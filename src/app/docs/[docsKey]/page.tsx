@@ -7,11 +7,12 @@ export default async function ProjectDetailPage({ params }: PageProps<{ docsKey:
     return null
   }
 
-    const { default: ProjectPost } = await import(`@/docs/${docsKey}.mdx`)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { default: ProjectPost } = await import(`@/docs/${docsKey}.mdx`)
 
-    return (
+  return (
 
-        <ProjectPost />
+    <ProjectPost />
 
-    )
+  )
 }

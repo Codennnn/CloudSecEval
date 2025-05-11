@@ -1,16 +1,11 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import jsxA11y from 'prefer-code-style/eslint/jsx-a11y'
+import next from 'prefer-code-style/eslint/next'
+import normal from 'prefer-code-style/eslint/preset/normal'
+import typescriptStrict from 'prefer-code-style/eslint/typescript-strict'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
-
-export default eslintConfig;
+export default [
+  ...normal,
+  ...typescriptStrict,
+  ...next,
+  ...jsxA11y,
+]

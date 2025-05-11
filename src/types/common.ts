@@ -1,3 +1,3 @@
 export interface PageProps<T> {
-    params: Promise<T>
+  params: Promise<T>
 }
