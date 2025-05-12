@@ -11,16 +11,13 @@ You can connect multiple middleware functions to a field. In this case, they wil
 Let's start off by creating a simple middleware that will log a field value before it's sent back to the client:
 
 ```typescript
-import { FieldMiddleware, MiddlewareContext, NextFn } from '@nestjs/graphql';
+import { FieldMiddleware, MiddlewareContext, NextFn } from '@nestjs/graphql'
 
-const loggerMiddleware: FieldMiddleware = async (
-  ctx: MiddlewareContext,
-  next: NextFn,
-) => {
-  const value = await next();
-  console.log(value);
-  return value;
-};
+const loggerMiddleware: FieldMiddleware = async (ctx: MiddlewareContext, next: NextFn) => {
+  const value = await next()
+  console.log(value)
+  return value
+}
 ```
 
 > info **Hint** The `MiddlewareContext` is an object that consist of the same arguments that are normally received by the GraphQL resolver function (`{{ '{' }} source, args, context, info {{ '}' }}`), while `NextFn` is a function that let you execute the next middleware in the stack (bound to this field) or the actual field resolver.
@@ -35,7 +32,7 @@ With this in place, we can register our middleware directly in the `@Field()` de
 @ObjectType()
 export class Recipe {
   @Field({ middleware: [loggerMiddleware] })
-  title: string;
+  title: string
 }
 ```
 
@@ -48,8 +45,8 @@ Now whenever we request the `title` field of `Recipe` object type, the original 
 Also, as mentioned above, we can control the field's value from within the middleware function. For demonstration purposes, let's capitalise a recipe's title (if present):
 
 ```typescript
-const value = await next();
-return value?.toUpperCase();
+const value = await next()
+return value?.toUpperCase()
 ```
 
 In this case, every title will be automatically uppercased, when requested.

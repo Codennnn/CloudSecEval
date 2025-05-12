@@ -297,7 +297,7 @@ class GetAuthorArgs {
 }
 ```
 
-> info **Hint** Again, due to TypeScript's metadata reflection system limitations, it's required to either use the `@Field` decorator to manually indicate type and optionality, or use a [CLI plugin](/graphql/cli-plugin). Also, in the case of `firstName`, which is a GraphQL nullable field, it isn't necessary to add the non-value types of `null` or `undefined` to the type of this field. Just be aware, you'll need to type guard for these possible non-value types in your resolvers, because a GraphQL nullable field will allow those types to pass through to your resolver. 
+> info **Hint** Again, due to TypeScript's metadata reflection system limitations, it's required to either use the `@Field` decorator to manually indicate type and optionality, or use a [CLI plugin](/graphql/cli-plugin). Also, in the case of `firstName`, which is a GraphQL nullable field, it isn't necessary to add the non-value types of `null` or `undefined` to the type of this field. Just be aware, you'll need to type guard for these possible non-value types in your resolvers, because a GraphQL nullable field will allow those types to pass through to your resolver.
 
 This will result in generating the following part of the GraphQL schema in SDL:
 
@@ -319,10 +319,10 @@ Base `@ArgsType()` class:
 @ArgsType()
 class PaginationArgs {
   @Field(() => Int)
-  offset: number = 0;
+  offset: number = 0
 
   @Field(() => Int)
-  limit: number = 10;
+  limit: number = 10
 }
 ```
 
@@ -332,11 +332,11 @@ Type specific sub-class of the base `@ArgsType()` class:
 @ArgsType()
 class GetAuthorArgs extends PaginationArgs {
   @Field({ nullable: true })
-  firstName?: string;
+  firstName?: string
 
   @Field({ defaultValue: '' })
   @MinLength(3)
-  lastName: string;
+  lastName: string
 }
 ```
 
@@ -346,10 +346,10 @@ The same approach can be taken with `@ObjectType()` objects. Define generic prop
 @ObjectType()
 class Character {
   @Field(() => Int)
-  id: number;
+  id: number
 
   @Field()
-  name: string;
+  name: string
 }
 ```
 
@@ -359,7 +359,7 @@ Add type-specific properties on sub-classes:
 @ObjectType()
 class Warrior extends Character {
   @Field()
-  level: number;
+  level: number
 }
 ```
 
@@ -371,10 +371,10 @@ function BaseResolver<T extends Type<unknown>>(classRef: T): any {
   abstract class BaseResolverHost {
     @Query(() => [classRef], { name: `findAll${classRef.name}` })
     async findAll(): Promise<T[]> {
-      return [];
+      return []
     }
   }
-  return BaseResolverHost;
+  return BaseResolverHost
 }
 ```
 
@@ -390,7 +390,7 @@ Here's how you could generate a concrete sub-class of the `BaseResolver`:
 @Resolver(() => Recipe)
 export class RecipesResolver extends BaseResolver(Recipe) {
   constructor(private recipesService: RecipesService) {
-    super();
+    super()
   }
 }
 ```
@@ -408,46 +408,46 @@ type Query {
 We saw one use of generics above. This powerful TypeScript feature can be used to create useful abstractions. For example, here's a sample cursor-based pagination implementation based on [this documentation](https://graphql.org/learn/pagination/#pagination-and-edges):
 
 ```typescript
-import { Field, ObjectType, Int } from '@nestjs/graphql';
-import { Type } from '@nestjs/common';
+import { Field, ObjectType, Int } from '@nestjs/graphql'
+import { Type } from '@nestjs/common'
 
 interface IEdgeType<T> {
-  cursor: string;
-  node: T;
+  cursor: string
+  node: T
 }
 
 export interface IPaginatedType<T> {
-  edges: IEdgeType<T>[];
-  nodes: T[];
-  totalCount: number;
-  hasNextPage: boolean;
+  edges: IEdgeType<T>[]
+  nodes: T[]
+  totalCount: number
+  hasNextPage: boolean
 }
 
 export function Paginated<T>(classRef: Type<T>): Type<IPaginatedType<T>> {
   @ObjectType(`${classRef.name}Edge`)
   abstract class EdgeType {
     @Field(() => String)
-    cursor: string;
+    cursor: string
 
     @Field(() => classRef)
-    node: T;
+    node: T
   }
 
   @ObjectType({ isAbstract: true })
   abstract class PaginatedType implements IPaginatedType<T> {
     @Field(() => [EdgeType], { nullable: true })
-    edges: EdgeType[];
+    edges: EdgeType[]
 
     @Field(() => [classRef], { nullable: true })
-    nodes: T[];
+    nodes: T[]
 
     @Field(() => Int)
-    totalCount: number;
+    totalCount: number
 
     @Field()
-    hasNextPage: boolean;
+    hasNextPage: boolean
   }
-  return PaginatedType as Type<IPaginatedType<T>>;
+  return PaginatedType as Type<IPaginatedType<T>>
 }
 ```
 
@@ -603,12 +603,12 @@ export abstract class IQuery {
 By generating classes (instead of the default technique of generating interfaces), you can use declarative validation **decorators** in combination with the schema first approach, which is an extremely useful technique (read [more](/techniques/validation)). For example, you could add `class-validator` decorators to the generated `CreatePostInput` class as shown below to enforce minimum and maximum string lengths on the `title` field:
 
 ```typescript
-import { MinLength, MaxLength } from 'class-validator';
+import { MinLength, MaxLength } from 'class-validator'
 
 export class CreatePostInput {
   @MinLength(3)
   @MaxLength(50)
-  title: string;
+  title: string
 }
 ```
 
@@ -617,13 +617,13 @@ export class CreatePostInput {
 However, if you add decorators directly to the automatically generated file, they will be **overwritten** each time the file is generated. Instead, create a separate file and simply extend the generated class.
 
 ```typescript
-import { MinLength, MaxLength } from 'class-validator';
-import { Post } from '../../graphql.ts';
+import { MinLength, MaxLength } from 'class-validator'
+import { Post } from '../../graphql.ts'
 
 export class CreatePostInput extends Post {
   @MinLength(3)
   @MaxLength(50)
-  title: string;
+  title: string
 }
 ```
 
@@ -634,20 +634,36 @@ We can access the standard GraphQL resolver arguments using dedicated decorators
 <table>
   <tbody>
     <tr>
-      <td><code>@Root()</code> and <code>@Parent()</code></td>
-      <td><code>root</code>/<code>parent</code></td>
+      <td>
+        <code>@Root()</code> and <code>@Parent()</code>
+      </td>
+      <td>
+        <code>root</code>/<code>parent</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Context(param?: string)</code></td>
-      <td><code>context</code> / <code>context[param]</code></td>
+      <td>
+        <code>@Context(param?: string)</code>
+      </td>
+      <td>
+        <code>context</code> / <code>context[param]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Info(param?: string)</code></td>
-      <td><code>info</code> / <code>info[param]</code></td>
+      <td>
+        <code>@Info(param?: string)</code>
+      </td>
+      <td>
+        <code>info</code> / <code>info[param]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Args(param?: string)</code></td>
-      <td><code>args</code> / <code>args[param]</code></td>
+      <td>
+        <code>@Args(param?: string)</code>
+      </td>
+      <td>
+        <code>args</code> / <code>args[param]</code>
+      </td>
     </tr>
   </tbody>
 </table>

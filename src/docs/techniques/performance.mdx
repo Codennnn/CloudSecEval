@@ -43,11 +43,8 @@ By default, Fastify listens only on the `localhost 127.0.0.1` interface ([read m
 
 ```typescript
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
-  await app.listen(3000, '0.0.0.0');
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
+  await app.listen(3000, '0.0.0.0')
 }
 ```
 
@@ -71,7 +68,7 @@ index(@Res() res) {
 You can pass options into the Fastify constructor through the `FastifyAdapter` constructor. For example:
 
 ```typescript
-new FastifyAdapter({ logger: true });
+new FastifyAdapter({ logger: true })
 ```
 
 #### Middleware

@@ -23,8 +23,8 @@ $ npm i --save-dev webpack-node-externals run-script-webpack-plugin webpack
 Once the installation is complete, create a `webpack-hmr.config.js` file in the root directory of your application.
 
 ```typescript
-const nodeExternals = require('webpack-node-externals');
-const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
+const nodeExternals = require('webpack-node-externals')
+const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin')
 
 module.exports = function (options, webpack) {
   return {
@@ -43,8 +43,8 @@ module.exports = function (options, webpack) {
       }),
       new RunScriptWebpackPlugin({ name: options.output.filename, autoRestart: false }),
     ],
-  };
-};
+  }
+}
 ```
 
 > info **Hint** With **Yarn Berry** (not classic Yarn), instead of using the `nodeExternals` in the `externals` configuration property, use the `WebpackPnpExternals` from `webpack-pnp-externals` package: `WebpackPnpExternals({{ '{' }} exclude: ['webpack/hot/poll?100'] {{ '}' }})`.
@@ -56,18 +56,18 @@ This function takes the original object containing the default webpack configura
 To enable **HMR**, open the application entry file (`main.ts`) and add the following webpack-related instructions:
 
 ```typescript
-declare const module: any;
+declare const module: any
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.create(AppModule)
+  await app.listen(process.env.PORT ?? 3000)
 
   if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
+    module.hot.accept()
+    module.hot.dispose(() => app.close())
   }
 }
-bootstrap();
+bootstrap()
 ```
 
 To simplify the execution process, add a script to your `package.json` file.
@@ -101,10 +101,10 @@ $ npm i --save-dev webpack webpack-cli webpack-node-externals ts-loader run-scri
 Once the installation is complete, create a `webpack.config.js` file in the root directory of your application.
 
 ```typescript
-const webpack = require('webpack');
-const path = require('path');
-const nodeExternals = require('webpack-node-externals');
-const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
+const webpack = require('webpack')
+const path = require('path')
+const nodeExternals = require('webpack-node-externals')
+const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin')
 
 module.exports = {
   entry: ['webpack/hot/poll?100', './src/main.ts'],
@@ -127,12 +127,15 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  plugins: [new webpack.HotModuleReplacementPlugin(), new RunScriptWebpackPlugin({ name: 'server.js', autoRestart: false })],
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new RunScriptWebpackPlugin({ name: 'server.js', autoRestart: false }),
+  ],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'server.js',
   },
-};
+}
 ```
 
 > info **Hint** With **Yarn Berry** (not classic Yarn), instead of using the `nodeExternals` in the `externals` configuration property, use the `WebpackPnpExternals` from `webpack-pnp-externals` package: `WebpackPnpExternals({{ '{' }} exclude: ['webpack/hot/poll?100'] {{ '}' }})`.
@@ -144,18 +147,18 @@ This configuration tells webpack a few essential things about your application: 
 To enable **HMR**, open the application entry file (`main.ts`) and add the following webpack-related instructions:
 
 ```typescript
-declare const module: any;
+declare const module: any
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.create(AppModule)
+  await app.listen(process.env.PORT ?? 3000)
 
   if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
+    module.hot.accept()
+    module.hot.dispose(() => app.close())
   }
 }
-bootstrap();
+bootstrap()
 ```
 
 To simplify the execution process, add a script to your `package.json` file.

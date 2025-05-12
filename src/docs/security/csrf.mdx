@@ -15,7 +15,7 @@ $ npm i csrf-csrf
 Once the installation is complete, register the `csrf-csrf` middleware as global middleware.
 
 ```typescript
-import { doubleCsrf } from 'csrf-csrf';
+import { doubleCsrf } from 'csrf-csrf'
 // ...
 // somewhere in your initialization file
 const {
@@ -23,8 +23,8 @@ const {
   generateToken, // Use this in your routes to generate and provide a CSRF hash, along with a token cookie and token.
   validateRequest, // Also a convenience if you plan on making your own middleware.
   doubleCsrfProtection, // This is the default CSRF protection middleware.
-} = doubleCsrf(doubleCsrfOptions);
-app.use(doubleCsrfProtection);
+} = doubleCsrf(doubleCsrfOptions)
+app.use(doubleCsrfProtection)
 ```
 
 #### Use with Fastify
@@ -38,10 +38,10 @@ $ npm i --save @fastify/csrf-protection
 Once the installation is complete, register the `@fastify/csrf-protection` plugin, as follows:
 
 ```typescript
-import fastifyCsrf from '@fastify/csrf-protection';
+import fastifyCsrf from '@fastify/csrf-protection'
 // ...
 // somewhere in your initialization file after registering some storage plugin
-await app.register(fastifyCsrf);
+await app.register(fastifyCsrf)
 ```
 
 > warning **Warning** As explained in the `@fastify/csrf-protection` docs [here](https://github.com/fastify/csrf-protection#usage), this plugin requires a storage plugin to be initialized first. Please, see that documentation for further instructions.

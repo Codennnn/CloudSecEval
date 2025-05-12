@@ -159,7 +159,7 @@ the following object with a 200 status code.
 The interface of this response object can be accessed from the `@nestjs/terminus` package with the `HealthCheckResult` interface.
 
 |           |                                                                                                                                                                                             |                                      |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `status`  | If any health indicator failed the status will be `'error'`. If the NestJS app is shutting down but still accepting HTTP requests, the health check will have the `'shutting_down'` status. | `'error' \| 'ok' \| 'shutting_down'` |
 | `info`    | Object containing information of each health indicator which is of status `'up'`, or in other words "healthy".                                                                              | `object`                             |
 | `error`   | Object containing information of each health indicator which is of status `'down'`, or in other words "unhealthy".                                                                          | `object`                             |
@@ -174,7 +174,6 @@ check for that response code specifically and determine all other codes as unhea
 In case any other response code other than `204` gets returned, the following example would be unhealthy. The third parameter
 requires you to provide a function (sync or async) which returns a boolean whether the response is considered
 healthy (`true`) or unhealthy (`false`).
-
 
 ```typescript
 @@filename(health.controller)
@@ -193,7 +192,6 @@ check() {
   ]);
 }
 ```
-
 
 #### TypeOrm health indicator
 
@@ -284,7 +282,6 @@ export class HealthController {
 }
 ```
 
-
 #### Disk health indicator
 
 With the `DiskHealthIndicator` we can check how much storage is in use. To get started, make sure to inject the `DiskHealthIndicator`
@@ -342,10 +339,11 @@ check() {
 
 #### Memory health indicator
 
-To make sure your process does not exceed a certain memory limit the `MemoryHealthIndicator` can be used. 
+To make sure your process does not exceed a certain memory limit the `MemoryHealthIndicator` can be used.
 The following example can be used to check the heap of your process.
 
 > info **Hint** Heap is the portion of memory where dynamically allocated memory resides (i.e. memory allocated via malloc). Memory allocated from the heap will remain allocated until one of the following occurs:
+>
 > - The memory is _free_'d
 > - The program terminates
 
@@ -389,7 +387,6 @@ would return an unhealthy response code in case your process does have more than
 > It does not include memory that is swapped out. It does include memory from shared libraries as long as the pages from
 > those libraries are actually in memory. It does include all stack and heap memory.
 
-
 ```typescript
 @@filename(health.controller)
 // Within the `HealthController`-class
@@ -402,7 +399,6 @@ check() {
   ]);
 }
 ```
-
 
 #### Custom health indicator
 
@@ -550,7 +546,6 @@ Therefore you can pick and choose which part of the logger you would like to ove
 
 > info **Info** If you want to learn more about custom loggers in NestJS, [read more here](/techniques/logger#injecting-a-custom-logger).
 
-
 ```typescript
 @@filename(terminus-logger.service)
 import { Injectable, Scope, ConsoleLogger } from '@nestjs/common';
@@ -584,7 +579,6 @@ imports: [
 export class HealthModule {}
 ```
 
-
 To completely suppress any log messages coming from Terminus, including error messages, configure Terminus as such.
 
 ```typescript
@@ -599,14 +593,12 @@ imports: [
 export class HealthModule {}
 ```
 
-
-
 Terminus allows you to configure how Healthcheck errors should be displayed in your logs.
 
-| Error Log Style          | Description                                                                                                                        | Example                                                              |
-|:------------------|:-----------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------|
-| `json`  (default) | Prints a summary of the health check result in case of an error as JSON object                                                     | <figure><img src="/assets/Terminus_Error_Log_Json.png" /></figure>   |
-| `pretty`          | Prints a summary of the health check result in case of an error within formatted boxes and highlights successful/erroneous results | <figure><img src="/assets/Terminus_Error_Log_Pretty.png" /></figure> |
+| Error Log Style  | Description                                                                                                                        | Example                                                              |
+| :--------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------- |
+| `json` (default) | Prints a summary of the health check result in case of an error as JSON object                                                     | <figure><img src="/assets/Terminus_Error_Log_Json.png" /></figure>   |
+| `pretty`         | Prints a summary of the health check result in case of an error within formatted boxes and highlights successful/erroneous results | <figure><img src="/assets/Terminus_Error_Log_Pretty.png" /></figure> |
 
 You can change the log style using the `errorLogStyle` configuration option as in the following snippet.
 

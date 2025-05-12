@@ -2,7 +2,9 @@
 
 Providers are a core concept in Nest. Many of the basic Nest classes, such as services, repositories, factories, and helpers, can be treated as providers. The key idea behind a provider is that it can be **injected** as a dependency, allowing objects to form various relationships with each other. The responsibility of "wiring up" these objects is largely handled by the Nest runtime system.
 
-<figure><img class="illustrative-image" src="/assets/Components_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Components_1.png" />
+</figure>
 
 In the previous chapter, we created a simple `CatsController`. Controllers should handle HTTP requests and delegate more complex tasks to **providers**. Providers are plain JavaScript classes declared as `providers` in a NestJS module. For more details, refer to the "Modules" chapter.
 
@@ -139,7 +141,7 @@ Occasionally, you may have dependencies that don't always need to be resolved. F
 To mark a provider as optional, use the `@Optional()` decorator in the constructor's signature.
 
 ```typescript
-import { Injectable, Optional, Inject } from '@nestjs/common';
+import { Injectable, Optional, Inject } from '@nestjs/common'
 
 @Injectable()
 export class HttpService<T> {
@@ -154,12 +156,12 @@ In the example above, we're using a custom provider, which is why we include the
 The technique we've used so far is called constructor-based injection, where providers are injected through the constructor method. In certain specific cases, **property-based injection** can be useful. For example, if your top-level class depends on one or more providers, passing them all the way up through `super()` in sub-classes can become cumbersome. To avoid this, you can use the `@Inject()` decorator directly at the property level.
 
 ```typescript
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common'
 
 @Injectable()
 export class HttpService<T> {
   @Inject('HTTP_OPTIONS')
-  private readonly httpClient: T;
+  private readonly httpClient: T
 }
 ```
 
@@ -187,24 +189,24 @@ Nest will now be able to resolve the dependencies of the `CatsController` class.
 At this point, our directory structure should look like this:
 
 <div class="file-tree">
-<div class="item">src</div>
-<div class="children">
-<div class="item">cats</div>
-<div class="children">
-<div class="item">dto</div>
-<div class="children">
-<div class="item">create-cat.dto.ts</div>
-</div>
-<div class="item">interfaces</div>
-<div class="children">
-<div class="item">cat.interface.ts</div>
-</div>
-<div class="item">cats.controller.ts</div>
-<div class="item">cats.service.ts</div>
-</div>
-<div class="item">app.module.ts</div>
-<div class="item">main.ts</div>
-</div>
+  <div class="item">src</div>
+  <div class="children">
+    <div class="item">cats</div>
+    <div class="children">
+      <div class="item">dto</div>
+      <div class="children">
+        <div class="item">create-cat.dto.ts</div>
+      </div>
+      <div class="item">interfaces</div>
+      <div class="children">
+        <div class="item">cat.interface.ts</div>
+      </div>
+      <div class="item">cats.controller.ts</div>
+      <div class="item">cats.service.ts</div>
+    </div>
+    <div class="item">app.module.ts</div>
+    <div class="item">main.ts</div>
+  </div>
 </div>
 
 #### Manual instantiation

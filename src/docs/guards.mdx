@@ -2,7 +2,9 @@
 
 A guard is a class annotated with the `@Injectable()` decorator, which implements the `CanActivate` interface.
 
-<figure><img class="illustrative-image" src="/assets/Guards_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Guards_1.png" />
+</figure>
 
 Guards have a **single responsibility**. They determine whether a given request will be handled by the route handler or not, depending on certain conditions (like permissions, roles, ACLs, etc.) present at run-time. This is often referred to as **authorization**. Authorization (and its cousin, **authentication**, with which it usually collaborates) has typically been handled by [middleware](/middleware) in traditional Express applications. Middleware is a fine choice for authentication, since things like token validation and attaching properties to the `request` object are not strongly connected with a particular route context (and its metadata).
 
@@ -248,7 +250,7 @@ When a user with insufficient privileges requests an endpoint, Nest automaticall
 Note that behind the scenes, when a guard returns `false`, the framework throws a `ForbiddenException`. If you want to return a different error response, you should throw your own specific exception. For example:
 
 ```typescript
-throw new UnauthorizedException();
+throw new UnauthorizedException()
 ```
 
 Any exception thrown by a guard will be handled by the [exceptions layer](/exception-filters) (global exceptions filter and any exceptions filters that are applied to the current context).

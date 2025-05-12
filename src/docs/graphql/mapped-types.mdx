@@ -16,13 +16,13 @@ The `PartialType()` function returns a type (class) with all the properties of t
 @InputType()
 class CreateUserInput {
   @Field()
-  email: string;
+  email: string
 
   @Field()
-  password: string;
+  password: string
 
   @Field()
-  firstName: string;
+  firstName: string
 }
 ```
 
@@ -50,13 +50,13 @@ The `PickType()` function constructs a new type (class) by picking a set of prop
 @InputType()
 class CreateUserInput {
   @Field()
-  email: string;
+  email: string
 
   @Field()
-  password: string;
+  password: string
 
   @Field()
-  firstName: string;
+  firstName: string
 }
 ```
 
@@ -64,9 +64,7 @@ We can pick a set of properties from this class using the `PickType()` utility f
 
 ```typescript
 @InputType()
-export class UpdateEmailInput extends PickType(CreateUserInput, [
-  'email',
-] as const) {}
+export class UpdateEmailInput extends PickType(CreateUserInput, ['email'] as const) {}
 ```
 
 > info **Hint** The `PickType()` function is imported from the `@nestjs/graphql` package.
@@ -79,13 +77,13 @@ The `OmitType()` function constructs a type by picking all properties from an in
 @InputType()
 class CreateUserInput {
   @Field()
-  email: string;
+  email: string
 
   @Field()
-  password: string;
+  password: string
 
   @Field()
-  firstName: string;
+  firstName: string
 }
 ```
 
@@ -93,9 +91,7 @@ We can generate a derived type that has every property **except** `email` as sho
 
 ```typescript
 @InputType()
-export class UpdateUserInput extends OmitType(CreateUserInput, [
-  'email',
-] as const) {}
+export class UpdateUserInput extends OmitType(CreateUserInput, ['email'] as const) {}
 ```
 
 > info **Hint** The `OmitType()` function is imported from the `@nestjs/graphql` package.
@@ -108,19 +104,19 @@ The `IntersectionType()` function combines two types into one new type (class). 
 @InputType()
 class CreateUserInput {
   @Field()
-  email: string;
+  email: string
 
   @Field()
-  password: string;
+  password: string
 }
 
 @ObjectType()
 export class AdditionalUserInfo {
   @Field()
-  firstName: string;
+  firstName: string
 
   @Field()
-  lastName: string;
+  lastName: string
 }
 ```
 
@@ -128,10 +124,7 @@ We can generate a new type that combines all properties in both types.
 
 ```typescript
 @InputType()
-export class UpdateUserInput extends IntersectionType(
-  CreateUserInput,
-  AdditionalUserInfo,
-) {}
+export class UpdateUserInput extends IntersectionType(CreateUserInput, AdditionalUserInfo) {}
 ```
 
 > info **Hint** The `IntersectionType()` function is imported from the `@nestjs/graphql` package.
@@ -142,7 +135,5 @@ The type mapping utility functions are composable. For example, the following wi
 
 ```typescript
 @InputType()
-export class UpdateUserInput extends PartialType(
-  OmitType(CreateUserInput, ['email'] as const),
-) {}
+export class UpdateUserInput extends PartialType(OmitType(CreateUserInput, ['email'] as const)) {}
 ```

@@ -45,13 +45,13 @@ Similarly, if you have a middleware that runs on all routes, you may need to upd
 ```typescript
 // In NestJS 11, this will be automatically converted to a valid Express v5 route.
 // While it may still work, it's no longer advisable to use this wildcard syntax in Express v5.
-forRoutes('*'); // <-- This should not work in Express v5
+forRoutes('*') // <-- This should not work in Express v5
 ```
 
 Instead, you can update the path to use a named wildcard:
 
 ```typescript
-forRoutes('{*splat}'); // <-- This will work in Express v5
+forRoutes('{*splat}') // <-- This will work in Express v5
 ```
 
 Note that `{{ '{' }}*splat&#125;` is a named wildcard that matches any path including the root path. Outer braces make path optional.
@@ -72,16 +72,16 @@ As a result, query strings like these:
 will no longer be parsed as expected. To revert to the previous behavior, you can configure Express to use the `extended` parser (the default in Express v4) by setting the `query parser` option to `extended`:
 
 ```typescript
-import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule); // <-- Make sure to use <NestExpressApplication>
-  app.set('query parser', 'extended'); // <-- Add this line
-  await app.listen(3000);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule) // <-- Make sure to use <NestExpressApplication>
+  app.set('query parser', 'extended') // <-- Add this line
+  await app.listen(3000)
 }
-bootstrap();
+bootstrap()
 ```
 
 #### Fastify v5
@@ -95,20 +95,15 @@ bootstrap();
 By default, only [CORS-safelisted methods](https://fetch.spec.whatwg.org/#methods) are allowed. If you need to enable additional methods (such as `PUT`, `PATCH`, or `DELETE`), you must explicitly define them in the `methods` option.
 
 ```typescript
-const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']; // OR comma-delimited string 'GET,POST,PUT,PATH,DELETE'
+const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] // OR comma-delimited string 'GET,POST,PUT,PATH,DELETE'
 
-const app = await NestFactory.create<NestFastifyApplication>(
-  AppModule,
-  new FastifyAdapter(),
-  { cors: { methods } },
-);
+const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
+  cors: { methods },
+})
 
 // OR alternatively, you can use the `enableCors` method
-const app = await NestFactory.create<NestFastifyApplication>(
-  AppModule,
-  new FastifyAdapter(),
-);
-app.enableCors({ methods });
+const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
+app.enableCors({ methods })
 ```
 
 #### Fastify middleware registration
@@ -253,26 +248,26 @@ Before version 11, a health indicator might have looked like this:
 @Injectable()
 export class DogHealthIndicator extends HealthIndicator {
   constructor(private readonly httpService: HttpService) {
-    super();
+    super()
   }
 
   async isHealthy(key: string) {
     try {
-      const badboys = await this.getBadboys();
-      const isHealthy = badboys.length === 0;
+      const badboys = await this.getBadboys()
+      const isHealthy = badboys.length === 0
 
       const result = this.getStatus(key, isHealthy, {
         badboys: badboys.length,
-      });
+      })
 
       if (!isHealthy) {
-        throw new HealthCheckError('Dog check failed', result);
+        throw new HealthCheckError('Dog check failed', result)
       }
 
-      return result;
+      return result
     } catch (error) {
-      const result = this.getStatus(key, isHealthy);
-      throw new HealthCheckError('Dog check failed', result);
+      const result = this.getStatus(key, isHealthy)
+      throw new HealthCheckError('Dog check failed', result)
     }
   }
 
@@ -280,9 +275,9 @@ export class DogHealthIndicator extends HealthIndicator {
     return firstValueFrom(
       this.httpService.get<Dog[]>('https://example.com/dog').pipe(
         map((response) => response.data),
-        map((dogs) => dogs.filter((dog) => dog.state === DogState.BAD_BOY)),
-      ),
-    );
+        map((dogs) => dogs.filter((dog) => dog.state === DogState.BAD_BOY))
+      )
+    )
   }
 }
 ```
@@ -295,26 +290,26 @@ export class DogHealthIndicator {
   constructor(
     private readonly httpService: HttpService,
     //  Inject the `HealthIndicatorService` provided by the `TerminusModule`
-    private readonly healthIndicatorService: HealthIndicatorService,
+    private readonly healthIndicatorService: HealthIndicatorService
   ) {}
 
   async isHealthy(key: string) {
     // Start the health indicator check for the given key
-    const indicator = this.healthIndicatorService.check(key);
+    const indicator = this.healthIndicatorService.check(key)
 
     try {
-      const badboys = await this.getBadboys();
-      const isHealthy = badboys.length === 0;
+      const badboys = await this.getBadboys()
+      const isHealthy = badboys.length === 0
 
       if (!isHealthy) {
         // Mark the indicator as "down" and add additional info to the response
-        return indicator.down({ badboys: badboys.length });
+        return indicator.down({ badboys: badboys.length })
       }
 
       // Mark the health indicator as up
-      return indicator.up();
+      return indicator.up()
     } catch (error) {
-      return indicator.down('Unable to retrieve dogs');
+      return indicator.down('Unable to retrieve dogs')
     }
   }
 

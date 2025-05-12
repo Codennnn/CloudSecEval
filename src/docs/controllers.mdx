@@ -2,7 +2,9 @@
 
 Controllers are responsible for handling incoming **requests** and sending **responses** back to the client.
 
-<figure><img class="illustrative-image" src="/assets/Controllers_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Controllers_1.png" />
+</figure>
 
 A controller's purpose is to handle specific requests for the application. The **routing** mechanism determines which controller will handle each request. Often, a controller has multiple routes, and each route can perform a different action.
 
@@ -51,18 +53,31 @@ This method will return a 200 status code along with the associated response, wh
   <tr>
     <td>Standard (recommended)</td>
     <td>
-      Using this built-in method, when a request handler returns a JavaScript object or array, it will <strong>automatically</strong>
-      be serialized to JSON. When it returns a JavaScript primitive type (e.g., <code>string</code>, <code>number</code>, <code>boolean</code>), however, Nest will send just the value without attempting to serialize it. This makes response handling simple: just return the value, and Nest takes care of the rest.
+      Using this built-in method, when a request handler returns a JavaScript object or array, it
+      will <strong>automatically</strong>
+      be serialized to JSON. When it returns a JavaScript primitive type (e.g., <code>
+        string
+      </code>, <code>number</code>, <code>boolean</code>), however, Nest will send just the value
+      without attempting to serialize it. This makes response handling simple: just return the
+      value, and Nest takes care of the rest.
       <br />
-      <br /> Furthermore, the response's <strong>status code</strong> is always 200 by default, except for POST
-      requests which use 201. We can easily change this behavior by adding the <code>@HttpCode(...)</code>
-      decorator at a handler-level (see <a href='controllers#status-code'>Status codes</a>).
+      <br /> Furthermore, the response's <strong>status code</strong> is always 200 by default,
+      except for POST requests which use 201. We can easily change this behavior by adding the{' '}
+      <code>@HttpCode(...)</code>
+      decorator at a handler-level (see <a href="controllers#status-code">Status codes</a>).
     </td>
   </tr>
   <tr>
     <td>Library-specific</td>
     <td>
-      We can use the library-specific (e.g., Express) <a href="https://expressjs.com/en/api.html#res" rel="nofollow" target="_blank">response object</a>, which can be injected using the <code>@Res()</code> decorator in the method handler signature (e.g., <code>findAll(@Res() response)</code>).  With this approach, you have the ability to use the native response handling methods exposed by that object.  For example, with Express, you can construct responses using code like <code>response.status(200).send()</code>.
+      We can use the library-specific (e.g., Express){' '}
+      <a href="https://expressjs.com/en/api.html#res" rel="nofollow" target="_blank">
+        response object
+      </a>
+      , which can be injected using the <code>@Res()</code> decorator in the method handler
+      signature (e.g., <code>findAll(@Res() response)</code>). With this approach, you have the
+      ability to use the native response handling methods exposed by that object. For example, with
+      Express, you can construct responses using code like <code>response.status(200).send()</code>.
     </td>
   </tr>
 </table>
@@ -107,48 +122,97 @@ The request object represents the HTTP request and contains properties for the q
 <table>
   <tbody>
     <tr>
-      <td><code>@Request(), @Req()</code></td>
-      <td><code>req</code></td></tr>
-    <tr>
-      <td><code>@Response(), @Res()</code><span class="table-code-asterisk">*</span></td>
-      <td><code>res</code></td>
+      <td>
+        <code>@Request(), @Req()</code>
+      </td>
+      <td>
+        <code>req</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Next()</code></td>
-      <td><code>next</code></td>
+      <td>
+        <code>@Response(), @Res()</code>
+        <span class="table-code-asterisk">*</span>
+      </td>
+      <td>
+        <code>res</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Session()</code></td>
-      <td><code>req.session</code></td>
+      <td>
+        <code>@Next()</code>
+      </td>
+      <td>
+        <code>next</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Param(key?: string)</code></td>
-      <td><code>req.params</code> / <code>req.params[key]</code></td>
+      <td>
+        <code>@Session()</code>
+      </td>
+      <td>
+        <code>req.session</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Body(key?: string)</code></td>
-      <td><code>req.body</code> / <code>req.body[key]</code></td>
+      <td>
+        <code>@Param(key?: string)</code>
+      </td>
+      <td>
+        <code>req.params</code> / <code>req.params[key]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Query(key?: string)</code></td>
-      <td><code>req.query</code> / <code>req.query[key]</code></td>
+      <td>
+        <code>@Body(key?: string)</code>
+      </td>
+      <td>
+        <code>req.body</code> / <code>req.body[key]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Headers(name?: string)</code></td>
-      <td><code>req.headers</code> / <code>req.headers[name]</code></td>
+      <td>
+        <code>@Query(key?: string)</code>
+      </td>
+      <td>
+        <code>req.query</code> / <code>req.query[key]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Ip()</code></td>
-      <td><code>req.ip</code></td>
+      <td>
+        <code>@Headers(name?: string)</code>
+      </td>
+      <td>
+        <code>req.headers</code> / <code>req.headers[name]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@HostParam()</code></td>
-      <td><code>req.hosts</code></td>
+      <td>
+        <code>@Ip()</code>
+      </td>
+      <td>
+        <code>req.ip</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@HostParam()</code>
+      </td>
+      <td>
+        <code>req.hosts</code>
+      </td>
     </tr>
   </tbody>
 </table>
 
-<sup>\* </sup>For compatibility with typings across underlying HTTP platforms (e.g., Express and Fastify), Nest provides `@Res()` and `@Response()` decorators. `@Res()` is simply an alias for `@Response()`. Both directly expose the underlying native platform `response` object interface. When using them, you should also import the typings for the underlying library (e.g., `@types/express`) to take full advantage. Note that when you inject either `@Res()` or `@Response()` in a method handler, you put Nest into **Library-specific mode** for that handler, and you become responsible for managing the response. When doing so, you must issue some kind of response by making a call on the `response` object (e.g., `res.json(...)` or `res.send(...)`), or the HTTP server will hang.
+<sup>\* </sup>For compatibility with typings across underlying HTTP platforms (e.g., Express and
+Fastify), Nest provides `@Res()` and `@Response()` decorators. `@Res()` is simply an alias for
+`@Response()`. Both directly expose the underlying native platform `response` object interface. When
+using them, you should also import the typings for the underlying library (e.g., `@types/express`)
+to take full advantage. Note that when you inject either `@Res()` or `@Response()` in a method
+handler, you put Nest into **Library-specific mode** for that handler, and you become responsible
+for managing the response. When doing so, you must issue some kind of response by making a call on
+the `response` object (e.g., `res.json(...)` or `res.send(...)`), or the HTTP server will hang.
 
 > info **Hint** To learn how to create your own custom decorators, visit [this](/custom-decorators) chapter.
 
@@ -312,7 +376,7 @@ The `@Controller` decorator can take a `host` option to require that the HTTP ho
 export class AdminController {
   @Get()
   index(): string {
-    return 'Admin page';
+    return 'Admin page'
   }
 }
 ```
@@ -326,7 +390,7 @@ Similar to a route `path`, the `hosts` option can use tokens to capture the dyna
 export class AccountController {
   @Get()
   getInfo(@HostParam('account') account: string) {
-    return account;
+    return account
   }
 }
 ```
@@ -438,8 +502,8 @@ If your application requires handling more complex query parameters, such as nes
 you'll need to configure your HTTP adapter (Express or Fastify) to use an appropriate query parser. In Express, you can use the `extended` parser, which allows for rich query objects:
 
 ```typescript
-const app = await NestFactory.create<NestExpressApplication>(AppModule);
-app.set('query parser', 'extended');
+const app = await NestFactory.create<NestExpressApplication>(AppModule)
+app.set('query parser', 'extended')
 ```
 
 In Fastify, you can use the `querystringParser` option:
@@ -449,8 +513,8 @@ const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
   new FastifyAdapter({
     querystringParser: (str) => qs.parse(str),
-  }),
-);
+  })
+)
 ```
 
 > info **Hint** `qs` is a querystring parser that supports nesting and arrays. You can install it using `npm install qs`.

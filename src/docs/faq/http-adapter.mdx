@@ -37,8 +37,8 @@ export class CatsService {
 The `HttpAdapterHost` is **not** an actual `HttpAdapter`. To get the actual `HttpAdapter` instance, simply access the `httpAdapter` property.
 
 ```typescript
-const adapterHost = app.get(HttpAdapterHost);
-const httpAdapter = adapterHost.httpAdapter;
+const adapterHost = app.get(HttpAdapterHost)
+const httpAdapter = adapterHost.httpAdapter
 ```
 
 The `httpAdapter` is the actual instance of the HTTP adapter used by the underlying framework. It is an instance of either `ExpressAdapter` or `FastifyAdapter` (both classes extend `AbstractHttpAdapter`).
@@ -46,7 +46,7 @@ The `httpAdapter` is the actual instance of the HTTP adapter used by the underly
 The adapter object exposes several useful methods to interact with the HTTP server. However, if you want to access the library instance (e.g., the Express instance) directly, call the `getInstance()` method.
 
 ```typescript
-const instance = httpAdapter.getInstance();
+const instance = httpAdapter.getInstance()
 ```
 
 #### Listening event
@@ -54,15 +54,13 @@ const instance = httpAdapter.getInstance();
 To execute an action when the server begins listening for incoming requests, you can subscribe to the `listen$` stream, as demonstrated below:
 
 ```typescript
-this.httpAdapterHost.listen$.subscribe(() =>
-  console.log('HTTP server is listening'),
-);
+this.httpAdapterHost.listen$.subscribe(() => console.log('HTTP server is listening'))
 ```
 
 Additionally, the `HttpAdapterHost` provides a `listening` boolean property that indicates whether the server is currently active and listening:
 
 ```typescript
 if (this.httpAdapterHost.listening) {
-  console.log('HTTP server is listening');
+  console.log('HTTP server is listening')
 }
 ```

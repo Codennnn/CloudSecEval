@@ -7,15 +7,15 @@ Like many type systems, GraphQL supports interfaces. An **Interface** is an abst
 When using the code first approach, you define a GraphQL interface by creating an abstract class annotated with the `@InterfaceType()` decorator exported from the `@nestjs/graphql`.
 
 ```typescript
-import { Field, ID, InterfaceType } from '@nestjs/graphql';
+import { Field, ID, InterfaceType } from '@nestjs/graphql'
 
 @InterfaceType()
 export abstract class Character {
   @Field(() => ID)
-  id: string;
+  id: string
 
   @Field()
-  name: string;
+  name: string
 }
 ```
 
@@ -37,8 +37,8 @@ Now, to implement the `Character` interface, use the `implements` key:
   implements: () => [Character],
 })
 export class Human implements Character {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 ```
 
@@ -52,17 +52,17 @@ To provide a customized `resolveType()` function, pass the `resolveType` propert
 @InterfaceType({
   resolveType(book) {
     if (book.colors) {
-      return ColoringBook;
+      return ColoringBook
     }
-    return TextBook;
+    return TextBook
   },
 })
 export abstract class Book {
   @Field(() => ID)
-  id: string;
+  id: string
 
   @Field()
-  title: string;
+  title: string
 }
 ```
 
@@ -71,7 +71,7 @@ export abstract class Book {
 So far, using interfaces, you could only share field definitions with your objects. If you also want to share the actual field resolvers implementation, you can create a dedicated interface resolver, as follows:
 
 ```typescript
-import { Resolver, ResolveField, Parent, Info } from '@nestjs/graphql';
+import { Resolver, ResolveField, Parent, Info } from '@nestjs/graphql'
 
 @Resolver((type) => Character) // Reminder: Character is an interface
 export class CharacterInterfaceResolver {
@@ -79,10 +79,10 @@ export class CharacterInterfaceResolver {
   friends(
     @Parent() character, // Resolved object that implements Character
     @Info() { parentType }, // Type of the object that implements Character
-    @Args('search', { type: () => String }) searchTerm: string,
+    @Args('search', { type: () => String }) searchTerm: string
   ) {
     // Get character's friends
-    return [];
+    return []
   }
 }
 ```
@@ -106,8 +106,8 @@ Then, you can use the typings generation feature (as shown in the [quick start](
 
 ```typescript
 export interface Character {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 ```
 
@@ -119,9 +119,9 @@ export class CharactersResolver {
   @ResolveField()
   __resolveType(value) {
     if ('age' in value) {
-      return Person;
+      return Person
     }
-    return null;
+    return null
   }
 }
 ```

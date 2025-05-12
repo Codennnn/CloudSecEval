@@ -121,8 +121,8 @@ The `options` property has to fulfill the following interface:
 
 ```typescript
 export interface PluginOptions {
-  typeFileNameSuffix?: string[];
-  introspectComments?: boolean;
+  typeFileNameSuffix?: string[]
+  introspectComments?: boolean
 }
 ```
 
@@ -133,14 +133,22 @@ export interface PluginOptions {
     <th>Description</th>
   </tr>
   <tr>
-    <td><code>typeFileNameSuffix</code></td>
-    <td><code>['.input.ts', '.args.ts', '.entity.ts', '.model.ts']</code></td>
+    <td>
+      <code>typeFileNameSuffix</code>
+    </td>
+    <td>
+      <code>['.input.ts', '.args.ts', '.entity.ts', '.model.ts']</code>
+    </td>
     <td>GraphQL types files suffix</td>
   </tr>
   <tr>
-    <td><code>introspectComments</code></td>
-      <td><code>false</code></td>
-      <td>If set to true, plugin will generate descriptions for properties based on comments</td>
+    <td>
+      <code>introspectComments</code>
+    </td>
+    <td>
+      <code>false</code>
+    </td>
+    <td>If set to true, plugin will generate descriptions for properties based on comments</td>
   </tr>
 </table>
 
@@ -191,20 +199,20 @@ This happens because `jest` configuration does not import `@nestjs/graphql/plugi
 To fix this, create the following file in your e2e tests directory:
 
 ```javascript
-const transformer = require('@nestjs/graphql/plugin');
+const transformer = require('@nestjs/graphql/plugin')
 
-module.exports.name = 'nestjs-graphql-transformer';
+module.exports.name = 'nestjs-graphql-transformer'
 // you should change the version number anytime you change the configuration below - otherwise, jest will not detect changes
-module.exports.version = 1;
+module.exports.version = 1
 
 module.exports.factory = (cs) => {
   return transformer.before(
     {
       // @nestjs/graphql/plugin options (can be empty)
     },
-    cs.program, // "cs.tsCompiler.program" for older versions of Jest (<= v27)
-  );
-};
+    cs.program // "cs.tsCompiler.program" for older versions of Jest (<= v27)
+  )
+}
 ```
 
 With this in place, import AST transformer within your `jest` configuration file. By default (in the starter application), e2e tests configuration file is located under the `test` folder and is named `jest-e2e.json`.

@@ -3,7 +3,7 @@
 The only difference between the HTTP [exception filter](/exception-filters) layer and the corresponding microservices layer is that instead of throwing `HttpException`, you should use `RpcException`.
 
 ```typescript
-throw new RpcException('Invalid credentials.');
+throw new RpcException('Invalid credentials.')
 ```
 
 > info **Hint** The `RpcException` class is imported from the `@nestjs/microservices` package.

@@ -3,9 +3,10 @@
 Nest is built around a language feature called **decorators**. Decorators are a well-known concept in a lot of commonly used programming languages, but in the JavaScript world, they're still relatively new. In order to better understand how decorators work, we recommend reading [this article](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841). Here's a simple definition:
 
 <blockquote class="external">
-  An ES2016 decorator is an expression which returns a function and can take a target, name and property descriptor as arguments.
-  You apply it by prefixing the decorator with an <code>@</code> character and placing this at the very top of what
-  you are trying to decorate. Decorators can be defined for either a class, a method or a property.
+  An ES2016 decorator is an expression which returns a function and can take a target, name and
+  property descriptor as arguments. You apply it by prefixing the decorator with an <code>@</code>{' '}
+  character and placing this at the very top of what you are trying to decorate. Decorators can be
+  defined for either a class, a method or a property.
 </blockquote>
 
 #### Param decorators
@@ -15,44 +16,84 @@ Nest provides a set of useful **param decorators** that you can use together wit
 <table>
   <tbody>
     <tr>
-      <td><code>@Request(), @Req()</code></td>
-      <td><code>req</code></td>
+      <td>
+        <code>@Request(), @Req()</code>
+      </td>
+      <td>
+        <code>req</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Response(), @Res()</code></td>
-      <td><code>res</code></td>
+      <td>
+        <code>@Response(), @Res()</code>
+      </td>
+      <td>
+        <code>res</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Next()</code></td>
-      <td><code>next</code></td>
+      <td>
+        <code>@Next()</code>
+      </td>
+      <td>
+        <code>next</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Session()</code></td>
-      <td><code>req.session</code></td>
+      <td>
+        <code>@Session()</code>
+      </td>
+      <td>
+        <code>req.session</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Param(param?: string)</code></td>
-      <td><code>req.params</code> / <code>req.params[param]</code></td>
+      <td>
+        <code>@Param(param?: string)</code>
+      </td>
+      <td>
+        <code>req.params</code> / <code>req.params[param]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Body(param?: string)</code></td>
-      <td><code>req.body</code> / <code>req.body[param]</code></td>
+      <td>
+        <code>@Body(param?: string)</code>
+      </td>
+      <td>
+        <code>req.body</code> / <code>req.body[param]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Query(param?: string)</code></td>
-      <td><code>req.query</code> / <code>req.query[param]</code></td>
+      <td>
+        <code>@Query(param?: string)</code>
+      </td>
+      <td>
+        <code>req.query</code> / <code>req.query[param]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Headers(param?: string)</code></td>
-      <td><code>req.headers</code> / <code>req.headers[param]</code></td>
+      <td>
+        <code>@Headers(param?: string)</code>
+      </td>
+      <td>
+        <code>req.headers</code> / <code>req.headers[param]</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@Ip()</code></td>
-      <td><code>req.ip</code></td>
+      <td>
+        <code>@Ip()</code>
+      </td>
+      <td>
+        <code>req.ip</code>
+      </td>
     </tr>
     <tr>
-      <td><code>@HostParam()</code></td>
-      <td><code>req.hosts</code></td>
+      <td>
+        <code>@HostParam()</code>
+      </td>
+      <td>
+        <code>req.hosts</code>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -62,7 +103,7 @@ Additionally, you can create your own **custom decorators**. Why is this useful?
 In the node.js world, it's common practice to attach properties to the **request** object. Then you manually extract them in each route handler, using code like the following:
 
 ```typescript
-const user = req.user;
+const user = req.user
 ```
 
 In order to make your code more readable and transparent, you can create a `@User()` decorator and reuse it across all of your controllers.

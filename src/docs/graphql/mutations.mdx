@@ -30,12 +30,12 @@ The `upvotePost()` method takes `postId` (`Int`) as an argument and returns an u
 If the mutation needs to take an object as an argument, we can create an **input type**. The input type is a special kind of object type that can be passed in as an argument (read more [here](https://graphql.org/learn/schema/#input-types)). To declare an input type, use the `@InputType()` decorator.
 
 ```typescript
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql'
 
 @InputType()
 export class UpvotePostInput {
   @Field()
-  postId: number;
+  postId: number
 }
 ```
 

@@ -13,18 +13,18 @@ Nest provides a built-in capability to help ensure that these operations can be 
 Let's assume that we want to automatically exclude a `password` property from a user entity. We annotate the entity as follows:
 
 ```typescript
-import { Exclude } from 'class-transformer';
+import { Exclude } from 'class-transformer'
 
 export class UserEntity {
-  id: number;
-  firstName: string;
-  lastName: string;
+  id: number
+  firstName: string
+  lastName: string
 
   @Exclude()
-  password: string;
+  password: string
 
   constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
+    Object.assign(this, partial)
   }
 }
 ```

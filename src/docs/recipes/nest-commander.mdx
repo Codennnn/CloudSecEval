@@ -23,14 +23,14 @@ Every command is seen as an `@Injectable()` by Nest, so your normal Dependency I
 Similar to how in a NestJS application we can use the `NestFactory` to create a server for us, and run it using `listen`, the `nest-commander` package exposes a simple to use API to run your server. Import the `CommandFactory` and use the `static` method `run` and pass in the root module of your application. This would probably look like below
 
 ```ts
-import { CommandFactory } from 'nest-commander';
-import { AppModule } from './app.module';
+import { CommandFactory } from 'nest-commander'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  await CommandFactory.run(AppModule);
+  await CommandFactory.run(AppModule)
 }
 
-bootstrap();
+bootstrap()
 ```
 
 By default, Nest's logger is disabled when using the `CommandFactory`. It's possible to provide it though, as the second argument to the `run` function. You can either provide a custom NestJS logger, or an array of log levels you want to keep - it might be useful to at least provide `['error']` here, if you only want to print out Nest's error logs.
@@ -61,13 +61,13 @@ So what's the use of writing a super awesome command line script if you can't te
 The following class would equate to having a CLI command that can take in the subcommand `basic` or be called directly, with `-n`, `-s`, and `-b` (along with their long flags) all being supported and with custom parsers for each option. The `--help` flag is also supported, as is customary with commander.
 
 ```ts
-import { Command, CommandRunner, Option } from 'nest-commander';
-import { LogService } from './log.service';
+import { Command, CommandRunner, Option } from 'nest-commander'
+import { LogService } from './log.service'
 
 interface BasicCommandOptions {
-  string?: string;
-  boolean?: boolean;
-  number?: number;
+  string?: string
+  boolean?: boolean
+  number?: number
 }
 
 @Command({ name: 'basic', description: 'A parameter parse' })
@@ -76,18 +76,15 @@ export class BasicCommand extends CommandRunner {
     super()
   }
 
-  async run(
-    passedParam: string[],
-    options?: BasicCommandOptions,
-  ): Promise<void> {
+  async run(passedParam: string[], options?: BasicCommandOptions): Promise<void> {
     if (options?.boolean !== undefined && options?.boolean !== null) {
-      this.runWithBoolean(passedParam, options.boolean);
+      this.runWithBoolean(passedParam, options.boolean)
     } else if (options?.number) {
-      this.runWithNumber(passedParam, options.number);
+      this.runWithNumber(passedParam, options.number)
     } else if (options?.string) {
-      this.runWithString(passedParam, options.string);
+      this.runWithString(passedParam, options.string)
     } else {
-      this.runWithNone(passedParam);
+      this.runWithNone(passedParam)
     }
   }
 
@@ -96,7 +93,7 @@ export class BasicCommand extends CommandRunner {
     description: 'A basic number parser',
   })
   parseNumber(val: string): number {
-    return Number(val);
+    return Number(val)
   }
 
   @Option({
@@ -104,7 +101,7 @@ export class BasicCommand extends CommandRunner {
     description: 'A string return',
   })
   parseString(val: string): string {
-    return val;
+    return val
   }
 
   @Option({
@@ -112,23 +109,23 @@ export class BasicCommand extends CommandRunner {
     description: 'A boolean parser',
   })
   parseBoolean(val: string): boolean {
-    return JSON.parse(val);
+    return JSON.parse(val)
   }
 
   runWithString(param: string[], option: string): void {
-    this.logService.log({ param, string: option });
+    this.logService.log({ param, string: option })
   }
 
   runWithNumber(param: string[], option: number): void {
-    this.logService.log({ param, number: option });
+    this.logService.log({ param, number: option })
   }
 
   runWithBoolean(param: string[], option: boolean): void {
-    this.logService.log({ param, boolean: option });
+    this.logService.log({ param, boolean: option })
   }
 
   runWithNone(param: string[]): void {
-    this.logService.log({ param });
+    this.logService.log({ param })
   }
 }
 ```
@@ -146,10 +143,10 @@ And now to be able to run the CLI in your main.ts you can do the following
 
 ```ts
 async function bootstrap() {
-  await CommandFactory.run(AppModule);
+  await CommandFactory.run(AppModule)
 }
 
-bootstrap();
+bootstrap()
 ```
 
 And just like that, you've got a command line application.

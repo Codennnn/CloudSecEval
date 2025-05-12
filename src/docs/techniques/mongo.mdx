@@ -127,7 +127,7 @@ export const CatSchema = new mongoose.Schema({
   name: String,
   age: Number,
   breed: String,
-});
+})
 ```
 
 The `cat.schema` file resides in a folder in the `cats` directory, where we also define the `CatsModule`. While you can store schema files wherever you prefer, we recommend storing them near their related **domain** objects, in the appropriate module directory.
@@ -204,9 +204,9 @@ export class CatsService {
 At times you may need to access the native [Mongoose Connection](https://mongoosejs.com/docs/api.html#Connection) object. For example, you may want to make native API calls on the connection object. You can inject the Mongoose Connection by using the `@InjectConnection()` decorator as follows:
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { Injectable } from '@nestjs/common'
+import { InjectConnection } from '@nestjs/mongoose'
+import { Connection } from 'mongoose'
 
 @Injectable()
 export class CatsService {
@@ -221,16 +221,16 @@ To start a session with Mongoose, it's recommended to inject the database connec
 Here's an example of how to start a session:
 
 ```typescript
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { InjectConnection } from '@nestjs/mongoose'
+import { Connection } from 'mongoose'
 
 @Injectable()
 export class CatsService {
   constructor(@InjectConnection() private readonly connection: Connection) {}
 
   async startTransaction() {
-    const session = await this.connection.startSession();
-    session.startTransaction();
+    const session = await this.connection.startSession()
+    session.startTransaction()
     // Your transaction logic here
   }
 }
@@ -266,9 +266,7 @@ With this setup, you have to tell the `MongooseModule.forFeature()` function whi
 
 ```typescript
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }], 'cats'),
-  ],
+  imports: [MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }], 'cats')],
 })
 export class CatsModule {}
 ```
@@ -276,9 +274,9 @@ export class CatsModule {}
 You can also inject the `Connection` for a given connection:
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { Injectable } from '@nestjs/common'
+import { InjectConnection } from '@nestjs/mongoose'
+import { Connection } from 'mongoose'
 
 @Injectable()
 export class CatsService {
@@ -327,11 +325,11 @@ Middleware (also called pre and post hooks) are functions which are passed contr
       {
         name: Cat.name,
         useFactory: () => {
-          const schema = CatsSchema;
+          const schema = CatsSchema
           schema.pre('save', function () {
-            console.log('Hello from pre save');
-          });
-          return schema;
+            console.log('Hello from pre save')
+          })
+          return schema
         },
       },
     ]),
@@ -377,9 +375,9 @@ To register a [plugin](https://mongoosejs.com/docs/plugins.html) for a given sch
       {
         name: Cat.name,
         useFactory: () => {
-          const schema = CatsSchema;
-          schema.plugin(require('mongoose-autopopulate'));
-          return schema;
+          const schema = CatsSchema
+          schema.plugin(require('mongoose-autopopulate'))
+          return schema
         },
       },
     ]),
@@ -527,7 +525,7 @@ MongooseModule.forRootAsync({
   useFactory: () => ({
     uri: 'mongodb://localhost/nest',
   }),
-});
+})
 ```
 
 Like other [factory providers](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory), our factory function can be `async` and can inject dependencies through `inject`.
@@ -539,7 +537,7 @@ MongooseModule.forRootAsync({
     uri: configService.get<string>('MONGODB_URI'),
   }),
   inject: [ConfigService],
-});
+})
 ```
 
 Alternatively, you can configure the `MongooseModule` using a class instead of a factory, as shown below:
@@ -547,7 +545,7 @@ Alternatively, you can configure the `MongooseModule` using a class instead of a
 ```typescript
 MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
-});
+})
 ```
 
 The construction above instantiates `MongooseConfigService` inside `MongooseModule`, using it to create the required options object. Note that in this example, the `MongooseConfigService` has to implement the `MongooseOptionsFactory` interface, as shown below. The `MongooseModule` will call the `createMongooseOptions()` method on the instantiated object of the supplied class.
@@ -558,7 +556,7 @@ export class MongooseConfigService implements MongooseOptionsFactory {
   createMongooseOptions(): MongooseModuleOptions {
     return {
       uri: 'mongodb://localhost/nest',
-    };
+    }
   }
 }
 ```
@@ -569,7 +567,7 @@ If you want to reuse an existing options provider instead of creating a private 
 MongooseModule.forRootAsync({
   imports: [ConfigModule],
   useExisting: ConfigService,
-});
+})
 ```
 
 #### Connection events
@@ -677,17 +675,17 @@ In Mongoose, a **virtual** is a property that exists on a document but is not pe
 ```ts
 class Person {
   @Prop()
-  firstName: string;
+  firstName: string
 
   @Prop()
-  lastName: string;
+  lastName: string
 
   @Virtual({
     get: function (this: Person) {
-      return `${this.firstName} ${this.lastName}`;
+      return `${this.firstName} ${this.lastName}`
     },
   })
-  fullName: string;
+  fullName: string
 }
 ```
 

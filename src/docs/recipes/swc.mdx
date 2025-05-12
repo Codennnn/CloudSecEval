@@ -42,7 +42,7 @@ To customize builder's behavior, you can pass an object containing two attribute
     "builder": {
       "type": "swc",
       "options": {
-        "swcrcPath": "infrastructure/.swcrc",
+        "swcrcPath": "infrastructure/.swcrc"
       }
     }
   }
@@ -112,7 +112,8 @@ $ npm i --save-dev swc-loader
 Once the installation is complete, create a `webpack.config.js` file in the root directory of your application with the following content:
 
 ```js
-const swcDefaultConfig = require('@nestjs/cli/lib/compiler/defaults/swc-defaults').swcDefaultsFactory().swcOptions;
+const swcDefaultConfig =
+  require('@nestjs/cli/lib/compiler/defaults/swc-defaults').swcDefaultsFactory().swcOptions
 
 module.exports = {
   module: {
@@ -127,7 +128,7 @@ module.exports = {
       },
     ],
   },
-};
+}
 ```
 
 #### Monorepo and CLI plugins
@@ -136,16 +137,16 @@ Now if you use CLI plugins, `swc-loader` will not load them automatically. Inste
 declare a `generate-metadata.ts` file near the `main.ts` file with the following content:
 
 ```ts
-import { PluginMetadataGenerator } from '@nestjs/cli/lib/compiler/plugins/plugin-metadata-generator';
-import { ReadonlyVisitor } from '@nestjs/swagger/dist/plugin';
+import { PluginMetadataGenerator } from '@nestjs/cli/lib/compiler/plugins/plugin-metadata-generator'
+import { ReadonlyVisitor } from '@nestjs/swagger/dist/plugin'
 
-const generator = new PluginMetadataGenerator();
+const generator = new PluginMetadataGenerator()
 generator.generate({
   visitors: [new ReadonlyVisitor({ introspectComments: true, pathToSource: __dirname })],
   outputDir: __dirname,
   watch: true,
   tsconfigPath: 'apps/<name>/tsconfig.app.json',
-});
+})
 ```
 
 > info **Hint** In this example we used `@nestjs/swagger` plugin, but you can use any plugin of your choice.
@@ -176,7 +177,7 @@ If you use TypeORM/MikroORM or any other ORM in your application, you may stumbl
 @Entity()
 export class User {
   @OneToOne(() => Profile, (profile) => profile.user)
-  profile: Relation<Profile>; // <--- see "Relation<>" type here instead of just "Profile"
+  profile: Relation<Profile> // <--- see "Relation<>" type here instead of just "Profile"
 }
 ```
 
@@ -191,7 +192,7 @@ If your ORM does not provide a similar workaround, you can define the wrapper ty
  * Wrapper type used to circumvent ESM modules circular dependency issue
  * caused by reflection metadata saving the type of the property.
  */
-export type WrapperType<T> = T; // WrapperType === Relation
+export type WrapperType<T> = T // WrapperType === Relation
 ```
 
 For all [circular dependency injections](/fundamentals/circular-dependency) in your project, you will also need to use the custom wrapper type described above:
@@ -201,8 +202,8 @@ For all [circular dependency injections](/fundamentals/circular-dependency) in y
 export class UsersService {
   constructor(
     @Inject(forwardRef(() => ProfileService))
-    private readonly profileService: WrapperType<ProfileService>,
-  ) {};
+    private readonly profileService: WrapperType<ProfileService>
+  ) {}
 }
 ```
 
@@ -267,8 +268,8 @@ $ npm i --save-dev vitest unplugin-swc @swc/core @vitest/coverage-v8
 Create a `vitest.config.ts` file in the root directory of your application with the following content:
 
 ```ts
-import swc from 'unplugin-swc';
-import { defineConfig } from 'vitest/config';
+import swc from 'unplugin-swc'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -285,18 +286,18 @@ export default defineConfig({
   resolve: {
     alias: {
       // Ensure Vitest correctly resolves TypeScript path aliases
-      'src': resolve(__dirname, './src'),
+      src: resolve(__dirname, './src'),
     },
   },
-});
+})
 ```
 
 This configuration file sets up the Vitest environment, root directory, and SWC plugin. You should also create a separate configuration
 file for e2e tests, with an additional `include` field that specifies the test path regex:
 
 ```ts
-import swc from 'unplugin-swc';
-import { defineConfig } from 'vitest/config';
+import swc from 'unplugin-swc'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -305,14 +306,14 @@ export default defineConfig({
     root: './',
   },
   plugins: [swc.vite()],
-});
+})
 ```
 
 Additionally, you can set the `alias` options to support TypeScript paths in your tests:
 
 ```ts
-import swc from 'unplugin-swc';
-import { defineConfig } from 'vitest/config';
+import swc from 'unplugin-swc'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -331,7 +332,7 @@ export default defineConfig({
     },
   },
   plugins: [swc.vite()],
-});
+})
 ```
 
 ### Path aliases
@@ -339,16 +340,17 @@ export default defineConfig({
 Unlike Jest, Vitest does not automatically resolve TypeScript path aliases like `src/`. This may lead to dependency resolution errors during testing. To resolve this issue, add the following `resolve.alias` configuration in your `vitest.config.ts` file:
 
 ```ts
-import { resolve } from 'path';
+import { resolve } from 'path'
 
 export default defineConfig({
   resolve: {
     alias: {
-      'src': resolve(__dirname, './src'),
+      src: resolve(__dirname, './src'),
     },
   },
-});
+})
 ```
+
 This ensures that Vitest correctly resolves module imports, preventing errors related to missing dependencies.
 
 #### Update imports in E2E tests
@@ -368,7 +370,6 @@ Lastly, update the test scripts in your package.json file to the following:
   }
 }
 ```
-
 
 These scripts configure Vitest for running tests, watching for changes, generating code coverage reports, and debugging. The test:e2e script is specifically for running E2E tests with a custom configuration file.
 

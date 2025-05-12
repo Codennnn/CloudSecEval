@@ -57,7 +57,7 @@ By default, the package looks for a `.env` file in the root directory of the app
 ```typescript
 ConfigModule.forRoot({
   envFilePath: '.development.env',
-});
+})
 ```
 
 You can also specify multiple paths for `.env` files like this:
@@ -65,7 +65,7 @@ You can also specify multiple paths for `.env` files like this:
 ```typescript
 ConfigModule.forRoot({
   envFilePath: ['.env.development.local', '.env.development'],
-});
+})
 ```
 
 If a variable is found in multiple files, the first one takes precedence.
@@ -77,7 +77,7 @@ If you don't want to load the `.env` file, but instead would like to simply acce
 ```typescript
 ConfigModule.forRoot({
   ignoreEnvFile: true,
-});
+})
 ```
 
 #### Use module globally
@@ -87,7 +87,7 @@ When you want to use `ConfigModule` in other modules, you'll need to import it (
 ```typescript
 ConfigModule.forRoot({
   isGlobal: true,
-});
+})
 ```
 
 #### Custom configuration files
@@ -110,7 +110,7 @@ export default () => ({
 We load this file using the `load` property of the options object we pass to the `ConfigModule.forRoot()` method:
 
 ```typescript
-import configuration from './config/configuration';
+import configuration from './config/configuration'
 
 @Module({
   imports: [
@@ -214,10 +214,10 @@ And use it in our class:
 
 ```typescript
 // get an environment variable
-const dbUser = this.configService.get<string>('DATABASE_USER');
+const dbUser = this.configService.get<string>('DATABASE_USER')
 
 // get a custom configuration value
-const dbHost = this.configService.get<string>('database.host');
+const dbHost = this.configService.get<string>('database.host')
 ```
 
 As shown above, use the `configService.get()` method to get a simple environment variable by passing the variable name. You can do TypeScript type hinting by passing the type, as shown above (e.g., `get<string>(...)`). The `get()` method can also traverse a nested custom configuration object (created via a <a href="techniques/configuration#custom-configuration-files">Custom configuration file</a>), as shown in the second example above.
@@ -226,21 +226,21 @@ You can also get the whole nested custom configuration object using an interface
 
 ```typescript
 interface DatabaseConfig {
-  host: string;
-  port: number;
+  host: string
+  port: number
 }
 
-const dbConfig = this.configService.get<DatabaseConfig>('database');
+const dbConfig = this.configService.get<DatabaseConfig>('database')
 
 // you can now use `dbConfig.port` and `dbConfig.host`
-const port = dbConfig.port;
+const port = dbConfig.port
 ```
 
 The `get()` method also takes an optional second argument defining a default value, which will be returned when the key doesn't exist, as shown below:
 
 ```typescript
 // use "localhost" when "database.host" is not defined
-const dbHost = this.configService.get<string>('database.host', 'localhost');
+const dbHost = this.configService.get<string>('database.host', 'localhost')
 ```
 
 `ConfigService` has two optional generics (type arguments). The first one is to help prevent accessing a config property that does not exist. Use it as shown below:
@@ -304,7 +304,7 @@ As with custom configuration files, inside your `registerAs()` factory function,
 Load a namespaced configuration with the `load` property of the `forRoot()` method's options object, in the same way you load a custom configuration file:
 
 ```typescript
-import databaseConfig from './config/database.config';
+import databaseConfig from './config/database.config'
 
 @Module({
   imports: [
@@ -319,7 +319,7 @@ export class AppModule {}
 Now, to get the `host` value from the `database` namespace, use dot notation. Use `'database'` as the prefix to the property name, corresponding to the name of the namespace (passed as the first argument to the `registerAs()` function):
 
 ```typescript
-const dbHost = this.configService.get<string>('database.host');
+const dbHost = this.configService.get<string>('database.host')
 ```
 
 A reasonable alternative is to inject the `database` namespace directly. This allows us to benefit from strong typing:
@@ -369,7 +369,7 @@ As accessing `process.env` can be slow, you can set the `cache` property of the 
 ```typescript
 ConfigModule.forRoot({
   cache: true,
-});
+})
 ```
 
 #### Partial registration
@@ -377,7 +377,7 @@ ConfigModule.forRoot({
 Thus far, we've processed configuration files in our root module (e.g., `AppModule`), with the `forRoot()` method. Perhaps you have a more complex project structure, with feature-specific configuration files located in multiple different directories. Rather than load all these files in the root module, the `@nestjs/config` package provides a feature called **partial registration**, which references only the configuration files associated with each feature module. Use the `forFeature()` static method within a feature module to perform this partial registration, as follows:
 
 ```typescript
-import databaseConfig from './config/database.config';
+import databaseConfig from './config/database.config'
 
 @Module({
   imports: [ConfigModule.forFeature(databaseConfig)],
@@ -577,8 +577,8 @@ If a module configuration depends on the environment variables, and these variab
 
 ```typescript
 export async function getStorageModule() {
-  await ConfigModule.envVariablesLoaded;
-  return process.env.STORAGE === 'S3' ? S3StorageModule : DefaultStorageModule;
+  await ConfigModule.envVariablesLoaded
+  return process.env.STORAGE === 'S3' ? S3StorageModule : DefaultStorageModule
 }
 ```
 
@@ -590,10 +590,7 @@ There may be times where you want to conditionally load in a module and specify 
 
 ```typescript
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    ConditionalModule.registerWhen(FooModule, 'USE_FOO'),
-  ],
+  imports: [ConfigModule.forRoot(), ConditionalModule.registerWhen(FooModule, 'USE_FOO')],
 })
 export class AppModule {}
 ```
@@ -606,7 +603,7 @@ The above module would only load in the `FooModule` if in the `.env` file there 
     ConfigModule.forRoot(),
     ConditionalModule.registerWhen(
       FooBarModule,
-      (env: NodeJS.ProcessEnv) => !!env['foo'] && !!env['bar'],
+      (env: NodeJS.ProcessEnv) => !!env['foo'] && !!env['bar']
     ),
   ],
 })
@@ -650,11 +647,11 @@ While our config is stored in a service, it can still be used in the `main.ts` f
 To access it, you must use the `app.get()` method, followed by the service reference:
 
 ```typescript
-const configService = app.get(ConfigService);
+const configService = app.get(ConfigService)
 ```
 
 You can then use it as usual, by calling the `get` method with the configuration key:
 
 ```typescript
-const port = configService.get('PORT');
+const port = configService.get('PORT')
 ```

@@ -9,7 +9,7 @@ To ignore a global prefix for routes set through `setGlobalPrefix()`, use `ignor
 ```typescript
 const document = SwaggerModule.createDocument(app, options, {
   ignoreGlobalPrefix: true,
-});
+})
 ```
 
 #### Global parameters
@@ -23,7 +23,7 @@ const config = new DocumentBuilder()
     in: 'header',
   })
   // other configurations
-  .build();
+  .build()
 ```
 
 #### Global responses
@@ -37,7 +37,7 @@ const config = new DocumentBuilder()
     description: 'Internal server error',
   })
   // other configurations
-  .build();
+  .build()
 ```
 
 #### Multiple specifications
@@ -49,14 +49,14 @@ To support multiple specifications, your application must be written with a modu
 You can setup multiple specifications support as shown below:
 
 ```typescript
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { CatsModule } from './cats/cats.module';
-import { DogsModule } from './dogs/dogs.module';
+import { NestFactory } from '@nestjs/core'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { AppModule } from './app.module'
+import { CatsModule } from './cats/cats.module'
+import { DogsModule } from './dogs/dogs.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
 
   /**
    * createDocument(application, configurationOptions, extraOptions);
@@ -73,30 +73,30 @@ async function bootstrap() {
     .setDescription('The cats API description')
     .setVersion('1.0')
     .addTag('cats')
-    .build();
+    .build()
 
   const catDocumentFactory = () =>
     SwaggerModule.createDocument(app, options, {
       include: [CatsModule],
-    });
-  SwaggerModule.setup('api/cats', app, catDocumentFactory);
+    })
+  SwaggerModule.setup('api/cats', app, catDocumentFactory)
 
   const secondOptions = new DocumentBuilder()
     .setTitle('Dogs example')
     .setDescription('The dogs API description')
     .setVersion('1.0')
     .addTag('dogs')
-    .build();
+    .build()
 
   const dogDocumentFactory = () =>
     SwaggerModule.createDocument(app, secondOptions, {
       include: [DogsModule],
-    });
-  SwaggerModule.setup('api/dogs', app, dogDocumentFactory);
+    })
+  SwaggerModule.setup('api/dogs', app, dogDocumentFactory)
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
+bootstrap()
 ```
 
 Now you can start your server with the following command:
@@ -107,11 +107,15 @@ $ npm run start
 
 Navigate to `http://localhost:3000/api/cats` to see the Swagger UI for cats:
 
-<figure><img src="/assets/swagger-cats.png" /></figure>
+<figure>
+  <img src="/assets/swagger-cats.png" />
+</figure>
 
 In turn, `http://localhost:3000/api/dogs` will expose the Swagger UI for dogs:
 
-<figure><img src="/assets/swagger-dogs.png" /></figure>
+<figure>
+  <img src="/assets/swagger-dogs.png" />
+</figure>
 
 #### Dropdown in the explorer bar
 
@@ -122,24 +126,24 @@ To enable support for multiple specifications in the dropdown menu of the explor
 Here’s how to set up multiple specifications from a dropdown in the explorer bar:
 
 ```typescript
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { CatsModule } from './cats/cats.module';
-import { DogsModule } from './dogs/dogs.module';
+import { NestFactory } from '@nestjs/core'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { AppModule } from './app.module'
+import { CatsModule } from './cats/cats.module'
+import { DogsModule } from './dogs/dogs.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
 
   // Main API options
   const options = new DocumentBuilder()
     .setTitle('Multiple Specifications Example')
     .setDescription('Description for multiple specifications')
     .setVersion('1.0')
-    .build();
+    .build()
 
   // Create main API document
-  const document = SwaggerModule.createDocument(app, options);
+  const document = SwaggerModule.createDocument(app, options)
 
   // Setup main API Swagger UI with dropdown support
   SwaggerModule.setup('api', app, document, {
@@ -161,7 +165,7 @@ async function bootstrap() {
       ],
     },
     jsonDocumentUrl: '/api/swagger.json',
-  });
+  })
 
   // Cats API options
   const catOptions = new DocumentBuilder()
@@ -169,17 +173,17 @@ async function bootstrap() {
     .setDescription('Description for the Cats API')
     .setVersion('1.0')
     .addTag('cats')
-    .build();
+    .build()
 
   // Create Cats API document
   const catDocument = SwaggerModule.createDocument(app, catOptions, {
     include: [CatsModule],
-  });
+  })
 
   // Setup Cats API Swagger UI
   SwaggerModule.setup('api/cats', app, catDocument, {
     jsonDocumentUrl: '/api/cats/swagger.json',
-  });
+  })
 
   // Dogs API options
   const dogOptions = new DocumentBuilder()
@@ -187,22 +191,22 @@ async function bootstrap() {
     .setDescription('Description for the Dogs API')
     .setVersion('1.0')
     .addTag('dogs')
-    .build();
+    .build()
 
   // Create Dogs API document
   const dogDocument = SwaggerModule.createDocument(app, dogOptions, {
     include: [DogsModule],
-  });
+  })
 
   // Setup Dogs API Swagger UI
   SwaggerModule.setup('api/dogs', app, dogDocument, {
     jsonDocumentUrl: '/api/dogs/swagger.json',
-  });
+  })
 
-  await app.listen(3000);
+  await app.listen(3000)
 }
 
-bootstrap();
+bootstrap()
 ```
 
 In this example, we set up a main API along with separate specifications for Cats and Dogs, each accessible from the dropdown in the explorer bar.

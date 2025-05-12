@@ -37,14 +37,14 @@ To create a subscription using the code first approach, we use the `@Subscriptio
 The following subscription handler takes care of **subscribing** to an event by calling `PubSub#asyncIterableIterator`. This method takes a single argument, the `triggerName`, which corresponds to an event topic name.
 
 ```typescript
-const pubSub = new PubSub();
+const pubSub = new PubSub()
 
 @Resolver(() => Author)
 export class AuthorResolver {
   // ...
   @Subscription(() => Comment)
   commentAdded() {
-    return pubSub.asyncIterableIterator('commentAdded');
+    return pubSub.asyncIterableIterator('commentAdded')
   }
 }
 ```
@@ -163,14 +163,14 @@ commentAdded() {
 To create an equivalent subscription in Nest, we'll make use of the `@Subscription()` decorator.
 
 ```typescript
-const pubSub = new PubSub();
+const pubSub = new PubSub()
 
 @Resolver('Author')
 export class AuthorResolver {
   // ...
   @Subscription()
   commentAdded() {
-    return pubSub.asyncIterableIterator('commentAdded');
+    return pubSub.asyncIterableIterator('commentAdded')
   }
 }
 ```
@@ -339,17 +339,17 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
   subscriptions: {
     'graphql-ws': {
       onConnect: (context: Context<any>) => {
-        const { connectionParams, extra } = context;
+        const { connectionParams, extra } = context
         // user validation will remain the same as in the example above
         // when using with graphql-ws, additional context value should be stored in the extra field
-        extra.user = { user: {} };
+        extra.user = { user: {} }
       },
     },
   },
   context: ({ extra }) => {
     // you can now access your additional context value through the extra field
   },
-});
+})
 ```
 
 #### Enable subscriptions with Mercurius driver
@@ -377,7 +377,7 @@ export class AuthorResolver {
   // ...
   @Subscription(() => Comment)
   commentAdded(@Context('pubsub') pubSub: PubSub) {
-    return pubSub.subscribe('commentAdded');
+    return pubSub.subscribe('commentAdded')
   }
 }
 ```
@@ -473,14 +473,14 @@ commentAdded(@Args('title') title: string, @Context('pubsub') pubSub: PubSub) {
 To create an equivalent subscription in Nest, we'll make use of the `@Subscription()` decorator.
 
 ```typescript
-const pubSub = new PubSub();
+const pubSub = new PubSub()
 
 @Resolver('Author')
 export class AuthorResolver {
   // ...
   @Subscription()
   commentAdded(@Context('pubsub') pubSub: PubSub) {
-    return pubSub.subscribe('commentAdded');
+    return pubSub.subscribe('commentAdded')
   }
 }
 ```
@@ -557,7 +557,7 @@ GraphQLModule.forRoot<MercuriusDriverConfig>({
       host: '127.0.0.1',
     }),
   },
-});
+})
 ```
 
 #### Authentication over WebSockets

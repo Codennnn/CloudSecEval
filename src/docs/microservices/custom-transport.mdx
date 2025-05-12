@@ -15,17 +15,14 @@ With a custom transporter, you can integrate any messaging system/protocol (incl
 First, let's define a class representing our custom transporter.
 
 ```typescript
-import { CustomTransportStrategy, Server } from '@nestjs/microservices';
+import { CustomTransportStrategy, Server } from '@nestjs/microservices'
 
-class GoogleCloudPubSubServer
-  extends Server
-  implements CustomTransportStrategy
-{
+class GoogleCloudPubSubServer extends Server implements CustomTransportStrategy {
   /**
    * Triggered when you run "app.listen()".
    */
   listen(callback: () => void) {
-    callback();
+    callback()
   }
 
   /**
@@ -39,7 +36,7 @@ class GoogleCloudPubSubServer
    * will not need this.
    */
   on(event: string, callback: Function) {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 
   /**
@@ -48,7 +45,7 @@ class GoogleCloudPubSubServer
    * will not need this.
    */
   unwrap<T = never>(): T {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 }
 ```
@@ -62,12 +59,9 @@ Conventionally, we added the `"Server"` suffix to our class as it will be respon
 With this in place, we can now use our custom strategy instead of using a built-in transporter, as follows:
 
 ```typescript
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-  AppModule,
-  {
-    strategy: new GoogleCloudPubSubServer(),
-  },
-);
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+  strategy: new GoogleCloudPubSubServer(),
+})
 ```
 
 Basically, instead of passing the normal transporter options object with `transport` and `options` properties, we pass a single property, `strategy`, whose value is an instance of our custom transporter class.
@@ -146,18 +140,15 @@ As we mentioned in the first section, you don't necessarily need to use the `@ne
 To communicate with an external service/emit & publish messages (or events) you can either use a library-specific SDK package, or implement a custom client class that extends the `ClientProxy`, as follows:
 
 ```typescript
-import { ClientProxy, ReadPacket, WritePacket } from '@nestjs/microservices';
+import { ClientProxy, ReadPacket, WritePacket } from '@nestjs/microservices'
 
 class GoogleCloudPubSubClient extends ClientProxy {
   async connect(): Promise<any> {}
   async close() {}
   async dispatchEvent(packet: ReadPacket<any>): Promise<any> {}
-  publish(
-    packet: ReadPacket<any>,
-    callback: (packet: WritePacket<any>) => void,
-  ): Function {}
+  publish(packet: ReadPacket<any>, callback: (packet: WritePacket<any>) => void): Function {}
   unwrap<T = never>(): T {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 }
 ```
@@ -172,33 +163,30 @@ To observe what and when those methods are executed, let's add multiple `console
 ```typescript
 class GoogleCloudPubSubClient extends ClientProxy {
   async connect(): Promise<any> {
-    console.log('connect');
+    console.log('connect')
   }
 
   async close() {
-    console.log('close');
+    console.log('close')
   }
 
   async dispatchEvent(packet: ReadPacket<any>): Promise<any> {
-    return console.log('event to dispatch: ', packet);
+    return console.log('event to dispatch: ', packet)
   }
 
-  publish(
-    packet: ReadPacket<any>,
-    callback: (packet: WritePacket<any>) => void,
-  ): Function {
-    console.log('message:', packet);
+  publish(packet: ReadPacket<any>, callback: (packet: WritePacket<any>) => void): Function {
+    console.log('message:', packet)
 
     // In a real-world application, the "callback" function should be executed
     // with payload sent back from the responder. Here, we'll simply simulate (5 seconds delay)
     // that response came through by passing the same "data" as we've originally passed in.
-    setTimeout(() => callback({ response: packet.data }), 5000);
+    setTimeout(() => callback({ response: packet.data }), 5000)
 
-    return () => console.log('teardown');
+    return () => console.log('teardown')
   }
 
   unwrap<T = never>(): T {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 }
 ```
@@ -206,10 +194,8 @@ class GoogleCloudPubSubClient extends ClientProxy {
 With this in place, let's create an instance of `GoogleCloudPubSubClient` class and run the `send()` method (which you might have seen in earlier chapters), subscribing to the returned observable stream.
 
 ```typescript
-const googlePubSubClient = new GoogleCloudPubSubClient();
-googlePubSubClient
-  .send('pattern', 'Hello world!')
-  .subscribe((response) => console.log(response));
+const googlePubSubClient = new GoogleCloudPubSubClient()
+googlePubSubClient.send('pattern', 'Hello world!').subscribe((response) => console.log(response))
 ```
 
 Now, you should see the following output in your terminal:
@@ -223,14 +209,14 @@ Hello world! // <-- after 5 seconds
 To test if our "teardown" method (which our `publish()` method returns) is properly executed, let's apply a timeout operator to our stream, setting it to 2 seconds to make sure it throws earlier then our `setTimeout` calls the `callback` function.
 
 ```typescript
-const googlePubSubClient = new GoogleCloudPubSubClient();
+const googlePubSubClient = new GoogleCloudPubSubClient()
 googlePubSubClient
   .send('pattern', 'Hello world!')
   .pipe(timeout(2000))
   .subscribe(
     (response) => console.log(response),
-    (error) => console.error(error.message),
-  );
+    (error) => console.error(error.message)
+  )
 ```
 
 > info **Hint** The `timeout` operator is imported from the `rxjs/operators` package.
@@ -247,7 +233,7 @@ Timeout has occurred
 To dispatch an event (instead of sending a message), use the `emit()` method:
 
 ```typescript
-googlePubSubClient.emit('event', 'Hello world!');
+googlePubSubClient.emit('event', 'Hello world!')
 ```
 
 And that's what you should see in the console:

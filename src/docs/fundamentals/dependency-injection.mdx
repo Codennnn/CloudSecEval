@@ -122,7 +122,7 @@ providers: [
     provide: CatsService,
     useClass: CatsService,
   },
-];
+]
 ```
 
 Now that we see this explicit construction, we can understand the registration process. Here, we are clearly associating the token `CatsService` with the class `CatsService`. The short-hand notation is merely a convenience to simplify the most common use-case, where the token is used to request an instance of a class by the same name.
@@ -144,13 +144,13 @@ Nest allows you to define Custom providers to handle these cases. It provides se
 The `useValue` syntax is useful for injecting a constant value, putting an external library into the Nest container, or replacing a real implementation with a mock object. Let's say you'd like to force Nest to use a mock `CatsService` for testing purposes.
 
 ```typescript
-import { CatsService } from './cats.service';
+import { CatsService } from './cats.service'
 
 const mockCatsService = {
   /* mock implementation
   ...
   */
-};
+}
 
 @Module({
   imports: [CatsModule],
@@ -171,7 +171,7 @@ In this example, the `CatsService` token will resolve to the `mockCatsService` m
 So far, we've used class names as our provider tokens (the value of the `provide` property in a provider listed in the `providers` array). This is matched by the standard pattern used with [constructor based injection](https://docs.nestjs.com/providers#dependency-injection), where the token is also a class name. (Refer back to <a href="/fundamentals/custom-providers#di-fundamentals">DI Fundamentals</a> for a refresher on tokens if this concept isn't entirely clear). Sometimes, we may want the flexibility to use strings or symbols as the DI token. For example:
 
 ```typescript
-import { connection } from './connection';
+import { connection } from './connection'
 
 @Module({
   providers: [
@@ -216,10 +216,8 @@ The `useClass` syntax allows you to dynamically determine a class that a token s
 const configServiceProvider = {
   provide: ConfigService,
   useClass:
-    process.env.NODE_ENV === 'development'
-      ? DevelopmentConfigService
-      : ProductionConfigService,
-};
+    process.env.NODE_ENV === 'development' ? DevelopmentConfigService : ProductionConfigService,
+}
 
 @Module({
   providers: [configServiceProvider],
@@ -296,7 +294,7 @@ class LoggerService {
 const loggerAliasProvider = {
   provide: 'AliasedLoggerService',
   useExisting: LoggerService,
-};
+}
 
 @Module({
   providers: [LoggerService, loggerAliasProvider],
@@ -312,9 +310,9 @@ While providers often supply services, they are not limited to that usage. A pro
 const configFactory = {
   provide: 'CONFIG',
   useFactory: () => {
-    return process.env.NODE_ENV === 'development' ? devConfig : prodConfig;
+    return process.env.NODE_ENV === 'development' ? devConfig : prodConfig
   },
-};
+}
 
 @Module({
   providers: [configFactory],

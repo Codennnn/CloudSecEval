@@ -13,22 +13,24 @@ async create(@Body() createCatDto: CreateCatDto) {
 
 Based on the `CreateCatDto`, the following model definition Swagger UI will be created:
 
-<figure><img src="/assets/swagger-dto.png" /></figure>
+<figure>
+  <img src="/assets/swagger-dto.png" />
+</figure>
 
 As you can see, the definition is empty although the class has a few declared properties. In order to make the class properties visible to the `SwaggerModule`, we have to either annotate them with the `@ApiProperty()` decorator or use the CLI plugin (read more in the **Plugin** section) which will do it automatically:
 
 ```typescript
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
 
 export class CreateCatDto {
   @ApiProperty()
-  name: string;
+  name: string
 
   @ApiProperty()
-  age: number;
+  age: number
 
   @ApiProperty()
-  breed: string;
+  breed: string
 }
 ```
 
@@ -36,7 +38,9 @@ export class CreateCatDto {
 
 Let's open the browser and verify the generated `CreateCatDto` model:
 
-<figure><img src="/assets/swagger-dto2.png" /></figure>
+<figure>
+  <img src="/assets/swagger-dto2.png" />
+</figure>
 
 In addition, the `@ApiProperty()` decorator allows setting various [Schema Object](https://swagger.io/specification/#schemaObject) properties:
 
@@ -127,11 +131,15 @@ You can then use the enum directly with the `@Query()` parameter decorator in co
 async filterByRole(@Query('role') role: UserRole = UserRole.User) {}
 ```
 
-<figure><img src="/assets/enum_query.gif" /></figure>
+<figure>
+  <img src="/assets/enum_query.gif" />
+</figure>
 
 With `isArray` set to **true**, the `enum` can be selected as a **multi-select**:
 
-<figure><img src="/assets/enum_query_array.gif" /></figure>
+<figure>
+  <img src="/assets/enum_query_array.gif" />
+</figure>
 
 #### Enums schema
 
@@ -151,11 +159,11 @@ The above specification works fine for most cases. However, if you are utilizing
 ```typescript
 // generated client-side code
 export class CatDetail {
-  breed: CatDetailEnum;
+  breed: CatDetailEnum
 }
 
 export class CatInformation {
-  breed: CatInformationEnum;
+  breed: CatInformationEnum
 }
 
 export enum CatDetailEnum {
@@ -179,7 +187,7 @@ To address this issue, you can pass an `enumName` along with the `enum` property
 ```typescript
 export class CatDetail {
   @ApiProperty({ enum: CatBreed, enumName: 'CatBreed' })
-  breed: CatBreed;
+  breed: CatBreed
 }
 ```
 
@@ -299,7 +307,7 @@ Alternatively, you can pass an options object with the `extraModels` property sp
 const documentFactory = () =>
   SwaggerModule.createDocument(app, options, {
     extraModels: [ExtraModel],
-  });
+  })
 ```
 
 To get a reference (`$ref`) to your model, use the `getSchemaPath(ExtraModel)` function:

@@ -47,7 +47,7 @@ EventEmitterModule.forRoot({
   verboseMemoryLeak: false,
   // disable throwing uncaughtException if an error event is emitted and it has no listeners
   ignoreErrors: false,
-});
+})
 ```
 
 #### Dispatching events
@@ -68,8 +68,8 @@ this.eventEmitter.emit(
   new OrderCreatedEvent({
     orderId: 1,
     payload: {},
-  }),
-);
+  })
+)
 ```
 
 #### Listening to events
@@ -98,15 +98,15 @@ export type OnEventOptions = OnOptions & {
    *
    * @default false
    */
-  prependListener?: boolean;
+  prependListener?: boolean
 
   /**
    * If "true", the onEvent callback will not throw an error while handling the event. Otherwise, if "false" it will throw an error.
    *
    * @default true
    */
-  suppressErrors?: boolean;
-};
+  suppressErrors?: boolean
+}
 ```
 
 > info **Hint** Read more about the `OnOptions` options object from [`eventemitter2`](https://github.com/EventEmitter2/EventEmitter2#emitteronevent-listener-options-objectboolean).
@@ -148,11 +148,8 @@ Events triggered before or during the `onApplicationBootstrap` lifecycle hook—
 To avoid this issue, you can use the `waitUntilReady` method of the `EventEmitterReadinessWatcher`, which returns a promise that resolves once all listeners have been registered. This method can be called in the `onApplicationBootstrap` lifecycle hook of a module to ensure that all events are properly captured.
 
 ```typescript
-await this.eventEmitterReadinessWatcher.waitUntilReady();
-await this.eventEmitter.emit(
-  'order.created',
-  new OrderCreatedEvent({ orderId: 1, payload: {} }),
-);
+await this.eventEmitterReadinessWatcher.waitUntilReady()
+await this.eventEmitter.emit('order.created', new OrderCreatedEvent({ orderId: 1, payload: {} }))
 ```
 
 > info **Note** This is only necessary for events emitted before the `onApplicationBootstrap` lifecycle hook is complete.

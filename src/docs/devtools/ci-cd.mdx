@@ -51,11 +51,15 @@ The `publishOptions` object will vary depending on the CI/CD provider you're usi
 
 Once the graph is successfully published, you'll see the following output in your workflow view:
 
-<figure><img src="/assets/devtools/graph-published-terminal.png" /></figure>
+<figure>
+  <img src="/assets/devtools/graph-published-terminal.png" />
+</figure>
 
 Every time our graph is published, we should see a new entry in the project's corresponding page:
 
-<figure><img src="/assets/devtools/project.png" /></figure>
+<figure>
+  <img src="/assets/devtools/project.png" />
+</figure>
 
 #### Reports
 
@@ -63,7 +67,9 @@ Devtools generate a report for every build **IF** there's a corresponding snapsh
 
 To see reports, navigate to the project's corresponding page (see organizations).
 
-<figure><img src="/assets/devtools/report.png" /></figure>
+<figure>
+  <img src="/assets/devtools/report.png" />
+</figure>
 
 This is particularly helpful in identifying changes that may have gone unnoticed during code reviews. For instance, let's say someone has changed the scope of a **deeply nested provider**. This change might not be immediately obvious to the reviewer, but with Devtools, we can easily spot such changes and make sure that they're intentional. Or if we remove a guard from a specific endpoint, it will show up as affected in the report. Now if we didn't have integration or e2e tests for that route, we might not notice that it's no longer protected, and by the time we do, it could be too late.
 
@@ -79,7 +85,9 @@ For every published graph we can go back in time and preview how it looked befor
 
 See screenshot below:
 
-<figure><img src="/assets/devtools/nodes-selection.png" /></figure>
+<figure>
+  <img src="/assets/devtools/nodes-selection.png" />
+</figure>
 
 The ability to go back in time lets you investigate and troubleshoot the issue by comparing the current graph with the previous one. Depending on how you set things up, every pull request (or even every commit) will have a corresponding snapshot in the registry, so you can easily go back in time and see what changed. Think of Devtools as a Git but with an understanding of how Nest constructs your application graph, and with the ability to **visualize** it.
 
@@ -147,16 +155,20 @@ const publishOptions = {
   target: process.env.TARGET_SHA,
   trigger: process.env.GITHUB_BASE_REF ? 'pull' : 'push',
   branch: process.env.BRANCH_NAME,
-};
+}
 ```
 
 For the best developer experience, make sure to integrate the **GitHub application** for your project by clicking on the "Integrate GitHub app" button (see screenshot below). Note - this isn't required.
 
-<figure><img src="/assets/devtools/integrate-github-app.png" /></figure>
+<figure>
+  <img src="/assets/devtools/integrate-github-app.png" />
+</figure>
 
 With this integration, you'll be able to see the status of the preview/report generation process right in your pull request:
 
-<figure><img src="/assets/devtools/actions-preview.png" /></figure>
+<figure>
+  <img src="/assets/devtools/actions-preview.png" />
+</figure>
 
 #### Integrations: Gitlab Pipelines
 
@@ -171,7 +183,7 @@ const publishOptions = {
   target: process.env.TARGET_SHA,
   trigger: process.env.GITHUB_BASE_REF ? 'pull' : 'push',
   branch: process.env.BRANCH_NAME,
-};
+}
 ```
 
 > info **Hint** Ideally, `DEVTOOLS_API_KEY` environment variable should be retrieved from secrets.
@@ -233,7 +245,7 @@ const publishOptions = {
   target: process.env.CI_MERGE_REQUEST_DIFF_BASE_SHA,
   trigger: process.env.CI_MERGE_REQUEST_DIFF_BASE_SHA ? 'pull' : 'push',
   branch: process.env.CI_COMMIT_BRANCH ?? process.env.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME,
-};
+}
 ```
 
 Most of this information is provided through CI/CD built-in environment variables (see [CircleCI built-in environment list](https://circleci.com/docs/variables/#built-in-environment-variables) and [Bitbucket variables](https://support.atlassian.com/bitbucket-cloud/docs/variables-and-secrets/) ).

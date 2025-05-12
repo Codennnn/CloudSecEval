@@ -2,7 +2,9 @@
 
 An interceptor is a class annotated with the `@Injectable()` decorator and implements the `NestInterceptor` interface.
 
-<figure><img class="illustrative-image" src="/assets/Interceptors_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Interceptors_1.png" />
+</figure>
 
 Interceptors have a set of useful capabilities which are inspired by the [Aspect Oriented Programming](https://en.wikipedia.org/wiki/Aspect-oriented_programming) (AOP) technique. They make it possible to:
 
@@ -111,8 +113,8 @@ As mentioned, the construction above attaches the interceptor to every handler d
 In order to set up a global interceptor, we use the `useGlobalInterceptors()` method of the Nest application instance:
 
 ```typescript
-const app = await NestFactory.create(AppModule);
-app.useGlobalInterceptors(new LoggingInterceptor());
+const app = await NestFactory.create(AppModule)
+app.useGlobalInterceptors(new LoggingInterceptor())
 ```
 
 Global interceptors are used across the whole application, for every controller and every route handler. In terms of dependency injection, global interceptors registered from outside of any module (with `useGlobalInterceptors()`, as in the example above) cannot inject dependencies since this is done outside the context of any module. In order to solve this issue, you can set up an interceptor **directly from any module** using the following construction:

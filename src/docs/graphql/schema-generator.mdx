@@ -6,12 +6,12 @@ To manually generate a GraphQL SDL schema (i.e., without running an application,
 
 ```typescript
 async function generateSchema() {
-  const app = await NestFactory.create(GraphQLSchemaBuilderModule);
-  await app.init();
+  const app = await NestFactory.create(GraphQLSchemaBuilderModule)
+  await app.init()
 
-  const gqlSchemaFactory = app.get(GraphQLSchemaFactory);
-  const schema = await gqlSchemaFactory.create([RecipesResolver]);
-  console.log(printSchema(schema));
+  const gqlSchemaFactory = app.get(GraphQLSchemaFactory)
+  const schema = await gqlSchemaFactory.create([RecipesResolver])
+  console.log(printSchema(schema))
 }
 ```
 
@@ -22,11 +22,7 @@ async function generateSchema() {
 The `gqlSchemaFactory.create()` method takes an array of resolver class references. For example:
 
 ```typescript
-const schema = await gqlSchemaFactory.create([
-  RecipesResolver,
-  AuthorsResolver,
-  PostsResolvers,
-]);
+const schema = await gqlSchemaFactory.create([RecipesResolver, AuthorsResolver, PostsResolvers])
 ```
 
 It also takes a second optional argument with an array of scalar classes:
@@ -34,8 +30,8 @@ It also takes a second optional argument with an array of scalar classes:
 ```typescript
 const schema = await gqlSchemaFactory.create(
   [RecipesResolver, AuthorsResolver, PostsResolvers],
-  [DurationScalar, DateScalar],
-);
+  [DurationScalar, DateScalar]
+)
 ```
 
 Lastly, you can pass an options object:
@@ -44,7 +40,7 @@ Lastly, you can pass an options object:
 const schema = await gqlSchemaFactory.create([RecipesResolver], {
   skipCheck: true,
   orphanedTypes: [],
-});
+})
 ```
 
 - `skipCheck`: ignore schema validation; boolean, defaults to `false`

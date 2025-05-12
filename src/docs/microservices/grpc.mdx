@@ -56,45 +56,72 @@ The <strong>gRPC</strong> transporter options object exposes the properties desc
 
 <table>
   <tr>
-    <td><code>package</code></td>
-    <td>Protobuf package name (matches <code>package</code> setting from <code>.proto</code> file).  Required</td>
+    <td>
+      <code>package</code>
+    </td>
+    <td>
+      Protobuf package name (matches <code>package</code> setting from <code>.proto</code> file).
+      Required
+    </td>
   </tr>
   <tr>
-    <td><code>protoPath</code></td>
+    <td>
+      <code>protoPath</code>
+    </td>
     <td>
       Absolute (or relative to the root dir) path to the
       <code>.proto</code> file. Required
     </td>
   </tr>
   <tr>
-    <td><code>url</code></td>
-    <td>Connection url.  String in the format <code>ip address/dns name:port</code> (for example, <code>'0.0.0.0:50051'</code> for a Docker server) defining the address/port on which the transporter establishes a connection.  Optional.  Defaults to <code>'localhost:5000'</code></td>
-  </tr>
-  <tr>
-    <td><code>protoLoader</code></td>
-    <td>NPM package name for the utility to load <code>.proto</code> files.  Optional.  Defaults to <code>'@grpc/proto-loader'</code></td>
-  </tr>
-  <tr>
-    <td><code>loader</code></td>
     <td>
-      <code>@grpc/proto-loader</code> options. These provide detailed control over the behavior of <code>.proto</code> files. Optional. See
+      <code>url</code>
+    </td>
+    <td>
+      Connection url. String in the format <code>ip address/dns name:port</code> (for example,{' '}
+      <code>'0.0.0.0:50051'</code> for a Docker server) defining the address/port on which the
+      transporter establishes a connection. Optional. Defaults to <code>'localhost:5000'</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>protoLoader</code>
+    </td>
+    <td>
+      NPM package name for the utility to load <code>.proto</code> files. Optional. Defaults to{' '}
+      <code>'@grpc/proto-loader'</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>loader</code>
+    </td>
+    <td>
+      <code>@grpc/proto-loader</code> options. These provide detailed control over the behavior of{' '}
+      <code>.proto</code> files. Optional. See
       <a
         href="https://github.com/grpc/grpc-node/blob/master/packages/proto-loader/README.md"
         rel="nofollow"
         target="_blank"
-        >here</a
-      > for more details
+      >
+        here
+      </a>{' '}
+      for more details
     </td>
   </tr>
   <tr>
-    <td><code>credentials</code></td>
     <td>
-      Server credentials.  Optional. <a
+      <code>credentials</code>
+    </td>
+    <td>
+      Server credentials. Optional.
+      <a
         href="https://grpc.io/grpc/node/grpc.ServerCredentials.html"
         rel="nofollow"
         target="_blank"
-        >Read more here</a
       >
+        Read more here
+      </a>
     </td>
   </tr>
 </table>
@@ -239,7 +266,7 @@ imports: [
       },
     },
   ]),
-];
+]
 ```
 
 > info **Hint** The `register()` method takes an array of objects. Register multiple packages by providing a comma separated list of registration objects.
@@ -249,16 +276,16 @@ Once registered, we can inject the configured `ClientGrpc` object with `@Inject(
 ```typescript
 @Injectable()
 export class AppService implements OnModuleInit {
-  private heroesService: HeroesService;
+  private heroesService: HeroesService
 
   constructor(@Inject('HERO_PACKAGE') private client: ClientGrpc) {}
 
   onModuleInit() {
-    this.heroesService = this.client.getService<HeroesService>('HeroesService');
+    this.heroesService = this.client.getService<HeroesService>('HeroesService')
   }
 
   getHero(): Observable<string> {
-    return this.heroesService.findOne({ id: 1 });
+    return this.heroesService.findOne({ id: 1 })
   }
 }
 ```
@@ -279,16 +306,16 @@ export class AppService implements OnModuleInit {
       protoPath: join(__dirname, 'hero/hero.proto'),
     },
   })
-  client: ClientGrpc;
+  client: ClientGrpc
 
-  private heroesService: HeroesService;
+  private heroesService: HeroesService
 
   onModuleInit() {
-    this.heroesService = this.client.getService<HeroesService>('HeroesService');
+    this.heroesService = this.client.getService<HeroesService>('HeroesService')
   }
 
   getHero(): Observable<string> {
-    return this.heroesService.findOne({ id: 1 });
+    return this.heroesService.findOne({ id: 1 })
   }
 }
 ```
@@ -301,7 +328,7 @@ Note, all service methods are **lower camel cased** (in order to follow the natu
 
 ```typescript
 interface HeroesService {
-  findOne(data: { id: number }): Observable<any>;
+  findOne(data: { id: number }): Observable<any>
 }
 ```
 
@@ -407,18 +434,16 @@ Based on this `.proto` file, let's define the `HelloService` interface:
 
 ```typescript
 interface HelloService {
-  bidiHello(upstream: Observable<HelloRequest>): Observable<HelloResponse>;
-  lotsOfGreetings(
-    upstream: Observable<HelloRequest>,
-  ): Observable<HelloResponse>;
+  bidiHello(upstream: Observable<HelloRequest>): Observable<HelloResponse>
+  lotsOfGreetings(upstream: Observable<HelloRequest>): Observable<HelloResponse>
 }
 
 interface HelloRequest {
-  greeting: string;
+  greeting: string
 }
 
 interface HelloResponse {
-  reply: string;
+  reply: string
 }
 ```
 
@@ -457,14 +482,14 @@ bidiHello(messages: Observable<any>, metadata: Metadata, call: ServerDuplexStrea
 According to the service definition (in the `.proto` file), the `BidiHello` method should stream requests to the service. To send multiple asynchronous messages to the stream from a client, we leverage an RxJS `ReplaySubject` class.
 
 ```typescript
-const helloService = this.client.getService<HelloService>('HelloService');
-const helloRequest$ = new ReplaySubject<HelloRequest>();
+const helloService = this.client.getService<HelloService>('HelloService')
+const helloRequest$ = new ReplaySubject<HelloRequest>()
 
-helloRequest$.next({ greeting: 'Hello (1)!' });
-helloRequest$.next({ greeting: 'Hello (2)!' });
-helloRequest$.complete();
+helloRequest$.next({ greeting: 'Hello (1)!' })
+helloRequest$.next({ greeting: 'Hello (2)!' })
+helloRequest$.complete()
 
-return helloService.bidiHello(helloRequest$);
+return helloService.bidiHello(helloRequest$)
 ```
 
 In the example above, we wrote two messages to the stream (`next()` calls) and notified the service that we've completed sending the data (`complete()` call).
@@ -596,6 +621,6 @@ To read metadata from within the [call stream handlers](microservices/grpc#call-
 
 ```typescript
 requestStream.on('metadata', (metadata: Metadata) => {
-  const meta = metadata.get('X-Meta');
-});
+  const meta = metadata.get('X-Meta')
+})
 ```

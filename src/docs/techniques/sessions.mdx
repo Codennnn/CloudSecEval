@@ -14,15 +14,15 @@ $ npm i -D @types/express-session
 Once the installation is complete, apply the `express-session` middleware as global middleware (for example, in your `main.ts` file).
 
 ```typescript
-import * as session from 'express-session';
+import * as session from 'express-session'
 // somewhere in your initialization file
 app.use(
   session({
     secret: 'my-secret',
     resave: false,
     saveUninitialized: false,
-  }),
-);
+  })
+)
 ```
 
 > warning **Notice** The default server-side session storage is purposely not designed for a production environment. It will leak memory under most conditions, does not scale past a single process, and is meant for debugging and developing. Read more in the [official repository](https://github.com/expressjs/session).
@@ -70,17 +70,14 @@ $ npm i @fastify/secure-session
 Once the installation is complete, register the `fastify-secure-session` plugin:
 
 ```typescript
-import secureSession from '@fastify/secure-session';
+import secureSession from '@fastify/secure-session'
 
 // somewhere in your initialization file
-const app = await NestFactory.create<NestFastifyApplication>(
-  AppModule,
-  new FastifyAdapter(),
-);
+const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
 await app.register(secureSession, {
   secret: 'averylogphrasebiggerthanthirtytwochars',
   salt: 'mq9hDxBVDbspDR6n',
-});
+})
 ```
 
 > info **Hint** You can also pregenerate a key ([see instructions](https://github.com/fastify/fastify-secure-session)) or use [keys rotation](https://github.com/fastify/fastify-secure-session#using-keys-with-key-rotation).

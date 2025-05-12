@@ -81,16 +81,16 @@ To specify a return model for a request, we must create a class and annotate all
 ```typescript
 export class Cat {
   @ApiProperty()
-  id: number;
+  id: number
 
   @ApiProperty()
-  name: string;
+  name: string
 
   @ApiProperty()
-  age: number;
+  age: number
 
   @ApiProperty()
-  breed: string;
+  breed: string
 }
 ```
 
@@ -106,14 +106,16 @@ export class CatsController {
     type: Cat,
   })
   async create(@Body() createCatDto: CreateCatDto): Promise<Cat> {
-    return this.catsService.create(createCatDto);
+    return this.catsService.create(createCatDto)
   }
 }
 ```
 
 Let's open the browser and verify the generated `Cat` model:
 
-<figure><img src="/assets/swagger-response-type.png" /></figure>
+<figure>
+  <img src="/assets/swagger-response-type.png" />
+</figure>
 
 Instead of defining responses for each endpoint or controller individually, you can define a global response for all endpoints using the `DocumentBuilder` class. This approach is useful when you want to define a global response for all endpoints in your application (e.g., for errors like `401 Unauthorized` or `500 Internal Server Error`).
 
@@ -124,7 +126,7 @@ const config = new DocumentBuilder()
     description: 'Internal server error',
   })
   // other configurations
-  .build();
+  .build()
 ```
 
 #### File upload
@@ -146,7 +148,7 @@ Where `FileUploadDto` is defined as follows:
 ```typescript
 class FileUploadDto {
   @ApiProperty({ type: 'string', format: 'binary' })
-  file: any;
+  file: any
 }
 ```
 
@@ -155,7 +157,7 @@ To handle multiple files uploading, you can define `FilesUploadDto` as follows:
 ```typescript
 class FilesUploadDto {
   @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' } })
-  files: any[];
+  files: any[]
 }
 ```
 
@@ -174,15 +176,15 @@ With the ability to provide [Raw Definitions](/openapi/types-and-parameters#raw-
 ```ts
 export class PaginatedDto<TData> {
   @ApiProperty()
-  total: number;
+  total: number
 
   @ApiProperty()
-  limit: number;
+  limit: number
 
   @ApiProperty()
-  offset: number;
+  offset: number
 
-  results: TData[];
+  results: TData[]
 }
 ```
 
@@ -191,13 +193,13 @@ We skip decorating `results` as we will be providing a raw definition for it lat
 ```ts
 export class CatDto {
   @ApiProperty()
-  name: string;
+  name: string
 
   @ApiProperty()
-  age: number;
+  age: number
 
   @ApiProperty()
-  breed: string;
+  breed: string
 }
 ```
 
@@ -266,9 +268,7 @@ If you run Swagger now, the generated `swagger.json` for this specific endpoint 
 To make it reusable, we can create a custom decorator for `PaginatedDto`, as follows:
 
 ```ts
-export const ApiPaginatedResponse = <TModel extends Type<any>>(
-  model: TModel,
-) => {
+export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
   return applyDecorators(
     ApiExtraModels(PaginatedDto, model),
     ApiOkResponse({
@@ -285,9 +285,9 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
           },
         ],
       },
-    }),
-  );
-};
+    })
+  )
+}
 ```
 
 > info **Hint** `Type<any>` interface and `applyDecorators` function are imported from the `@nestjs/common` package.
@@ -311,9 +311,7 @@ findAll(): Observable<{ total: number, limit: number, offset: number, results: C
 As you can see, the **Return Type** here is ambiguous. To workaround this issue, you can add a `title` property to the `schema` for `ApiPaginatedResponse`:
 
 ```typescript
-export const ApiPaginatedResponse = <TModel extends Type<any>>(
-  model: TModel,
-) => {
+export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
   return applyDecorators(
     ApiOkResponse({
       schema: {
@@ -322,9 +320,9 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
           // ...
         ],
       },
-    }),
-  );
-};
+    })
+  )
+}
 ```
 
 Now the result of the client generator tool will become:

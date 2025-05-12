@@ -39,17 +39,32 @@ The `options` object is specific to the chosen transporter. The <strong>NATS</st
 
 <table>
   <tr>
-    <td><code>queue</code></td>
-    <td>Queue that your server should subscribe to (leave <code>undefined</code> to ignore this setting). Read more about NATS queue groups <a href="https://docs.nestjs.com/microservices/nats#queue-groups">below</a>.
-    </td> 
+    <td>
+      <code>queue</code>
+    </td>
+    <td>
+      Queue that your server should subscribe to (leave <code>undefined</code> to ignore this
+      setting). Read more about NATS queue groups{' '}
+      <a href="https://docs.nestjs.com/microservices/nats#queue-groups">below</a>.
+    </td>
   </tr>
   <tr>
-    <td><code>gracefulShutdown</code></td>
-    <td>Enables graceful shutdown. When enabled, the server first unsubscribes from all channels before closing the connection. Default is <code>false</code>.
+    <td>
+      <code>gracefulShutdown</code>
+    </td>
+    <td>
+      Enables graceful shutdown. When enabled, the server first unsubscribes from all channels
+      before closing the connection. Default is <code>false</code>.
+    </td>
   </tr>
   <tr>
-    <td><code>gracePeriod</code></td>
-    <td>Time in milliseconds to wait for the server after unsubscribing from all channels. Default is <code>10000</code> ms.
+    <td>
+      <code>gracePeriod</code>
+    </td>
+    <td>
+      Time in milliseconds to wait for the server after unsubscribing from all channels. Default is{' '}
+      <code>10000</code> ms.
+    </td>
   </tr>
 </table>
 
@@ -179,8 +194,8 @@ replaceEmoji(data, context) {
 In some cases you might want to configure headers for multiple requests, you can pass these as options to the `ClientProxyFactory`:
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { Module } from '@nestjs/common'
+import { ClientProxyFactory, Transport } from '@nestjs/microservices'
 
 @Module({
   providers: [
@@ -206,8 +221,8 @@ To get real-time updates on the connection and the state of the underlying drive
 
 ```typescript
 this.client.status.subscribe((status: NatsStatus) => {
-  console.log(status);
-});
+  console.log(status)
+})
 ```
 
 > info **Hint** The `NatsStatus` type is imported from the `@nestjs/microservices` package.
@@ -227,16 +242,16 @@ In some cases, you might want to listen to internal events emitted by the micros
 
 ```typescript
 this.client.on('error', (err) => {
-  console.error(err);
-});
+  console.error(err)
+})
 ```
 
 Similarly, you can listen to the server's internal events:
 
 ```typescript
 server.on<NatsEvents>('error', (err) => {
-  console.error(err);
-});
+  console.error(err)
+})
 ```
 
 > info **Hint** The `NatsEvents` type is imported from the `@nestjs/microservices` package.
@@ -248,11 +263,11 @@ For more advanced use cases, you may need to access the underlying driver instan
 To do so, you can use the `unwrap()` method, which returns the underlying driver instance. The generic type parameter should specify the type of driver instance you expect.
 
 ```typescript
-const natsConnection = this.client.unwrap<import('nats').NatsConnection>();
+const natsConnection = this.client.unwrap<import('nats').NatsConnection>()
 ```
 
 Similarly, you can access the server's underlying driver instance:
 
 ```typescript
-const natsConnection = server.unwrap<import('nats').NatsConnection>();
+const natsConnection = server.unwrap<import('nats').NatsConnection>()
 ```

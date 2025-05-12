@@ -483,10 +483,10 @@ With this in place, Nest will automatically bind `AuthGuard` to all endpoints.
 Now we must provide a mechanism for declaring routes as public. For this, we can create a custom decorator using the `SetMetadata` decorator factory function.
 
 ```typescript
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from '@nestjs/common'
 
-export const IS_PUBLIC_KEY = 'isPublic';
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+export const IS_PUBLIC_KEY = 'isPublic'
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
 ```
 
 In the file above, we exported two constants. One being our metadata key named `IS_PUBLIC_KEY`, and the other being our new decorator itself that we’re going to call `Public` (you can alternatively name it `SkipAuth` or `AllowAnon`, whatever fits your project).
@@ -506,39 +506,42 @@ Lastly, we need the `AuthGuard` to return `true` when the `"isPublic"` metadata 
 ```typescript
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {}
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]);
+    ])
     if (isPublic) {
       // 💡 See this condition
-      return true;
+      return true
     }
 
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const request = context.switchToHttp().getRequest()
+    const token = this.extractTokenFromHeader(request)
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
-      });
+      })
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      request['user'] = payload;
+      request['user'] = payload
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
-    return true;
+    return true
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    const [type, token] = request.headers.authorization?.split(' ') ?? []
+    return type === 'Bearer' ? token : undefined
   }
 }
 ```

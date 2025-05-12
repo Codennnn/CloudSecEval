@@ -7,24 +7,24 @@ Union types are very similar to interfaces, but they don't get to specify any co
 To define a GraphQL union type, we must define classes that this union will be composed of. Following the [example](https://www.apollographql.com/docs/apollo-server/schema/unions-interfaces/#union-type) from the Apollo documentation, we'll create two classes. First, `Book`:
 
 ```typescript
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 export class Book {
   @Field()
-  title: string;
+  title: string
 }
 ```
 
 And then `Author`:
 
 ```typescript
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 export class Author {
   @Field()
-  name: string;
+  name: string
 }
 ```
 
@@ -34,7 +34,7 @@ With this in place, register the `ResultUnion` union using the `createUnionType`
 export const ResultUnion = createUnionType({
   name: 'ResultUnion',
   types: () => [Author, Book] as const,
-});
+})
 ```
 
 > warning **Warning** The array returned by the `types` property of the `createUnionType` function should be given a const assertion. If the const assertion is not given, a wrong declaration file will be generated at compile time, and an error will occur when using it from another project.
@@ -76,14 +76,14 @@ export const ResultUnion = createUnionType({
   types: () => [Author, Book] as const,
   resolveType(value) {
     if (value.name) {
-      return Author;
+      return Author
     }
     if (value.title) {
-      return Book;
+      return Book
     }
-    return null;
+    return null
   },
-});
+})
 ```
 
 #### Schema first
@@ -106,14 +106,14 @@ Then, you can use the typings generation feature (as shown in the [quick start](
 
 ```typescript
 export class Author {
-  name: string;
+  name: string
 }
 
 export class Book {
-  title: string;
+  title: string
 }
 
-export type ResultUnion = Author | Book;
+export type ResultUnion = Author | Book
 ```
 
 Unions require an extra `__resolveType` field in the resolver map to determine which type the union should resolve to. Also, note that the `ResultUnionResolver` class has to be registered as a provider in any module. Let's create a `ResultUnionResolver` class and define the `__resolveType` method.
@@ -124,12 +124,12 @@ export class ResultUnionResolver {
   @ResolveField()
   __resolveType(value) {
     if (value.name) {
-      return 'Author';
+      return 'Author'
     }
     if (value.title) {
-      return 'Book';
+      return 'Book'
     }
-    return null;
+    return null
   }
 }
 ```
@@ -160,7 +160,7 @@ With this in place, register the `AllowedColor` enum using the `registerEnumType
 ```typescript
 registerEnumType(AllowedColor, {
   name: 'AllowedColor',
-});
+})
 ```
 
 Now you can reference the `AllowedColor` in our types:
@@ -186,7 +186,7 @@ To provide a description for the enum, pass the `description` property into the 
 registerEnumType(AllowedColor, {
   name: 'AllowedColor',
   description: 'The supported colors.',
-});
+})
 ```
 
 To provide a description for the enum values, or to mark a value as deprecated, pass the `valuesMap` property, as follows:
@@ -203,7 +203,7 @@ registerEnumType(AllowedColor, {
       deprecationReason: 'Too blue.',
     },
   },
-});
+})
 ```
 
 This will generate the following GraphQL schema in SDL:
@@ -249,7 +249,7 @@ Sometimes a backend forces a different value for an enum internally than in the 
 ```typescript
 export const allowedColorResolver: Record<keyof typeof AllowedColor, any> = {
   RED: '#f00',
-};
+}
 ```
 
 > info **Hint** All decorators are exported from the `@nestjs/graphql` package.
@@ -261,5 +261,5 @@ GraphQLModule.forRoot({
   resolvers: {
     AllowedColor: allowedColorResolver,
   },
-});
+})
 ```

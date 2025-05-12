@@ -9,8 +9,8 @@ There may be times where you would like to send back a file from your REST API t
 export class FileController {
   @Get()
   getFile(@Res() res: Response) {
-    const file = createReadStream(join(process.cwd(), 'package.json'));
-    file.pipe(res);
+    const file = createReadStream(join(process.cwd(), 'package.json'))
+    file.pipe(res)
   }
 }
 ```
@@ -32,16 +32,16 @@ Fastify, by default, can support sending files without needing to call `stream.p
 You can find a simple example of returning the `package.json` as a file instead of a JSON below, but the idea extends out naturally to images, documents, and any other file type.
 
 ```ts
-import { Controller, Get, StreamableFile } from '@nestjs/common';
-import { createReadStream } from 'fs';
-import { join } from 'path';
+import { Controller, Get, StreamableFile } from '@nestjs/common'
+import { createReadStream } from 'fs'
+import { join } from 'path'
 
 @Controller('file')
 export class FileController {
   @Get()
   getFile(): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'package.json'));
-    return new StreamableFile(file);
+    const file = createReadStream(join(process.cwd(), 'package.json'))
+    return new StreamableFile(file)
   }
 }
 ```
@@ -49,33 +49,33 @@ export class FileController {
 The default content type (the value for `Content-Type` HTTP response header) is `application/octet-stream`. If you need to customize this value you can use the `type` option from `StreamableFile`, or use the `res.set` method or the [`@Header()`](/controllers#headers) decorator, like this:
 
 ```ts
-import { Controller, Get, StreamableFile, Res } from '@nestjs/common';
-import { createReadStream } from 'fs';
-import { join } from 'path';
-import type { Response } from 'express'; // Assuming that we are using the ExpressJS HTTP Adapter
+import { Controller, Get, StreamableFile, Res } from '@nestjs/common'
+import { createReadStream } from 'fs'
+import { join } from 'path'
+import type { Response } from 'express' // Assuming that we are using the ExpressJS HTTP Adapter
 
 @Controller('file')
 export class FileController {
   @Get()
   getFile(): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'package.json'));
+    const file = createReadStream(join(process.cwd(), 'package.json'))
     return new StreamableFile(file, {
       type: 'application/json',
       disposition: 'attachment; filename="package.json"',
       // If you want to define the Content-Length value to another value instead of file's length:
       // length: 123,
-    });
+    })
   }
 
   // Or even:
   @Get()
   getFileChangingResponseObjDirectly(@Res({ passthrough: true }) res: Response): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'package.json'));
+    const file = createReadStream(join(process.cwd(), 'package.json'))
     res.set({
       'Content-Type': 'application/json',
       'Content-Disposition': 'attachment; filename="package.json"',
-    });
-    return new StreamableFile(file);
+    })
+    return new StreamableFile(file)
   }
 
   // Or even:
@@ -83,8 +83,8 @@ export class FileController {
   @Header('Content-Type', 'application/json')
   @Header('Content-Disposition', 'attachment; filename="package.json"')
   getFileUsingStaticValues(): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'package.json'));
-    return new StreamableFile(file);
-  }  
+    const file = createReadStream(join(process.cwd(), 'package.json'))
+    return new StreamableFile(file)
+  }
 }
 ```

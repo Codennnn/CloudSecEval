@@ -85,11 +85,11 @@ export class UsersController {
   // Rate limiting is applied to this route.
   @SkipThrottle({ default: false })
   dontSkip() {
-    return 'List users work with Rate limiting.';
+    return 'List users work with Rate limiting.'
   }
   // This route will skip rate limiting.
   doSkip() {
-    return 'List users work without Rate limiting.';
+    return 'List users work without Rate limiting.'
   }
 }
 ```
@@ -163,30 +163,15 @@ This module can work with websockets, but it requires some class extension. You 
 @Injectable()
 export class WsThrottlerGuard extends ThrottlerGuard {
   async handleRequest(requestProps: ThrottlerRequest): Promise<boolean> {
-    const {
-      context,
-      limit,
-      ttl,
-      throttler,
-      blockDuration,
-      getTracker,
-      generateKey,
-    } = requestProps;
+    const { context, limit, ttl, throttler, blockDuration, getTracker, generateKey } = requestProps
 
-    const client = context.switchToWs().getClient();
-    const tracker = client._socket.remoteAddress;
-    const key = generateKey(context, tracker, throttler.name);
+    const client = context.switchToWs().getClient()
+    const tracker = client._socket.remoteAddress
+    const key = generateKey(context, tracker, throttler.name)
     const { totalHits, timeToExpire, isBlocked, timeToBlockExpire } =
-      await this.storageService.increment(
-        key,
-        ttl,
-        limit,
-        blockDuration,
-        throttler.name,
-      );
+      await this.storageService.increment(key, ttl, limit, blockDuration, throttler.name)
 
-    const getThrottlerSuffix = (name: string) =>
-      name === 'default' ? '' : `-${name}`;
+    const getThrottlerSuffix = (name: string) => (name === 'default' ? '' : `-${name}`)
 
     // Throw an error when the user reached their limit.
     if (isBlocked) {
@@ -199,10 +184,10 @@ export class WsThrottlerGuard extends ThrottlerGuard {
         timeToExpire,
         isBlocked,
         timeToBlockExpire,
-      });
+      })
     }
 
-    return true;
+    return true
   }
 }
 ```
@@ -224,9 +209,9 @@ The `ThrottlerGuard` can also be used to work with GraphQL requests. Again, the 
 @Injectable()
 export class GqlThrottlerGuard extends ThrottlerGuard {
   getRequestResponse(context: ExecutionContext) {
-    const gqlCtx = GqlExecutionContext.create(context);
-    const ctx = gqlCtx.getContext();
-    return { req: ctx.req, res: ctx.res };
+    const gqlCtx = GqlExecutionContext.create(context)
+    const ctx = gqlCtx.getContext()
+    return { req: ctx.req, res: ctx.res }
   }
 }
 ```
@@ -237,28 +222,49 @@ The following options are valid for the object passed to the array of the `Throt
 
 <table>
   <tr>
-    <td><code>name</code></td>
-    <td>the name for internal tracking of which throttler set is being used. Defaults to `default` if not passed</td>
+    <td>
+      <code>name</code>
+    </td>
+    <td>
+      the name for internal tracking of which throttler set is being used. Defaults to `default` if
+      not passed
+    </td>
   </tr>
   <tr>
-    <td><code>ttl</code></td>
+    <td>
+      <code>ttl</code>
+    </td>
     <td>the number of milliseconds that each request will last in storage</td>
   </tr>
   <tr>
-    <td><code>limit</code></td>
+    <td>
+      <code>limit</code>
+    </td>
     <td>the maximum number of requests within the TTL limit</td>
   </tr>
   <tr>
-    <td><code>blockDuration</code></td>
+    <td>
+      <code>blockDuration</code>
+    </td>
     <td>the number of milliseconds that request will be blocked for that time</td>
   </tr>
   <tr>
-    <td><code>ignoreUserAgents</code></td>
-    <td>an array of regular expressions of user-agents to ignore when it comes to throttling requests</td>
+    <td>
+      <code>ignoreUserAgents</code>
+    </td>
+    <td>
+      an array of regular expressions of user-agents to ignore when it comes to throttling requests
+    </td>
   </tr>
   <tr>
-    <td><code>skipIf</code></td>
-    <td>a function that takes in the <code>ExecutionContext</code> and returns a <code>boolean</code> to short circuit the throttler logic. Like <code>@SkipThrottler()</code>, but based on the request</td>
+    <td>
+      <code>skipIf</code>
+    </td>
+    <td>
+      a function that takes in the <code>ExecutionContext</code> and returns a <code>boolean</code>{' '}
+      to short circuit the throttler logic. Like <code>@SkipThrottler()</code>, but based on the
+      request
+    </td>
   </tr>
 </table>
 
@@ -266,32 +272,67 @@ If you need to set up storage instead, or want to use some of the above options 
 
 <table>
   <tr>
-    <td><code>storage</code></td>
-    <td>a custom storage service for where the throttling should be kept track. <a href="/security/rate-limiting#storages">See here.</a></td>
+    <td>
+      <code>storage</code>
+    </td>
+    <td>
+      a custom storage service for where the throttling should be kept track.{' '}
+      <a href="/security/rate-limiting#storages">See here.</a>
+    </td>
   </tr>
   <tr>
-    <td><code>ignoreUserAgents</code></td>
-    <td>an array of regular expressions of user-agents to ignore when it comes to throttling requests</td>
+    <td>
+      <code>ignoreUserAgents</code>
+    </td>
+    <td>
+      an array of regular expressions of user-agents to ignore when it comes to throttling requests
+    </td>
   </tr>
   <tr>
-    <td><code>skipIf</code></td>
-    <td>a function that takes in the <code>ExecutionContext</code> and returns a <code>boolean</code> to short circuit the throttler logic. Like <code>@SkipThrottler()</code>, but based on the request</td>
+    <td>
+      <code>skipIf</code>
+    </td>
+    <td>
+      a function that takes in the <code>ExecutionContext</code> and returns a <code>boolean</code>{' '}
+      to short circuit the throttler logic. Like <code>@SkipThrottler()</code>, but based on the
+      request
+    </td>
   </tr>
   <tr>
-    <td><code>throttlers</code></td>
+    <td>
+      <code>throttlers</code>
+    </td>
     <td>an array of throttler sets, defined using the table above</td>
   </tr>
   <tr>
-    <td><code>errorMessage</code></td>
-    <td>a <code>string</code> OR a function that takes in the <code>ExecutionContext</code> and the <code>ThrottlerLimitDetail</code> and returns a <code>string</code> which overrides the default throttler error message</td>
+    <td>
+      <code>errorMessage</code>
+    </td>
+    <td>
+      a <code>string</code> OR a function that takes in the <code>ExecutionContext</code> and the{' '}
+      <code>ThrottlerLimitDetail</code> and returns a <code>string</code> which overrides the
+      default throttler error message
+    </td>
   </tr>
   <tr>
-    <td><code>getTracker</code></td>
-    <td>a function that takes in the <code>Request</code> and returns a <code>string</code> to override the default logic of the <code>getTracker</code> method</td>
+    <td>
+      <code>getTracker</code>
+    </td>
+    <td>
+      a function that takes in the <code>Request</code> and returns a <code>string</code> to
+      override the default logic of the <code>getTracker</code> method
+    </td>
   </tr>
   <tr>
-    <td><code>generateKey</code></td>
-    <td>a function that takes in the <code>ExecutionContext</code>, the tacker <code>string</code> and the throttler name as a <code>string</code> and returns a <code>string</code> to override the final key which will be used to store the rate limit value. This overrides the default logic of the <code>generateKey</code> method</td>
+    <td>
+      <code>generateKey</code>
+    </td>
+    <td>
+      a function that takes in the <code>ExecutionContext</code>, the tacker <code>string</code> and
+      the throttler name as a <code>string</code> and returns a <code>string</code> to override the
+      final key which will be used to store the rate limit value. This overrides the default logic
+      of the <code>generateKey</code> method
+    </td>
   </tr>
 </table>
 

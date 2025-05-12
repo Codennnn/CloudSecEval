@@ -19,7 +19,7 @@ export class CatsController {
   @UseGuards(Guard3)
   @Get()
   getCats(): Cats[] {
-    return this.catsService.getCats();
+    return this.catsService.getCats()
   }
 }
 ```
@@ -47,9 +47,9 @@ export class CatsController {
   updateCat(
     @Body() body: UpdateCatDTO,
     @Param() params: UpdateCatParams,
-    @Query() query: UpdateCatQuery,
+    @Query() query: UpdateCatQuery
   ) {
-    return this.catsService.updateCat(body, params, query);
+    return this.catsService.updateCat(body, params, query)
   }
 }
 ```

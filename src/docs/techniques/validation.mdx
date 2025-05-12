@@ -28,9 +28,9 @@ Because this pipe uses the [`class-validator`](https://github.com/typestack/clas
 
 ```typescript
 export interface ValidationPipeOptions extends ValidatorOptions {
-  transform?: boolean;
-  disableErrorMessages?: boolean;
-  exceptionFactory?: (errors: ValidationError[]) => any;
+  transform?: boolean
+  disableErrorMessages?: boolean
+  exceptionFactory?: (errors: ValidationError[]) => any
 }
 ```
 
@@ -139,11 +139,11 @@ We'll start by binding `ValidationPipe` at the application level, thus ensuring 
 
 ```typescript
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.create(AppModule)
+  app.useGlobalPipes(new ValidationPipe())
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
+bootstrap()
 ```
 
 To test our pipe, let's create a basic endpoint.
@@ -162,14 +162,14 @@ create(@Body() createUserDto: CreateUserDto) {
 Now we can add a few validation rules in our `CreateUserDto`. We do this using decorators provided by the `class-validator` package, described in detail [here](https://github.com/typestack/class-validator#validation-decorators). In this fashion, any route that uses the `CreateUserDto` will automatically enforce these validation rules.
 
 ```typescript
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator'
 
 export class CreateUserDto {
   @IsEmail()
-  email: string;
+  email: string
 
   @IsNotEmpty()
-  password: string;
+  password: string
 }
 ```
 
@@ -195,11 +195,11 @@ findOne(@Param() params: FindOneParams) {
 `FindOneParams`, like a DTO, is simply a class that defines validation rules using `class-validator`. It would look like this:
 
 ```typescript
-import { IsNumberString } from 'class-validator';
+import { IsNumberString } from 'class-validator'
 
 export class FindOneParams {
   @IsNumberString()
-  id: string;
+  id: string
 }
 ```
 
@@ -211,8 +211,8 @@ Error messages can be helpful to explain what was incorrect in a request. Howeve
 app.useGlobalPipes(
   new ValidationPipe({
     disableErrorMessages: true,
-  }),
-);
+  })
+)
 ```
 
 As a result, detailed error messages won't be displayed in the response body.
@@ -225,8 +225,8 @@ Our `ValidationPipe` can also filter out properties that should not be received 
 app.useGlobalPipes(
   new ValidationPipe({
     whitelist: true,
-  }),
-);
+  })
+)
 ```
 
 When set to true, this will automatically remove non-whitelisted properties (those without any decorator in the validation class).
@@ -254,8 +254,8 @@ To enable this behavior globally, set the option on a global pipe:
 app.useGlobalPipes(
   new ValidationPipe({
     transform: true,
-  }),
-);
+  })
+)
 ```
 
 With the auto-transformation option enabled, the `ValidationPipe` will also perform conversion of primitive types. In the following example, the `findOne()` method takes one argument which represents an extracted `id` path parameter:
@@ -304,9 +304,9 @@ The `PartialType()` function returns a type (class) with all the properties of t
 
 ```typescript
 export class CreateCatDto {
-  name: string;
-  age: number;
-  breed: string;
+  name: string
+  age: number
+  breed: string
 }
 ```
 
@@ -322,9 +322,9 @@ The `PickType()` function constructs a new type (class) by picking a set of prop
 
 ```typescript
 export class CreateCatDto {
-  name: string;
-  age: number;
-  breed: string;
+  name: string
+  age: number
+  breed: string
 }
 ```
 
@@ -340,9 +340,9 @@ The `OmitType()` function constructs a type by picking all properties from an in
 
 ```typescript
 export class CreateCatDto {
-  name: string;
-  age: number;
-  breed: string;
+  name: string
+  age: number
+  breed: string
 }
 ```
 
@@ -358,22 +358,19 @@ The `IntersectionType()` function combines two types into one new type (class). 
 
 ```typescript
 export class CreateCatDto {
-  name: string;
-  breed: string;
+  name: string
+  breed: string
 }
 
 export class AdditionalCatInfo {
-  color: string;
+  color: string
 }
 ```
 
 We can generate a new type that combines all properties in both types.
 
 ```typescript
-export class UpdateCatDto extends IntersectionType(
-  CreateCatDto,
-  AdditionalCatInfo,
-) {}
+export class UpdateCatDto extends IntersectionType(CreateCatDto, AdditionalCatInfo) {}
 ```
 
 > info **Hint** The `IntersectionType()` function is imported from the `@nestjs/mapped-types` package.
@@ -381,9 +378,7 @@ export class UpdateCatDto extends IntersectionType(
 The type mapping utility functions are composable. For example, the following will produce a type (class) that has all of the properties of the `CreateCatDto` type except for `name`, and those properties will be set to optional:
 
 ```typescript
-export class UpdateCatDto extends PartialType(
-  OmitType(CreateCatDto, ['name'] as const),
-) {}
+export class UpdateCatDto extends PartialType(OmitType(CreateCatDto, ['name'] as const)) {}
 ```
 
 #### Parsing and validating arrays

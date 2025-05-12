@@ -4,7 +4,9 @@ Most of the concepts discussed elsewhere in this documentation, such as dependen
 
 In Nest, a gateway is simply a class annotated with `@WebSocketGateway()` decorator. Technically, gateways are platform-agnostic which makes them compatible with any WebSockets library once an adapter is created. There are two WS platforms supported out-of-the-box: [socket.io](https://github.com/socketio/socket.io) and [ws](https://github.com/websockets/ws). You can choose the one that best suits your needs. Also, you can build your own adapter by following this [guide](/websockets/adapter).
 
-<figure><img class="illustrative-image" src="/assets/Gateways_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Gateways_1.png" />
+</figure>
 
 > info **Hint** Gateways can be treated as [providers](/providers); this means they can inject dependencies through the class constructor. Also, gateways can be injected by other classes (providers and controllers) as well.
 
@@ -127,13 +129,13 @@ However, in this case, you won't be able to leverage interceptors. If you don't 
 Now when a client emits the message as follows:
 
 ```typescript
-socket.emit('events', { name: 'Nest' });
+socket.emit('events', { name: 'Nest' })
 ```
 
 The `handleEvent()` method will be executed. In order to listen for messages emitted from within the above handler, the client has to attach a corresponding acknowledgment listener:
 
 ```typescript
-socket.emit('events', { name: 'Nest' }, (data) => console.log(data));
+socket.emit('events', { name: 'Nest' }, (data) => console.log(data))
 ```
 
 #### Multiple responses
@@ -163,7 +165,7 @@ handleEvent(data) {
 In order to listen for the incoming response(s), the client has to apply another event listener.
 
 ```typescript
-socket.on('events', (data) => console.log(data));
+socket.on('events', (data) => console.log(data))
 ```
 
 #### Asynchronous responses
@@ -206,8 +208,8 @@ There are 3 useful lifecycle hooks available. All of them have corresponding int
       <code>OnGatewayInit</code>
     </td>
     <td>
-      Forces to implement the <code>afterInit()</code> method. Takes library-specific server instance as an argument (and
-      spreads the rest if required).
+      Forces to implement the <code>afterInit()</code> method. Takes library-specific server
+      instance as an argument (and spreads the rest if required).
     </td>
   </tr>
   <tr>
@@ -215,8 +217,8 @@ There are 3 useful lifecycle hooks available. All of them have corresponding int
       <code>OnGatewayConnection</code>
     </td>
     <td>
-      Forces to implement the <code>handleConnection()</code> method. Takes library-specific client socket instance as
-      an argument.
+      Forces to implement the <code>handleConnection()</code> method. Takes library-specific client
+      socket instance as an argument.
     </td>
   </tr>
   <tr>
@@ -224,8 +226,8 @@ There are 3 useful lifecycle hooks available. All of them have corresponding int
       <code>OnGatewayDisconnect</code>
     </td>
     <td>
-      Forces to implement the <code>handleDisconnect()</code> method. Takes library-specific client socket instance as
-      an argument.
+      Forces to implement the <code>handleDisconnect()</code> method. Takes library-specific client
+      socket instance as an argument.
     </td>
   </tr>
 </table>

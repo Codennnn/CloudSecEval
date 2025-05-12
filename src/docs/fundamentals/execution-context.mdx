@@ -33,14 +33,14 @@ With the application type available, we can write more generic components, as sh
 To retrieve the array of arguments being passed to the handler, one approach is to use the host object's `getArgs()` method.
 
 ```typescript
-const [req, res, next] = host.getArgs();
+const [req, res, next] = host.getArgs()
 ```
 
 You can pluck a particular argument by index using the `getArgByIndex()` method:
 
 ```typescript
-const request = host.getArgByIndex(0);
-const response = host.getArgByIndex(1);
+const request = host.getArgByIndex(0)
+const response = host.getArgByIndex(1)
 ```
 
 In these examples we retrieved the request and response objects by index, which is not typically recommended as it couples the application to a particular execution context. Instead, you can make your code more robust and reusable by using one of the `host` object's utility methods to switch to the appropriate application context for your application. The context switch utility methods are shown below.
@@ -63,9 +63,9 @@ switchToWs(): WsArgumentsHost;
 Let's rewrite the previous example using the `switchToHttp()` method. The `host.switchToHttp()` helper call returns an `HttpArgumentsHost` object that is appropriate for the HTTP application context. The `HttpArgumentsHost` object has two useful methods we can use to extract the desired objects. We also use the Express type assertions in this case to return native Express typed objects:
 
 ```typescript
-const ctx = host.switchToHttp();
-const request = ctx.getRequest<Request>();
-const response = ctx.getResponse<Response>();
+const ctx = host.switchToHttp()
+const request = ctx.getRequest<Request>()
+const response = ctx.getResponse<Response>()
 ```
 
 Similarly `WsArgumentsHost` and `RpcArgumentsHost` have methods to return appropriate objects in the microservices and WebSockets contexts. Here are the methods for `WsArgumentsHost`:
@@ -75,11 +75,11 @@ export interface WsArgumentsHost {
   /**
    * Returns the data object.
    */
-  getData<T>(): T;
+  getData<T>(): T
   /**
    * Returns the client object.
    */
-  getClient<T>(): T;
+  getClient<T>(): T
 }
 ```
 
@@ -90,12 +90,12 @@ export interface RpcArgumentsHost {
   /**
    * Returns the data object.
    */
-  getData<T>(): T;
+  getData<T>(): T
 
   /**
    * Returns the context object.
    */
-  getContext<T>(): T;
+  getContext<T>(): T
 }
 ```
 
@@ -108,20 +108,20 @@ export interface ExecutionContext extends ArgumentsHost {
   /**
    * Returns the type of the controller class which the current handler belongs to.
    */
-  getClass<T>(): Type<T>;
+  getClass<T>(): Type<T>
   /**
    * Returns a reference to the handler (method) that will be invoked next in the
    * request pipeline.
    */
-  getHandler(): Function;
+  getHandler(): Function
 }
 ```
 
 The `getHandler()` method returns a reference to the handler about to be invoked. The `getClass()` method returns the type of the `Controller` class which this particular handler belongs to. For example, in an HTTP context, if the currently processed request is a `POST` request, bound to the `create()` method on the `CatsController`, `getHandler()` returns a reference to the `create()` method and `getClass()` returns the `CatsController` **class** (not instance).
 
 ```typescript
-const methodKey = ctx.getHandler().name; // "create"
-const className = ctx.getClass().name; // "CatsController"
+const methodKey = ctx.getHandler().name // "create"
+const className = ctx.getClass().name // "CatsController"
 ```
 
 The ability to access references to both the current class and handler method provides great flexibility. Most importantly, it gives us the opportunity to access the metadata set through either decorators created via `Reflector#createDecorator` or the built-in `@SetMetadata()` decorator from within guards or interceptors. We cover this use case below.
@@ -186,7 +186,7 @@ export class CatsService {
 Now, to read the handler metadata, use the `get()` method:
 
 ```typescript
-const roles = this.reflector.get(Roles, context.getHandler());
+const roles = this.reflector.get(Roles, context.getHandler())
 ```
 
 The `Reflector#get` method allows us to easily access the metadata by passing in two arguments: a decorator reference and a **context** (decorator target) to retrieve the metadata from. In this example, the specified **decorator** is `Roles` (refer back to the `roles.decorator.ts` file above). The context is provided by the call to `context.getHandler()`, which results in extracting the metadata for the currently processed route handler. Remember, `getHandler()` gives us a **reference** to the route handler function.
@@ -242,7 +242,7 @@ export class CatsController {}
 If your intent is to specify `'user'` as the default role, and override it selectively for certain methods, you would probably use the `getAllAndOverride()` method.
 
 ```typescript
-const roles = this.reflector.getAllAndOverride(Roles, [context.getHandler(), context.getClass()]);
+const roles = this.reflector.getAllAndOverride(Roles, [context.getHandler(), context.getClass()])
 ```
 
 A guard with this code, running in the context of the `create()` method, with the above metadata, would result in `roles` containing `['admin']`.
@@ -250,7 +250,7 @@ A guard with this code, running in the context of the `create()` method, with th
 To get metadata for both and merge it (this method merges both arrays and objects), use the `getAllAndMerge()` method:
 
 ```typescript
-const roles = this.reflector.getAllAndMerge(Roles, [context.getHandler(), context.getClass()]);
+const roles = this.reflector.getAllAndMerge(Roles, [context.getHandler(), context.getClass()])
 ```
 
 This would result in `roles` containing `['user', 'admin']`.
@@ -335,7 +335,7 @@ export class CatsService {
 Now, to read the handler metadata, use the `get()` method.
 
 ```typescript
-const roles = this.reflector.get<string[]>('roles', context.getHandler());
+const roles = this.reflector.get<string[]>('roles', context.getHandler())
 ```
 
 Here instead of passing a decorator reference, we pass the metadata **key** as the first argument (which in our case is `'roles'`). Everything else remains the same as in the `Reflector#createDecorator` example.

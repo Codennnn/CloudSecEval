@@ -85,7 +85,7 @@ HttpModule.registerAsync({
     timeout: 5000,
     maxRedirects: 5,
   }),
-});
+})
 ```
 
 Like other factory providers, our factory function can be [async](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory) and can inject dependencies through `inject`.
@@ -98,7 +98,7 @@ HttpModule.registerAsync({
     maxRedirects: configService.get('HTTP_MAX_REDIRECTS'),
   }),
   inject: [ConfigService],
-});
+})
 ```
 
 Alternatively, you can configure the `HttpModule` using a class instead of a factory, as shown below.
@@ -106,7 +106,7 @@ Alternatively, you can configure the `HttpModule` using a class instead of a fac
 ```typescript
 HttpModule.registerAsync({
   useClass: HttpConfigService,
-});
+})
 ```
 
 The construction above instantiates `HttpConfigService` inside `HttpModule`, using it to create an options object. Note that in this example, the `HttpConfigService` has to implement `HttpModuleOptionsFactory` interface as shown below. The `HttpModule` will call the `createHttpOptions()` method on the instantiated object of the supplied class.
@@ -118,7 +118,7 @@ class HttpConfigService implements HttpModuleOptionsFactory {
     return {
       timeout: 5000,
       maxRedirects: 5,
-    };
+    }
   }
 }
 ```
@@ -129,7 +129,7 @@ If you want to reuse an existing options provider instead of creating a private 
 HttpModule.registerAsync({
   imports: [ConfigModule],
   useExisting: HttpConfigService,
-});
+})
 ```
 
 You can also pass so-called `extraProviders` to the `registerAsync()` method. These providers will be merged with the module providers.
@@ -139,7 +139,7 @@ HttpModule.registerAsync({
   imports: [ConfigModule],
   useClass: HttpConfigService,
   extraProviders: [MyAdditionalProvider],
-});
+})
 ```
 
 This is useful when you want to provide additional dependencies to the factory function or the class constructor.
@@ -154,7 +154,7 @@ export class CatsService {
   constructor(private readonly httpService: HttpService) {}
 
   findAll(): Promise<AxiosResponse<Cat[]>> {
-    return this.httpService.axiosRef.get('http://localhost:3000/cats');
+    return this.httpService.axiosRef.get('http://localhost:3000/cats')
     //                      ^ AxiosInstance interface
   }
 }
@@ -165,23 +165,23 @@ export class CatsService {
 Since the return value of the `HttpService` methods is an Observable, we can use `rxjs` - `firstValueFrom` or `lastValueFrom` to retrieve the data of the request in the form of a promise.
 
 ```typescript
-import { catchError, firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs'
 
 @Injectable()
 export class CatsService {
-  private readonly logger = new Logger(CatsService.name);
+  private readonly logger = new Logger(CatsService.name)
   constructor(private readonly httpService: HttpService) {}
 
   async findAll(): Promise<Cat[]> {
     const { data } = await firstValueFrom(
       this.httpService.get<Cat[]>('http://localhost:3000/cats').pipe(
         catchError((error: AxiosError) => {
-          this.logger.error(error.response.data);
-          throw 'An error happened!';
-        }),
-      ),
-    );
-    return data;
+          this.logger.error(error.response.data)
+          throw 'An error happened!'
+        })
+      )
+    )
+    return data
   }
 }
 ```

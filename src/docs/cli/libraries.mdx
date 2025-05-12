@@ -88,10 +88,10 @@ With the automatically generated configuration files in place, using libraries i
 First, note that using library modules is the same as using any other Nest module. What the monorepo does is manage paths in a way that importing libraries and generating builds is now transparent. To use `MyLibraryService`, we need to import its declaring module. We can modify `my-project/src/app.module.ts` as follows to import `MyLibraryModule`.
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { MyLibraryModule } from '@app/my-library';
+import { Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { MyLibraryModule } from '@app/my-library'
 
 @Module({
   imports: [MyLibraryModule],

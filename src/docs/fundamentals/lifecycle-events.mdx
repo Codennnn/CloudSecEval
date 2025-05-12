@@ -6,7 +6,9 @@ A Nest application, as well as every application element, has a lifecycle manage
 
 The following diagram depicts the sequence of key application lifecycle events, from the time the application is bootstrapped until the node process exits. We can divide the overall lifecycle into three phases: **initializing**, **running** and **terminating**. Using this lifecycle, you can plan for appropriate initialization of modules and services, manage active connections, and gracefully shutdown your application when it receives a termination signal.
 
-<figure><img class="illustrative-image" src="/assets/lifecycle-events.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/lifecycle-events.png" />
+</figure>
 
 #### Lifecycle events
 
@@ -77,18 +79,18 @@ The `onModuleDestroy()`, `beforeApplicationShutdown()` and `onApplicationShutdow
 Shutdown hook listeners consume system resources, so they are disabled by default. To use shutdown hooks, you **must enable listeners** by calling `enableShutdownHooks()`:
 
 ```typescript
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
 
   // Starts listening for shutdown hooks
-  app.enableShutdownHooks();
+  app.enableShutdownHooks()
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
+bootstrap()
 ```
 
 > warning **warning** Due to inherent platform limitations, NestJS has limited support for application shutdown hooks on Windows. You can expect `SIGINT` to work, as well as `SIGBREAK` and to some extent `SIGHUP` - [read more](https://nodejs.org/api/process.html#process_signal_events). However `SIGTERM` will never work on Windows because killing a process in the task manager is unconditional, "i.e., there's no way for an application to detect or prevent it". Here's some [relevant documentation](https://docs.libuv.org/en/v1.x/signal.html) from libuv to learn more about how `SIGINT`, `SIGBREAK` and others are handled on Windows. Also, see Node.js documentation of [Process Signal Events](https://nodejs.org/api/process.html#process_signal_events)

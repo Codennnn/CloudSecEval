@@ -22,7 +22,7 @@ export class CatsService {
 
 #### Retrieving instances
 
-The `ModuleRef` instance (hereafter we'll refer to it as the **module reference**) has a `get()` method. By default, this method returns a provider, controller, or injectable (e.g., guard, interceptor, etc.) that was registered and has been instantiated in the *current module* using its injection token/class name. If the instance is not found, an exception will be raised.
+The `ModuleRef` instance (hereafter we'll refer to it as the **module reference**) has a `get()` method. By default, this method returns a provider, controller, or injectable (e.g., guard, interceptor, etc.) that was registered and has been instantiated in the _current module_ using its injection token/class name. If the instance is not found, an exception will be raised.
 
 ```typescript
 @@filename(cats.service)
@@ -54,7 +54,7 @@ export class CatsService {
 To retrieve a provider from the global context (for example, if the provider has been injected in a different module), pass the `{{ '{' }} strict: false {{ '}' }}` option as a second argument to `get()`.
 
 ```typescript
-this.moduleRef.get(Service, { strict: false });
+this.moduleRef.get(Service, { strict: false })
 ```
 
 #### Resolving scoped providers
@@ -196,8 +196,8 @@ export class CatsService {
 Now, use the `getByRequest()` method of the `ContextIdFactory` class to create a context id based on the request object, and pass this to the `resolve()` call:
 
 ```typescript
-const contextId = ContextIdFactory.getByRequest(this.request);
-const catsRepository = await this.moduleRef.resolve(CatsRepository, contextId);
+const contextId = ContextIdFactory.getByRequest(this.request)
+const catsRepository = await this.moduleRef.resolve(CatsRepository, contextId)
 ```
 
 #### Instantiating custom classes dynamically

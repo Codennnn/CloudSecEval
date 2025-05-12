@@ -57,30 +57,30 @@ At this point, `nest` converts the existing structure to a **monorepo mode** str
 
 <div class="file-tree">
   <div class="item">apps</div>
+  <div class="children">
+    <div class="item">my-app</div>
     <div class="children">
-      <div class="item">my-app</div>
+      <div class="item">src</div>
       <div class="children">
-        <div class="item">src</div>
-        <div class="children">
-          <div class="item">app.controller.ts</div>
-          <div class="item">app.module.ts</div>
-          <div class="item">app.service.ts</div>
-          <div class="item">main.ts</div>
-        </div>
-        <div class="item">tsconfig.app.json</div>
+        <div class="item">app.controller.ts</div>
+        <div class="item">app.module.ts</div>
+        <div class="item">app.service.ts</div>
+        <div class="item">main.ts</div>
       </div>
-      <div class="item">my-project</div>
-      <div class="children">
-        <div class="item">src</div>
-        <div class="children">
-          <div class="item">app.controller.ts</div>
-          <div class="item">app.module.ts</div>
-          <div class="item">app.service.ts</div>
-          <div class="item">main.ts</div>
-        </div>
-        <div class="item">tsconfig.app.json</div>
-      </div>
+      <div class="item">tsconfig.app.json</div>
     </div>
+    <div class="item">my-project</div>
+    <div class="children">
+      <div class="item">src</div>
+      <div class="children">
+        <div class="item">app.controller.ts</div>
+        <div class="item">app.module.ts</div>
+        <div class="item">app.service.ts</div>
+        <div class="item">main.ts</div>
+      </div>
+      <div class="item">tsconfig.app.json</div>
+    </div>
+  </div>
   <div class="item">nest-cli.json</div>
   <div class="item">package.json</div>
   <div class="item">tsconfig.json</div>
@@ -288,7 +288,7 @@ The webpack options file can contain standard [webpack configuration options](ht
 ```javascript
 module.exports = {
   externals: [],
-};
+}
 ```
 
 Since the webpack config file is a JavaScript file, you can even expose a function that takes default options and returns a modified object:
@@ -298,8 +298,8 @@ module.exports = function (options) {
   return {
     ...options,
     externals: [],
-  };
-};
+  }
+}
 ```
 
 #### Assets

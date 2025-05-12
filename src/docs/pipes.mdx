@@ -150,9 +150,9 @@ The `value` parameter is the currently processed method argument (before it is r
 
 ```typescript
 export interface ArgumentMetadata {
-  type: 'body' | 'query' | 'param' | 'custom';
-  metatype?: Type<unknown>;
-  data?: string;
+  type: 'body' | 'query' | 'param' | 'custom'
+  metatype?: Type<unknown>
+  data?: string
 }
 ```
 
@@ -163,11 +163,13 @@ These properties describe the currently processed argument.
     <td>
       <code>type</code>
     </td>
-    <td>Indicates whether the argument is a body
+    <td>
+      Indicates whether the argument is a body
       <code>@Body()</code>, query
       <code>@Query()</code>, param
       <code>@Param()</code>, or a custom parameter (read more
-      <a routerLink="/custom-decorators">here</a>).</td>
+      <a routerLink="/custom-decorators">here</a>).
+    </td>
   </tr>
   <tr>
     <td>
@@ -176,16 +178,19 @@ These properties describe the currently processed argument.
     <td>
       Provides the metatype of the argument, for example,
       <code>String</code>. Note: the value is
-      <code>undefined</code> if you either omit a type declaration in the route handler method signature, or use vanilla JavaScript.
+      <code>undefined</code> if you either omit a type declaration in the route handler method
+      signature, or use vanilla JavaScript.
     </td>
   </tr>
   <tr>
     <td>
       <code>data</code>
     </td>
-    <td>The string passed to the decorator, for example
+    <td>
+      The string passed to the decorator, for example
       <code>@Body('string')</code>. It's
-      <code>undefined</code> if you leave the decorator parenthesis empty.</td>
+      <code>undefined</code> if you leave the decorator parenthesis empty.
+    </td>
   </tr>
 </table>
 
@@ -297,7 +302,7 @@ In this case, we want to bind the pipe at the method call level. In our current 
 Zod schema example:
 
 ```typescript
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const createCatSchema = z
   .object({
@@ -305,9 +310,9 @@ export const createCatSchema = z
     age: z.number(),
     breed: z.string(),
   })
-  .required();
+  .required()
 
-export type CreateCatDto = z.infer<typeof createCatSchema>;
+export type CreateCatDto = z.infer<typeof createCatSchema>
 ```
 
 We do that using the `@UsePipes()` decorator as shown below:

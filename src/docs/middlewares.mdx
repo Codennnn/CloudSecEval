@@ -2,7 +2,9 @@
 
 Middleware is a function which is called **before** the route handler. Middleware functions have access to the [request](https://expressjs.com/en/4x/api.html#req) and [response](https://expressjs.com/en/4x/api.html#res) objects, and the `next()` middleware function in the application’s request-response cycle. The **next** middleware function is commonly denoted by a variable named `next`.
 
-<figure><img class="illustrative-image" src="/assets/Middlewares_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Middlewares_1.png" />
+</figure>
 
 Nest middleware are, by default, equivalent to [express](https://expressjs.com/en/guide/using-middleware.html) middleware. The following description from the official express documentation describes the capabilities of middleware:
 
@@ -13,8 +15,11 @@ Nest middleware are, by default, equivalent to [express](https://expressjs.com/e
     <li>make changes to the request and the response objects.</li>
     <li>end the request-response cycle.</li>
     <li>call the next middleware function in the stack.</li>
-    <li>if the current middleware function does not end the request-response cycle, it must call <code>next()</code> to
-      pass control to the next middleware function. Otherwise, the request will be left hanging.</li>
+    <li>
+      if the current middleware function does not end the request-response cycle, it must call{' '}
+      <code>next()</code> to pass control to the next middleware function. Otherwise, the request
+      will be left hanging.
+    </li>
   </ul>
 </blockquote>
 
@@ -134,7 +139,7 @@ Pattern-based routes are also supported in NestJS middleware. For example, the n
 forRoutes({
   path: 'abcd/*splat',
   method: RequestMethod.ALL,
-});
+})
 ```
 
 > info **Hint** `splat` is simply the name of the wildcard parameter and has no special meaning. You can name it anything you like, for example, `*wildcard`.
@@ -145,7 +150,7 @@ The `'abcd/*'` route path will match `abcd/1`, `abcd/123`, `abcd/abc`, and so on
 forRoutes({
   path: 'abcd/{*splat}',
   method: RequestMethod.ALL,
-});
+})
 ```
 
 #### Middleware consumer
@@ -201,9 +206,9 @@ consumer
   .exclude(
     { path: 'cats', method: RequestMethod.GET },
     { path: 'cats', method: RequestMethod.POST },
-    'cats/{*splat}',
+    'cats/{*splat}'
   )
-  .forRoutes(CatsController);
+  .forRoutes(CatsController)
 ```
 
 > info **Hint** The `exclude()` method supports wildcard parameters using the [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters) package.
@@ -247,7 +252,7 @@ consumer
 As mentioned above, in order to bind multiple middleware that are executed sequentially, simply provide a comma separated list inside the `apply()` method:
 
 ```typescript
-consumer.apply(cors(), helmet(), logger).forRoutes(CatsController);
+consumer.apply(cors(), helmet(), logger).forRoutes(CatsController)
 ```
 
 #### Global middleware

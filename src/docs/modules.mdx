@@ -2,7 +2,9 @@
 
 A module is a class that is annotated with the `@Module()` decorator. This decorator provides metadata that **Nest** uses to organize and manage the application structure efficiently.
 
-<figure><img class="illustrative-image" src="/assets/Modules_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Modules_1.png" />
+</figure>
 
 Every Nest application has at least one module, the **root module**, which serves as the starting point for Nest to build the **application graph**. This graph is an internal structure that Nest uses to resolve relationships and dependencies between modules and providers. While small applications might only have a root module, this is generally not the case. Modules are **highly recommended** as an effective way to organize your components. For most applications, you'll likely have multiple modules, each encapsulating a closely related set of **capabilities**.
 
@@ -79,7 +81,9 @@ Here is how our directory structure looks now:
 
 In Nest, modules are **singletons** by default, and thus you can share the same instance of any provider between multiple modules effortlessly.
 
-<figure><img class="illustrative-image" src="/assets/Shared_Module_1.png" /></figure>
+<figure>
+  <img class="illustrative-image" src="/assets/Shared_Module_1.png" />
+</figure>
 
 Every module is automatically a **shared module**. Once created it can be reused by any module. Let's imagine that we want to share an instance of the `CatsService` between several other modules. In order to do that, we first need to **export** the `CatsService` provider by adding it to the module's `exports` array, as shown below:
 
@@ -160,9 +164,9 @@ If you have to import the same set of modules everywhere, it can get tedious. Un
 When you want to provide a set of providers which should be available everywhere out-of-the-box (e.g., helpers, database connections, etc.), make the module **global** with the `@Global()` decorator.
 
 ```typescript
-import { Module, Global } from '@nestjs/common';
-import { CatsController } from './cats.controller';
-import { CatsService } from './cats.service';
+import { Module, Global } from '@nestjs/common'
+import { CatsController } from './cats.controller'
+import { CatsService } from './cats.service'
 
 @Global()
 @Module({
@@ -242,9 +246,9 @@ If you want to register a dynamic module in the global scope, set the `global` p
 The `DatabaseModule` can be imported and configured in the following manner:
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database/database.module';
-import { User } from './users/entities/user.entity';
+import { Module } from '@nestjs/common'
+import { DatabaseModule } from './database/database.module'
+import { User } from './users/entities/user.entity'
 
 @Module({
   imports: [DatabaseModule.forRoot([User])],
@@ -255,9 +259,9 @@ export class AppModule {}
 If you want to in turn re-export a dynamic module, you can omit the `forRoot()` method call in the exports array:
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database/database.module';
-import { User } from './users/entities/user.entity';
+import { Module } from '@nestjs/common'
+import { DatabaseModule } from './database/database.module'
+import { User } from './users/entities/user.entity'
 
 @Module({
   imports: [DatabaseModule.forRoot([User])],

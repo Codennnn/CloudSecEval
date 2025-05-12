@@ -39,26 +39,26 @@ In addition, you can create custom scalars.
 To create a custom implementation for the `Date` scalar, simply create a new class.
 
 ```typescript
-import { Scalar, CustomScalar } from '@nestjs/graphql';
-import { Kind, ValueNode } from 'graphql';
+import { Scalar, CustomScalar } from '@nestjs/graphql'
+import { Kind, ValueNode } from 'graphql'
 
 @Scalar('Date', () => Date)
 export class DateScalar implements CustomScalar<number, Date> {
-  description = 'Date custom scalar type';
+  description = 'Date custom scalar type'
 
   parseValue(value: number): Date {
-    return new Date(value); // value from the client
+    return new Date(value) // value from the client
   }
 
   serialize(value: Date): number {
-    return value.getTime(); // value sent to the client
+    return value.getTime() // value sent to the client
   }
 
   parseLiteral(ast: ValueNode): Date {
     if (ast.kind === Kind.INT) {
-      return new Date(ast.value);
+      return new Date(ast.value)
     }
-    return null;
+    return null
   }
 }
 ```
@@ -92,7 +92,7 @@ $ npm i --save graphql-type-json
 Once the package is installed, we pass a custom resolver to the `forRoot()` method:
 
 ```typescript
-import GraphQLJSON from 'graphql-type-json';
+import GraphQLJSON from 'graphql-type-json'
 
 @Module({
   imports: [
@@ -118,13 +118,13 @@ For a suite of useful scalars, take a look at the [graphql-scalars](https://www.
 To define a custom scalar, create a new `GraphQLScalarType` instance. We'll create a custom `UUID` scalar.
 
 ```typescript
-const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function validate(uuid: unknown): string | never {
   if (typeof uuid !== 'string' || !regex.test(uuid)) {
-    throw new Error('invalid uuid');
+    throw new Error('invalid uuid')
   }
-  return uuid;
+  return uuid
 }
 
 export const CustomUuidScalar = new GraphQLScalarType({
@@ -133,7 +133,7 @@ export const CustomUuidScalar = new GraphQLScalarType({
   serialize: (value) => validate(value),
   parseValue: (value) => validate(value),
   parseLiteral: (ast) => validate(ast.value),
-});
+})
 ```
 
 We pass a custom resolver to the `forRoot()` method:
@@ -169,7 +169,7 @@ $ npm i --save graphql-type-json
 Once the package is installed, we pass a custom resolver to the `forRoot()` method:
 
 ```typescript
-import GraphQLJSON from 'graphql-type-json';
+import GraphQLJSON from 'graphql-type-json'
 
 @Module({
   imports: [
@@ -195,26 +195,26 @@ type Foo {
 Another method to define a scalar type is to create a simple class. Assume we want to enhance our schema with the `Date` type.
 
 ```typescript
-import { Scalar, CustomScalar } from '@nestjs/graphql';
-import { Kind, ValueNode } from 'graphql';
+import { Scalar, CustomScalar } from '@nestjs/graphql'
+import { Kind, ValueNode } from 'graphql'
 
 @Scalar('Date')
 export class DateScalar implements CustomScalar<number, Date> {
-  description = 'Date custom scalar type';
+  description = 'Date custom scalar type'
 
   parseValue(value: number): Date {
-    return new Date(value); // value from the client
+    return new Date(value) // value from the client
   }
 
   serialize(value: Date): number {
-    return value.getTime(); // value sent to the client
+    return value.getTime() // value sent to the client
   }
 
   parseLiteral(ast: ValueNode): Date {
     if (ast.kind === Kind.INT) {
-      return new Date(ast.value);
+      return new Date(ast.value)
     }
-    return null;
+    return null
   }
 }
 ```
@@ -238,10 +238,10 @@ By default, the generated TypeScript definition for all scalars is `any` - which
 But, you can configure how Nest generates typings for your custom scalars when you specify how to generate types:
 
 ```typescript
-import { GraphQLDefinitionsFactory } from '@nestjs/graphql';
-import { join } from 'path';
+import { GraphQLDefinitionsFactory } from '@nestjs/graphql'
+import { join } from 'path'
 
-const definitionsFactory = new GraphQLDefinitionsFactory();
+const definitionsFactory = new GraphQLDefinitionsFactory()
 
 definitionsFactory.generate({
   typePaths: ['./src/**/*.graphql'],
@@ -253,7 +253,7 @@ definitionsFactory.generate({
     BigNumber: '_BigNumber',
   },
   additionalHeader: "import _BigNumber from 'bignumber.js'",
-});
+})
 ```
 
 > info **Hint** Alternatively, you can use a type reference instead, for example: `DateTime: Date`. In this case, `GraphQLDefinitionsFactory` will extract the name property of the specified type (`Date.name`) to generate TS definitions. Note: adding an import statement for non-built-in types (custom types) is required.
@@ -269,11 +269,11 @@ scalar Payload
 We will now see the following generated TypeScript definitions in `src/graphql.ts`:
 
 ```typescript
-import _BigNumber from 'bignumber.js';
+import _BigNumber from 'bignumber.js'
 
-export type DateTime = Date;
-export type BigNumber = _BigNumber;
-export type Payload = unknown;
+export type DateTime = Date
+export type BigNumber = _BigNumber
+export type Payload = unknown
 ```
 
 Here, we've used the `customScalarTypeMapping` property to supply a map of the types we wish to declare for our custom scalars. We've

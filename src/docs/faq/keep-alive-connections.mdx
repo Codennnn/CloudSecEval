@@ -11,15 +11,15 @@ For these scenarios where you always want your application to exit without waiti
 In your `main.ts` file, enable the option when creating your NestJS application:
 
 ```typescript
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     forceCloseConnections: true,
-  });
-  await app.listen(process.env.PORT ?? 3000);
+  })
+  await app.listen(process.env.PORT ?? 3000)
 }
 
-bootstrap();
+bootstrap()
 ```

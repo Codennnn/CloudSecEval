@@ -23,10 +23,10 @@ The `sse` method returns an `Observable` that emits multiple `MessageEvent` (in 
 
 ```typescript
 export interface MessageEvent {
-  data: string | object;
-  id?: string;
-  type?: string;
-  retry?: number;
+  data: string | object
+  id?: string
+  type?: string
+  retry?: number
 }
 ```
 
@@ -37,10 +37,10 @@ With this in place, we can now create an instance of the `EventSource` class in 
 Once the connection is opened, incoming messages from the server are delivered to your code in the form of events. If there is an event field in the incoming message, the triggered event is the same as the event field value. If no event field is present, then a generic `message` event is fired ([source](https://developer.mozilla.org/en-US/docs/Web/API/EventSource)).
 
 ```javascript
-const eventSource = new EventSource('/sse');
+const eventSource = new EventSource('/sse')
 eventSource.onmessage = ({ data }) => {
-  console.log('New message', JSON.parse(data));
-};
+  console.log('New message', JSON.parse(data))
+}
 ```
 
 #### Example

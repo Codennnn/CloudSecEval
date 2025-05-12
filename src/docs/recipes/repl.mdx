@@ -81,7 +81,9 @@ AppModule:
 
 Quick demo:
 
-<figure><img src="/assets/repl.gif" alt="REPL example" /></figure>
+<figure>
+  <img src="/assets/repl.gif" alt="REPL example" />
+</figure>
 
 You can find more information about the existing, predefined native methods in the section below.
 
@@ -121,12 +123,12 @@ Fortunately, there is a very simple solution. Modify your `bootstrap` function l
 
 ```typescript
 async function bootstrap() {
-  const replServer = await repl(AppModule);
-  replServer.setupHistory(".nestjs_repl_history", (err) => {
+  const replServer = await repl(AppModule)
+  replServer.setupHistory('.nestjs_repl_history', (err) => {
     if (err) {
-      console.error(err);
+      console.error(err)
     }
-  });
+  })
 }
 ```
 

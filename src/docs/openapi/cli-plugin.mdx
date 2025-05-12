@@ -27,16 +27,16 @@ you had to duplicate a lot of code to let the package know how your models/compo
 ```typescript
 export class CreateUserDto {
   @ApiProperty()
-  email: string;
+  email: string
 
   @ApiProperty()
-  password: string;
+  password: string
 
   @ApiProperty({ enum: RoleEnum, default: [], isArray: true })
-  roles: RoleEnum[] = [];
+  roles: RoleEnum[] = []
 
   @ApiProperty({ required: false, default: true })
-  isEnabled?: boolean = true;
+  isEnabled?: boolean = true
 }
 ```
 
@@ -46,10 +46,10 @@ By [enabling the Swagger plugin](/openapi/cli-plugin#using-the-cli-plugin), the 
 
 ```typescript
 export class CreateUserDto {
-  email: string;
-  password: string;
-  roles: RoleEnum[] = [];
-  isEnabled?: boolean = true;
+  email: string
+  password: string
+  roles: RoleEnum[] = []
+  isEnabled?: boolean = true
 }
 ```
 
@@ -166,14 +166,14 @@ The `options` property has to fulfill the following interface:
 
 ```typescript
 export interface PluginOptions {
-  dtoFileNameSuffix?: string[];
-  controllerFileNameSuffix?: string[];
-  classValidatorShim?: boolean;
-  dtoKeyOfComment?: string;
-  controllerKeyOfComment?: string;
-  introspectComments?: boolean;
-  skipAutoHttpCode?: boolean;
-  esmCompatible?: boolean;
+  dtoFileNameSuffix?: string[]
+  controllerFileNameSuffix?: string[]
+  classValidatorShim?: boolean
+  dtoKeyOfComment?: string
+  controllerKeyOfComment?: string
+  introspectComments?: boolean
+  skipAutoHttpCode?: boolean
+  esmCompatible?: boolean
 }
 ```
 
@@ -184,44 +184,91 @@ export interface PluginOptions {
     <th>Description</th>
   </tr>
   <tr>
-    <td><code>dtoFileNameSuffix</code></td>
-    <td><code>['.dto.ts', '.entity.ts']</code></td>
+    <td>
+      <code>dtoFileNameSuffix</code>
+    </td>
+    <td>
+      <code>['.dto.ts', '.entity.ts']</code>
+    </td>
     <td>DTO (Data Transfer Object) files suffix</td>
   </tr>
   <tr>
-    <td><code>controllerFileNameSuffix</code></td>
-    <td><code>.controller.ts</code></td>
+    <td>
+      <code>controllerFileNameSuffix</code>
+    </td>
+    <td>
+      <code>.controller.ts</code>
+    </td>
     <td>Controller files suffix</td>
   </tr>
   <tr>
-    <td><code>classValidatorShim</code></td>
-    <td><code>true</code></td>
-    <td>If set to true, the module will reuse <code>class-validator</code> validation decorators (e.g. <code>@Max(10)</code> will add <code>max: 10</code> to schema definition) </td>
+    <td>
+      <code>classValidatorShim</code>
+    </td>
+    <td>
+      <code>true</code>
+    </td>
+    <td>
+      If set to true, the module will reuse <code>class-validator</code> validation decorators (e.g.{' '}
+      <code>@Max(10)</code> will add <code>max: 10</code> to schema definition){' '}
+    </td>
   </tr>
   <tr>
-    <td><code>dtoKeyOfComment</code></td>
-    <td><code>'description'</code></td>
-    <td>The property key to set the comment text to on <code>ApiProperty</code>.</td>
+    <td>
+      <code>dtoKeyOfComment</code>
+    </td>
+    <td>
+      <code>'description'</code>
+    </td>
+    <td>
+      The property key to set the comment text to on <code>ApiProperty</code>.
+    </td>
   </tr>
   <tr>
-    <td><code>controllerKeyOfComment</code></td>
-    <td><code>'summary'</code></td>
-    <td>The property key to set the comment text to on <code>ApiOperation</code>.</td>
+    <td>
+      <code>controllerKeyOfComment</code>
+    </td>
+    <td>
+      <code>'summary'</code>
+    </td>
+    <td>
+      The property key to set the comment text to on <code>ApiOperation</code>.
+    </td>
   </tr>
   <tr>
-    <td><code>introspectComments</code></td>
-    <td><code>false</code></td>
-    <td>If set to true, plugin will generate descriptions and example values for properties based on comments</td>
+    <td>
+      <code>introspectComments</code>
+    </td>
+    <td>
+      <code>false</code>
+    </td>
+    <td>
+      If set to true, plugin will generate descriptions and example values for properties based on
+      comments
+    </td>
   </tr>
   <tr>
-    <td><code>skipAutoHttpCode</code></td>
-    <td><code>false</code></td>
-    <td>Disables the automatic addition of <code>@HttpCode()</code> in controllers</td>
+    <td>
+      <code>skipAutoHttpCode</code>
+    </td>
+    <td>
+      <code>false</code>
+    </td>
+    <td>
+      Disables the automatic addition of <code>@HttpCode()</code> in controllers
+    </td>
   </tr>
   <tr>
-    <td><code>esmCompatible</code></td>
-    <td><code>false</code></td>
-    <td>If set to true, resolves syntax errors encountered when using ESM (<code>&#123; "type": "module" &#125;</code>).</td>
+    <td>
+      <code>esmCompatible</code>
+    </td>
+    <td>
+      <code>false</code>
+    </td>
+    <td>
+      If set to true, resolves syntax errors encountered when using ESM (
+      <code>&#123; "type": "module" &#125;</code>).
+    </td>
   </tr>
 </table>
 
@@ -252,10 +299,10 @@ $ npx ts-node src/generate-metadata.ts
 Now, the serialized metadata file must be loaded by the `SwaggerModule#loadPluginMetadata` method, as shown below:
 
 ```typescript
-import metadata from './metadata'; // <-- file auto-generated by the "PluginMetadataGenerator"
+import metadata from './metadata' // <-- file auto-generated by the "PluginMetadataGenerator"
 
-await SwaggerModule.loadPluginMetadata(metadata); // <-- here
-const document = SwaggerModule.createDocument(app, config);
+await SwaggerModule.loadPluginMetadata(metadata) // <-- here
+const document = SwaggerModule.createDocument(app, config)
 ```
 
 #### Integration with `ts-jest` (e2e tests)
@@ -265,20 +312,20 @@ To run e2e tests, `ts-jest` compiles your source code files on the fly, in memor
 To enable the plugin, create the following file in your e2e tests directory:
 
 ```javascript
-const transformer = require('@nestjs/swagger/plugin');
+const transformer = require('@nestjs/swagger/plugin')
 
-module.exports.name = 'nestjs-swagger-transformer';
+module.exports.name = 'nestjs-swagger-transformer'
 // you should change the version number anytime you change the configuration below - otherwise, jest will not detect changes
-module.exports.version = 1;
+module.exports.version = 1
 
 module.exports.factory = (cs) => {
   return transformer.before(
     {
       // @nestjs/swagger/plugin options (can be empty)
     },
-    cs.program, // "cs.tsCompiler.program" for older versions of Jest (<= v27)
-  );
-};
+    cs.program // "cs.tsCompiler.program" for older versions of Jest (<= v27)
+  )
+}
 ```
 
 With this in place, import AST transformer within your `jest` configuration file. By default (in the starter application), e2e tests configuration file is located under the `test` folder and is named `jest-e2e.json`.

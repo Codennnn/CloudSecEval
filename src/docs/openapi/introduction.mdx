@@ -56,7 +56,9 @@ $ npm run start
 
 While the application is running, open your browser and navigate to `http://localhost:3000/api`. You should see the Swagger UI.
 
-<figure><img src="/assets/swagger1.png" /></figure>
+<figure>
+  <img src="/assets/swagger1.png" />
+</figure>
 
 As you can see, the `SwaggerModule` automatically reflects all of your endpoints.
 
@@ -66,7 +68,7 @@ As you can see, the `SwaggerModule` automatically reflects all of your endpoints
 > ```typescript
 > SwaggerModule.setup('swagger', app, documentFactory, {
 >   jsonDocumentUrl: 'swagger/json',
-> });
+> })
 > ```
 >
 > Which would expose it at `http://localhost:3000/swagger/json`
@@ -83,12 +85,12 @@ As you can see, the `SwaggerModule` automatically reflects all of your endpoints
 >       scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
 >     },
 >   },
-> });
+> })
 >
 > // If you are not going to use CSP at all, you can use this:
 > app.register(helmet, {
 >   contentSecurityPolicy: false,
-> });
+> })
 > ```
 
 #### Document options
@@ -286,19 +288,20 @@ export interface SwaggerCustomOptions {
   urls?: Record<'url' | 'name', string>[];
 }
 ```
-> info **Hint** `ui` and `raw` are independent options. Disabling Swagger UI (`ui: false`) does not disable API definitions (JSON/YAML).  Conversely, disabling API definitions (`raw: []`) does not disable the Swagger UI.  
+
+> info **Hint** `ui` and `raw` are independent options. Disabling Swagger UI (`ui: false`) does not disable API definitions (JSON/YAML). Conversely, disabling API definitions (`raw: []`) does not disable the Swagger UI.
 >
 > For example, the following configuration will disable the Swagger UI but still allow access to API definitions:
+>
 > ```typescript
->const options: SwaggerCustomOptions = {
->    ui: false, // Swagger UI is disabled
->    raw: ['json'], // JSON API definition is still accessible (YAML is disabled)
->};
->SwaggerModule.setup('api', app, options);
+> const options: SwaggerCustomOptions = {
+>   ui: false, // Swagger UI is disabled
+>   raw: ['json'], // JSON API definition is still accessible (YAML is disabled)
+> }
+> SwaggerModule.setup('api', app, options)
 > ```
 >
 > In this case, http://localhost:3000/api-json will still be accessible, but http://localhost:3000/api (Swagger UI) will not.
-
 
 #### Example
 

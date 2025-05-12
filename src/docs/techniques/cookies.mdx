@@ -14,9 +14,9 @@ $ npm i -D @types/cookie-parser
 Once the installation is complete, apply the `cookie-parser` middleware as global middleware (for example, in your `main.ts` file).
 
 ```typescript
-import * as cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser'
 // somewhere in your initialization file
-app.use(cookieParser());
+app.use(cookieParser())
 ```
 
 You can pass several options to the `cookieParser` middleware:
@@ -64,13 +64,13 @@ $ npm i @fastify/cookie
 Once the installation is complete, register the `@fastify/cookie` plugin:
 
 ```typescript
-import fastifyCookie from '@fastify/cookie';
+import fastifyCookie from '@fastify/cookie'
 
 // somewhere in your initialization file
-const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
 await app.register(fastifyCookie, {
   secret: 'my-secret', // for cookies signature
-});
+})
 ```
 
 With this in place, you can now read cookies from within the route handlers, as follows:
@@ -104,12 +104,12 @@ To read more about `FastifyReply#setCookie()` method, check out this [page](http
 To provide a convenient, declarative way of accessing incoming cookies, we can create a [custom decorator](/custom-decorators).
 
 ```typescript
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 
 export const Cookies = createParamDecorator((data: string, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest();
-  return data ? request.cookies?.[data] : request.cookies;
-});
+  const request = ctx.switchToHttp().getRequest()
+  return data ? request.cookies?.[data] : request.cookies
+})
 ```
 
 The `@Cookies()` decorator will extract all cookies, or a named cookie from the `req.cookies` object and populate the decorated parameter with that value.

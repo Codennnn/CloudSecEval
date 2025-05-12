@@ -147,9 +147,9 @@ The `Test` class is useful for providing an application execution context that e
 const moduleRef = await Test.createTestingModule({
   controllers: [CatsController],
   providers: [CatsService],
-}).compile();
+}).compile()
 
-catsService = await moduleRef.resolve(CatsService);
+catsService = await moduleRef.resolve(CatsService)
 ```
 
 > warning **Warning** The `resolve()` method returns a unique instance of the provider, from its own **DI container sub-tree**. Each sub-tree has a unique context identifier. Thus, if you call this method more than once and compare instance references, you will see that they are not equal.
@@ -166,35 +166,33 @@ Nest also allows you to define a mock factory to apply to all of your missing de
 
 ```typescript
 // ...
-import { ModuleMocker, MockFunctionMetadata } from 'jest-mock';
+import { ModuleMocker, MockFunctionMetadata } from 'jest-mock'
 
-const moduleMocker = new ModuleMocker(global);
+const moduleMocker = new ModuleMocker(global)
 
 describe('CatsController', () => {
-  let controller: CatsController;
+  let controller: CatsController
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [CatsController],
     })
       .useMocker((token) => {
-        const results = ['test1', 'test2'];
+        const results = ['test1', 'test2']
         if (token === CatsService) {
-          return { findAll: jest.fn().mockResolvedValue(results) };
+          return { findAll: jest.fn().mockResolvedValue(results) }
         }
         if (typeof token === 'function') {
-          const mockMetadata = moduleMocker.getMetadata(
-            token,
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
-          return new Mock();
+          const mockMetadata = moduleMocker.getMetadata(token) as MockFunctionMetadata<any, any>
+          const Mock = moduleMocker.generateFromMetadata(mockMetadata)
+          return new Mock()
         }
       })
-      .compile();
+      .compile()
 
-    controller = moduleRef.get(CatsController);
-  });
-});
+    controller = moduleRef.get(CatsController)
+  })
+})
 ```
 
 You can also retrieve these mocks out of the testing container as you normally would custom providers, `moduleRef.get(CatsService)`.
@@ -285,16 +283,14 @@ describe('Cats', () => {
 > info **Hint** If you're using [Fastify](/techniques/performance) as your HTTP adapter, it requires a slightly different configuration, and has built-in testing capabilities:
 >
 > ```ts
-> let app: NestFastifyApplication;
+> let app: NestFastifyApplication
 >
 > beforeAll(async () => {
->   app = moduleRef.createNestApplication<NestFastifyApplication>(
->     new FastifyAdapter(),
->   );
+>   app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
 >
->   await app.init();
->   await app.getHttpAdapter().getInstance().ready();
-> });
+>   await app.init()
+>   await app.getHttpAdapter().getInstance().ready()
+> })
 >
 > it(`/GET cats`, () => {
 >   return app
@@ -303,14 +299,14 @@ describe('Cats', () => {
 >       url: '/cats',
 >     })
 >     .then((result) => {
->       expect(result.statusCode).toEqual(200);
->       expect(result.payload).toEqual(/* expectedPayload */);
->     });
-> });
+>       expect(result.statusCode).toEqual(200)
+>       expect(result.payload).toEqual(/* expectedPayload */)
+>     })
+> })
 >
 > afterAll(async () => {
->   await app.close();
-> });
+>   await app.close()
+> })
 > ```
 
 In this example, we build on some of the concepts described earlier. In addition to the `compile()` method we used earlier, we now use the `createNestApplication()` method to instantiate a full Nest runtime environment.
@@ -339,7 +335,7 @@ const moduleRef = await Test.createTestingModule({
 })
   .overrideModule(CatsModule)
   .useModule(AlternateCatsModule)
-  .compile();
+  .compile()
 ```
 
 Each of the override method types, in turn, returns the `TestingModule` instance, and can thus be chained with other methods in the [fluent style](https://en.wikipedia.org/wiki/Fluent_interface). You should use `compile()` at the end of such a chain to cause Nest to instantiate and initialize the module.
@@ -354,8 +350,9 @@ The compiled module has several useful methods, as described in the following ta
       <code>createNestApplication()</code>
     </td>
     <td>
-      Creates and returns a Nest application (<code>INestApplication</code> instance) based on the given module.
-      Note that you must manually initialize the application using the <code>init()</code> method.
+      Creates and returns a Nest application (<code>INestApplication</code> instance) based on the
+      given module. Note that you must manually initialize the application using the{' '}
+      <code>init()</code> method.
     </td>
   </tr>
   <tr>
@@ -363,7 +360,8 @@ The compiled module has several useful methods, as described in the following ta
       <code>createNestMicroservice()</code>
     </td>
     <td>
-      Creates and returns a Nest microservice (<code>INestMicroservice</code> instance) based on the given module.
+      Creates and returns a Nest microservice (<code>INestMicroservice</code> instance) based on the
+      given module.
     </td>
   </tr>
   <tr>
@@ -371,15 +369,19 @@ The compiled module has several useful methods, as described in the following ta
       <code>get()</code>
     </td>
     <td>
-      Retrieves a static instance of a controller or provider (including guards, filters, etc.) available in the application context. Inherited from the <a href="/fundamentals/module-ref">module reference</a> class.
+      Retrieves a static instance of a controller or provider (including guards, filters, etc.)
+      available in the application context. Inherited from the{' '}
+      <a href="/fundamentals/module-ref">module reference</a> class.
     </td>
   </tr>
   <tr>
-     <td>
+    <td>
       <code>resolve()</code>
     </td>
     <td>
-      Retrieves a dynamically created scoped instance (request or transient) of a controller or provider (including guards, filters, etc.) available in the application context. Inherited from the <a href="/fundamentals/module-ref">module reference</a> class.
+      Retrieves a dynamically created scoped instance (request or transient) of a controller or
+      provider (including guards, filters, etc.) available in the application context. Inherited
+      from the <a href="/fundamentals/module-ref">module reference</a> class.
     </td>
   </tr>
   <tr>
@@ -387,7 +389,9 @@ The compiled module has several useful methods, as described in the following ta
       <code>select()</code>
     </td>
     <td>
-      Navigates through the module's dependency graph; can be used to retrieve a specific instance from the selected module (used along with strict mode (<code>strict: true</code>) in <code>get()</code> method).
+      Navigates through the module's dependency graph; can be used to retrieve a specific instance
+      from the selected module (used along with strict mode (<code>strict: true</code>) in{' '}
+      <code>get()</code> method).
     </td>
   </tr>
 </table>
@@ -430,7 +434,7 @@ const moduleRef = await Test.createTestingModule({
 })
   .overrideProvider(JwtAuthGuard)
   .useClass(MockAuthGuard)
-  .compile();
+  .compile()
 ```
 
 Now all your tests will use the `MockAuthGuard` on every request.
@@ -446,14 +450,12 @@ The strategy is to generate a context identifier beforehand and force Nest to us
 To accomplish this, use `jest.spyOn()` on the `ContextIdFactory`:
 
 ```typescript
-const contextId = ContextIdFactory.create();
-jest
-  .spyOn(ContextIdFactory, 'getByRequest')
-  .mockImplementation(() => contextId);
+const contextId = ContextIdFactory.create()
+jest.spyOn(ContextIdFactory, 'getByRequest').mockImplementation(() => contextId)
 ```
 
 Now we can use the `contextId` to access a single generated DI container sub-tree for any subsequent request.
 
 ```typescript
-catsService = await moduleRef.resolve(CatsService, contextId);
+catsService = await moduleRef.resolve(CatsService, contextId)
 ```

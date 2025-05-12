@@ -83,8 +83,8 @@ export class AppModule {}
 If you're using a global catch-all exception filter (which is either a filter registered with `app.useGlobalFilters()` or a filter registered in your app module providers annotated with a `@Catch()` decorator without arguments), add a `@SentryExceptionCaptured()` decorator to the filter's `catch()` method. This decorator will report all unexpected errors that are received by your global error filter to Sentry:
 
 ```typescript
-import { Catch, ExceptionFilter } from '@nestjs/common';
-import { SentryExceptionCaptured } from '@sentry/nestjs';
+import { Catch, ExceptionFilter } from '@nestjs/common'
+import { SentryExceptionCaptured } from '@sentry/nestjs'
 
 @Catch()
 export class YourCatchAllExceptionFilter implements ExceptionFilter {

@@ -793,27 +793,23 @@ We've now completed our JWT authentication implementation. JavaScript clients (s
 In most cases, using a provided `AuthGuard` class is sufficient. However, there might be use-cases when you would like to simply extend the default error handling or authentication logic. For this, you can extend the built-in class and override methods within a sub-class.
 
 ```typescript
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   canActivate(context: ExecutionContext) {
     // Add your custom authentication logic here
     // for example, call super.logIn(request) to establish a session.
-    return super.canActivate(context);
+    return super.canActivate(context)
   }
 
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      throw err || new UnauthorizedException()
     }
-    return user;
+    return user
   }
 }
 ```
@@ -844,10 +840,10 @@ With this in place, Nest will automatically bind `JwtAuthGuard` to all endpoints
 Now we must provide a mechanism for declaring routes as public. For this, we can create a custom decorator using the `SetMetadata` decorator factory function.
 
 ```typescript
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from '@nestjs/common'
 
-export const IS_PUBLIC_KEY = 'isPublic';
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+export const IS_PUBLIC_KEY = 'isPublic'
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
 ```
 
 In the file above, we exported two constants. One being our metadata key named `IS_PUBLIC_KEY`, and the other being our new decorator itself that we’re going to call `Public` (you can alternatively name it `SkipAuth` or `AllowAnon`, whatever fits your project).
@@ -868,18 +864,18 @@ Lastly, we need the `JwtAuthGuard` to return `true` when the `"isPublic"` metada
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
-    super();
+    super()
   }
 
   canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]);
+    ])
     if (isPublic) {
-      return true;
+      return true
     }
-    return super.canActivate(context);
+    return super.canActivate(context)
   }
 }
 ```
@@ -928,7 +924,7 @@ In the example above, the `resolve()` method will asynchronously return the requ
 Any standard Passport customization options can be passed the same way, using the `register()` method. The available options depend on the strategy being implemented. For example:
 
 ```typescript
-PassportModule.register({ session: true });
+PassportModule.register({ session: true })
 ```
 
 You can also pass strategies an options object in their constructors to configure them.
@@ -963,8 +959,8 @@ In order to use an AuthGuard with [GraphQL](https://docs.nestjs.com/graphql/quic
 @Injectable()
 export class GqlAuthGuard extends AuthGuard('jwt') {
   getRequest(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
+    const ctx = GqlExecutionContext.create(context)
+    return ctx.getContext().req
   }
 }
 ```
@@ -972,15 +968,13 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 To get the current authenticated user in your graphql resolver, you can define a `@CurrentUser()` decorator:
 
 ```typescript
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common'
+import { GqlExecutionContext } from '@nestjs/graphql'
 
-export const CurrentUser = createParamDecorator(
-  (data: unknown, context: ExecutionContext) => {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req.user;
-  },
-);
+export const CurrentUser = createParamDecorator((data: unknown, context: ExecutionContext) => {
+  const ctx = GqlExecutionContext.create(context)
+  return ctx.getContext().req.user
+})
 ```
 
 To use above decorator in your resolver, be sure to include it as a parameter of your query or mutation:
@@ -999,12 +993,12 @@ For the passport-local strategy, you'll also need to add the GraphQL context's a
 @Injectable()
 export class GqlLocalAuthGuard extends AuthGuard('local') {
   getRequest(context: ExecutionContext) {
-    const gqlExecutionContext = GqlExecutionContext.create(context);
-    const gqlContext = gqlExecutionContext.getContext();
-    const gqlArgs = gqlExecutionContext.getArgs();
+    const gqlExecutionContext = GqlExecutionContext.create(context)
+    const gqlContext = gqlExecutionContext.getContext()
+    const gqlArgs = gqlExecutionContext.getArgs()
 
-    gqlContext.req.body = { ...gqlContext.req.body, ...gqlArgs };
-    return gqlContext.req;
+    gqlContext.req.body = { ...gqlContext.req.body, ...gqlArgs }
+    return gqlContext.req
   }
 }
 ```

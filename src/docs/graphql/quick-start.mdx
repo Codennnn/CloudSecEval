@@ -176,15 +176,15 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 The above approach dynamically generates TypeScript definitions each time the application starts. Alternatively, it may be preferable to build a simple script to generate these on demand. For example, assume we create the following script as `generate-typings.ts`:
 
 ```typescript
-import { GraphQLDefinitionsFactory } from '@nestjs/graphql';
-import { join } from 'path';
+import { GraphQLDefinitionsFactory } from '@nestjs/graphql'
+import { join } from 'path'
 
-const definitionsFactory = new GraphQLDefinitionsFactory();
+const definitionsFactory = new GraphQLDefinitionsFactory()
 definitionsFactory.generate({
   typePaths: ['./src/**/*.graphql'],
   path: join(process.cwd(), 'src/graphql.ts'),
   outputAs: 'class',
-});
+})
 ```
 
 Now you can run this script on demand:
@@ -203,7 +203,7 @@ definitionsFactory.generate({
   path: join(process.cwd(), 'src/graphql.ts'),
   outputAs: 'class',
   watch: true,
-});
+})
 ```
 
 To automatically generate the additional `__typename` field for every object type, enable the `emitTypenameField` option:
@@ -212,7 +212,7 @@ To automatically generate the additional `__typename` field for every object typ
 definitionsFactory.generate({
   // ...
   emitTypenameField: true,
-});
+})
 ```
 
 To generate resolvers (queries, mutations, subscriptions) as plain fields without arguments, enable the `skipResolverArgs` option:
@@ -221,7 +221,7 @@ To generate resolvers (queries, mutations, subscriptions) as plain fields withou
 definitionsFactory.generate({
   // ...
   skipResolverArgs: true,
-});
+})
 ```
 
 To generate enums as TypeScript union types instead of regular TypeScript enums, set the `enumsAsTypes` option to `true`:
@@ -230,7 +230,7 @@ To generate enums as TypeScript union types instead of regular TypeScript enums,
 definitionsFactory.generate({
   // ...
   enumsAsTypes: true,
-});
+})
 ```
 
 #### Apollo Sandbox
@@ -238,10 +238,10 @@ definitionsFactory.generate({
 To use [Apollo Sandbox](https://www.apollographql.com/blog/announcement/platform/apollo-sandbox-an-open-graphql-ide-for-local-development/) instead of the `graphql-playground` as a GraphQL IDE for local development, use the following configuration:
 
 ```typescript
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 
 @Module({
   imports: [
@@ -266,7 +266,7 @@ In some circumstances (for example end-to-end tests), you may want to get a refe
 You can access the generated schema (in either the code first or schema first approach), using the `GraphQLSchemaHost` class:
 
 ```typescript
-const { schema } = app.get(GraphQLSchemaHost);
+const { schema } = app.get(GraphQLSchemaHost)
 ```
 
 > info **Hint** You must call the `GraphQLSchemaHost#schema` getter after the application has been initialized (after the `onModuleInit` hook has been triggered by either the `app.listen()` or `app.init()` method).
@@ -316,7 +316,7 @@ class GqlConfigService implements GqlOptionsFactory {
   createGqlOptions(): ApolloDriverConfig {
     return {
       typePaths: ['./**/*.graphql'],
-    };
+    }
   }
 }
 ```

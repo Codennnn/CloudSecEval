@@ -251,24 +251,24 @@ It's essential to verify that your DI container is properly configured to preven
 To confirm that the IoC container is set up correctly, let's create an integration test that loads the actual module configuration and verifies that all providers are registered and injected properly.
 
 ```typescript
-import { Test, TestingModule } from '@nestjs/testing';
-import { CatsModule } from './cats.module';
-import { CatsService } from './cats.service';
+import { Test, TestingModule } from '@nestjs/testing'
+import { CatsModule } from './cats.module'
+import { CatsService } from './cats.service'
 
 describe('Cats Module Integration Test', () => {
-  let moduleRef: TestingModule;
+  let moduleRef: TestingModule
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       imports: [CatsModule],
-    }).compile();
-  });
+    }).compile()
+  })
 
   it('should resolve exported providers from the ioc container', () => {
-    const catsService = moduleRef.get(CatsService);
-    expect(catsService).toBeDefined();
-  });
-});
+    const catsService = moduleRef.get(CatsService)
+    expect(catsService).toBeDefined()
+  })
+})
 ```
 
 #### Comparison Between Solitary, Sociable, Integration, and E2E Testing

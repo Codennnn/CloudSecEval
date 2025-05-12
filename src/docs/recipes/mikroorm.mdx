@@ -18,7 +18,7 @@ MikroORM also supports `postgres`, `sqlite`, and `mongo`. See the [official docs
 Once the installation process is completed, we can import the `MikroOrmModule` into the root `AppModule`.
 
 ```typescript
-import { SqliteDriver } from '@mikro-orm/sqlite';
+import { SqliteDriver } from '@mikro-orm/sqlite'
 
 @Module({
   imports: [
@@ -67,13 +67,13 @@ Afterward, the `EntityManager` will be available to inject across the entire pro
 
 ```ts
 // Import everything from your driver package or `@mikro-orm/knex`
-import { EntityManager, MikroORM } from '@mikro-orm/sqlite';
+import { EntityManager, MikroORM } from '@mikro-orm/sqlite'
 
 @Injectable()
 export class MyService {
   constructor(
     private readonly orm: MikroORM,
-    private readonly em: EntityManager,
+    private readonly em: EntityManager
   ) {}
 }
 ```
@@ -114,7 +114,7 @@ In this way we can inject the `PhotoRepository` to the `PhotoService` using the 
 export class PhotoService {
   constructor(
     @InjectRepository(Photo)
-    private readonly photoRepository: EntityRepository<Photo>,
+    private readonly photoRepository: EntityRepository<Photo>
   ) {}
 }
 ```
@@ -129,7 +129,7 @@ decorator, as Nest DI resolved based on the class references.
 @Entity({ repository: () => AuthorRepository })
 export class Author {
   // to allow inference in `em.getRepository()`
-  [EntityRepositoryType]?: AuthorRepository;
+  [EntityRepositoryType]?: AuthorRepository
 }
 
 // `**./author.repository.ts**`
@@ -195,16 +195,16 @@ Luckily, MikroORM provides a [serialization API](https://mikro-orm.io/docs/seria
 @Entity()
 export class Book {
   @Property({ hidden: true }) // Equivalent of class-transformer's `@Exclude`
-  hiddenField = Date.now();
+  hiddenField = Date.now()
 
   @Property({ persist: false }) // Similar to class-transformer's `@Expose()`. Will only exist in memory, and will be serialized.
-  count?: number;
+  count?: number
 
   @ManyToOne({
     serializer: (value) => value.name,
     serializedName: 'authorName',
   }) // Equivalent of class-transformer's `@Transform()`
-  author: Author;
+  author: Author
 }
 ```
 
