@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation'
+
 import type { PageProps } from '@/types/common'
 
 // 为MDX文档内容定义类型
@@ -18,7 +20,7 @@ export default async function ProjectDetailPage({ params }: PageProps<{ docTitle
     catch (error) {
       console.error(`无法加载文档: ${docPath}`, error)
 
-      return <div>找不到请求的文档</div>
+      notFound()
     }
   }
 
