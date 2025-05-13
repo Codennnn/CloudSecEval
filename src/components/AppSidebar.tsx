@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { GalleryVerticalEnd, Minus, Plus } from 'lucide-react'
+import { GalleryVerticalEndIcon, MinusIcon, PlusIcon } from 'lucide-react'
 
 import { SearchForm } from '@/components/SearchForm'
 import {
@@ -295,7 +295,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               { }
               <Link href="#">
                 <div className="flex justify-center items-center bg-sidebar-primary rounded-lg size-8 aspect-square text-sidebar-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
+                  <GalleryVerticalEndIcon className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-medium">Documentation</span>
@@ -321,8 +321,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuButton>
                       {item.title}
                       {' '}
-                      <Plus className="group-data-[state=open]/collapsible:hidden ml-auto" />
-                      <Minus className="group-data-[state=closed]/collapsible:hidden ml-auto" />
+                      <PlusIcon className="group-data-[state=open]/collapsible:hidden ml-auto" />
+                      <MinusIcon className="group-data-[state=closed]/collapsible:hidden ml-auto" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
                   {item.items.length
