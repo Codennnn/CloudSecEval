@@ -1,14 +1,39 @@
 import type { MDXComponents } from 'mdx/types'
 
 import { CodeBlock } from '@/components/CodeBlock'
+import { isExternalLink } from '@/utils/common'
 
 interface PreProps {
   children: React.ReactElement<{ className: string, children: React.ReactElement }>
 }
 
+interface AnchorProps {
+  href: string
+  children: React.ReactElement
+}
+
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
+
+    a: (props: AnchorProps) => {
+      const { href, children } = props
+
+      if (isExternalLink(href)) {
+        return (
+          <a href={href} rel="noopener noreferrer" target="_blank">
+            {children}
+          </a>
+        )
+      }
+
+      return (
+        <a href={href}>
+          {children}
+        </a>
+      )
+    },
+
     pre: ({ children, ...props }: PreProps) => {
       const childProps = children.props
 
