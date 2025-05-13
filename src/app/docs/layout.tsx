@@ -1,4 +1,5 @@
 import { AppSidebar } from '@/components/AppSidebar'
+import { ThemeModeToggle } from '@/components/ThemeModeToggle'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,8 +20,8 @@ export default function DocsLayout(props: React.PropsWithChildren) {
     <SidebarProvider>
       <AppSidebar />
 
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+      <SidebarInset className="overflow-hidden h-full">
+        <header className="flex py-3 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
 
           <Separator
@@ -41,9 +42,13 @@ export default function DocsLayout(props: React.PropsWithChildren) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+
+          <div className="ml-auto">
+            <ThemeModeToggle />
+          </div>
         </header>
 
-        <div className="p-4">
+        <div className="p-4 flex-1 overflow-auto">
           {props.children}
         </div>
       </SidebarInset>

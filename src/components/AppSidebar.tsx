@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { GalleryVerticalEndIcon, MinusIcon, PlusIcon } from 'lucide-react'
+import { ChevronDownIcon, ChevronRightIcon, GalleryVerticalEndIcon } from 'lucide-react'
 
 import { SearchForm } from '@/components/SearchForm'
 import {
@@ -30,7 +30,7 @@ interface NavItem {
 interface NavSection {
   title: string
   url: string
-  items: NavItem[]
+  items?: NavItem[]
 }
 
 // This is sample data.
@@ -38,8 +38,7 @@ const data = {
   navMain: [
     {
       title: 'Introduction',
-      url: '/',
-      items: [],
+      url: '/introduction',
     },
     {
       title: 'Overview',
@@ -171,12 +170,10 @@ const data = {
     {
       title: 'Deployment',
       url: '/deployment',
-      items: [],
     },
     {
       title: 'Standalone apps',
       url: '/standalone-applications',
-      items: [],
     },
     {
       title: 'CLI',
@@ -257,17 +254,14 @@ const data = {
     {
       title: 'Migration guide',
       url: '/migration-guide',
-      items: [],
     },
     {
       title: 'API Reference',
       url: 'https://api-references-nestjs.netlify.app/',
-      items: [],
     },
     {
       title: 'Official courses',
       url: 'https://courses.nestjs.com/',
-      items: [],
     },
     {
       title: 'Discover',
@@ -280,7 +274,6 @@ const data = {
     {
       title: 'Support us',
       url: '/support',
-      items: [],
     },
   ],
 }
@@ -305,8 +298,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+
         <SearchForm />
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
@@ -318,37 +313,74 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                      {item.title}
-                      {' '}
-                      <PlusIcon className="group-data-[state=open]/collapsible:hidden ml-auto" />
-                      <MinusIcon className="group-data-[state=closed]/collapsible:hidden ml-auto" />
-                    </SidebarMenuButton>
+                    {item.url && item.url !== '#'
+                      ? (
+                          <SidebarMenuButton asChild>
+                            <Link href={`/docs/${item.url}`}>
+                              <span className="flex-1 truncate min-w-0">
+                                {item.title}
+                              </span>
+
+                              {
+                                item.items && item.items.length > 0
+                                  ? (
+                                      <span className="ml-auto shrink-0">
+                                        <ChevronRightIcon className="group-data-[state=open]/collapsible:hidden" size={14} />
+                                        <ChevronDownIcon className="group-data-[state=closed]/collapsible:hidden" size={14} />
+                                      </span>
+                                    )
+                                  : null
+                              }
+                            </Link>
+                          </SidebarMenuButton>
+                        )
+                      : (
+                          <SidebarMenuButton>
+                            <span className="flex-1 truncate min-w-0">
+                              {item.title}
+                            </span>
+
+                            {
+                              item.items && item.items.length > 0
+                                ? (
+                                    <span className="ml-auto shrink-0">
+                                      <ChevronRightIcon className="group-data-[state=open]/collapsible:hidden" size={14} />
+                                      <ChevronDownIcon className="group-data-[state=closed]/collapsible:hidden" size={14} />
+                                    </span>
+                                  )
+                                : null
+                            }
+                          </SidebarMenuButton>
+                        )}
                   </CollapsibleTrigger>
-                  {item.items.length
-                    ? (
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items.map((item) => (
-                              <SidebarMenuSubItem key={item.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  isActive={item.isActive}
-                                >
-                                  <Link href={`/docs/${item.url}`}>{item.title}</Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      )
-                    : null}
+
+                  {
+                    item.items && item.items.length > 0
+                      ? (
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.items.map((subItem) => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarMenuSubButton
+                                    asChild
+                                    isActive={subItem.isActive}
+                                  >
+                                    <Link href={`/docs/${subItem.url}`}>{subItem.title}</Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        )
+                      : null
+                  }
                 </SidebarMenuItem>
               </Collapsible>
             ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   )

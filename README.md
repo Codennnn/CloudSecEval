@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NestJS 中文文档站点（非官方）
 
-## Getting Started
+本项目旨在为中文开发者提供优质、专业、易读的 NestJS 技术文档。我们坚持"原生中文"表达，确保技术概念准确传达，并严格遵循官方术语对照表，致力于打造最适合本地开发者阅读习惯的 NestJS 中文资料库。
 
-First, run the development server:
+## 项目特色
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **非官方译本**，专为中文技术社区打造
+- 遵循 [NestJS 中文文档翻译指南][translation-guide]，确保术语统一、表达地道
+- 保持与官方文档结构一致，便于查阅与对照
+- 支持社区协作，欢迎参与翻译与校对
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 快速开始
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. 安装依赖：
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   npm install
+   # 或
+   yarn
+   # 或
+   pnpm install
+   ```
 
-## Learn More
+2. 启动本地开发服务器：
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm run dev
+   # 或
+   yarn dev
+   # 或
+   pnpm dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. 打开浏览器访问 [http://localhost:3000](http://localhost:3000) 查看文档站点效果。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 参与贡献
 
-## Deploy on Vercel
+- 欢迎提交 Pull Request，参与文档翻译、校对与优化。
+- 翻译请严格遵循术语表和 [翻译指南][translation-guide]，确保内容准确、风格统一。
+- 有任何建议或问题，欢迎在 Issue 区留言交流。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 版权声明
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+本项目为社区驱动的非官方 NestJS 中文文档，仅供学习与交流使用。NestJS 及其相关标识为其官方所有。
+
+[translation-guide]: ./.cursor/rules/nestjs_translation_guide.mdc
