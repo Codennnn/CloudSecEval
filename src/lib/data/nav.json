@@ -1,0 +1,336 @@
+[
+  {
+    "title": "介绍",
+    "titleEn": "Introduction",
+    "url": "/introduction"
+  },
+  {
+    "title": "概述",
+    "titleEn": "Overview",
+    "items": [
+      { "title": "第一步", "titleEn": "First steps", "url": "/first-steps" },
+      { "title": "控制器", "titleEn": "Controllers", "url": "/controllers" },
+      { "title": "提供者", "titleEn": "Providers", "url": "/providers" },
+      { "title": "模块", "titleEn": "Modules", "url": "/modules" },
+      { "title": "中间件", "titleEn": "Middleware", "url": "/middleware" },
+      { "title": "异常过滤器", "titleEn": "Exception filters", "url": "/exception-filters" },
+      { "title": "管道", "titleEn": "Pipes", "url": "/pipes" },
+      { "title": "守卫", "titleEn": "Guards", "url": "/guards" },
+      { "title": "拦截器", "titleEn": "Interceptors", "url": "/interceptors" },
+      { "title": "自定义装饰器", "titleEn": "Custom decorators", "url": "/custom-decorators" }
+    ]
+  },
+  {
+    "title": "基础原理",
+    "titleEn": "Fundamentals",
+    "items": [
+      {
+        "title": "自定义提供者",
+        "titleEn": "Custom providers",
+        "url": "/fundamentals/custom-providers"
+      },
+      {
+        "title": "异步提供者",
+        "titleEn": "Asynchronous providers",
+        "url": "/fundamentals/async-providers"
+      },
+      { "title": "动态模块", "titleEn": "Dynamic modules", "url": "/fundamentals/dynamic-modules" },
+      {
+        "title": "注入作用域",
+        "titleEn": "Injection scopes",
+        "url": "/fundamentals/injection-scopes"
+      },
+      {
+        "title": "循环依赖",
+        "titleEn": "Circular dependency",
+        "url": "/fundamentals/circular-dependency"
+      },
+      { "title": "模块引用", "titleEn": "Module reference", "url": "/fundamentals/module-ref" },
+      {
+        "title": "懒加载模块",
+        "titleEn": "Lazy-loading modules",
+        "url": "/fundamentals/lazy-loading-modules"
+      },
+      {
+        "title": "执行上下文",
+        "titleEn": "Execution context",
+        "url": "/fundamentals/execution-context"
+      },
+      {
+        "title": "生命周期事件",
+        "titleEn": "Lifecycle events",
+        "url": "/fundamentals/lifecycle-events"
+      },
+      {
+        "title": "发现服务",
+        "titleEn": "Discovery service",
+        "url": "/fundamentals/discovery-service"
+      },
+      {
+        "title": "平台无关性",
+        "titleEn": "Platform agnosticism",
+        "url": "/fundamentals/platform-agnosticism"
+      },
+      { "title": "测试", "titleEn": "Testing", "url": "/fundamentals/testing" }
+    ]
+  },
+  {
+    "title": "技术专题",
+    "titleEn": "Techniques",
+    "items": [
+      { "title": "配置", "titleEn": "Configuration", "url": "/techniques/configuration" },
+      { "title": "数据库", "titleEn": "Database", "url": "/techniques/database" },
+      { "title": "Mongo", "titleEn": "Mongo", "url": "/techniques/mongodb" },
+      { "title": "验证", "titleEn": "Validation", "url": "/techniques/validation" },
+      { "title": "缓存", "titleEn": "Caching", "url": "/techniques/caching" },
+      { "title": "序列化", "titleEn": "Serialization", "url": "/techniques/serialization" },
+      { "title": "版本控制", "titleEn": "Versioning", "url": "/techniques/versioning" },
+      { "title": "任务调度", "titleEn": "Task scheduling", "url": "/techniques/task-scheduling" },
+      { "title": "队列", "titleEn": "Queues", "url": "/techniques/queues" },
+      { "title": "日志", "titleEn": "Logging", "url": "/techniques/logger" },
+      { "title": "Cookie", "titleEn": "Cookies", "url": "/techniques/cookies" },
+      { "title": "事件", "titleEn": "Events", "url": "/techniques/events" },
+      { "title": "压缩", "titleEn": "Compression", "url": "/techniques/compression" },
+      { "title": "文件上传", "titleEn": "File upload", "url": "/techniques/file-upload" },
+      { "title": "文件流", "titleEn": "Streaming files", "url": "/techniques/streaming-files" },
+      { "title": "HTTP 模块", "titleEn": "HTTP module", "url": "/techniques/http-module" },
+      { "title": "会话", "titleEn": "Session", "url": "/techniques/session" },
+      { "title": "MVC 模式", "titleEn": "Model-View-Controller", "url": "/techniques/mvc" },
+      {
+        "title": "性能优化（Fastify）",
+        "titleEn": "Performance (Fastify)",
+        "url": "/techniques/performance"
+      },
+      {
+        "title": "服务器发送事件",
+        "titleEn": "Server-Sent Events",
+        "url": "/techniques/server-sent-events"
+      }
+    ]
+  },
+  {
+    "title": "安全",
+    "titleEn": "Security",
+    "items": [
+      { "title": "认证", "titleEn": "Authentication", "url": "/security/authentication" },
+      { "title": "授权", "titleEn": "Authorization", "url": "/security/authorization" },
+      {
+        "title": "加密与哈希",
+        "titleEn": "Encryption and Hashing",
+        "url": "/security/encryption-and-hashing"
+      },
+      { "title": "Helmet", "titleEn": "Helmet", "url": "/security/helmet" },
+      { "title": "跨域资源共享", "titleEn": "CORS", "url": "/security/cors" },
+      { "title": "CSRF 防护", "titleEn": "CSRF Protection", "url": "/security/csrf" },
+      { "title": "速率限制", "titleEn": "Rate limiting", "url": "/security/rate-limiting" }
+    ]
+  },
+  {
+    "title": "GraphQL",
+    "titleEn": "GraphQL",
+    "items": [
+      { "title": "快速入门", "titleEn": "Quick start", "url": "/graphql/quick-start" },
+      { "title": "解析器", "titleEn": "Resolvers", "url": "/graphql/resolvers" },
+      { "title": "变更", "titleEn": "Mutations", "url": "/graphql/mutations" },
+      { "title": "订阅", "titleEn": "Subscriptions", "url": "/graphql/subscriptions" },
+      { "title": "标量类型", "titleEn": "Scalars", "url": "/graphql/scalars" },
+      { "title": "指令", "titleEn": "Directives", "url": "/graphql/directives" },
+      { "title": "接口", "titleEn": "Interfaces", "url": "/graphql/interfaces" },
+      {
+        "title": "联合类型和枚举",
+        "titleEn": "Unions and Enums",
+        "url": "/graphql/unions-and-enums"
+      },
+      { "title": "字段中间件", "titleEn": "Field middleware", "url": "/graphql/field-middleware" },
+      { "title": "映射类型", "titleEn": "Mapped types", "url": "/graphql/mapped-types" },
+      { "title": "插件", "titleEn": "Plugins", "url": "/graphql/plugins" },
+      { "title": "复杂性", "titleEn": "Complexity", "url": "/graphql/complexity" },
+      { "title": "扩展", "titleEn": "Extensions", "url": "/graphql/extensions" },
+      { "title": "CLI 插件", "titleEn": "CLI Plugin", "url": "/graphql/cli-plugin" },
+      { "title": "生成 SDL", "titleEn": "Generating SDL", "url": "/graphql/generating-sdl" },
+      { "title": "共享模型", "titleEn": "Sharing models", "url": "/graphql/sharing-models" },
+      { "title": "其他特性", "titleEn": "Other features", "url": "/graphql/other-features" },
+      { "title": "联邦", "titleEn": "Federation", "url": "/graphql/federation" }
+    ]
+  },
+  {
+    "title": "WebSockets",
+    "titleEn": "WebSockets",
+    "items": [
+      { "title": "网关", "titleEn": "Gateways", "url": "/websockets/gateways" },
+      {
+        "title": "异常过滤器",
+        "titleEn": "Exception filters",
+        "url": "/websockets/exception-filters"
+      },
+      { "title": "管道", "titleEn": "Pipes", "url": "/websockets/pipes" },
+      { "title": "守卫", "titleEn": "Guards", "url": "/websockets/guards" },
+      { "title": "拦截器", "titleEn": "Interceptors", "url": "/websockets/interceptors" },
+      { "title": "适配器", "titleEn": "Adapters", "url": "/websockets/adapter" }
+    ]
+  },
+  {
+    "title": "微服务",
+    "titleEn": "Microservices",
+    "items": [
+      { "title": "概述", "titleEn": "Overview", "url": "/microservices/basics" },
+      { "title": "Redis", "titleEn": "Redis", "url": "/microservices/redis" },
+      { "title": "MQTT", "titleEn": "MQTT", "url": "/microservices/mqtt" },
+      { "title": "NATS", "titleEn": "NATS", "url": "/microservices/nats" },
+      { "title": "RabbitMQ", "titleEn": "RabbitMQ", "url": "/microservices/rabbitmq" },
+      { "title": "Kafka", "titleEn": "Kafka", "url": "/microservices/kafka" },
+      { "title": "gRPC", "titleEn": "gRPC", "url": "/microservices/grpc" },
+      {
+        "title": "自定义传输器",
+        "titleEn": "Custom transporters",
+        "url": "/microservices/custom-transport"
+      },
+      {
+        "title": "异常过滤器",
+        "titleEn": "Exception filters",
+        "url": "/microservices/exception-filters"
+      },
+      { "title": "管道", "titleEn": "Pipes", "url": "/microservices/pipes" },
+      { "title": "守卫", "titleEn": "Guards", "url": "/microservices/guards" },
+      { "title": "拦截器", "titleEn": "Interceptors", "url": "/microservices/interceptors" }
+    ]
+  },
+  {
+    "title": "部署",
+    "titleEn": "Deployment",
+    "url": "/deployment"
+  },
+  {
+    "title": "独立应用",
+    "titleEn": "Standalone apps",
+    "url": "/standalone-applications"
+  },
+  {
+    "title": "CLI",
+    "titleEn": "CLI",
+    "items": [
+      { "title": "概述", "titleEn": "Overview", "url": "/cli/overview" },
+      { "title": "工作空间", "titleEn": "Workspaces", "url": "/cli/monorepo" },
+      { "title": "库", "titleEn": "Libraries", "url": "/cli/libraries" },
+      { "title": "使用方法", "titleEn": "Usage", "url": "/cli/usages" },
+      { "title": "脚本", "titleEn": "Scripts", "url": "/cli/scripts" }
+    ]
+  },
+  {
+    "title": "OpenAPI",
+    "titleEn": "OpenAPI",
+    "items": [
+      { "title": "介绍", "titleEn": "Introduction", "url": "/openapi/introduction" },
+      {
+        "title": "类型和参数",
+        "titleEn": "Types and Parameters",
+        "url": "/openapi/types-and-parameters"
+      },
+      { "title": "操作", "titleEn": "Operations", "url": "/openapi/operations" },
+      { "title": "安全", "titleEn": "Security", "url": "/openapi/security" },
+      { "title": "映射类型", "titleEn": "Mapped Types", "url": "/openapi/mapped-types" },
+      { "title": "装饰器", "titleEn": "Decorators", "url": "/openapi/decorators" },
+      { "title": "CLI 插件", "titleEn": "CLI Plugin", "url": "/openapi/cli-plugin" },
+      { "title": "其他特性", "titleEn": "Other features", "url": "/openapi/other-features" }
+    ]
+  },
+  {
+    "title": "实用案例",
+    "titleEn": "Recipes",
+    "items": [
+      { "title": "REPL", "titleEn": "REPL", "url": "/recipes/repl" },
+      { "title": "CRUD 生成器", "titleEn": "CRUD generator", "url": "/recipes/crud-generator" },
+      { "title": "SWC（快速编译器）", "titleEn": "SWC (fast compiler)", "url": "/recipes/swc" },
+      { "title": "Passport（认证）", "titleEn": "Passport (auth)", "url": "/recipes/passport" },
+      { "title": "热重载", "titleEn": "Hot reload", "url": "/recipes/hot-reload" },
+      { "title": "MikroORM", "titleEn": "MikroORM", "url": "/recipes/mikroorm" },
+      { "title": "TypeORM", "titleEn": "TypeORM", "url": "/recipes/sql-typeorm" },
+      { "title": "Mongoose", "titleEn": "Mongoose", "url": "/recipes/mongodb" },
+      { "title": "Sequelize", "titleEn": "Sequelize", "url": "/recipes/sql-sequelize" },
+      { "title": "路由模块", "titleEn": "Router module", "url": "/recipes/router-module" },
+      { "title": "Swagger", "titleEn": "Swagger", "url": "/recipes/swagger" },
+      { "title": "健康检查", "titleEn": "Health checks", "url": "/recipes/terminus" },
+      { "title": "CQRS", "titleEn": "CQRS", "url": "/recipes/cqrs" },
+      { "title": "Compodoc", "titleEn": "Compodoc", "url": "/recipes/documentation" },
+      { "title": "Prisma", "titleEn": "Prisma", "url": "/recipes/prisma" },
+      { "title": "Sentry", "titleEn": "Sentry", "url": "/recipes/sentry" },
+      { "title": "静态资源服务", "titleEn": "Serve static", "url": "/recipes/serve-static" },
+      { "title": "Commander", "titleEn": "Commander", "url": "/recipes/nest-commander" },
+      {
+        "title": "异步本地存储",
+        "titleEn": "Async local storage",
+        "url": "/recipes/async-local-storage"
+      },
+      { "title": "Necord", "titleEn": "Necord", "url": "/recipes/necord" },
+      { "title": "Suites（Automock）", "titleEn": "Suites (Automock)", "url": "/recipes/suites" }
+    ]
+  },
+  {
+    "title": "常见问题",
+    "titleEn": "FAQ",
+    "items": [
+      { "title": "无服务器", "titleEn": "Serverless", "url": "/faq/serverless" },
+      { "title": "HTTP 适配器", "titleEn": "HTTP adapter", "url": "/faq/http-adapter" },
+      {
+        "title": "保持连接",
+        "titleEn": "Keep-Alive connections",
+        "url": "/faq/keep-alive-connections"
+      },
+      { "title": "全局路径前缀", "titleEn": "Global path prefix", "url": "/faq/global-prefix" },
+      { "title": "原始请求体", "titleEn": "Raw body", "url": "/faq/raw-body" },
+      { "title": "混合应用", "titleEn": "Hybrid application", "url": "/faq/hybrid-application" },
+      {
+        "title": "HTTPS 和多服务器",
+        "titleEn": "HTTPS & multiple servers",
+        "url": "/faq/multiple-servers"
+      },
+      { "title": "请求生命周期", "titleEn": "Request lifecycle", "url": "/faq/request-lifecycle" },
+      { "title": "常见错误", "titleEn": "Common errors", "url": "/faq/common-errors" },
+      {
+        "title": "示例",
+        "titleEn": "Examples",
+        "url": "https://github.com/nestjs/nest/tree/master/sample"
+      }
+    ]
+  },
+  {
+    "title": "开发工具",
+    "titleEn": "Devtools",
+    "items": [
+      { "title": "概述", "titleEn": "Overview", "url": "/devtools/overview" },
+      {
+        "title": "CI/CD 集成",
+        "titleEn": "CI/CD integration",
+        "url": "/devtools/ci-cd-integration"
+      }
+    ]
+  },
+  {
+    "title": "迁移指南",
+    "titleEn": "Migration guide",
+    "url": "/migration-guide"
+  },
+  {
+    "title": "API 参考",
+    "titleEn": "API Reference",
+    "url": "https://api-references-nestjs.netlify.app/"
+  },
+  {
+    "title": "官方课程",
+    "titleEn": "Official courses",
+    "url": "https://courses.nestjs.com/"
+  },
+  {
+    "title": "发现",
+    "titleEn": "Discover",
+    "items": [
+      { "title": "谁在使用 Nest？", "titleEn": "Who is using Nest?", "url": "/discover/companies" },
+      { "title": "招聘板", "titleEn": "Jobs board", "url": "https://jobs.nestjs.com/" }
+    ]
+  },
+  {
+    "title": "支持我们",
+    "titleEn": "Support us",
+    "url": "/support"
+  }
+]

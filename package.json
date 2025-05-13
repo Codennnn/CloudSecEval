@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "run-p lint:ts lint:es lint:css",
-    "lint:css": "stylelint \"**/*.css\"",
+    "lint:css": "stylelint \"src/**/*.css\"",
     "lint:es": "eslint \"**/*.{ts,tsx}\"",
     "lint:ts": "tsc --noEmit --skipLibCheck",
     "format:mdx": "prettier --write \"**/*.mdx\""

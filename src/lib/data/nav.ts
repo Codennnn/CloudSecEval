@@ -1,17 +1,19 @@
-import { NavSection } from '@/types/nav'
+import { NavMenuItem } from '@/types/nav'
 
-export const navMainData: NavSection[] = [
+export const navMainData: NavMenuItem[] = [
   {
-    title: 'Introduction',
+    title: '介绍',
+    titleEn: 'Introduction',
     url: '/introduction',
   },
   {
-    title: 'Overview',
+    title: '概述',
+    titleEn: 'Overview',
     items: [
-      { title: 'First steps', url: '/first-steps' },
-      { title: 'Controllers', url: '/controllers' },
-      { title: 'Providers', url: '/providers' },
-      { title: 'Modules', url: '/modules' },
+      { title: '快速上手', titleEn: 'First steps', url: '/first-steps' },
+      { title: '控制器', titleEn: 'Controllers', url: '/controllers' },
+      { title: '提供者', titleEn: 'Providers', url: '/providers' },
+      { title: '模块', titleEn: 'Modules', url: '/modules' },
       { title: 'Middleware', url: '/middleware' },
       { title: 'Exception filters', url: '/exception-filters' },
       { title: 'Pipes', url: '/pipes' },

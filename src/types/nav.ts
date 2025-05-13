@@ -1,10 +1,6 @@
-export interface NavItem {
+export interface NavMenuItem {
   title?: string
+  titleEn?: string
   url?: string
-}
-
-export interface NavSection {
-  title?: string
-  url?: string
-  items?: NavItem[]
+  items?: NavMenuItem[]
 }

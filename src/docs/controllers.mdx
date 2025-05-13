@@ -60,9 +60,8 @@ export class CatsController {
         会直接发送该值，而不会尝试序列化。这让响应处理变得非常简单：只需返回值，Nest
         会自动处理剩下的事情。
         <br />
-        <br />
-        此外，响应的<strong>状态码</strong>默认总是 200，POST 请求除外（默认为
-        201）。我们可以通过在处理器级别添加 <code>@HttpCode(...)</code> 装饰器（详见
+        此外，响应的<strong>状态码</strong>默认总是 200，POST
+        请求除外（默认为201）。我们可以通过在处理器级别添加 <code>@HttpCode(...)</code> 装饰器（详见
         <a href="controllers#status-code">状态码</a>）轻松更改这一行为。
       </td>
     </tr>
