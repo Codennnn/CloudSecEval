@@ -1,0 +1,71 @@
+:root {
+  --shiki-color-text: var(--foreground);
+  --shiki-color-background: transparent;
+  --shiki-token-constant: var(--primary);
+  --shiki-token-string: oklch(73% 0.13 149deg);
+  --shiki-token-comment: var(--muted-foreground);
+  --shiki-token-keyword: oklch(65% 0.2 27deg);
+  --shiki-token-parameter: oklch(61% 0.17 10deg);
+  --shiki-token-function: oklch(59% 0.21 327deg);
+  --shiki-token-string-expression: oklch(73% 0.13 149deg);
+  --shiki-token-punctuation: var(--muted-foreground);
+  --shiki-token-link: var(--primary);
+
+  &.dark {
+    --shiki-color-text: var(--foreground);
+    --shiki-color-background: transparent;
+    --shiki-token-constant: oklch(80% 0.14 217deg);
+    --shiki-token-string: oklch(81% 0.13 149deg);
+    --shiki-token-comment: var(--muted-foreground);
+    --shiki-token-keyword: oklch(78% 0.15 27deg);
+    --shiki-token-parameter: oklch(76% 0.14 10deg);
+    --shiki-token-function: oklch(74% 0.18 327deg);
+    --shiki-token-string-expression: oklch(81% 0.13 149deg);
+    --shiki-token-punctuation: var(--muted-foreground);
+    --shiki-token-link: var(--primary);
+  }
+}
+
+/* Shiki 代码块容器样式 */
+code[class*='language-'],
+pre[class*='language-'] {
+  @apply font-mono text-sm;
+}
+
+pre[class*='language-'] {
+  @apply relative my-4 overflow-hidden rounded-lg p-4;
+
+  background-color: oklch(97% 0 0deg) !important;
+}
+
+.dark pre[class*='language-'] {
+  background-color: oklch(15% 0 0deg) !important;
+}
+
+pre.shiki {
+  @apply overflow-x-auto p-4;
+}
+
+pre.shiki code {
+  @apply grid;
+
+  counter-reset: line;
+}
+
+pre.shiki .line {
+  @apply border-l-2 border-transparent pl-2 pr-4;
+}
+
+pre.shiki .line.highlighted {
+  @apply border-primary bg-primary/10;
+}
+
+pre.shiki .line-number {
+  @apply mr-4 inline-block w-4 text-right text-muted-foreground;
+
+  counter-increment: line;
+}
+
+pre.shiki .line-number::before {
+  content: counter(line);
+}
