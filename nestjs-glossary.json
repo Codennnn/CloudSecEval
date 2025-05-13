@@ -1,0 +1,61 @@
+{
+  "core_concepts": {
+    "Module": "模块（Module）",
+    "Controller": "控制器（Controller）",
+    "Provider": "提供者（Provider）",
+    "Service": "服务（Service）",
+    "Middleware": "中间件（Middleware）",
+    "Guard": "守卫（Guard）",
+    "Interceptor": "拦截器（Interceptor）",
+    "Pipe": "管道（Pipe）",
+    "Dependency Injection": "依赖注入（Dependency Injection）",
+    "Decorator": "装饰器（Decorator）",
+    "Lifecycle Hook": "生命周期钩子（Lifecycle Hook）",
+    "ApplicationContext": "应用上下文（ApplicationContext）"
+  },
+  "platform": {
+    "Express": "Express（Node.js 框架）",
+    "Fastify": "Fastify（高性能 Node.js 框架）"
+  },
+  "cli": {
+    "Nest CLI": "Nest 命令行工具（Nest CLI）",
+    "Schematics": "原型生成器（Schematics）",
+    "Monorepo": "多包仓库结构（Monorepo）"
+  },
+  "architecture": {
+    "Microservices": "微服务（Microservices）",
+    "GraphQL": "GraphQL（查询语言）",
+    "WebSockets": "WebSocket 通信（WebSockets）",
+    "RESTful API": "RESTful 接口（RESTful API）",
+    "Event-based communication": "基于事件的通信（Event-based communication）"
+  },
+  "testing": {
+    "Unit Testing": "单元测试（Unit Testing）",
+    "End-to-End Testing": "端到端测试（End-to-End Testing）",
+    "Test Harness": "测试工具（Test Harness）"
+  },
+  "configuration": {
+    "Environment Variable": "环境变量（Environment Variable）",
+    "Configuration Service": "配置服务（Configuration Service）"
+  },
+  "advanced": {
+    "Custom Provider": "自定义提供者（Custom Provider）",
+    "Dynamic Module": "动态模块（Dynamic Module）",
+    "Scoped Provider": "作用域提供者（Scoped Provider）",
+    "Request-scoped": "请求作用域（Request-scoped）",
+    "Static Module": "静态模块（Static Module）"
+  },
+  "http": {
+    "Request Lifecycle": "请求生命周期（Request Lifecycle）",
+    "HTTP Exception": "HTTP 异常（HTTP Exception）",
+    "Exception Filter": "异常过滤器（Exception Filter）"
+  },
+  "others": {
+    "Boilerplate": "模板代码（Boilerplate）",
+    "Scaffolding": "脚手架生成（Scaffolding）",
+    "Runtime": "运行时（Runtime）",
+    "Metadata": "元数据（Metadata）",
+    "Reflection": "反射机制（Reflection）",
+    "Interoperability": "兼容性（Interoperability）"
+  }
+}
