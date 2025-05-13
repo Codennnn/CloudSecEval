@@ -20,6 +20,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { navMainData } from '@/lib/data/nav'
+import { isExternalLink } from '@/utils/common'
 
 import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from './AppSidebarMenuButton'
 
@@ -60,7 +61,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {item.url
                       ? (
                           <AppSidebarMenuButton asChild item={item}>
-                            <Link href={`/docs/${item.url}`}>
+                            <Link
+                              href={isExternalLink(item.url) ? item.url : `/docs/${item.url}`}
+                              target={isExternalLink(item.url) ? '_blank' : undefined}
+                            >
                               <SidebarMenuButtonContent item={item} />
                             </Link>
                           </AppSidebarMenuButton>
@@ -80,7 +84,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               {item.items.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
                                   <AppSidebarMenuSubButton item={subItem}>
-                                    <Link href={`/docs/${subItem.url}`}>{subItem.title}</Link>
+                                    {subItem.url
+                                      ? (
+                                          <Link
+                                            href={isExternalLink(subItem.url) ? subItem.url : `/docs/${subItem.url}`}
+                                            target={isExternalLink(subItem.url) ? '_blank' : undefined}
+                                          >
+                                            {subItem.title}
+                                          </Link>
+                                        )
+                                      : subItem.title}
                                   </AppSidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}
