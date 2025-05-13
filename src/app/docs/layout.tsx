@@ -41,7 +41,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
           </Breadcrumb>
         </header>
 
-        <div className="flex flex-1 flex-col p-4">
+        <div className="p-4">
           {props.children}
         </div>
       </SidebarInset>
