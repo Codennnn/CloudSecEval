@@ -7,7 +7,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Overview',
-    url: '#',
     items: [
       { title: 'First steps', url: '/first-steps' },
       { title: 'Controllers', url: '/controllers' },
@@ -23,7 +22,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Fundamentals',
-    url: '#',
     items: [
       { title: 'Custom providers', url: '/fundamentals/custom-providers' },
       { title: 'Asynchronous providers', url: '/fundamentals/async-providers' },
@@ -41,7 +39,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Techniques',
-    url: '#',
     items: [
       { title: 'Configuration', url: '/techniques/configuration' },
       { title: 'Database', url: '/techniques/database' },
@@ -67,7 +64,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Security',
-    url: '#',
     items: [
       { title: 'Authentication', url: '/security/authentication' },
       { title: 'Authorization', url: '/security/authorization' },
@@ -80,7 +76,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'GraphQL',
-    url: '#',
     items: [
       { title: 'Quick start', url: '/graphql/quick-start' },
       { title: 'Resolvers', url: '/graphql/resolvers' },
@@ -104,7 +99,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'WebSockets',
-    url: '#',
     items: [
       { title: 'Gateways', url: '/websockets/gateways' },
       { title: 'Exception filters', url: '/websockets/exception-filters' },
@@ -116,7 +110,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Microservices',
-    url: '#',
     items: [
       { title: 'Overview', url: '/microservices/basics' },
       { title: 'Redis', url: '/microservices/redis' },
@@ -142,7 +135,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'CLI',
-    url: '#',
     items: [
       { title: 'Overview', url: '/cli/overview' },
       { title: 'Workspaces', url: '/cli/monorepo' },
@@ -153,7 +145,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'OpenAPI',
-    url: '#',
     items: [
       { title: 'Introduction', url: '/openapi/introduction' },
       { title: 'Types and Parameters', url: '/openapi/types-and-parameters' },
@@ -167,7 +158,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Recipes',
-    url: '#',
     items: [
       { title: 'REPL', url: '/recipes/repl' },
       { title: 'CRUD generator', url: '/recipes/crud-generator' },
@@ -194,7 +184,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'FAQ',
-    url: '#',
     items: [
       { title: 'Serverless', url: '/faq/serverless' },
       { title: 'HTTP adapter', url: '/faq/http-adapter' },
@@ -210,7 +199,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Devtools',
-    url: '#',
     items: [
       { title: 'Overview', url: '/devtools/overview' },
       { title: 'CI/CD integration', url: '/devtools/ci-cd-integration' },
@@ -230,7 +218,6 @@ export const navMainData: NavSection[] = [
   },
   {
     title: 'Discover',
-    url: '#',
     items: [
       { title: 'Who is using Nest?', url: '/discover/companies' },
       { title: 'Jobs board', url: 'https://jobs.nestjs.com/' },

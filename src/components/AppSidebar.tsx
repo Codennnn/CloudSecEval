@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ChevronDownIcon, ChevronRightIcon, GalleryVerticalEndIcon } from 'lucide-react'
+import { GalleryVerticalEndIcon } from 'lucide-react'
 
 import { SearchForm } from '@/components/SearchForm'
 import {
@@ -16,11 +16,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { navMainData } from '@/lib/data/nav'
+
+import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from './AppSidebarMenuButton'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -29,7 +30,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
-              <Link href="#">
+              <Link href="/">
                 <div className="flex justify-center items-center bg-sidebar-primary rounded-lg size-8 aspect-square text-sidebar-primary-foreground">
                   <GalleryVerticalEndIcon className="size-4" />
                 </div>
@@ -56,44 +57,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    {item.url && item.url !== '#'
+                    {item.url
                       ? (
-                          <SidebarMenuButton asChild>
+                          <AppSidebarMenuButton asChild item={item}>
                             <Link href={`/docs/${item.url}`}>
-                              <span className="flex-1 truncate min-w-0">
-                                {item.title}
-                              </span>
-
-                              {
-                                item.items && item.items.length > 0
-                                  ? (
-                                      <span className="ml-auto shrink-0">
-                                        <ChevronRightIcon className="group-data-[state=open]/collapsible:hidden" size={14} />
-                                        <ChevronDownIcon className="group-data-[state=closed]/collapsible:hidden" size={14} />
-                                      </span>
-                                    )
-                                  : null
-                              }
+                              <SidebarMenuButtonContent item={item} />
                             </Link>
-                          </SidebarMenuButton>
+                          </AppSidebarMenuButton>
                         )
                       : (
-                          <SidebarMenuButton>
-                            <span className="flex-1 truncate min-w-0">
-                              {item.title}
-                            </span>
-
-                            {
-                              item.items && item.items.length > 0
-                                ? (
-                                    <span className="ml-auto shrink-0">
-                                      <ChevronRightIcon className="group-data-[state=open]/collapsible:hidden" size={14} />
-                                      <ChevronDownIcon className="group-data-[state=closed]/collapsible:hidden" size={14} />
-                                    </span>
-                                  )
-                                : null
-                            }
-                          </SidebarMenuButton>
+                          <AppSidebarMenuButton item={item}>
+                            <SidebarMenuButtonContent item={item} />
+                          </AppSidebarMenuButton>
                         )}
                   </CollapsibleTrigger>
 
@@ -104,12 +79,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <SidebarMenuSub>
                               {item.items.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarMenuSubButton
-                                    asChild
-                                    isActive={subItem.isActive}
-                                  >
+                                  <AppSidebarMenuSubButton item={subItem}>
                                     <Link href={`/docs/${subItem.url}`}>{subItem.title}</Link>
-                                  </SidebarMenuSubButton>
+                                  </AppSidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}
                             </SidebarMenuSub>
