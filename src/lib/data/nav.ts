@@ -43,8 +43,8 @@ export const navMainData: NavMenuItem[] = [
   {
     title: '技术专题',
     items: [
-      { title: 'Configuration', titleEn: 'Configuration', url: '/techniques/configuration' },
-      { title: 'Database', titleEn: 'Database', url: '/techniques/database' },
+      { title: '配置', titleEn: 'Configuration', url: '/techniques/configuration' },
+      { title: '数据库', titleEn: 'Database', url: '/techniques/database' },
       { title: 'Mongo', titleEn: 'Mongo', url: '/techniques/mongodb' },
       { title: 'Validation', titleEn: 'Validation', url: '/techniques/validation' },
       { title: 'Caching', titleEn: 'Caching', url: '/techniques/caching' },
