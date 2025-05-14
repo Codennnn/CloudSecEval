@@ -1,16 +1,16 @@
-### Task scheduling
+### 任务调度（Task scheduling）
 
-Task scheduling allows you to schedule arbitrary code (methods/functions) to execute at a fixed date/time, at recurring intervals, or once after a specified interval. In the Linux world, this is often handled by packages like [cron](https://en.wikipedia.org/wiki/Cron) at the OS level. For Node.js apps, there are several packages that emulate cron-like functionality. Nest provides the `@nestjs/schedule` package, which integrates with the popular Node.js [cron](https://github.com/kelektiv/node-cron) package. We'll cover this package in the current chapter.
+任务调度允许你按照固定的日期/时间、周期性间隔，或在指定间隔后执行任意代码（方法/函数）。在 Linux 世界中，这通常由操作系统层面的 [cron](https://en.wikipedia.org/wiki/Cron) 等软件包处理。对于 Node.js 应用，有多个软件包可以模拟类似 cron 的功能。Nest 提供了 `@nestjs/schedule` 包，该包集成了流行的 Node.js [cron](https://github.com/kelektiv/node-cron) 包。本章将介绍如何使用该包。
 
-#### Installation
+#### 安装
 
-To begin using it, we first install the required dependencies.
+要开始使用任务调度功能，首先需要安装相关依赖。
 
 ```bash
 $ npm install --save @nestjs/schedule
 ```
 
-To activate job scheduling, import the `ScheduleModule` into the root `AppModule` and run the `forRoot()` static method as shown below:
+要启用任务调度功能，需要在根模块（AppModule）中导入 `ScheduleModule`，并按照如下方式调用其静态方法 `forRoot()`：
 
 ```typescript
 @@filename(app.module)
@@ -25,16 +25,16 @@ import { ScheduleModule } from '@nestjs/schedule';
 export class AppModule {}
 ```
 
-The `.forRoot()` call initializes the scheduler and registers any declarative <a href="techniques/task-scheduling#declarative-cron-jobs">cron jobs</a>, <a href="techniques/task-scheduling#declarative-timeouts">timeouts</a> and <a href="techniques/task-scheduling#declarative-intervals">intervals</a> that exist within your app. Registration occurs when the `onApplicationBootstrap` lifecycle hook occurs, ensuring that all modules have loaded and declared any scheduled jobs.
+调用 `.forRoot()` 方法会初始化调度器，并注册应用中所有声明式的 <a href="techniques/task-scheduling#declarative-cron-jobs">定时任务（cron jobs）</a>、<a href="techniques/task-scheduling#declarative-timeouts">超时任务（timeouts）</a> 和 <a href="techniques/task-scheduling#declarative-intervals">间隔任务（intervals）</a>。这些任务会在 `onApplicationBootstrap` 生命周期钩子（lifecycle hook）触发时注册，确保所有模块都已加载并声明了各自的调度任务。
 
-#### Declarative cron jobs
+#### 声明式定时任务（cron jobs）
 
-A cron job schedules an arbitrary function (method call) to run automatically. Cron jobs can run:
+定时任务（cron job）用于自动调度执行任意函数（方法调用）。定时任务可以：
 
-- Once, at a specified date/time.
-- On a recurring basis; recurring jobs can run at a specified instant within a specified interval (for example, once per hour, once per week, once every 5 minutes)
+- 在指定的日期/时间执行一次。
+- 按照设定的周期重复执行；周期性任务可以在指定的时间点、以指定的间隔运行（例如，每小时一次、每周一次、每 5 分钟一次）。
 
-Declare a cron job with the `@Cron()` decorator preceding the method definition containing the code to be executed, as follows:
+你可以通过在方法定义前添加 `@Cron()` 装饰器（Decorator），来声明一个定时任务。被装饰的方法中包含需要执行的代码，示例如下：
 
 ```typescript
 import { Injectable, Logger } from '@nestjs/common'
@@ -46,29 +46,29 @@ export class TasksService {
 
   @Cron('45 * * * * *')
   handleCron() {
-    this.logger.debug('Called when the current second is 45')
+    this.logger.debug('当当前秒数为 45 时调用')
   }
 }
 ```
 
-In this example, the `handleCron()` method will be called each time the current second is `45`. In other words, the method will be run once per minute, at the 45 second mark.
+在上述示例中，`handleCron()` 方法会在每分钟的第 45 秒被调用一次。换句话说，该方法会在每分钟的 45 秒时自动运行。
 
-The `@Cron()` decorator supports the following standard [cron patterns](http://crontab.org/):
+`@Cron()` 装饰器支持以下标准 [cron 表达式](http://crontab.org/)：
 
-- Asterisk (e.g. `*`)
-- Ranges (e.g. `1-3,5`)
-- Steps (e.g. `*/2`)
+- 星号（例如：`*`）
+- 范围（例如：`1-3,5`）
+- 步进（例如：`*/2`）
 
-In the example above, we passed `45 * * * * *` to the decorator. The following key shows how each position in the cron pattern string is interpreted:
+在上面的示例中，我们将 `45 * * * * *` 作为参数传递给装饰器。下面的说明展示了 cron 表达式字符串中每个位置的含义：
 
 <pre class="language-javascript">
   <code class="language-javascript">
-    * * * * * * | | | | | | | | | | | day of week | | | | months | | | day of month | | hours |
-    minutes seconds (optional)
+    * * * * * * | | | | | | | | | | | 星期几 | | | | 月份 | | | 每月的第几天 | | 小时 | 分钟
+    秒（可选）
   </code>
 </pre>
 
-Some sample cron patterns are:
+以下是一些常见的 cron 表达式示例：
 
 <table>
   <tbody>
@@ -76,36 +76,37 @@ Some sample cron patterns are:
       <td>
         <code>* * * * * *</code>
       </td>
-      <td>every second</td>
+      <td>每秒执行一次</td>
     </tr>
     <tr>
       <td>
         <code>45 * * * * *</code>
       </td>
-      <td>every minute, on the 45th second</td>
+      <td>每分钟的第 45 秒执行</td>
     </tr>
     <tr>
       <td>
         <code>0 10 * * * *</code>
       </td>
-      <td>every hour, at the start of the 10th minute</td>
+      <td>每小时的第 10 分钟开始时执行</td>
     </tr>
     <tr>
       <td>
         <code>0 */30 9-17 * * *</code>
       </td>
-      <td>every 30 minutes between 9am and 5pm</td>
+      <td>每天 9:00 至 17:00 之间，每隔 30 分钟执行一次</td>
     </tr>
     <tr>
       <td>
         <code>0 30 11 * * 1-5</code>
       </td>
-      <td>Monday to Friday at 11:30am</td>
+      <td>每周一至周五的 11:30 执行</td>
     </tr>
   </tbody>
 </table>
 
-The `@nestjs/schedule` package provides a convenient enum with commonly used cron patterns. You can use this enum as follows:
+`@nestjs/schedule` 包提供了一个包含常用 cron 表达式（Cron
+Expression）的枚举，方便开发者直接使用。你可以按如下方式使用该枚举：
 
 ```typescript
 import { Injectable, Logger } from '@nestjs/common'
@@ -117,18 +118,18 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_30_SECONDS)
   handleCron() {
-    this.logger.debug('Called every 30 seconds')
+    this.logger.debug('每 30 秒调用一次')
   }
 }
 ```
 
-In this example, the `handleCron()` method will be called every `30` seconds. If an exception occurs, it will be logged to the console, as every method annotated with `@Cron()` is automatically wrapped in a `try-catch` block.
+在上述示例中，`handleCron()` 方法会每隔 30 秒被调用一次。如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Cron()` 装饰器的方法都会被自动包裹在 `try-catch` 语句块中。
 
-Alternatively, you can supply a JavaScript `Date` object to the `@Cron()` decorator. Doing so causes the job to execute exactly once, at the specified date.
+另外，你也可以为 `@Cron()` 装饰器传入一个 JavaScript 的 `Date` 对象。这样，任务会在指定的日期和时间仅执行一次。
 
-> info **Hint** Use JavaScript date arithmetic to schedule jobs relative to the current date. For example, `@Cron(new Date(Date.now() + 10 * 1000))` to schedule a job to run 10 seconds after the app starts.
+> info **提示** 你可以利用 JavaScript 的日期运算来实现相对当前时间的定时任务。例如，`@Cron(new Date(Date.now() + 10 * 1000))` 可以让任务在应用启动后 10 秒执行一次。
 
-Also, you can supply additional options as the second parameter to the `@Cron()` decorator.
+你还可以为 `@Cron()` 装饰器提供第二个参数，用于传递额外的选项。
 
 <table>
   <tbody>
@@ -136,16 +137,15 @@ Also, you can supply additional options as the second parameter to the `@Cron()`
       <td>
         <code>name</code>
       </td>
-      <td>Useful to access and control a cron job after it's been declared.</td>
+      <td>用于在声明后访问和控制定时任务（cron job）。</td>
     </tr>
     <tr>
       <td>
         <code>timeZone</code>
       </td>
       <td>
-        Specify the timezone for the execution. This will modify the actual time relative to your
-        timezone. If the timezone is invalid, an error is thrown. You can check all timezones
-        available at <a href="http://momentjs.com/timezone/">Moment Timezone</a> website.
+        指定任务执行时所用的时区（timezone）。这会根据你的时区调整实际执行时间。如果时区无效，将会抛出错误。你可以在{' '}
+        <a href="http://momentjs.com/timezone/">Moment Timezone</a> 网站上查看所有可用时区。
       </td>
     </tr>
     <tr>
@@ -153,8 +153,7 @@ Also, you can supply additional options as the second parameter to the `@Cron()`
         <code>utcOffset</code>
       </td>
       <td>
-        This allows you to specify the offset of your timezone rather than using the{' '}
-        <code>timeZone</code> param.
+        允许你通过设置偏移量（offset）来指定时区，而不是直接使用 <code>timeZone</code> 参数。
       </td>
     </tr>
     <tr>
@@ -162,16 +161,15 @@ Also, you can supply additional options as the second parameter to the `@Cron()`
         <code>waitForCompletion</code>
       </td>
       <td>
-        If <code>true</code>, no additional instances of the cron job will run until the current
-        onTick callback has been completed. Any new scheduled executions that occur while the
-        current cron job is running will be skipped entirely.
+        如果设置为 <code>true</code>，则在当前 onTick
+        回调函数执行完成前，不会启动新的定时任务实例。当前任务运行期间发生的所有新调度将会被完全跳过。
       </td>
     </tr>
     <tr>
       <td>
         <code>disabled</code>
       </td>
-      <td>This indicates whether the job will be executed at all.</td>
+      <td>用于指示该任务是否会被执行。</td>
     </tr>
   </tbody>
 </table>
@@ -190,73 +188,77 @@ export class NotificationService {
 }
 ```
 
-You can access and control a cron job after it's been declared, or dynamically create a cron job (where its cron pattern is defined at runtime) with the <a href="/techniques/task-scheduling#dynamic-schedule-module-api">Dynamic API</a>. To access a declarative cron job via the API, you must associate the job with a name by passing the `name` property in an optional options object as the second argument of the decorator.
+你可以在声明后访问和控制定时任务（cron job），也可以通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API</a> 动态创建定时任务（其 cron 表达式在运行时定义）。要通过 API 访问声明式定时任务，必须通过装饰器（Decorator）第二个参数 options 对象中的 `name` 属性为任务指定名称。
 
-#### Declarative intervals
+#### 声明式定时任务
 
-To declare that a method should run at a (recurring) specified interval, prefix the method definition with the `@Interval()` decorator. Pass the interval value, as a number in milliseconds, to the decorator as shown below:
+要声明某个方法以指定的（周期性）间隔运行，只需在方法定义前添加 `@Interval()` 装饰器（Decorator）。如下面所示，将间隔时间（以毫秒为单位的数字）作为参数传递给装饰器：
 
 ```typescript
 @Interval(10000)
 handleInterval() {
-  this.logger.debug('Called every 10 seconds');
+  this.logger.debug('每 10 秒调用一次');
 }
 ```
 
-> info **Hint** This mechanism uses the JavaScript `setInterval()` function under the hood. You can also utilize a cron job to schedule recurring jobs.
+> info **提示** 该机制底层使用了 JavaScript 的 `setInterval()` 函数。你也可以使用 cron 任务（cron job）来调度周期性任务。
 
-If you want to control your declarative interval from outside the declaring class via the <a href="/techniques/task-scheduling#dynamic-schedule-module-api">Dynamic API</a>, associate the interval with a name using the following construction:
+如果你希望通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API（Dynamic API）</a> 在声明类外部控制声明式定时任务，可以通过如下方式为定时任务指定名称：
 
 ```typescript
 @Interval('notifications', 2500)
 handleInterval() {}
 ```
 
-If an exception occurs, it will be logged to the console, as every method annotated with `@Interval()` is automatically wrapped in a `try-catch` block.
+如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Interval()` 装饰器的方法都会被自动包裹在 `try-catch` 代码块中。
 
-The <a href="techniques/task-scheduling#dynamic-intervals">Dynamic API</a> also enables **creating** dynamic intervals, where the interval's properties are defined at runtime, and **listing and deleting** them.
+<a href="techniques/task-scheduling#dynamic-intervals">动态 API</a>
+还支持**创建**动态定时任务（dynamic
+intervals），即在运行时定义定时任务的属性，并且可以**列出和删除**这些任务。
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### Declarative timeouts
+#### 声明式超时任务
 
-To declare that a method should run (once) at a specified timeout, prefix the method definition with the `@Timeout()` decorator. Pass the relative time offset (in milliseconds), from application startup, to the decorator as shown below:
+要声明某个方法在指定超时时间后（仅一次）运行，只需在方法定义前添加 `@Timeout()` 装饰器。如下所示，将相对于应用启动时间的延迟（以毫秒为单位）作为参数传递给装饰器：
 
 ```typescript
 @Timeout(5000)
 handleTimeout() {
-  this.logger.debug('Called once after 5 seconds');
+  this.logger.debug('在 5 秒后调用一次');
 }
 ```
 
-> info **Hint** This mechanism uses the JavaScript `setTimeout()` function under the hood.
+> info **提示** 该机制底层使用了 JavaScript 的 `setTimeout()` 函数。
 
-If an exception occurs, it will be logged to the console, as every method annotated with `@Timeout()` is automatically wrapped in a `try-catch` block.
+如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Timeout()` 装饰器的方法都会被自动包裹在 `try-catch` 代码块中。
 
-If you want to control your declarative timeout from outside the declaring class via the <a href="/techniques/task-scheduling#dynamic-schedule-module-api">Dynamic API</a>, associate the timeout with a name using the following construction:
+如果你希望通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API</a> 在声明类外部控制声明式超时任务，可以通过如下方式为超时任务指定名称：
 
 ```typescript
 @Timeout('notifications', 2500)
 handleTimeout() {}
 ```
 
-The <a href="techniques/task-scheduling#dynamic-timeouts">Dynamic API</a> also enables **creating** dynamic timeouts, where the timeout's properties are defined at runtime, and **listing and deleting** them.
+<a href="techniques/task-scheduling#dynamic-timeouts">动态 API</a>
+还支持**创建**动态超时任务（dynamic
+timeouts），即在运行时定义超时任务的属性，并且可以**列出和删除**这些任务。
 
-#### Dynamic schedule module API
+#### 动态调度模块 API
 
-The `@nestjs/schedule` module provides a dynamic API that enables managing declarative <a href="techniques/task-scheduling#declarative-cron-jobs">cron jobs</a>, <a href="techniques/task-scheduling#declarative-timeouts">timeouts</a> and <a href="techniques/task-scheduling#declarative-intervals">intervals</a>. The API also enables creating and managing **dynamic** cron jobs, timeouts and intervals, where the properties are defined at runtime.
+`@nestjs/schedule` 模块提供了一个动态 API，支持管理声明式的 <a href="techniques/task-scheduling#declarative-cron-jobs">定时任务（cron jobs）</a>、<a href="techniques/task-scheduling#declarative-timeouts">超时（timeouts）</a> 和 <a href="techniques/task-scheduling#declarative-intervals">间隔任务（intervals）</a>。该 API 还支持在运行时动态创建和管理 **动态** 定时任务、超时和间隔任务。
 
-#### Dynamic cron jobs
+#### 动态定时任务（cron jobs）
 
-Obtain a reference to a `CronJob` instance by name from anywhere in your code using the `SchedulerRegistry` API. First, inject `SchedulerRegistry` using standard constructor injection:
+你可以通过 `SchedulerRegistry` API，在代码的任意位置根据名称获取 `CronJob` 实例的引用。首先，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
 ```typescript
 constructor(private schedulerRegistry: SchedulerRegistry) {}
 ```
 
-> info **Hint** Import the `SchedulerRegistry` from the `@nestjs/schedule` package.
+> info **提示** 请从 `@nestjs/schedule` 包中导入 `SchedulerRegistry`。
 
-Then use it in a class as follows. Assume a cron job was created with the following declaration:
+然后在类中这样使用。假设你已经通过如下方式声明了一个定时任务：
 
 ```typescript
 @Cron('* * 8 * * *', {
@@ -265,7 +267,7 @@ Then use it in a class as follows. Assume a cron job was created with the follow
 triggerNotifications() {}
 ```
 
-Access this job using the following:
+可以通过如下方式访问该任务：
 
 ```typescript
 const job = this.schedulerRegistry.getCronJob('notifications')
@@ -274,18 +276,18 @@ job.stop()
 console.log(job.lastDate())
 ```
 
-The `getCronJob()` method returns the named cron job. The returned `CronJob` object has the following methods:
+`getCronJob()` 方法会返回指定名称的定时任务。返回的 `CronJob` 对象包含以下方法：
 
-- `stop()` - stops a job that is scheduled to run.
-- `start()` - restarts a job that has been stopped.
-- `setTime(time: CronTime)` - stops a job, sets a new time for it, and then starts it
-- `lastDate()` - returns a `DateTime` representation of the date on which the last execution of a job occurred.
-- `nextDate()` - returns a `DateTime` representation of the date when the next execution of a job is scheduled.
-- `nextDates(count: number)` - Provides an array (size `count`) of `DateTime` representations for the next set of dates that will trigger job execution. `count` defaults to 0, returning an empty array.
+- `stop()` - 停止已计划运行的任务。
+- `start()` - 重新启动已被停止的任务。
+- `setTime(time: CronTime)` - 停止任务，设置新的时间，然后重新启动任务。
+- `lastDate()` - 返回该任务上一次执行的日期（`DateTime` 类型）。
+- `nextDate()` - 返回该任务下一次计划执行的日期（`DateTime` 类型）。
+- `nextDates(count: number)` - 返回一个数组（长度为 `count`），包含该任务接下来将被触发的日期（`DateTime` 类型）。`count` 默认为 0，此时返回空数组。
 
-> info **Hint** Use `toJSDate()` on `DateTime` objects to render them as a JavaScript Date equivalent to this DateTime.
+> info **提示** 可以对 `DateTime` 对象调用 `toJSDate()` 方法，将其转换为 JavaScript 的 `Date` 类型。
 
-**Create** a new cron job dynamically using the `SchedulerRegistry#addCronJob` method, as follows:
+**动态创建** 新的定时任务，可以使用 `SchedulerRegistry#addCronJob` 方法，如下所示：
 
 ```typescript
 addCronJob(name: string, seconds: string) {
@@ -302,11 +304,11 @@ addCronJob(name: string, seconds: string) {
 }
 ```
 
-In this code, we use the `CronJob` object from the `cron` package to create the cron job. The `CronJob` constructor takes a cron pattern (just like the `@Cron()` <a href="techniques/task-scheduling#declarative-cron-jobs">decorator</a>) as its first argument, and a callback to be executed when the cron timer fires as its second argument. The `SchedulerRegistry#addCronJob` method takes two arguments: a name for the `CronJob`, and the `CronJob` object itself.
+在上述代码中，我们使用 `cron` 包中的 `CronJob` 对象来创建定时任务。`CronJob` 构造函数的第一个参数是 cron 表达式（与 `@Cron()` <a href="techniques/task-scheduling#declarative-cron-jobs">装饰器（Decorator）</a>用法一致），第二个参数是定时器触发时要执行的回调函数。`SchedulerRegistry#addCronJob` 方法接收两个参数：任务名称和 `CronJob` 实例。
 
-> warning **Warning** Remember to inject the `SchedulerRegistry` before accessing it. Import `CronJob` from the `cron` package.
+> warning **警告** 在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需从 `cron` 包中导入。
 
-**Delete** a named cron job using the `SchedulerRegistry#deleteCronJob` method, as follows:
+**删除** 指定名称的定时任务，可以使用 `SchedulerRegistry#deleteCronJob` 方法，如下所示：
 
 ```typescript
 deleteCron(name: string) {
@@ -315,7 +317,7 @@ deleteCron(name: string) {
 }
 ```
 
-**List** all cron jobs using the `SchedulerRegistry#getCronJobs` method as follows:
+**列出** 所有定时任务，可以使用 `SchedulerRegistry#getCronJobs` 方法，如下所示：
 
 ```typescript
 getCrons() {
@@ -332,24 +334,24 @@ getCrons() {
 }
 ```
 
-The `getCronJobs()` method returns a `map`. In this code, we iterate over the map and attempt to access the `nextDate()` method of each `CronJob`. In the `CronJob` API, if a job has already fired and has no future firing date, it throws an exception.
+`getCronJobs()` 方法会返回一个 `map`。在上述代码中，我们遍历该 map，并尝试访问每个 `CronJob` 的 `nextDate()` 方法。在 `CronJob` 的 API 中，如果任务已经执行完毕且没有未来的触发时间，则会抛出异常。
 
-#### Dynamic intervals
+#### 动态定时任务间隔
 
-Obtain a reference to an interval with the `SchedulerRegistry#getInterval` method. As above, inject `SchedulerRegistry` using standard constructor injection:
+可以通过 `SchedulerRegistry#getInterval` 方法获取某个定时任务（interval）的引用。如前所述，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
 ```typescript
 constructor(private schedulerRegistry: SchedulerRegistry) {}
 ```
 
-And use it as follows:
+然后可以这样使用：
 
 ```typescript
 const interval = this.schedulerRegistry.getInterval('notifications')
 clearInterval(interval)
 ```
 
-**Create** a new interval dynamically using the `SchedulerRegistry#addInterval` method, as follows:
+**动态创建**新的定时任务间隔，可以使用 `SchedulerRegistry#addInterval` 方法，示例如下：
 
 ```typescript
 addInterval(name: string, milliseconds: number) {
@@ -362,10 +364,10 @@ addInterval(name: string, milliseconds: number) {
 }
 ```
 
-In this code, we create a standard JavaScript interval, then pass it to the `SchedulerRegistry#addInterval` method.
-That method takes two arguments: a name for the interval, and the interval itself.
+在上述代码中，我们首先创建了一个标准的 JavaScript 定时任务（interval），然后将其传递给 `SchedulerRegistry#addInterval` 方法。
+该方法接收两个参数：定时任务的名称和定时任务本身。
 
-**Delete** a named interval using the `SchedulerRegistry#deleteInterval` method, as follows:
+**删除**指定名称的定时任务，可以使用 `SchedulerRegistry#deleteInterval` 方法，示例如下：
 
 ```typescript
 deleteInterval(name: string) {
@@ -374,7 +376,7 @@ deleteInterval(name: string) {
 }
 ```
 
-**List** all intervals using the `SchedulerRegistry#getIntervals` method as follows:
+**列出**所有定时任务，可以使用 `SchedulerRegistry#getIntervals` 方法，示例如下：
 
 ```typescript
 getIntervals() {
@@ -383,22 +385,22 @@ getIntervals() {
 }
 ```
 
-#### Dynamic timeouts
+#### 动态超时
 
-Obtain a reference to a timeout with the `SchedulerRegistry#getTimeout` method. As above, inject `SchedulerRegistry` using standard constructor injection:
+可以通过 `SchedulerRegistry#getTimeout` 方法获取某个超时（timeout）的引用。如前所述，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
 ```typescript
 constructor(private readonly schedulerRegistry: SchedulerRegistry) {}
 ```
 
-And use it as follows:
+然后可以这样使用：
 
 ```typescript
 const timeout = this.schedulerRegistry.getTimeout('notifications')
 clearTimeout(timeout)
 ```
 
-**Create** a new timeout dynamically using the `SchedulerRegistry#addTimeout` method, as follows:
+**动态创建**新的超时任务，可以使用 `SchedulerRegistry#addTimeout` 方法，示例如下：
 
 ```typescript
 addTimeout(name: string, milliseconds: number) {
@@ -411,10 +413,10 @@ addTimeout(name: string, milliseconds: number) {
 }
 ```
 
-In this code, we create a standard JavaScript timeout, then pass it to the `SchedulerRegistry#addTimeout` method.
-That method takes two arguments: a name for the timeout, and the timeout itself.
+在上述代码中，我们创建了一个标准的 JavaScript 超时（timeout），然后将其传递给 `SchedulerRegistry#addTimeout` 方法。
+该方法接收两个参数：超时任务的名称和超时对象本身。
 
-**Delete** a named timeout using the `SchedulerRegistry#deleteTimeout` method, as follows:
+**删除**指定名称的超时任务，可以使用 `SchedulerRegistry#deleteTimeout` 方法，示例如下：
 
 ```typescript
 deleteTimeout(name: string) {
@@ -423,7 +425,7 @@ deleteTimeout(name: string) {
 }
 ```
 
-**List** all timeouts using the `SchedulerRegistry#getTimeouts` method as follows:
+**列出**所有超时任务，可以使用 `SchedulerRegistry#getTimeouts` 方法，示例如下：
 
 ```typescript
 getTimeouts() {
@@ -432,6 +434,6 @@ getTimeouts() {
 }
 ```
 
-#### Example
+#### 示例
 
-A working example is available [here](https://github.com/nestjs/nest/tree/master/sample/27-scheduling).
+可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/27-scheduling)。

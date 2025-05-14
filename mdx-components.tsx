@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { MDXComponents } from 'mdx/types'
 
 import { CodeBlock } from '@/components/CodeBlock'
@@ -28,9 +29,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
 
       return (
-        <a href={href.startsWith('/') ? `/docs${href}` : href}>
+        <Link href={href.startsWith('/') ? `/docs${href}` : href}>
           {children}
-        </a>
+        </Link>
       )
     },
 
