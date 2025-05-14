@@ -1,12 +1,12 @@
-### Rate Limiting
+### 限流（Rate Limiting）
 
-A common technique to protect applications from brute-force attacks is **rate-limiting**. To get started, you'll need to install the `@nestjs/throttler` package.
+一种常见的防护应用免受暴力破解攻击的技术是**限流（rate-limiting）**。要开始使用，您需要安装 `@nestjs/throttler` 包。
 
 ```bash
 $ npm i --save @nestjs/throttler
 ```
 
-Once the installation is complete, the `ThrottlerModule` can be configured as any other Nest package with `forRoot` or `forRootAsync` methods.
+安装完成后，可以像配置其他 Nest 包一样，使用 `forRoot` 或 `forRootAsync` 方法配置 `ThrottlerModule`（限流模块）。
 
 ```typescript
 @@filename(app.module)
@@ -25,9 +25,9 @@ Once the installation is complete, the `ThrottlerModule` can be configured as an
 export class AppModule {}
 ```
 
-The above will set the global options for the `ttl`, the time to live in milliseconds, and the `limit`, the maximum number of requests within the ttl, for the routes of your application that are guarded.
+上述配置会为被守卫（Guard）保护的路由设置全局选项：`ttl`（生存时间，单位为毫秒）和 `limit`（在 ttl 时间内允许的最大请求数）。
 
-Once the module has been imported, you can then choose how you would like to bind the `ThrottlerGuard`. Any kind of binding as mentioned in the [guards](https://docs.nestjs.com/guards) section is fine. If you wanted to bind the guard globally, for example, you could do so by adding this provider to any module:
+引入该模块后，您可以选择如何绑定 `ThrottlerGuard`（限流守卫）。如 [守卫](https://docs.nestjs.com/guards) 一节所述，任何绑定方式都可以。如果您希望全局绑定该守卫，可以像下面这样将其作为 provider 添加到任意模块中：
 
 ```typescript
 {
@@ -36,9 +36,9 @@ Once the module has been imported, you can then choose how you would like to bin
 }
 ```
 
-#### Multiple Throttler Definitions
+#### 多重限流定义
 
-There may come upon times where you want to set up multiple throttling definitions, like no more than 3 calls in a second, 20 calls in 10 seconds, and 100 calls in a minute. To do so, you can set up your definitions in the array with named options, that can later be referenced in the `@SkipThrottle()` and `@Throttle()` decorators to change the options again.
+有时您可能希望设置多组限流规则，例如：每秒不超过 3 次、10 秒内不超过 20 次、1 分钟内不超过 100 次。为此，您可以在数组中设置带有名称的限流选项，后续可通过 `@SkipThrottle()` 和 `@Throttle()` 装饰器引用这些选项，灵活切换限流策略。
 
 ```typescript
 @@filename(app.module)
@@ -66,9 +66,9 @@ There may come upon times where you want to set up multiple throttling definitio
 export class AppModule {}
 ```
 
-#### Customization
+#### 个性化定制
 
-There may be a time where you want to bind the guard to a controller or globally, but want to disable rate limiting for one or more of your endpoints. For that, you can use the `@SkipThrottle()` decorator, to negate the throttler for an entire class or a single route. The `@SkipThrottle()` decorator can also take in an object of string keys with boolean values for if there is a case where you want to exclude _most_ of a controller, but not every route, and configure it per throttler set if you have more than one. If you do not pass an object, the default is to use `{{ '{' }} default: true {{ '}' }}`
+有时候，你可能希望将守卫（Guard）绑定到控制器或全局，但又想为某些接口禁用限流功能。此时，可以使用 `@SkipThrottle()` 装饰器（Decorator），让整个类或单个路由不受限流器（Throttler）影响。`@SkipThrottle()` 装饰器还可以接收一个以字符串为键、布尔值为值的对象参数，适用于你想排除控制器中大部分路由但不是全部，或者在有多个限流器配置时按需设置。如果不传递对象参数，默认值为 `{{ '{' }} default: true {{ '}' }}`。
 
 ```typescript
 @SkipThrottle()
@@ -76,28 +76,28 @@ There may be a time where you want to bind the guard to a controller or globally
 export class UsersController {}
 ```
 
-This `@SkipThrottle()` decorator can be used to skip a route or a class or to negate the skipping of a route in a class that is skipped.
+`@SkipThrottle()` 装饰器既可以用于跳过某个路由或类的限流，也可以在已跳过的类中通过参数配置让某个路由重新启用限流。
 
 ```typescript
 @SkipThrottle()
 @Controller('users')
 export class UsersController {
-  // Rate limiting is applied to this route.
+  // 该路由会应用限流策略。
   @SkipThrottle({ default: false })
   dontSkip() {
     return 'List users work with Rate limiting.'
   }
-  // This route will skip rate limiting.
+  // 该路由会跳过限流。
   doSkip() {
     return 'List users work without Rate limiting.'
   }
 }
 ```
 
-There is also the `@Throttle()` decorator which can be used to override the `limit` and `ttl` set in the global module, to give tighter or looser security options. This decorator can be used on a class or a function as well. With version 5 and onwards, the decorator takes in an object with the string relating to the name of the throttler set, and an object with the limit and ttl keys and integer values, similar to the options passed to the root module. If you do not have a name set in your original options, use the string `default` You have to configure it like this:
+此外，还有 `@Throttle()` 装饰器，可以用来覆盖全局模块中设置的 `limit` 和 `ttl`，以实现更严格或更宽松的安全策略。该装饰器同样可以应用于类或方法。从第 5 版开始，装饰器接收一个对象，键为限流器配置的名称，值为包含 limit 和 ttl 的对象，格式与根模块配置类似。如果你的原始配置没有设置名称，请使用字符串 `default`。配置方式如下：
 
 ```typescript
-// Override default configuration for Rate limiting and duration.
+// 覆盖默认的限流次数和持续时间配置。
 @Throttle({ default: { limit: 3, ttl: 60000 } })
 @Get()
 findAll() {
@@ -105,11 +105,11 @@ findAll() {
 }
 ```
 
-#### Proxies
+#### 代理服务器
 
-If your application is running behind a proxy server, it’s essential to configure the HTTP adapter to trust the proxy. You can refer to the specific HTTP adapter options for [Express](http://expressjs.com/en/guide/behind-proxies.html) and [Fastify](https://www.fastify.io/docs/latest/Reference/Server/#trustproxy) to enable the `trust proxy` setting.
+如果你的应用程序部署在代理服务器（proxy server）之后，务必配置 HTTP 适配器（HTTP adapter）以信任代理。你可以参考 [Express](http://expressjs.com/en/guide/behind-proxies.html) 和 [Fastify](https://www.fastify.io/docs/latest/Reference/Server/#trustproxy) 的官方文档，启用 `trust proxy` 设置。
 
-Here's an example that demonstrates how to enable `trust proxy` for the Express adapter:
+以下示例演示了如何为 Express 适配器启用 `trust proxy`：
 
 ```typescript
 @@filename(main)
@@ -119,7 +119,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.set('trust proxy', 'loopback'); // Trust requests from the loopback address
+  app.set('trust proxy', 'loopback'); // 信任来自 loopback 地址的请求
   await app.listen(3000);
 }
 
@@ -131,14 +131,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.set('trust proxy', 'loopback'); // Trust requests from the loopback address
+  app.set('trust proxy', 'loopback'); // 信任来自 loopback 地址的请求
   await app.listen(3000);
 }
 
 bootstrap();
 ```
 
-Enabling `trust proxy` allows you to retrieve the original IP address from the `X-Forwarded-For` header. You can also customize the behavior of your application by overriding the `getTracker()` method to extract the IP address from this header instead of relying on `req.ip`. The following example demonstrates how to achieve this for both Express and Fastify:
+启用 `trust proxy` 后，你可以通过 `X-Forwarded-For` 请求头（Header）获取原始 IP 地址。你还可以通过重写 `getTracker()` 方法，自定义应用程序的行为，从该请求头中提取 IP 地址，而不是依赖 `req.ip`。下面的示例展示了如何在 Express 和 Fastify 中实现这一点：
 
 ```typescript
 @@filename(throttler-behind-proxy.guard)
@@ -148,16 +148,16 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class ThrottlerBehindProxyGuard extends ThrottlerGuard {
   protected async getTracker(req: Record<string, any>): Promise<string> {
-    return req.ips.length ? req.ips[0] : req.ip; // individualize IP extraction to meet your own needs
+    return req.ips.length ? req.ips[0] : req.ip; // 可根据实际需求自定义 IP 提取逻辑
   }
 }
 ```
 
-> info **Hint** You can find the API of the `req` Request object for express [here](https://expressjs.com/en/api.html#req.ips) and for fastify [here](https://www.fastify.io/docs/latest/Reference/Request/).
+> info **提示** 你可以在 express 的 [官方文档](https://expressjs.com/en/api.html#req.ips) 和 fastify 的 [官方文档](https://www.fastify.io/docs/latest/Reference/Request/) 中查阅 `req` 请求对象（Request Object）的 API。
 
-#### Websockets
+#### WebSocket 通信
 
-This module can work with websockets, but it requires some class extension. You can extend the `ThrottlerGuard` and override the `handleRequest` method like so:
+本模块同样支持 WebSocket 通信，但需要进行一定的类扩展。你可以通过继承 `ThrottlerGuard`（限流守卫）并重写 `handleRequest` 方法来实现，示例如下：
 
 ```typescript
 @Injectable()
@@ -173,7 +173,7 @@ export class WsThrottlerGuard extends ThrottlerGuard {
 
     const getThrottlerSuffix = (name: string) => (name === 'default' ? '' : `-${name}`)
 
-    // Throw an error when the user reached their limit.
+    // 当用户达到限流阈值时抛出异常。
     if (isBlocked) {
       await this.throwThrottlingException(context, {
         limit,
@@ -192,18 +192,18 @@ export class WsThrottlerGuard extends ThrottlerGuard {
 }
 ```
 
-> info **Hint** If you are using ws, it is necessary to replace the `_socket` with `conn`
+> info **提示** 如果你使用的是 ws，需要将 `_socket` 替换为 `conn`
 
-There's a few things to keep in mind when working with WebSockets:
+在使用 WebSocket 通信时，有几点需要注意：
 
-- Guard cannot be registered with the `APP_GUARD` or `app.useGlobalGuards()`
-- When a limit is reached, Nest will emit an `exception` event, so make sure there is a listener ready for this
+- 守卫（Guard）不能通过 `APP_GUARD` 或 `app.useGlobalGuards()` 注册
+- 当达到限流阈值时，Nest 会触发一个 `exception` 事件（异常事件），因此请确保有相应的事件监听器进行处理
 
-> info **Hint** If you are using the `@nestjs/platform-ws` package you can use `client._socket.remoteAddress` instead.
+> info **提示** 如果你使用的是 `@nestjs/platform-ws` 包，可以直接使用 `client._socket.remoteAddress`。
 
-#### GraphQL
+#### GraphQL 查询
 
-The `ThrottlerGuard` can also be used to work with GraphQL requests. Again, the guard can be extended, but this time the `getRequestResponse` method will be overridden
+`ThrottlerGuard` 同样可以用于处理 GraphQL 请求。依然可以扩展该守卫，不过这一次需要重写 `getRequestResponse` 方法。
 
 ```typescript
 @Injectable()
@@ -216,131 +216,126 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 }
 ```
 
-#### Configuration
+#### 配置
 
-The following options are valid for the object passed to the array of the `ThrottlerModule`'s options:
-
-<table>
-  <tr>
-    <td>
-      <code>name</code>
-    </td>
-    <td>
-      the name for internal tracking of which throttler set is being used. Defaults to `default` if
-      not passed
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>ttl</code>
-    </td>
-    <td>the number of milliseconds that each request will last in storage</td>
-  </tr>
-  <tr>
-    <td>
-      <code>limit</code>
-    </td>
-    <td>the maximum number of requests within the TTL limit</td>
-  </tr>
-  <tr>
-    <td>
-      <code>blockDuration</code>
-    </td>
-    <td>the number of milliseconds that request will be blocked for that time</td>
-  </tr>
-  <tr>
-    <td>
-      <code>ignoreUserAgents</code>
-    </td>
-    <td>
-      an array of regular expressions of user-agents to ignore when it comes to throttling requests
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>skipIf</code>
-    </td>
-    <td>
-      a function that takes in the <code>ExecutionContext</code> and returns a <code>boolean</code>{' '}
-      to short circuit the throttler logic. Like <code>@SkipThrottler()</code>, but based on the
-      request
-    </td>
-  </tr>
-</table>
-
-If you need to set up storage instead, or want to use some of the above options in a more global sense, applying to each throttler set, you can pass the options above via the `throttlers` option key and use the below table
+以下选项可用于传递给 `ThrottlerModule` 选项数组的对象：
 
 <table>
-  <tr>
-    <td>
-      <code>storage</code>
-    </td>
-    <td>
-      a custom storage service for where the throttling should be kept track.{' '}
-      <a href="/security/rate-limiting#storages">See here.</a>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>ignoreUserAgents</code>
-    </td>
-    <td>
-      an array of regular expressions of user-agents to ignore when it comes to throttling requests
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>skipIf</code>
-    </td>
-    <td>
-      a function that takes in the <code>ExecutionContext</code> and returns a <code>boolean</code>{' '}
-      to short circuit the throttler logic. Like <code>@SkipThrottler()</code>, but based on the
-      request
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>throttlers</code>
-    </td>
-    <td>an array of throttler sets, defined using the table above</td>
-  </tr>
-  <tr>
-    <td>
-      <code>errorMessage</code>
-    </td>
-    <td>
-      a <code>string</code> OR a function that takes in the <code>ExecutionContext</code> and the{' '}
-      <code>ThrottlerLimitDetail</code> and returns a <code>string</code> which overrides the
-      default throttler error message
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>getTracker</code>
-    </td>
-    <td>
-      a function that takes in the <code>Request</code> and returns a <code>string</code> to
-      override the default logic of the <code>getTracker</code> method
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>generateKey</code>
-    </td>
-    <td>
-      a function that takes in the <code>ExecutionContext</code>, the tacker <code>string</code> and
-      the throttler name as a <code>string</code> and returns a <code>string</code> to override the
-      final key which will be used to store the rate limit value. This overrides the default logic
-      of the <code>generateKey</code> method
-    </td>
-  </tr>
+  <tbody>
+    <tr>
+      <td>
+        <code>name</code>
+      </td>
+      <td>
+        用于内部追踪当前限流器集合的名称。如果未传递，则默认为 <code>default</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ttl</code>
+      </td>
+      <td>每个请求在存储中持续的毫秒数</td>
+    </tr>
+    <tr>
+      <td>
+        <code>limit</code>
+      </td>
+      <td>在 TTL 限制内允许的最大请求次数</td>
+    </tr>
+    <tr>
+      <td>
+        <code>blockDuration</code>
+      </td>
+      <td>请求被阻止的持续时间（毫秒）</td>
+    </tr>
+    <tr>
+      <td>
+        <code>ignoreUserAgents</code>
+      </td>
+      <td>一个包含需要忽略限流的 User-Agent（用户代理）正则表达式的数组</td>
+    </tr>
+    <tr>
+      <td>
+        <code>skipIf</code>
+      </td>
+      <td>
+        一个函数，接收 <code>执行上下文（ExecutionContext）</code> 并返回 <code>boolean</code>
+        ，用于短路限流逻辑。类似于 <code>@SkipThrottler()</code>，但可基于请求自定义跳过条件
+      </td>
+    </tr>
+  </tbody>
 </table>
 
-#### Async Configuration
+如果你需要设置存储（storage），或者希望以更全局的方式应用上述部分选项（即应用于每个限流器集合），可以通过 `throttlers` 选项键传递上述选项，并参考下表：
 
-You may want to get your rate-limiting configuration asynchronously instead of synchronously. You can use the `forRootAsync()` method, which allows for dependency injection and `async` methods.
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <code>storage</code>
+      </td>
+      <td>
+        自定义存储服务，用于记录限流信息。<a href="/security/rate-limiting#storages">详见此处。</a>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>ignoreUserAgents</code>
+      </td>
+      <td>一个包含需要忽略限流的 User-Agent（用户代理）正则表达式的数组</td>
+    </tr>
+    <tr>
+      <td>
+        <code>skipIf</code>
+      </td>
+      <td>
+        一个函数，接收 <code>执行上下文（ExecutionContext）</code> 并返回 <code>boolean</code>
+        ，用于短路限流逻辑。类似于 <code>@SkipThrottler()</code>，但可基于请求自定义跳过条件
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>throttlers</code>
+      </td>
+      <td>限流器集合的数组，定义方式见上表</td>
+    </tr>
+    <tr>
+      <td>
+        <code>errorMessage</code>
+      </td>
+      <td>
+        一个 <code>string</code> 或函数，接收 <code>执行上下文（ExecutionContext）</code> 和{' '}
+        <code>ThrottlerLimitDetail</code>，返回 <code>string</code>
+        ，用于自定义限流错误消息，覆盖默认提示
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>getTracker</code>
+      </td>
+      <td>
+        一个函数，接收 <code>请求对象（Request）</code> 并返回 <code>string</code>，用于覆盖{' '}
+        <code>getTracker</code> 方法的默认逻辑
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>generateKey</code>
+      </td>
+      <td>
+        一个函数，接收 <code>执行上下文（ExecutionContext）</code>、追踪字符串 <code>string</code>{' '}
+        以及限流器名称 <code>string</code>，返回 <code>string</code>，用于覆盖{' '}
+        <code>generateKey</code> 方法的默认逻辑，决定最终用于存储限流值的键
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-One approach would be to use a factory function:
+#### 异步配置
+
+有时你可能希望以异步方式获取限流配置，而不是同步方式。你可以使用 `forRootAsync()` 方法，该方法支持依赖注入（Dependency Injection）和 `async` 方法。
+
+一种常见做法是使用工厂函数：
 
 ```typescript
 @Module({
@@ -360,7 +355,7 @@ One approach would be to use a factory function:
 export class AppModule {}
 ```
 
-You can also use the `useClass` syntax:
+你也可以使用 `useClass` 语法：
 
 ```typescript
 @Module({
@@ -374,37 +369,30 @@ You can also use the `useClass` syntax:
 export class AppModule {}
 ```
 
-This is doable, as long as `ThrottlerConfigService` implements the interface `ThrottlerOptionsFactory`.
+只要 `ThrottlerConfigService` 实现了 `ThrottlerOptionsFactory` 接口，这种方式也是可行的。
 
-#### Storages
+#### 存储方式
 
-The built in storage is an in memory cache that keeps track of the requests made until they have passed the TTL set by the global options. You can drop in your own storage option to the `storage` option of the `ThrottlerModule` so long as the class implements the `ThrottlerStorage` interface.
+内置存储是一种内存缓存（in memory cache），用于记录请求，直到它们超过全局选项中设置的 TTL 为止。你可以通过将自定义存储类传递给 `ThrottlerModule` 的 `storage` 选项，来替换默认存储，只要该类实现了 `ThrottlerStorage` 接口即可。
 
-For distributed servers you could use the community storage provider for [Redis](https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis) to have a single source of truth.
+对于分布式服务器场景，你可以使用社区提供的 [Redis 存储适配器](https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis)，实现统一的数据源。
 
-> info **Note** `ThrottlerStorage` can be imported from `@nestjs/throttler`.
+> info **注意** `ThrottlerStorage` 可从 `@nestjs/throttler` 导入。
 
-#### Time Helpers
+#### 时间辅助方法
 
-There are a couple of helper methods to make the timings more readable if you prefer to use them over the direct definition. `@nestjs/throttler` exports five different helpers, `seconds`, `minutes`, `hours`, `days`, and `weeks`. To use them, simply call `seconds(5)` or any of the other helpers, and the correct number of milliseconds will be returned.
+如果你希望让时间设置更易读，`@nestjs/throttler` 提供了几个辅助方法。它导出了五个不同的时间辅助函数：`seconds`、`minutes`、`hours`、`days` 和 `weeks`。你只需调用 `seconds(5)` 或其他辅助方法，即可获得对应的毫秒数。
 
-#### Migration Guide
+#### 迁移指南
 
-For most people, wrapping your options in an array will be enough.
+对于大多数用户来说，只需将你的选项包裹在一个数组中即可。
 
-If you are using a custom storage, you should wrap your `ttl` and `limit` in an
-array and assign it to the `throttlers` property of the options object.
+如果你正在使用自定义存储，应将 `ttl` 和 `limit` 包裹在数组中，并赋值给选项对象的 `throttlers` 属性。
 
-Any `@ThrottleSkip()` should now take in an object with `string: boolean` props.
-The strings are the names of the throttlers. If you do not have a name, pass the
-string `'default'`, as this is what will be used under the hood otherwise.
+现在，任何 `@ThrottleSkip()` 装饰器都应接收一个带有 `string: boolean` 属性的对象。字符串为限流器的名称。如果没有名称，请传递字符串 `'default'`，因为底层默认会使用该名称。
 
-Any `@Throttle()` decorators should also now take in an object with string keys,
-relating to the names of the throttler contexts (again, `'default'` if no name)
-and values of objects that have `limit` and `ttl` keys.
+同样，任何 `@Throttle()` 装饰器现在也应接收一个以字符串为键的对象，这些字符串对应限流器上下文的名称（同样，如果没有名称则为 `'default'`），值为包含 `limit` 和 `ttl` 键的对象。
 
-> Warning **Important** The `ttl` is now in **milliseconds**. If you want to keep your ttl
-> in seconds for readability, use the `seconds` helper from this package. It just
-> multiplies the ttl by 1000 to make it in milliseconds.
+> 警告 **重要** 现在 `ttl` 单位为 **毫秒**。如果你希望为了可读性仍以秒为单位设置 `ttl`，可以使用本包提供的 `seconds` 辅助函数。该函数会将 `ttl` 乘以 1000，从而转换为毫秒。
 
-For more info, see the [Changelog](https://github.com/nestjs/throttler/blob/master/CHANGELOG.md#500)
+更多信息请参见 [更新日志](https://github.com/nestjs/throttler/blob/master/CHANGELOG.md#500)

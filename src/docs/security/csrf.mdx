@@ -1,47 +1,47 @@
-### CSRF Protection
+### CSRF 防护
 
-Cross-site request forgery (CSRF or XSRF) is a type of attack where **unauthorized** commands are sent from a trusted user to a web application. To help prevent this, you can use the [csrf-csrf](https://github.com/Psifi-Solutions/csrf-csrf) package.
+跨站请求伪造（CSRF，Cross-site request forgery，也称为 XSRF）是一种攻击方式，攻击者会以受信任用户的身份向 Web 应用发送**未授权**的指令。为防止此类攻击，你可以使用 [csrf-csrf](https://github.com/Psifi-Solutions/csrf-csrf) 包。
 
-#### Use with Express (default)
+#### 在 Express 中使用（默认）
 
-Start by installing the required package:
+首先安装所需的依赖包：
 
 ```bash
 $ npm i csrf-csrf
 ```
 
-> warning **Warning** As noted in the [csrf-csrf documentation](https://github.com/Psifi-Solutions/csrf-csrf?tab=readme-ov-file#getting-started), this middleware requires session middleware or `cookie-parser` to be initialized beforehand. Please refer to the documentation for further details.
+> warning **警告** 如 [csrf-csrf 官方文档](https://github.com/Psifi-Solutions/csrf-csrf?tab=readme-ov-file#getting-started) 所述，此中间件（Middleware）需要先初始化 session 中间件或 `cookie-parser`。请参考官方文档获取更多细节。
 
-Once the installation is complete, register the `csrf-csrf` middleware as global middleware.
+安装完成后，将 `csrf-csrf` 中间件注册为全局中间件：
 
 ```typescript
 import { doubleCsrf } from 'csrf-csrf'
 // ...
-// somewhere in your initialization file
+// 在你的初始化文件中
 const {
-  invalidCsrfTokenError, // This is provided purely for convenience if you plan on creating your own middleware.
-  generateToken, // Use this in your routes to generate and provide a CSRF hash, along with a token cookie and token.
-  validateRequest, // Also a convenience if you plan on making your own middleware.
-  doubleCsrfProtection, // This is the default CSRF protection middleware.
+  invalidCsrfTokenError, // 如果你计划自定义中间件，可直接使用此错误类型。
+  generateToken, // 在路由中生成并提供 CSRF 哈希、token cookie 及 token。
+  validateRequest, // 如需自定义中间件，也可直接使用。
+  doubleCsrfProtection, // 默认的 CSRF 防护中间件。
 } = doubleCsrf(doubleCsrfOptions)
 app.use(doubleCsrfProtection)
 ```
 
-#### Use with Fastify
+#### 在 Fastify 中使用
 
-Start by installing the required package:
+首先安装所需的依赖包：
 
 ```bash
 $ npm i --save @fastify/csrf-protection
 ```
 
-Once the installation is complete, register the `@fastify/csrf-protection` plugin, as follows:
+安装完成后，按如下方式注册 `@fastify/csrf-protection` 插件：
 
 ```typescript
 import fastifyCsrf from '@fastify/csrf-protection'
 // ...
-// somewhere in your initialization file after registering some storage plugin
+// 在注册存储插件后于初始化文件中注册
 await app.register(fastifyCsrf)
 ```
 
-> warning **Warning** As explained in the `@fastify/csrf-protection` docs [here](https://github.com/fastify/csrf-protection#usage), this plugin requires a storage plugin to be initialized first. Please, see that documentation for further instructions.
+> warning **警告** 如 `@fastify/csrf-protection` 官方文档 [说明](https://github.com/fastify/csrf-protection#usage)，此插件需要先注册存储插件。请参阅官方文档获取详细说明。
