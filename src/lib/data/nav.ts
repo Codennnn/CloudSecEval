@@ -151,18 +151,19 @@ export const navMainData: NavMenuItem[] = [
   {
     title: 'OpenAPI',
     items: [
-      { title: 'Introduction', titleEn: 'Introduction', url: '/openapi/introduction' },
-      { title: 'Types and Parameters', titleEn: 'Types and Parameters', url: '/openapi/types-and-parameters' },
-      { title: 'Operations', titleEn: 'Operations', url: '/openapi/operations' },
-      { title: 'Security', titleEn: 'Security', url: '/openapi/security' },
-      { title: 'Mapped Types', titleEn: 'Mapped Types', url: '/openapi/mapped-types' },
-      { title: 'Decorators', titleEn: 'Decorators', url: '/openapi/decorators' },
-      { title: 'CLI Plugin', titleEn: 'CLI Plugin', url: '/openapi/cli-plugin' },
-      { title: 'Other features', titleEn: 'Other features', url: '/openapi/other-features' },
+      { title: '介绍', titleEn: 'Introduction', url: '/openapi/introduction' },
+      { title: '类型和参数', titleEn: 'Types and Parameters', url: '/openapi/types-and-parameters' },
+      { title: '操作', titleEn: 'Operations', url: '/openapi/operations' },
+      { title: '安全', titleEn: 'Security', url: '/openapi/security' },
+      { title: '映射类型', titleEn: 'Mapped Types', url: '/openapi/mapped-types' },
+      { title: '装饰器', titleEn: 'Decorators', url: '/openapi/decorators' },
+      { title: 'CLI 插件', titleEn: 'CLI Plugin', url: '/openapi/cli-plugin' },
+      { title: '其他功能', titleEn: 'Other features', url: '/openapi/other-features' },
     ],
   },
   {
-    title: 'Recipes',
+    title: '实用案例',
+    titleEn: 'Recipes',
     items: [
       { title: 'REPL', titleEn: 'REPL', url: '/recipes/repl' },
       { title: 'CRUD generator', titleEn: 'CRUD generator', url: '/recipes/crud-generator' },
