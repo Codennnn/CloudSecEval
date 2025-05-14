@@ -28,7 +28,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
 
       return (
-        <a href={href}>
+        <a href={href.startsWith('/') ? `/docs${href}` : href}>
           {children}
         </a>
       )

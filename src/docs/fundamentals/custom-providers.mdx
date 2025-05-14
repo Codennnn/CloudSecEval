@@ -1,12 +1,12 @@
-### Custom providers
+### 自定义提供者（Custom Provider）
 
-In earlier chapters, we touched on various aspects of **Dependency Injection (DI)** and how it is used in Nest. One example of this is the [constructor based](https://docs.nestjs.com/providers#dependency-injection) dependency injection used to inject instances (often service providers) into classes. You won't be surprised to learn that Dependency Injection is built into the Nest core in a fundamental way. So far, we've only explored one main pattern. As your application grows more complex, you may need to take advantage of the full features of the DI system, so let's explore them in more detail.
+在前面的章节中，我们已经介绍了 **依赖注入（Dependency Injection，DI）** 及其在 Nest 中的应用。例如，[基于构造函数的依赖注入](https://docs.nestjs.com/providers#dependency-injection) 用于将实例（通常是服务提供者）注入到类中。你可能已经注意到，依赖注入机制在 Nest 核心中扮演着至关重要的角色。到目前为止，我们只探索了一种主要模式。随着应用变得更加复杂，你可能需要充分利用 DI 系统的全部特性，下面我们将更详细地进行探讨。
 
-#### DI fundamentals
+#### DI 基础
 
-Dependency injection is an [inversion of control (IoC)](https://en.wikipedia.org/wiki/Inversion_of_control) technique wherein you delegate instantiation of dependencies to the IoC container (in our case, the NestJS runtime system), instead of doing it in your own code imperatively. Let's examine what's happening in this example from the [Providers chapter](https://docs.nestjs.com/providers).
+依赖注入是一种 [控制反转（Inversion of Control，IoC）](https://en.wikipedia.org/wiki/Inversion_of_control) 技术，即将依赖项的实例化过程交由 IoC 容器（在本例中为 NestJS 运行时系统）管理，而不是在代码中手动创建。让我们通过 [提供者章节](https://docs.nestjs.com/providers) 的示例来分析其工作原理。
 
-First, we define a provider. The `@Injectable()` decorator marks the `CatsService` class as a provider.
+首先，我们定义一个提供者。`@Injectable()` 装饰器将 `CatsService` 类标记为可由 Nest IoC 容器管理的提供者。
 
 ```typescript
 @@filename(cats.service)
@@ -36,7 +36,7 @@ export class CatsService {
 }
 ```
 
-Then we request that Nest inject the provider into our controller class:
+然后，我们请求 Nest 将该提供者注入到控制器类中：
 
 ```typescript
 @@filename(cats.controller)
@@ -71,7 +71,7 @@ export class CatsController {
 }
 ```
 
-Finally, we register the provider with the Nest IoC container:
+最后，我们在 Nest IoC 容器中注册该提供者：
 
 ```typescript
 @@filename(app.module)
@@ -86,26 +86,26 @@ import { CatsService } from './cats/cats.service';
 export class AppModule {}
 ```
 
-What exactly is happening under the covers to make this work? There are three key steps in the process:
+那么，底层究竟发生了什么？整个过程有三个关键步骤：
 
-1. In `cats.service.ts`, the `@Injectable()` decorator declares the `CatsService` class as a class that can be managed by the Nest IoC container.
-2. In `cats.controller.ts`, `CatsController` declares a dependency on the `CatsService` token with constructor injection:
+1. 在 `cats.service.ts` 中，`@Injectable()` 装饰器声明 `CatsService` 类为可由 Nest IoC 容器管理的类。
+2. 在 `cats.controller.ts` 中，`CatsController` 通过构造函数注入声明依赖于 `CatsService` 注入令牌（Injection Token）：
 
 ```typescript
   constructor(private catsService: CatsService)
 ```
 
-3. In `app.module.ts`, we associate the token `CatsService` with the class `CatsService` from the `cats.service.ts` file. We'll <a href="/fundamentals/custom-providers#standard-providers">see below</a> exactly how this association (also called _registration_) occurs.
+3. 在 `app.module.ts` 中，我们将 `CatsService` 注入令牌与 `cats.service.ts` 文件中的 `CatsService` 类关联。稍后我们会在<a href="/fundamentals/custom-providers#standard-providers">下文</a>详细介绍这种关联（也称为 _注册_）。
 
-When the Nest IoC container instantiates a `CatsController`, it first looks for any dependencies\*. When it finds the `CatsService` dependency, it performs a lookup on the `CatsService` token, which returns the `CatsService` class, per the registration step (#3 above). Assuming `SINGLETON` scope (the default behavior), Nest will then either create an instance of `CatsService`, cache it, and return it, or if one is already cached, return the existing instance.
+当 Nest IoC 容器实例化 `CatsController` 时，会首先查找其依赖项\*。当发现依赖 `CatsService` 时，会根据注册步骤（上文第 3 步）查找 `CatsService` 注入令牌，并返回对应的 `CatsService` 类。假设采用默认的 `SINGLETON` 作用域，Nest 会创建 `CatsService` 的实例、缓存并返回它，或者如果已缓存则直接返回现有实例。
 
-\*This explanation is a bit simplified to illustrate the point. One important area we glossed over is that the process of analyzing the code for dependencies is very sophisticated, and happens during application bootstrapping. One key feature is that dependency analysis (or "creating the dependency graph"), is **transitive**. In the above example, if the `CatsService` itself had dependencies, those too would be resolved. The dependency graph ensures that dependencies are resolved in the correct order - essentially "bottom up". This mechanism relieves the developer from having to manage such complex dependency graphs.
+\*此处为简化说明，实际依赖分析过程更为复杂，发生在应用引导（bootstrapping）期间。依赖分析（即“创建依赖图”）是**递归传递**的。例如，如果 `CatsService` 本身还有依赖项，也会被自动解析。依赖图确保依赖项按正确顺序解析——本质上是“自底向上”。这一机制让开发者无需手动管理复杂的依赖关系。
 
 <app-banner-courses></app-banner-courses>
 
-#### Standard providers
+#### 标准提供者（Standard Provider）
 
-Let's take a closer look at the `@Module()` decorator. In `app.module`, we declare:
+让我们进一步了解 `@Module()` 装饰器。在 `app.module` 中，我们声明：
 
 ```typescript
 @Module({
@@ -114,7 +114,7 @@ Let's take a closer look at the `@Module()` decorator. In `app.module`, we decla
 })
 ```
 
-The `providers` property takes an array of `providers`. So far, we've supplied those providers via a list of class names. In fact, the syntax `providers: [CatsService]` is short-hand for the more complete syntax:
+`providers` 属性接收一个提供者数组。到目前为止，我们通过类名列表传递这些提供者。实际上，`providers: [CatsService]` 是更完整语法的简写形式：
 
 ```typescript
 providers: [
@@ -125,29 +125,29 @@ providers: [
 ]
 ```
 
-Now that we see this explicit construction, we can understand the registration process. Here, we are clearly associating the token `CatsService` with the class `CatsService`. The short-hand notation is merely a convenience to simplify the most common use-case, where the token is used to request an instance of a class by the same name.
+通过这种显式写法，我们可以更清楚地理解注册过程。这里，我们将 `CatsService` 注入令牌与 `CatsService` 类关联。简写语法只是为了简化最常见的用例，即通过类名请求实例。
 
-#### Custom providers
+#### 自定义提供者（Custom Provider）
 
-What happens when your requirements go beyond those offered by _Standard providers_? Here are a few examples:
+如果你的需求超出了 _标准提供者_ 的能力怎么办？例如：
 
-- You want to create a custom instance instead of having Nest instantiate (or return a cached instance of) a class
-- You want to re-use an existing class in a second dependency
-- You want to override a class with a mock version for testing
+- 希望自定义实例，而不是让 Nest 实例化（或返回缓存的）类
+- 希望在第二个依赖项中复用已有类
+- 希望为测试覆盖真实类，使用 mock 版本
 
-Nest allows you to define Custom providers to handle these cases. It provides several ways to define custom providers. Let's walk through them.
+Nest 允许你通过自定义提供者来满足这些场景。它提供了多种定义自定义提供者的方式。下面我们逐一介绍。
 
-> info **Hint** If you are having problems with dependency resolution you can set the `NEST_DEBUG` environment variable and get extra dependency resolution logs during startup.
+> info **提示** 如果你遇到依赖解析问题，可以设置 `NEST_DEBUG` 环境变量，在启动时获取额外的依赖解析日志。
 
-#### Value providers: `useValue`
+#### 值提供者：`useValue`
 
-The `useValue` syntax is useful for injecting a constant value, putting an external library into the Nest container, or replacing a real implementation with a mock object. Let's say you'd like to force Nest to use a mock `CatsService` for testing purposes.
+`useValue` 语法适用于注入常量值、将外部库放入 Nest 容器，或用 mock 对象替换真实实现。例如，想在测试时让 Nest 使用 mock 版 `CatsService`：
 
 ```typescript
 import { CatsService } from './cats.service'
 
 const mockCatsService = {
-  /* mock implementation
+  /* mock 实现
   ...
   */
 }
@@ -164,11 +164,11 @@ const mockCatsService = {
 export class AppModule {}
 ```
 
-In this example, the `CatsService` token will resolve to the `mockCatsService` mock object. `useValue` requires a value - in this case a literal object that has the same interface as the `CatsService` class it is replacing. Because of TypeScript's [structural typing](https://www.typescriptlang.org/docs/handbook/type-compatibility.html), you can use any object that has a compatible interface, including a literal object or a class instance instantiated with `new`.
+在此示例中，`CatsService` 注入令牌会解析为 `mockCatsService` mock 对象。`useValue` 需要一个值——这里是一个与 `CatsService` 类接口兼容的字面量对象。由于 TypeScript 的[结构类型](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)，你可以使用任何接口兼容的对象，包括字面量对象或通过 `new` 实例化的类。
 
-#### Non-class-based provider tokens
+#### 非类注入令牌
 
-So far, we've used class names as our provider tokens (the value of the `provide` property in a provider listed in the `providers` array). This is matched by the standard pattern used with [constructor based injection](https://docs.nestjs.com/providers#dependency-injection), where the token is also a class name. (Refer back to <a href="/fundamentals/custom-providers#di-fundamentals">DI Fundamentals</a> for a refresher on tokens if this concept isn't entirely clear). Sometimes, we may want the flexibility to use strings or symbols as the DI token. For example:
+到目前为止，我们一直用类名作为提供者的注入令牌（即 `provide` 属性的值）。这与[基于构造函数的注入](https://docs.nestjs.com/providers#dependency-injection)模式相匹配，即令牌也是类名。（如需回顾令牌概念，可参考<a href="/fundamentals/custom-providers#di-fundamentals">DI 基础</a>）。有时，我们希望用字符串或 symbol 作为 DI 令牌。例如：
 
 ```typescript
 import { connection } from './connection'
@@ -184,11 +184,11 @@ import { connection } from './connection'
 export class AppModule {}
 ```
 
-In this example, we are associating a string-valued token (`'CONNECTION'`) with a pre-existing `connection` object we've imported from an external file.
+在此示例中，我们用字符串类型的令牌（`'CONNECTION'`）与已存在的 `connection` 对象关联。
 
-> warning **Notice** In addition to using strings as token values, you can also use JavaScript [symbols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) or TypeScript [enums](https://www.typescriptlang.org/docs/handbook/enums.html).
+> warning **注意** 除了字符串，还可以用 JavaScript [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) 或 TypeScript [enum](https://www.typescriptlang.org/docs/handbook/enums.html) 作为令牌。
 
-We've previously seen how to inject a provider using the standard [constructor based injection](https://docs.nestjs.com/providers#dependency-injection) pattern. This pattern **requires** that the dependency be declared with a class name. The `'CONNECTION'` custom provider uses a string-valued token. Let's see how to inject such a provider. To do so, we use the `@Inject()` decorator. This decorator takes a single argument - the token.
+我们之前已经看到如何用标准[构造函数注入](https://docs.nestjs.com/providers#dependency-injection)模式注入提供者。该模式**要求**依赖项用类名声明。`'CONNECTION'` 自定义提供者用的是字符串令牌。要注入此类提供者，需要用 `@Inject()` 装饰器。该装饰器接收一个参数——令牌。
 
 ```typescript
 @@filename()
@@ -204,13 +204,13 @@ export class CatsRepository {
 }
 ```
 
-> info **Hint** The `@Inject()` decorator is imported from `@nestjs/common` package.
+> info **提示** `@Inject()` 装饰器需从 `@nestjs/common` 包导入。
 
-While we directly use the string `'CONNECTION'` in the above examples for illustration purposes, for clean code organization, it's best practice to define tokens in a separate file, such as `constants.ts`. Treat them much as you would symbols or enums that are defined in their own file and imported where needed.
+虽然上例直接用字符串 `'CONNECTION'`，但为了代码整洁，建议将令牌定义在单独文件（如 `constants.ts`），像管理 symbol 或 enum 一样集中管理和导入。
 
-#### Class providers: `useClass`
+#### 类提供者：`useClass`
 
-The `useClass` syntax allows you to dynamically determine a class that a token should resolve to. For example, suppose we have an abstract (or default) `ConfigService` class. Depending on the current environment, we want Nest to provide a different implementation of the configuration service. The following code implements such a strategy.
+`useClass` 语法允许你动态决定令牌应解析为哪个类。例如，假设有一个抽象（或默认）`ConfigService` 类。根据当前环境，Nest 可提供不同的配置服务实现。如下：
 
 ```typescript
 const configServiceProvider = {
@@ -225,16 +225,16 @@ const configServiceProvider = {
 export class AppModule {}
 ```
 
-Let's look at a couple of details in this code sample. You'll notice that we define `configServiceProvider` with a literal object first, then pass it in the module decorator's `providers` property. This is just a bit of code organization, but is functionally equivalent to the examples we've used thus far in this chapter.
+此代码中，我们先用字面量对象定义 `configServiceProvider`，再传给模块装饰器的 `providers` 属性。这只是代码组织方式，功能等同于前文示例。
 
-Also, we have used the `ConfigService` class name as our token. For any class that depends on `ConfigService`, Nest will inject an instance of the provided class (`DevelopmentConfigService` or `ProductionConfigService`) overriding any default implementation that may have been declared elsewhere (e.g., a `ConfigService` declared with an `@Injectable()` decorator).
+此外，我们用 `ConfigService` 类名作为令牌。依赖 `ConfigService` 的类会注入所提供的实现类（`DevelopmentConfigService` 或 `ProductionConfigService`），覆盖其他地方声明的默认实现（如用 `@Injectable()` 装饰器声明的 `ConfigService`）。
 
-#### Factory providers: `useFactory`
+#### 工厂提供者：`useFactory`
 
-The `useFactory` syntax allows for creating providers **dynamically**. The actual provider will be supplied by the value returned from a factory function. The factory function can be as simple or complex as needed. A simple factory may not depend on any other providers. A more complex factory can itself inject other providers it needs to compute its result. For the latter case, the factory provider syntax has a pair of related mechanisms:
+`useFactory` 语法允许**动态**创建提供者。实际提供者由工厂函数返回的值决定。工厂函数可以很简单，也可以很复杂。简单工厂无需依赖其他提供者，复杂工厂则可注入其他依赖。后者可通过以下机制实现：
 
-1. The factory function can accept (optional) arguments.
-2. The (optional) `inject` property accepts an array of providers that Nest will resolve and pass as arguments to the factory function during the instantiation process. Also, these providers can be marked as optional. The two lists should be correlated: Nest will pass instances from the `inject` list as arguments to the factory function in the same order. The example below demonstrates this.
+1. 工厂函数可接收（可选）参数。
+2. `inject` 属性（可选）接收一个提供者数组，Nest 会在实例化时解析并按顺序传递给工厂函数。这些依赖项也可标记为可选。如下例所示：
 
 ```typescript
 @@filename()
@@ -246,14 +246,13 @@ const connectionProvider = {
   },
   inject: [MyOptionsProvider, { token: 'SomeOptionalProvider', optional: true }],
   //       \______________/             \__________________/
-  //        This provider                The provider with this token
-  //        is mandatory.                can resolve to `undefined`.
+  //        此依赖项为必需                此依赖项可解析为 undefined
 };
 
 @Module({
   providers: [
     connectionProvider,
-    MyOptionsProvider, // class-based provider
+    MyOptionsProvider, // 基于类的提供者
     // { provide: 'SomeOptionalProvider', useValue: 'anything' },
   ],
 })
@@ -267,28 +266,27 @@ const connectionProvider = {
   },
   inject: [MyOptionsProvider, { token: 'SomeOptionalProvider', optional: true }],
   //       \______________/            \__________________/
-  //        This provider               The provider with this token
-  //        is mandatory.               can resolve to `undefined`.
+  //        此依赖项为必需               此依赖项可解析为 undefined
 };
 
 @Module({
   providers: [
     connectionProvider,
-    MyOptionsProvider, // class-base provider
+    MyOptionsProvider, // 基于类的提供者
     // { provide: 'SomeOptionalProvider', useValue: 'anything' },
   ],
 })
 export class AppModule {}
 ```
 
-#### Alias providers: `useExisting`
+#### 别名提供者：`useExisting`
 
-The `useExisting` syntax allows you to create aliases for existing providers. This creates two ways to access the same provider. In the example below, the (string-based) token `'AliasedLoggerService'` is an alias for the (class-based) token `LoggerService`. Assume we have two different dependencies, one for `'AliasedLoggerService'` and one for `LoggerService`. If both dependencies are specified with `SINGLETON` scope, they'll both resolve to the same instance.
+`useExisting` 语法允许为已有提供者创建别名。这样可以通过不同令牌访问同一个提供者。如下例，字符串令牌 `'AliasedLoggerService'` 是类令牌 `LoggerService` 的别名。假设有两个依赖项分别依赖 `'AliasedLoggerService'` 和 `LoggerService`，如果都为 `SINGLETON` 作用域，则解析为同一实例。
 
 ```typescript
 @Injectable()
 class LoggerService {
-  /* implementation details */
+  /* 实现细节 */
 }
 
 const loggerAliasProvider = {
@@ -302,9 +300,9 @@ const loggerAliasProvider = {
 export class AppModule {}
 ```
 
-#### Non-service based providers
+#### 非服务类提供者
 
-While providers often supply services, they are not limited to that usage. A provider can supply **any** value. For example, a provider may supply an array of configuration objects based on the current environment, as shown below:
+虽然提供者通常用于提供服务，但不限于此。提供者可以提供**任意**值。例如，根据当前环境提供配置对象数组：
 
 ```typescript
 const configFactory = {
@@ -320,11 +318,11 @@ const configFactory = {
 export class AppModule {}
 ```
 
-#### Export custom provider
+#### 导出自定义提供者
 
-Like any provider, a custom provider is scoped to its declaring module. To make it visible to other modules, it must be exported. To export a custom provider, we can either use its token or the full provider object.
+与其他提供者一样，自定义提供者的作用域仅限于声明它的模块。若要让其他模块可见，必须导出。可以用其令牌或完整提供者对象导出。
 
-The following example shows exporting using the token:
+以下示例展示了用令牌导出：
 
 ```typescript
 @@filename()
@@ -359,7 +357,7 @@ const connectionFactory = {
 export class AppModule {}
 ```
 
-Alternatively, export with the full provider object:
+或者，用完整提供者对象导出：
 
 ```typescript
 @@filename()

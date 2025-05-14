@@ -1,50 +1,48 @@
-### Injection scopes
+### 依赖注入作用域（Injection scopes）
 
-For people coming from different programming language backgrounds, it might be unexpected to learn that in Nest, almost everything is shared across incoming requests. We have a connection pool to the database, singleton services with global state, etc. Remember that Node.js doesn't follow the request/response Multi-Threaded Stateless Model in which every request is processed by a separate thread. Hence, using singleton instances is fully **safe** for our applications.
+对于来自不同编程语言背景的开发者来说，可能会对 Nest 中"几乎所有内容都是在所有请求间共享的"这一点感到意外。我们通常会有数据库连接池、带有全局状态的单例服务等。请记住，Node.js 并不遵循"请求/响应多线程无状态模型"，即每个请求由独立线程处理。因此，在 Nest 应用中使用单例实例是完全**安全**的。
 
-However, there are edge cases when request-based lifetime may be the desired behavior, for instance, per-request caching in GraphQL applications, request tracking, and multi-tenancy. Injection scopes provide a mechanism to obtain the desired provider lifetime behavior.
+不过，在某些特殊场景下，我们可能需要基于请求的生命周期行为，例如在 GraphQL 应用中进行每请求缓存、请求追踪、多租户（multi-tenancy）等。依赖注入作用域（Injection scopes）机制可以帮助我们实现期望的提供者（Provider）生命周期行为。
 
-#### Provider scope
+#### 提供者作用域（Provider scope）
 
-A provider can have any of the following scopes:
+一个提供者可以拥有以下几种作用域：
 
 <table>
-  <tr>
-    <td>
-      <code>DEFAULT</code>
-    </td>
-    <td>
-      A single instance of the provider is shared across the entire application. The instance
-      lifetime is tied directly to the application lifecycle. Once the application has bootstrapped,
-      all singleton providers have been instantiated. Singleton scope is used by default.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>REQUEST</code>
-    </td>
-    <td>
-      A new instance of the provider is created exclusively for each incoming{' '}
-      <strong>request</strong>. The instance is garbage-collected after the request has completed
-      processing.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>TRANSIENT</code>
-    </td>
-    <td>
-      Transient providers are not shared across consumers. Each consumer that injects a transient
-      provider will receive a new, dedicated instance.
-    </td>
-  </tr>
+  <tbody>
+    <tr>
+      <td>
+        <code>DEFAULT</code>
+      </td>
+      <td>
+        提供者的单个实例在整个应用中共享。其实例的生命周期与应用生命周期直接绑定。应用引导（bootstrapped）后，所有单例（Singleton）提供者都会被实例化。默认情况下，使用单例作用域。
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>REQUEST</code>
+      </td>
+      <td>
+        每个传入的<strong>请求（Request）</strong>
+        都会创建一个新的提供者实例。该实例会在请求处理完成后被垃圾回收。
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>TRANSIENT</code>
+      </td>
+      <td>
+        瞬态（Transient）提供者不会在不同消费者之间共享。每个注入瞬态提供者的消费者都会获得一个全新的专属实例。
+      </td>
+    </tr>
+  </tbody>
 </table>
 
-> info **Hint** Using singleton scope is **recommended** for most use cases. Sharing providers across consumers and across requests means that an instance can be cached and its initialization occurs only once, during application startup.
+> info **提示** 绝大多数场景下，推荐使用单例作用域。让提供者在不同消费者和请求间共享，可以实现实例缓存，并且只在应用启动时初始化一次。
 
-#### Usage
+#### 用法
 
-Specify injection scope by passing the `scope` property to the `@Injectable()` decorator options object:
+可以通过在 `@Injectable()` 装饰器的 options 对象中传递 `scope` 属性来指定依赖注入作用域：
 
 ```typescript
 import { Injectable, Scope } from '@nestjs/common'
@@ -53,7 +51,7 @@ import { Injectable, Scope } from '@nestjs/common'
 export class CatsService {}
 ```
 
-Similarly, for [custom providers](/fundamentals/custom-providers), set the `scope` property in the long-hand form for a provider registration:
+同样地，对于[自定义提供者](/fundamentals/custom-providers)，可以在提供者注册的长格式写法中设置 `scope` 属性：
 
 ```typescript
 {
@@ -63,17 +61,17 @@ Similarly, for [custom providers](/fundamentals/custom-providers), set the `scop
 }
 ```
 
-> info **Hint** Import the `Scope` enum from `@nestjs/common`
+> info **提示** 需要从 `@nestjs/common` 导入 `Scope` 枚举。
 
-Singleton scope is used by default and does not need be declared. If you do want to declare a provider as singleton scoped, use the `Scope.DEFAULT` value for the `scope` property.
+默认情况下使用单例作用域，无需显式声明。如果你确实想声明为单例作用域，可以为 `scope` 属性设置 `Scope.DEFAULT`。
 
-> warning **Notice** Websocket Gateways should not use request-scoped providers because they must act as singletons. Each gateway encapsulates a real socket and cannot be instantiated multiple times. The limitation also applies to some other providers, like [_Passport strategies_](../security/authentication#request-scoped-strategies) or _Cron controllers_.
+> warning **注意** WebSocket 网关（Gateway）不应使用请求作用域（Request-scoped）提供者，因为它们必须作为单例存在。每个网关都封装了一个真实的 socket，不能被多次实例化。类似的限制也适用于某些其他提供者，比如 [_Passport 策略_](../security/authentication#request-scoped-strategies) 或 _Cron 控制器_。
 
-#### Controller scope
+#### 控制器作用域（Controller scope）
 
-Controllers can also have scope, which applies to all request method handlers declared in that controller. Like provider scope, the scope of a controller declares its lifetime. For a request-scoped controller, a new instance is created for each inbound request, and garbage-collected when the request has completed processing.
+控制器（Controller）同样可以设置作用域，这一作用域会应用于该控制器中声明的所有请求处理方法。与提供者作用域类似，控制器的作用域决定了其实例的生命周期。对于请求作用域的控制器，每个入站请求都会创建一个新的控制器实例，并在请求处理完成后自动进行垃圾回收。
 
-Declare controller scope with the `scope` property of the `ControllerOptions` object:
+可以通过 `ControllerOptions` 对象的 `scope` 属性声明控制器作用域：
 
 ```typescript
 @Controller({
@@ -83,21 +81,21 @@ Declare controller scope with the `scope` property of the `ControllerOptions` ob
 export class CatsController {}
 ```
 
-#### Scope hierarchy
+#### 作用域层级（Scope hierarchy）
 
-The `REQUEST` scope bubbles up the injection chain. A controller that depends on a request-scoped provider will, itself, be request-scoped.
+`REQUEST` 作用域会沿着依赖注入链向上传递。一个依赖于请求作用域提供者的控制器自身也会变成请求作用域。
 
-Imagine the following dependency graph: `CatsController <- CatsService <- CatsRepository`. If `CatsService` is request-scoped (and the others are default singletons), the `CatsController` will become request-scoped as it is dependent on the injected service. The `CatsRepository`, which is not dependent, would remain singleton-scoped.
+假设有如下依赖关系图：`CatsController <- CatsService <- CatsRepository`。如果 `CatsService` 被设置为请求作用域（而其他两个仍为默认的单例作用域），那么由于 `CatsController` 依赖于这个被注入的服务，它自身也会变成请求作用域。而 `CatsRepository` 因为没有被依赖，则依然保持单例作用域。
 
-Transient-scoped dependencies don't follow that pattern. If a singleton-scoped `DogsService` injects a transient `LoggerService` provider, it will receive a fresh instance of it. However, `DogsService` will stay singleton-scoped, so injecting it anywhere would _not_ resolve to a new instance of `DogsService`. In case it's desired behavior, `DogsService` must be explicitly marked as `TRANSIENT` as well.
+瞬态作用域（Transient）的依赖并不遵循上述模式。例如，如果一个单例作用域的 `DogsService` 注入了一个瞬态的 `LoggerService` 提供者，每次注入时都会获得一个全新的 `LoggerService` 实例。然而，`DogsService` 本身依然保持单例作用域，无论在何处被注入，都不会生成新的 `DogsService` 实例。如果你希望 `DogsService` 也能每次注入时都创建新实例，则需要显式将其标记为瞬态作用域（TRANSIENT）。
 
 <app-banner-courses></app-banner-courses>
 
-#### Request provider
+#### 请求对象提供者（Request provider）
 
-In an HTTP server-based application (e.g., using `@nestjs/platform-express` or `@nestjs/platform-fastify`), you may want to access a reference to the original request object when using request-scoped providers. You can do this by injecting the `REQUEST` object.
+在基于 HTTP 服务器的应用中（例如使用 `@nestjs/platform-express` 或 `@nestjs/platform-fastify`），如果你在请求作用域的提供者中需要访问原始的请求对象，可以通过注入 REQUEST 对象来实现。
 
-The `REQUEST` provider is inherently request-scoped, meaning you don't need to specify the `REQUEST` scope explicitly when using it. Additionally, even if you attempt to do so, it will be disregarded. Any provider that relies on a request-scoped provider automatically adopts a request scope, and this behavior cannot be altered.
+`REQUEST` 提供者本身就是请求作用域，因此在使用时无需显式指定其作用域。即使你尝试手动设置，也不会生效。任何依赖于请求作用域提供者的其他提供者都会自动变为请求作用域，这一行为无法更改。
 
 ```typescript
 import { Injectable, Scope, Inject } from '@nestjs/common'
@@ -110,7 +108,7 @@ export class CatsService {
 }
 ```
 
-Because of underlying platform/protocol differences, you access the inbound request slightly differently for Microservice or GraphQL applications. In [GraphQL](/graphql/quick-start) applications, you inject `CONTEXT` instead of `REQUEST`:
+由于底层平台或协议的差异，在微服务（Microservice）或 GraphQL 应用中，获取入站请求对象的方式有所不同。在 [GraphQL](/graphql/quick-start) 应用中，应注入 `CONTEXT`，而不是 `REQUEST：`
 
 ```typescript
 import { Injectable, Scope, Inject } from '@nestjs/common'
@@ -122,9 +120,9 @@ export class CatsService {
 }
 ```
 
-You then configure your `context` value (in the `GraphQLModule`) to contain `request` as its property.
+你需要在 `GraphQLModule` 的 `context` 配置中，将 `request` 作为其属性。
 
-#### Inquirer provider
+#### Inquirer 提供者（Inquirer provider）
 
 If you want to get the class where a provider was constructed, for instance in logging or metrics providers, you can inject the `INQUIRER` token.
 
@@ -142,7 +140,7 @@ export class HelloService {
 }
 ```
 
-And then use it as follows:
+然后可以这样使用：
 
 ```typescript
 import { Injectable } from '@nestjs/common'
@@ -160,27 +158,27 @@ export class AppService {
 }
 ```
 
-In the example above when `AppService#getRoot` is called, `"AppService: My name is getRoot"` will be logged to the console.
+在上面的例子中，当调用 `AppService#getRoot` 时，控制台会输出：`"AppService: My name is getRoot"`。
 
-#### Performance
+#### 性能（Performance）
 
-Using request-scoped providers will have an impact on application performance. While Nest tries to cache as much metadata as possible, it will still have to create an instance of your class on each request. Hence, it will slow down your average response time and overall benchmarking result. Unless a provider must be request-scoped, it is strongly recommended that you use the default singleton scope.
+使用请求作用域（Request-scoped）提供者会影响应用性能。尽管 Nest 尽力缓存尽可能多的元数据，但它仍然需要在每个请求中创建一个新的类实例。这将导致平均响应时间延长，并降低整体基准测试表现。除非确实需要使用请求作用域，否则强烈建议使用默认的单例作用域（Singleton scope）。
 
-> info **Hint** Although it all sounds quite intimidating, a properly designed application that leverages request-scoped providers should not slow down by more than ~5% latency-wise.
+> info **提示** 虽然听起来有些吓人，但合理设计的应用，即使大量使用请求作用域提供者，延迟通常也不会超过 5% 左右。
 
-#### Durable providers
+#### 持久化提供者（Durable providers）
 
-Request-scoped providers, as mentioned in the section above, may lead to increased latency since having at least 1 request-scoped provider (injected into the controller instance, or deeper - injected into one of its providers) makes the controller request-scoped as well. That means it must be recreated (instantiated) per each individual request (and garbage collected afterward). Now, that also means, that for let's say 30k requests in parallel, there will be 30k ephemeral instances of the controller (and its request-scoped providers).
+请求作用域（Request-scoped）提供者，如前文所述，可能会导致应用延迟增加。因为只要有一个请求作用域的提供者被注入到控制器实例（或更深层的依赖链中），该控制器也会变为请求作用域。这意味着每个请求都需要重新创建（实例化）控制器（以及其请求作用域的依赖），并在请求结束后进行垃圾回收。举例来说，如果有 3 万个并发请求，就会同时存在 3 万个临时的控制器实例（以及其请求作用域的依赖）。
 
-Having a common provider that most providers depend on (think of a database connection, or a logger service), automatically converts all those providers to request-scoped providers as well. This can pose a challenge in **multi-tenant applications**, especially for those that have a central request-scoped "data source" provider that grabs headers/token from the request object and based on its values, retrieves the corresponding database connection/schema (specific to that tenant).
+如果有一个大多数提供者都依赖的通用提供者（比如数据库连接或日志服务），那么所有依赖它的提供者也会自动变为请求作用域。在多租户应用（multi-tenant application）中，这种情况尤其常见，特别是当你有一个中心化的请求作用域“数据源”提供者，它会从请求对象中获取 header 或 token，并据此获取对应的数据库连接或 schema（即每个租户专属的数据库）。
 
-For instance, let's say you have an application alternately used by 10 different customers. Each customer has its **own dedicated data source**, and you want to make sure customer A will never be able to reach customer B's database. One way to achieve this could be to declare a request-scoped "data source" provider that - based on the request object - determines what's the "current customer" and retrieves its corresponding database. With this approach, you can turn your application into a multi-tenant application in just a few minutes. But, a major downside to this approach is that since most likely a large chunk of your application' components rely on the "data source" provider, they will implicitly become "request-scoped", and therefore you will undoubtedly see an impact in your apps performance.
+举个例子，假设你的应用被 10 个不同的客户轮流使用，每个客户都有自己专属的数据源，你希望确保 A 客户永远无法访问 B 客户的数据库。实现这一目标的一种方式，是声明一个请求作用域的“数据源”提供者，根据请求对象判断“当前客户”是谁，并获取其对应的数据库。通过这种方式，你可以在几分钟内将应用升级为多租户架构。但这种做法的主要缺点在于，由于应用中很大一部分组件都依赖于这个“数据源”提供者，它们都会隐式变为请求作用域，因此应用性能必然会受到影响。
 
-But what if we had a better solution? Since we only have 10 customers, couldn't we have 10 individual [DI sub-trees](/fundamentals/module-ref#resolving-scoped-providers) per customer (instead of recreating each tree per request)? If your providers don't rely on any property that's truly unique for each consecutive request (e.g., request UUID) but instead there're some specific attributes that let us aggregate (classify) them, there's no reason to _recreate DI sub-tree_ on every incoming request.
+那么，有没有更优的解决方案？既然我们只有 10 个客户，是否可以为每个客户分别维护 10 棵独立的[依赖注入子树](/fundamentals/module-ref#resolving-scoped-providers)，而不是每次请求都重新创建整棵依赖树？如果你的提供者并不依赖每个请求都唯一的属性（比如请求的 UUID），而是依赖某些可以归类（聚合）的特定属性，那么其实没有必要为每个请求都重新创建依赖注入子树。
 
-And that's exactly when the **durable providers** come in handy.
+这正是 **持久化提供者（durable provider）** 大显身手的场景。
 
-Before we start flagging providers as durable, we must first register a **strategy** that instructs Nest what are those "common request attributes", provide logic that groups requests - associates them with their corresponding DI sub-trees.
+在开始将提供者标记为持久化之前，我们首先需要注册一个 **策略**，告诉 Nest 哪些是“通用请求属性”，并提供逻辑来分组请求 - 将它们与对应的依赖注入子树关联起来。
 
 ```typescript
 import { HostComponentInfo, ContextId, ContextIdFactory, ContextIdStrategy } from '@nestjs/core'
@@ -206,13 +204,13 @@ export class AggregateByTenantContextIdStrategy implements ContextIdStrategy {
 }
 ```
 
-> info **Hint** Similar to the request scope, durability bubbles up the injection chain. That means if A depends on B which is flagged as `durable`, A implicitly becomes durable too (unless `durable` is explicitly set to `false` for A provider).
+> info **提示** 类似于请求作用域，持久化（durability）特性也会沿着依赖注入链向上传递。也就是说，如果 A 依赖于被标记为 `durable` 的 B，那么 A 也会隐式地变为 durable（除非在 A 的提供者上显式将 `durable` 设置为 false）。
 
-> warning **Warning** Note this strategy is not ideal for applications operating with a large number of tenants.
+> warning **警告** 请注意，这种策略并不适用于操作大量租户的应用。
 
-The value returned from the `attach` method instructs Nest what context identifier should be used for a given host. In this case, we specified that the `tenantSubTreeId` should be used instead of the original, auto-generated `contextId` object, when the host component (e.g., request-scoped controller) is flagged as durable (you can learn how to mark providers as durable below). Also, in the above example, **no payload** would be registered (where payload = `REQUEST`/`CONTEXT` provider that represents the "root" - parent of the sub-tree).
+`attach` 方法的返回值用于指示 Nest 应该为特定宿主（host）组件使用哪个上下文标识符（context identifier）。在本例中，我们指定当宿主组件（如请求作用域的控制器）被标记为 durable 时，应使用 `tenantSubTreeId`，而不是原本自动生成的 `contextId` 对象（关于如何将提供者标记为 durable，见下文）。另外，在上述示例中，并不会注册任何 payload（payload 即代表“根”——子树父级的 `REQUEST`/`CONTEXT` 提供者）。
 
-If you want to register the payload for a durable tree, use the following construction instead:
+如果你希望为 durable 子树注册 payload，可以使用如下写法：
 
 ```typescript
 // The return of `AggregateByTenantContextIdStrategy#attach` method:
@@ -222,19 +220,19 @@ return {
 }
 ```
 
-Now whenever you inject the `REQUEST` provider (or `CONTEXT` for GraphQL applications) using the `@Inject(REQUEST)`/`@Inject(CONTEXT)`, the `payload` object would be injected (consisting of a single property - `tenantId` in this case).
+这样，每当你通过 `@Inject(REQUEST)` 或 `@Inject(CONTEXT)` 注入 `REQUEST` 提供者（或在 GraphQL 应用中注入 `CONTEXT`）时，都会注入包含单个属性（本例为 `tenantId`）的 `payload` 对象。
 
-Alright so with this strategy in place, you can register it somewhere in your code (as it applies globally anyway), so for example, you could place it in the `main.ts` file:
+有了上述策略后，你可以在代码中的任意位置注册它（因为它是全局生效的），例如可以放在 `main.ts` 文件中：
 
 ```typescript
 ContextIdFactory.apply(new AggregateByTenantContextIdStrategy())
 ```
 
-> info **Hint** The `ContextIdFactory` class is imported from the `@nestjs/core` package.
+> info **提示** 需要从 `@nestjs/core` 包导入 `ContextIdFactory` 类。
 
-As long as the registration occurs before any request hits your application, everything will work as intended.
+只要在应用接收任何请求之前完成注册，所有功能就会按预期工作。
 
-Lastly, to turn a regular provider into a durable provider, simply set the `durable` flag to `true` and change its scope to `Scope.REQUEST` (not needed if the REQUEST scope is in the injection chain already):
+最后，要将普通提供者转换为 durable 提供者，只需将 `durable` 标志设置为 `true`，并将其作用域改为 `Scope.REQUEST`（如果注入链中已存在 REQUEST 作用域，则无需重复设置）：
 
 ```typescript
 import { Injectable, Scope } from '@nestjs/common'
@@ -243,7 +241,7 @@ import { Injectable, Scope } from '@nestjs/common'
 export class CatsService {}
 ```
 
-Similarly, for [custom providers](/fundamentals/custom-providers), set the `durable` property in the long-hand form for a provider registration:
+同样地，对于[自定义提供者](/fundamentals/custom-providers)，可以在注册时设置 `durable` 属性：
 
 ```typescript
 {

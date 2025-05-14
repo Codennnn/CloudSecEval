@@ -1,27 +1,27 @@
-### Testing
+### 测试（Testing）
 
-Automated testing is considered an essential part of any serious software development effort. Automation makes it easy to repeat individual tests or test suites quickly and easily during development. This helps ensure that releases meet quality and performance goals. Automation helps increase coverage and provides a faster feedback loop to developers. Automation both increases the productivity of individual developers and ensures that tests are run at critical development lifecycle junctures, such as source code control check-in, feature integration, and version release.
+自动化测试被认为是现代软件开发不可或缺的重要环节。自动化让开发过程中能够快速、便捷地重复执行单个测试或测试套件，有助于确保发布版本达到质量和性能目标。自动化测试不仅提升了测试覆盖率，还为开发者提供了更快的反馈循环。它既提升了开发者个人的生产力，也确保在关键的开发生命周期节点（如源代码提交、功能集成和版本发布）能够及时运行测试。
 
-Such tests often span a variety of types, including unit tests, end-to-end (e2e) tests, integration tests, and so on. While the benefits are unquestionable, it can be tedious to set them up. Nest strives to promote development best practices, including effective testing, so it includes features such as the following to help developers and teams build and automate tests. Nest:
+这些测试通常涵盖多种类型，包括单元测试（Unit Testing）、端到端测试（End-to-End Testing，e2e）、集成测试（Integration Testing）等。虽然自动化测试的好处毋庸置疑，但搭建测试环境有时会比较繁琐。Nest 致力于推广开发最佳实践，包括高效的测试，因此内置了如下特性，帮助开发者和团队构建并自动化测试。Nest：
 
-- automatically scaffolds default unit tests for components and e2e tests for applications
-- provides default tooling (such as a test runner that builds an isolated module/application loader)
-- provides integration with [Jest](https://github.com/facebook/jest) and [Supertest](https://github.com/visionmedia/supertest) out-of-the-box, while remaining agnostic to testing tools
-- makes the Nest dependency injection system available in the testing environment for easily mocking components
+- 自动为组件生成默认的单元测试和为应用生成端到端测试脚手架
+- 提供默认工具（如可构建隔离模块/应用加载器的测试运行器（Test Runner））
+- 开箱即用地集成了 [Jest](https://github.com/facebook/jest) 和 [Supertest](https://github.com/visionmedia/supertest)，同时对测试工具保持无关性
+- 使 Nest 的依赖注入（Dependency Injection）系统在测试环境中可用，便于模拟（Mock）组件
 
-As mentioned, you can use any **testing framework** that you like, as Nest doesn't force any specific tooling. Simply replace the elements needed (such as the test runner), and you will still enjoy the benefits of Nest's ready-made testing facilities.
+如前所述，你可以使用任何你喜欢的**测试框架（Testing Framework）**，Nest 并不会强制指定特定工具。只需替换所需的部分（如测试运行器），即可继续享受 Nest 提供的现成测试能力。
 
-#### Installation
+#### 安装
 
-To get started, first install the required package:
+首先，安装所需的包：
 
 ```bash
 $ npm i --save-dev @nestjs/testing
 ```
 
-#### Unit testing
+#### 单元测试（Unit Testing）
 
-In the following example, we test two classes: `CatsController` and `CatsService`. As mentioned, [Jest](https://github.com/facebook/jest) is provided as the default testing framework. It serves as a test-runner and also provides assert functions and test-double utilities that help with mocking, spying, etc. In the following basic test, we manually instantiate these classes, and ensure that the controller and service fulfill their API contract.
+在下方示例中，我们将测试两个类：`CatsController` 和 `CatsService`。如前所述，[Jest](https://github.com/facebook/jest) 是默认的测试框架。它既作为测试运行器，也提供断言函数和测试替身（Test Double）工具，便于模拟（Mock）、监视（Spy）等。在下面的基础测试中，我们手动实例化这些类，并确保控制器和服务能够满足其 API 合同。
 
 ```typescript
 @@filename(cats.controller.spec)
@@ -70,13 +70,13 @@ describe('CatsController', () => {
 });
 ```
 
-> info **Hint** Keep your test files located near the classes they test. Testing files should have a `.spec` or `.test` suffix.
+> info **提示** 建议将测试文件放在被测试类附近。测试文件应以 `.spec` 或 `.test` 结尾。
 
-Because the above sample is trivial, we aren't really testing anything Nest-specific. Indeed, we aren't even using dependency injection (notice that we pass an instance of `CatsService` to our `catsController`). This form of testing - where we manually instantiate the classes being tested - is often called **isolated testing** as it is independent from the framework. Let's introduce some more advanced capabilities that help you test applications that make more extensive use of Nest features.
+由于上述示例较为简单，实际上并未测试任何 Nest 特有的内容。事实上，我们甚至没有使用依赖注入（Dependency Injection），而是直接将 `CatsService` 的实例传递给 `catsController`。这种测试方式——即手动实例化被测类——通常被称为**隔离测试（Isolated Testing）**，它与框架无关。接下来我们将介绍一些更高级的能力，帮助你测试更充分利用 Nest 特性的应用。
 
-#### Testing utilities
+#### 测试工具（Testing utilities）
 
-The `@nestjs/testing` package provides a set of utilities that enable a more robust testing process. Let's rewrite the previous example using the built-in `Test` class:
+`@nestjs/testing` 包提供了一套实用工具，帮助你实现更健壮的测试流程。我们来用内置的 `Test` 类重写前面的示例：
 
 ```typescript
 @@filename(cats.controller.spec)
@@ -137,11 +137,11 @@ describe('CatsController', () => {
 });
 ```
 
-The `Test` class is useful for providing an application execution context that essentially mocks the full Nest runtime, but gives you hooks that make it easy to manage class instances, including mocking and overriding. The `Test` class has a `createTestingModule()` method that takes a module metadata object as its argument (the same object you pass to the `@Module()` decorator). This method returns a `TestingModule` instance which in turn provides a few methods. For unit tests, the important one is the `compile()` method. This method bootstraps a module with its dependencies (similar to the way an application is bootstrapped in the conventional `main.ts` file using `NestFactory.create()`), and returns a module that is ready for testing.
+`Test` 类可以为应用提供一个执行上下文（Execution Context），本质上模拟了完整的 Nest 运行时（Runtime），同时为你提供了便捷的钩子来管理类实例，包括模拟（Mock）和覆盖（Override）。`Test` 类的 `createTestingModule()` 方法接收一个模块元数据对象作为参数（与传递给 `@Module()` 装饰器的对象相同）。该方法会返回一个 `测试模块（TestingModule）` 实例，进而提供若干方法。对于单元测试（Unit Testing）来说，最重要的是 `compile()` 方法。它会引导（Bootstrapping）模块及其依赖（类似于在 `main.ts` 中用 `NestFactory.create()` 启动应用），并返回一个可用于测试的模块。
 
-> info **Hint** The `compile()` method is **asynchronous** and therefore has to be awaited. Once the module is compiled you can retrieve any **static** instance it declares (controllers and providers) using the `get()` method.
+> info **提示** `compile()` 方法是**异步**的，因此必须使用 `await`。模块编译完成后，你可以通过 `get()` 方法获取其声明的任何**静态**实例（控制器和提供者）。
 
-`TestingModule` inherits from the [module reference](/fundamentals/module-ref) class, and therefore its ability to dynamically resolve scoped providers (transient or request-scoped). Do this with the `resolve()` method (the `get()` method can only retrieve static instances).
+`测试模块（TestingModule）` 继承自 [模块引用（Module Reference）](/fundamentals/module-ref) 类，因此也具备动态解析作用域提供者（如瞬态或请求作用域）的能力。可以通过 `resolve()` 方法实现（`get()` 方法只能获取静态实例）。
 
 ```typescript
 const moduleRef = await Test.createTestingModule({
@@ -152,17 +152,17 @@ const moduleRef = await Test.createTestingModule({
 catsService = await moduleRef.resolve(CatsService)
 ```
 
-> warning **Warning** The `resolve()` method returns a unique instance of the provider, from its own **DI container sub-tree**. Each sub-tree has a unique context identifier. Thus, if you call this method more than once and compare instance references, you will see that they are not equal.
+> warning **警告** `resolve()` 方法会返回该提供者在其**依赖注入（Dependency Injection）容器子树**中的唯一实例。每个子树都有唯一的上下文标识符。因此，如果多次调用该方法并比较实例引用，会发现它们并不相等。
 
-> info **Hint** Learn more about the module reference features [here](/fundamentals/module-ref).
+> info **提示** 你可以在[这里](/fundamentals/module-ref)了解更多模块引用相关特性。
 
-Instead of using the production version of any provider, you can override it with a [custom provider](/fundamentals/custom-providers) for testing purposes. For example, you can mock a database service instead of connecting to a live database. We'll cover overrides in the next section, but they're available for unit tests as well.
+除了使用生产环境的提供者外，你还可以为测试目的覆盖（Override）为[自定义提供者（Custom Provider）](/fundamentals/custom-providers)。例如，你可以模拟数据库服务，而不是连接真实数据库。我们将在下一节详细介绍覆盖，但在单元测试中同样适用。
 
 <app-banner-courses></app-banner-courses>
 
-#### Auto mocking
+#### 自动模拟（Auto mocking）
 
-Nest also allows you to define a mock factory to apply to all of your missing dependencies. This is useful for cases where you have a large number of dependencies in a class and mocking all of them will take a long time and a lot of setup. To make use of this feature, the `createTestingModule()` will need to be chained up with the `useMocker()` method, passing a factory for your dependency mocks. This factory can take in an optional token, which is an instance token, any token which is valid for a Nest provider, and returns a mock implementation. The below is an example of creating a generic mocker using [`jest-mock`](https://www.npmjs.com/package/jest-mock) and a specific mock for `CatsService` using `jest.fn()`.
+Nest 还允许你定义一个模拟工厂（mock factory），用于为所有缺失的依赖自动生成模拟对象（Mock）。当某个类依赖项较多，手动为每个依赖编写模拟对象既耗时又繁琐时，这一特性尤为有用。要使用该功能，需要在 `createTestingModule()` 方法后链式调用 `useMocker()` 方法，并传入一个用于生成依赖模拟对象的工厂函数。该工厂函数可以接收一个可选的 token（实例令牌，即任何有效的 Nest 提供者（Provider）令牌），并返回一个模拟实现。下面的示例展示了如何结合 [`jest-mock`](https://www.npmjs.com/package/jest-mock) 创建通用模拟器，以及如何使用 `jest.fn()` 为 `CatsService` 创建特定的模拟对象。
 
 ```typescript
 // ...
@@ -195,15 +195,15 @@ describe('CatsController', () => {
 })
 ```
 
-You can also retrieve these mocks out of the testing container as you normally would custom providers, `moduleRef.get(CatsService)`.
+你也可以像获取自定义提供者（Custom Provider）一样，从测试容器中获取这些模拟对象，例如 `moduleRef.get(CatsService)`。
 
-> info **Hint** A general mock factory, like `createMock` from [`@golevelup/ts-jest`](https://github.com/golevelup/nestjs/tree/master/packages/testing) can also be passed directly.
+> info **提示** 你也可以直接传入通用模拟工厂，例如 [`@golevelup/ts-jest`](https://github.com/golevelup/nestjs/tree/master/packages/testing) 提供的 `createMock` 方法。
 
-> info **Hint** `REQUEST` and `INQUIRER` providers cannot be auto-mocked because they're already pre-defined in the context. However, they can be _overwritten_ using the custom provider syntax or by utilizing the `.overrideProvider` method.
+> info **提示** `REQUEST` 和 `INQUIRER` 这两个提供者无法被自动模拟，因为它们在上下文中已被预定义。不过，你可以通过自定义提供者语法或 `.overrideProvider` 方法对其进行覆盖。
 
-#### End-to-end testing
+#### 端到端测试（End-to-End Testing）
 
-Unlike unit testing, which focuses on individual modules and classes, end-to-end (e2e) testing covers the interaction of classes and modules at a more aggregate level -- closer to the kind of interaction that end-users will have with the production system. As an application grows, it becomes hard to manually test the end-to-end behavior of each API endpoint. Automated end-to-end tests help us ensure that the overall behavior of the system is correct and meets project requirements. To perform e2e tests we use a similar configuration to the one we just covered in **unit testing**. In addition, Nest makes it easy to use the [Supertest](https://github.com/visionmedia/supertest) library to simulate HTTP requests.
+与关注单个模块（Module）和类的单元测试（Unit Testing）不同，端到端测试（End-to-End Testing，e2e）关注的是类和模块之间更高层次的交互——更接近最终用户实际与生产系统交互的方式。随着应用规模的增长，手动测试每个 API 端点的端到端行为变得愈发困难。自动化的端到端测试有助于我们确保系统整体行为的正确性，并满足项目需求。进行端到端测试时，我们会采用与前文**单元测试**类似的配置。此外，Nest 还让你可以轻松集成 [Supertest](https://github.com/visionmedia/supertest) 库来模拟 HTTP 请求。
 
 ```typescript
 @@filename(cats.e2e-spec)
@@ -280,7 +280,7 @@ describe('Cats', () => {
 });
 ```
 
-> info **Hint** If you're using [Fastify](/techniques/performance) as your HTTP adapter, it requires a slightly different configuration, and has built-in testing capabilities:
+> info **提示** 如果你使用 [Fastify](/techniques/performance) 作为 HTTP 适配器，则需要稍作不同的配置，并且 Fastify 内置了测试能力：
 >
 > ```ts
 > let app: NestFastifyApplication
@@ -309,25 +309,25 @@ describe('Cats', () => {
 > })
 > ```
 
-In this example, we build on some of the concepts described earlier. In addition to the `compile()` method we used earlier, we now use the `createNestApplication()` method to instantiate a full Nest runtime environment.
+在本例中，我们基于前文介绍的一些概念进行了扩展。除了前面用到的 `compile()` 方法外，这里还使用了 `createNestApplication()` 方法来实例化一个完整的 Nest 运行时环境（Runtime）。
 
-One caveat to consider is that when your application is compiled using the `compile()` method, the `HttpAdapterHost#httpAdapter` will be undefined at that time. This is because there isn't an HTTP adapter or server created yet during this compilation phase. If your test requires the `httpAdapter`, you should use the `createNestApplication()` method to create the application instance, or refactor your project to avoid this dependency when initializing the dependencies graph.
+有一点需要注意：当你的应用通过 `compile()` 方法编译时，此时 `HttpAdapterHost#httpAdapter` 仍然是未定义的。原因是在编译阶段还没有创建 HTTP 适配器或服务器。如果你的测试依赖于 `httpAdapter`，应当使用 `createNestApplication()` 方法来创建应用实例，或者在初始化依赖关系图时重构项目以避免这种依赖。
 
-Alright, let's break down the example:
+下面我们来详细拆解这个示例：
 
-We save a reference to the running app in our `app` variable so we can use it to simulate HTTP requests.
+我们将正在运行的应用引用保存在 `app` 变量中，以便后续用于模拟 HTTP 请求。
 
-We simulate HTTP tests using the `request()` function from Supertest. We want these HTTP requests to route to our running Nest app, so we pass the `request()` function a reference to the HTTP listener that underlies Nest (which, in turn, may be provided by the Express platform). Hence the construction `request(app.getHttpServer())`. The call to `request()` hands us a wrapped HTTP Server, now connected to the Nest app, which exposes methods to simulate an actual HTTP request. For example, using `request(...).get('/cats')` will initiate a request to the Nest app that is identical to an **actual** HTTP request like `get '/cats'` coming in over the network.
+我们通过 Supertest 的 `request()` 函数来模拟 HTTP 测试。为了让这些 HTTP 请求路由到正在运行的 Nest 应用，我们将 Nest 底层的 HTTP 监听器（通常由 Express 平台提供）传递给 `request()`。因此有了 `request(app.getHttpServer())` 这样的写法。调用 `request()` 后会返回一个包装过的 HTTP 服务器（HTTP Server），它已连接到 Nest 应用，并暴露出用于模拟真实 HTTP 请求的方法。例如，`request(...).get('/cats')` 会向 Nest 应用发起一个与实际网络请求 `get '/cats'` 完全一致的请求。
 
-In this example, we also provide an alternate (test-double) implementation of the `CatsService` which simply returns a hard-coded value that we can test for. Use `overrideProvider()` to provide such an alternate implementation. Similarly, Nest provides methods to override modules, guards, interceptors, filters and pipes with the `overrideModule()`, `overrideGuard()`, `overrideInterceptor()`, `overrideFilter()`, and `overridePipe()` methods respectively.
+在本例中，我们还为 `CatsService` 提供了一个替代（测试替身，test-double）实现，该实现仅返回一个硬编码的值，便于我们进行断言。可以通过 `overrideProvider()` 方法来提供这种替代实现。同理，Nest 还提供了 `overrideModule()`、`overrideGuard()`、`overrideInterceptor()`、`overrideFilter()` 和 `overridePipe()` 等方法，分别用于覆盖模块、守卫、拦截器、过滤器和管道。
 
-Each of the override methods (except for `overrideModule()`) returns an object with 3 different methods that mirror those described for [custom providers](https://docs.nestjs.com/fundamentals/custom-providers):
+除了 `overrideModule()` 以外，每个覆盖方法都会返回一个对象，该对象包含 3 个与[自定义提供者（Custom Provider）](/fundamentals/custom-providers)类似的方法：
 
-- `useClass`: you supply a class that will be instantiated to provide the instance to override the object (provider, guard, etc.).
-- `useValue`: you supply an instance that will override the object.
-- `useFactory`: you supply a function that returns an instance that will override the object.
+- `useClass`：你可以提供一个类，Nest 会实例化该类来替换原有对象（如提供者、守卫等）。
+- `useValue`：你可以提供一个实例，直接覆盖原有对象。
+- `useFactory`：你可以提供一个工厂函数，返回的实例将用于覆盖原有对象。
 
-On the other hand, `overrideModule()` returns an object with the `useModule()` method, which you can use to supply a module that will override the original module, as follows:
+而 `overrideModule()` 方法则返回一个包含 `useModule()` 方法的对象，你可以用它来指定一个模块以覆盖原有模块，例如：
 
 ```typescript
 const moduleRef = await Test.createTestingModule({
@@ -338,11 +338,11 @@ const moduleRef = await Test.createTestingModule({
   .compile()
 ```
 
-Each of the override method types, in turn, returns the `TestingModule` instance, and can thus be chained with other methods in the [fluent style](https://en.wikipedia.org/wiki/Fluent_interface). You should use `compile()` at the end of such a chain to cause Nest to instantiate and initialize the module.
+每种覆盖方法最终都会返回 `测试模块（TestingModule）` 实例，因此可以采用[链式调用（fluent style）](https://en.wikipedia.org/wiki/Fluent_interface)的方式组合多个方法。最后应调用 `compile()`，让 Nest 实例化并初始化模块。
 
-Also, sometimes you may want to provide a custom logger e.g. when the tests are run (for example, on a CI server). Use the `setLogger()` method and pass an object that fulfills the `LoggerService` interface to instruct the `TestModuleBuilder` how to log during tests (by default, only "error" logs will be logged to the console).
+此外，有时你可能希望在测试运行时（例如在 CI 服务器上）自定义日志记录器。可以使用 `setLogger()` 方法，并传入一个实现了 `LoggerService` 接口的对象，来指定 `TestModuleBuilder` 在测试期间的日志行为（默认情况下，仅 "error" 日志会输出到控制台）。
 
-The compiled module has several useful methods, as described in the following table:
+编译后的模块还提供了若干实用方法，具体如下表所示：
 
 <table>
   <tr>
@@ -350,9 +350,8 @@ The compiled module has several useful methods, as described in the following ta
       <code>createNestApplication()</code>
     </td>
     <td>
-      Creates and returns a Nest application (<code>INestApplication</code> instance) based on the
-      given module. Note that you must manually initialize the application using the{' '}
-      <code>init()</code> method.
+      基于给定模块创建并返回一个 Nest 应用（<code>INestApplication</code>{' '}
+      实例）。注意，你需要手动调用 <code>init()</code> 方法进行初始化。
     </td>
   </tr>
   <tr>
@@ -360,8 +359,7 @@ The compiled module has several useful methods, as described in the following ta
       <code>createNestMicroservice()</code>
     </td>
     <td>
-      Creates and returns a Nest microservice (<code>INestMicroservice</code> instance) based on the
-      given module.
+      基于给定模块创建并返回一个 Nest 微服务（<code>INestMicroservice</code> 实例）。
     </td>
   </tr>
   <tr>
@@ -369,9 +367,8 @@ The compiled module has several useful methods, as described in the following ta
       <code>get()</code>
     </td>
     <td>
-      Retrieves a static instance of a controller or provider (including guards, filters, etc.)
-      available in the application context. Inherited from the{' '}
-      <a href="/fundamentals/module-ref">module reference</a> class.
+      获取应用上下文中可用的控制器或提供者（包括守卫、过滤器等）的静态实例。该方法继承自{' '}
+      <a href="/fundamentals/module-ref">模块引用（Module Reference）</a> 类。
     </td>
   </tr>
   <tr>
@@ -379,9 +376,8 @@ The compiled module has several useful methods, as described in the following ta
       <code>resolve()</code>
     </td>
     <td>
-      Retrieves a dynamically created scoped instance (request or transient) of a controller or
-      provider (including guards, filters, etc.) available in the application context. Inherited
-      from the <a href="/fundamentals/module-ref">module reference</a> class.
+      获取应用上下文中动态创建的作用域实例（如请求作用域或瞬态）的控制器或提供者。该方法同样继承自{' '}
+      <a href="/fundamentals/module-ref">模块引用（Module Reference）</a> 类。
     </td>
   </tr>
   <tr>
@@ -389,18 +385,17 @@ The compiled module has several useful methods, as described in the following ta
       <code>select()</code>
     </td>
     <td>
-      Navigates through the module's dependency graph; can be used to retrieve a specific instance
-      from the selected module (used along with strict mode (<code>strict: true</code>) in{' '}
-      <code>get()</code> method).
+      在模块依赖图中导航，可用于从选定模块中获取特定实例（结合 <code>get()</code> 方法的 strict 模式{' '}
+      <code>strict: true</code> 一起使用）。
     </td>
   </tr>
 </table>
 
-> info **Hint** Keep your e2e test files inside the `test` directory. The testing files should have a `.e2e-spec` suffix.
+> info **提示** 建议将端到端（e2e）测试文件放在 `test` 目录下，文件名应以 `.e2e-spec` 结尾。
 
-#### Overriding globally registered enhancers
+#### 全局注册增强器的覆盖（Overriding globally registered enhancers）
 
-If you have a globally registered guard (or pipe, interceptor, or filter), you need to take a few more steps to override that enhancer. To recap the original registration looks like this:
+如果你有全局注册的守卫（Guard）、管道（Pipe）、拦截器（Interceptor）或过滤器（Filter），想要在测试中覆盖它们，需要额外做一些配置。回顾一下，原始注册方式如下：
 
 ```typescript
 providers: [
@@ -411,22 +406,22 @@ providers: [
 ],
 ```
 
-This is registering the guard as a "multi"-provider through the `APP_*` token. To be able to replace the `JwtAuthGuard` here, the registration needs to use an existing provider in this slot:
+这里通过 `APP_*` 令牌将守卫注册为"多重"提供者（multi-provider）。要想在测试中替换 `JwtAuthGuard`，需要将注册方式改为使用已存在的提供者：
 
 ```typescript
 providers: [
   {
     provide: APP_GUARD,
     useExisting: JwtAuthGuard,
-    // ^^^^^^^^ notice the use of 'useExisting' instead of 'useClass'
+    // ^^^^^^^^ 注意这里用 'useExisting' 替代 'useClass'
   },
   JwtAuthGuard,
 ],
 ```
 
-> info **Hint** Change the `useClass` to `useExisting` to reference a registered provider instead of having Nest instantiate it behind the token.
+> info **提示** 将 `useClass` 改为 `useExisting`，即可让 Nest 通过已注册的提供者进行引用，而不是自动实例化。
 
-Now the `JwtAuthGuard` is visible to Nest as a regular provider that can be overridden when creating the `TestingModule`:
+这样，`JwtAuthGuard` 就作为常规提供者暴露给 Nest，在创建 `测试模块（TestingModule）` 时可以被覆盖：
 
 ```typescript
 const moduleRef = await Test.createTestingModule({
@@ -437,24 +432,24 @@ const moduleRef = await Test.createTestingModule({
   .compile()
 ```
 
-Now all your tests will use the `MockAuthGuard` on every request.
+此时，所有测试请求都会使用 `MockAuthGuard`。
 
-#### Testing request-scoped instances
+#### 测试请求作用域实例（Testing request-scoped instances）
 
-[Request-scoped](/fundamentals/injection-scopes) providers are created uniquely for each incoming **request**. The instance is garbage-collected after the request has completed processing. This poses a problem, because we can't access a dependency injection sub-tree generated specifically for a tested request.
+[请求作用域（Request-scoped）](/fundamentals/injection-scopes) 提供者会为每个传入的**请求**单独创建实例。请求处理完成后，这些实例会被垃圾回收。这带来一个问题：我们无法直接访问为某次测试请求生成的依赖注入子树。
 
-We know (based on the sections above) that the `resolve()` method can be used to retrieve a dynamically instantiated class. Also, as described <a href="https://docs.nestjs.com/fundamentals/module-ref#resolving-scoped-providers">here</a>, we know we can pass a unique context identifier to control the lifecycle of a DI container sub-tree. How do we leverage this in a testing context?
+如前文所述，可以通过 `resolve()` 方法获取动态实例。同时，正如[这里](https://docs.nestjs.com/fundamentals/module-ref#resolving-scoped-providers)所述，我们可以传递唯一的上下文标识符（context identifier），以控制依赖注入容器子树的生命周期。那么在测试场景下，如何利用这一点？
 
-The strategy is to generate a context identifier beforehand and force Nest to use this particular ID to create a sub-tree for all incoming requests. In this way we'll be able to retrieve instances created for a tested request.
+解决方案是：提前生成一个上下文标识符，并强制 Nest 在所有传入请求中都使用该 ID。这样，我们就能访问为某次测试请求生成的实例。
 
-To accomplish this, use `jest.spyOn()` on the `ContextIdFactory`:
+具体做法如下，使用 `jest.spyOn()` 对 `ContextIdFactory` 进行模拟：
 
 ```typescript
 const contextId = ContextIdFactory.create()
 jest.spyOn(ContextIdFactory, 'getByRequest').mockImplementation(() => contextId)
 ```
 
-Now we can use the `contextId` to access a single generated DI container sub-tree for any subsequent request.
+现在，我们可以通过 `contextId` 访问后续任意请求生成的依赖注入子树：
 
 ```typescript
 catsService = await moduleRef.resolve(CatsService, contextId)
