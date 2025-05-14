@@ -1,8 +1,8 @@
-### Streaming files
+### 文件流式传输
 
-> info **Note** This chapter shows how you can stream files from your **HTTP application**. The examples presented below do not apply to GraphQL or Microservice applications.
+> info **注意** 本章节介绍如何在 **HTTP 应用程序** 中实现文件流式传输。以下示例不适用于 GraphQL 或微服务应用。
 
-There may be times where you would like to send back a file from your REST API to the client. To do this with Nest, normally you'd do the following:
+有时候，你可能希望通过 RESTful 接口将文件返回给客户端。在 Nest 中，通常可以这样实现：
 
 ```ts
 @Controller('file')
@@ -15,21 +15,21 @@ export class FileController {
 }
 ```
 
-But in doing so you end up losing access to your post-controller interceptor logic. To handle this, you can return a `StreamableFile` instance and under the hood, the framework will take care of piping the response.
+但这样做会导致你无法使用控制器后置的拦截器逻辑。为了解决这个问题，你可以返回一个 `StreamableFile` 实例，底层框架会自动处理响应的流式传输。
 
-#### Streamable File class
+#### StreamableFile 类
 
-A `StreamableFile` is a class that holds onto the stream that is to be returned. To create a new `StreamableFile`, you can pass either a `Buffer` or a `Stream` to the `StreamableFile` constructor.
+`StreamableFile` 是一个用于持有待返回流的类。你可以通过向 `StreamableFile` 构造函数传入 `Buffer` 或 `Stream` 来创建新的实例。
 
-> info **hint** The `StreamableFile` class can be imported from `@nestjs/common`.
+> info **提示** `StreamableFile` 类可从 `@nestjs/common` 包中导入。
 
-#### Cross-platform support
+#### 跨平台支持
 
-Fastify, by default, can support sending files without needing to call `stream.pipe(res)`, so you don't need to use the `StreamableFile` class at all. However, Nest supports the use of `StreamableFile` in both platform types, so if you end up switching between Express and Fastify there's no need to worry about compatibility between the two engines.
+Fastify 默认支持直接发送文件，无需调用 `stream.pipe(res)`，因此无需使用 `StreamableFile` 类。不过，Nest 在两种平台类型中都支持 `StreamableFile`，因此如果你在 Express 和 Fastify 之间切换，无需担心两者的兼容性。
 
-#### Example
+#### 示例
 
-You can find a simple example of returning the `package.json` as a file instead of a JSON below, but the idea extends out naturally to images, documents, and any other file type.
+下面是一个简单示例，演示如何将 `package.json` 作为文件返回，而不是以 JSON 格式返回。当然，这一思路同样适用于图片、文档等任意类型的文件。
 
 ```ts
 import { Controller, Get, StreamableFile } from '@nestjs/common'
@@ -46,13 +46,13 @@ export class FileController {
 }
 ```
 
-The default content type (the value for `Content-Type` HTTP response header) is `application/octet-stream`. If you need to customize this value you can use the `type` option from `StreamableFile`, or use the `res.set` method or the [`@Header()`](/controllers#headers) decorator, like this:
+默认情况下，响应头 `Content-Type` 的值为 `application/octet-stream`。如果你需要自定义该值，可以使用 `StreamableFile` 的 `type` 选项，或者通过 `res.set` 方法，亦或是使用 [`@Header()`](/controllers#headers) 装饰器，例如：
 
 ```ts
 import { Controller, Get, StreamableFile, Res } from '@nestjs/common'
 import { createReadStream } from 'fs'
 import { join } from 'path'
-import type { Response } from 'express' // Assuming that we are using the ExpressJS HTTP Adapter
+import type { Response } from 'express' // 假设我们使用的是 Express（Node.js 框架）HTTP 适配器
 
 @Controller('file')
 export class FileController {
@@ -62,12 +62,12 @@ export class FileController {
     return new StreamableFile(file, {
       type: 'application/json',
       disposition: 'attachment; filename="package.json"',
-      // If you want to define the Content-Length value to another value instead of file's length:
+      // 如果你希望自定义 Content-Length 的值而不是使用文件长度：
       // length: 123,
     })
   }
 
-  // Or even:
+  // 或者这样：
   @Get()
   getFileChangingResponseObjDirectly(@Res({ passthrough: true }) res: Response): StreamableFile {
     const file = createReadStream(join(process.cwd(), 'package.json'))
@@ -78,7 +78,7 @@ export class FileController {
     return new StreamableFile(file)
   }
 
-  // Or even:
+  // 还可以这样：
   @Get()
   @Header('Content-Type', 'application/json')
   @Header('Content-Disposition', 'attachment; filename="package.json"')
