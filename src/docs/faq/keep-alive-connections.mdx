@@ -1,14 +1,14 @@
-### Keep alive connections
+### 保持连接（Keep-Alive Connections）
 
-By default, the HTTP adapters of NestJS will wait until the response is finished before closing the application. But sometimes, this behavior is not desired, or unexpected. There might be some requests that use `Connection: Keep-Alive` headers that live for a long time.
+默认情况下，NestJS 的 HTTP 适配器会在响应结束后才关闭应用程序。但有时，这种行为并不符合预期，或者并非你所期望。某些请求可能会使用 `Connection: Keep-Alive` 请求头，这会导致连接长时间保持活动状态。
 
-For these scenarios where you always want your application to exit without waiting for requests to end, you can enable the `forceCloseConnections` option when creating your NestJS application.
+针对这些场景，如果你希望应用程序无需等待所有请求结束就直接退出，可以在创建 NestJS 应用程序时启用 `forceCloseConnections` 选项。
 
-> warning **Tip** Most users will not need to enable this option. But the symptom of needing this option is that your application will not exit when you expect it to. Usually when `app.enableShutdownHooks()` is enabled and you notice that the application is not restarting/exiting. Most likely while running the NestJS application during development with `--watch`.
+> warning **提示** 绝大多数用户无需启用此选项。只有在你发现应用程序未能按预期退出时，才可能需要用到它。通常，这种情况会出现在你启用了 `app.enableShutdownHooks()`，并且注意到应用程序无法正常重启或退出时。最常见的场景是在开发过程中使用 `--watch` 运行 NestJS 应用程序时。
 
-#### Usage
+#### 用法
 
-In your `main.ts` file, enable the option when creating your NestJS application:
+在你的 `main.ts` 文件中，创建 NestJS 应用程序时启用该选项：
 
 ```typescript
 import { NestFactory } from '@nestjs/core'
