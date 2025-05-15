@@ -1,24 +1,24 @@
-### Kafka
+### Kafka（Kafka）
 
-[Kafka](https://kafka.apache.org/) is an open source, distributed streaming platform which has three key capabilities:
+[Kafka](https://kafka.apache.org/) 是一个开源的分布式流式处理平台，具备以下三大核心能力：
 
-- Publish and subscribe to streams of records, similar to a message queue or enterprise messaging system.
-- Store streams of records in a fault-tolerant durable way.
-- Process streams of records as they occur.
+- 发布和订阅记录流，类似于消息队列或企业消息系统。
+- 以容错且持久的方式存储记录流。
+- 实时处理记录流。
 
-The Kafka project aims to provide a unified, high-throughput, low-latency platform for handling real-time data feeds. It integrates very well with Apache Storm and Spark for real-time streaming data analysis.
+Kafka 项目旨在提供一个统一的、高吞吐量、低延迟的平台，用于处理实时数据流。它能够很好地与 Apache Storm 和 Spark 集成，实现实时流数据分析。
 
-#### Installation
+#### 安装
 
-To start building Kafka-based microservices, first install the required package:
+要开始构建基于 Kafka 的微服务，首先需要安装相关依赖包：
 
 ```bash
 $ npm i --save kafkajs
 ```
 
-#### Overview
+#### 概览
 
-Like other Nest microservice transport layer implementations, you select the Kafka transporter mechanism using the `transport` property of the options object passed to the `createMicroservice()` method, along with an optional `options` property, as shown below:
+与其他 Nest 微服务传输层实现类似，你可以通过在 `createMicroservice()` 方法中传入的 options 对象的 `transport` 属性来选择 Kafka 传输机制，同时可以通过可选的 `options` 属性进行配置，示例如下：
 
 ```typescript
 @@filename(main)
@@ -41,11 +41,11 @@ const app = await NestFactory.createMicroservice(AppModule, {
 });
 ```
 
-> info **Hint** The `Transport` enum is imported from the `@nestjs/microservices` package.
+> info **提示** `Transport` 枚举类型需从 `@nestjs/microservices` 包中导入。
 
-#### Options
+#### 配置项
 
-The `options` property is specific to the chosen transporter. The <strong>Kafka</strong> transporter exposes the properties described below.
+`options` 属性是针对所选传输层特有的配置项。<strong>Kafka</strong> 传输层支持以下配置属性：
 
 <table>
   <tr>
@@ -53,11 +53,11 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>client</code>
     </td>
     <td>
-      Client configuration options (read more
+      客户端配置选项（详细说明请参见
       <a href="https://kafka.js.org/docs/configuration" rel="nofollow" target="blank">
-        here
+        这里
       </a>
-      )
+      ）
     </td>
   </tr>
   <tr>
@@ -65,15 +65,15 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>consumer</code>
     </td>
     <td>
-      Consumer configuration options (read more
+      消费者配置选项（详细说明请参见
       <a
         href="https://kafka.js.org/docs/consuming#a-name-options-a-options"
         rel="nofollow"
         target="blank"
       >
-        here
+        这里
       </a>
-      )
+      ）
     </td>
   </tr>
   <tr>
@@ -81,11 +81,11 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>run</code>
     </td>
     <td>
-      Run configuration options (read more
+      运行配置选项（详细说明请参见
       <a href="https://kafka.js.org/docs/consuming" rel="nofollow" target="blank">
-        here
+        这里
       </a>
-      )
+      ）
     </td>
   </tr>
   <tr>
@@ -93,11 +93,11 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>subscribe</code>
     </td>
     <td>
-      Subscribe configuration options (read more
+      订阅配置选项（详细说明请参见
       <a href="https://kafka.js.org/docs/consuming#frombeginning" rel="nofollow" target="blank">
-        here
+        这里
       </a>
-      )
+      ）
     </td>
   </tr>
   <tr>
@@ -105,11 +105,11 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>producer</code>
     </td>
     <td>
-      Producer configuration options (read more
+      生产者配置选项（详细说明请参见
       <a href="https://kafka.js.org/docs/producing#options" rel="nofollow" target="blank">
-        here
+        这里
       </a>
-      )
+      ）
     </td>
   </tr>
   <tr>
@@ -117,11 +117,11 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>send</code>
     </td>
     <td>
-      Send configuration options (read more
+      发送配置选项（详细说明请参见
       <a href="https://kafka.js.org/docs/producing#options" rel="nofollow" target="blank">
-        here
+        这里
       </a>
-      )
+      ）
     </td>
   </tr>
   <tr>
@@ -129,8 +129,7 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>producerOnlyMode</code>
     </td>
     <td>
-      Feature flag to skip consumer group registration and only act as a producer (
-      <code>boolean</code>)
+      跳过消费者组注册，仅作为生产者（producer）运行的功能开关（<code>boolean</code> 类型）
     </td>
   </tr>
   <tr>
@@ -138,18 +137,18 @@ The `options` property is specific to the chosen transporter. The <strong>Kafka<
       <code>postfixId</code>
     </td>
     <td>
-      Change suffix of clientId value (<code>string</code>)
+      修改 clientId 值的后缀（<code>string</code> 类型）
     </td>
   </tr>
 </table>
 
-#### Client
+#### 客户端
 
-There is a small difference in Kafka compared to other microservice transporters. Instead of the `ClientProxy` class, we use the `ClientKafkaProxy` class.
+与其他微服务传输层实现相比，Kafka 有一个小区别。我们不再使用 `ClientProxy` 类，而是使用 `ClientKafkaProxy` 类。
 
-Like other microservice transporters, you have <a href="https://docs.nestjs.com/microservices/basics#client">several options</a> for creating a `ClientKafkaProxy` instance.
+与其他微服务传输层类似，你有<a href="https://docs.nestjs.com/microservices/basics#client">多种方式</a>来创建 `ClientKafkaProxy` 实例。
 
-One method for creating an instance is to use the `ClientsModule`. To create a client instance with the `ClientsModule`, import it and use the `register()` method to pass an options object with the same properties shown above in the `createMicroservice()` method, as well as a `name` property to be used as the injection token. Read more about `ClientsModule` <a href="https://docs.nestjs.com/microservices/basics#client">here</a>.
+其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入一个配置对象。该对象的属性与上文 `createMicroservice()` 方法中展示的属性一致，并且还需要额外指定一个 `name` 属性作为注入令牌。你可以在<a href="https://docs.nestjs.com/microservices/basics#client">这里</a>查看更多关于 `ClientsModule` 的内容。
 
 ```typescript
 @Module({
@@ -174,9 +173,9 @@ One method for creating an instance is to use the `ClientsModule`. To create a c
 })
 ```
 
-Other options to create a client (either `ClientProxyFactory` or `@Client()`) can be used as well. You can read about them <a href="https://docs.nestjs.com/microservices/basics#client">here</a>.
+你也可以选择其他方式来创建客户端（如 `ClientProxyFactory` 或 `@Client()` 装饰器）。相关内容可参考<a href="https://docs.nestjs.com/microservices/basics#client">这里</a>。
 
-Use the `@Client()` decorator as follows:
+使用 `@Client()` 装饰器的方式如下：
 
 ```typescript
 @Client({
@@ -194,23 +193,23 @@ Use the `@Client()` decorator as follows:
 client: ClientKafkaProxy;
 ```
 
-#### Message pattern
+#### 消息模式（Message pattern）
 
-The Kafka microservice message pattern utilizes two topics for the request and reply channels. The `ClientKafkaProxy#send()` method sends messages with a [return address](https://www.enterpriseintegrationpatterns.com/patterns/messaging/ReturnAddress.html) by associating a [correlation id](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CorrelationIdentifier.html), reply topic, and reply partition with the request message. This requires the `ClientKafkaProxy` instance to be subscribed to the reply topic and assigned to at least one partition before sending a message.
+Kafka 微服务的消息模式（Message pattern）会为请求和响应通道分别使用两个主题（topic）。`ClientKafkaProxy#send()` 方法通过为请求消息关联 [返回地址](https://www.enterpriseintegrationpatterns.com/patterns/messaging/ReturnAddress.html)、[关联 ID](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CorrelationIdentifier.html)、响应主题和响应分区，实现消息的发送。这要求 `ClientKafkaProxy` 实例在发送消息前，必须已订阅响应主题，并且至少分配到一个分区。
 
-Subsequently, you need to have at least one reply topic partition for every Nest application running. For example, if you are running 4 Nest applications but the reply topic only has 3 partitions, then 1 of the Nest applications will error out when trying to send a message.
+随后，你需要为每个正在运行的 Nest 应用分配至少一个响应主题分区。例如，如果你运行了 4 个 Nest 应用，但响应主题只有 3 个分区，那么其中 1 个 Nest 应用在尝试发送消息时会报错。
 
-When new `ClientKafkaProxy` instances are launched they join the consumer group and subscribe to their respective topics. This process triggers a rebalance of topic partitions assigned to consumers of the consumer group.
+当新的 `ClientKafkaProxy` 实例启动时，它们会加入消费者组，并订阅各自的主题。这个过程会触发消费者组内主题分区的再平衡（rebalance）。
 
-Normally, topic partitions are assigned using the round robin partitioner, which assigns topic partitions to a collection of consumers sorted by consumer names which are randomly set on application launch. However, when a new consumer joins the consumer group, the new consumer can be positioned anywhere within the collection of consumers. This creates a condition where pre-existing consumers can be assigned different partitions when the pre-existing consumer is positioned after the new consumer. As a result, the consumers that are assigned different partitions will lose response messages of requests sent before the rebalance.
+通常，主题分区的分配采用轮询分区器（round robin partitioner），它会根据应用启动时随机设置的消费者名称，对消费者集合进行排序并分配分区。然而，当有新消费者加入消费者组时，新消费者可能会被插入到消费者集合的任意位置。这会导致已有消费者在新消费者之后的位置发生变化，从而被分配到不同的分区。结果是，这些被重新分配分区的消费者会丢失再平衡前已发送请求的响应消息。
 
-To prevent the `ClientKafkaProxy` consumers from losing response messages, a Nest-specific built-in custom partitioner is utilized. This custom partitioner assigns partitions to a collection of consumers sorted by high-resolution timestamps (`process.hrtime()`) that are set on application launch.
+为防止 `ClientKafkaProxy` 的消费者丢失响应消息，Nest 内置了专用的自定义分区器（custom partitioner）。该分区器会根据应用启动时设置的高精度时间戳（`process.hrtime()`），对消费者集合进行排序并分配分区。
 
-#### Message response subscription
+#### 消息响应订阅（Message response subscription）
 
-> warning **Note** This section is only relevant if you use [request-response](/microservices/basics#request-response) message style (with the `@MessagePattern` decorator and the `ClientKafkaProxy#send` method). Subscribing to the response topic is not necessary for the [event-based](/microservices/basics#event-based) communication (`@EventPattern` decorator and `ClientKafkaProxy#emit` method).
+> warning **注意** 本节内容仅适用于你使用 [请求-响应](/microservices/basics#request-response) 消息风格（即使用 `@MessagePattern` 装饰器和 `ClientKafkaProxy#send` 方法）时。对于 [基于事件](/microservices/basics#event-based) 通信（`@EventPattern` 装饰器和 `ClientKafkaProxy#emit` 方法），无需订阅响应主题。
 
-The `ClientKafkaProxy` class provides the `subscribeToResponseOf()` method. The `subscribeToResponseOf()` method takes a request's topic name as an argument and adds the derived reply topic name to a collection of reply topics. This method is required when implementing the message pattern.
+`ClientKafkaProxy` 类提供了 `subscribeToResponseOf()` 方法。该方法接收一个请求主题名称作为参数，并将派生出的响应主题名称添加到响应主题集合中。在实现消息模式时，必须调用此方法。
 
 ```typescript
 @@filename(heroes.controller)
@@ -219,7 +218,7 @@ onModuleInit() {
 }
 ```
 
-If the `ClientKafkaProxy` instance is created asynchronously, the `subscribeToResponseOf()` method must be called before calling the `connect()` method.
+如果 `ClientKafkaProxy` 实例是异步创建的，则必须在调用 `connect()` 方法之前调用 `subscribeToResponseOf()` 方法。
 
 ```typescript
 @@filename(heroes.controller)
@@ -229,13 +228,13 @@ async onModuleInit() {
 }
 ```
 
-#### Incoming
+#### 消息接收
 
-Nest receives incoming Kafka messages as an object with `key`, `value`, and `headers` properties that have values of type `Buffer`. Nest then parses these values by transforming the buffers into strings. If the string is "object like", Nest attempts to parse the string as `JSON`. The `value` is then passed to its associated handler.
+Nest 会将接收到的 Kafka 消息解析为一个包含 `key`、`value` 和 `headers` 属性的对象，这些属性的值类型均为 `Buffer`。随后，Nest 会将这些 Buffer 转换为字符串。如果字符串表现为"类对象"格式，Nest 会尝试将其作为 `JSON` 进行解析。最终，`value` 会被传递给其对应的处理器。
 
-#### Outgoing
+#### 消息发送
 
-Nest sends outgoing Kafka messages after a serialization process when publishing events or sending messages. This occurs on arguments passed to the `ClientKafkaProxy` `emit()` and `send()` methods or on values returned from a `@MessagePattern` method. This serialization "stringifies" objects that are not strings or buffers by using `JSON.stringify()` or the `toString()` prototype method.
+Nest 在发布事件或发送消息时，会对即将发送的 Kafka 消息进行序列化处理。这一过程会应用于传递给 `ClientKafkaProxy` 的 `emit()` 和 `send()` 方法的参数，或是 `@MessagePattern` 方法的返回值。序列化时，若对象不是字符串或 Buffer，则会通过 `JSON.stringify()` 或 `toString()` 原型方法将其"字符串化"。
 
 ```typescript
 @@filename(heroes.controller)
@@ -253,9 +252,9 @@ export class HeroesController {
 }
 ```
 
-> info **Hint** `@Payload()` is imported from the `@nestjs/microservices` package.
+> info **提示** `@Payload()` 需从 `@nestjs/microservices` 包中导入。
 
-Outgoing messages can also be keyed by passing an object with the `key` and `value` properties. Keying messages is important for meeting the [co-partitioning requirement](https://docs.confluent.io/current/ksql/docs/developer-guide/partition-data.html#co-partitioning-requirements).
+发送的消息也可以通过传递包含 `key` 和 `value` 属性的对象来指定消息键。为消息设置键对于满足 [分区协同（co-partitioning）要求](https://docs.confluent.io/current/ksql/docs/developer-guide/partition-data.html#co-partitioning-requirements)非常重要。
 
 ```typescript
 @@filename(heroes.controller)
@@ -283,7 +282,7 @@ export class HeroesController {
 }
 ```
 
-Additionally, messages passed in this format can also contain custom headers set in the `headers` hash property. Header hash property values must be either of type `string` or type `Buffer`.
+此外，以上述格式传递的消息还可以通过 `headers` 哈希属性设置自定义消息头。消息头哈希属性的值必须为 `string` 或 `Buffer` 类型。
 
 ```typescript
 @@filename(heroes.controller)
@@ -311,15 +310,15 @@ export class HeroesController {
 }
 ```
 
-#### Event-based
+#### 基于事件的通信
 
-While the request-response method is ideal for exchanging messages between services, it is less suitable when your message style is event-based (which in turn is ideal for Kafka) - when you just want to publish events **without waiting for a response**. In that case, you do not want the overhead required by request-response for maintaining two topics.
+虽然请求-响应（request-response）方式非常适合服务之间的消息交换，但当你的消息风格是基于事件（event-based）时（例如 Kafka 场景下），这种方式就不太合适了——此时你只需要发布事件**而无需等待响应**。在这种情况下，你不希望为维护两个主题（topic）而引入请求-响应所需的额外开销。
 
-Check out these two sections to learn more about this: [Overview: Event-based](/microservices/basics#event-based) and [Overview: Publishing events](/microservices/basics#publishing-events).
+你可以参考以下两个章节，进一步了解相关内容：[概览：基于事件](/microservices/basics#event-based) 以及 [概览：事件发布](/microservices/basics#publishing-events)。
 
-#### Context
+#### 上下文（Context）
 
-In more complex scenarios, you may need to access additional information about the incoming request. When using the Kafka transporter, you can access the `KafkaContext` object.
+在更复杂的场景下，你可能需要访问有关传入请求的更多信息。当你使用 Kafka 传输器（Kafka transporter）时，可以通过 `KafkaContext` 对象获取这些信息。
 
 ```typescript
 @@filename()
@@ -335,9 +334,9 @@ killDragon(message, context) {
 }
 ```
 
-> info **Hint** `@Payload()`, `@Ctx()` and `KafkaContext` are imported from the `@nestjs/microservices` package.
+> info **提示** `@Payload()`、`@Ctx()` 和 `KafkaContext` 都从 `@nestjs/microservices` 包中导入。
 
-To access the original Kafka `IncomingMessage` object, use the `getMessage()` method of the `KafkaContext` object, as follows:
+如果你需要访问原始的 Kafka `IncomingMessage`（传入消息）对象，可以通过 `KafkaContext` 对象的 `getMessage()` 方法获取，如下所示：
 
 ```typescript
 @@filename()
@@ -357,7 +356,7 @@ killDragon(message, context) {
 }
 ```
 
-Where the `IncomingMessage` fulfills the following interface:
+其中，`IncomingMessage`（传入消息）接口定义如下：
 
 ```typescript
 interface IncomingMessage {
@@ -373,7 +372,7 @@ interface IncomingMessage {
 }
 ```
 
-If your handler involves a slow processing time for each received message you should consider using the `heartbeat` callback. To retrieve the `heartbeat` function, use the `getHeartbeat()` method of the `KafkaContext`, as follows:
+如果你的处理函数每次处理消息的耗时较长，建议使用 `heartbeat` 回调。你可以通过 `KafkaContext` 的 `getHeartbeat()` 方法获取 `heartbeat` 函数，示例如下：
 
 ```typescript
 @@filename()
@@ -381,20 +380,20 @@ If your handler involves a slow processing time for each received message you sh
 async killDragon(@Payload() message: KillDragonMessage, @Ctx() context: KafkaContext) {
   const heartbeat = context.getHeartbeat();
 
-  // Do some slow processing
+  // 执行耗时操作
   await doWorkPart1();
 
-  // Send heartbeat to not exceed the sessionTimeout
+  // 发送心跳，避免超过 sessionTimeout
   await heartbeat();
 
-  // Do some slow processing again
+  // 再次执行耗时操作
   await doWorkPart2();
 }
 ```
 
-#### Naming conventions
+#### 命名规范
 
-The Kafka microservice components append a description of their respective role onto the `client.clientId` and `consumer.groupId` options to prevent collisions between Nest microservice client and server components. By default the `ClientKafkaProxy` components append `-client` and the `ServerKafka` components append `-server` to both of these options. Note how the provided values below are transformed in that way (as shown in the comments).
+Kafka 微服务组件会在 `client.clientId` 和 `consumer.groupId` 选项后追加各自角色的描述，以防止 Nest 微服务客户端和服务端组件之间发生命名冲突。默认情况下，`ClientKafkaProxy` 组件会在这两个选项后追加 `-client`，而 `ServerKafka` 组件则追加 `-server`。请注意下方示例中，所提供的值会被这样转换（如注释所示）。
 
 ```typescript
 @@filename(main)
@@ -412,7 +411,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 });
 ```
 
-And for the client:
+对于客户端：
 
 ```typescript
 @@filename(heroes.controller)
@@ -431,9 +430,9 @@ And for the client:
 client: ClientKafkaProxy;
 ```
 
-> info **Hint** Kafka client and consumer naming conventions can be customized by extending `ClientKafkaProxy` and `KafkaServer` in your own custom provider and overriding the constructor.
+> info **提示** 你可以通过继承自定义提供者（Custom Provider）中的 `ClientKafkaProxy` 和 `KafkaServer`，并重写构造函数，来自定义 Kafka 客户端和消费者的命名规范。
 
-Since the Kafka microservice message pattern utilizes two topics for the request and reply channels, a reply pattern should be derived from the request topic. By default, the name of the reply topic is the composite of the request topic name with `.reply` appended.
+由于 Kafka 微服务消息模式会为请求和响应通道各使用一个主题（Topic），因此响应模式应当基于请求主题生成。默认情况下，响应主题的名称是在请求主题名称后追加 `.reply` 得到的。
 
 ```typescript
 @@filename(heroes.controller)
@@ -442,25 +441,25 @@ onModuleInit() {
 }
 ```
 
-> info **Hint** Kafka reply topic naming conventions can be customized by extending `ClientKafkaProxy` in your own custom provider and overriding the `getResponsePatternName` method.
+> info **提示** 你可以通过继承自定义提供者中的 `ClientKafkaProxy`，并重写 `getResponsePatternName` 方法，来自定义 Kafka 响应主题的命名规范。
 
-#### Retriable exceptions
+#### 可重试异常（Retriable exceptions）
 
-Similar to other transporters, all unhandled exceptions are automatically wrapped into an `RpcException` and converted to a "user-friendly" format. However, there are edge-cases when you might want to bypass this mechanism and let exceptions be consumed by the `kafkajs` driver instead. Throwing an exception when processing a message instructs `kafkajs` to **retry** it (redeliver it) which means that even though the message (or event) handler was triggered, the offset won't be committed to Kafka.
+与其他传输层类似，所有未处理的异常都会被自动包装为 `RpcException`，并转换为"用户友好"的格式。然而，在某些边界场景下，你可能希望绕过这一机制，让异常直接被 `kafkajs` 驱动程序处理。当消息处理过程中抛出异常时，会指示 `kafkajs` 对该消息进行**重试**（重新投递）。这意味着即使消息（或事件）处理器已被触发，其 offset 也不会被提交到 Kafka。
 
-> warning **Warning** For event handlers (event-based communication), all unhandled exceptions are considered **retriable exceptions** by default.
+> warning **警告** 对于事件处理器（基于事件的通信），所有未处理的异常默认都被视为**可重试异常**。
 
-For this, you can use a dedicated class called `KafkaRetriableException`, as follows:
+为此，你可以使用一个专用的类 `KafkaRetriableException`，用法如下：
 
 ```typescript
 throw new KafkaRetriableException('...')
 ```
 
-> info **Hint** `KafkaRetriableException` class is exported from the `@nestjs/microservices` package.
+> info **提示** `KafkaRetriableException` 类由 `@nestjs/microservices` 包导出。
 
-### Custom exception handling
+### 自定义异常处理
 
-Along with the default error handling mechanisms, you can create a custom Exception Filter for Kafka events to manage retry logic. For instance, the example below demonstrates how to skip a problematic event after a configurable number of retries:
+除了默认的错误处理机制外，你还可以为 Kafka 事件创建自定义异常过滤器（Exception Filter），以便管理重试逻辑。例如，下面的示例演示了如何在达到可配置的最大重试次数后跳过有问题的事件：
 
 ```typescript
 import { Catch, ArgumentsHost, Logger } from '@nestjs/common'
@@ -473,7 +472,7 @@ export class KafkaMaxRetryExceptionFilter extends BaseExceptionFilter {
 
   constructor(
     private readonly maxRetries: number,
-    // Optional custom function executed when max retries are exceeded
+    // 超过最大重试次数时执行的可选自定义函数
     private readonly skipHandler?: (message: any) => Promise<void>
   ) {
     super()
@@ -485,27 +484,25 @@ export class KafkaMaxRetryExceptionFilter extends BaseExceptionFilter {
     const currentRetryCount = this.getRetryCountFromContext(kafkaContext)
 
     if (currentRetryCount >= this.maxRetries) {
-      this.logger.warn(
-        `Max retries (${this.maxRetries}) exceeded for message: ${JSON.stringify(message)}`
-      )
+      this.logger.warn(`已超过最大重试次数（${this.maxRetries}），消息：${JSON.stringify(message)}`)
 
       if (this.skipHandler) {
         try {
           await this.skipHandler(message)
         } catch (err) {
-          this.logger.error('Error in skipHandler:', err)
+          this.logger.error('skipHandler 执行出错：', err)
         }
       }
 
       try {
         await this.commitOffset(kafkaContext)
       } catch (commitError) {
-        this.logger.error('Failed to commit offset:', commitError)
+        this.logger.error('提交 offset 失败：', commitError)
       }
-      return // Stop propagating the exception
+      return // 停止异常的进一步传播
     }
 
-    // If retry count is below the maximum, proceed with the default Exception Filter logic
+    // 如果重试次数未达到上限，继续执行默认的异常过滤器逻辑
     super.catch(exception, host)
   }
 
@@ -518,7 +515,7 @@ export class KafkaMaxRetryExceptionFilter extends BaseExceptionFilter {
   private async commitOffset(context: KafkaContext): Promise<void> {
     const consumer = context.getConsumer && context.getConsumer()
     if (!consumer) {
-      throw new Error('Consumer instance is not available from KafkaContext.')
+      throw new Error('无法从 KafkaContext 获取 Consumer 实例。')
     }
 
     const topic = context.getTopic && context.getTopic()
@@ -527,14 +524,14 @@ export class KafkaMaxRetryExceptionFilter extends BaseExceptionFilter {
     const offset = message.offset
 
     if (!topic || partition === undefined || offset === undefined) {
-      throw new Error('Incomplete Kafka message context for committing offset.')
+      throw new Error('提交 offset 时 Kafka 消息上下文信息不完整。')
     }
 
     await consumer.commitOffsets([
       {
         topic,
         partition,
-        // When committing an offset, commit the next number (i.e., current offset + 1)
+        // 提交 offset 时需提交下一个编号（即当前 offset + 1）
         offset: (Number(offset) + 1).toString(),
       },
     ])
@@ -542,29 +539,29 @@ export class KafkaMaxRetryExceptionFilter extends BaseExceptionFilter {
 }
 ```
 
-This filter offers a way to retry processing a Kafka event up to a configurable number of times. Once the maximum retries are reached, it triggers a custom `skipHandler` (if provided) and commits the offset, effectively skipping the problematic event. This allows subsequent events to be processed without interruption.
+该过滤器（Filter）允许你对 Kafka 事件的处理进行最多可配置次数的重试。一旦达到最大重试次数，会触发自定义的 `skipHandler`（如果有提供），并提交 offset，从而跳过有问题的事件，使后续事件能够继续被正常处理。
 
-You can integrate this filter by adding it to your event handlers:
+你可以通过将该过滤器添加到事件处理器中来集成使用：
 
 ```typescript
 @UseFilters(new KafkaMaxRetryExceptionFilter(5))
 export class MyEventHandler {
   @EventPattern('your-topic')
   async handleEvent(@Payload() data: any, @Ctx() context: KafkaContext) {
-    // Your event processing logic...
+    // 你的事件处理逻辑...
   }
 }
 ```
 
-#### Commit offsets
+#### 提交偏移量（Commit offsets）
 
-Committing offsets is essential when working with Kafka. Per default, messages will be automatically committed after a specific time. For more information visit [KafkaJS docs](https://kafka.js.org/docs/consuming#autocommit). `KafkaContext` offers a way to access the active consumer for manually committing offsets. The consumer is the KafkaJS consumer and works as the [native KafkaJS implementation](https://kafka.js.org/docs/consuming#manual-committing).
+在使用 Kafka 时，提交偏移量（offset）是非常重要的操作。默认情况下，消息会在特定时间后自动提交。更多信息请参阅 [KafkaJS 文档](https://kafka.js.org/docs/consuming#autocommit)。`KafkaContext` 提供了一种方式，可以访问当前活跃的消费者（consumer），以手动提交偏移量。这里的消费者即 KafkaJS 的 consumer，其行为与 [原生 KafkaJS 实现](https://kafka.js.org/docs/consuming#manual-committing)一致。
 
 ```typescript
 @@filename()
 @EventPattern('user.created')
 async handleUserCreated(@Payload() data: IncomingMessage, @Ctx() context: KafkaContext) {
-  // business logic
+  // 业务逻辑
 
   const { offset } = context.getMessage();
   const partition = context.getPartition();
@@ -576,7 +573,7 @@ async handleUserCreated(@Payload() data: IncomingMessage, @Ctx() context: KafkaC
 @Bind(Payload(), Ctx())
 @EventPattern('user.created')
 async handleUserCreated(data, context) {
-  // business logic
+  // 业务逻辑
 
   const { offset } = context.getMessage();
   const partition = context.getPartition();
@@ -586,7 +583,7 @@ async handleUserCreated(data, context) {
 }
 ```
 
-To disable auto-committing of messages set `autoCommit: false` in the `run` configuration, as follows:
+如果你希望禁用消息的自动提交，可以在 `run` 配置中将 `autoCommit` 设置为 `false`，如下所示：
 
 ```typescript
 @@filename(main)
@@ -615,9 +612,9 @@ const app = await NestFactory.createMicroservice(AppModule, {
 });
 ```
 
-#### Instance status updates
+#### 实例状态更新
 
-To get real-time updates on the connection and the state of the underlying driver instance, you can subscribe to the `status` stream. This stream provides status updates specific to the chosen driver. For the Kafka driver, the `status` stream emits `connected`, `disconnected`, `rebalancing`, `crashed`, and `stopped` events.
+要实时获取连接状态以及底层驱动实例的状态更新，可以订阅 `status` 流。该流会根据所选驱动提供特定的状态更新。以 Kafka 驱动为例，`status` 流会发出 `connected`（已连接）、`disconnected`（已断开连接）、`rebalancing`（再平衡）、`crashed`（已崩溃）和 `stopped`（已停止）等事件。
 
 ```typescript
 this.client.status.subscribe((status: KafkaStatus) => {
@@ -625,9 +622,9 @@ this.client.status.subscribe((status: KafkaStatus) => {
 })
 ```
 
-> info **Hint** The `KafkaStatus` type is imported from the `@nestjs/microservices` package.
+> info **提示** `KafkaStatus` 类型需从 `@nestjs/microservices` 包中导入。
 
-Similarly, you can subscribe to the server's `status` stream to receive notifications about the server's status.
+同样，你也可以订阅服务端的 `status` 流，以接收服务端状态的通知。
 
 ```typescript
 const server = app.connectMicroservice<MicroserviceOptions>(...);
@@ -636,11 +633,11 @@ server.status.subscribe((status: KafkaStatus) => {
 });
 ```
 
-#### Underlying producer and consumer
+#### 底层生产者与消费者
 
-For more advanced use cases, you may need to access the underlying prodocuer and consumer instances. This can be useful for scenarios like manually closing the connection or using driver-specific methods. However, keep in mind that for most cases, you **shouldn't need** to access the driver directly.
+对于更高级的使用场景，你可能需要访问底层的生产者（producer）和消费者（consumer）实例。这在需要手动关闭连接或调用驱动专有方法时非常有用。但请注意，在大多数情况下，你**无需**直接操作驱动。
 
-To do so, you can use `producer` and `consumer` getters exposed by the `ClientKafkaProxy` instance.
+你可以通过 `ClientKafkaProxy` 实例暴露的 `producer` 和 `consumer` 属性来实现：
 
 ```typescript
 const producer = this.client.producer

@@ -116,7 +116,7 @@ export const navMainData: NavMenuItem[] = [
     title: '微服务',
     titleEn: 'Microservices',
     items: [
-      { title: 'Overview', titleEn: 'Overview', url: '/microservices/basics' },
+      { title: '概述', titleEn: 'Overview', url: '/microservices/basics' },
       { title: 'Redis', titleEn: 'Redis', url: '/microservices/redis' },
       { title: 'MQTT', titleEn: 'MQTT', url: '/microservices/mqtt' },
       { title: 'NATS', titleEn: 'NATS', url: '/microservices/nats' },
