@@ -101,7 +101,8 @@ export const navMainData: NavMenuItem[] = [
     ],
   },
   {
-    title: 'WebSockets',
+    title: 'WebSocket 通信',
+    titleEn: 'WebSockets',
     items: [
       { title: 'Gateways', titleEn: 'Gateways', url: '/websockets/gateways' },
       { title: 'Exception filters', titleEn: 'Exception filters', url: '/websockets/exception-filters' },
@@ -112,7 +113,8 @@ export const navMainData: NavMenuItem[] = [
     ],
   },
   {
-    title: 'Microservices',
+    title: '微服务',
+    titleEn: 'Microservices',
     items: [
       { title: 'Overview', titleEn: 'Overview', url: '/microservices/basics' },
       { title: 'Redis', titleEn: 'Redis', url: '/microservices/redis' },
