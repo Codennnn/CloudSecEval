@@ -22,8 +22,10 @@ export function CodeBlock({
   showLineNumbers = false,
   className,
 }: CodeBlockProps) {
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
+
   const [html, setHtml] = useState<string>('')
+
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export function CodeBlock({
           // Shiki options
           const options: CodeToHastOptions = {
             lang: language || 'text',
-            theme: theme === 'dark' ? 'github-dark' : 'rose-pine-dawn',
+            theme: resolvedTheme === 'dark' ? 'github-dark' : 'rose-pine-dawn',
           }
 
           // 只有在需要行号时才添加transformers
@@ -58,7 +60,7 @@ export function CodeBlock({
 
       await highlightCode()
     })()
-  }, [code, language, theme, showLineNumbers])
+  }, [code, language, resolvedTheme, showLineNumbers])
 
   if (isLoading) {
     return (

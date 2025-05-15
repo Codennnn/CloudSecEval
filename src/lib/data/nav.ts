@@ -74,7 +74,7 @@ export const navMainData: NavMenuItem[] = [
       { title: 'Helmet', titleEn: 'Helmet', url: '/security/helmet' },
       { title: '跨源资源共享（CORS）', titleEn: 'CORS', url: '/security/cors' },
       { title: 'CSRF 防护', titleEn: 'CSRF Protection', url: '/security/csrf' },
-      { title: '限流', titleEn: 'Rate limiting', url: '/security/rate-limiting' },
+      { title: '请求频率限制', titleEn: 'Rate limiting', url: '/security/rate-limiting' },
     ],
   },
   {

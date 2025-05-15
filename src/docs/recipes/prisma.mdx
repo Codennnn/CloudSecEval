@@ -1,6 +1,6 @@
 ### Prisma
 
-[Prisma](https://www.prisma.io) 是一个 [开源](https://github.com/prisma/prisma) 的 ORM（对象关系映射，Object-Relational Mapping）工具，适用于 Node.js 和 TypeScript。它作为编写原生 SQL 或使用其他数据库访问工具（如 SQL 查询构建器 [knex.js](https://knexjs.org/) 或其他 ORM，如 [TypeORM](https://typeorm.io/) 和 [Sequelize](https://sequelize.org/)）的**替代方案**。Prisma 目前支持 PostgreSQL、MySQL、SQL Server、SQLite、MongoDB 以及 CockroachDB（[预览版](https://www.prisma.io/docs/reference/database-reference/supported-databases)）。
+[Prisma](https://www.prisma.io) 是一个 [开源](https://github.com/prisma/prisma) 的 ORM（Object-Relational Mapping，对象关系映射）工具，适用于 Node.js 和 TypeScript。它作为编写原生 SQL 或使用其他数据库访问工具（如 SQL 查询构建器 [knex.js](https://knexjs.org/) 或其他 ORM，如 [TypeORM](https://typeorm.io/) 和 [Sequelize](https://sequelize.org/)）的**替代方案**。Prisma 目前支持 PostgreSQL、MySQL、SQL Server、SQLite、MongoDB 以及 CockroachDB（[预览版](https://www.prisma.io/docs/reference/database-reference/supported-databases)）。
 
 虽然 Prisma 可以与原生 JavaScript 一起使用，但它充分拥抱 TypeScript，并在类型安全（type-safety）方面提供了超越 TypeScript 生态中其他 ORM 的保障。你可以在[这里](https://www.prisma.io/docs/concepts/more/comparisons/prisma-and-typeorm#type-safety)找到 Prisma 与 TypeORM 在类型安全方面的详细对比。
 
@@ -415,7 +415,7 @@ export class PostsService {
 
 你的 `UsersService` 和 `PostsService` 目前封装了 Prisma Client 提供的 CRUD 查询。在实际应用中，服务还可以承载业务逻辑。例如，你可以在 `UsersService` 中添加 `updatePassword` 方法，用于更新用户密码。
 
-记得在应用模块（AppModule）中注册这些新服务。
+记得在 `AppModule` 中注册这些新服务。
 
 ##### 在主控制器中实现 REST API 路由
 

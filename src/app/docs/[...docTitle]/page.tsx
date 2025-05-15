@@ -16,7 +16,7 @@ export default async function ProjectDetailPage({ params }: PageProps<{ docTitle
       const { default: DocContent } = await import(`@/docs/${docPath}.mdx`) as { default: MDXContent }
 
       return (
-        <article className="prose dark:prose-invert">
+        <article className="prose dark:prose-invert mx-auto p-6 prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic">
           <DocContent />
         </article>
       )

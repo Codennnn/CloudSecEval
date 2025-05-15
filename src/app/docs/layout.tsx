@@ -48,7 +48,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
           </div>
         </header>
 
-        <div className="p-4 flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto">
           {props.children}
         </div>
       </SidebarInset>
