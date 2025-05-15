@@ -1,0 +1,19 @@
+.illustrative-image {
+  filter: var(--images-filter);
+}
+
+:not(pre) > code {
+  @apply bg-muted py-0.5 px-1 font-semibold rounded;
+
+  &::before,
+  &::after {
+    @apply content-[''];
+  }
+}
+
+blockquote > p {
+  &::before,
+  &::after {
+    @apply content-[''];
+  }
+}

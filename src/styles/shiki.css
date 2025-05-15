@@ -43,7 +43,7 @@ pre[class*='language-'] {
 }
 
 pre.shiki {
-  @apply overflow-x-auto p-4;
+  @apply overflow-x-auto p-1.5;
 }
 
 pre.shiki code {

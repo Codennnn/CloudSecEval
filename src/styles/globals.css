@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import './shiki.css';
+@import './doc.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -128,18 +129,5 @@
 
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-.illustrative-image {
-  filter: var(--images-filter);
-}
-
-:not(pre) > code {
-  @apply bg-muted py-0.5 px-1 font-semibold rounded;
-
-  &::before,
-  &::after {
-    @apply hidden;
   }
 }

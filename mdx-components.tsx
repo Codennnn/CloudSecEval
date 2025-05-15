@@ -19,6 +19,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
     a: (props: AnchorProps) => {
       const { href, children } = props
+      console.log(href, 'href')
 
       if (isExternalLink(href)) {
         return (
@@ -29,7 +30,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
 
       return (
-        <Link href={href.startsWith('/') ? `/docs${href}` : href}>
+        <Link href={href.startsWith('/') ? `/docs${href}` : `/docs/${href}`}>
           {children}
         </Link>
       )

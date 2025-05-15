@@ -1,12 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import { GalleryVerticalEndIcon } from 'lucide-react'
 
 import { SearchForm } from '@/components/SearchForm'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
 import {
   Sidebar,
   SidebarContent,
@@ -15,14 +12,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { navMainData } from '@/lib/data/nav'
-import { isExternalLink } from '@/utils/common'
 
-import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from './AppSidebarMenuButton'
+import { CollapsibleNavItem } from './CollapsibleNavItem'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -52,59 +46,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarMenu>
             {navMainData.map((item, idx) => (
-              <Collapsible
-                key={item.title}
-                className="group/collapsible"
-                defaultOpen={idx === 1}
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    {item.url
-                      ? (
-                          <AppSidebarMenuButton asChild item={item}>
-                            <Link
-                              href={isExternalLink(item.url) ? item.url : `/docs/${item.url}`}
-                              target={isExternalLink(item.url) ? '_blank' : undefined}
-                            >
-                              <SidebarMenuButtonContent item={item} />
-                            </Link>
-                          </AppSidebarMenuButton>
-                        )
-                      : (
-                          <AppSidebarMenuButton item={item}>
-                            <SidebarMenuButtonContent item={item} />
-                          </AppSidebarMenuButton>
-                        )}
-                  </CollapsibleTrigger>
-
-                  {
-                    item.items && item.items.length > 0
-                      ? (
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.items.map((subItem) => (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                  <AppSidebarMenuSubButton item={subItem}>
-                                    {subItem.url
-                                      ? (
-                                          <Link
-                                            href={isExternalLink(subItem.url) ? subItem.url : `/docs/${subItem.url}`}
-                                            target={isExternalLink(subItem.url) ? '_blank' : undefined}
-                                          >
-                                            {subItem.title}
-                                          </Link>
-                                        )
-                                      : subItem.title}
-                                  </AppSidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        )
-                      : null
-                  }
-                </SidebarMenuItem>
-              </Collapsible>
+              <CollapsibleNavItem
+                key={`${item.title ?? ''}-${idx}`}
+                item={item}
+              />
             ))}
           </SidebarMenu>
         </SidebarGroup>
