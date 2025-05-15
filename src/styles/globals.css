@@ -134,3 +134,12 @@
 .illustrative-image {
   filter: var(--images-filter);
 }
+
+:not(pre) > code {
+  @apply bg-amber-100 p-0.5;
+
+  &::before,
+  &::after {
+    @apply hidden;
+  }
+}

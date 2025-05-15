@@ -33,7 +33,7 @@ export function CodeBlock({
           // Shiki options
           const options: CodeToHastOptions = {
             lang: language || 'text',
-            theme: theme === 'dark' ? 'github-dark' : 'github-light',
+            theme: theme === 'dark' ? 'github-dark' : 'rose-pine-dawn',
           }
 
           // 只有在需要行号时才添加transformers
