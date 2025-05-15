@@ -389,7 +389,7 @@ export class DatabaseModule {}
 
 #### 配置校验（Schema validation）
 
-在应用程序启动时，如果缺少必要的环境变量（Environment Variable），或者这些变量不符合特定的校验规则，通常应当抛出异常。`@nestjs/config` 包支持两种校验方式：
+在应用程序启动时，如果缺少必要的环境变量，或者这些变量不符合特定的校验规则，通常应当抛出异常。`@nestjs/config` 包支持两种校验方式：
 
 - 内置 [Joi](https://github.com/sideway/joi) 校验器。你可以使用 Joi 定义对象的验证模式（Validation Schema），并对 JavaScript 对象进行校验。
 - 自定义 `validate()` 函数，接收环境变量作为输入参数。

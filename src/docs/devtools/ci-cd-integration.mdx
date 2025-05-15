@@ -45,7 +45,7 @@ async function bootstrap() {
 }
 ```
 
-如上所示，我们在这里使用了 `GraphPublisher` 来将序列化后的依赖关系图（Graph）发布到集中式注册中心（Registry）。`PUBLISH_GRAPH` 是一个自定义环境变量（Environment Variable），用于控制是否在 CI/CD 流程中发布依赖关系图。我们还将 `preview` 属性设置为 `true`，这样应用会以预览模式引导——即所有控制器、增强器和提供者的构造函数及生命周期钩子都不会被执行。注意，这并不是**必须**的，但这样可以让我们在 CI/CD 流水线中运行应用时，无需真正连接数据库等外部服务，从而简化流程。
+如上所示，我们在这里使用了 `GraphPublisher` 来将序列化后的依赖关系图（Graph）发布到集中式注册中心（Registry）。`PUBLISH_GRAPH` 是一个自定义环境变量，用于控制是否在 CI/CD 流程中发布依赖关系图。我们还将 `preview` 属性设置为 `true`，这样应用会以预览模式引导——即所有控制器、增强器和提供者的构造函数及生命周期钩子都不会被执行。注意，这并不是**必须**的，但这样可以让我们在 CI/CD 流水线中运行应用时，无需真正连接数据库等外部服务，从而简化流程。
 
 `publishOptions` 对象的具体内容会根据你所使用的 CI/CD 服务商而有所不同。我们会在后续章节为主流 CI/CD 服务商提供详细的配置说明。
 
@@ -186,7 +186,7 @@ const publishOptions = {
 }
 ```
 
-> info **提示** 理想情况下，`DEVTOOLS_API_KEY` 环境变量（Environment Variable）应通过密钥管理服务获取。
+> info **提示** 理想情况下，`DEVTOOLS_API_KEY` 环境变量应通过密钥管理服务获取。
 
 该工作流会在每次针对 `master` 分支的拉取请求（pull request）或直接提交到 `master` 分支时运行。你可以根据项目需求调整此配置。这里的关键在于为 `GraphPublisher` 类（Class）提供所需的环境变量，以便其正常运行。
 

@@ -53,7 +53,6 @@
     "TestingModule": "测试模块（TestingModule）"
   },
   "configuration": {
-    "Environment Variable": "环境变量（Environment Variable）",
     "Configuration Service": "配置服务（Configuration Service）",
     "ConfigModule": "配置模块（ConfigModule）",
     "Validation Schema": "验证模式（Validation Schema）"

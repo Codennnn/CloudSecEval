@@ -1,6 +1,6 @@
-### 限流（Rate Limiting）
+### 请求频率限制（Rate Limiting）
 
-一种常见的防护应用免受暴力破解攻击的技术是**限流（rate-limiting）**。要开始使用，您需要安装 `@nestjs/throttler` 包。
+一种常见的防护应用免受暴力破解攻击的技术是**rate-limiting**。要开始使用，您需要安装 `@nestjs/throttler` 包。
 
 ```bash
 $ npm i --save @nestjs/throttler
@@ -282,7 +282,7 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
       <td>
         <code>ignoreUserAgents</code>
       </td>
-      <td>一个包含需要忽略限流的 User-Agent（用户代理）正则表达式的数组</td>
+      <td>一个包含需要忽略限流的 User-Agent 正则表达式的数组</td>
     </tr>
     <tr>
       <td>
