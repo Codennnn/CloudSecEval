@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
 import { getPageTitle } from '@/utils/common'
 
-import '@/styles/globals.css'
+import '@/styles/global.css'
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',

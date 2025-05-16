@@ -55,12 +55,12 @@ importers:
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       prefer-code-style:
         specifier: ^3.6.0
-        version: 3.6.0(@types/estree@1.0.7)(jiti@2.4.2)(jsonc-eslint-parser@2.4.0)(postcss@8.5.3)(prettier@3.5.3)(tailwindcss@4.1.6)(typescript@5.8.3)(vue-eslint-parser@10.1.3(eslint@9.23.0(jiti@2.4.2)))
+        version: 3.6.0(@types/estree@1.0.7)(jiti@2.4.2)(jsonc-eslint-parser@2.4.0)(postcss@8.5.3)(prettier@3.5.3)(tailwindcss@4.1.7)(typescript@5.8.3)(vue-eslint-parser@10.1.3(eslint@9.23.0(jiti@2.4.2)))
       react:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0
       react-dom:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
       shiki:
         specifier: ^3.4.0
@@ -77,7 +77,7 @@ importers:
         version: 4.1.6
       '@tailwindcss/typography':
         specifier: ^0.5.16
-        version: 0.5.16(tailwindcss@4.1.6)
+        version: 0.5.16(tailwindcss@4.1.7)
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
@@ -107,15 +107,15 @@ importers:
         version: 38.0.0(stylelint@16.19.1(typescript@5.8.3))
       stylelint-config-tailwindcss:
         specifier: ^1.0.0
-        version: 1.0.0(stylelint@16.19.1(typescript@5.8.3))(tailwindcss@4.1.6)
+        version: 1.0.0(stylelint@16.19.1(typescript@5.8.3))(tailwindcss@4.1.7)
       tailwindcss:
-        specifier: ^4
-        version: 4.1.6
+        specifier: ^4.1.7
+        version: 4.1.7
       tw-animate-css:
         specifier: ^1.2.9
         version: 1.2.9
       typescript:
-        specifier: ^5
+        specifier: ^5.8.3
         version: 5.8.3
 
 packages:
@@ -3157,6 +3157,9 @@ packages:
   tailwindcss@4.1.6:
     resolution: {integrity: sha512-j0cGLTreM6u4OWzBeLBpycK0WIh8w7kSwcUsQZoGLHZ7xDTdM69lN64AgoIEEwFi0tnhs4wSykUa5YWxAzgFYg==}
 
+  tailwindcss@4.1.7:
+    resolution: {integrity: sha512-kr1o/ErIdNhTz8uzAYL7TpaUuzKIE6QPQ4qmSdxnoX/lo+5wmUHQA6h3L5yIqEImSRnAAURDirLu/BgiXGPAhg==}
+
   tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
@@ -4245,13 +4248,13 @@ snapshots:
       postcss: 8.5.3
       tailwindcss: 4.1.6
 
-  '@tailwindcss/typography@0.5.16(tailwindcss@4.1.6)':
+  '@tailwindcss/typography@0.5.16(tailwindcss@4.1.7)':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 4.1.6
+      tailwindcss: 4.1.7
 
   '@tybys/wasm-util@0.9.0':
     dependencies:
@@ -5037,11 +5040,11 @@ snapshots:
     dependencies:
       eslint: 9.23.0(jiti@2.4.2)
 
-  eslint-plugin-tailwindcss@3.18.0(tailwindcss@4.1.6):
+  eslint-plugin-tailwindcss@3.18.0(tailwindcss@4.1.7):
     dependencies:
       fast-glob: 3.3.3
       postcss: 8.5.3
-      tailwindcss: 4.1.6
+      tailwindcss: 4.1.7
 
   eslint-plugin-vue@10.1.0(eslint@9.23.0(jiti@2.4.2))(vue-eslint-parser@10.1.3(eslint@9.23.0(jiti@2.4.2))):
     dependencies:
@@ -6311,7 +6314,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prefer-code-style@3.6.0(@types/estree@1.0.7)(jiti@2.4.2)(jsonc-eslint-parser@2.4.0)(postcss@8.5.3)(prettier@3.5.3)(tailwindcss@4.1.6)(typescript@5.8.3)(vue-eslint-parser@10.1.3(eslint@9.23.0(jiti@2.4.2))):
+  prefer-code-style@3.6.0(@types/estree@1.0.7)(jiti@2.4.2)(jsonc-eslint-parser@2.4.0)(postcss@8.5.3)(prettier@3.5.3)(tailwindcss@4.1.7)(typescript@5.8.3)(vue-eslint-parser@10.1.3(eslint@9.23.0(jiti@2.4.2))):
     dependencies:
       '@babel/core': 7.27.1
       '@eslint/js': 9.26.0
@@ -6326,13 +6329,13 @@ snapshots:
       eslint-plugin-react: 7.37.5(eslint@9.23.0(jiti@2.4.2))
       eslint-plugin-react-hooks: 5.2.0(eslint@9.23.0(jiti@2.4.2))
       eslint-plugin-simple-import-sort: 12.1.1(eslint@9.23.0(jiti@2.4.2))
-      eslint-plugin-tailwindcss: 3.18.0(tailwindcss@4.1.6)
+      eslint-plugin-tailwindcss: 3.18.0(tailwindcss@4.1.7)
       eslint-plugin-vue: 10.1.0(eslint@9.23.0(jiti@2.4.2))(vue-eslint-parser@10.1.3(eslint@9.23.0(jiti@2.4.2)))
       globals: 16.1.0
       stylelint: 16.19.1(typescript@5.8.3)
       stylelint-config-clean-order: 7.0.0(stylelint@16.19.1(typescript@5.8.3))
       stylelint-config-standard: 37.0.0(stylelint@16.19.1(typescript@5.8.3))
-      stylelint-config-tailwindcss: 1.0.0(stylelint@16.19.1(typescript@5.8.3))(tailwindcss@4.1.6)
+      stylelint-config-tailwindcss: 1.0.0(stylelint@16.19.1(typescript@5.8.3))(tailwindcss@4.1.7)
       stylelint-less: 3.0.1(postcss@8.5.3)(stylelint@16.19.1(typescript@5.8.3))
       stylelint-prettier: 5.0.3(prettier@3.5.3)(stylelint@16.19.1(typescript@5.8.3))
       stylelint-scss: 6.12.0(stylelint@16.19.1(typescript@5.8.3))
@@ -6826,10 +6829,10 @@ snapshots:
       stylelint: 16.19.1(typescript@5.8.3)
       stylelint-config-recommended: 16.0.0(stylelint@16.19.1(typescript@5.8.3))
 
-  stylelint-config-tailwindcss@1.0.0(stylelint@16.19.1(typescript@5.8.3))(tailwindcss@4.1.6):
+  stylelint-config-tailwindcss@1.0.0(stylelint@16.19.1(typescript@5.8.3))(tailwindcss@4.1.7):
     dependencies:
       stylelint: 16.19.1(typescript@5.8.3)
-      tailwindcss: 4.1.6
+      tailwindcss: 4.1.7
 
   stylelint-less@3.0.1(postcss@8.5.3)(stylelint@16.19.1(typescript@5.8.3)):
     dependencies:
@@ -6934,6 +6937,8 @@ snapshots:
   tailwind-merge@3.2.0: {}
 
   tailwindcss@4.1.6: {}
+
+  tailwindcss@4.1.7: {}
 
   tapable@2.2.1: {}
 

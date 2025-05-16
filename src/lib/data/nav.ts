@@ -97,7 +97,7 @@ export const navMainData: NavMenuItem[] = [
       { title: '生成 SDL', titleEn: 'Generating SDL', url: '/graphql/generating-sdl' },
       { title: '共享模型', titleEn: 'Sharing models', url: '/graphql/sharing-models' },
       { title: '其他功能', titleEn: 'Other features', url: '/graphql/other-features' },
-      { title: '联邦', titleEn: 'Federation', url: '/graphql/federation' },
+      { title: '联邦（Federation）', titleEn: 'Federation', url: '/graphql/federation' },
     ],
   },
   {
