@@ -1,8 +1,8 @@
-### Generating SDL
+### 生成 SDL（Schema Definition Language）
 
-> warning **Warning** This chapter applies only to the code first approach.
+> warning **警告** 本章节仅适用于代码优先（code first）方式。
 
-To manually generate a GraphQL SDL schema (i.e., without running an application, connecting to the database, hooking up resolvers, etc.), use the `GraphQLSchemaBuilderModule`.
+如果你希望手动生成 GraphQL SDL 模式（即无需运行应用程序、连接数据库、挂载解析器等），可以使用 `GraphQLSchemaBuilderModule`。
 
 ```typescript
 async function generateSchema() {
@@ -15,17 +15,17 @@ async function generateSchema() {
 }
 ```
 
-> info **Hint** The `GraphQLSchemaBuilderModule` and `GraphQLSchemaFactory` are imported from the `@nestjs/graphql` package. The `printSchema` function is imported from the `graphql` package.
+> info **提示** `GraphQLSchemaBuilderModule` 和 `GraphQLSchemaFactory` 均从 `@nestjs/graphql` 包中导入。`printSchema` 函数从 `graphql` 包中导入。
 
-#### Usage
+#### 用法
 
-The `gqlSchemaFactory.create()` method takes an array of resolver class references. For example:
+`gqlSchemaFactory.create()` 方法接收一个解析器（Resolver）类的引用数组。例如：
 
 ```typescript
 const schema = await gqlSchemaFactory.create([RecipesResolver, AuthorsResolver, PostsResolvers])
 ```
 
-It also takes a second optional argument with an array of scalar classes:
+它还可以接收第二个可选参数，即标量类（Scalar Class）数组：
 
 ```typescript
 const schema = await gqlSchemaFactory.create(
@@ -34,7 +34,7 @@ const schema = await gqlSchemaFactory.create(
 )
 ```
 
-Lastly, you can pass an options object:
+最后，你还可以传递一个选项对象：
 
 ```typescript
 const schema = await gqlSchemaFactory.create([RecipesResolver], {
@@ -43,5 +43,5 @@ const schema = await gqlSchemaFactory.create([RecipesResolver], {
 })
 ```
 
-- `skipCheck`: ignore schema validation; boolean, defaults to `false`
-- `orphanedTypes`: list of classes that are not explicitly referenced (not part of the object graph) to be generated. Normally, if a class is declared but isn't otherwise referenced in the graph, it's omitted. The property value is an array of class references.
+- `skipCheck`：是否跳过模式校验，布尔值，默认为 `false`
+- `orphanedTypes`：未被显式引用（不属于对象图）的类列表。通常，如果某个类被声明但未在对象图中被引用，则不会被包含在生成的模式中。该属性值为类引用数组。
