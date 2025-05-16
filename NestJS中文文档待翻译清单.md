@@ -5,11 +5,3 @@
 ## GraphQL 部分
 
 GraphQL 部分所有页面未完成翻译 ❎
-
-## WebSockets 部分
-
-WebSockets 部分所有页面未完成翻译 ❎
-
-## Microservices 部分
-
-Microservices 部分所有页面未完成翻译 ❎
