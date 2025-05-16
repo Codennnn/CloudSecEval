@@ -1,43 +1,44 @@
-## Harnessing the power of TypeScript & GraphQL
+## 探索 TypeScript 与 GraphQL 的强大结合
 
-[GraphQL](https://graphql.org/) is a powerful query language for APIs and a runtime for fulfilling those queries with your existing data. It's an elegant approach that solves many problems typically found with REST APIs. For background, we suggest reading this [comparison](https://www.apollographql.com/blog/graphql-vs-rest) between GraphQL and REST. GraphQL combined with [TypeScript](https://www.typescriptlang.org/) helps you develop better type safety with your GraphQL queries, giving you end-to-end typing.
+[GraphQL](https://graphql.org/) 是一种功能强大的 API 查询语言，同时也是一个用于根据现有数据满足这些查询的运行时。它以优雅的方式解决了 REST 接口（RESTful API）中常见的诸多问题。作为补充，建议阅读这篇 [GraphQL 与 REST 的对比](https://www.apollographql.com/blog/graphql-vs-rest)，以便更好地理解二者的区别。将 GraphQL 与 [TypeScript](https://www.typescriptlang.org/) 结合使用，可以让你的 GraphQL 查询具备端到端的类型安全。
 
-In this chapter, we assume a basic understanding of GraphQL, and focus on how to work with the built-in `@nestjs/graphql` module. The `GraphQLModule` can be configured to use [Apollo](https://www.apollographql.com/) server (with the `@nestjs/apollo` driver) and [Mercurius](https://github.com/mercurius-js/mercurius) (with the `@nestjs/mercurius`). We provide official integrations for these proven GraphQL packages to provide a simple way to use GraphQL with Nest (see more integrations [here](https://docs.nestjs.com/graphql/quick-start#third-party-integrations)).
+本章假设你已经具备 GraphQL 的基础知识，重点介绍如何使用内置的 `@nestjs/graphql` 模块。在 Nest 中，`GraphQLModule` 可以配置为使用 [Apollo](https://www.apollographql.com/) 服务器（通过 `@nestjs/apollo` 驱动）或 [Mercurius](https://github.com/mercurius-js/mercurius)（通过 `@nestjs/mercurius` 驱动）。我们为这些成熟的 GraphQL 方案提供了官方集成，帮助你更简单地在 Nest 中使用 GraphQL（更多集成方案请参见[这里](https://docs.nestjs.com/graphql/quick-start#third-party-integrations)）。
 
-You can also build your own dedicated driver (read more on that [here](/graphql/other-features#creating-a-custom-driver)).
+你也可以自行构建专用的驱动（详细内容请参见[此处](/graphql/other-features#creating-a-custom-driver)）。
 
-#### Installation
+#### 安装
 
-Start by installing the required packages:
+首先安装所需依赖包：
 
 ```bash
-# For Express and Apollo (default)
+# 适用于 Express 和 Apollo（默认）
 $ npm i @nestjs/graphql @nestjs/apollo @apollo/server graphql
 
-# For Fastify and Apollo
+# 适用于 Fastify 和 Apollo
 # npm i @nestjs/graphql @nestjs/apollo @apollo/server @as-integrations/fastify graphql
 
-# For Fastify and Mercurius
+# 适用于 Fastify 和 Mercurius
 # npm i @nestjs/graphql @nestjs/mercurius graphql mercurius
 ```
 
-> warning **Warning** `@nestjs/graphql@>=9` and `@nestjs/apollo^10` packages are compatible with **Apollo v3** (check out Apollo Server 3 [migration guide](https://www.apollographql.com/docs/apollo-server/migration/) for more details), while `@nestjs/graphql@^8` only supports **Apollo v2** (e.g., `apollo-server-express@2.x.x` package).
+> warning **警告** `@nestjs/graphql@>=9` 和 `@nestjs/apollo^10` 这两个包与 **Apollo v3** 兼容（更多细节请参考 Apollo Server 3 [迁移指南](https://www.apollographql.com/docs/apollo-server/migration/)），而 `@nestjs/graphql@^8` 仅支持 **Apollo v2**（例如 `apollo-server-express@2.x.x` 包）。
 
-#### Overview
+#### 概览
 
-Nest offers two ways of building GraphQL applications, the **code first** and the **schema first** methods. You should choose the one that works best for you. Most of the chapters in this GraphQL section are divided into two main parts: one you should follow if you adopt **code first**, and the other to be used if you adopt **schema first**.
+Nest 提供了两种构建 GraphQL 应用的方式，分别是 **代码优先（code first）** 和 **模式优先（schema first）**。你可以根据实际需求选择最适合自己的方式。本章节的大部分内容也会分为两部分：采用 **代码优先** 的读者请参考一部分，采用 **模式优先** 的读者请参考另一部分。
 
-In the **code first** approach, you use decorators and TypeScript classes to generate the corresponding GraphQL schema. This approach is useful if you prefer to work exclusively with TypeScript and avoid context switching between language syntaxes.
+在 **代码优先** 方式中，你可以通过装饰器（Decorator）和 TypeScript 类来生成对应的 GraphQL 模式（Schema）。如果你更喜欢完全使用 TypeScript 并避免在不同语言语法间切换，这种方式会非常适合。
 
-In the **schema first** approach, the source of truth is GraphQL SDL (Schema Definition Language) files. SDL is a language-agnostic way to share schema files between different platforms. Nest automatically generates your TypeScript definitions (using either classes or interfaces) based on the GraphQL schemas to reduce the need to write redundant boilerplate code.
+在 **模式优先** 方式中，真相的唯一来源是 GraphQL SDL（Schema Definition Language，模式定义语言）文件。SDL 是一种与语言无关的方式，可以在不同平台间共享模式文件。Nest 会自动根据 GraphQL 模式生成 TypeScript 类型定义（可以是类或接口），从而减少重复编写模板代码（Boilerplate）的工作量。
 
 <app-banner-courses-graphql-cf></app-banner-courses-graphql-cf>
 
-#### Getting started with GraphQL & TypeScript
+#### 使用 GraphQL 和 TypeScript 快速上手
 
-> info **Hint** In the following chapters, we'll be integrating the `@nestjs/apollo` package. If you want to use `mercurius` package instead, navigate to [this section](/graphql/quick-start#mercurius-integration).
+> info **提示**  
+> 在接下来的章节中，我们将集成 `@nestjs/apollo` 包。如果你希望使用 `mercurius` 包，请前往[本节](/graphql/quick-start#mercurius-integration)查看相关内容。
 
-Once the packages are installed, we can import the `GraphQLModule` and configure it with the `forRoot()` static method.
+安装好相关包后，我们可以导入 `GraphQLModule`，并通过其静态方法 `forRoot()` 进行配置。
 
 ```typescript
 @@filename()
@@ -55,9 +56,11 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 export class AppModule {}
 ```
 
-> info **Hint** For `mercurius` integration, you should be using the `MercuriusDriver` and `MercuriusDriverConfig` instead. Both are exported from the `@nestjs/mercurius` package.
+> info **提示**  
+> 如果你需要集成 `mercurius`，应当使用 `MercuriusDriver` 和 `MercuriusDriverConfig`，这两个均由 `@nestjs/mercurius` 包导出。
 
-The `forRoot()` method takes an options object as an argument. These options are passed through to the underlying driver instance (read more about available settings here: [Apollo](https://www.apollographql.com/docs/apollo-server/api/apollo-server) and [Mercurius](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)). For example, if you want to disable the `playground` and turn off `debug` mode (for Apollo), pass the following options:
+`forRoot()` 方法接收一个配置对象作为参数。该对象中的选项会被传递给底层的驱动实例（可在这里查看更多可用设置：[Apollo](https://www.apollographql.com/docs/apollo-server/api/apollo-server) 和 [Mercurius](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)）。  
+例如，如果你想禁用 `playground`（交互式调试工具）并关闭 `debug` 模式（针对 Apollo），可以传入如下配置：
 
 ```typescript
 @@filename()
@@ -76,21 +79,21 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 export class AppModule {}
 ```
 
-In this case, these options will be forwarded to the `ApolloServer` constructor.
+在上述示例中，这些选项会被转发给 `ApolloServer` 的构造函数。
 
-#### GraphQL playground
+#### GraphQL Playground（图形化交互式 IDE）
 
-The playground is a graphical, interactive, in-browser GraphQL IDE, available by default on the same URL as the GraphQL server itself. To access the playground, you need a basic GraphQL server configured and running. To see it now, you can install and build the [working example here](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first). Alternatively, if you're following along with these code samples, once you've completed the steps in the [Resolvers chapter](/graphql/resolvers-map), you can access the playground.
+Playground 是一个图形化、交互式的浏览器内 GraphQL IDE，默认情况下可通过与 GraphQL 服务器相同的 URL 访问。要使用 Playground，您需要先配置并运行一个基础的 GraphQL 服务器。想要立即体验，可以[安装并构建此处的示例项目](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first)。另外，如果您正在跟随本系列代码示例学习，完成[解析器章节](/graphql/resolvers-map)的步骤后，也可以访问 Playground。
 
-With that in place, and with your application running in the background, you can then open your web browser and navigate to `http://localhost:3000/graphql` (host and port may vary depending on your configuration). You will then see the GraphQL playground, as shown below.
+完成上述准备，并确保应用在后台运行后，您只需在浏览器中访问 `http://localhost:3000/graphql`（主机和端口可能因您的配置而异），即可看到 GraphQL Playground，效果如下图所示。
 
 <figure>
   <img src="/assets/playground.png" alt="" />
 </figure>
 
-> info **Note** `@nestjs/mercurius` integration does not ship with the built-in GraphQL Playground integration. Instead, you can use [GraphiQL](https://github.com/graphql/graphiql) (set `graphiql: true`).
+> info **注意** `@nestjs/mercurius` 集成并未内置 GraphQL Playground。您可以使用 [GraphiQL](https://github.com/graphql/graphiql)（设置 `graphiql: true`）。
 
-> warning **Warning** Update (04/14/2025): The default Apollo playground has been deprecated and will be removed in the next major release. Instead, you can use [GraphiQL](https://github.com/graphql/graphiql), just set `graphiql: true` in the `GraphQLModule` configuration, as shown below:
+> warning **警告** 更新（2025/04/14）：默认的 Apollo Playground 已被弃用，并将在下一个主版本中移除。建议改用 [GraphiQL](https://github.com/graphql/graphiql)，只需在 `GraphQLModule` 配置中设置 `graphiql: true`，示例如下：
 >
 > ```typescript
 > GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -99,13 +102,13 @@ With that in place, and with your application running in the background, you can
 > }),
 > ```
 >
-> If your application uses [subscriptions](/graphql/subscriptions), be sure to use `graphql-ws`, as `subscriptions-transport-ws` isn't supported by GraphiQL.
+> 如果您的应用使用了[订阅功能](/graphql/subscriptions)，请确保使用 `graphql-ws`，因为 GraphiQL 不支持 `subscriptions-transport-ws`。
 
-#### Code first
+#### 代码优先（Code first）
 
-In the **code first** approach, you use decorators and TypeScript classes to generate the corresponding GraphQL schema.
+在 **代码优先** 方式中，你可以通过装饰器和 TypeScript 类来生成对应的 GraphQL 模式（schema）。
 
-To use the code first approach, start by adding the `autoSchemaFile` property to the options object:
+要使用代码优先方式，首先需要在配置对象中添加 `autoSchemaFile` 属性：
 
 ```typescript
 GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -114,7 +117,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-The `autoSchemaFile` property value is the path where your automatically generated schema will be created. Alternatively, the schema can be generated on-the-fly in memory. To enable this, set the `autoSchemaFile` property to `true`:
+`autoSchemaFile` 属性的值是自动生成的 GraphQL 模式文件的存放路径。你也可以选择在内存中动态生成该模式文件。若要启用此功能，只需将 `autoSchemaFile` 属性设置为 `true`：
 
 ```typescript
 GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -123,7 +126,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-By default, the types in the generated schema will be in the order they are defined in the included modules. To sort the schema lexicographically, set the `sortSchema` property to `true`:
+默认情况下，生成的模式文件中的类型顺序与各模块中定义的顺序一致。如果希望按字典序对模式进行排序，可以将 `sortSchema` 属性设置为 `true`：
 
 ```typescript
 GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -133,13 +136,13 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-#### Example
+#### 示例
 
-A fully working code first sample is available [here](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first).
+一个完整可用的代码优先（code first）示例可在 [这里](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first) 查看。
 
-#### Schema first
+#### 模式优先（schema first）
 
-To use the schema first approach, start by adding a `typePaths` property to the options object. The `typePaths` property indicates where the `GraphQLModule` should look for GraphQL SDL schema definition files you'll be writing. These files will be combined in memory; this allows you to split your schemas into several files and locate them near their resolvers.
+要使用模式优先方式，首先需要在配置对象中添加 `typePaths` 属性。`typePaths` 属性用于指示 `GraphQLModule` 应该在哪里查找你编写的 GraphQL SDL 模式定义文件。这些文件会在内存中合并，这样你就可以将模式拆分到多个文件，并将它们放在靠近各自解析器的位置。
 
 ```typescript
 GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -148,7 +151,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-You will typically also need to have TypeScript definitions (classes and interfaces) that correspond to the GraphQL SDL types. Creating the corresponding TypeScript definitions by hand is redundant and tedious. It leaves us without a single source of truth -- each change made within SDL forces us to adjust TypeScript definitions as well. To address this, the `@nestjs/graphql` package can **automatically generate** TypeScript definitions from the abstract syntax tree ([AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree)). To enable this feature, add the `definitions` options property when configuring the `GraphQLModule`.
+通常你还需要拥有与 GraphQL SDL 类型对应的 TypeScript 类型定义（类和接口）。手动创建这些对应的 TypeScript 类型定义既繁琐又容易出错。这样一来，SDL 和 TypeScript 类型定义就无法做到"单一事实来源"——每次在 SDL 中做出更改时，都需要同步调整 TypeScript 类型定义。为了解决这个问题，`@nestjs/graphql` 包可以**自动生成** TypeScript 类型定义，基于抽象语法树（AST，Abstract Syntax Tree）。要启用此功能，只需在配置 `GraphQLModule` 时添加 `definitions` 选项属性。
 
 ```typescript
 GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -160,7 +163,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-The path property of the `definitions` object indicates where to save generated TypeScript output. By default, all generated TypeScript types are created as interfaces. To generate classes instead, specify the `outputAs` property with a value of `'class'`.
+`definitions` 对象的 `path` 属性用于指定生成的 TypeScript 输出文件保存位置。默认情况下，所有生成的 TypeScript 类型都会以接口（interface）形式创建。如果你希望生成类（class），可以将 `outputAs` 属性设置为 `'class'`。
 
 ```typescript
 GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -173,7 +176,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-The above approach dynamically generates TypeScript definitions each time the application starts. Alternatively, it may be preferable to build a simple script to generate these on demand. For example, assume we create the following script as `generate-typings.ts`:
+上述方式会在每次应用启动时动态生成 TypeScript 类型定义。或者，你也可以选择编写一个简单的脚本，按需生成这些类型。例如，假设我们创建如下脚本 `generate-typings.ts`：
 
 ```typescript
 import { GraphQLDefinitionsFactory } from '@nestjs/graphql'
@@ -187,15 +190,15 @@ definitionsFactory.generate({
 })
 ```
 
-Now you can run this script on demand:
+现在你可以按需运行该脚本：
 
 ```bash
 $ ts-node generate-typings
 ```
 
-> info **Hint** You can compile the script beforehand (e.g., with `tsc`) and use `node` to execute it.
+> info **提示** 你也可以先编译该脚本（例如使用 `tsc`），然后用 `node` 执行。
 
-To enable watch mode for the script (to automatically generate typings whenever any `.graphql` file changes), pass the `watch` option to the `generate()` method.
+如果希望为该脚本启用监听模式（即在任意 `.graphql` 文件发生变化时自动生成类型），只需为 `generate()` 方法传递 `watch` 选项：
 
 ```typescript
 definitionsFactory.generate({
@@ -206,7 +209,7 @@ definitionsFactory.generate({
 })
 ```
 
-To automatically generate the additional `__typename` field for every object type, enable the `emitTypenameField` option:
+如果希望为每个对象类型自动生成额外的 `__typename` 字段，可以启用 `emitTypenameField` 选项：
 
 ```typescript
 definitionsFactory.generate({
@@ -215,7 +218,7 @@ definitionsFactory.generate({
 })
 ```
 
-To generate resolvers (queries, mutations, subscriptions) as plain fields without arguments, enable the `skipResolverArgs` option:
+如果希望将解析器（查询、变更、订阅）生成为不带参数的普通字段，可以启用 `skipResolverArgs` 选项：
 
 ```typescript
 definitionsFactory.generate({
@@ -224,7 +227,7 @@ definitionsFactory.generate({
 })
 ```
 
-To generate enums as TypeScript union types instead of regular TypeScript enums, set the `enumsAsTypes` option to `true`:
+如果希望将枚举类型生成为 TypeScript 联合类型（而不是常规的 TypeScript 枚举），可以将 `enumsAsTypes` 选项设置为 `true`：
 
 ```typescript
 definitionsFactory.generate({
@@ -233,9 +236,9 @@ definitionsFactory.generate({
 })
 ```
 
-#### Apollo Sandbox
+#### Apollo Sandbox（沙盒）
 
-To use [Apollo Sandbox](https://www.apollographql.com/blog/announcement/platform/apollo-sandbox-an-open-graphql-ide-for-local-development/) instead of the `graphql-playground` as a GraphQL IDE for local development, use the following configuration:
+如需在本地开发中使用 [Apollo Sandbox](https://www.apollographql.com/blog/announcement/platform/apollo-sandbox-an-open-graphql-ide-for-local-development/) 作为 GraphQL 集成开发环境（IDE），以替代 `graphql-playground`，请参考以下配置：
 
 ```typescript
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
@@ -255,27 +258,27 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 export class AppModule {}
 ```
 
-#### Example
+#### 示例
 
-A fully working schema first sample is available [here](https://github.com/nestjs/nest/tree/master/sample/12-graphql-schema-first).
+一个完整可用的 schema-first（以 schema 为主）示例可在 [此处](https://github.com/nestjs/nest/tree/master/sample/12-graphql-schema-first) 查看。
 
-#### Accessing generated schema
+#### 获取已生成的 schema（模式）对象
 
-In some circumstances (for example end-to-end tests), you may want to get a reference to the generated schema object. In end-to-end tests, you can then run queries using the `graphql` object without using any HTTP listeners.
+在某些情况下（例如端到端测试（End-to-End Testing）），你可能希望获取已生成的 schema（模式）对象的引用。在端到端测试中，你可以直接使用 `graphql` 对象运行查询，而无需通过任何 HTTP 监听器。
 
-You can access the generated schema (in either the code first or schema first approach), using the `GraphQLSchemaHost` class:
+无论你采用代码优先（code first）还是 schema 优先（schema first）方式，都可以通过 `GraphQLSchemaHost` 类来访问已生成的 schema：
 
 ```typescript
 const { schema } = app.get(GraphQLSchemaHost)
 ```
 
-> info **Hint** You must call the `GraphQLSchemaHost#schema` getter after the application has been initialized (after the `onModuleInit` hook has been triggered by either the `app.listen()` or `app.init()` method).
+> info **提示** 你必须在应用初始化完成后（即在 `onModuleInit` 生命周期钩子被 `app.listen()` 或 `app.init()` 方法触发后），再调用 `GraphQLSchemaHost#schema` 的 getter。
 
-#### Async configuration
+#### 异步配置（Async configuration）
 
-When you need to pass module options asynchronously instead of statically, use the `forRootAsync()` method. As with most dynamic modules, Nest provides several techniques to deal with async configuration.
+当你需要以异步方式（而非静态方式）传递模块（Module）选项时，可以使用 `forRootAsync()` 方法。与大多数动态模块（Dynamic Module）一样，Nest 提供了多种处理异步配置的技术手段。
 
-One technique is to use a factory function:
+其中一种方式是使用工厂函数：
 
 ```typescript
  GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -286,7 +289,7 @@ One technique is to use a factory function:
 }),
 ```
 
-Like other factory providers, our factory function can be <a href="https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory">async</a> and can inject dependencies through `inject`.
+与其他工厂提供者类似，我们的工厂函数也可以是 <a href="https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory">异步的</a>，并且可以通过 `inject` 注入依赖。
 
 ```typescript
 GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -299,7 +302,7 @@ GraphQLModule.forRootAsync<ApolloDriverConfig>({
 }),
 ```
 
-Alternatively, you can configure the `GraphQLModule` using a class instead of a factory, as shown below:
+另外，你也可以通过类（Class）而非工厂函数来配置 `GraphQLModule`，如下所示：
 
 ```typescript
 GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -308,7 +311,7 @@ GraphQLModule.forRootAsync<ApolloDriverConfig>({
 }),
 ```
 
-The construction above instantiates `GqlConfigService` inside `GraphQLModule`, using it to create options object. Note that in this example, the `GqlConfigService` has to implement the `GqlOptionsFactory` interface, as shown below. The `GraphQLModule` will call the `createGqlOptions()` method on the instantiated object of the supplied class.
+上述写法会在 `GraphQLModule` 内部实例化 `GqlConfigService`，并用它来创建配置对象。需要注意的是，在这个例子中，`GqlConfigService` 必须实现 `GqlOptionsFactory` 接口，如下所示。`GraphQLModule` 会在所提供类的实例上调用 `createGqlOptions()` 方法。
 
 ```typescript
 @Injectable()
@@ -321,7 +324,7 @@ class GqlConfigService implements GqlOptionsFactory {
 }
 ```
 
-If you want to reuse an existing options provider instead of creating a private copy inside the `GraphQLModule`, use the `useExisting` syntax.
+如果你希望复用已有的配置服务，而不是在 `GraphQLModule` 内部创建一个私有副本，可以使用 `useExisting` 语法。
 
 ```typescript
 GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -330,9 +333,9 @@ GraphQLModule.forRootAsync<ApolloDriverConfig>({
 }),
 ```
 
-#### Mercurius integration
+#### Mercurius 集成
 
-Instead of using Apollo, Fastify users (read more [here](/techniques/performance)) can alternatively use the `@nestjs/mercurius` driver.
+对于 Fastify 用户（详细内容请参阅[此处](/techniques/performance)），除了使用 Apollo 外，还可以选择使用 `@nestjs/mercurius` 驱动。
 
 ```typescript
 @@filename()
@@ -351,13 +354,13 @@ import { MercuriusDriver, MercuriusDriverConfig } from '@nestjs/mercurius';
 export class AppModule {}
 ```
 
-> info **Hint** Once the application is running, open your browser and navigate to `http://localhost:3000/graphiql`. You should see the [GraphQL IDE](https://github.com/graphql/graphiql).
+> info **提示** 应用启动后，在浏览器中访问 `http://localhost:3000/graphiql`，你将看到 [GraphQL IDE](https://github.com/graphql/graphiql)。
 
-The `forRoot()` method takes an options object as an argument. These options are passed through to the underlying driver instance. Read more about available settings [here](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options).
+`forRoot()` 方法接收一个选项对象作为参数。这些选项会传递给底层驱动实例。关于可用设置的更多信息，请参阅[这里](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)。
 
-#### Multiple endpoints
+#### 多端点支持
 
-Another useful feature of the `@nestjs/graphql` module is the ability to serve multiple endpoints at once. This lets you decide which modules should be included in which endpoint. By default, `GraphQL` searches for resolvers throughout the whole app. To limit this scan to only a subset of modules, use the `include` property.
+`@nestjs/graphql` 模块的另一个实用特性是能够同时提供多个端点。这让你可以灵活决定哪些模块应包含在哪个端点中。默认情况下，GraphQL 会在整个应用中查找解析器（Resolver）。如果你希望只在部分模块中查找，可以使用 `include` 属性进行限制。
 
 ```typescript
 GraphQLModule.forRoot({
@@ -365,12 +368,12 @@ GraphQLModule.forRoot({
 }),
 ```
 
-> warning **Warning** If you use the `@apollo/server` with `@as-integrations/fastify` package with multiple GraphQL endpoints in a single application, make sure to enable the `disableHealthCheck` setting in the `GraphQLModule` configuration.
+> warning **警告** 如果你在单个应用中结合 `@apollo/server` 与 `@as-integrations/fastify` 包使用多个 GraphQL 端点，请务必在 `GraphQLModule` 配置中启用 `disableHealthCheck` 设置。
 
-#### Third-party integrations
+#### 第三方集成
 
 - [GraphQL Yoga](https://github.com/dotansimha/graphql-yoga)
 
-#### Example
+#### 示例
 
-A working example is available [here](https://github.com/nestjs/nest/tree/master/sample/33-graphql-mercurius).
+一个可运行的示例可在[此处](https://github.com/nestjs/nest/tree/master/sample/33-graphql-mercurius)查看。
