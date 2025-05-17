@@ -2,10 +2,9 @@ import { notFound } from 'next/navigation'
 
 import type { PageProps } from '@/types/common'
 
-// 为MDX文档内容定义类型
 type MDXContent = React.ComponentType
 
-export default async function ProjectDetailPage({ params }: PageProps<{ docTitle: string[] }>) {
+export default async function DocsPage({ params }: PageProps<{ docTitle: string[] }>) {
   const { docTitle } = await params
 
   if (docTitle.length > 0) {
@@ -16,7 +15,7 @@ export default async function ProjectDetailPage({ params }: PageProps<{ docTitle
       const { default: DocContent } = await import(`@/docs/${docPath}.mdx`) as { default: MDXContent }
 
       return (
-        <article className="prose dark:prose-invert mx-auto p-6 prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic">
+        <article className="prose text-[15px] dark:prose-invert mx-auto p-6 prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic prose-a:underline-offset-4">
           <DocContent />
         </article>
       )

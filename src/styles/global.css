@@ -132,3 +132,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+* {
+  /* 现代滚动条样式 */
+  scrollbar-width: thin;
+}
