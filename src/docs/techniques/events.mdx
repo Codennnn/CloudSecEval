@@ -142,7 +142,7 @@ handleEverything(payload: any) {
 
 #### 避免事件丢失
 
-在 `onApplicationBootstrap` 生命周期钩子之前或期间触发的事件——例如在模块构造函数或 `onModuleInit` 方法中触发的事件——可能会因为 `EventSubscribersLoader` 尚未完成监听器注册而被遗漏。
+在 `onApplicationBootstrap` 生命周期钩子之前或期间触发的事件 —— 例如在模块构造函数或 `onModuleInit` 方法中触发的事件 —— 可能会因为 `EventSubscribersLoader` 尚未完成监听器注册而被遗漏。
 
 为避免此问题，你可以在模块的 `onApplicationBootstrap` 生命周期钩子中调用 `EventEmitterReadinessWatcher` 的 `waitUntilReady` 方法。该方法会返回一个 Promise，当所有监听器都已注册完成后才会 resolve，从而确保所有事件都能被正确捕获。
 

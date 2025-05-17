@@ -312,7 +312,7 @@ export class HeroesController {
 
 #### 基于事件的通信
 
-虽然请求-响应（request-response）方式非常适合服务之间的消息交换，但当你的消息风格是基于事件（event-based）时（例如 Kafka 场景下），这种方式就不太合适了——此时你只需要发布事件**而无需等待响应**。在这种情况下，你不希望为维护两个主题（topic）而引入请求-响应所需的额外开销。
+虽然请求-响应（request-response）方式非常适合服务之间的消息交换，但当你的消息风格是基于事件（event-based）时（例如 Kafka 场景下），这种方式就不太合适了 —— 此时你只需要发布事件**而无需等待响应**。在这种情况下，你不希望为维护两个主题（topic）而引入请求-响应所需的额外开销。
 
 你可以参考以下两个章节，进一步了解相关内容：[概览：基于事件](/microservices/basics#event-based) 以及 [概览：事件发布](/microservices/basics#publishing-events)。
 

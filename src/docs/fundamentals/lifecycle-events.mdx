@@ -93,7 +93,7 @@ async function bootstrap() {
 bootstrap()
 ```
 
-> warning **警告** 由于平台本身的限制，NestJS 在 Windows 上对应用关闭钩子的支持有限。你可以预期 `SIGINT`、`SIGBREAK` 以及部分 `SIGHUP` 能正常工作——[详细说明](https://nodejs.org/api/process.html#process_signal_events)。但 `SIGTERM` 在 Windows 上永远无法生效，因为在任务管理器中强制结束进程是无条件的，即"应用无法检测或阻止该操作"。更多信息可参考 [libuv 官方文档](https://docs.libuv.org/en/v1.x/signal.html) 以及 Node.js 的 [进程信号事件文档](https://nodejs.org/api/process.html#process_signal_events)。
+> warning **警告** 由于平台本身的限制，NestJS 在 Windows 上对应用关闭钩子的支持有限。你可以预期 `SIGINT`、`SIGBREAK` 以及部分 `SIGHUP` 能正常工作 ——[详细说明](https://nodejs.org/api/process.html#process_signal_events)。但 `SIGTERM` 在 Windows 上永远无法生效，因为在任务管理器中强制结束进程是无条件的，即"应用无法检测或阻止该操作"。更多信息可参考 [libuv 官方文档](https://docs.libuv.org/en/v1.x/signal.html) 以及 Node.js 的 [进程信号事件文档](https://nodejs.org/api/process.html#process_signal_events)。
 
 > info **提示** `enableShutdownHooks` 会通过启动监听器消耗内存。如果你在单个 Node 进程中运行多个 Nest 应用（如使用 Jest 并行测试时），Node 可能会因监听器过多而发出警告。因此，`enableShutdownHooks` 默认未启用。运行多个实例时请注意此情况。
 

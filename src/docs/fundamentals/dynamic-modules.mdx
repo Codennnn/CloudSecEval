@@ -177,7 +177,7 @@ import { ConfigModule } from './config/config.module'
 export class AppModule {}
 ```
 
-这样就能把 `options` 对象传递给动态模块了。那如何在 `ConfigModule` 内部使用这个 `options` 呢？我们知道 `ConfigModule` 主要是提供并导出一个可注入的服务——`ConfigService`。实际上需要用到 `options` 的是 `ConfigService`。假设我们已经能把 `register()` 里的 `options` 传递给 `ConfigService`，那就可以根据 `options` 的属性定制服务行为了。（**注意**：目前我们还没实现参数传递，这里先写死 `options`，后面会完善。）
+这样就能把 `options` 对象传递给动态模块了。那如何在 `ConfigModule` 内部使用这个 `options` 呢？我们知道 `ConfigModule` 主要是提供并导出一个可注入的服务 —— ConfigService`。实际上需要用到 `options`的是`ConfigService`。假设我们已经能把 `register()`里的`options`传递给`ConfigService`，那就可以根据 `options`的属性定制服务行为了。（**注意**：目前我们还没实现参数传递，这里先写死`options`，后面会完善。）
 
 ```typescript
 import { Injectable } from '@nestjs/common'

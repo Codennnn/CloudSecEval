@@ -116,7 +116,7 @@ export class CatsController {
 
 #### 依赖注入（Dependency Injection）
 
-Nest 构建于强大的设计模式——**依赖注入（Dependency Injection）**之上。我们强烈建议你阅读官方 [Angular 文档](https://angular.dev/guide/di) 中关于该概念的精彩介绍。
+Nest 构建于强大的设计模式 —— **依赖注入**之上。我们强烈建议你阅读官方 [Angular 文档](https://angular.dev/guide/di) 中关于该概念的精彩介绍。
 
 在 Nest 中，得益于 TypeScript 的能力，依赖管理变得非常简单，因为依赖会根据类型自动解析。在下面的示例中，Nest 会通过创建并返回 `CatsService` 的实例（如果是单例模式，则会返回已存在的实例）来解析 `catsService`。该依赖随后会被注入到控制器的构造函数中（或赋值给指定的属性）：
 

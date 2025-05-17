@@ -706,7 +706,7 @@ TypeOrmModule.forRootAsync({
 })
 ```
 
-这种写法与 `useClass` 类似，但有一个关键区别——`TypeOrmModule` 会在已导入的模块中查找并复用现有的 `ConfigService`，而不是新建一个实例。
+这种写法与 `useClass` 类似，但有一个关键区别 —— `TypeOrmModule` 会在已导入的模块中查找并复用现有的 `ConfigService`，而不是新建一个实例。
 
 > info **提示** 请确保 `name` 属性与 `useFactory`、`useClass` 或 `useValue` 属性处于同一级别。这样可以让 Nest 正确地在相应的注入令牌下注册数据源。
 
@@ -714,7 +714,7 @@ TypeOrmModule.forRootAsync({
 
 结合使用 `useFactory`、`useClass` 或 `useExisting` 进行异步配置时，你还可以选择性地指定一个 `dataSourceFactory` 函数。通过该函数，你可以自行提供 TypeORM 数据源（DataSource），而不是让 `TypeOrmModule` 自动创建数据源。
 
-`dataSourceFactory` 会接收通过 `useFactory`、`useClass` 或 `useExisting` 异步配置时传入的 TypeORM 数据源选项（DataSourceOptions），并返回一个解析为 TypeORM 数据源（DataSource）的 Promise。
+`dataSourceFactory` 会接收通过 `useFactory`、`useClass` 或 `useExisting` 异步配置时传入的 TypeORM 数据源选项（DataSourceOptions），并返回一个解析为 TypeORM 数据源的 Promise。
 
 ```typescript
 TypeOrmModule.forRootAsync({
@@ -751,7 +751,7 @@ TypeOrmModule.forRootAsync({
 
 ### 集成 Sequelize
 
-除了使用 TypeORM 之外，你还可以选择通过 `@nestjs/sequelize` 包集成 [Sequelize](https://sequelize.org/) ORM。此外，我们还会用到 [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript) 包，它提供了一系列装饰器（Decorator），可以用声明式的方式定义实体（Entity）。
+除了使用 TypeORM 之外，你还可以选择通过 `@nestjs/sequelize` 包集成 [Sequelize](https://sequelize.org/) ORM。此外，我们还会用到 [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript) 包，它提供了一系列装饰器（Decorator），可以用声明式的方式定义实体。
 
 要开始使用 Sequelize，需要先安装相关依赖。本章节以主流的 [MySQL](https://www.mysql.com/) 关系型数据库管理系统（Relational DBMS）为例进行演示，但 Sequelize 也支持多种关系型数据库，如 PostgreSQL、MySQL、Microsoft SQL Server、SQLite 和 MariaDB。无论选择哪种数据库，操作流程基本一致，只需安装对应的数据库客户端 API 库即可。
 

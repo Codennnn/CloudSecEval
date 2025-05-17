@@ -151,7 +151,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-通常你还需要拥有与 GraphQL SDL 类型对应的 TypeScript 类型定义（类和接口）。手动创建这些对应的 TypeScript 类型定义既繁琐又容易出错。这样一来，SDL 和 TypeScript 类型定义就无法做到"单一事实来源"——每次在 SDL 中做出更改时，都需要同步调整 TypeScript 类型定义。为了解决这个问题，`@nestjs/graphql` 包可以**自动生成** TypeScript 类型定义，基于抽象语法树（AST，Abstract Syntax Tree）。要启用此功能，只需在配置 `GraphQLModule` 时添加 `definitions` 选项属性。
+通常你还需要拥有与 GraphQL SDL 类型对应的 TypeScript 类型定义（类和接口）。手动创建这些对应的 TypeScript 类型定义既繁琐又容易出错。这样一来，SDL 和 TypeScript 类型定义就无法做到"单一事实来源" —— 每次在 SDL 中做出更改时，都需要同步调整 TypeScript 类型定义。为了解决这个问题，`@nestjs/graphql` 包可以**自动生成** TypeScript 类型定义，基于抽象语法树。要启用此功能，只需在配置 `GraphQLModule` 时添加 `definitions` 选项属性。
 
 ```typescript
 GraphQLModule.forRoot<ApolloDriverConfig>({

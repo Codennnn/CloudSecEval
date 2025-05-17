@@ -208,7 +208,7 @@ export class AggregateByTenantContextIdStrategy implements ContextIdStrategy {
 
 > warning **警告** 请注意，这种策略并不适用于操作大量租户的应用。
 
-`attach` 方法的返回值用于指示 Nest 应该为特定宿主（host）组件使用哪个上下文标识符（context identifier）。在本例中，我们指定当宿主组件（如请求作用域的控制器）被标记为 durable 时，应使用 `tenantSubTreeId`，而不是原本自动生成的 `contextId` 对象（关于如何将提供者标记为 durable，见下文）。另外，在上述示例中，并不会注册任何 payload（payload 即代表“根”——子树父级的 `REQUEST`/`CONTEXT` 提供者）。
+`attach` 方法的返回值用于指示 Nest 应该为特定宿主（host）组件使用哪个上下文标识符（context identifier）。在本例中，我们指定当宿主组件（如请求作用域的控制器）被标记为 durable 时，应使用 `tenantSubTreeId`，而不是原本自动生成的 `contextId` 对象（关于如何将提供者标记为 durable，见下文）。另外，在上述示例中，并不会注册任何 payload（payload 即代表“根” —— 子树父级的 `REQUEST`/`CONTEXT` 提供者）。
 
 如果你希望为 durable 子树注册 payload，可以使用如下写法：
 

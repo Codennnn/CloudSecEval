@@ -167,7 +167,7 @@ export class AppModule {}
 
 > info **提示** 需要注意的是，那些没有通过 `forFeature()` 方法注册、仅通过实体间关系被引用的实体，并不会因为启用了 `autoLoadEntities` 而被自动包含。
 
-> info **提示** 使用 `autoLoadEntities` 对 MikroORM CLI 没有影响——在这种情况下，仍然需要在 CLI 配置中完整列出所有实体。不过，CLI 配置可以使用 glob 路径，因为 CLI 不会经过 webpack 处理。
+> info **提示** 使用 `autoLoadEntities` 对 MikroORM CLI 没有影响 —— 在这种情况下，仍然需要在 CLI 配置中完整列出所有实体。不过，CLI 配置可以使用 glob 路径，因为 CLI 不会经过 webpack 处理。
 
 #### 序列化
 

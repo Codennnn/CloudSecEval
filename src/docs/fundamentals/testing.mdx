@@ -72,7 +72,7 @@ describe('CatsController', () => {
 
 > info **提示** 建议将测试文件放在被测试类附近。测试文件应以 `.spec` 或 `.test` 结尾。
 
-由于上述示例较为简单，实际上并未测试任何 Nest 特有的内容。事实上，我们甚至没有使用依赖注入（Dependency Injection），而是直接将 `CatsService` 的实例传递给 `catsController`。这种测试方式——即手动实例化被测类——通常被称为**隔离测试（Isolated Testing）**，它与框架无关。接下来我们将介绍一些更高级的能力，帮助你测试更充分利用 Nest 特性的应用。
+由于上述示例较为简单，实际上并未测试任何 Nest 特有的内容。事实上，我们甚至没有使用依赖注入，而是直接将 `CatsService` 的实例传递给 `catsController`。这种测试方式 —— 即手动实例化被测类 ——通 常被称为**隔离测试（Isolated Testing）**，它与框架无关。接下来我们将介绍一些更高级的能力，帮助你测试更充分利用 Nest 特性的应用。
 
 #### 测试工具（Testing utilities）
 

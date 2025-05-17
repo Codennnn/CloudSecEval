@@ -143,7 +143,7 @@ export class AppModule {}
 
 #### 为处理器设置角色
 
-我们的 `RolesGuard` 目前还很"笨"，还没有利用守卫最重要的特性——[执行上下文](/fundamentals/execution-context)。它还不知道每个处理器允许哪些角色。例如，`CatsController` 的不同路由可能有不同的权限要求，有的只允许管理员访问，有的则对所有人开放。如何灵活、可复用地为路由分配角色？
+我们的 `RolesGuard` 目前还很"笨"，还没有利用守卫最重要的特性 —— [执行上下文](/fundamentals/execution-context)。它还不知道每个处理器允许哪些角色。例如，`CatsController` 的不同路由可能有不同的权限要求，有的只允许管理员访问，有的则对所有人开放。如何灵活、可复用地为路由分配角色？
 
 这就需要用到**自定义元数据（Metadata）**（详见[这里](https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata)）。Nest 提供了两种方式为路由处理器附加自定义元数据：通过 `Reflector.createDecorator` 静态方法创建装饰器，或使用内置的 `@SetMetadata()` 装饰器。
 
