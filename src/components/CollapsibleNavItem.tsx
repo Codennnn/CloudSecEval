@@ -9,14 +9,14 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible'
+} from '~/components/ui/collapsible'
 import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
-} from '@/components/ui/sidebar'
-import { NavMenuItem } from '@/types/nav'
-import { isExternalLink } from '@/utils/common'
+} from '~/components/ui/sidebar'
+import { NavMenuItem } from '~/types/nav'
+import { isExternalLink } from '~/utils/common'
 
 import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from './AppSidebarMenuButton'
 

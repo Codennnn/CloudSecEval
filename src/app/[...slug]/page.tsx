@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { getPageTitle } from '@/utils/common'
+import { getPageTitle } from '~/utils/common'
 
 export function generateMetadata(): Metadata {
   return {

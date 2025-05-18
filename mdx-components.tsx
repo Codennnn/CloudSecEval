@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import type { MDXComponents } from 'mdx/types'
 
-import { CodeBlock } from '@/components/CodeBlock'
-import { isExternalLink } from '@/utils/common'
+import { CodeBlock } from '~/components/CodeBlock'
+import { isExternalLink } from '~/utils/common'
 
 interface PreProps {
   children: React.ReactElement<{ className: string, children: React.ReactElement }>

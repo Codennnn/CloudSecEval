@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-import { navMainData } from '@/lib/data/nav'
+import { navMainData } from '~/lib/data/nav'
 
 export default function DocsIndexPage() {
   // 遍历导航数据查找第一个有效的 URL

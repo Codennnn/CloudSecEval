@@ -1,5 +1,5 @@
-import { AppSidebar } from '@/components/AppSidebar'
-import { ThemeModeToggle } from '@/components/ThemeModeToggle'
+import { AppSidebar } from '~/components/AppSidebar'
+import { ThemeModeToggle } from '~/components/ThemeModeToggle'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,13 +7,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
+} from '~/components/ui/breadcrumb'
+import { Separator } from '~/components/ui/separator'
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/ui/sidebar'
+} from '~/components/ui/sidebar'
 
 export default function DocsLayout(props: React.PropsWithChildren) {
   return (

@@ -1,4 +1,4 @@
-import { NavMenuItem } from '@/types/nav'
+import { NavMenuItem } from '~/types/nav'
 
 export const navMainData: NavMenuItem[] = [
   {

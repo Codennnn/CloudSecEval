@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { GalleryVerticalEndIcon } from 'lucide-react'
 
-import { SearchForm } from '@/components/SearchForm'
+import { SearchForm } from '~/components/SearchForm'
 import {
   Sidebar,
   SidebarContent,
@@ -13,8 +13,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '@/components/ui/sidebar'
-import { navMainData } from '@/lib/data/nav'
+} from '~/components/ui/sidebar'
+import { navMainData } from '~/lib/data/nav'
 
 import { CollapsibleNavItem } from './CollapsibleNavItem'
 

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { type CodeToHastOptions, codeToHtml } from 'shiki'
 
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 
 interface CodeBlockProps {
   code: string
