@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 
+import { RoutePath } from '~/constants'
 import { navMainData } from '~/lib/data/nav'
 
 export default function DocsIndexPage() {
@@ -28,5 +29,5 @@ export default function DocsIndexPage() {
     }
   }
 
-  redirect(`/docs${firstValidUrl}`)
+  redirect(`${RoutePath.Docs}${firstValidUrl}`)
 }

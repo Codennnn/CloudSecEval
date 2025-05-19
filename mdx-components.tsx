@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { MDXComponents } from 'mdx/types'
 
 import { CodeBlock } from '~/components/CodeBlock'
+import { RoutePath } from '~/constants'
 import { isExternalLink } from '~/utils/common'
 
 interface PreProps {
@@ -30,7 +31,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
 
       return (
-        <Link href={href.startsWith('/') ? `/docs${href}` : `/docs/${href}`}>
+        <Link href={href.startsWith('/') ? `${RoutePath.Docs}${href}` : `${RoutePath.Docs}/${href}`}>
           {children}
         </Link>
       )

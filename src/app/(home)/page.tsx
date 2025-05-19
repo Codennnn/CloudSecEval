@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 
+import { RoutePath } from '~/constants'
+
 export default function HomePage() {
   // 当用户访问根路径时，自动重定向到文档页面
-  redirect('/docs')
+  redirect(RoutePath.Docs)
 }

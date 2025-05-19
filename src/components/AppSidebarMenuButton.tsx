@@ -3,6 +3,8 @@
 import { usePathname } from 'next/navigation'
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react'
 
+import { RoutePath } from '~/constants'
+
 import { SidebarMenuButton, SidebarMenuSubButton } from './ui/sidebar'
 
 interface SidebarMenuItemType {
@@ -25,7 +27,7 @@ export function AppSidebarMenuButton(
   const pathname = usePathname()
 
   return (
-    <SidebarMenuButton {...restProps} isActive={pathname === `/docs${item.url}`}>
+    <SidebarMenuButton {...restProps} isActive={pathname === `${RoutePath.Docs}${item.url}`}>
       {children}
     </SidebarMenuButton>
   )
@@ -37,7 +39,7 @@ export function AppSidebarMenuSubButton(
   const pathname = usePathname()
 
   return (
-    <SidebarMenuSubButton asChild isActive={pathname === `/docs${item.url}`}>
+    <SidebarMenuSubButton asChild isActive={pathname === `${RoutePath.Docs}${item.url}`}>
       {children}
     </SidebarMenuSubButton>
   )

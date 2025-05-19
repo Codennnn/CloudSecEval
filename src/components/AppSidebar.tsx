@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { GalleryVerticalEndIcon } from 'lucide-react'
 
+import { CollapsibleNavItem } from '~/components/CollapsibleNavItem'
 import { SearchForm } from '~/components/SearchForm'
 import {
   Sidebar,
@@ -16,9 +17,7 @@ import {
 } from '~/components/ui/sidebar'
 import { navMainData } from '~/lib/data/nav'
 
-import { CollapsibleNavItem } from './CollapsibleNavItem'
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>

@@ -187,11 +187,11 @@ export const navMainData: NavMenuItem[] = [
       { title: 'Nest 命令行工具', titleEn: 'Commander', url: '/recipes/nest-commander' },
       { title: '异步本地存储', titleEn: 'Async local storage', url: '/recipes/async-local-storage' },
       { title: 'Necord', titleEn: 'Necord', url: '/recipes/necord' },
-      { title: 'Suites (Automock)', titleEn: 'Suites (Automock)', url: '/recipes/suites' },
+      { title: 'Suites（原 Automock）', titleEn: 'Suites (Automock)', url: '/recipes/suites' },
     ],
   },
   {
-    title: 'FAQ',
+    title: '常见问题解答',
     items: [
       { title: 'Serverless', titleEn: 'Serverless', url: '/faq/serverless' },
       { title: 'HTTP 适配器', titleEn: 'HTTP adapter', url: '/faq/http-adapter' },

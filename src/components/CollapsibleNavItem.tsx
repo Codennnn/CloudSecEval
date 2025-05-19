@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { ArrowUpRightIcon } from 'lucide-react'
 
 import {
   Collapsible,
@@ -15,6 +16,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from '~/components/ui/sidebar'
+import { RoutePath } from '~/constants'
 import { NavMenuItem } from '~/types/nav'
 import { isExternalLink } from '~/utils/common'
 
@@ -33,8 +35,8 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   // 检查当前路径是否与该导航项或其子项匹配
-  const isActiveItem = item.url && pathname === `/docs${item.url}`
-  const hasActiveChild = item.items?.some((subItem) => subItem.url && pathname === `/docs${subItem.url}`)
+  const isActiveItem = item.url && pathname === `${RoutePath.Docs}${item.url}`
+  const hasActiveChild = item.items?.some((subItem) => subItem.url && pathname === `${RoutePath.Docs}${subItem.url}`)
 
   // 当路径变化时，自动展开包含当前页面的菜单
   useEffect(() => {
@@ -66,10 +68,19 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
             ? (
                 <AppSidebarMenuButton asChild item={item}>
                   <Link
-                    href={isExternalLink(item.url) ? item.url : `/docs/${item.url}`}
+                    href={isExternalLink(item.url) ? item.url : `${RoutePath.Docs}/${item.url}`}
                     target={isExternalLink(item.url) ? '_blank' : undefined}
                   >
                     <SidebarMenuButtonContent item={item} />
+
+                    {isExternalLink(item.url)
+                      ? (
+                          <ArrowUpRightIcon
+                            className="opacity-50"
+                            size={14}
+                          />
+                        )
+                      : null}
                   </Link>
                 </AppSidebarMenuButton>
               )
@@ -91,10 +102,19 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                           {subItem.url
                             ? (
                                 <Link
-                                  href={isExternalLink(subItem.url) ? subItem.url : `/docs/${subItem.url}`}
+                                  href={isExternalLink(subItem.url) ? subItem.url : `${RoutePath.Docs}/${subItem.url}`}
                                   target={isExternalLink(subItem.url) ? '_blank' : undefined}
                                 >
                                   {subItem.title}
+
+                                  {isExternalLink(subItem.url)
+                                    ? (
+                                        <ArrowUpRightIcon
+                                          className="ml-auto opacity-50"
+                                          size={14}
+                                        />
+                                      )
+                                    : null}
                                 </Link>
                               )
                             : subItem.title}
