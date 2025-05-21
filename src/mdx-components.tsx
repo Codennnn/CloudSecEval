@@ -14,10 +14,16 @@ interface AnchorProps {
   children: React.ReactElement
 }
 
+/**
+ * 自定义 MDX 组件渲染函数
+ *
+ * 该函数用于扩展和重写 MDX 文档中的默认组件渲染行为，在 NestJS 中文文档项目中，此函数确保了文档中的代码示例和链接能够正确且一致地渲染
+ *
+ * @param components - 基础 MDX 组件集合，会与自定义组件合并
+ * @returns 增强后的 MDX 组件集合
+ */
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    ...components,
-
     a: (props: AnchorProps) => {
       const { href, children } = props
       console.log(href, 'href')
@@ -76,5 +82,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
       return <pre {...props}>{children}</pre>
     },
+
+    ...components,
   }
 }
