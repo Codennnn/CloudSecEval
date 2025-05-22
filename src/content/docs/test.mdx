@@ -1,5 +1,18 @@
 # 测试代码
 
+```ts filename='xxx.js' showLineNumbers
+console.log('Hello') // [!code hl]
+console.log('Hello')
+```
+
 ```ts
-console.log("Hello")
+// @noErrors
+import { Controller, Get } from '@nestjs/common'
+@Controller('cats')
+export class CatsController {
+  @Get()
+  findAll(): string {
+    return 'This action returns all cats'
+  }
+}
 ```

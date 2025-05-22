@@ -1,92 +1,39 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-
-import { useTheme } from 'next-themes'
+import { transformerNotationHighlight } from '@shikijs/transformers'
 import { transformerTwoslash } from '@shikijs/twoslash'
-import { type CodeToHastOptions, codeToHtml } from 'shiki'
-
-import { cn } from '~/lib/utils'
+import { type BundledLanguage, type CodeToHastOptions, codeToHtml } from 'shiki'
 
 interface CodeBlockProps {
-  /** 代码内容 */
   code: string
-  language: string
+  lang: BundledLanguage
   filename?: string
   showLineNumbers?: boolean
-  className?: string
 }
 
-export function CodeBlock({
-  code,
-  language,
-  filename,
-  showLineNumbers = false,
-  className,
-}: CodeBlockProps) {
-  const { resolvedTheme } = useTheme()
+export async function CodeBlock(props: CodeBlockProps) {
+  const { code, lang, filename, showLineNumbers } = props
 
-  const [html, setHtml] = useState<string>('')
+  const transformers: CodeToHastOptions['transformers'] = [
+    transformerTwoslash(),
+    transformerNotationHighlight(),
+  ]
 
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    void (async () => {
-      const highlightCode = async () => {
-        try {
-          // Shiki options
-          const options: CodeToHastOptions = {
-            lang: language || 'text',
-            theme: resolvedTheme === 'dark' ? 'github-dark' : 'rose-pine-dawn',
-            transformers: [],
-          }
-
-          // 只有在需要行号时才添加transformers
-          if (showLineNumbers) {
-            options.transformers?.push({
-              name: 'line-numbers',
-            })
-          }
-
-          if (language === 'typescript') {
-            options.transformers?.push(transformerTwoslash())
-          }
-
-          const highlightedCode = await codeToHtml(code, options)
-
-          setHtml(highlightedCode)
-        }
-        catch (error) {
-          console.error('代码高亮失败:', error)
-        }
-        finally {
-          setIsLoading(false)
-        }
-      }
-
-      await highlightCode()
-    })()
-  }, [code, language, resolvedTheme, showLineNumbers])
-
-  if (isLoading) {
-    return (
-      <pre className="relative overflow-auto rounded-lg bg-muted p-4">
-        <code className="text-sm">{code}</code>
-      </pre>
-    )
+  if (showLineNumbers) {
+    transformers.push({ name: 'line-numbers' })
   }
 
+  const out = await codeToHtml(code, {
+    lang,
+    themes: {
+      light: 'github-light',
+      dark: 'github-dark',
+    },
+    transformers,
+  })
+
   return (
-    <div className={cn('relative', className)}>
-      {filename && (
-        <div className="absolute left-3 top-0 rounded-b-md bg-muted px-2 py-1 text-xs text-muted-foreground">
-          {filename}
-        </div>
-      )}
-      <div
-        dangerouslySetInnerHTML={{ __html: html }}
-        className="overflow-hidden rounded-lg not-prose"
-      />
+    <div>
+      <div>{filename}</div>
+      <div dangerouslySetInnerHTML={{ __html: out }} />
     </div>
   )
 }

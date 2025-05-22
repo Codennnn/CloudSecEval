@@ -69,3 +69,15 @@ pre.shiki .line-number {
 pre.shiki .line-number::before {
   content: counter(line);
 }
+
+.twoslash-popup-container {
+  @apply hidden absolute bottom-0 left-0 translate-y-full z-10;
+}
+
+.twoslash-hover:hover {
+  @apply relative;
+
+  > .twoslash-popup-container {
+    @apply inline-block;
+  }
+}
