@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react'
 
 import { useTheme } from 'next-themes'
+import { transformerTwoslash } from '@shikijs/twoslash'
 import { type CodeToHastOptions, codeToHtml } from 'shiki'
 
 import { cn } from '~/lib/utils'
 
 interface CodeBlockProps {
+  /** 代码内容 */
   code: string
   language: string
   filename?: string
@@ -36,18 +38,22 @@ export function CodeBlock({
           const options: CodeToHastOptions = {
             lang: language || 'text',
             theme: resolvedTheme === 'dark' ? 'github-dark' : 'rose-pine-dawn',
+            transformers: [],
           }
 
           // 只有在需要行号时才添加transformers
           if (showLineNumbers) {
-            options.transformers = [
-              {
-                name: 'line-numbers',
-              },
-            ]
+            options.transformers?.push({
+              name: 'line-numbers',
+            })
+          }
+
+          if (language === 'typescript') {
+            options.transformers?.push(transformerTwoslash())
           }
 
           const highlightedCode = await codeToHtml(code, options)
+
           setHtml(highlightedCode)
         }
         catch (error) {

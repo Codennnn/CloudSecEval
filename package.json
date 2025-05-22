@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 8000",
+    "dev": "next dev -p 8000",
     "build": "next build",
     "start": "next start",
     "lint": "run-p lint:ts lint:es lint:css",
@@ -33,11 +33,11 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "remark-gfm": "^4.0.1",
-    "shiki": "^3.4.2",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@shikijs/twoslash": "^3.4.2",
     "@tailwindcss/postcss": "^4.1.7",
     "@tailwindcss/typography": "^0.5.16",
     "@types/mdx": "^2.0.13",
@@ -46,6 +46,7 @@
     "@types/react-dom": "^19.1.5",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.5.3",
+    "shiki": "^3.4.2",
     "stylelint": "^16.19.1",
     "stylelint-config-clean-order": "^7.0.0",
     "stylelint-config-standard": "^38.0.0",

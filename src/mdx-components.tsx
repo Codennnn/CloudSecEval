@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { MDXComponents } from 'mdx/types'
 
 import { CodeBlock } from '~/components/CodeBlock'
+import { CodeBlockServer } from '~/components/CodeBlockServer'
 import { RoutePath } from '~/constants'
 import { isExternalLink } from '~/utils/common'
 
@@ -69,14 +70,15 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         }
 
         if (typeof codeContent === 'string') {
-          return (
-            <CodeBlock
-              code={codeContent}
-              filename={filename}
-              language={language}
-              showLineNumbers={showLineNumbers}
-            />
-          )
+          return <CodeBlockServer code={codeContent} lang={language} />
+          // return (
+          //   <CodeBlock
+          //     code={codeContent}
+          //     filename={filename}
+          //     language={language}
+          //     showLineNumbers={showLineNumbers}
+          //   />
+          // )
         }
       }
 

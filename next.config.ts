@@ -1,16 +1,16 @@
 import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
+import remarkGfm from 'remark-gfm'
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['@shikijs/twoslash'],
+
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 }
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      ['remark-gfm', { strict: true, throwOnError: true }],
-    ],
+    remarkPlugins: [remarkGfm],
     rehypePlugins: [],
   },
 })
