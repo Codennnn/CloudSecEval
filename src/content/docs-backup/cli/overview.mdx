@@ -1,0 +1,110 @@
+### 概述
+
+[Nest 命令行工具（Nest CLI）](https://github.com/nestjs/nest-cli) 是一个命令行界面工具，帮助你初始化、开发并维护 Nest 应用程序。它在多个方面为你提供支持，包括项目脚手架生成、开发模式下的服务启动，以及为生产环境分发而进行的构建与打包。Nest CLI 体现了最佳实践的架构模式，鼓励开发结构良好的应用。
+
+#### 安装
+
+**注意**：本指南描述了使用 [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) 安装依赖包（包括 Nest 命令行工具）的方式。你也可以根据需要选择其他包管理器。使用 npm 时，有多种方式可以让操作系统命令行正确解析 `nest` CLI 可执行文件的位置。这里，我们介绍使用 `-g` 选项全局安装 `nest` 可执行文件的方法。这种方式较为方便，因此本手册默认采用全局安装的方式。需要注意的是，**任何** npm 包的全局安装都意味着你需要自行确保所用版本的正确性。此外，如果你有多个项目，每个项目都会使用**相同**版本的 CLI。一个合理的替代方案是使用 [npx](https://github.com/npm/cli/blob/latest/docs/lib/content/commands/npx.md) 工具（已内置于 npm CLI，或其他包管理器的类似功能），以确保你运行的是**受管理的版本**的 Nest CLI。建议你查阅 [npx 文档](https://github.com/npm/cli/blob/latest/docs/lib/content/commands/npx.md) 和/或咨询你的 DevOps 支持团队以获取更多信息。
+
+使用如下命令将 CLI 全局安装（关于全局安装的详细说明见上文“注意”部分）：
+
+```bash
+$ npm install -g @nestjs/cli
+```
+
+> info **提示** 你也可以使用 `npx @nestjs/cli@latest` 命令，无需全局安装 CLI。
+
+#### 基本工作流程
+
+安装完成后，你可以直接在操作系统命令行中通过 `nest` 可执行文件调用 CLI 命令。输入以下命令可查看所有可用的 `nest` 命令：
+
+```bash
+$ nest --help
+```
+
+如需获取某个具体命令的帮助信息，可以使用如下格式。将下例中的 `generate` 替换为任意命令（如 `new`、`add` 等），即可查看该命令的详细帮助：
+
+```bash
+$ nest generate --help
+```
+
+要在开发模式下创建、构建并运行一个新的基础 Nest 项目，请进入你希望作为新项目父目录的文件夹，并依次执行以下命令：
+
+```bash
+$ nest new my-nest-project
+$ cd my-nest-project
+$ npm run start:dev
+```
+
+在浏览器中打开 [http://localhost:3000](http://localhost:3000) 即可查看新应用正在运行。当你修改任何源文件时，应用会自动重新编译并热重载。
+
+> info **提示** 推荐使用 [SWC 构建器](/recipes/swc) 以获得更快的构建速度（比默认 TypeScript 编译器快 10 倍）。
+
+#### 项目结构
+
+当你运行 `nest new` 命令时，Nest 会通过创建一个新文件夹并填充初始文件，生成一套模板代码应用结构。你可以在这个默认结构中继续开发，按照本指南的说明添加新的组件。我们将由 `nest new` 生成的项目结构称为**标准模式**。Nest 还支持另一种用于管理多个项目和库的结构，称为**多包仓库结构（Monorepo 模式）**。
+
+除了在**构建**流程上有一些特殊考虑（本质上，多包仓库结构简化了因多项目结构带来的构建复杂度），以及内置的 [库](/cli/libraries) 支持外，Nest 的其他特性和本指南内容对标准模式和多包仓库结构同样适用。实际上，你可以随时从标准模式切换到多包仓库结构，因此在你还在学习 Nest 的过程中，可以暂时不用做出选择。
+
+你可以使用任意一种模式来管理多个项目。以下是两种模式的主要区别简要对比：
+
+| 功能                                             | 标准模式                      | 多包仓库结构（Monorepo 模式）      |
+| ------------------------------------------------ | ----------------------------- | ---------------------------------- |
+| 多项目管理                                       | 各自独立的文件系统结构        | 单一文件系统结构                   |
+| `node_modules` & `package.json`                  | 各自独立                      | 在 monorepo 中共享                 |
+| 默认编译器                                       | `tsc`                         | webpack                            |
+| 编译器设置                                       | 分别指定                      | monorepo 默认，可按项目覆盖        |
+| 配置文件如 `eslint.config.mjs`、`.prettierrc` 等 | 分别指定                      | 在 monorepo 中共享                 |
+| `nest build` 和 `nest start` 命令                | 默认自动针对（唯一的）项目    | 默认针对 monorepo 中的**默认项目** |
+| 库（Library）                                    | 手动管理，通常通过 npm 包方式 | 内置支持，包括路径管理和打包       |
+
+如需帮助你决定采用哪种模式，请阅读 [工作空间](/cli/monorepo) 和 [库](/cli/libraries) 相关章节，获取更详细的信息。
+
+<app-banner-courses></app-banner-courses>
+
+#### CLI 命令语法
+
+所有 `nest` 命令都遵循相同的格式：
+
+```bash
+nest commandOrAlias requiredArg [optionalArg] [options]
+```
+
+例如：
+
+```bash
+$ nest new my-nest-project --dry-run
+```
+
+这里，`new` 是 _commandOrAlias_。`new` 命令有一个别名 `n`。`my-nest-project` 是 _requiredArg_。如果命令行未提供 _requiredArg_，`nest` 会提示你输入。此外，`--dry-run` 也有等效的简写形式 `-d`。因此，下面的命令与上面等价：
+
+```bash
+$ nest n my-nest-project -d
+```
+
+大多数命令及部分选项都支持别名。你可以运行 `nest new --help` 查看这些选项和别名，并加深对上述结构的理解。
+
+#### 命令总览
+
+运行 `nest <command> --help` 可以查看下列任意命令的专属选项。
+
+详细命令说明请参见 [用法](/cli/usages) 章节。
+
+| 命令       | 别名 | 描述                                                             |
+| ---------- | ---- | ---------------------------------------------------------------- |
+| `new`      | `n`  | 脚手架生成一个新的**标准模式**应用，包含所有运行所需的模板文件。 |
+| `generate` | `g`  | 基于原型生成器（Schematics）生成和/或修改文件。                  |
+| `build`    |      | 将应用或工作空间编译到输出文件夹。                               |
+| `start`    |      | 编译并运行应用（或工作空间中的默认项目）。                       |
+| `add`      |      | 导入已打包为 **nest 库** 的库，并运行其安装原型生成器。          |
+| `info`     | `i`  | 显示已安装的 nest 包及其他有用的系统信息。                       |
+
+#### 环境要求
+
+Nest 命令行工具（Nest CLI）需要 Node.js 的 [国际化支持](https://nodejs.org/api/intl.html)（ICU），建议使用 [Node.js 官方页面](https://nodejs.org/en/download) 提供的官方二进制文件。如果你遇到与 ICU 相关的错误，请检查你的 Node.js 是否满足此要求。
+
+```bash
+node -p process.versions.icu
+```
+
+如果命令输出 `undefined`，说明你的 Node.js 没有国际化支持。

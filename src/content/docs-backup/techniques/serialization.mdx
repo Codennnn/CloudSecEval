@@ -1,0 +1,142 @@
+### 序列化（Serialization）
+
+序列化（Serialization）是在对象被返回到网络响应之前发生的一个过程。在这个阶段，我们可以对即将返回给客户端的数据进行转换和清理（如脱敏）。例如，像密码这样的敏感数据应始终从响应中排除，或者某些属性可能需要额外转换，比如只发送实体的一部分属性。手动执行这些转换既繁琐又容易出错，并且你可能无法确定所有场景都已覆盖。
+
+#### 概述
+
+Nest 提供了内置能力，帮助你以简单直观的方式完成这些操作。`ClassSerializerInterceptor` 拦截器（Interceptor）利用强大的 [class-transformer](https://github.com/typestack/class-transformer) 包，提供了一种声明式、可扩展的对象转换方式。其基本操作是获取方法处理器返回的值，并应用 [class-transformer](https://github.com/typestack/class-transformer) 的 `instanceToPlain()` 函数。在此过程中，可以根据实体类或数据传输对象（Data Transfer Object，DTO）类上通过 class-transformer 装饰器（Decorator）声明的规则进行转换，具体如下所述。
+
+> info **提示** 序列化不会应用于 [StreamableFile](https://docs.nestjs.com/techniques/streaming-files#streamable-file-class) 响应。
+
+#### 排除属性
+
+假设我们希望自动从用户实体中排除 `password` 属性。可以如下为实体添加注解：
+
+```typescript
+import { Exclude } from 'class-transformer'
+
+export class UserEntity {
+  id: number
+  firstName: string
+  lastName: string
+
+  @Exclude()
+  password: string
+
+  constructor(partial: Partial<UserEntity>) {
+    Object.assign(this, partial)
+  }
+}
+```
+
+现在来看一个控制器（Controller）方法处理器返回该类实例的例子：
+
+```typescript
+@UseInterceptors(ClassSerializerInterceptor)
+@Get()
+findOne(): UserEntity {
+  return new UserEntity({
+    id: 1,
+    firstName: 'John',
+    lastName: 'Doe',
+    password: 'password',
+  });
+}
+```
+
+> **警告** 请注意，必须返回类的实例。如果你返回一个普通的 JavaScript 对象，例如 `{{ '{' }} user: new UserEntity() {{ '}' }}`，该对象将无法被正确序列化。
+
+> info **提示** `ClassSerializerInterceptor` 需从 `@nestjs/common` 导入。
+
+当该端点被请求时，客户端会收到如下响应：
+
+```json
+{
+  "id": 1,
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+需要注意的是，该拦截器（Interceptor）可以应用于整个应用（详见[此处](https://docs.nestjs.com/interceptors#binding-interceptors)）。拦截器与实体类声明的结合确保了**任何**返回 `UserEntity` 的方法都会自动移除 `password` 属性，从而实现了业务规则的集中式强制执行。
+
+#### 暴露属性
+
+你可以使用 `@Expose()` 装饰器为属性提供别名，或者执行一个函数来计算属性值（类似于 **getter** 函数），如下所示。
+
+```typescript
+@Expose()
+get fullName(): string {
+  return `${this.firstName} ${this.lastName}`;
+}
+```
+
+#### 转换
+
+你可以使用 `@Transform()` 装饰器进行额外的数据转换。例如，下面的写法会返回 `RoleEntity` 的 name 属性，而不是整个对象。
+
+```typescript
+@Transform(({ value }) => value.name)
+role: RoleEntity;
+```
+
+#### 传递选项
+
+你可能希望修改转换函数的默认行为。要覆盖默认设置，可以通过 `@SerializeOptions()` 装饰器传递一个 `options` 对象。
+
+```typescript
+@SerializeOptions({
+  excludePrefixes: ['_'],
+})
+@Get()
+findOne(): UserEntity {
+  return new UserEntity();
+}
+```
+
+> info **提示** `@SerializeOptions()` 装饰器需从 `@nestjs/common` 导入。
+
+通过 `@SerializeOptions()` 传递的选项会作为底层 `instanceToPlain()` 函数的第二个参数。在本例中，我们会自动排除所有以 `_` 前缀开头的属性。
+
+#### 转换普通对象
+
+你可以在控制器层面强制进行转换，方法是使用 `@SerializeOptions` 装饰器。这样可以确保所有响应都被转换为指定类的实例，并应用 class-validator 或 class-transformer 的装饰器，即使返回的是普通对象。这种方式可以让代码更简洁，无需反复实例化类或调用 `plainToInstance`。
+
+在下面的示例中，无论条件分支返回的是普通 JavaScript 对象还是类实例，都会被自动转换为 `UserEntity` 实例，并应用相关装饰器：
+
+```typescript
+@UseInterceptors(ClassSerializerInterceptor)
+@SerializeOptions({ type: UserEntity })
+@Get()
+findOne(@Query() { id }: { id: number }): UserEntity {
+  if (id === 1) {
+    return {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'password',
+    };
+  }
+
+  return {
+    id: 2,
+    firstName: 'Kamil',
+    lastName: 'Mysliwiec',
+    password: 'password2',
+  };
+}
+```
+
+> info **提示** 通过为控制器指定预期的返回类型，你可以利用 TypeScript 的类型检查能力，确保返回的普通对象符合数据传输对象（DTO）或实体的结构。而 `plainToInstance` 函数则无法提供这种类型提示，如果普通对象与预期结构不符，可能会导致潜在的 bug。
+
+#### 示例
+
+可用的完整示例请参见 [这里](https://github.com/nestjs/nest/tree/master/sample/21-serializer)。
+
+#### WebSocket 和微服务
+
+虽然本章以 HTTP 风格应用（如 Express 或 Fastify）为例进行说明，但 `ClassSerializerInterceptor` 在 WebSocket 和微服务（Microservices）中同样适用，无论使用哪种传输方式。
+
+#### 了解更多
+
+关于更多可用装饰器和选项，请参阅 `class-transformer` 包的官方文档 [这里](https://github.com/typestack/class-transformer)。

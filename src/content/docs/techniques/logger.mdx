@@ -245,8 +245,6 @@ export class MyLogger extends ConsoleLogger {
 
 你还可以通过在应用选项对象的 `logger` 属性中传入该扩展日志记录器的实例（如上方 <a href="techniques/logger#custom-logger-implementation">自定义实现</a> 一节所示），或者采用下方 <a href="techniques/logger#dependency-injection">依赖注入（Dependency Injection）</a> 一节中的方法，让 Nest 用你的扩展日志记录器进行系统日志记录。如果你这样做，务必像上方示例代码那样调用 `super`，将具体的日志方法调用委托给父类（内置类），以便 Nest 能依赖其预期的内置特性。
 
-<app-banner-courses></app-banner-courses>
-
 #### 依赖注入
 
 如果你需要更高级的日志记录功能，建议充分利用依赖注入机制。例如，你可能希望将 `ConfigService` 注入到自定义日志记录器中，以实现个性化配置，并进一步将自定义日志记录器注入到其他控制器（Controller）或提供者中。要为自定义日志记录器启用依赖注入，请创建一个实现了 `LoggerService`（日志记录器服务）接口的类，并将该类作为提供者注册到某个模块（Module）中。例如：

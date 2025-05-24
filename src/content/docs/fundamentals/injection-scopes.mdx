@@ -89,8 +89,6 @@ export class CatsController {}
 
 瞬态作用域（Transient）的依赖并不遵循上述模式。例如，如果一个单例作用域的 `DogsService` 注入了一个瞬态的 `LoggerService` 提供者，每次注入时都会获得一个全新的 `LoggerService` 实例。然而，`DogsService` 本身依然保持单例作用域，无论在何处被注入，都不会生成新的 `DogsService` 实例。如果你希望 `DogsService` 也能每次注入时都创建新实例，则需要显式将其标记为瞬态作用域（TRANSIENT）。
 
-<app-banner-courses></app-banner-courses>
-
 #### 请求对象提供者（Request provider）
 
 在基于 HTTP 服务器的应用中（例如使用 `@nestjs/platform-express` 或 `@nestjs/platform-fastify`），如果你在请求作用域的提供者中需要访问原始的请求对象，可以通过注入 REQUEST 对象来实现。

@@ -1,0 +1,259 @@
+### 自定义路由装饰器
+
+Nest 的核心基于一种被称为 **装饰器（Decorator）** 的语言特性。装饰器在许多主流编程语言中都是广为人知的概念，但在 JavaScript 世界中仍然相对较新。为了更好地理解装饰器的工作原理，建议阅读[这篇文章](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841)。下面是一个简单的定义：
+
+<blockquote class="external">
+  ES2016
+  装饰器是一种返回函数的表达式，可以接收目标对象、名称和属性描述符作为参数。你可以通过在需要装饰的内容前加上{' '}
+  <code>@</code> 字符来应用装饰器。装饰器既可以用于类，也可以用于方法或属性。
+</blockquote>
+
+#### 参数装饰器（Param decorators）
+
+Nest 提供了一组非常实用的 **参数装饰器（param decorators）**，可与 HTTP 路由处理器（Route Handler）配合使用。下表列出了内置装饰器及其对应的原生 Express（Express（Node.js 框架））或 Fastify（Fastify（高性能 Node.js 框架））对象：
+
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <code>@Request(), @Req()</code>
+      </td>
+      <td>
+        <code>req</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Response(), @Res()</code>
+      </td>
+      <td>
+        <code>res</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Next()</code>
+      </td>
+      <td>
+        <code>next</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Session()</code>
+      </td>
+      <td>
+        <code>req.session</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Param(param?: string)</code>
+      </td>
+      <td>
+        <code>req.params</code> / <code>req.params[param]</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Body(param?: string)</code>
+      </td>
+      <td>
+        <code>req.body</code> / <code>req.body[param]</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Query(param?: string)</code>
+      </td>
+      <td>
+        <code>req.query</code> / <code>req.query[param]</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Headers(param?: string)</code>
+      </td>
+      <td>
+        <code>req.headers</code> / <code>req.headers[param]</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@Ip()</code>
+      </td>
+      <td>
+        <code>req.ip</code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>@HostParam()</code>
+      </td>
+      <td>
+        <code>req.hosts</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+此外，你还可以创建自己的 **自定义装饰器（Custom Decorator）**。为什么这很有用？
+
+在 Node.js 世界中，通常会将属性附加到 **请求对象（Request Object）** 上。然后你需要在每个路由处理器中手动提取这些属性，例如：
+
+```typescript
+const user = req.user
+```
+
+为了让代码更加可读和直观，你可以创建一个 `@User()` 装饰器，并在所有控制器（Controller）中复用它。
+
+```typescript
+@@filename(user.decorator)
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+export const User = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.user;
+  },
+);
+```
+
+之后，你可以在需要的地方直接使用它：
+
+```typescript
+@@filename()
+@Get()
+async findOne(@User() user: UserEntity) {
+  console.log(user);
+}
+@@switch
+@Get()
+@Bind(User())
+async findOne(user) {
+  console.log(user);
+}
+```
+
+#### 传递数据（Passing data）
+
+当你的装饰器行为依赖于某些条件时，可以通过 `data` 参数向装饰器工厂函数传递参数。一个常见用例是自定义装饰器根据 key 从请求对象中提取属性。例如，假设我们的 <a href="techniques/authentication#implementing-passport-strategies">认证层</a> 验证请求并将用户实体（user entity）附加到请求对象上。一个已认证请求的用户实体可能如下：
+
+```json
+{
+  "id": 101,
+  "firstName": "Alan",
+  "lastName": "Turing",
+  "email": "alan@email.com",
+  "roles": ["admin"]
+}
+```
+
+我们来定义一个装饰器，接收属性名作为 key，如果存在则返回对应的值（如果不存在或 `user` 对象未创建则返回 undefined）。
+
+```typescript
+@@filename(user.decorator)
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+export const User = createParamDecorator(
+  (data: string, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    const user = request.user;
+
+    return data ? user?.[data] : user;
+  },
+);
+@@switch
+import { createParamDecorator } from '@nestjs/common';
+
+export const User = createParamDecorator((data, ctx) => {
+  const request = ctx.switchToHttp().getRequest();
+  const user = request.user;
+
+  return data ? user && user[data] : user;
+});
+```
+
+在控制器中，你可以通过 `@User()` 装饰器访问特定属性：
+
+```typescript
+@@filename()
+@Get()
+async findOne(@User('firstName') firstName: string) {
+  console.log(`Hello ${firstName}`);
+}
+@@switch
+@Get()
+@Bind(User('firstName'))
+async findOne(firstName) {
+  console.log(`Hello ${firstName}`);
+}
+```
+
+你可以为不同的 key 复用同一个装饰器，访问不同的属性。如果 `user` 对象结构较深或较复杂，这样可以让请求处理器（Route Handler）实现更简洁、可读性更强。
+
+> info **提示** 对于 TypeScript 用户，`createParamDecorator<T>()` 是一个泛型方法。这意味着你可以显式地指定类型，例如 `createParamDecorator<string>((data, ctx) => ...)`。或者在工厂函数中为参数指定类型，如 `createParamDecorator((data: string, ctx) => ...)`。如果两者都省略，`data` 的类型将为 `any`。
+
+#### 配合管道（Working with pipes）
+
+Nest 对自定义参数装饰器的处理方式与内置装饰器（如 `@Body()`、`@Param()` 和 `@Query()`）一致。这意味着自定义装饰器参数同样会执行管道（Pipe）。此外，你还可以直接在自定义装饰器上应用管道：
+
+```typescript
+@@filename()
+@Get()
+async findOne(
+  @User(new ValidationPipe({ validateCustomDecorators: true }))
+  user: UserEntity,
+) {
+  console.log(user);
+}
+@@switch
+@Get()
+@Bind(User(new ValidationPipe({ validateCustomDecorators: true })))
+async findOne(user) {
+  console.log(user);
+}
+```
+
+> info **提示** 需要注意的是，必须将 `validateCustomDecorators` 选项设置为 true。`ValidationPipe` 默认不会校验自定义装饰器标注的参数。
+
+#### 装饰器组合（Decorator composition）
+
+Nest 提供了一个辅助方法用于组合多个装饰器。例如，假设你想将所有与认证相关的装饰器合并为一个装饰器，可以这样实现：
+
+```typescript
+@@filename(auth.decorator)
+import { applyDecorators } from '@nestjs/common';
+
+export function Auth(...roles: Role[]) {
+  return applyDecorators(
+    SetMetadata('roles', roles),
+    UseGuards(AuthGuard, RolesGuard),
+    ApiBearerAuth(),
+    ApiUnauthorizedResponse({ description: 'Unauthorized' }),
+  );
+}
+@@switch
+import { applyDecorators } from '@nestjs/common';
+
+export function Auth(...roles) {
+  return applyDecorators(
+    SetMetadata('roles', roles),
+    UseGuards(AuthGuard, RolesGuard),
+    ApiBearerAuth(),
+    ApiUnauthorizedResponse({ description: 'Unauthorized' }),
+  );
+}
+```
+
+你可以像下面这样使用自定义的 `@Auth()` 装饰器：
+
+```typescript
+@Get('users')
+@Auth('admin')
+findAllUsers() {}
+```
+
+这样就相当于一次性应用了上述四个装饰器。
+
+> warning **警告** `@nestjs/swagger` 包中的 `@ApiHideProperty()` 装饰器无法与 `applyDecorators` 组合使用，否则会出现异常。

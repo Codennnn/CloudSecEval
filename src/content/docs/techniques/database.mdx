@@ -1148,8 +1148,6 @@ async createMany() {
 
 迁移类与 Nest 应用的源代码是分离的。它们的生命周期由 Sequelize 命令行工具（CLI）进行管理。因此，在迁移中无法使用依赖注入（Dependency Injection）以及其他 Nest 特有的功能。如果你想了解更多关于迁移的内容，请参考 [Sequelize 官方文档](https://sequelize.org/docs/v6/other-topics/migrations/#installing-the-cli) 中的相关指南。
 
-<app-banner-courses></app-banner-courses>
-
 #### 多数据库连接
 
 在某些项目中，可能需要连接多个数据库。通过本模块也可以实现这一需求。要使用多个连接，首先需要创建这些连接。在这种情况下，**必须**为每个连接命名。

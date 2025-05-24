@@ -128,8 +128,6 @@ constructor(private catsService: CatsService) {}
 
 提供者通常拥有与应用生命周期一致的存活期（"作用域"）。当应用启动时，每个依赖都必须被解析，也就是说每个提供者都会被实例化。同样地，当应用关闭时，所有提供者都会被销毁。不过，你也可以将提供者设置为**请求作用域（request-scoped）**，即其生命周期与单个请求绑定。你可以在 [注入作用域](/fundamentals/injection-scopes) 章节了解更多相关技术。
 
-<app-banner-courses></app-banner-courses>
-
 #### 自定义提供者（Custom Provider）
 
 Nest 内置了一个控制反转（IoC）容器，用于管理提供者之间的关系。这一特性是依赖注入的基础，但实际上它远比我们目前介绍的更强大。定义提供者有多种方式：你可以使用普通值、类、同步或异步工厂等。更多定义提供者的示例，请参考 [依赖注入](/fundamentals/dependency-injection) 章节。

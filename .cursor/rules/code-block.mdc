@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 技术文档代码块渲染
+
+代码块渲染系统采用了现代化的 Markdown/MDX 处理方案，结合了 Shiki 语法高亮引擎，实现了高质量的代码展示效果：
+
+## 技术栈
+
+- **MDX 处理**：
+  - `@next/mdx` - Next.js 官方 MDX 集成方案
+  - `@mdx-js/react` - MDX 核心库
+  - `remark-gfm` - 支持 GitHub Flavored Markdown
+
+- **代码高亮**：
+  - `shiki` - 基于 TextMate 语法的代码高亮引擎
+  - `@shikijs/transformers` - Shiki 代码转换插件集
+  - `@shikijs/twoslash` - TypeScript 类型标注功能
+  
+- **MDX 增强**：
+  - `rehype-mdx-code-props` - 为代码块添加自定义属性
+
+代码块渲染系统确保文档中的代码示例不仅美观，而且便于阅读和理解，同时提供了类型提示等高级功能，增强了技术文档的实用性和专业性。

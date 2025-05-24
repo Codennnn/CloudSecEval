@@ -1,0 +1,48 @@
+### 服务端推送事件（Server-Sent Events，SSE）
+
+服务端推送事件（Server-Sent Events，SSE）是一种服务端推送（server push）技术，允许客户端通过 HTTP 连接自动接收来自服务器的实时更新。每条通知都会作为一段以两个换行符结尾的文本块发送（详细介绍可参考 [这里](https://developer.mozilla.org/zh-CN/docs/Web/API/Server-sent_events) ）。
+
+#### 用法
+
+要在某个路由（注册在**控制器类（Controller）**中的路由）上启用服务端推送事件，只需为方法处理器添加 `@Sse()` 装饰器（Decorator）。
+
+```typescript
+@Sse('sse')
+sse(): Observable<MessageEvent> {
+  return interval(1000).pipe(map((_) => ({ data: { hello: 'world' } })));
+}
+```
+
+> info **提示** `@Sse()` 装饰器（Decorator）和 `MessageEvent` 接口（Interface）均从 `@nestjs/common` 导入，而 `Observable`、`interval` 和 `map` 则从 `rxjs` 包导入。
+
+> warning **警告** 服务端推送事件路由必须返回一个可观察对象（Observable）流。
+
+在上面的示例中，我们定义了一个名为 `sse` 的路由，用于推送实时更新。你可以通过 [EventSource API](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource) 在客户端监听这些事件。
+
+`sse` 方法返回一个可观察对象（Observable），它会不断发出多个消息事件（MessageEvent）（本例中每秒发出一个新的消息事件）。`MessageEvent` 对象应遵循如下接口规范，以符合标准：
+
+```typescript
+export interface MessageEvent {
+  data: string | object
+  id?: string
+  type?: string
+  retry?: number
+}
+```
+
+有了上述实现后，我们可以在客户端应用中创建 `EventSource`（事件源）类的实例，并将 `/sse` 路由（即上面 `@Sse()` 装饰器中指定的端点）作为构造函数参数传入。
+
+`EventSource` 实例会与 HTTP 服务器建立持久连接，服务器以 `text/event-stream` 格式发送事件。该连接会一直保持，直到调用 `EventSource.close()` 主动关闭。
+
+连接建立后，来自服务器的消息会以事件的形式传递给你的代码。如果接收到的消息中包含 `event` 字段，则会触发与该字段值同名的事件；如果没有 `event` 字段，则会触发通用的 `message` 事件（详细说明可参考 [来源](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource) ）。
+
+```javascript
+const eventSource = new EventSource('/sse')
+eventSource.onmessage = ({ data }) => {
+  console.log('新消息', JSON.parse(data))
+}
+```
+
+#### 示例
+
+可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/28-sse)。

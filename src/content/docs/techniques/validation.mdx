@@ -315,8 +315,6 @@ app.useGlobalPipes(
 
 另外，你也可以选择在请求包含非白名单属性时，直接阻止请求继续处理，并向用户返回错误响应。要启用此功能，需要将 `forbidNonWhitelisted` 选项属性设置为 `true`，并同时启用 `whitelist`。
 
-<app-banner-courses></app-banner-courses>
-
 #### 转换请求载荷对象
 
 通过网络传入的请求载荷通常是普通的 JavaScript 对象。`验证管道（ValidationPipe）` 可以自动将这些载荷转换为根据其数据传输对象（Data Transfer Object，DTO）类类型化的对象。要启用自动转换功能，只需将 `transform` 选项设置为 `true`。你可以在方法级别进行设置：

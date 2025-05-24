@@ -1,18 +1,20 @@
-### 快速上手
+import { FileTree } from '~/components/doc/FileTree'
+
+# 快速上手
 
 在本系列文章中，你将学习 Nest 的**核心基础知识**。为了帮助你熟悉 Nest 应用的基本构建模块，我们将通过构建一个基础的 CRUD 应用，涵盖入门阶段常见的功能特性。
 
-#### 语言
+## 语言
 
 我们热爱 [TypeScript](https://www.typescriptlang.org/)，但更重要的是 —— 我们热爱 [Node.js](https://nodejs.org/en/)。因此，Nest 兼容 TypeScript 和纯 JavaScript。Nest 充分利用了最新的语言特性，所以如果你想用原生 JavaScript，需要配合 [Babel](https://babeljs.io/) 编译器。
 
 本教程中的示例主要使用 TypeScript，但你可以随时**切换代码片段**为原生 JavaScript 语法（只需点击每个代码片段右上角的语言切换按钮）。
 
-#### 前置条件
+## 前置条件
 
 请确保你的操作系统已安装 [Node.js](https://nodejs.org)（版本 >= 20）。
 
-#### 项目初始化
+## 项目初始化
 
 使用 [Nest CLI](/cli/overview) 脚手架工具可以非常简单地创建新项目。确保已安装 [npm](https://www.npmjs.com/)，然后在终端中运行以下命令即可创建一个新的 Nest 项目：
 
@@ -21,20 +23,11 @@ $ npm i -g @nestjs/cli
 $ nest new project-name
 ```
 
-> info **提示** 若希望创建带有 TypeScript [更严格](https://www.typescriptlang.org/tsconfig#strict)特性的项目，可在 `nest new` 命令中添加 `--strict` 参数。
+> info **提示** 若要创建启用了 TypeScript [严格模式](https://www.typescriptlang.org/tsconfig#strict)的项目，可在 `nest new` 命令中添加 `--strict` 参数。
 
 上述命令会创建 `project-name` 目录，自动安装依赖和部分基础文件，并生成 `src/` 目录及多个核心文件。
 
-<div class="file-tree">
-  <div class="item">src</div>
-  <div class="children">
-    <div class="item">app.controller.spec.ts</div>
-    <div class="item">app.controller.ts</div>
-    <div class="item">app.module.ts</div>
-    <div class="item">app.service.ts</div>
-    <div class="item">main.ts</div>
-  </div>
-</div>
+<FileTree />
 
 以下是这些核心文件的简要说明：
 
@@ -46,7 +39,7 @@ $ nest new project-name
 | `app.service.ts`         | 基础服务，包含一个方法。                                      |
 | `main.ts`                | 应用入口文件，使用核心函数 `NestFactory` 创建 Nest 应用实例。 |
 
-`main.ts` 文件包含一个异步函数，用于**引导（bootstrap）**应用：
+`main.ts` 文件包含一个异步函数，用于 **引导启动（bootstrap）** 我们的应用：
 
 ```typescript
 @@filename(main)
@@ -76,9 +69,7 @@ bootstrap();
 
 > info **提示** 默认情况下，如果应用创建过程中发生错误，程序会以代码 `1` 退出。如果你希望抛出异常而不是直接退出，可以关闭 `abortOnError` 选项（例如：`NestFactory.create(AppModule, { abortOnError: false })`）。
 
-<app-banner-courses></app-banner-courses>
-
-#### 平台
+## 平台
 
 Nest 致力于成为平台无关的框架。平台无关性让开发者能够创建可复用的逻辑模块，并在多种类型的应用中复用。从技术上讲，只要有适配器，Nest 就能与任何 Node HTTP 框架协作。目前，Nest 原生支持两种 HTTP 平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io)。你可以根据需求选择最适合的方案。
 
@@ -95,7 +86,7 @@ Nest 致力于成为平台无关的框架。平台无关性让开发者能够创
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
 ```
 
-#### 运行应用
+## 运行应用
 
 安装完成后，在终端运行以下命令即可启动应用，监听 HTTP 请求：
 
@@ -115,7 +106,7 @@ $ npm run start:dev
 
 该命令会自动监控文件变更，实时编译并重启服务器。
 
-#### 代码规范与格式化
+## 代码规范与格式化
 
 [CLI](/cli/overview) 力求为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码**检查（linter）**和**格式化（formatter）**工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
 

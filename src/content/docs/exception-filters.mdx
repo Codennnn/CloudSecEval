@@ -225,8 +225,6 @@ export class HttpExceptionFilter {
 
 \*之所以采用这种抽象，是因为 `ArgumentsHost` 能适用于所有上下文（如当前的 HTTP 服务器上下文、微服务、WebSocket 等）。在执行上下文章节中，我们会看到如何利用 `ArgumentsHost` 及其辅助方法访问**任意**上下文下的底层参数，从而编写可跨多种上下文通用的异常过滤器。
 
-<app-banner-courses></app-banner-courses>
-
 #### 绑定过滤器
 
 我们将新建的 `HttpExceptionFilter` 绑定到 `CatsController` 的 `create()` 方法：

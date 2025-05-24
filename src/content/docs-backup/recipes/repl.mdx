@@ -1,0 +1,135 @@
+### 交互式命令行（Read-Eval-Print-Loop，REPL）
+
+REPL 是一个简单的交互式环境，可以接收用户的单条输入，执行后将结果返回给用户。
+REPL 功能允许你直接在终端中检查依赖关系图，并调用你的提供者（Provider）和控制器（Controller）的方法。
+
+#### 使用方法
+
+要在 REPL 模式下运行你的 NestJS 应用，请新建一个 `repl.ts` 文件（与现有的 `main.ts` 文件同级），并添加如下代码：
+
+```typescript
+@@filename(repl)
+import { repl } from '@nestjs/core';
+import { AppModule } from './src/app.module';
+
+async function bootstrap() {
+  await repl(AppModule);
+}
+bootstrap();
+@@switch
+import { repl } from '@nestjs/core';
+import { AppModule } from './src/app.module';
+
+async function bootstrap() {
+  await repl(AppModule);
+}
+bootstrap();
+```
+
+然后在终端中使用以下命令启动 REPL：
+
+```bash
+$ npm run start -- --entryFile repl
+```
+
+> info **提示** `repl` 会返回一个 [Node.js REPL 服务器](https://nodejs.org/api/repl.html) 对象。
+
+启动后，你应该会在控制台看到如下信息：
+
+```bash
+LOG [NestFactory] 正在启动 Nest 应用...
+LOG [InstanceLoader] AppModule 依赖关系已初始化
+LOG REPL 已初始化
+```
+
+现在你可以开始与依赖关系图进行交互。例如，你可以获取一个 `AppService`（此处以入门项目为例），并调用其 `getHello()` 方法：
+
+```typescript
+> get(AppService).getHello()
+'Hello World!'
+```
+
+你可以在终端中执行任意 JavaScript 代码，例如，将 `AppController` 的实例赋值给本地变量，并使用 `await` 调用异步方法：
+
+```typescript
+> appController = get(AppController)
+AppController { appService: AppService {} }
+> await appController.getHello()
+'Hello World!'
+```
+
+要显示某个提供者或控制器的所有公开方法，可以使用 `methods()` 函数，如下所示：
+
+```typescript
+> methods(AppController)
+
+Methods:
+ ◻ getHello
+```
+
+如果你想以列表形式打印所有已注册的模块及其控制器和提供者，可以使用 `debug()`。
+
+```typescript
+> debug()
+
+AppModule:
+ - controllers:
+  ◻ AppController
+ - providers:
+  ◻ AppService
+```
+
+快速演示：
+
+<figure>
+  <img src="/assets/repl.gif" alt="REPL 示例" />
+</figure>
+
+你可以在下方章节中找到更多关于内置原生方法的信息。
+
+#### 内置函数
+
+NestJS REPL 内置了一些原生函数，在启动 REPL 时会全局可用。你可以调用 `help()` 来列出它们。
+
+如果你不记得某个函数的签名（即：期望的参数和返回类型），可以调用 `<function_name>.help`。
+例如：
+
+```text
+> $.help
+检索一个可注入类或控制器的实例，否则抛出异常。
+接口：$(token: InjectionToken) => any
+```
+
+> info **提示** 这些函数接口采用 [TypeScript 函数类型表达式语法](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-type-expressions) 编写。
+
+| 函数         | 描述                                                                         | 签名                                                                  |
+| ------------ | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `debug`      | 以列表形式打印所有已注册模块及其控制器和提供者。                             | `debug(moduleCls?: ClassRef \| string) => void`                       |
+| `get` 或 `$` | 检索一个可注入类或控制器的实例，否则抛出异常。                               | `get(token: InjectionToken) => any`                                   |
+| `methods`    | 显示某个提供者或控制器的所有公开方法。                                       | `methods(token: ClassRef \| string) => void`                          |
+| `resolve`    | 解析可注入类或控制器的瞬态或请求作用域（Request-scoped）实例，否则抛出异常。 | `resolve(token: InjectionToken, contextId: any) => Promise<any>`      |
+| `select`     | 允许在模块树中导航，例如从选定模块中获取特定实例。                           | `select(token: DynamicModule \| ClassRef) => INestApplicationContext` |
+
+#### 热重载（Watch 模式）
+
+在开发过程中，建议以 watch 模式运行 REPL，这样可以自动反映所有代码更改：
+
+```bash
+$ npm run start -- --watch --entryFile repl
+```
+
+但这样有一个小问题：REPL 的命令历史会在每次重载后丢失，可能会带来不便。
+幸运的是，解决方法非常简单。只需如下修改你的 `bootstrap` 函数：
+
+```typescript
+async function bootstrap() {
+  const replServer = await repl(AppModule)
+  replServer.setupHistory('.nestjs_repl_history', (err) => {
+    if (err) {
+      console.error(err)
+    }
+  })
+}
+```
+
+现在，命令历史将在多次运行/重载之间得以保留。

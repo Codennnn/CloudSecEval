@@ -1,0 +1,24 @@
+### 全局前缀
+
+要为 HTTP 应用程序中注册的**每一个路由**设置统一的前缀，可以使用 `INestApplication` 实例的 `setGlobalPrefix()` 方法。
+
+```typescript
+const app = await NestFactory.create(AppModule)
+app.setGlobalPrefix('v1')
+```
+
+你可以通过如下方式将部分路由从全局前缀中排除：
+
+```typescript
+app.setGlobalPrefix('v1', {
+  exclude: [{ path: 'health', method: RequestMethod.GET }],
+})
+```
+
+另外，你也可以直接以字符串形式指定路由（此时会应用于所有请求方法）：
+
+```typescript
+app.setGlobalPrefix('v1', { exclude: ['cats'] })
+```
+
+> info **提示** `path` 属性支持使用 [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters) 包的通配参数。注意：这里不支持通配星号 `*`，必须使用参数（`:param`）或命名通配符（`*splat`）。

@@ -44,30 +44,27 @@ pre[class*='language-'] {
 
 pre.shiki {
   @apply overflow-x-auto p-1.5;
-}
 
-pre.shiki code {
-  @apply grid;
+  /* code {
+    counter-increment: step 0;
+    counter-reset: step;
 
-  counter-reset: line;
-}
+    .line::before {
+      content: counter(step);
+      counter-increment: step;
+      display: inline-block;
+      width: 1rem;
+      margin-right: 1.5rem;
+      color: rgb(115 138 148 / 40%);
+      text-align: right;
+    }
+  } */
 
-pre.shiki .line {
-  @apply border-l-2 border-transparent pl-2 pr-4;
-}
-
-pre.shiki .line.highlighted {
-  @apply border-primary bg-primary/10;
-}
-
-pre.shiki .line-number {
-  @apply mr-4 inline-block w-4 text-right text-muted-foreground;
-
-  counter-increment: line;
-}
-
-pre.shiki .line-number::before {
-  content: counter(line);
+  .line {
+    &.highlighted {
+      @apply border-primary bg-primary/10;
+    }
+  }
 }
 
 .twoslash-popup-container {
