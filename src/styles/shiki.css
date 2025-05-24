@@ -23,6 +23,18 @@
     --shiki-token-string-expression: oklch(81% 0.13 149deg);
     --shiki-token-punctuation: var(--muted-foreground);
     --shiki-token-link: var(--primary);
+
+    /*
+      以下样式用于在暗色模式下统一 shiki 代码高亮的样式。
+      !important 用于确保这些样式优先级最高，不被其他样式覆盖。
+    */
+    .shiki,
+    .shiki span {
+      font-weight: var(--shiki-dark-font-weight) !important;
+      color: var(--shiki-dark) !important;
+      text-decoration: var(--shiki-dark-text-decoration) !important;
+      background-color: var(--shiki-dark-bg) !important;
+    }
   }
 }
 

@@ -3,7 +3,7 @@
 }
 
 :not(pre) > code {
-  @apply bg-muted py-0.5 px-1 font-semibold rounded;
+  @apply whitespace-nowrap bg-muted py-0.5 px-1 font-normal rounded border border-border;
 
   &::before,
   &::after {

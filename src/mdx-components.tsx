@@ -3,6 +3,7 @@ import type { MDXComponents } from 'mdx/types'
 import type { BundledLanguage } from 'shiki'
 
 import { CodeBlock } from '~/components/CodeBlock'
+import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { RoutePath } from '~/constants'
 import { isExternalLink } from '~/utils/common'
 
@@ -65,6 +66,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
       return <pre {...props}>{children}</pre>
     },
+
+    CalloutInfo,
 
     ...components,
   }

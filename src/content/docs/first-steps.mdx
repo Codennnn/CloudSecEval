@@ -23,7 +23,10 @@ $ npm i -g @nestjs/cli
 $ nest new project-name
 ```
 
-> info **提示** 若要创建启用了 TypeScript [严格模式](https://www.typescriptlang.org/tsconfig#strict)的项目，可在 `nest new` 命令中添加 `--strict` 参数。
+<CalloutInfo>
+  若要创建启用了 TypeScript [严格模式](https://www.typescriptlang.org/tsconfig#strict)的项目，可在
+  `nest new` 命令中添加 `--strict` 参数。
+</CalloutInfo>
 
 上述命令会创建 `project-name` 目录，自动安装依赖和部分基础文件，并生成 `src/` 目录及多个核心文件。
 
@@ -57,7 +60,9 @@ bootstrap()
 
 通过 Nest CLI 脚手架创建的项目，初始结构鼓励开发者将每个模块放在独立目录中，遵循最佳实践。
 
-> info **提示** 默认情况下，如果应用创建过程中发生错误，程序会以代码 `1` 退出。如果你希望抛出异常而不是直接退出，可以关闭 `abortOnError` 选项（例如：`NestFactory.create(AppModule, { abortOnError: false })`）。
+<CalloutInfo>
+  默认情况下，如果应用创建过程中发生错误，程序会以代码 `1` 退出。如果你希望抛出异常而不是直接退出，可以关闭 `abortOnError` 选项（例如：`NestFactory.create(AppModule, { abortOnError: false })`）。
+</CalloutInfo>
 
 ## 平台
 
@@ -84,7 +89,10 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule)
 $ npm run start
 ```
 
-> info **提示** 若想加快开发速度（构建速度提升约 20 倍），可通过在 `start` 脚本中添加 `-b swc` 参数，使用 [SWC 构建器](/recipes/swc)：`npm run start -- -b swc`。
+<CalloutInfo>
+  若想加快开发速度（构建速度提升约 20 倍），可通过在 `start` 脚本中添加 `-b swc` 参数，使用 [SWC
+  构建器](/recipes/swc)：`npm run start -- -b swc`。
+</CalloutInfo>
 
 该命令会启动 HTTP 服务器，监听 `src/main.ts` 文件中定义的端口。应用启动后，在浏览器中访问 `http://localhost:3000/`，你将看到 `Hello World!`。
 
@@ -100,7 +108,9 @@ $ npm run start:dev
 
 [CLI](/cli/overview) 力求为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码**检查（linter）**和**格式化（formatter）**工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
 
-> info **提示** 不清楚格式化工具和检查工具的区别？可在[这里](https://prettier.io/docs/en/comparison.html)了解。
+<CalloutInfo>
+  不清楚格式化工具和检查工具的区别？可在[这里](https://prettier.io/docs/en/comparison.html)了解。
+</CalloutInfo>
 
 为确保最大稳定性和可扩展性，我们使用基础 [`eslint`](https://www.npmjs.com/package/eslint) 和 [`prettier`](https://www.npmjs.com/package/prettier) CLI 包。这一配置便于与官方 IDE 插件集成。
 
