@@ -14,7 +14,7 @@ $ npm i --save amqplib amqp-connection-manager
 
 要使用 RabbitMQ 作为传输层（Transport Layer），请将如下 options 对象传递给 `createMicroservice()` 方法：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.RMQ,
@@ -194,7 +194,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入一个选项对象。该对象的属性与上文 `createMicroservice()` 方法中展示的属性一致，并且还需要包含一个 `name` 属性作为注入令牌（Injection Token）。您可以在<a href="https://docs.nestjs.com/microservices/basics#client">这里</a>查看更多关于 `ClientsModule` 的内容。
 
-```typescript
+```ts
 @Module({
   imports: [
     ClientsModule.register([
@@ -221,7 +221,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 在更复杂的场景中，你可能需要访问有关传入请求的更多信息。当使用 RabbitMQ 传输层时，可以访问 `RmqContext` 对象。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
@@ -239,7 +239,7 @@ getNotifications(data, context) {
 
 要访问原始的 RabbitMQ 消息（包含 `properties`、`fields` 和 `content`），可以使用 `RmqContext` 对象的 `getMessage()` 方法，如下所示：
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
@@ -255,7 +255,7 @@ getNotifications(data, context) {
 
 如果需要获取 RabbitMQ [通道（channel）](https://www.rabbitmq.com/channels.html) 的引用，可以使用 `RmqContext` 对象的 `getChannelRef` 方法，如下所示：
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
@@ -275,7 +275,7 @@ getNotifications(data, context) {
 
 要启用手动确认模式，需要将 `noAck` 属性设置为 `false`：
 
-```typescript
+```ts
 options: {
   urls: ['amqp://localhost:5672'],
   queue: 'cats_queue',
@@ -288,7 +288,7 @@ options: {
 
 当开启手动消费者确认后，必须由工作进程（worker）主动发送确认，告知任务已完成。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
@@ -312,7 +312,7 @@ getNotifications(data, context) {
 
 如需配置消息选项，可以使用 `RmqRecordBuilder` 类（注意：事件驱动流程同样适用）。例如，要设置 `headers` 和 `priority` 属性，可以使用 `setOptions` 方法，如下所示：
 
-```typescript
+```ts
 const message = ':cat:';
 const record = new RmqRecordBuilder(message)
   .setOptions({
@@ -330,7 +330,7 @@ this.client.send('replace-emoji', record).subscribe(...);
 
 你也可以在服务端通过访问 `RmqContext` 读取这些值，示例如下：
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('replace-emoji')
 replaceEmoji(@Payload() data: string, @Ctx() context: RmqContext): string {
@@ -350,7 +350,7 @@ replaceEmoji(data, context) {
 
 要实时获取连接状态以及底层驱动实例的状态更新，可以订阅 `status` 流。该流会根据所选驱动提供特定的状态更新。以 RMQ 驱动为例，`status` 流会发出 `connected`（已连接）和 `disconnected`（已断开）事件。
 
-```typescript
+```ts
 this.client.status.subscribe((status: RmqStatus) => {
   console.log(status)
 })
@@ -360,7 +360,7 @@ this.client.status.subscribe((status: RmqStatus) => {
 
 同样地，你也可以订阅服务端的 `status` 流，以便接收服务端状态的通知。
 
-```typescript
+```ts
 const server = app.connectMicroservice<MicroserviceOptions>(...);
 server.status.subscribe((status: RmqStatus) => {
   console.log(status);
@@ -371,7 +371,7 @@ server.status.subscribe((status: RmqStatus) => {
 
 在某些场景下，你可能希望监听微服务内部发出的事件。例如，可以监听 `error`（错误）事件，在发生错误时触发额外操作。为此，可以使用 `on()` 方法，如下所示：
 
-```typescript
+```ts
 this.client.on('error', (err) => {
   console.error(err)
 })
@@ -379,7 +379,7 @@ this.client.on('error', (err) => {
 
 同样地，也可以监听服务端的内部事件：
 
-```typescript
+```ts
 server.on<RmqEvents>('error', (err) => {
   console.error(err)
 })
@@ -393,13 +393,13 @@ server.on<RmqEvents>('error', (err) => {
 
 要实现这一点，可以使用 `unwrap()` 方法，该方法会返回底层驱动实例。泛型类型参数应指定你期望的驱动实例类型。
 
-```typescript
+```ts
 const managerRef = this.client.unwrap<import('amqp-connection-manager').AmqpConnectionManager>()
 ```
 
 同样地，你也可以访问服务端的底层驱动实例：
 
-```typescript
+```ts
 const managerRef = server.unwrap<import('amqp-connection-manager').AmqpConnectionManager>()
 ```
 
@@ -411,7 +411,7 @@ RabbitMQ 支持在路由键中使用通配符，从而实现灵活的消息路�
 
 要在 RabbitMQ 微服务中启用通配符支持，需要在配置对象中将 `wildcards` 选项设置为 `true`：
 
-```typescript
+```ts
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.RMQ,
   options: {
@@ -424,7 +424,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 配置完成后，你可以在订阅事件或消息时使用通配符路由键。例如，监听路由键为 `cats.#` 的消息，可以使用如下代码：
 
-```typescript
+```ts
 @MessagePattern('cats.#')
 getCats(@Payload() data: { message: string }, @Ctx() context: RmqContext) {
   console.log(`收到路由键为: ${context.getPattern()} 的消息`)
@@ -437,7 +437,7 @@ getCats(@Payload() data: { message: string }, @Ctx() context: RmqContext) {
 
 要发送带有特定路由键的消息，可以使用 `ClientProxy` 实例的 `send()` 方法：
 
-```typescript
+```ts
 this.client.send('cats.meow', { message: 'Meow!' }).subscribe((response) => {
   console.log(response)
 })

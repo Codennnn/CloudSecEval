@@ -40,7 +40,7 @@ extend type Query {
 
 解析器（Resolver）中额外提供了一个名为 `resolveReference()` 的方法。每当 Apollo Gateway 需要获取某个关联资源的 User 实例时，就会触发该方法。稍后我们会在 Posts 服务中看到相关示例。请注意，这个方法必须使用 `@ResolveReference()` 装饰器进行注解。
 
-```typescript
+```ts
 import { Args, Query, Resolver, ResolveReference } from '@nestjs/graphql'
 import { UsersService } from './users.service'
 
@@ -62,7 +62,7 @@ export class UsersResolver {
 
 最后，我们通过在配置对象中传入 `ApolloFederationDriver` 驱动，注册 `GraphQLModule`，将所有内容串联起来：
 
-```typescript
+```ts
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -123,7 +123,7 @@ export class UsersResolver {
 
 最后，我们通过在配置对象中传入 `ApolloFederationDriver` 驱动，注册 `GraphQLModule`，将所有内容串联起来：
 
-```typescript
+```ts
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { UsersResolver } from './users.resolver'
@@ -171,7 +171,7 @@ extend type Query {
 
 在下方示例中，`PostsResolver` 提供了 `getUser()` 方法，该方法返回一个包含 `__typename` 以及应用可能需要用于解析引用的其他属性（此处为 `id`）的引用对象。`__typename` 用于 GraphQL 网关（Gateway）定位负责 User 类型的微服务，并检索对应的实例。上文描述的 "Users 服务" 会在执行 `resolveReference()` 方法时被请求。
 
-```typescript
+```ts
 import { Query, Resolver, Parent, ResolveField } from '@nestjs/graphql'
 import { PostsService } from './posts.service'
 import { Post } from './posts.interfaces'
@@ -194,7 +194,7 @@ export class PostsResolver {
 
 最后，我们需要像在 "Users 服务" 部分一样注册 `GraphQLModule`。
 
-```typescript
+```ts
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -341,7 +341,7 @@ $ npm install --save @apollo/gateway
 
 网关需要指定一组端点（endpoints），它会自动发现对应的模式。因此，无论是代码优先还是模式优先方式，网关服务的实现方式都是一致的。
 
-```typescript
+```ts
 import { IntrospectAndCompose } from '@apollo/gateway'
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
@@ -401,7 +401,7 @@ extend type Query {
 
 解析器额外提供了一个名为 `resolveReference()` 的方法。每当 Mercurius 网关需要获取某个关联资源的 User 实例时，就会触发该方法。稍后我们会在 Posts 服务中看到相关示例。请注意，该方法必须使用 `@ResolveReference()` 装饰器进行注解。
 
-```typescript
+```ts
 import { Args, Query, Resolver, ResolveReference } from '@nestjs/graphql'
 import { UsersService } from './users.service'
 
@@ -423,7 +423,7 @@ export class UsersResolver {
 
 最后，我们通过在配置对象中传入 `MercuriusFederationDriver` 驱动，将其注册到 `GraphQLModule`，完成所有配置：
 
-```typescript
+```ts
 import { MercuriusFederationDriver, MercuriusFederationDriverConfig } from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -485,7 +485,7 @@ export class UsersResolver {
 
 最后，我们通过在配置对象中传入 `MercuriusFederationDriver` 驱动，将其注册到 `GraphQLModule`，完成所有配置：
 
-```typescript
+```ts
 import { MercuriusFederationDriver, MercuriusFederationDriverConfig } from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { UsersResolver } from './users.resolver'
@@ -532,7 +532,7 @@ extend type Query {
 
 在下例中，`PostsResolver` 提供了 `getUser()` 方法，该方法返回一个包含 `__typename` 以及应用可能需要解析引用的其他属性（本例为 `id`）的对象。`__typename` 用于 GraphQL 网关（Gateway）定位负责 User 类型的微服务，并获取对应实例。当执行 `resolveReference()` 方法时，上文描述的 "Users 服务" 会被请求。
 
-```typescript
+```ts
 import { Query, Resolver, Parent, ResolveField } from '@nestjs/graphql'
 import { PostsService } from './posts.service'
 import { Post } from './posts.interfaces'
@@ -555,7 +555,7 @@ export class PostsResolver {
 
 最后，我们需要像在 "Users 服务" 部分一样注册 `GraphQLModule`。
 
-```typescript
+```ts
 import { MercuriusFederationDriver, MercuriusFederationDriverConfig } from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -696,7 +696,7 @@ export class AppModule {}
 
 网关需要指定一组端点（endpoints），并会自动发现对应的模式。因此，无论是代码优先还是模式优先方式，网关服务的实现方式保持一致。
 
-```typescript
+```ts
 import { MercuriusGatewayDriver, MercuriusGatewayDriverConfig } from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'

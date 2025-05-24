@@ -23,7 +23,7 @@ Swagger 插件会自动完成以下操作：
 
 过去，如果你希望在 Swagger UI 中提供交互式体验，通常需要重复编写大量代码，以便让相关包知道你的模型/组件应如何在规范中声明。例如，你可以这样定义一个简单的 `CreateUserDto` 类：
 
-```typescript
+```ts
 export class CreateUserDto {
   @ApiProperty()
   email: string
@@ -43,7 +43,7 @@ export class CreateUserDto {
 
 通过[启用 Swagger 插件](/openapi/cli-plugin#using-the-cli-plugin)，上述类定义可以简化为：
 
-```typescript
+```ts
 export class CreateUserDto {
   email: string
   password: string
@@ -68,7 +68,7 @@ export class CreateUserDto {
 
 例如，假设有如下 `roles` 属性：
 
-```typescript
+```ts
 /**
  * 用户角色列表
  * @example ['admin']
@@ -82,7 +82,7 @@ roles: RoleEnum[] = [];
 
 此时你需要重复填写描述和示例值。而启用 `introspectComments` 后，CLI 插件可以自动提取这些注释，并为属性自动生成描述（以及示例，如果有定义的话）。这样，上述属性就可以简化为：
 
-```typescript
+```ts
 /**
  * 用户角色列表
  * @example ['admin']
@@ -92,7 +92,7 @@ roles: RoleEnum[] = [];
 
 插件还提供了 `dtoKeyOfComment` 和 `controllerKeyOfComment` 选项，用于自定义插件如何将注释内容赋值给 `ApiProperty` 和 `ApiOperation` 装饰器。示例如下：
 
-```typescript
+```ts
 export class SomeController {
   /**
    * 创建资源
@@ -104,7 +104,7 @@ export class SomeController {
 
 这等价于如下写法：
 
-```typescript
+```ts
 @ApiOperation({ summary: "创建资源" })
 ```
 
@@ -163,7 +163,7 @@ async create(): Promise<Cat> {}
 
 `options` 属性需符合以下接口定义：
 
-```typescript
+```ts
 export interface PluginOptions {
   dtoFileNameSuffix?: string[]
   controllerFileNameSuffix?: string[]
@@ -296,7 +296,7 @@ $ npx ts-node src/generate-metadata.ts
 
 此时，序列化后的元数据文件需要通过 `SwaggerModule#loadPluginMetadata` 方法加载，如下所示：
 
-```typescript
+```ts
 import metadata from './metadata' // <-- 该文件由 "PluginMetadataGenerator" 自动生成
 
 await SwaggerModule.loadPluginMetadata(metadata) // <-- 在这里加载

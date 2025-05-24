@@ -12,7 +12,7 @@
 
 要按需加载模块，Nest 提供了 `LazyModuleLoader` 类，你可以像常规依赖注入（Dependency Injection）一样将其注入到类中：
 
-```typescript
+```ts
 @@filename(cats.service)
 @Injectable()
 export class CatsService {
@@ -32,14 +32,14 @@ export class CatsService {
 
 另外，你也可以在应用引导文件（`main.ts`）中获取 `LazyModuleLoader` 提供者（Provider）的引用，如下所示：
 
-```typescript
+```ts
 // "app" 代表 Nest 应用实例
 const lazyModuleLoader = app.get(LazyModuleLoader)
 ```
 
 有了它之后，你可以通过如下方式加载任意模块：
 
-```typescript
+```ts
 const { LazyModule } = await import('./lazy.module')
 const moduleRef = await this.lazyModuleLoader.load(() => LazyModule)
 ```
@@ -63,7 +63,7 @@ const moduleRef = await this.lazyModuleLoader.load(() => LazyModule)
 
 例如，假设我们有如下定义的 `LazyModule`：
 
-```typescript
+```ts
 @Module({
   providers: [LazyService],
   exports: [LazyService],
@@ -75,7 +75,7 @@ export class LazyModule {}
 
 这样，我们就可以获取 `LazyService` 提供者的引用：
 
-```typescript
+```ts
 const { LazyModule } = await import('./lazy.module')
 const moduleRef = await this.lazyModuleLoader.load(() => LazyModule)
 

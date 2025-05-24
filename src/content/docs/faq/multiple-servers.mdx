@@ -2,7 +2,7 @@
 
 要创建一个使用 HTTPS 协议的应用程序，需要在 `NestFactory` 类的 `create()` 方法中，通过 options 对象设置 `httpsOptions` 属性：
 
-```typescript
+```ts
 const httpsOptions = {
   key: fs.readFileSync('./secrets/private-key.pem'),
   cert: fs.readFileSync('./secrets/public-certificate.pem'),
@@ -15,7 +15,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 如果你使用的是 `FastifyAdapter`，可以按照如下方式创建应用：
 
-```typescript
+```ts
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
   new FastifyAdapter({ https: httpsOptions })
@@ -26,7 +26,7 @@ const app = await NestFactory.create<NestFastifyApplication>(
 
 下面的示例展示了如何实例化一个 Nest 应用，使其能够同时监听多个端口（例如同时监听一个非 HTTPS 端口和一个 HTTPS 端口）。
 
-```typescript
+```ts
 const httpsOptions = {
   key: fs.readFileSync('./secrets/private-key.pem'),
   cert: fs.readFileSync('./secrets/public-certificate.pem'),
@@ -42,7 +42,7 @@ const httpsServer = https.createServer(httpsOptions, server).listen(443)
 
 由于我们手动调用了 `http.createServer` / `https.createServer`，因此在调用 `app.close` 或收到终止信号时，NestJS 不会自动关闭这些服务器。我们需要自行处理关闭逻辑：
 
-```typescript
+```ts
 @Injectable()
 export class ShutdownObserver implements OnApplicationShutdown {
   private httpServers: http.Server[] = []

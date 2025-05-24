@@ -45,7 +45,7 @@ URI 版本控制通过在请求的 URI 中传递版本号来实现，例如：`h
 
 要为你的应用程序启用 URI 版本控制，请按如下方式操作：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.create(AppModule);
 // 或直接调用 "app.enableVersioning()"
@@ -67,7 +67,7 @@ Header 版本控制的 HTTP 请求示例：
 
 要为你的应用启用 **Header 版本控制**，请按如下方式操作：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.create(AppModule);
 app.enableVersioning({
@@ -89,7 +89,7 @@ Media Type 版本控制（Media Type Versioning）使用请求的 `Accept` 头�
 
 要为你的应用启用 **Media Type 版本控制**，请按如下方式操作：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.create(AppModule);
 app.enableVersioning({
@@ -119,7 +119,7 @@ await app.listen(process.env.PORT ?? 3000);
 
 要为你的应用启用**自定义版本控制**，只需创建一个 `extractor` 函数，并将其传递给应用程序，如下所示：
 
-```typescript
+```ts
 @@filename(main)
 // 示例 extractor，从自定义请求头中提取版本列表，并将其转换为已排序的数组。
 // 本例使用 Fastify，但 Express 的请求处理方式类似。
@@ -150,7 +150,7 @@ await app.listen(process.env.PORT ?? 3000);
 
 要为控制器添加版本，请按如下方式操作：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Controller({
   version: '1',
@@ -179,7 +179,7 @@ export class CatsControllerV1 {
 
 要为单个路由添加版本，请按如下方式操作：
 
-```typescript
+```ts
 @@filename(cats.controller)
 import { Controller, Get, Version } from '@nestjs/common';
 
@@ -222,7 +222,7 @@ export class CatsController {
 
 添加多个版本的方法如下：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Controller({
   version: ['1', '2'],
@@ -255,7 +255,7 @@ export class CatsController {
 
 添加版本中立的控制器或路由的方法如下：
 
-```typescript
+```ts
 @@filename(cats.controller)
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 
@@ -286,7 +286,7 @@ export class CatsController {
 
 如果你不希望为每个控制器（Controller）或单独的路由（Route）都指定版本，或者你希望为所有未指定版本的控制器或路由设置一个特定的默认版本，可以按照如下方式设置 `defaultVersion`：
 
-```typescript
+```ts
 @@filename(main)
 app.enableVersioning({
   // ...
@@ -302,7 +302,7 @@ app.enableVersioning({
 
 [中间件（Middleware）](https://docs.nestjs.com/middleware) 也可以利用版本控制元数据（versioning metadata），为特定路由的某个版本配置中间件。要实现这一点，只需在 `MiddlewareConsumer.forRoutes()` 方法的参数中提供版本号即可：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';

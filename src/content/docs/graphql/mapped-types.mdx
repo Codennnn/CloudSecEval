@@ -12,7 +12,7 @@ Nest 提供了 `PartialType()` 工具函数，帮助你更轻松地完成这一�
 
 `PartialType()` 函数会返回一个类型（类），其所有属性都变为可选。例如，假设我们有如下的 **创建** 类型：
 
-```typescript
+```ts
 @InputType()
 class CreateUserInput {
   @Field()
@@ -28,7 +28,7 @@ class CreateUserInput {
 
 默认情况下，这些字段都是必填的。若要创建一个拥有相同字段但全部为可选的类型，可以使用 `PartialType()`，并将类引用（`CreateUserInput`）作为参数传入：
 
-```typescript
+```ts
 @InputType()
 export class UpdateUserInput extends PartialType(CreateUserInput) {}
 ```
@@ -37,7 +37,7 @@ export class UpdateUserInput extends PartialType(CreateUserInput) {}
 
 `PartialType()` 函数还可以接收一个可选的第二个参数，该参数是一个装饰器工厂的引用。通过该参数可以更改应用于结果（子）类的装饰器函数。如果未指定，子类实际上会使用与父类（第一个参数引用的类）相同的装饰器。在上面的例子中，我们继承了带有 `@InputType()` 装饰器的 `CreateUserInput`。由于我们希望 `UpdateUserInput` 也被视为带有 `@InputType()` 装饰器的类型，因此无需将 `InputType` 作为第二个参数传入。如果父类型和子类型的装饰器不同（例如父类使用 `@ObjectType`），则需要将 `InputType` 作为第二个参数传入。例如：
 
-```typescript
+```ts
 @InputType()
 export class UpdateUserInput extends PartialType(User, InputType) {}
 ```
@@ -46,7 +46,7 @@ export class UpdateUserInput extends PartialType(User, InputType) {}
 
 `PickType()` 工具函数可以通过从输入类型中挑选一组属性，构造出一个新的类型（类）。例如，假设我们有如下类型：
 
-```typescript
+```ts
 @InputType()
 class CreateUserInput {
   @Field()
@@ -62,7 +62,7 @@ class CreateUserInput {
 
 我们可以使用 `PickType()` 工具函数，从该类中挑选部分属性，生成一个新类型：
 
-```typescript
+```ts
 @InputType()
 export class UpdateEmailInput extends PickType(CreateUserInput, ['email'] as const) {}
 ```
@@ -73,7 +73,7 @@ export class UpdateEmailInput extends PickType(CreateUserInput, ['email'] as con
 
 `OmitType()` 函数用于基于输入类型，移除指定属性后，构造出一个新的类型。例如，假设我们有如下类型：
 
-```typescript
+```ts
 @InputType()
 class CreateUserInput {
   @Field()
@@ -89,7 +89,7 @@ class CreateUserInput {
 
 我们可以通过如下方式，生成一个派生类型，该类型包含除了 `email` 以外的所有属性。在这个用法中，`OmitType` 的第二个参数是属性名数组。
 
-```typescript
+```ts
 @InputType()
 export class UpdateUserInput extends OmitType(CreateUserInput, ['email'] as const) {}
 ```
@@ -100,7 +100,7 @@ export class UpdateUserInput extends OmitType(CreateUserInput, ['email'] as cons
 
 `IntersectionType()` 函数可以将两个类型（类）合并为一个新的类型。例如，假设我们有如下两个类型：
 
-```typescript
+```ts
 @InputType()
 class CreateUserInput {
   @Field()
@@ -122,7 +122,7 @@ export class AdditionalUserInfo {
 
 我们可以生成一个新类型，将两个类型中的所有属性合并到一起。
 
-```typescript
+```ts
 @InputType()
 export class UpdateUserInput extends IntersectionType(CreateUserInput, AdditionalUserInfo) {}
 ```
@@ -133,7 +133,7 @@ export class UpdateUserInput extends IntersectionType(CreateUserInput, Additiona
 
 类型映射工具函数是可以组合使用的。例如，下面的写法会生成一个类型（类），它包含 `CreateUserInput` 类型中除 `email` 之外的所有属性，并且这些属性都变为可选：
 
-```typescript
+```ts
 @InputType()
 export class UpdateUserInput extends PartialType(OmitType(CreateUserInput, ['email'] as const)) {}
 ```

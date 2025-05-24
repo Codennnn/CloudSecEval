@@ -44,7 +44,7 @@
 
 可以通过在 `@Injectable()` 装饰器的 options 对象中传递 `scope` 属性来指定依赖注入作用域：
 
-```typescript
+```ts
 import { Injectable, Scope } from '@nestjs/common'
 
 @Injectable({ scope: Scope.REQUEST })
@@ -53,7 +53,7 @@ export class CatsService {}
 
 同样地，对于[自定义提供者](/fundamentals/custom-providers)，可以在提供者注册的长格式写法中设置 `scope` 属性：
 
-```typescript
+```ts
 {
   provide: 'CACHE_MANAGER',
   useClass: CacheManager,
@@ -73,7 +73,7 @@ export class CatsService {}
 
 可以通过 `ControllerOptions` 对象的 `scope` 属性声明控制器作用域：
 
-```typescript
+```ts
 @Controller({
   path: 'cats',
   scope: Scope.REQUEST,
@@ -95,7 +95,7 @@ export class CatsController {}
 
 `REQUEST` 提供者本身就是请求作用域，因此在使用时无需显式指定其作用域。即使你尝试手动设置，也不会生效。任何依赖于请求作用域提供者的其他提供者都会自动变为请求作用域，这一行为无法更改。
 
-```typescript
+```ts
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { REQUEST } from '@nestjs/core'
 import { Request } from 'express'
@@ -108,7 +108,7 @@ export class CatsService {
 
 由于底层平台或协议的差异，在微服务（Microservice）或 GraphQL 应用中，获取入站请求对象的方式有所不同。在 [GraphQL](/graphql/quick-start) 应用中，应注入 `CONTEXT`，而不是 `REQUEST：`
 
-```typescript
+```ts
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { CONTEXT } from '@nestjs/graphql'
 
@@ -124,7 +124,7 @@ export class CatsService {
 
 If you want to get the class where a provider was constructed, for instance in logging or metrics providers, you can inject the `INQUIRER` token.
 
-```typescript
+```ts
 import { Inject, Injectable, Scope } from '@nestjs/common'
 import { INQUIRER } from '@nestjs/core'
 
@@ -140,7 +140,7 @@ export class HelloService {
 
 然后可以这样使用：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { HelloService } from './hello.service'
 
@@ -178,7 +178,7 @@ export class AppService {
 
 在开始将提供者标记为持久化之前，我们首先需要注册一个 **策略**，告诉 Nest 哪些是“通用请求属性”，并提供逻辑来分组请求 - 将它们与对应的依赖注入子树关联起来。
 
-```typescript
+```ts
 import { HostComponentInfo, ContextId, ContextIdFactory, ContextIdStrategy } from '@nestjs/core'
 import { Request } from 'express'
 
@@ -210,7 +210,7 @@ export class AggregateByTenantContextIdStrategy implements ContextIdStrategy {
 
 如果你希望为 durable 子树注册 payload，可以使用如下写法：
 
-```typescript
+```ts
 // The return of `AggregateByTenantContextIdStrategy#attach` method:
 return {
   resolve: (info: HostComponentInfo) => (info.isTreeDurable ? tenantSubTreeId : contextId),
@@ -222,7 +222,7 @@ return {
 
 有了上述策略后，你可以在代码中的任意位置注册它（因为它是全局生效的），例如可以放在 `main.ts` 文件中：
 
-```typescript
+```ts
 ContextIdFactory.apply(new AggregateByTenantContextIdStrategy())
 ```
 
@@ -232,7 +232,7 @@ ContextIdFactory.apply(new AggregateByTenantContextIdStrategy())
 
 最后，要将普通提供者转换为 durable 提供者，只需将 `durable` 标志设置为 `true`，并将其作用域改为 `Scope.REQUEST`（如果注入链中已存在 REQUEST 作用域，则无需重复设置）：
 
-```typescript
+```ts
 import { Injectable, Scope } from '@nestjs/common'
 
 @Injectable({ scope: Scope.REQUEST, durable: true })
@@ -241,7 +241,7 @@ export class CatsService {}
 
 同样地，对于[自定义提供者](/fundamentals/custom-providers)，可以在注册时设置 `durable` 属性：
 
-```typescript
+```ts
 {
   provide: 'foobar',
   useFactory: () => { ... },

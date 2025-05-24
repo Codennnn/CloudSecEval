@@ -22,7 +22,7 @@ CI/CD 集成功能仅对 **[企业版](/settings)** 用户开放。
 
 首先，我们需要在应用的引导文件（`main.ts`）中配置 `GraphPublisher` 类（从 `@nestjs/devtools-integration` 导入，详见上一章节），示例如下：
 
-```typescript
+```ts
 async function bootstrap() {
   const shouldPublishGraph = process.env.PUBLISH_GRAPH === "true";
 
@@ -146,7 +146,7 @@ jobs:
 
 最后，让我们再次打开 `main.ts` 文件，补全之前留空的 `publishOptions` 对象：
 
-```typescript
+```ts
 const publishOptions = {
   apiKey: process.env.DEVTOOLS_API_KEY,
   repository: process.env.REPOSITORY_NAME,
@@ -174,7 +174,7 @@ const publishOptions = {
 
 首先，我们从在项目根目录下创建一个新的 Gitlab CI 配置文件开始，例如命名为 `.gitlab-ci.yml`。在该文件中，可以使用如下配置：
 
-```typescript
+```ts
 const publishOptions = {
   apiKey: process.env.DEVTOOLS_API_KEY,
   repository: process.env.REPOSITORY_NAME,
@@ -236,7 +236,7 @@ Nest Devtools 的 CI/CD 集成可以与任意 CI/CD 工具配合使用（例如 
 
 请参考下方 `publishOptions` 对象的配置，了解发布某次提交、构建或拉取请求（PR）所需的信息：
 
-```typescript
+```ts
 const publishOptions = {
   apiKey: process.env.DEVTOOLS_API_KEY,
   repository: process.env.CI_PROJECT_NAME,

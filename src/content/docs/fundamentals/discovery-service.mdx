@@ -6,7 +6,7 @@
 
 在使用 `DiscoveryService` 之前，需要在目标模块中导入 `DiscoveryModule`（发现模块），以确保该服务可以通过依赖注入（Dependency Injection）方式获取。下面是如何在 NestJS 模块中配置的示例：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { DiscoveryModule } from '@nestjs/core'
 import { ExampleService } from './example.service'
@@ -20,7 +20,7 @@ export class ExampleModule {}
 
 模块配置完成后，就可以在任何需要动态发现能力的提供者或服务中注入 `DiscoveryService`：
 
-```typescript
+```ts
 @@filename(example.service)
 @Injectable()
 export class ExampleService {
@@ -40,14 +40,14 @@ export class ExampleService {
 
 `DiscoveryService` 的核心能力之一是获取应用中所有已注册的提供者。这对于根据特定条件动态处理提供者非常有用。以下代码演示了如何获取所有提供者：
 
-```typescript
+```ts
 const providers = this.discoveryService.getProviders()
 console.log(providers)
 ```
 
 每个提供者对象都包含其实例、注入令牌（Token）和元数据信息。同样，如果需要获取应用中所有已注册的控制器，也可以这样做：
 
-```typescript
+```ts
 const controllers = this.discoveryService.getControllers()
 console.log(controllers)
 ```
@@ -60,7 +60,7 @@ console.log(controllers)
 
 例如，假设我们用一个自定义装饰器为提供者打上特定的元数据标签：
 
-```typescript
+```ts
 import { DiscoveryService } from '@nestjs/core'
 
 export const FeatureFlag = DiscoveryService.createDecorator()
@@ -68,7 +68,7 @@ export const FeatureFlag = DiscoveryService.createDecorator()
 
 将该装饰器应用到服务上后，即可存储元数据，后续可以方便地查询：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { FeatureFlag } from './custom-metadata.decorator'
 
@@ -79,7 +79,7 @@ export class CustomService {}
 
 通过这种方式为提供者附加元数据后，`DiscoveryService` 可以轻松根据指定的元数据值筛选提供者。下面的代码演示了如何获取带有特定元数据值的提供者：
 
-```typescript
+```ts
 const providers = this.discoveryService.getProviders()
 
 const [provider] = providers.filter(

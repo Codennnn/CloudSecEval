@@ -310,7 +310,7 @@ TypeScript 编译会自动将编译输出（`.js` 和 `.d.ts` 文件）分发到
 
 `assets` 键的值应为一个数组，每个元素用于指定需要分发的文件。元素可以是带有 `glob` 风格文件匹配的简单字符串，例如：
 
-```typescript
+```ts
 "assets": ["**/*.graphql"],
 "watchAssets": true,
 ```
@@ -324,7 +324,7 @@ TypeScript 编译会自动将编译输出（`.js` 和 `.d.ts` 文件）分发到
 
 例如：
 
-```typescript
+```ts
 "assets": [
   { "include": "**/*.graphql", "exclude": "**/omitted.graphql", "watchAssets": true },
 ]

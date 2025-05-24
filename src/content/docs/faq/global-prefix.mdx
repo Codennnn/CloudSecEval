@@ -2,14 +2,14 @@
 
 要为 HTTP 应用程序中注册的**每一个路由**设置统一的前缀，可以使用 `INestApplication` 实例的 `setGlobalPrefix()` 方法。
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule)
 app.setGlobalPrefix('v1')
 ```
 
 你可以通过如下方式将部分路由从全局前缀中排除：
 
-```typescript
+```ts
 app.setGlobalPrefix('v1', {
   exclude: [{ path: 'health', method: RequestMethod.GET }],
 })
@@ -17,7 +17,7 @@ app.setGlobalPrefix('v1', {
 
 另外，你也可以直接以字符串形式指定路由（此时会应用于所有请求方法）：
 
-```typescript
+```ts
 app.setGlobalPrefix('v1', { exclude: ['cats'] })
 ```
 

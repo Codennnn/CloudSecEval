@@ -18,7 +18,7 @@ $ npm i --save ioredis
 
 要使用 Redis 传输器，只需将如下选项对象传递给 `createMicroservice()` 方法：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.REDIS,
@@ -91,7 +91,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要先导入该模块，并使用 `register()` 方法传入一个配置对象。该对象的属性与上文 `createMicroservice()` 方法中所示一致，并且需要额外指定一个 `name` 属性作为注入令牌（Injection Token）。你可以在 <a href="https://docs.nestjs.com/microservices/basics#client">这里</a> 阅读更多关于 `ClientsModule` 的内容。
 
-```typescript
+```ts
 @Module({
   imports: [
     ClientsModule.register([
@@ -115,7 +115,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 在更复杂的场景下，你可能需要访问有关传入请求的更多信息。当使用 Redis 传输器时，可以通过 `RedisContext` 对象获取这些信息。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RedisContext) {
@@ -135,7 +135,7 @@ getNotifications(data, context) {
 
 要启用通配符支持，需要将 `wildcards` 选项设置为 `true`。这样会指示传输层在底层使用 `psubscribe` 和 `pmessage`。
 
-```typescript
+```ts
 const app = await NestFactory.createMicroservice(AppModule, {
   transport: Transport.REDIS,
   options: {
@@ -149,7 +149,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 启用该选项后，您可以在消息和事件模式中使用通配符。例如，若要订阅所有以 `notifications` 开头的频道，可以使用如下模式：
 
-```typescript
+```ts
 @EventPattern('notifications.*')
 ```
 
@@ -157,7 +157,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 如需实时获取连接和底层驱动实例状态的更新，可以订阅 `status` 流。该流会提供特定于所选驱动的状态更新。对于 Redis 驱动，`status` 流会发出 `connected`、`disconnected` 和 `reconnecting` 事件。
 
-```typescript
+```ts
 this.client.status.subscribe((status: RedisStatus) => {
   console.log(status)
 })
@@ -167,7 +167,7 @@ this.client.status.subscribe((status: RedisStatus) => {
 
 同样，您也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
-```typescript
+```ts
 const server = app.connectMicroservice<MicroserviceOptions>(...);
 server.status.subscribe((status: RedisStatus) => {
   console.log(status);
@@ -178,7 +178,7 @@ server.status.subscribe((status: RedisStatus) => {
 
 在某些情况下，你可能希望监听微服务内部触发的事件。例如，你可以监听 `error` 事件，在发生错误时执行额外的操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
-```typescript
+```ts
 this.client.on('error', (err) => {
   console.error(err)
 })
@@ -186,7 +186,7 @@ this.client.on('error', (err) => {
 
 同样地，你也可以监听服务器内部的事件：
 
-```typescript
+```ts
 server.on<RedisEvents>('error', (err) => {
   console.error(err)
 })
@@ -200,13 +200,13 @@ server.on<RedisEvents>('error', (err) => {
 
 要访问底层驱动，可以使用 `unwrap()` 方法。该方法会返回底层驱动实例。泛型类型参数应指定你期望获得的驱动实例类型。
 
-```typescript
+```ts
 const [pub, sub] = this.client.unwrap<[import('ioredis').Redis, import('ioredis').Redis]>()
 ```
 
 同样地，你也可以访问服务器的底层驱动实例：
 
-```typescript
+```ts
 const [pub, sub] = server.unwrap<[import('ioredis').Redis, import('ioredis').Redis]>()
 ```
 

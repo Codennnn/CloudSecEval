@@ -14,7 +14,7 @@ $ npm i --save @nestjs/event-emitter
 
 安装完成后，将 `EventEmitterModule` 导入到根模块 `AppModule`，并按照如下方式调用其静态方法 `forRoot()`：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -31,7 +31,7 @@ export class AppModule {}
 
 如需配置底层的 `EventEmitter` 实例，可以将配置对象传递给 `.forRoot()` 方法，示例如下：
 
-```typescript
+```ts
 EventEmitterModule.forRoot({
   // 设置为 true 以启用通配符
   wildcard: false,
@@ -54,7 +54,7 @@ EventEmitterModule.forRoot({
 
 要派发（即触发）一个事件，首先需要通过标准的构造函数依赖注入（Dependency Injection）方式注入 `EventEmitter2`：
 
-```typescript
+```ts
 constructor(private eventEmitter: EventEmitter2) {}
 ```
 
@@ -62,7 +62,7 @@ constructor(private eventEmitter: EventEmitter2) {}
 
 然后可以在类中如下使用：
 
-```typescript
+```ts
 this.eventEmitter.emit(
   'order.created',
   new OrderCreatedEvent({
@@ -76,7 +76,7 @@ this.eventEmitter.emit(
 
 要声明一个事件监听器（event listener），只需在方法定义前使用 `@OnEvent()` 装饰器（Decorator），如下所示：
 
-```typescript
+```ts
 @OnEvent('order.created')
 handleOrderCreatedEvent(payload: OrderCreatedEvent) {
   // 处理并响应 "OrderCreatedEvent" 事件
@@ -89,7 +89,7 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) {
 
 第二个参数（可选）是监听器选项对象，定义如下：
 
-```typescript
+```ts
 export type OnEventOptions = OnOptions & {
   /**
    * 如果为 true，则将给定监听器插入到监听器数组的开头（而不是末尾）。
@@ -111,7 +111,7 @@ export type OnEventOptions = OnOptions & {
 
 > info **提示** 关于 `OnOptions` 选项对象的更多信息，请参阅 [`eventemitter2` 文档](https://github.com/EventEmitter2/EventEmitter2#emitteronevent-listener-options-objectboolean)。
 
-```typescript
+```ts
 @OnEvent('order.created', { async: true })
 handleOrderCreatedEvent(payload: OrderCreatedEvent) {
   // 处理并响应 "OrderCreatedEvent" 事件
@@ -120,7 +120,7 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) {
 
 如需使用命名空间（namespace）或通配符（wildcard），请在 `EventEmitterModule#forRoot()` 方法中传入 `wildcard` 选项。当启用命名空间/通配符后，事件可以是用分隔符（delimiter）分隔的字符串（如 `foo.bar`），也可以是数组（如 `['foo', 'bar']`）。分隔符也可以通过配置属性（`delimiter`）自定义。当启用命名空间功能后，可以使用通配符订阅事件：
 
-```typescript
+```ts
 @OnEvent('order.*')
 handleOrderEvents(payload: OrderCreatedEvent | OrderRemovedEvent | OrderUpdatedEvent) {
   // 处理并响应事件
@@ -131,7 +131,7 @@ handleOrderEvents(payload: OrderCreatedEvent | OrderRemovedEvent | OrderUpdatedE
 
 通过该模式，可以创建一个监听所有事件的事件监听器：
 
-```typescript
+```ts
 @OnEvent('**')
 handleEverything(payload: any) {
   // 处理并响应任意事件
@@ -146,7 +146,7 @@ handleEverything(payload: any) {
 
 为避免此问题，你可以在模块的 `onApplicationBootstrap` 生命周期钩子中调用 `EventEmitterReadinessWatcher` 的 `waitUntilReady` 方法。该方法会返回一个 Promise，当所有监听器都已注册完成后才会 resolve，从而确保所有事件都能被正确捕获。
 
-```typescript
+```ts
 await this.eventEmitterReadinessWatcher.waitUntilReady()
 await this.eventEmitter.emit('order.created', new OrderCreatedEvent({ orderId: 1, payload: {} }))
 ```

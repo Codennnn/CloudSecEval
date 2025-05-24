@@ -14,7 +14,7 @@ $ npm i --save mqtt
 
 要使用 MQTT 传输层，请将如下 options 对象传递给 `createMicroservice()` 方法：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.MQTT,
@@ -43,7 +43,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要先导入该模块，并使用 `register()` 方法传入一个配置对象。该对象的属性与上文 `createMicroservice()` 方法中展示的属性一致，并且需要额外指定一个 `name` 属性作为注入令牌。详细内容可参考 <a href="https://docs.nestjs.com/microservices/basics#client">这里</a>。
 
-```typescript
+```ts
 @Module({
   imports: [
     ClientsModule.register([
@@ -66,7 +66,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 在更复杂的场景下，你可能需要访问有关传入请求的更多信息。使用 MQTT 传输器时，可以通过 `MqttContext` 对象获取这些信息。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: MqttContext) {
@@ -84,7 +84,7 @@ getNotifications(data, context) {
 
 如果你需要访问原始的 mqtt [数据包（packet）](https://github.com/mqttjs/mqtt-packet)，可以通过 `MqttContext` 对象的 `getPacket()` 方法实现，如下所示：
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: MqttContext) {
@@ -102,7 +102,7 @@ getNotifications(data, context) {
 
 订阅可以是某个明确的主题（topic），也可以包含通配符。MQTT 协议中有两种通配符：`+` 和 `#`。其中，`+` 是单层通配符，表示匹配单个主题层级；而 `#` 是多层通配符，可以匹配多个主题层级。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('sensors/+/temperature/+')
 getTemperature(@Ctx() context: MqttContext) {
@@ -120,7 +120,7 @@ getTemperature(context) {
 
 通过 `@MessagePattern` 或 `@EventPattern` 装饰器创建的任何订阅，默认使用 QoS 0。如果需要更高的 QoS，可以在建立连接时通过 `subscribeOptions` 全局设置，如下所示：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.MQTT,
@@ -149,7 +149,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 要配置消息选项（如调整 QoS 等级、设置 Retain 或 DUP 标志，或为负载添加额外属性），可以使用 `MqttRecordBuilder` 类。例如，要将 `QoS` 设置为 `2`，可以使用 `setQoS` 方法，如下所示：
 
-```typescript
+```ts
 const userProperties = { 'x-version': '1.0.0' };
 const record = new MqttRecordBuilder(':cat:')
   .setProperties({ userProperties })
@@ -162,7 +162,7 @@ client.send('replace-emoji', record).subscribe(...);
 
 在服务端，也可以通过访问 `MqttContext` 读取这些选项。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('replace-emoji')
 replaceEmoji(@Payload() data: string, @Ctx() context: MqttContext): string {
@@ -180,7 +180,7 @@ replaceEmoji(data, context) {
 
 在某些场景下，如果你希望为多个请求统一配置用户属性，可以将这些选项传递给 `ClientProxyFactory`。
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { ClientProxyFactory, Transport } from '@nestjs/microservices'
 
@@ -206,7 +206,7 @@ export class ApiModule {}
 
 要实时获取连接和底层驱动实例的状态更新，可以订阅 `status` 流。该流会提供所选驱动专属的状态更新。以 MQTT 驱动为例，`status` 流会发出 `connected`、`disconnected`、`reconnecting` 和 `closed` 事件。
 
-```typescript
+```ts
 this.client.status.subscribe((status: MqttStatus) => {
   console.log(status)
 })
@@ -216,7 +216,7 @@ this.client.status.subscribe((status: MqttStatus) => {
 
 同样，你也可以订阅服务器的 `status` 流，以接收服务器状态的通知。
 
-```typescript
+```ts
 const server = app.connectMicroservice<MicroserviceOptions>(...);
 server.status.subscribe((status: MqttStatus) => {
   console.log(status);
@@ -227,7 +227,7 @@ server.status.subscribe((status: MqttStatus) => {
 
 在某些情况下，你可能希望监听微服务内部发出的事件。例如，可以监听 `error` 事件，在发生错误时触发额外操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
-```typescript
+```ts
 this.client.on('error', (err) => {
   console.error(err)
 })
@@ -235,7 +235,7 @@ this.client.on('error', (err) => {
 
 同样，你也可以监听服务器的内部事件：
 
-```typescript
+```ts
 server.on<MqttEvents>('error', (err) => {
   console.error(err)
 })
@@ -249,12 +249,12 @@ server.on<MqttEvents>('error', (err) => {
 
 如需访问底层驱动实例，可以使用 `unwrap()` 方法。该方法会返回底层驱动实例，泛型类型参数应指定你期望的驱动实例类型。
 
-```typescript
+```ts
 const mqttClient = this.client.unwrap<import('mqtt').MqttClient>()
 ```
 
 同样，你也可以访问服务器的底层驱动实例：
 
-```typescript
+```ts
 const mqttClient = server.unwrap<import('mqtt').MqttClient>()
 ```

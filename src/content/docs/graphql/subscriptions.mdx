@@ -8,7 +8,7 @@
 
 要启用订阅功能，需要将 `installSubscriptionHandlers` 属性设置为 `true`。
 
-```typescript
+```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({
   driver: ApolloDriver,
   installSubscriptionHandlers: true,
@@ -19,7 +19,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 如需切换为 `graphql-ws` 包，请使用如下配置：
 
-```typescript
+```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({
   driver: ApolloDriver,
   subscriptions: {
@@ -36,7 +36,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 下面的订阅处理器通过调用 `PubSub#asyncIterableIterator` 方法来**订阅**某个事件。该方法接收一个参数 `triggerName`，即事件主题名称。
 
-```typescript
+```ts
 const pubSub = new PubSub()
 
 @Resolver(() => Author)
@@ -63,7 +63,7 @@ type Subscription {
 
 需要注意的是，订阅（Subscription）本质上会返回一个对象，该对象仅包含一个顶层属性，其键名为订阅的名称。该名称要么继承自订阅处理器方法的名称（如上例中的 `commentAdded`），要么可以通过将带有 `name` 键的选项作为 `@Subscription()` 装饰器的第二个参数显式指定，如下所示：
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   name: 'commentAdded',
 })
@@ -78,7 +78,7 @@ subscribeToCommentAdded() {
 
 现在，要发布事件，我们可以使用 `PubSub#publish` 方法。这个方法通常在变更操作中使用，用于在对象图的某一部分发生变化时，触发客户端的更新。例如：
 
-```typescript
+```ts
 @@filename(posts/posts.resolver)
 @Mutation(() => Comment)
 async addComment(
@@ -105,7 +105,7 @@ type Subscription {
 
 要过滤特定事件，可以为 `filter` 属性指定一个过滤函数。该函数的作用类似于数组的 `filter` 方法。它接收两个参数：`payload`（事件负载，由事件发布者发送）和 `variables`（在订阅请求时传入的参数）。该函数返回一个布尔值，用于决定该事件是否应该发布给客户端监听者。
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   filter: (payload, variables) =>
     payload.commentAdded.title === variables.title,
@@ -119,7 +119,7 @@ commentAdded(@Args('title') title: string) {
 
 如果需要修改发布的事件负载，可以为 `resolve` 属性指定一个函数。该函数接收事件负载（由事件发布者发送），并返回最终要传递给客户端的值。
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   resolve: value => value,
 })
@@ -133,7 +133,7 @@ commentAdded() {
 
 如果你需要访问注入的提供者（Provider）（例如，使用外部服务来校验数据），可以使用如下写法：
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   resolve(this: AuthorResolver, value) {
     // "this" 指向 "AuthorResolver" 的实例
@@ -147,7 +147,7 @@ commentAdded() {
 
 同样的写法也适用于过滤函数：
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
@@ -163,7 +163,7 @@ commentAdded() {
 
 要在 Nest 中创建等效的订阅，我们需要使用 `@Subscription()` 装饰器。
 
-```typescript
+```ts
 const pubSub = new PubSub()
 
 @Resolver('Author')
@@ -178,7 +178,7 @@ export class AuthorResolver {
 
 如果需要根据上下文和参数过滤特定事件，可以设置 `filter` 属性。
 
-```typescript
+```ts
 @Subscription('commentAdded', {
   filter: (payload, variables) =>
     payload.commentAdded.title === variables.title,
@@ -190,7 +190,7 @@ commentAdded() {
 
 如果需要对已发布的 payload 进行变换，可以使用 `resolve` 函数。
 
-```typescript
+```ts
 @Subscription('commentAdded', {
   resolve: value => value,
 })
@@ -201,7 +201,7 @@ commentAdded() {
 
 如果你需要访问注入的提供者（例如，使用外部服务对数据进行校验），可以使用如下结构：
 
-```typescript
+```ts
 @Subscription('commentAdded', {
   resolve(this: AuthorResolver, value) {
     // "this" 指向 "AuthorResolver" 的实例
@@ -215,7 +215,7 @@ commentAdded() {
 
 同样的结构也适用于 filter：
 
-```typescript
+```ts
 @Subscription('commentAdded', {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
@@ -263,7 +263,7 @@ type Subscription {
 
 在上文中，我们实例化了一个本地的 `PubSub` 实例。更推荐的做法是将 `PubSub` 定义为一个[提供者](/fundamentals/custom-providers)，并通过构造函数注入（使用 `@Inject()` 装饰器）。这样可以在整个应用中复用该实例。例如，可以如下定义一个提供者，然后在需要的地方注入 `'PUB_SUB'`。
 
-```typescript
+```ts
 {
   provide: 'PUB_SUB',
   useValue: new PubSub(),
@@ -274,7 +274,7 @@ type Subscription {
 
 如果需要自定义订阅服务器（例如更改路径），可以使用 `subscriptions` 选项属性。
 
-```typescript
+```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({
   driver: ApolloDriver,
   subscriptions: {
@@ -287,7 +287,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 如果你在订阅中使用的是 `graphql-ws` 包，请将 `subscriptions-transport-ws` 键替换为 `graphql-ws`，如下所示：
 
-```typescript
+```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({
   driver: ApolloDriver,
   subscriptions: {
@@ -304,7 +304,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 `onConnect` 的第一个参数是传递给 `SubscriptionClient` 的 `connectionParams`（详细内容请参阅 [这里](https://www.apollographql.com/docs/react/data/subscriptions/#5-authenticate-over-websocket-optional)）。
 
-```typescript
+```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({
   driver: ApolloDriver,
   subscriptions: {
@@ -334,7 +334,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 如果你使用的是 `graphql-ws` 包，`onConnect` 回调的签名会略有不同：
 
-```typescript
+```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({
   driver: ApolloDriver,
   subscriptions: {
@@ -357,7 +357,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 要启用订阅功能，只需将 `subscription` 属性设置为 `true`。
 
-```typescript
+```ts
 GraphQLModule.forRoot<MercuriusDriverConfig>({
   driver: MercuriusDriver,
   subscription: true,
@@ -372,7 +372,7 @@ GraphQLModule.forRoot<MercuriusDriverConfig>({
 
 下面的订阅处理器通过调用 `PubSub#asyncIterableIterator` 方法来实现对事件的**订阅**。该方法接收一个参数 `triggerName`，即事件主题名称。
 
-```typescript
+```ts
 @Resolver(() => Author)
 export class AuthorResolver {
   // ...
@@ -397,7 +397,7 @@ type Subscription {
 
 需要注意的是，订阅本质上会返回一个对象，该对象只有一个顶层属性，其键名就是订阅的名称。这个名称要么继承自订阅处理器方法的名称（如上例中的 `commentAdded`），要么可以通过将带有 `name` 键的选项作为 `@Subscription()` 装饰器的第二个参数显式指定，如下所示：
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   name: 'commentAdded',
 })
@@ -412,7 +412,7 @@ subscribeToCommentAdded(@Context('pubsub') pubSub: PubSub) {
 
 现在，要发布事件，我们可以使用 `PubSub#publish` 方法。通常会在变更（Mutation）中使用它，以便在对象图的某部分发生变化时触发客户端更新。例如：
 
-```typescript
+```ts
 @@filename(posts/posts.resolver)
 @Mutation(() => Comment)
 async addComment(
@@ -445,7 +445,7 @@ type Subscription {
 
 要过滤特定事件，可以设置 `filter` 属性为一个过滤函数。该函数的作用类似于数组的 `filter` 方法。它接收两个参数：`payload`（事件发布者发送的事件负载）和 `variables`（订阅请求时传入的参数）。该函数返回一个布尔值，用于决定该事件是否应该发布给客户端监听者。
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   filter: (payload, variables) =>
     payload.commentAdded.title === variables.title,
@@ -457,7 +457,7 @@ commentAdded(@Args('title') title: string, @Context('pubsub') pubSub: PubSub) {
 
 如果你需要访问注入的提供者（例如，使用外部服务来校验数据），可以使用如下结构：
 
-```typescript
+```ts
 @Subscription(() => Comment, {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
@@ -473,7 +473,7 @@ commentAdded(@Args('title') title: string, @Context('pubsub') pubSub: PubSub) {
 
 要在 Nest 中创建等效的订阅，我们需要使用 `@Subscription()` 装饰器。
 
-```typescript
+```ts
 const pubSub = new PubSub()
 
 @Resolver('Author')
@@ -488,7 +488,7 @@ export class AuthorResolver {
 
 如果你需要根据上下文和参数过滤特定事件，可以设置 `filter` 属性。
 
-```typescript
+```ts
 @Subscription('commentAdded', {
   filter: (payload, variables) =>
     payload.commentAdded.title === variables.title,
@@ -500,7 +500,7 @@ commentAdded(@Context('pubsub') pubSub: PubSub) {
 
 如果你需要访问注入的提供者（例如，使用外部服务对数据进行校验），可以使用如下写法：
 
-```typescript
+```ts
 @Subscription('commentAdded', {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
@@ -549,7 +549,7 @@ type Subscription {
 在上面的示例中，我们使用了默认的 `PubSub` 事件发射器（[mqemitter](https://github.com/mcollina/mqemitter)）。
 在生产环境中，推荐的做法是使用 `mqemitter-redis`。当然，你也可以提供自定义的 `PubSub` 实现（详细说明请参见[这里](https://github.com/mercurius-js/mercurius/blob/master/docs/subscriptions.md)）。
 
-```typescript
+```ts
 GraphQLModule.forRoot<MercuriusDriverConfig>({
   driver: MercuriusDriver,
   subscription: {
@@ -567,7 +567,7 @@ GraphQLModule.forRoot<MercuriusDriverConfig>({
 
 `verifyClient` 会接收一个 `info` 对象作为第一个参数，你可以通过它获取请求头（headers）。
 
-```typescript
+```ts
 GraphQLModule.forRoot<MercuriusDriverConfig>({
   driver: MercuriusDriver,
   subscription: {

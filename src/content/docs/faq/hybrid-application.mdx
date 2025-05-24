@@ -2,7 +2,7 @@
 
 混合应用指的是同时监听来自两个或更多不同来源请求的应用。这通常意味着将 HTTP 服务器与微服务监听器结合，或者仅仅是多个不同的微服务监听器。默认的 `createMicroservice` 方法不支持同时创建多个服务器，因此在这种情况下，每个微服务都需要手动创建并启动。为此，可以通过 `connectMicroservice()` 方法，将 `INestApplication` 实例与一个或多个 `INestMicroservice` 实例连接起来。
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule)
 const microservice = app.connectMicroservice<MicroserviceOptions>({
   transport: Transport.TCP,
@@ -16,7 +16,7 @@ await app.listen(3001)
 
 如果需要连接多个微服务实例，只需为每个微服务调用一次 `connectMicroservice()`：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule)
 // 微服务 #1
 const microserviceTcp = app.connectMicroservice<MicroserviceOptions>({
@@ -40,7 +40,7 @@ await app.listen(3001)
 
 如果你希望在混合应用中，将 `@MessagePattern()` 仅绑定到某一种传输策略（例如 MQTT），可以传递第二个参数 `Transport`，它是一个包含所有内置传输策略的枚举类型。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('time.us.*', Transport.NATS)
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
@@ -72,7 +72,7 @@ getTCPDate(data, context) {
 默认情况下，混合应用不会继承为主应用（基于 HTTP 的应用）配置的全局管道、拦截器、守卫和过滤器。
 如果希望让微服务继承主应用的这些配置属性，可以在 `connectMicroservice()` 的第二个参数（可选配置对象）中设置 `inheritAppConfig` 属性，如下所示：
 
-```typescript
+```ts
 const microservice = app.connectMicroservice<MicroserviceOptions>(
   {
     transport: Transport.TCP,

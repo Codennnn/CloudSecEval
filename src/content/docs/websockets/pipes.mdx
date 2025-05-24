@@ -8,7 +8,7 @@
 
 下面的示例演示了如何手动实例化一个方法作用域的管道。与基于 HTTP 的应用程序类似，你也可以使用网关作用域的管道（即在网关类前加上 `@UsePipes()` 装饰器）。
 
-```typescript
+```ts
 @@filename()
 @UsePipes(new ValidationPipe({ exceptionFactory: (errors) => new WsException(errors) }))
 @SubscribeMessage('events')

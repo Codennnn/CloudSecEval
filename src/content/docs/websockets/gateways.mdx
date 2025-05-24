@@ -25,7 +25,7 @@ $ npm i --save @nestjs/websockets @nestjs/platform-socket.io
 
 通常情况下，每个网关都会监听与 **HTTP 服务器** 相同的端口，除非你的应用不是一个 Web 应用，或者你手动更改了端口。你可以通过为 `@WebSocketGateway(80)` 装饰器传递参数（如 `80`，即你选择的端口号）来修改这一默认行为。你还可以通过如下方式为网关设置一个 [命名空间（namespace）](https://socket.io/docs/v4/namespaces/)：
 
-```typescript
+```ts
 @WebSocketGateway(80, { namespace: 'events' })
 ```
 
@@ -33,13 +33,13 @@ $ npm i --save @nestjs/websockets @nestjs/platform-socket.io
 
 你可以将任何受支持的 [选项（option）](https://socket.io/docs/v4/server-options/) 作为第二个参数传递给 `@WebSocketGateway()` 装饰器，例如：
 
-```typescript
+```ts
 @WebSocketGateway(81, { transports: ['websocket'] })
 ```
 
 此时，网关已经开始监听，但我们还没有订阅任何传入消息。接下来，我们创建一个处理器（handler），用于订阅 `events` 消息，并将收到的数据原样返回给用户。
 
-```typescript
+```ts
 @@filename(events.gateway)
 @SubscribeMessage('events')
 handleEvent(@MessageBody() data: string): string {
@@ -57,7 +57,7 @@ handleEvent(data) {
 
 网关创建完成后，我们可以在模块中注册它。
 
-```typescript
+```ts
 import { Module } from '@nestjs/common';
 import { EventsGateway } from './events.gateway';
 
@@ -70,7 +70,7 @@ export class EventsModule {}
 
 你还可以为装饰器传递属性键（property key），以便从传入的消息体中提取对应属性：
 
-```typescript
+```ts
 @@filename(events.gateway)
 @SubscribeMessage('events')
 handleEvent(@MessageBody('id') id: number): number {
@@ -88,7 +88,7 @@ handleEvent(id) {
 
 如果你不想使用装饰器，也可以采用如下等效写法：
 
-```typescript
+```ts
 @@filename(events.gateway)
 @SubscribeMessage('events')
 handleEvent(client: Socket, data: string): string {
@@ -105,7 +105,7 @@ handleEvent(client, data) {
 
 当收到 `events` 消息时，处理器会用相同的数据进行响应。此外，你还可以通过特定库的方法（如 `client.emit()`）主动发送消息。要访问已连接的 socket 实例，可以使用 `@ConnectedSocket()` 装饰器。
 
-```typescript
+```ts
 @@filename(events.gateway)
 @SubscribeMessage('events')
 handleEvent(
@@ -128,13 +128,13 @@ handleEvent(data, client) {
 
 现在，当客户端这样发送消息时：
 
-```typescript
+```ts
 socket.emit('events', { name: 'Nest' })
 ```
 
 `handleEvent()` 方法就会被执行。若要监听处理器内部主动发送的消息，客户端需要添加对应的回调函数：
 
-```typescript
+```ts
 socket.emit('events', { name: 'Nest' }, (data) => console.log(data))
 ```
 
@@ -142,7 +142,7 @@ socket.emit('events', { name: 'Nest' }, (data) => console.log(data))
 
 确认消息只会被分发一次。此外，原生 WebSocket 实现并不支持该特性。为了解决这个限制，你可以返回一个包含两个属性的对象：`event`（要发送的事件名称）和 `data`（需要转发给客户端的数据）。
 
-```typescript
+```ts
 @@filename(events.gateway)
 @SubscribeMessage('events')
 handleEvent(@MessageBody() data: unknown): WsResponse<unknown> {
@@ -164,7 +164,7 @@ handleEvent(data) {
 
 为了监听传入的响应，客户端需要添加另一个事件监听器。
 
-```typescript
+```ts
 socket.on('events', (data) => console.log(data))
 ```
 
@@ -172,7 +172,7 @@ socket.on('events', (data) => console.log(data))
 
 消息处理器（message handler）既可以同步响应，也可以**异步**响应。因此，`async` 方法是被支持的。消息处理器还可以返回一个 `Observable`（可观察对象），此时结果值会在流（stream）结束前持续发出。
 
-```typescript
+```ts
 @@filename(events.gateway)
 @SubscribeMessage('events')
 onEvent(@MessageBody() data: unknown): Observable<WsResponse<number>> {
@@ -238,14 +238,14 @@ NestJS 提供了 3 个非常实用的生命周期钩子。它们都有对应的�
 
 有时，你可能希望直接访问底层的**平台相关**服务器实例。该对象的引用会作为参数传递给 `afterInit()` 方法（`OnGatewayInit` 接口）。另一种方式是使用 `@WebSocketServer()` 装饰器。
 
-```typescript
+```ts
 @WebSocketServer()
 server: Server;
 ```
 
 你也可以通过 `namespace` 属性获取对应的命名空间，示例如下：
 
-```typescript
+```ts
 @WebSocketServer({ namespace: 'my-namespace' })
 namespace: Namespace;
 ```

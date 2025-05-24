@@ -2,7 +2,7 @@
 
 HTTP [异常过滤器](/exception-filters) 层与对应的 WebSocket 层唯一的区别在于，这里不再抛出 `HttpException`，而是应该使用 `WsException`。
 
-```typescript
+```ts
 throw new WsException('Invalid credentials.')
 ```
 
@@ -10,7 +10,7 @@ throw new WsException('Invalid credentials.')
 
 如上示例所示，Nest 会自动处理抛出的异常，并发送一个结构如下的 `exception` 消息：
 
-```typescript
+```ts
 {
   status: 'error',
   message: 'Invalid credentials.'
@@ -21,7 +21,7 @@ throw new WsException('Invalid credentials.')
 
 WebSocket 异常过滤器的行为与 HTTP 异常过滤器完全一致。下面的示例演示了一个手动实例化的方法作用域过滤器。与基于 HTTP 的应用类似，你也可以使用网关作用域（gateway-scoped）的过滤器（即在网关类前加上 `@UseFilters()` 装饰器）。
 
-```typescript
+```ts
 @UseFilters(new WsExceptionFilter())
 @SubscribeMessage('events')
 onEvent(client, data: any): WsResponse<any> {
@@ -36,7 +36,7 @@ onEvent(client, data: any): WsResponse<any> {
 
 要将异常处理委托给基础过滤器，需要继承 `BaseWsExceptionFilter` 并调用其继承的 `catch()` 方法。
 
-```typescript
+```ts
 @@filename()
 import { Catch, ArgumentsHost } from '@nestjs/common';
 import { BaseWsExceptionFilter } from '@nestjs/websockets';

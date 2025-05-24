@@ -12,7 +12,7 @@ Nest 提供了内置能力，帮助你以简单直观的方式完成这些操作
 
 假设我们希望自动从用户实体中排除 `password` 属性。可以如下为实体添加注解：
 
-```typescript
+```ts
 import { Exclude } from 'class-transformer'
 
 export class UserEntity {
@@ -31,7 +31,7 @@ export class UserEntity {
 
 现在来看一个控制器（Controller）方法处理器返回该类实例的例子：
 
-```typescript
+```ts
 @UseInterceptors(ClassSerializerInterceptor)
 @Get()
 findOne(): UserEntity {
@@ -64,7 +64,7 @@ findOne(): UserEntity {
 
 你可以使用 `@Expose()` 装饰器为属性提供别名，或者执行一个函数来计算属性值（类似于 **getter** 函数），如下所示。
 
-```typescript
+```ts
 @Expose()
 get fullName(): string {
   return `${this.firstName} ${this.lastName}`;
@@ -75,7 +75,7 @@ get fullName(): string {
 
 你可以使用 `@Transform()` 装饰器进行额外的数据转换。例如，下面的写法会返回 `RoleEntity` 的 name 属性，而不是整个对象。
 
-```typescript
+```ts
 @Transform(({ value }) => value.name)
 role: RoleEntity;
 ```
@@ -84,7 +84,7 @@ role: RoleEntity;
 
 你可能希望修改转换函数的默认行为。要覆盖默认设置，可以通过 `@SerializeOptions()` 装饰器传递一个 `options` 对象。
 
-```typescript
+```ts
 @SerializeOptions({
   excludePrefixes: ['_'],
 })
@@ -104,7 +104,7 @@ findOne(): UserEntity {
 
 在下面的示例中，无论条件分支返回的是普通 JavaScript 对象还是类实例，都会被自动转换为 `UserEntity` 实例，并应用相关装饰器：
 
-```typescript
+```ts
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ type: UserEntity })
 @Get()

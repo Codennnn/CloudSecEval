@@ -101,13 +101,13 @@ Nest 提供了一组非常实用的 **参数装饰器（param decorators）**，
 
 在 Node.js 世界中，通常会将属性附加到 **请求对象（Request Object）** 上。然后你需要在每个路由处理器中手动提取这些属性，例如：
 
-```typescript
+```ts
 const user = req.user
 ```
 
 为了让代码更加可读和直观，你可以创建一个 `@User()` 装饰器，并在所有控制器（Controller）中复用它。
 
-```typescript
+```ts
 @@filename(user.decorator)
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
@@ -121,7 +121,7 @@ export const User = createParamDecorator(
 
 之后，你可以在需要的地方直接使用它：
 
-```typescript
+```ts
 @@filename()
 @Get()
 async findOne(@User() user: UserEntity) {
@@ -151,7 +151,7 @@ async findOne(user) {
 
 我们来定义一个装饰器，接收属性名作为 key，如果存在则返回对应的值（如果不存在或 `user` 对象未创建则返回 undefined）。
 
-```typescript
+```ts
 @@filename(user.decorator)
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
@@ -176,7 +176,7 @@ export const User = createParamDecorator((data, ctx) => {
 
 在控制器中，你可以通过 `@User()` 装饰器访问特定属性：
 
-```typescript
+```ts
 @@filename()
 @Get()
 async findOne(@User('firstName') firstName: string) {
@@ -198,7 +198,7 @@ async findOne(firstName) {
 
 Nest 对自定义参数装饰器的处理方式与内置装饰器（如 `@Body()`、`@Param()` 和 `@Query()`）一致。这意味着自定义装饰器参数同样会执行管道（Pipe）。此外，你还可以直接在自定义装饰器上应用管道：
 
-```typescript
+```ts
 @@filename()
 @Get()
 async findOne(
@@ -221,7 +221,7 @@ async findOne(user) {
 
 Nest 提供了一个辅助方法用于组合多个装饰器。例如，假设你想将所有与认证相关的装饰器合并为一个装饰器，可以这样实现：
 
-```typescript
+```ts
 @@filename(auth.decorator)
 import { applyDecorators } from '@nestjs/common';
 
@@ -248,7 +248,7 @@ export function Auth(...roles) {
 
 你可以像下面这样使用自定义的 `@Auth()` 装饰器：
 
-```typescript
+```ts
 @Get('users')
 @Auth('admin')
 findAllUsers() {}

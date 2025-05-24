@@ -41,26 +41,16 @@ $ nest new project-name
 
 `main.ts` 文件包含一个异步函数，用于 **引导启动（bootstrap）** 我们的应用：
 
-```typescript
-@@filename(main)
-
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+```ts filename='main.ts'
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.create(AppModule)
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
-@@switch
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
-}
-bootstrap();
+bootstrap()
 ```
 
 要创建 Nest 应用实例，我们使用核心类 `NestFactory`。`NestFactory` 提供了一些静态方法用于创建应用实例。`create()` 方法会返回一个应用对象，实现了 `INestApplication` 接口。该对象提供了一系列方法，后续章节会详细介绍。在上面的 `main.ts` 示例中，我们仅启动了 HTTP 监听器，让应用能够接收 HTTP 请求。
@@ -82,7 +72,7 @@ Nest 致力于成为平台无关的框架。平台无关性让开发者能够创
 
 当你在 `NestFactory.create()` 方法中传入类型参数时，如下例所示，`app` 对象会拥有该平台专属的方法。但除非你需要访问底层平台 API，否则**无需**指定类型。
 
-```typescript
+```ts
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
 ```
 

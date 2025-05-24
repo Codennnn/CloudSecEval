@@ -8,7 +8,7 @@
 
 要为字段附加自定义元数据，请使用 `@nestjs/graphql` 包中导出的 `@Extensions()` 装饰器。
 
-```typescript
+```ts
 @Field()
 @Extensions({ role: Role.ADMIN })
 password: string;
@@ -24,7 +24,7 @@ password: string;
 
 为了便于说明，我们定义一个 `checkRoleMiddleware`，它会将用户的角色（此处为硬编码）与访问目标字段所需的角色进行比较：
 
-```typescript
+```ts
 export const checkRoleMiddleware: FieldMiddleware = async (
   ctx: MiddlewareContext,
   next: NextFn
@@ -47,7 +47,7 @@ export const checkRoleMiddleware: FieldMiddleware = async (
 
 有了上述中间件后，我们可以如下方式为 `password` 字段注册中间件：
 
-```typescript
+```ts
 @Field({ middleware: [checkRoleMiddleware] })
 @Extensions({ role: Role.ADMIN })
 password: string;

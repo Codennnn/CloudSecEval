@@ -25,7 +25,7 @@ $ nest g service users
 
 将这些自动生成文件的默认内容替换为如下所示。在本示例应用中，`UsersService` 仅维护一个硬编码的内存用户列表，并提供一个根据用户名查找用户的方法。在实际项目中，这里通常会构建用户模型和持久化层，可以选择 TypeORM、Sequelize、Mongoose 等库来实现。
 
-```typescript
+```ts
 @@filename(users/users.service)
 import { Injectable } from '@nestjs/common';
 
@@ -79,7 +79,7 @@ export class UsersService {
 
 在 `UsersModule` 中，唯一需要调整的是将 `UsersService` 添加到 `@Module` 装饰器的 `exports` 数组中，这样它才能被其他模块（比如稍后会用到的 `AuthService`）访问。
 
-```typescript
+```ts
 @@filename(users/users.module)
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -104,7 +104,7 @@ export class UsersModule {}
 
 我们的 `AuthService`（认证服务）负责检索用户并验证密码。为此，我们创建了一个 `signIn()` 方法。在下面的代码中，我们使用了便捷的 ES6 展开运算符（spread operator），在返回用户对象前去除 password 属性。这是返回用户对象时的常见做法，因为你不希望暴露诸如密码或其他安全密钥等敏感字段。
 
-```typescript
+```ts
 @@filename(auth/auth.service)
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
@@ -152,7 +152,7 @@ export class AuthService {
 
 现在，我们需要更新 `AuthModule`（认证模块），导入 `UsersModule`（用户模块）。
 
-```typescript
+```ts
 @@filename(auth/auth.module)
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -181,7 +181,7 @@ export class AuthModule {}
 
 完成上述操作后，我们来打开 `AuthController`（认证控制器），并为其添加 `signIn()` 方法。该方法会被客户端调用，用于用户身份验证。它会从请求体中接收用户名和密码，如果用户认证通过，则返回 JWT（JSON Web Token）令牌。
 
-```typescript
+```ts
 @@filename(auth/auth.controller)
 import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -219,7 +219,7 @@ $ npm install --save @nestjs/jwt
 
 为了让服务保持良好的模块化，我们将在 `authService` 中处理 JWT 的生成。请打开 `auth` 文件夹下的 `auth.service.ts` 文件，注入 `JwtService`，并按照如下方式更新 `signIn` 方法以生成 JWT 令牌：
 
-```typescript
+```ts
 @@filename(auth/auth.service)
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
@@ -278,7 +278,7 @@ export class AuthService {
 
 首先，在 `auth` 文件夹下创建 `constants.ts` 文件，并添加如下代码：
 
-```typescript
+```ts
 @@filename(auth/constants)
 export const jwtConstants = {
   secret: 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
@@ -295,7 +295,7 @@ export const jwtConstants = {
 
 现在，打开 `auth` 文件夹下的 `auth.module.ts`，并更新为如下内容：
 
-```typescript
+```ts
 @@filename(auth/auth.module)
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -359,7 +359,7 @@ $ # 注意：上方 JWT 已截断
 
 现在我们可以解决最后一个需求：通过要求请求中必须携带有效的 JWT（JSON Web Token）来保护接口。我们将通过创建一个 `AuthGuard`（身份验证守卫）来实现路由保护。
 
-```typescript
+```ts
 @@filename(auth/auth.guard)
 import {
   CanActivate,
@@ -408,7 +408,7 @@ export class AuthGuard implements CanActivate {
 
 打开 `auth.controller.ts` 文件，按如下方式更新：
 
-```typescript
+```ts
 @@filename(auth.controller)
 import {
   Body,
@@ -469,7 +469,7 @@ $ curl http://localhost:3000/auth/profile -H "Authorization: Bearer eyJhbGciOiJI
 
 首先，在任意模块（例如 `AuthModule`）中，将 `AuthGuard` 注册为全局守卫，方式如下：
 
-```typescript
+```ts
 providers: [
   {
     provide: APP_GUARD,
@@ -482,7 +482,7 @@ providers: [
 
 接下来，我们需要提供一种机制，用于声明哪些路由是公开的。为此，可以使用 `SetMetadata` 装饰器工厂函数创建一个自定义装饰器。
 
-```typescript
+```ts
 import { SetMetadata } from '@nestjs/common'
 
 export const IS_PUBLIC_KEY = 'isPublic'
@@ -493,7 +493,7 @@ export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
 
 现在有了自定义的 `@Public()` 装饰器后，可以用它来修饰任意方法，例如：
 
-```typescript
+```ts
 @Public()
 @Get()
 findAll() {
@@ -503,7 +503,7 @@ findAll() {
 
 最后，我们需要让 `AuthGuard` 在检测到 "isPublic" 元数据时直接放行。为此，可以使用 `Reflector` 类（详细说明见[此处](/guards#putting-it-all-together)）。
 
-```typescript
+```ts
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(

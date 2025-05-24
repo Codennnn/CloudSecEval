@@ -6,7 +6,7 @@
 
 要将控制器关联到特定标签，可以使用 `@ApiTags(...tags)` 装饰器。
 
-```typescript
+```ts
 @ApiTags('cats')
 @Controller('cats')
 export class CatsController {}
@@ -16,7 +16,7 @@ export class CatsController {}
 
 如果需要定义请求中期望包含的自定义请求头，可以使用 `@ApiHeader()` 装饰器。
 
-```typescript
+```ts
 @ApiHeader({
   name: 'X-MyHeader',
   description: '自定义请求头',
@@ -29,7 +29,7 @@ export class CatsController {}
 
 要自定义 HTTP 响应，可以使用 `@ApiResponse()` 装饰器。
 
-```typescript
+```ts
 @Post()
 @ApiResponse({ status: 201, description: '记录已成功创建。' })
 @ApiResponse({ status: 403, description: '禁止访问。' })
@@ -67,7 +67,7 @@ Nest 提供了一组简写的 **API 响应** 装饰器，这些装饰器继承�
 - `@ApiGatewayTimeoutResponse()`
 - `@ApiDefaultResponse()`
 
-```typescript
+```ts
 @Post()
 @ApiCreatedResponse({ description: '记录已成功创建。' })
 @ApiForbiddenResponse({ description: '禁止访问。' })
@@ -78,7 +78,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 
 如果需要为请求指定返回模型，需要先创建一个类，并为所有属性添加 `@ApiProperty()` 装饰器。
 
-```typescript
+```ts
 export class Cat {
   @ApiProperty()
   id: number
@@ -96,7 +96,7 @@ export class Cat {
 
 然后，可以将 `Cat` 模型与响应装饰器的 `type` 属性结合使用。
 
-```typescript
+```ts
 @ApiTags('cats')
 @Controller('cats')
 export class CatsController {
@@ -119,7 +119,7 @@ export class CatsController {
 
 如果你不想为每个端点或控制器单独定义响应，也可以通过 `DocumentBuilder` 类为所有端点定义全局响应。这种方式适用于需要为应用中所有端点统一定义响应（例如 `401 Unauthorized` 或 `500 Internal Server Error` 等错误）的场景。
 
-```typescript
+```ts
 const config = new DocumentBuilder()
   .addGlobalResponse({
     status: 500,
@@ -133,7 +133,7 @@ const config = new DocumentBuilder()
 
 你可以通过结合使用 `@ApiBody` 装饰器和 `@ApiConsumes()`，为特定方法启用文件上传功能。以下是一个完整示例，演示如何使用 [文件上传](/techniques/file-upload) 技巧：
 
-```typescript
+```ts
 @UseInterceptors(FileInterceptor('file'))
 @ApiConsumes('multipart/form-data')
 @ApiBody({
@@ -145,7 +145,7 @@ uploadFile(@UploadedFile() file: Express.Multer.File) {}
 
 其中，`FileUploadDto` 的定义如下：
 
-```typescript
+```ts
 class FileUploadDto {
   @ApiProperty({ type: 'string', format: 'binary' })
   file: any
@@ -154,7 +154,7 @@ class FileUploadDto {
 
 如果需要处理多个文件上传，可以这样定义 `FilesUploadDto`：
 
-```typescript
+```ts
 class FilesUploadDto {
   @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' } })
   files: any[]
@@ -165,7 +165,7 @@ class FilesUploadDto {
 
 要为请求添加扩展，请使用 `@ApiExtension()` 装饰器。扩展名称必须以 `x-` 为前缀。
 
-```typescript
+```ts
 @ApiExtension('x-foo', { hello: 'world' })
 ```
 
@@ -303,14 +303,14 @@ async findAll(): Promise<PaginatedDto<CatDto>> {}
 
 对于客户端代码生成工具来说，这种方式在生成 `PaginatedResponse<TModel>` 时存在一定的歧义。下面是针对上述 `GET /` 端点的客户端生成示例：
 
-```typescript
+```ts
 // Angular
 findAll(): Observable<{ total: number, limit: number, offset: number, results: CatDto[] }>
 ```
 
 可以看到，这里的**返回类型**存在歧义。为了解决这个问题，可以在 `ApiPaginatedResponse` 的 `schema` 中添加 `title` 属性：
 
-```typescript
+```ts
 export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
   return applyDecorators(
     ApiOkResponse({

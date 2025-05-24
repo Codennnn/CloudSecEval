@@ -16,7 +16,7 @@ $ npm install --save @sentry/nestjs @sentry/profiling-node
 
 要开始使用 Sentry，需要新建一个名为 `instrument.ts` 的文件，并确保在应用中最先被引入：
 
-```typescript
+```ts
 @@filename(instrument)
 const Sentry = require("@sentry/nestjs");
 const { nodeProfilingIntegration } = require("@sentry/profiling-node");
@@ -41,7 +41,7 @@ Sentry.init({
 
 在 `main.ts` 文件中，需确保最先引入 `instrument.ts`，再引入其他模块：
 
-```typescript
+```ts
 @@filename(main)
 // 一定要最先引入！
 import "./instrument";
@@ -60,7 +60,7 @@ bootstrap();
 
 接下来，在主模块中将 `SentryModule` 作为根模块引入：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from "@nestjs/common";
 import { SentryModule } from "@sentry/nestjs/setup";
@@ -82,7 +82,7 @@ export class AppModule {}
 
 如果你正在使用全局兜底异常过滤器（即通过 `app.useGlobalFilters()` 注册的过滤器，或在应用模块的 providers 中注册、且带有无参数 `@Catch()` 装饰器的过滤器），请在过滤器的 `catch()` 方法上添加 `@SentryExceptionCaptured()` 装饰器。该装饰器会将所有由全局错误过滤器接收到的未预期错误上报到 Sentry：
 
-```typescript
+```ts
 import { Catch, ExceptionFilter } from '@nestjs/common'
 import { SentryExceptionCaptured } from '@sentry/nestjs'
 
@@ -101,7 +101,7 @@ export class YourCatchAllExceptionFilter implements ExceptionFilter {
 
 > warning **警告** `SentryGlobalFilter` 必须在所有其他异常过滤器之前注册。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from "@nestjs/common";
 import { APP_FILTER } from "@nestjs/core";
@@ -133,7 +133,7 @@ npx @sentry/wizard@latest -i sourcemaps
 
 为了验证 Sentry 集成是否生效，你可以添加一个测试接口并主动抛出错误：
 
-```typescript
+```ts
 @Get("debug-sentry")
 getError() {
   throw new Error("My first Sentry error!");

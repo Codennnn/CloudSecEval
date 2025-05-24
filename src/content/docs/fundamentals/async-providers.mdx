@@ -4,7 +4,7 @@
 
 实现方式是结合 `useFactory` 语法与 `async/await`。工厂函数返回一个 `Promise`，并且可以在函数内部 `await` 异步任务。Nest 会在实例化依赖（注入）该提供者的任何类之前，等待该 Promise 被解析。
 
-```typescript
+```ts
 {
   provide: 'ASYNC_CONNECTION',
   useFactory: async () => {

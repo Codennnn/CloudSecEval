@@ -7,7 +7,7 @@ REPL 功能允许你直接在终端中检查依赖关系图，并调用你的提
 
 要在 REPL 模式下运行你的 NestJS 应用，请新建一个 `repl.ts` 文件（与现有的 `main.ts` 文件同级），并添加如下代码：
 
-```typescript
+```ts
 @@filename(repl)
 import { repl } from '@nestjs/core';
 import { AppModule } from './src/app.module';
@@ -44,14 +44,14 @@ LOG REPL 已初始化
 
 现在你可以开始与依赖关系图进行交互。例如，你可以获取一个 `AppService`（此处以入门项目为例），并调用其 `getHello()` 方法：
 
-```typescript
+```ts
 > get(AppService).getHello()
 'Hello World!'
 ```
 
 你可以在终端中执行任意 JavaScript 代码，例如，将 `AppController` 的实例赋值给本地变量，并使用 `await` 调用异步方法：
 
-```typescript
+```ts
 > appController = get(AppController)
 AppController { appService: AppService {} }
 > await appController.getHello()
@@ -60,7 +60,7 @@ AppController { appService: AppService {} }
 
 要显示某个提供者或控制器的所有公开方法，可以使用 `methods()` 函数，如下所示：
 
-```typescript
+```ts
 > methods(AppController)
 
 Methods:
@@ -69,7 +69,7 @@ Methods:
 
 如果你想以列表形式打印所有已注册的模块及其控制器和提供者，可以使用 `debug()`。
 
-```typescript
+```ts
 > debug()
 
 AppModule:
@@ -121,7 +121,7 @@ $ npm run start -- --watch --entryFile repl
 但这样有一个小问题：REPL 的命令历史会在每次重载后丢失，可能会带来不便。
 幸运的是，解决方法非常简单。只需如下修改你的 `bootstrap` 函数：
 
-```typescript
+```ts
 async function bootstrap() {
   const replServer = await repl(AppModule)
   replServer.setupHistory('.nestjs_repl_history', (err) => {

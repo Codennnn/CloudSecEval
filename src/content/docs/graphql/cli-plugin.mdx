@@ -19,7 +19,7 @@ GraphQL 插件会自动完成以下操作：
 
 按照目前的做法，你需要重复编写大量代码，让包能够识别你的类型应如何在 GraphQL 中声明。例如，你可以这样定义一个简单的 `Author` 类：
 
-```typescript
+```ts
 @@filename(authors/models/author.model)
 @ObjectType()
 export class Author {
@@ -41,7 +41,7 @@ export class Author {
 
 启用 GraphQL 插件后，上述类定义可以简化为：
 
-```typescript
+```ts
 @@filename(authors/models/author.model)
 @ObjectType()
 export class Author {
@@ -63,7 +63,7 @@ export class Author {
 
 例如，假设有如下 `roles` 属性：
 
-```typescript
+```ts
 /**
  * 用户角色列表
  */
@@ -75,7 +75,7 @@ roles: string[];
 
 你必须手动重复填写 description 字段。当启用 `introspectComments` 功能后，CLI 插件可以自动提取这些注释，并为属性自动生成描述信息。此时，上述字段可以简化为：
 
-```typescript
+```ts
 /**
  * 用户角色列表
  */
@@ -118,7 +118,7 @@ roles: string[];
 
 `options` 属性需符合以下接口定义：
 
-```typescript
+```ts
 export interface PluginOptions {
   typeFileNameSuffix?: string[]
   introspectComments?: boolean
@@ -176,7 +176,7 @@ $ npx ts-node src/generate-metadata.ts
 
 此时，序列化后的元数据文件必须通过 `GraphQLModule` 方法加载，示例如下：
 
-```typescript
+```ts
 import metadata from './metadata'; // <-- 该文件由 "PluginMetadataGenerator" 自动生成
 
 GraphQLModule.forRoot<...>({

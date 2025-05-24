@@ -4,7 +4,7 @@
 
 如果你希望手动生成 GraphQL SDL 模式（即无需运行应用程序、连接数据库、挂载解析器等），可以使用 `GraphQLSchemaBuilderModule`。
 
-```typescript
+```ts
 async function generateSchema() {
   const app = await NestFactory.create(GraphQLSchemaBuilderModule)
   await app.init()
@@ -21,13 +21,13 @@ async function generateSchema() {
 
 `gqlSchemaFactory.create()` 方法接收一个解析器（Resolver）类的引用数组。例如：
 
-```typescript
+```ts
 const schema = await gqlSchemaFactory.create([RecipesResolver, AuthorsResolver, PostsResolvers])
 ```
 
 它还可以接收第二个可选参数，即标量类（Scalar Class）数组：
 
-```typescript
+```ts
 const schema = await gqlSchemaFactory.create(
   [RecipesResolver, AuthorsResolver, PostsResolvers],
   [DurationScalar, DateScalar]
@@ -36,7 +36,7 @@ const schema = await gqlSchemaFactory.create(
 
 最后，你还可以传递一个选项对象：
 
-```typescript
+```ts
 const schema = await gqlSchemaFactory.create([RecipesResolver], {
   skipCheck: true,
   orphanedTypes: [],

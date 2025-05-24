@@ -10,7 +10,7 @@ Nest 应用会按照特定顺序处理请求并生成响应，这一过程被称
 
 守卫的执行顺序为：先执行全局守卫，然后是控制器守卫，最后是路由守卫。与中间件类似，守卫会按照绑定顺序依次执行。例如：
 
-```typescript
+```ts
 @UseGuards(Guard1, Guard2)
 @Controller('cats')
 export class CatsController {
@@ -36,7 +36,7 @@ export class CatsController {
 
 管道的执行顺序为：全局管道、控制器管道、路由管道，且在 `@UsePipes()` 装饰器参数中也是“先进先出”。但在路由参数级别，如果有多个管道，则会按照“最后一个参数到第一个参数”的顺序依次执行。这同样适用于路由级和控制器级管道。例如，假设有如下控制器：
 
-```typescript
+```ts
 @UsePipes(GeneralValidationPipe)
 @Controller('cats')
 export class CatsController {

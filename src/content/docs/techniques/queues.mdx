@@ -22,7 +22,7 @@ $ npm install --save @nestjs/bullmq bullmq
 
 安装完成后，我们可以将 `BullModule` 导入到根模块 `AppModule` 中。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
@@ -52,7 +52,7 @@ export class AppModule {}
 
 要注册一个队列（Queue），可以如下导入 `BullModule.registerQueue()` 动态模块：
 
-```typescript
+```ts
 BullModule.registerQueue({
   name: 'audio',
 })
@@ -65,7 +65,7 @@ BullModule.registerQueue({
 
 你还可以为特定队列覆盖部分预配置选项，例如：
 
-```typescript
+```ts
 BullModule.registerQueue({
   name: 'audio',
   connection: {
@@ -78,7 +78,7 @@ BullMQ 还支持作业（Job）之间的父子关系。这一功能使你可以�
 
 要添加作业流，可以这样做：
 
-```typescript
+```ts
 BullModule.registerFlowProducer({
   name: 'flowProducerName',
 })
@@ -96,7 +96,7 @@ BullModule.registerFlowProducer({
 
 例如，假设你的应用中有部分队列需要使用除默认 Redis 实例之外的其他 Redis 实例，你可以如下注册该实例的配置：
 
-```typescript
+```ts
 BullModule.forRoot('alternative-config', {
   connection: {
     port: 6381,
@@ -108,7 +108,7 @@ BullModule.forRoot('alternative-config', {
 
 完成上述配置后，你现在可以在 `registerQueue()` 的选项对象中通过 `configKey` 指定该配置：
 
-```typescript
+```ts
 BullModule.registerQueue({
   configKey: 'alternative-config',
   name: 'video',
@@ -119,7 +119,7 @@ BullModule.registerQueue({
 
 作业生产者负责向队列添加作业。生产者通常是应用服务（Nest 提供者（Provider））。要向队列添加作业，首先需要像下面这样在服务中注入队列：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { InjectQueue } from '@nestjs/bullmq'
@@ -134,7 +134,7 @@ export class AudioService {
 
 接下来，可以通过调用队列的 `add()` 方法并传入自定义的作业对象来添加作业。作业以可序列化的 JavaScript 对象形式表示（因为它们会被存储在 Redis 数据库中）。你可以根据业务语义自定义作业对象的结构。同时，还需要为作业指定一个名称。这样可以创建专门的[消费者](/techniques/queues#consumers)，仅处理具有特定名称的作业。
 
-```typescript
+```ts
 const job = await this.audioQueue.add('transcode', {
   foo: 'bar',
 })
@@ -159,7 +159,7 @@ const job = await this.audioQueue.add('transcode', {
 
 要延迟任务的开始，可以使用 `delay` 配置属性。
 
-```typescript
+```ts
 const job = await this.audioQueue.add(
   'transcode',
   {
@@ -171,7 +171,7 @@ const job = await this.audioQueue.add(
 
 如果希望将任务添加到队列的右端（以**后进先出（LIFO）**方式处理任务），可以将配置对象的 `lifo` 属性设置为 `true`。
 
-```typescript
+```ts
 const job = await this.audioQueue.add(
   'transcode',
   {
@@ -183,7 +183,7 @@ const job = await this.audioQueue.add(
 
 要设置任务优先级，可以使用 `priority` 属性。
 
-```typescript
+```ts
 const job = await this.audioQueue.add(
   'transcode',
   {
@@ -199,7 +199,7 @@ const job = await this.audioQueue.add(
 
 消费者是一个**类**，用于定义处理添加到队列中的任务（job）的方法，或监听队列上的事件，或两者兼而有之。可以使用 `@Processor()` 装饰器声明一个消费者类，示例如下：
 
-```typescript
+```ts
 import { Processor } from '@nestjs/bullmq'
 
 @Processor('audio')
@@ -210,7 +210,7 @@ export class AudioConsumer {}
 
 装饰器的字符串参数（如 `'audio'`）表示要将该类方法关联到的队列名称。
 
-```typescript
+```ts
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
 
@@ -236,14 +236,14 @@ export class AudioConsumer extends WorkerHost {
 
 > warning **警告** 该用法在 BullMQ 中已不再支持，详情请继续阅读。
 
-```typescript
+```ts
 @Process('transcode')
 async transcode(job: Job<unknown>) { ... }
 ```
 
 由于该行为在 BullMQ 中容易引起混淆，因此不再支持。现在，你需要通过 switch 语句，根据不同的任务名称调用不同的服务或逻辑：
 
-```typescript
+```ts
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
 
@@ -275,7 +275,7 @@ export class AudioConsumer extends WorkerHost {
 
 当消费者被标记为请求作用域（关于注入作用域的更多信息可参考[此处](/fundamentals/injection-scopes#provider-scope)），每个作业（job）都会专属创建该类的新实例。作业完成后，该实例会被垃圾回收。
 
-```typescript
+```ts
 @Processor({
   name: 'audio',
   scope: Scope.REQUEST,
@@ -284,7 +284,7 @@ export class AudioConsumer extends WorkerHost {
 
 由于请求作用域的消费者类是动态实例化且仅作用于单个作业，因此你可以通过标准方式在构造函数中注入 `JOB_REF`。
 
-```typescript
+```ts
 constructor(@Inject(JOB_REF) jobRef: Job) {
   console.log(jobRef);
 }
@@ -298,7 +298,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 
 Worker 事件必须在<a href="techniques/queues#consumers">消费者</a>类（即带有 `@Processor()` 装饰器的类）中声明。要监听某个事件，可使用 `@OnWorkerEvent(event)` 装饰器并指定需要处理的事件。例如，若要监听 `audio` 队列中作业进入 active 状态时触发的事件，可参考如下写法：
 
-```typescript
+```ts
 import { Processor, Process, OnWorkerEvent } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
 
@@ -317,7 +317,7 @@ export class AudioConsumer {
 
 QueueEvent 监听器需使用 `@QueueEventsListener(queue)` 装饰器，并继承 `@nestjs/bullmq` 提供的 `QueueEventsHost` 类。要监听某个事件，可使用 `@OnQueueEvent(event)` 装饰器并指定需要处理的事件。例如，若要监听 `audio` 队列中作业进入 active 状态时触发的事件，可参考如下写法：
 
-```typescript
+```ts
 import { QueueEventsHost, QueueEventsListener, OnQueueEvent } from '@nestjs/bullmq'
 
 @QueueEventsListener('audio')
@@ -341,13 +341,13 @@ export class AudioEventsListener extends QueueEventsHost {
 
 通过调用 `pause()` 方法可以暂停队列。被暂停的队列不会处理新的任务，但当前正在处理的任务会继续执行直到完成。
 
-```typescript
+```ts
 await audioQueue.pause()
 ```
 
 要恢复已暂停的队列，可以使用 `resume()` 方法，如下所示：
 
-```typescript
+```ts
 await audioQueue.resume()
 ```
 
@@ -360,7 +360,7 @@ await audioQueue.resume()
 - 能更好地利用多核 CPU。
 - 对 Redis 的连接数更少。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
@@ -385,7 +385,7 @@ export class AppModule {}
 
 其中一种方式是使用工厂函数：
 
-```typescript
+```ts
 BullModule.forRootAsync({
   useFactory: () => ({
     connection: {
@@ -398,7 +398,7 @@ BullModule.forRootAsync({
 
 我们的工厂函数行为与其他[异步提供者](https://docs.nestjs.com/fundamentals/async-providers)类似（例如，它可以是 `async`，并且能够通过 `inject` 注入依赖）。
 
-```typescript
+```ts
 BullModule.forRootAsync({
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => ({
@@ -413,7 +413,7 @@ BullModule.forRootAsync({
 
 另外，你也可以使用 `useClass` 语法：
 
-```typescript
+```ts
 BullModule.forRootAsync({
   useClass: BullConfigService,
 })
@@ -421,7 +421,7 @@ BullModule.forRootAsync({
 
 上述写法会在 `BullModule` 内部实例化 `BullConfigService`，并通过调用 `createSharedConfiguration()` 方法来提供配置对象。需要注意的是，这意味着 `BullConfigService` 必须实现 `SharedBullConfigurationFactory` 接口，如下所示：
 
-```typescript
+```ts
 @Injectable()
 class BullConfigService implements SharedBullConfigurationFactory {
   createSharedConfiguration(): BullModuleOptions {
@@ -437,7 +437,7 @@ class BullConfigService implements SharedBullConfigurationFactory {
 
 如果你希望避免在 `BullModule` 内部创建 `BullConfigService` 实例，而是复用其他模块中已导入的提供者，可以使用 `useExisting` 语法。
 
-```typescript
+```ts
 BullModule.forRootAsync({
   imports: [ConfigModule],
   useExisting: ConfigService,
@@ -448,7 +448,7 @@ BullModule.forRootAsync({
 
 同样地，如果你希望以异步方式传递队列选项，可以使用 `registerQueueAsync()` 方法，只需注意将 `name` 属性放在工厂函数外部。
 
-```typescript
+```ts
 BullModule.registerQueueAsync({
   name: 'audio',
   useFactory: () => ({
@@ -464,7 +464,7 @@ BullModule.registerQueueAsync({
 
 默认情况下，`BullModule` 会在 `onModuleInit` 生命周期钩子（Lifecycle Hook）中自动注册 BullMQ 组件（队列、处理器和事件监听服务）。但在某些场景下，这种自动注册行为可能并不理想。若需禁止自动注册，可以在 `BullModule` 中启用 `manualRegistration` 选项，示例如下：
 
-```typescript
+```ts
 BullModule.forRoot({
   extraOptions: {
     manualRegistration: true,
@@ -474,7 +474,7 @@ BullModule.forRoot({
 
 如需手动注册这些组件，可注入 `BullRegistrar`，并在合适的生命周期钩子（如 `OnModuleInit` 或 `OnApplicationBootstrap`）中调用其 `register` 方法。
 
-```typescript
+```ts
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { BullRegistrar } from '@nestjs/bullmq'
 
@@ -504,7 +504,7 @@ $ npm install --save @nestjs/bull bull
 
 安装完成后，我们可以在根模块 `AppModule` 中导入 `BullModule`。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
@@ -534,7 +534,7 @@ export class AppModule {}
 
 要注册队列，可以如下导入 `BullModule.registerQueue()` 动态模块：
 
-```typescript
+```ts
 BullModule.registerQueue({
   name: 'audio',
 })
@@ -546,7 +546,7 @@ BullModule.registerQueue({
 
 你还可以为特定队列覆盖部分预配置选项，例如：
 
-```typescript
+```ts
 BullModule.registerQueue({
   name: 'audio',
   redis: {
@@ -567,7 +567,7 @@ BullModule.registerQueue({
 
 例如，假设你的应用中有一个额外的 Redis 实例（除了默认实例之外），并且有部分队列需要使用这个实例，你可以按如下方式注册其配置：
 
-```typescript
+```ts
 BullModule.forRoot('alternative-config', {
   redis: {
     port: 6381,
@@ -579,7 +579,7 @@ BullModule.forRoot('alternative-config', {
 
 完成上述配置后，你现在可以在 `registerQueue()` 的选项对象中通过 `configKey` 指定该配置：
 
-```typescript
+```ts
 BullModule.registerQueue({
   configKey: 'alternative-config',
   name: 'video',
@@ -590,7 +590,7 @@ BullModule.registerQueue({
 
 任务生产者（Job producers）会向队列中添加任务。生产者通常是应用服务（Nest 提供者（Provider））。要向队列添加任务，首先需要像下面这样在服务中注入队列：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bull'
 import { InjectQueue } from '@nestjs/bull'
@@ -605,7 +605,7 @@ export class AudioService {
 
 接下来，可以通过调用队列的 `add()` 方法并传入自定义的任务对象来添加任务。任务以可序列化的 JavaScript 对象形式表示（因为它们会被存储在 Redis 数据库中）。你可以根据业务语义自定义任务对象的结构。
 
-```typescript
+```ts
 const job = await this.audioQueue.add({
   foo: 'bar',
 })
@@ -615,7 +615,7 @@ const job = await this.audioQueue.add({
 
 任务可以拥有唯一的名称。这允许你创建专门的<a href="techniques/queues#consumers">消费者</a>，只处理具有特定名称的任务。
 
-```typescript
+```ts
 const job = await this.audioQueue.add('transcode', {
   foo: 'bar',
 })
@@ -643,7 +643,7 @@ const job = await this.audioQueue.add('transcode', {
 
 要延迟任务的开始，可以使用 `delay` 配置属性：
 
-```typescript
+```ts
 const job = await this.audioQueue.add(
   {
     foo: 'bar',
@@ -654,7 +654,7 @@ const job = await this.audioQueue.add(
 
 如果希望将任务添加到队列的右端（以**后进先出 LIFO** 的方式处理），可以将配置对象的 `lifo` 属性设置为 `true`：
 
-```typescript
+```ts
 const job = await this.audioQueue.add(
   {
     foo: 'bar',
@@ -665,7 +665,7 @@ const job = await this.audioQueue.add(
 
 要为任务设置优先级，可以使用 `priority` 属性：
 
-```typescript
+```ts
 const job = await this.audioQueue.add(
   {
     foo: 'bar',
@@ -678,7 +678,7 @@ const job = await this.audioQueue.add(
 
 消费者是一个**类**，用于定义处理添加到队列中的任务（job）的方法，或监听队列上的事件的方法，或者两者兼有。可以使用 `@Processor()` 装饰器声明一个消费者类，示例如下：
 
-```typescript
+```ts
 import { Processor } from '@nestjs/bull'
 
 @Processor('audio')
@@ -691,7 +691,7 @@ export class AudioConsumer {}
 
 在消费者类中，可以通过为处理方法添加 `@Process()` 装饰器来声明任务处理器。
 
-```typescript
+```ts
 import { Processor, Process } from '@nestjs/bull'
 import { Job } from 'bull'
 
@@ -716,7 +716,7 @@ export class AudioConsumer {
 
 你可以通过为 `@Process()` 装饰器传递特定的 `name`，指定某个处理方法**只处理**特定类型（具有特定 `name`）的任务。你可以在同一个消费者类中声明多个 `@Process()` 处理器，分别对应每种任务类型（`name`）。当你使用命名任务时，请确保每个名称都有对应的处理器。
 
-```typescript
+```ts
 @Process('transcode')
 async transcode(job: Job<unknown>) { ... }
 ```
@@ -727,7 +727,7 @@ async transcode(job: Job<unknown>) { ... }
 
 当消费者被标记为请求作用域（详细了解依赖注入作用域可参考[此处](/fundamentals/injection-scopes#provider-scope)），每个任务都会专门创建该类的新实例。任务完成后，该实例会被垃圾回收机制自动销毁。
 
-```typescript
+```ts
 @Processor({
   name: 'audio',
   scope: Scope.REQUEST,
@@ -736,7 +736,7 @@ async transcode(job: Job<unknown>) { ... }
 
 由于请求作用域的消费者类是动态实例化且仅绑定到单个任务，因此你可以通过标准方式在构造函数中注入 `JOB_REF`。
 
-```typescript
+```ts
 constructor(@Inject(JOB_REF) jobRef: Job) {
   console.log(jobRef);
 }
@@ -750,7 +750,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 
 事件监听器必须声明在<a href="techniques/queues#consumers">消费者</a>类中（即，被 `@Processor()` 装饰器修饰的类）。要监听某个事件，可以使用下表中的装饰器之一，在类中声明对应的事件处理方法。例如，若要监听 `audio` 队列中任务进入 active 状态时触发的事件，可以参考如下写法：
 
-```typescript
+```ts
 import { Processor, Process, OnQueueActive } from '@nestjs/bull';
 import { Job } from 'bull';
 
@@ -920,7 +920,7 @@ export class AudioConsumer {
 
 当监听全局事件时，方法签名与本地事件监听略有不同。具体来说，任何在本地版本中接收 `job` 对象的方法签名，在全局版本中会接收一个 `jobId`（number 类型）。如果你需要获取实际的 `job` 对象，可以使用 `Queue#getJob` 方法。由于该方法是异步的，因此事件处理函数应声明为 `async`。例如：
 
-```typescript
+```ts
 @OnGlobalQueueCompleted()
 async onGlobalCompleted(jobId: number, result: any) {
   const job = await this.immediateQueue.getJob(jobId);
@@ -939,13 +939,13 @@ async onGlobalCompleted(jobId: number, result: any) {
 
 通过调用 `pause()` 方法可以暂停队列。被暂停的队列不会处理新的任务，但当前正在处理的任务会继续执行直到完成。
 
-```typescript
+```ts
 await audioQueue.pause()
 ```
 
 要恢复已暂停的队列，可以使用 `resume()` 方法，如下所示：
 
-```typescript
+```ts
 await audioQueue.resume()
 ```
 
@@ -993,7 +993,7 @@ export default function (job: Job, cb: DoneCallback) {
 
 其中一种方式是使用工厂函数：
 
-```typescript
+```ts
 BullModule.forRootAsync({
   useFactory: () => ({
     redis: {
@@ -1006,7 +1006,7 @@ BullModule.forRootAsync({
 
 我们的工厂函数行为与其他[异步提供者](https://docs.nestjs.com/fundamentals/async-providers)类似（例如，它可以是 `async`，并且能够通过 `inject` 注入依赖）。
 
-```typescript
+```ts
 BullModule.forRootAsync({
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => ({
@@ -1021,7 +1021,7 @@ BullModule.forRootAsync({
 
 另外，你也可以使用 `useClass` 语法：
 
-```typescript
+```ts
 BullModule.forRootAsync({
   useClass: BullConfigService,
 })
@@ -1029,7 +1029,7 @@ BullModule.forRootAsync({
 
 上述写法会在 `BullModule` 内部实例化 `BullConfigService`，并通过调用 `createSharedConfiguration()` 方法来提供配置对象。需要注意的是，这意味着 `BullConfigService` 必须实现 `SharedBullConfigurationFactory` 接口，如下所示：
 
-```typescript
+```ts
 @Injectable()
 class BullConfigService implements SharedBullConfigurationFactory {
   createSharedConfiguration(): BullModuleOptions {
@@ -1045,7 +1045,7 @@ class BullConfigService implements SharedBullConfigurationFactory {
 
 如果你希望避免在 `BullModule` 内部创建 `BullConfigService` 实例，而是复用其他模块中已导入的提供者，可以使用 `useExisting` 语法。
 
-```typescript
+```ts
 BullModule.forRootAsync({
   imports: [ConfigModule],
   useExisting: ConfigService,
@@ -1056,7 +1056,7 @@ BullModule.forRootAsync({
 
 同样地，如果你想以异步方式传递队列选项，可以使用 `registerQueueAsync()` 方法，只需注意将 `name` 属性放在工厂函数外部。
 
-```typescript
+```ts
 BullModule.registerQueueAsync({
   name: 'audio',
   useFactory: () => ({

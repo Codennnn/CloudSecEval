@@ -17,7 +17,7 @@ MikroORM 同时支持 `postgres`、`sqlite` 和 `mongo` 等多种数据库驱动
 
 安装完成后，我们可以在根模块 `AppModule` 中导入 `MikroOrmModule`。
 
-```typescript
+```ts
 import { SqliteDriver } from '@mikro-orm/sqlite'
 
 @Module({
@@ -39,7 +39,7 @@ export class AppModule {}
 
 另外，我们也可以通过创建配置文件 `mikro-orm.config.ts` [配置 CLI 工具](https://mikro-orm.io/docs/installation#setting-up-the-commandline-tool)，然后在 `forRoot()` 中不传递任何参数。
 
-```typescript
+```ts
 @Module({
   imports: [
     MikroOrmModule.forRoot(),
@@ -51,7 +51,7 @@ export class AppModule {}
 
 但如果你使用了支持 tree shaking 的构建工具，这种方式可能无法生效，此时建议显式传入配置对象：
 
-```typescript
+```ts
 import config from './mikro-orm.config'; // 你的 ORM 配置
 
 @Module({
@@ -86,7 +86,7 @@ MikroORM 支持仓库设计模式（repository design pattern）。对于每一�
 
 > info **提示** 你**不应该**通过 `forFeature()` 注册基础实体（base entities），因为这些实体没有仓库。另一方面，基础实体需要包含在 `forRoot()` 的列表中（或一般的 ORM 配置中）。
 
-```typescript
+```ts
 // photo.module.ts
 @Module({
   imports: [MikroOrmModule.forFeature([Photo])],
@@ -98,7 +98,7 @@ export class PhotoModule {}
 
 然后将其导入到根模块 `AppModule` 中：
 
-```typescript
+```ts
 // app.module.ts
 @Module({
   imports: [MikroOrmModule.forRoot(...), PhotoModule],
@@ -108,7 +108,7 @@ export class AppModule {}
 
 这样，我们就可以在 `PhotoService` 中通过 `@InjectRepository()` 装饰器注入 `PhotoRepository`：
 
-```typescript
+```ts
 @Injectable()
 export class PhotoService {
   constructor(
@@ -175,7 +175,7 @@ export class AppModule {}
 
 幸运的是，MikroORM 提供了一个 [序列化 API](https://mikro-orm.io/docs/serializing)，可以用来替代 `ClassSerializerInterceptor`。
 
-```typescript
+```ts
 @Entity()
 export class Book {
   @Property({ hidden: true }) // 等同于 class-transformer 的 `@Exclude`
@@ -218,7 +218,7 @@ export class MyService {
 
 `@mikro-orm/nestjs` 包提供了 `getRepositoryToken()` 函数，根据给定实体返回已准备好的令牌，方便对仓库进行模拟（mock）。
 
-```typescript
+```ts
 @Module({
   providers: [
     PhotoService,

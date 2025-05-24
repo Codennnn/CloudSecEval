@@ -14,7 +14,7 @@ $ npm i --save helmet
 
 安装完成后，将其作为全局中间件应用。
 
-```typescript
+```ts
 import helmet from 'helmet'
 // 在你的初始化文件中
 app.use(helmet())
@@ -22,7 +22,7 @@ app.use(helmet())
 
 > warning **警告** 当你同时使用 `helmet`、`@apollo/server`（4.x）以及 [Apollo Sandbox](https://docs.nestjs.com/graphql/quick-start#apollo-sandbox) 时，Apollo Sandbox 可能会因为 [CSP（内容安全策略）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 配置导致无法正常访问。为了解决该问题，请按照如下方式配置 CSP：
 >
-> ```typescript
+> ```ts
 > app.use(
 >   helmet({
 >     crossOriginEmbedderPolicy: false,
@@ -48,7 +48,7 @@ $ npm i --save @fastify/helmet
 
 [fastify-helmet](https://github.com/fastify/fastify-helmet) 不应作为中间件使用，而应作为 [Fastify 插件](https://www.fastify.io/docs/latest/Reference/Plugins/) 通过 `app.register()` 方法注册：
 
-```typescript
+```ts
 import helmet from '@fastify/helmet'
 // 在你的初始化文件中
 await app.register(helmet)
@@ -56,7 +56,7 @@ await app.register(helmet)
 
 > warning **警告** 当你同时使用 `apollo-server-fastify` 和 `@fastify/helmet` 时，GraphQL playground 可能会因为 [CSP](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 配置导致无法访问。为了解决该冲突，请按照如下方式配置 CSP：
 >
-> ```typescript
+> ```ts
 > await app.register(fastifyHelmet, {
 >   contentSecurityPolicy: {
 >     directives: {

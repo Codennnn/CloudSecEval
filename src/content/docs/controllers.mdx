@@ -16,7 +16,7 @@
 
 在下面的示例中，我们将使用 `@Controller()` 装饰器，它是定义基础控制器所 **必需** 的。我们会为其指定一个可选的路由前缀 `cats`。在 `@Controller()` 装饰器中使用路径前缀，可以帮助我们将相关路由分组，减少重复代码。例如，如果我们希望将所有与猫（cat）实体相关的路由统一在 `/cats` 路径下，只需在 `@Controller()` 装饰器中指定 `cats` 前缀，这样就无需在每个路由中重复该部分路径。
 
-```typescript
+```ts
 @@filename(cats.controller)
 import { Controller, Get } from '@nestjs/common';
 
@@ -89,7 +89,7 @@ export class CatsController {
 
 处理器通常需要访问客户端的 **请求** 详情。Nest 提供了对底层平台（默认是 Express）[请求对象](https://expressjs.com/en/api.html#req) 的访问方式。你可以通过在处理器参数中使用 `@Req()` 装饰器让 Nest 注入该对象。
 
-```typescript
+```ts
 @@filename(cats.controller)
 import { Controller, Get, Req } from '@nestjs/common';
 import { Request } from 'express';
@@ -217,7 +217,7 @@ export class CatsController {
 
 前文我们定义了一个用于获取猫资源的端点（**GET** 路由）。通常我们还需要提供一个用于创建新记录的端点。下面是 **POST** 处理器的示例：
 
-```typescript
+```ts
 @@filename(cats.controller)
 import { Controller, Get, Post } from '@nestjs/common';
 
@@ -256,7 +256,7 @@ export class CatsController {
 
 NestJS 也支持基于模式的路由。例如，星号（`*`）可以作为通配符，用于匹配路径末尾的任意字符组合。如下例所示，`findAll()` 方法会匹配所有以 `abcd/` 开头的路由，无论后面跟着多少字符。
 
-```typescript
+```ts
 @Get('abcd/*')
 findAll() {
   return 'This route uses a wildcard';
@@ -273,7 +273,7 @@ findAll() {
 
 如前所述，响应的默认 **状态码（status code）** 总是 **200**，POST 请求除外（默认为 **201**）。你可以通过在处理器级别使用 `@HttpCode(...)` 装饰器轻松更改这一行为。
 
-```typescript
+```ts
 @Post()
 @HttpCode(204)
 create() {
@@ -289,7 +289,7 @@ create() {
 
 要指定自定义响应头，可以使用 `@Header()` 装饰器，或直接通过库特定响应对象（如 `res.header()`）设置。
 
-```typescript
+```ts
 @Post()
 @Header('Cache-Control', 'no-store')
 create() {
@@ -305,7 +305,7 @@ create() {
 
 `@Redirect()` 接受两个参数，`url` 和 `statusCode`，均为可选。若省略，`statusCode` 默认为 `302`（`Found`）。
 
-```typescript
+```ts
 @Get()
 @Redirect('https://nestjs.com', 301)
 ```
@@ -314,7 +314,7 @@ create() {
 
 返回值会覆盖传递给 `@Redirect()` 装饰器的参数。例如：
 
-```typescript
+```ts
 @Get('docs')
 @Redirect('https://docs.nestjs.com', 302)
 getDocs(@Query('version') version) {
@@ -330,7 +330,7 @@ getDocs(@Query('version') version) {
 
 > info **提示** 带参数的路由应声明在所有静态路径之后，以避免参数化路径拦截原本属于静态路径的流量。
 
-```typescript
+```ts
 @@filename()
 @Get(':id')
 findOne(@Param() params: any): string {
@@ -350,7 +350,7 @@ findOne(params) {
 
 > info **提示** 需要从 `@nestjs/common` 包中引入 `Param`。
 
-```typescript
+```ts
 @@filename()
 @Get(':id')
 findOne(@Param('id') id: string): string {
@@ -368,7 +368,7 @@ findOne(id) {
 
 `@Controller` 装饰器可以通过 `host` 选项，要求传入请求的 HTTP host 必须匹配特定值。
 
-```typescript
+```ts
 @Controller({ host: 'admin.example.com' })
 export class AdminController {
   @Get()
@@ -382,7 +382,7 @@ export class AdminController {
 
 与路由 `path` 类似，`hosts` 选项也可以使用参数标记来捕获主机名中的动态值。如下例所示，这些参数可以通过 `@HostParam()` 装饰器在方法参数中获取。
 
-```typescript
+```ts
 @Controller({ host: ':account.example.com' })
 export class AccountController {
   @Get()
@@ -402,7 +402,7 @@ export class AccountController {
 
 我们热爱现代 JavaScript，尤其是其对**异步**数据处理的强调。因此，Nest 完全支持 `async` 函数。每个 `async` 函数都必须返回一个 `Promise`，这样 Nest 就能自动解析其最终值。如下例所示：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Get()
 async findAll(): Promise<any[]> {
@@ -417,7 +417,7 @@ async findAll() {
 
 这段代码完全有效。但 Nest 更进一步，允许路由处理器返回 RxJS [可观察流（observable stream）](https://rxjs-dev.firebaseapp.com/guide/observable)。Nest 会自动订阅流，并在流结束时解析最终值。
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Get()
 findAll(): Observable<any[]> {
@@ -440,7 +440,7 @@ findAll() {
 
 让我们创建 `CreateCatDto` 类：
 
-```typescript
+```ts
 @@filename(create-cat.dto)
 export class CreateCatDto {
   name: string;
@@ -451,7 +451,7 @@ export class CreateCatDto {
 
 它只包含三个基础属性。之后我们可以在 `CatsController` 中使用新建的 DTO：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
@@ -473,7 +473,7 @@ async create(createCatDto) {
 
 假设我们希望根据查询参数 `age` 和 `breed` 过滤猫列表。首先在 `CatsController` 中定义查询参数：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Get()
 async findAll(@Query('age') age: number, @Query('breed') breed: string) {
@@ -498,14 +498,14 @@ GET /cats?age=2&breed=Persian
 
 则需要配置你的 HTTP 适配器（Express 或 Fastify）使用合适的查询解析器。在 Express 中，可以使用 `extended` 解析器，支持丰富的查询对象：
 
-```typescript
+```ts
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
 app.set('query parser', 'extended')
 ```
 
 在 Fastify 中，可以使用 `querystringParser` 选项：
 
-```typescript
+```ts
 const app = await NestFactory.create<NestFastifyApplication>(
   AppModule,
   new FastifyAdapter({
@@ -524,7 +524,7 @@ const app = await NestFactory.create<NestFastifyApplication>(
 
 下面的示例展示了如何使用多种装饰器创建一个基础控制器。该控制器提供了若干方法，用于访问和操作内部数据。
 
-```typescript
+```ts
 @@filename(cats.controller)
 import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto';
@@ -602,7 +602,7 @@ export class CatsController {
 
 控制器必须始终属于某个模块，因此我们需要在 `@Module()` 装饰器的 `controllers` 数组中注册它。由于目前只定义了根模块 `AppModule`，我们可以直接在其中注册 `CatsController`：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { CatsController } from './cats/cats.controller';
@@ -619,7 +619,7 @@ export class AppModule {}
 
 前文介绍了标准的 Nest 响应处理方式。另一种方式是使用库特定的 [响应对象](https://expressjs.com/en/api.html#res)。要注入特定响应对象，可以使用 `@Res()` 装饰器。下面通过重写 `CatsController` 展示两种方式的区别：
 
-```typescript
+```ts
 @@filename()
 import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
@@ -659,7 +659,7 @@ export class CatsController {
 
 另外，采用这种方式会失去与 Nest 标准响应处理相关的特性（如拦截器、`@HttpCode()`、`@Header()` 装饰器等）的兼容性。为了解决这个问题，可以启用 `passthrough` 选项，如下所示：
 
-```typescript
+```ts
 @@filename()
 @Get()
 findAll(@Res({ passthrough: true }) res: Response) {

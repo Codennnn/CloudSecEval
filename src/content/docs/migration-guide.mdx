@@ -20,7 +20,7 @@ Express v5 最显著的更新之一是路径路由匹配算法的调整。以下
 
 因此，之前在 Express v4 可用的路由写法，在 Express v5 可能无法正常工作。例如：
 
-```typescript
+```ts
 @Get('users/*')
 findAll() {
   // 在 NestJS 11 中，这将被自动转换为有效的 Express v5 路由。
@@ -31,7 +31,7 @@ findAll() {
 
 要修复此问题，可以将路由更新为具名通配符：
 
-```typescript
+```ts
 @Get('users/*splat')
 findAll() {
   return 'This route will work in Express v5';
@@ -42,7 +42,7 @@ findAll() {
 
 同样地，如果你有中间件需要应用于所有路由，也需要将路径更新为具名通配符：
 
-```typescript
+```ts
 // 在 NestJS 11 中，这将被自动转换为有效的 Express v5 路由。
 // 虽然可能仍然可用，但在 Express v5 中已不推荐继续使用该通配符写法。
 forRoutes('*') // <-- 这在 Express v5 中将无法正常工作
@@ -50,7 +50,7 @@ forRoutes('*') // <-- 这在 Express v5 中将无法正常工作
 
 正确做法是将路径更新为具名通配符：
 
-```typescript
+```ts
 forRoutes('{*splat}') // <-- 这在 Express v5 中可用
 ```
 
@@ -71,7 +71,7 @@ forRoutes('{*splat}') // <-- 这在 Express v5 中可用
 
 将不再按预期方式解析。若需恢复之前的行为，可以通过设置 `query parser` 选项为 `extended`（Express v4 的默认值），让 Express 使用扩展解析器：
 
-```typescript
+```ts
 import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
@@ -94,7 +94,7 @@ bootstrap()
 
 默认情况下，仅允许 [CORS 安全列表方法](https://fetch.spec.whatwg.org/#methods)。如果你需要启用额外的方法（如 `PUT`、`PATCH` 或 `DELETE`），必须在 `methods` 选项中显式声明。
 
-```typescript
+```ts
 const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] // 或使用逗号分隔的字符串 'GET,POST,PUT,PATH,DELETE'
 
 const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
@@ -112,14 +112,14 @@ NestJS 11 现已在 `@nestjs/platform-fastify` 中使用最新版的 [path-to-re
 
 例如，如果你有一个应用于所有路由的中间件：
 
-```typescript
+```ts
 // 在 NestJS 11 中，即使你没有更新，这段代码也会被自动转换为有效路由。
 .forRoutes('(.*)');
 ```
 
 你需要将其更新为使用命名通配符：
 
-```typescript
+```ts
 .forRoutes('*splat');
 ```
 
@@ -244,7 +244,7 @@ CacheModule.registerAsync({
 
 在 11 版本之前，健康指示器的实现方式如下：
 
-```typescript
+```ts
 @Injectable()
 export class DogHealthIndicator extends HealthIndicator {
   constructor(private readonly httpService: HttpService) {
@@ -284,7 +284,7 @@ export class DogHealthIndicator extends HealthIndicator {
 
 从 11 版本开始，推荐使用新的 `HealthIndicatorService` API，这将简化健康指示器的实现流程。下面是相同健康指示器的新版实现方式：
 
-```typescript
+```ts
 @Injectable()
 export class DogHealthIndicator {
   constructor(

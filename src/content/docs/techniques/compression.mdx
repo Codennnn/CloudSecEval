@@ -17,7 +17,7 @@ $ npm i --save-dev @types/compression
 
 安装完成后，将 compression 中间件作为全局中间件（Middleware）应用：
 
-```typescript
+```ts
 import * as compression from 'compression'
 // 在初始化文件中
 app.use(compression())
@@ -33,7 +33,7 @@ $ npm i --save @fastify/compress
 
 安装完成后，将 `@fastify/compress` 作为全局中间件（Middleware）注册：
 
-```typescript
+```ts
 import compression from '@fastify/compress'
 // 在初始化文件中
 await app.register(compression)
@@ -41,7 +41,7 @@ await app.register(compression)
 
 默认情况下，`@fastify/compress` 会在浏览器支持该编码时，优先使用 Brotli 压缩（Brotli，Node >= 11.7.0）。Brotli 在压缩比方面通常非常高效，但压缩速度可能较慢。默认情况下，Brotli 的最大压缩质量为 11，不过你可以通过调整 `BROTLI_PARAM_QUALITY`（取值范围 0~11）来降低压缩时间、提升响应速度。你可以根据实际需求微调该参数，以在空间和时间之间取得最佳平衡。以下是将质量设置为 4 的示例：
 
-```typescript
+```ts
 import { constants } from 'zlib'
 // 在初始化文件中
 await app.register(compression, {
@@ -53,7 +53,7 @@ await app.register(compression, {
 
 要指定压缩编码格式，可以为 `app.register` 提供第二个参数：
 
-```typescript
+```ts
 await app.register(compression, { encodings: ['gzip', 'deflate'] })
 ```
 

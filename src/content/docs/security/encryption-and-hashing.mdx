@@ -10,7 +10,7 @@ Node.js 提供了内置的 [crypto 模块](https://nodejs.org/api/crypto.html)�
 
 下面以 AES（高级加密标准，Advanced Encryption System） `'aes-256-ctr'` 算法的 CTR 加密模式为例：
 
-```typescript
+```ts
 import { createCipheriv, randomBytes, scrypt } from 'crypto'
 import { promisify } from 'util'
 
@@ -28,7 +28,7 @@ const encryptedText = Buffer.concat([cipher.update(textToEncrypt), cipher.final(
 
 现在我们来解密 `encryptedText` ：
 
-```typescript
+```ts
 import { createDecipheriv } from 'crypto'
 
 const decipher = createDecipheriv('aes-256-ctr', key, iv)
@@ -50,7 +50,7 @@ $ npm i -D @types/bcrypt
 
 安装完成后，你可以像下面这样使用 `hash` 函数：
 
-```typescript
+```ts
 import * as bcrypt from 'bcrypt'
 
 const saltOrRounds = 10
@@ -60,13 +60,13 @@ const hash = await bcrypt.hash(password, saltOrRounds)
 
 如需生成盐值，可以使用 `genSalt` 函数：
 
-```typescript
+```ts
 const salt = await bcrypt.genSalt()
 ```
 
 如需比较/校验密码，可以使用 `compare` 函数：
 
-```typescript
+```ts
 const isMatch = await bcrypt.compare(password, hash)
 ```
 

@@ -20,7 +20,7 @@
 
 为了更好地理解在无服务器函数（Serverless Function）场景下，使用 Nest 或其他知名库（如 `express`）的性能开销，我们对比了 Node 运行时执行以下脚本所需的时间：
 
-```typescript
+```ts
 // #1 Express
 import * as express from 'express'
 
@@ -135,7 +135,7 @@ module.exports = (options, webpack) => {
 此外，有时您可以使用 `LazyModuleLoader` 类（如[本章](/fundamentals/lazy-loading-modules)所述）来懒加载（Lazy Loading）整个模块。缓存就是一个很好的例子。
 假设您的应用有一个 `CacheModule`，它内部连接到 Redis，并且导出 `CacheService` 以与 Redis 存储交互。如果并非所有函数调用都需要缓存，您可以按需、懒加载该模块。这样，对于不需要缓存的所有冷启动调用，启动速度都会更快。
 
-```typescript
+```ts
 if (request.method === RequestMethod[RequestMethod.GET]) {
   const { CacheModule } = await import('./cache.module')
   const moduleRef = await this.lazyModuleLoader.load(() => CacheModule)
@@ -150,7 +150,7 @@ if (request.method === RequestMethod[RequestMethod.GET]) {
 另一个典型场景是 webhook 或 worker，根据某些特定条件（例如输入参数），可能会执行不同的操作。
 在这种情况下，您可以在路由处理器中指定条件，按需懒加载适合本次函数调用的模块（Module），其余模块也都采用懒加载方式。
 
-```typescript
+```ts
 if (workerType === WorkerType.A) {
   const { WorkerAModule } = await import('./worker-a.module')
   const moduleRef = await this.lazyModuleLoader.load(() => WorkerAModule)
@@ -205,7 +205,7 @@ functions:
 
 接下来，打开 `main.ts` 文件，按照如下方式更新启动代码，加入所需的模板代码（Boilerplate）：
 
-```typescript
+```ts
 import { NestFactory } from '@nestjs/core'
 import serverlessExpress from '@codegenie/serverless-express'
 import { Callback, Context, Handler } from 'aws-lambda'
@@ -296,7 +296,7 @@ return {
 
 另外，如果你希望让你的函数保持非常轻量，并且不需要任何 HTTP 相关功能（如路由、守卫（Guard）、拦截器（Interceptor）、管道等），你可以像前文所述，直接使用 `NestFactory.createApplicationContext`，而不是运行整个 HTTP 服务器（底层为 `express`），示例如下：
 
-```typescript
+```ts
 @@filename(main)
 import { HttpStatus } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -323,7 +323,7 @@ export const handler: Handler = async (
 
 你也可以将 `event` 对象传递给，比如说，`EventsService` 提供者（Provider），让其根据输入值和你的业务逻辑进行处理并返回相应结果。
 
-```typescript
+```ts
 export const handler: Handler = async (event: any, context: Context, callback: Callback) => {
   const appContext = await NestFactory.createApplicationContext(AppModule)
   const eventsService = appContext.get(EventsService)

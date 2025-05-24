@@ -8,7 +8,7 @@
 
 下例演示了如何手动实例化一个方法作用域的管道。与基于 HTTP 的应用类似，你也可以使用控制器作用域的管道（即在控制器类前添加 `@UsePipes()` 装饰器）。
 
-```typescript
+```ts
 @@filename()
 @UsePipes(new ValidationPipe({ exceptionFactory: (errors) => new RpcException(errors) }))
 @MessagePattern({ cmd: 'sum' })

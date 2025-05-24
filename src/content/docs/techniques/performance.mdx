@@ -20,7 +20,7 @@ $ npm i --save @nestjs/platform-fastify
 
 安装 Fastify 平台后，我们就可以使用 `FastifyAdapter` 了。
 
-```typescript
+```ts
 @@filename(main)
 import { NestFactory } from '@nestjs/core';
 import {
@@ -41,7 +41,7 @@ bootstrap();
 
 默认情况下，Fastify 只监听 `localhost 127.0.0.1` 接口（[详细说明](https://www.fastify.io/docs/latest/Guides/Getting-Started/#your-first-server)）。如果你希望在其他主机上接受连接，需要在 `listen()` 方法中指定 `'0.0.0.0'`：
 
-```typescript
+```ts
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
   await app.listen(3000, '0.0.0.0')
@@ -56,7 +56,7 @@ async function bootstrap() {
 
 Fastify 处理重定向响应的方式与 Express 略有不同。要在 Fastify 中实现正确的重定向，需要同时返回状态码和 URL，示例如下：
 
-```typescript
+```ts
 @Get()
 index(@Res() res) {
   res.status(302).redirect('/login');
@@ -67,7 +67,7 @@ index(@Res() res) {
 
 你可以通过 `FastifyAdapter` 构造函数向 Fastify 构造函数传递配置项。例如：
 
-```typescript
+```ts
 new FastifyAdapter({ logger: true })
 ```
 
@@ -75,7 +75,7 @@ new FastifyAdapter({ logger: true })
 
 中间件函数会获取原始的 `req` 和 `res` 对象，而不是 Fastify 的封装对象。这是因为底层使用了 `middie` 包以及 `fastify` 的机制。详细信息可参考 [Fastify 官方文档](https://www.fastify.io/docs/latest/Reference/Middleware/)。
 
-```typescript
+```ts
 @@filename(logger.middleware)
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
@@ -103,7 +103,7 @@ export class LoggerMiddleware {
 
 你可以结合 Fastify 的 [路由配置](https://fastify.dev/docs/latest/Reference/Routes/#config) 功能，配合 `@RouteConfig()` 装饰器来使用。
 
-```typescript
+```ts
 @RouteConfig({ output: 'hello world' })
 @Get()
 index(@Req() req) {
@@ -115,7 +115,7 @@ index(@Req() req) {
 
 自 v10.3.0 起，`@nestjs/platform-fastify` 支持 Fastify 的 [路由约束](https://fastify.dev/docs/latest/Reference/Routes/#constraints) 功能，可以通过 `@RouteConstraints` 装饰器实现。
 
-```typescript
+```ts
 @RouteConstraints({ version: '1.2.x' })
 newFeature() {
   return '此功能仅适用于版本 >= 1.2.x';

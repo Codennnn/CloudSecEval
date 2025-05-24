@@ -8,7 +8,7 @@ Nest 通过其跨平台特性（如[守卫](/guards)和[拦截器](/interceptors
 
 你可以像在 RESTful 应用中一样，在 GraphQL 中使用标准的[守卫](/guards)、[拦截器](/interceptors)、[异常过滤器](/exception-filters)和[管道](/pipes)。此外，你还可以通过[自定义装饰器](/custom-decorators)功能，轻松创建自己的装饰器。下面让我们看一个 GraphQL 查询处理器的示例。
 
-```typescript
+```ts
 @Query('author')
 @UseGuards(AuthGuard)
 async getAuthor(@Args('id', ParseIntPipe) id: number) {
@@ -18,7 +18,7 @@ async getAuthor(@Args('id', ParseIntPipe) id: number) {
 
 如上所示，GraphQL 与 HTTP REST 处理器一样，可以同时使用守卫和管道。因此，你可以将身份验证逻辑迁移到守卫中，甚至可以在 REST 和 GraphQL API 接口之间复用同一个守卫类。同理，拦截器也可以在这两类应用中以相同方式工作：
 
-```typescript
+```ts
 @Mutation()
 @UseInterceptors(EventsInterceptor)
 async upvotePost(@Args('postId') postId: number) {
@@ -30,7 +30,7 @@ async upvotePost(@Args('postId') postId: number) {
 
 由于 GraphQL 在接收请求时的数据类型与 REST 不同，守卫和拦截器所接收的[执行上下文](https://docs.nestjs.com/fundamentals/execution-context)在 GraphQL 和 REST 场景下也有所区别。GraphQL 解析器拥有一组独特的参数：`root`、`args`、`context` 和 `info`。因此，守卫和拦截器需要将通用的 `ExecutionContext` 转换为 `GqlExecutionContext`。这个过程非常简单：
 
-```typescript
+```ts
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
@@ -49,7 +49,7 @@ export class AuthGuard implements CanActivate {
 
 Nest 的标准 [异常过滤器](/exception-filters) 同样适用于 GraphQL 应用程序。与 `执行上下文（ExecutionContext）` 类似，在 GraphQL 应用中应将 `ArgumentsHost` 对象转换为 `GqlArgumentsHost` 对象。
 
-```typescript
+```ts
 @Catch(HttpException)
 export class HttpExceptionFilter implements GqlExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
@@ -67,7 +67,7 @@ export class HttpExceptionFilter implements GqlExceptionFilter {
 
 如前所述，[自定义装饰器](/custom-decorators) 功能在 GraphQL 解析器（resolver）中同样可以正常使用。
 
-```typescript
+```ts
 export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => GqlExecutionContext.create(ctx).getContext().user
 )
@@ -75,7 +75,7 @@ export const User = createParamDecorator(
 
 可以如下方式使用 `@User()` 自定义装饰器：
 
-```typescript
+```ts
 @Mutation()
 async upvotePost(
   @User() user: UserEntity,
@@ -89,7 +89,7 @@ async upvotePost(
 
 在 GraphQL 场景下，Nest 并不会在字段级别运行**增强器**（enhancer，增强器是拦截器、守卫和过滤器的统称），它们只会在顶层的 `@Query()`/`@Mutation()` 方法上运行。[详见此 issue](https://github.com/nestjs/graphql/issues/320#issuecomment-511193229)。你可以通过在 `GqlModuleOptions` 中设置 `fieldResolverEnhancers` 选项，让 Nest 在带有 `@ResolveField()` 注解的方法上执行拦截器、守卫或过滤器。只需传入包含 `'interceptors'`、`'guards'` 和/或 `'filters'` 的数组即可：
 
-```typescript
+```ts
 GraphQLModule.forRoot({
   fieldResolverEnhancers: ['interceptors']
 }),
@@ -98,7 +98,7 @@ GraphQLModule.forRoot({
 > **警告**
 > 为字段解析器启用增强器可能会带来性能问题，尤其是在你返回大量记录、字段解析器被执行成千上万次的情况下。因此，当你启用 `fieldResolverEnhancers` 时，建议你跳过那些对字段解析器并非绝对必要的增强器。你可以使用如下辅助函数来实现：
 
-```typescript
+```ts
 export function isResolvingGraphQLField(context: ExecutionContext): boolean {
   if (context.getType<GqlContextType>() === 'graphql') {
     const gqlContext = GqlExecutionContext.create(context)
@@ -116,7 +116,7 @@ Nest 内置提供了两个官方驱动：`@nestjs/apollo` 和 `@nestjs/mercurius
 
 例如，若要集成 `express-graphql` 包，你可以创建如下驱动类：
 
-```typescript
+```ts
 import { AbstractGraphQLDriver, GqlModuleOptions } from '@nestjs/graphql'
 import { graphqlHTTP } from 'express-graphql'
 
@@ -140,7 +140,7 @@ class ExpressGraphQLDriver extends AbstractGraphQLDriver {
 
 然后这样使用：
 
-```typescript
+```ts
 GraphQLModule.forRoot({
   driver: ExpressGraphQLDriver,
 })

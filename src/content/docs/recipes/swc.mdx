@@ -173,7 +173,7 @@ $ npx ts-node src/generate-metadata.ts
 
 如果你在应用中使用 TypeORM、MikroORM 或其他 ORM，可能会遇到循环依赖问题。SWC 对**循环依赖**的处理并不理想，因此建议采用如下解决方案：
 
-```typescript
+```ts
 @Entity()
 export class User {
   @OneToOne(() => Profile, (profile) => profile.user)
@@ -187,7 +187,7 @@ export class User {
 
 如果你的 ORM 没有提供类似的解决方案，你也可以自行定义一个包装类型：
 
-```typescript
+```ts
 /**
  * 用于规避 ESM 模块循环依赖问题的包装类型，
  * 该问题由反射元数据保存属性类型引起。
@@ -197,7 +197,7 @@ export type WrapperType<T> = T // WrapperType 等价于 Relation
 
 对于项目中所有[循环依赖注入](/fundamentals/circular-dependency)的场景，也需要使用上述自定义包装类型：
 
-```typescript
+```ts
 @Injectable()
 export class UsersService {
   constructor(

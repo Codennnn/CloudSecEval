@@ -31,7 +31,7 @@ $ nest g resource
 
 下面是生成的控制器文件示例（针对 RESTful 接口）：
 
-```typescript
+```ts
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -91,7 +91,7 @@ $ nest g resource users
 
 可以看到，不仅所有模板代码（包括变更和查询）都已生成，而且各部分已自动关联。我们在使用 `UsersService`、`User` 实体和 DTO。
 
-```typescript
+```ts
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql'
 import { UsersService } from './users.service'
 import { User } from './entities/user.entity'

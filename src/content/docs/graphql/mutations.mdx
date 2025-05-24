@@ -8,7 +8,7 @@
 
 让我们为上一节中用到的 `AuthorResolver` 再添加一个方法（参见 [解析器](/graphql/resolvers)）。
 
-```typescript
+```ts
 @Mutation(() => Post)
 async upvotePost(@Args({ name: 'postId', type: () => Int }) postId: number) {
   return this.postsService.upvoteById({ id: postId });
@@ -29,7 +29,7 @@ type Mutation {
 
 如果变更需要接收一个对象作为参数，我们可以创建一个 **输入类型（input type）**。输入类型是一种特殊的对象类型，可以作为参数传递（详细内容可参见 [这里](https://graphql.org/learn/schema/#input-types)）。要声明输入类型，请使用 `@InputType()` 装饰器。
 
-```typescript
+```ts
 import { InputType, Field } from '@nestjs/graphql'
 
 @InputType()
@@ -43,7 +43,7 @@ export class UpvotePostInput {
 
 然后我们可以在解析器类中使用这个类型：
 
-```typescript
+```ts
 @Mutation(() => Post)
 async upvotePost(
   @Args('upvotePostData') upvotePostData: UpvotePostInput,
@@ -54,7 +54,7 @@ async upvotePost(
 
 让我们扩展上一节中使用的 `AuthorResolver`（参见 [resolvers](/graphql/resolvers)）。
 
-```typescript
+```ts
 @Mutation()
 async upvotePost(@Args('postId') postId: number) {
   return this.postsService.upvoteById({ id: postId });

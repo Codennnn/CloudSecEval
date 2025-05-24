@@ -22,7 +22,7 @@ $ npm i -D @suites/unit @suites/di.nestjs @suites/doubles.jest
 
 假设我们有一个 `CatsService` 的模块设置，其中包含了 `CatsApiService`、`CatsDAL`、`HttpClient` 和 `Logger`。这将作为本示例的基础：
 
-```typescript
+```ts
 @@filename(cats.module)
 import { HttpModule } from '@nestjs/axios';
 import { PrismaModule } from '../prisma.module';
@@ -39,7 +39,7 @@ export class CatsModule {}
 
 接下来我们将以隔离的方式测试 `CatsHttpService`。该服务负责从 API 获取猫的数据，并记录日志。
 
-```typescript
+```ts
 @@filename(cats-http.service)
 @Injectable()
 export class CatsHttpService {
@@ -55,7 +55,7 @@ export class CatsHttpService {
 
 我们希望对 `CatsHttpService` 进行隔离测试，并对其依赖项 `HttpClient` 和 `Logger` 进行模拟（Mock）。Suites 可以通过 `TestBed` 的 `.solitary()` 方法轻松实现这一点。
 
-```typescript
+```ts
 @@filename(cats-http.service.spec)
 import { TestBed, Mocked } from '@suites/unit';
 
@@ -100,7 +100,7 @@ describe('Cats Http Service 单元测试', () => {
 
 在本例中，我们不使用 Suites，而是使用 Nest 的 `TestingModule` 来测试 `HttpModule` 的实际配置。我们将利用 `nock` 来模拟 HTTP 请求，而不是在本场景下模拟 `HttpClient`。
 
-```typescript
+```ts
 @@filename(cats-api.service)
 import { HttpClient } from '@nestjs/axios';
 
@@ -117,7 +117,7 @@ export class CatsApiService {
 
 我们需要使用真实（未被模拟）的 `HttpClient` 来测试 `CatsApiService`，以确保依赖注入和 `Axios`（http）的配置是正确的。这涉及导入 `CatsModule` 并使用 `nock` 进行 HTTP 请求模拟。
 
-```typescript
+```ts
 @@filename(cats-api.service.integration.test)
 import { Test } from '@nestjs/testing';
 import * as nock from 'nock';
@@ -154,7 +154,7 @@ describe('Cats Api Service 集成测试', () => {
 
 接下来，我们来测试 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`。我们将对 `CatsApiService` 进行模拟（mock），并暴露 `CatsDAL`。
 
-```typescript
+```ts
 @@filename(cats.dal)
 import { PrismaClient } from '@prisma/client';
 
@@ -170,7 +170,7 @@ export class CatsDAL {
 
 接下来是 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`：
 
-```typescript
+```ts
 @@filename(cats.service)
 @Injectable()
 export class CatsService {
@@ -188,7 +188,7 @@ export class CatsService {
 
 现在，我们使用 Suites 进行友好测试，来测试 `CatsService`：
 
-```typescript
+```ts
 @@filename(cats.service.spec)
 import { TestBed, Mocked } from '@suites/unit';
 import { PrismaClient } from '@prisma/client';
@@ -246,7 +246,7 @@ describe('Cats Service Sociable Unit Test', () => {
 
 为了确认 IoC 容器配置无误，我们可以编写一个集成测试，加载实际的模块配置，并验证所有提供者都已正确注册和注入。
 
-```typescript
+```ts
 import { Test, TestingModule } from '@nestjs/testing'
 import { CatsModule } from './cats.module'
 import { CatsService } from './cats.service'

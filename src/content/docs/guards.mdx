@@ -16,7 +16,7 @@
 
 如前所述，**授权**是守卫的一个典型应用场景，因为某些特定路由只有在调用者（通常是已认证的用户）拥有足够权限时才能访问。我们现在要构建的 `AuthGuard` 假设用户已通过身份验证（即请求头中已携带令牌）。它会提取并校验令牌，并利用提取的信息判断请求是否可以继续。
 
-```typescript
+```ts
 @@filename(auth.guard)
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
@@ -63,7 +63,7 @@ export class AuthGuard {
 
 我们来构建一个更实用的守卫，只允许拥有特定角色的用户访问。我们先用一个基础模板，后续再逐步完善。当前它允许所有请求通过：
 
-```typescript
+```ts
 @@filename(roles.guard)
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
@@ -91,7 +91,7 @@ export class RolesGuard {
 
 与管道（Pipe）和异常过滤器类似，守卫可以是**控制器作用域**、**方法作用域**或**全局作用域**。下面我们用 `@UseGuards()` 装饰器设置一个控制器作用域的守卫。该装饰器可以接收一个或多个参数（逗号分隔），让你能方便地为控制器声明需要的守卫。
 
-```typescript
+```ts
 @@filename()
 @Controller('cats')
 @UseGuards(RolesGuard)
@@ -102,7 +102,7 @@ export class CatsController {}
 
 如上，我们传入的是 `RolesGuard` 类（而不是其实例），这样框架会负责其实例化，并支持依赖注入。和管道、异常过滤器一样，也可以直接传入实例：
 
-```typescript
+```ts
 @@filename()
 @Controller('cats')
 @UseGuards(new RolesGuard())
@@ -113,7 +113,7 @@ export class CatsController {}
 
 如果要设置全局守卫，可以通过 Nest 应用实例的 `useGlobalGuards()` 方法实现：
 
-```typescript
+```ts
 @@filename()
 const app = await NestFactory.create(AppModule);
 app.useGlobalGuards(new RolesGuard());
@@ -123,7 +123,7 @@ app.useGlobalGuards(new RolesGuard());
 
 全局守卫会应用于整个应用的所有控制器和路由处理器。需要注意的是，通过 `useGlobalGuards()` 在模块外注册的全局守卫无法注入依赖，因为这发生在任何模块上下文之外。为了解决这个问题，可以直接在模块内通过如下方式注册守卫：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
@@ -160,7 +160,7 @@ export const Roles = Reflector.createDecorator<string[]>();
 
 现在，我们只需在处理器上使用该装饰器即可：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Post()
 @Roles(['admin'])
@@ -184,7 +184,7 @@ async create(createCatDto) {
 
 现在我们回到 `RolesGuard`，将其与上面的内容结合。当前它总是返回 `true`，允许所有请求通过。我们希望根据**当前用户的角色**与**当前路由所需角色（自定义元数据）**进行比对，决定是否放行。为此，我们再次用到 `Reflector` 辅助类：
 
-```typescript
+```ts
 @@filename(roles.guard)
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -236,7 +236,7 @@ export class RolesGuard {
 
 当用户权限不足时，Nest 会自动返回如下响应：
 
-```typescript
+```ts
 {
   "statusCode": 403,
   "message": "Forbidden resource",
@@ -246,7 +246,7 @@ export class RolesGuard {
 
 需要注意的是，当守卫返回 `false` 时，框架会抛出 `ForbiddenException`。如果你希望返回不同的错误响应，可以自行抛出特定异常。例如：
 
-```typescript
+```ts
 throw new UnauthorizedException()
 ```
 

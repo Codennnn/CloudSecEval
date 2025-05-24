@@ -13,7 +13,7 @@ $ npm i -D @types/express-session
 
 安装完成后，在全局中间件中应用 `express-session` 中间件（例如在 `main.ts` 文件中）：
 
-```typescript
+```ts
 import * as session from 'express-session'
 // 在初始化文件中
 app.use(
@@ -39,7 +39,7 @@ app.use(
 
 配置完成后，你可以在路由处理器（Route Handler）中设置和读取会话值，例如：
 
-```typescript
+```ts
 @Get()
 findAll(@Req() request: Request) {
   request.session.visits = request.session.visits ? request.session.visits + 1 : 1;
@@ -50,7 +50,7 @@ findAll(@Req() request: Request) {
 
 你也可以使用 `@Session()` 装饰器直接从请求中提取会话对象，如下所示：
 
-```typescript
+```ts
 @Get()
 findAll(@Session() session: Record<string, any>) {
   session.visits = session.visits ? session.visits + 1 : 1;
@@ -69,7 +69,7 @@ $ npm i @fastify/secure-session
 
 安装完成后，在初始化文件中注册 `fastify-secure-session` 插件：
 
-```typescript
+```ts
 import secureSession from '@fastify/secure-session'
 
 // 在你的初始化文件中
@@ -86,7 +86,7 @@ await app.register(secureSession, {
 
 完成上述配置后，你就可以在路由处理器（Route Handler）中设置和读取会话（session）值，例如：
 
-```typescript
+```ts
 @Get()
 findAll(@Req() request: FastifyRequest) {
   const visits = request.session.get('visits');
@@ -96,7 +96,7 @@ findAll(@Req() request: FastifyRequest) {
 
 另外，你也可以使用 `@Session()` 装饰器从请求中提取会话对象，示例如下：
 
-```typescript
+```ts
 @Get()
 findAll(@Session() session: secureSession.Session) {
   const visits = session.get('visits');

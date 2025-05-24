@@ -6,7 +6,7 @@
 
 有时，在模块级别定义前缀（从而影响该模块内注册的所有控制器）会非常有用。例如，假设你的 REST 应用暴露了多个不同的端点，这些端点被应用中的某个特定部分（如"Dashboard"）使用。在这种情况下，与其在每个控制器中重复 `/dashboard` 前缀，不如使用一个实用的 `RouterModule` 模块，示例如下：
 
-```typescript
+```ts
 @Module({
   imports: [
     DashboardModule,
@@ -25,7 +25,7 @@ export class AppModule {}
 
 此外，你还可以定义层级结构。这意味着每个模块都可以拥有 `children` 子模块。子模块会继承其父模块的前缀。如下例所示，我们将 `AdminModule` 注册为 `DashboardModule` 和 `MetricsModule` 的父模块。
 
-```typescript
+```ts
 @Module({
   imports: [
     AdminModule,

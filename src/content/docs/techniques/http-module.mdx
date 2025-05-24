@@ -16,7 +16,7 @@ $ npm i --save @nestjs/axios axios
 
 安装完成后，若要使用 `HttpService`，首先需要导入 `HttpModule`。
 
-```typescript
+```ts
 @Module({
   imports: [HttpModule],
   providers: [CatsService],
@@ -28,7 +28,7 @@ export class CatsModule {}
 
 > info **提示** `HttpModule` 和 `HttpService` 都是从 `@nestjs/axios` 包中导入的。
 
-```typescript
+```ts
 @@filename()
 @Injectable()
 export class CatsService {
@@ -60,7 +60,7 @@ export class CatsService {
 
 [Axios](https://github.com/axios/axios) 可以通过多种选项进行配置，从而自定义 `HttpService` 的行为。你可以在 [这里](https://github.com/axios/axios#request-config) 阅读更多相关内容。要配置底层的 Axios 实例，可以在导入 `HttpModule` 时，向其 `register()` 方法传递一个可选的配置对象。该配置对象会被直接传递给底层的 Axios 构造函数。
 
-```typescript
+```ts
 @Module({
   imports: [
     HttpModule.register({
@@ -79,7 +79,7 @@ export class CatsModule {}
 
 其中一种方式是使用工厂函数：
 
-```typescript
+```ts
 HttpModule.registerAsync({
   useFactory: () => ({
     timeout: 5000,
@@ -90,7 +90,7 @@ HttpModule.registerAsync({
 
 与其他工厂提供者类似，我们的工厂函数也可以是 [async](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory) 异步函数，并且可以通过 `inject` 注入依赖。
 
-```typescript
+```ts
 HttpModule.registerAsync({
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => ({
@@ -103,7 +103,7 @@ HttpModule.registerAsync({
 
 另外，你也可以通过类（class）而不是工厂函数来配置 `HttpModule`，如下所示：
 
-```typescript
+```ts
 HttpModule.registerAsync({
   useClass: HttpConfigService,
 })
@@ -111,7 +111,7 @@ HttpModule.registerAsync({
 
 上述写法会在 `HttpModule` 内部实例化 `HttpConfigService`，并使用它来创建选项对象。需要注意的是，在这个例子中，`HttpConfigService` 必须实现 `HttpModuleOptionsFactory` 接口，如下所示。`HttpModule` 会在所提供类的实例上调用 `createHttpOptions()` 方法。
 
-```typescript
+```ts
 @Injectable()
 class HttpConfigService implements HttpModuleOptionsFactory {
   createHttpOptions(): HttpModuleOptions {
@@ -125,7 +125,7 @@ class HttpConfigService implements HttpModuleOptionsFactory {
 
 如果你希望复用已有的选项提供者，而不是在 `HttpModule` 内部创建一个私有副本，可以使用 `useExisting` 语法。
 
-```typescript
+```ts
 HttpModule.registerAsync({
   imports: [ConfigModule],
   useExisting: HttpConfigService,
@@ -134,7 +134,7 @@ HttpModule.registerAsync({
 
 你还可以通过 `registerAsync()` 方法传递所谓的 `extraProviders`。这些提供者会与模块内的其他提供者合并。
 
-```typescript
+```ts
 HttpModule.registerAsync({
   imports: [ConfigModule],
   useClass: HttpConfigService,
@@ -148,7 +148,7 @@ HttpModule.registerAsync({
 
 如果你觉得 `HttpModule.register` 的配置选项无法满足你的需求，或者你只是想直接访问由 `@nestjs/axios` 创建的底层 Axios 实例，可以通过 `HttpService#axiosRef` 属性来实现，如下所示：
 
-```typescript
+```ts
 @Injectable()
 export class CatsService {
   constructor(private readonly httpService: HttpService) {}
@@ -164,7 +164,7 @@ export class CatsService {
 
 由于 `HttpService` 方法的返回值是 Observable，因此我们可以使用 `rxjs` 的 `firstValueFrom` 或 `lastValueFrom`，以 Promise 的形式获取请求的数据。
 
-```typescript
+```ts
 import { catchError, firstValueFrom } from 'rxjs'
 
 @Injectable()

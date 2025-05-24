@@ -26,7 +26,7 @@ Nest 中间件（Middleware）默认等同于 [Express（Node.js 框架）](http
 
 > warning **警告** `Express` 和 `Fastify（高性能 Node.js 框架）` 对中间件的处理方式和方法签名不同，详细说明见[此处](/techniques/performance#middleware)。
 
-```typescript
+```ts
 @@filename(logger.middleware)
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
@@ -58,7 +58,7 @@ Nest 中间件完全支持依赖注入（Dependency Injection）。与提供者�
 
 中间件**不**在 `@Module()` 装饰器中声明，而是通过模块类的 `configure()` 方法进行设置。包含中间件的模块需要实现 `NestModule` 接口。下面我们在 `AppModule` 级别设置 `LoggerMiddleware`。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
@@ -93,7 +93,7 @@ export class AppModule {
 
 在上面的例子中，我们为 `/cats` 路由处理器（在 `CatsController` 中定义）设置了 `LoggerMiddleware`。你还可以通过向 `forRoutes()` 方法传递包含路由 `path` 和请求 `method` 的对象，进一步限定中间件应用于特定请求方法。如下例所示，我们引入了 `RequestMethod` 枚举来指定请求方法类型。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module, NestModule, RequestMethod, MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
@@ -134,7 +134,7 @@ export class AppModule {
 
 NestJS 中间件也支持基于模式的路由。例如，命名通配符（`*splat`）可用于匹配路由中的任意字符组合。如下例所示，该中间件会应用于所有以 `abcd/` 开头的路由，无论后面跟多少字符。
 
-```typescript
+```ts
 forRoutes({
   path: 'abcd/*splat',
   method: RequestMethod.ALL,
@@ -145,7 +145,7 @@ forRoutes({
 
 `'abcd/*'` 路由路径会匹配 `abcd/1`、`abcd/123`、`abcd/abc` 等。但连字符（`-`）和点（`.`）会被字面解释。注意，`abcd/`（没有后缀）不会被匹配。若需匹配这种情况，需要用大括号包裹通配符使其可选：
 
-```typescript
+```ts
 forRoutes({
   path: 'abcd/{*splat}',
   method: RequestMethod.ALL,
@@ -156,7 +156,7 @@ forRoutes({
 
 `MiddlewareConsumer` 是一个辅助类，提供了多种内置方法来管理中间件。所有方法都可以**链式调用**（[fluent style](https://en.wikipedia.org/wiki/Fluent_interface)）。`forRoutes()` 方法可以接收单个字符串、多个字符串、`RouteInfo` 对象、控制器类，甚至多个控制器类。大多数情况下，你可能会直接传递一个或多个控制器。下面是只传递一个控制器的例子：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
@@ -199,7 +199,7 @@ export class AppModule {
 
 以下是用法示例：
 
-```typescript
+```ts
 consumer
   .apply(LoggerMiddleware)
   .exclude(
@@ -220,7 +220,7 @@ consumer
 
 我们一直用的 `LoggerMiddleware` 类非常简单，没有成员、额外方法或依赖。那为什么不能直接用函数来定义？其实完全可以。这种中间件称为**函数式中间件（Functional Middleware）**。我们将 logger 中间件从类改为函数，演示如下：
 
-```typescript
+```ts
 @@filename(logger.middleware)
 import { Request, Response, NextFunction } from 'express';
 
@@ -237,7 +237,7 @@ export function logger(req, res, next) {
 
 然后在 `AppModule` 中使用：
 
-```typescript
+```ts
 @@filename(app.module)
 consumer
   .apply(logger)
@@ -250,7 +250,7 @@ consumer
 
 如前所述，若要绑定多个按顺序执行的中间件，只需在 `apply()` 方法中用逗号分隔列出：
 
-```typescript
+```ts
 consumer.apply(cors(), helmet(), logger).forRoutes(CatsController)
 ```
 
@@ -258,7 +258,7 @@ consumer.apply(cors(), helmet(), logger).forRoutes(CatsController)
 
 如果希望将中间件绑定到所有已注册路由，可以通过 `INestApplication` 实例的 `use()` 方法实现：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.create(AppModule);
 app.use(logger);

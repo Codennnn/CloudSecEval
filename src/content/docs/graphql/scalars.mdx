@@ -14,7 +14,7 @@ GraphQL 对象类型（Object Type）具有名称和字段，但这些字段最�
 
 `GraphQLISODateTime`（例如 `2019-12-03T09:54:33Z`）默认用于表示 `Date` 类型。如果你希望改用 `GraphQLTimestamp`，可以在 `buildSchemaOptions` 对象中将 `dateScalarMode` 设置为 `'timestamp'`，如下所示：
 
-```typescript
+```ts
 GraphQLModule.forRoot({
   buildSchemaOptions: {
     dateScalarMode: 'timestamp',
@@ -24,7 +24,7 @@ GraphQLModule.forRoot({
 
 同样地，`number` 类型默认使用 `GraphQLFloat` 表示。如果你希望改用 `GraphQLInt`，可以在 `buildSchemaOptions` 对象中将 `numberScalarMode` 设置为 `'integer'`，如下所示：
 
-```typescript
+```ts
 GraphQLModule.forRoot({
   buildSchemaOptions: {
     numberScalarMode: 'integer',
@@ -38,7 +38,7 @@ GraphQLModule.forRoot({
 
 要为 `Date` 标量类型创建自定义实现，只需新建一个类即可。
 
-```typescript
+```ts
 import { Scalar, CustomScalar } from '@nestjs/graphql'
 import { Kind, ValueNode } from 'graphql'
 
@@ -65,7 +65,7 @@ export class DateScalar implements CustomScalar<number, Date> {
 
 完成上述实现后，需要将 `DateScalar` 作为提供者注册到模块中。
 
-```typescript
+```ts
 @Module({
   providers: [DateScalar],
 })
@@ -74,7 +74,7 @@ export class CommonModule {}
 
 现在，我们就可以在类中直接使用 `Date` 类型了。
 
-```typescript
+```ts
 @Field()
 creationDate: Date;
 ```
@@ -91,7 +91,7 @@ $ npm i --save graphql-type-json
 
 安装完成后，我们将自定义解析器传递给 `forRoot()` 方法：
 
-```typescript
+```ts
 import GraphQLJSON from 'graphql-type-json'
 
 @Module({
@@ -106,7 +106,7 @@ export class AppModule {}
 
 现在我们可以在类中使用 `JSON` 类型了。
 
-```typescript
+```ts
 @Field(() => GraphQLJSON)
 info: JSON;
 ```
@@ -117,7 +117,7 @@ info: JSON;
 
 要定义自定义标量类型，需要创建一个新的 `GraphQLScalarType` 实例。下面我们将创建一个自定义的 `UUID` 标量类型。
 
-```typescript
+```ts
 const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function validate(uuid: unknown): string | never {
@@ -138,7 +138,7 @@ export const CustomUuidScalar = new GraphQLScalarType({
 
 同样地，我们将自定义解析器传递给 `forRoot()` 方法：
 
-```typescript
+```ts
 @Module({
   imports: [
     GraphQLModule.forRoot({
@@ -151,7 +151,7 @@ export class AppModule {}
 
 现在我们可以在类中使用 `UUID` 类型了。
 
-```typescript
+```ts
 @Field(() => CustomUuidScalar)
 uuid: string;
 ```
@@ -168,7 +168,7 @@ $ npm i --save graphql-type-json
 
 安装完成后，我们可以将自定义解析器传递给 `forRoot()` 方法：
 
-```typescript
+```ts
 import GraphQLJSON from 'graphql-type-json'
 
 @Module({
@@ -194,7 +194,7 @@ type Foo {
 
 另一种定义标量类型的方法是创建一个简单的类。假设我们希望在模式中增加 `Date` 类型。
 
-```typescript
+```ts
 import { Scalar, CustomScalar } from '@nestjs/graphql'
 import { Kind, ValueNode } from 'graphql'
 
@@ -221,7 +221,7 @@ export class DateScalar implements CustomScalar<number, Date> {
 
 完成后，将 `DateScalar` 注册为提供者。
 
-```typescript
+```ts
 @Module({
   providers: [DateScalar],
 })
@@ -237,7 +237,7 @@ scalar Date
 默认情况下，所有标量类型生成的 TypeScript 类型定义都是 `any`，这并不安全。
 不过，你可以通过配置自定义标量类型的类型映射，来指定 Nest 生成的类型定义：
 
-```typescript
+```ts
 import { GraphQLDefinitionsFactory } from '@nestjs/graphql'
 import { join } from 'path'
 
@@ -268,7 +268,7 @@ scalar Payload
 
 此时，在 `src/graphql.ts` 中会生成如下 TypeScript 类型定义：
 
-```typescript
+```ts
 import _BigNumber from 'bignumber.js'
 
 export type DateTime = Date

@@ -14,7 +14,7 @@ Nest 提供了多种**传输器（Transporters）**，并且还为开发者提�
 
 首先，我们来定义一个代表自定义传输器（Transporter）的类。
 
-```typescript
+```ts
 import { CustomTransportStrategy, Server } from '@nestjs/microservices'
 
 class GoogleCloudPubSubServer extends Server implements CustomTransportStrategy {
@@ -54,7 +54,7 @@ class GoogleCloudPubSubServer extends Server implements CustomTransportStrategy 
 
 有了这些准备后，我们就可以像下面这样，使用自定义策略来替代内置传输器：
 
-```typescript
+```ts
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   strategy: new GoogleCloudPubSubServer(),
 })
@@ -68,7 +68,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 例如，假设在应用的某处定义了如下消息处理器：
 
-```typescript
+```ts
 @MessagePattern('echo')
 echo(@Payload() data: object) {
   return data;
@@ -78,7 +78,7 @@ echo(@Payload() data: object) {
 该消息处理器会被 Nest 运行时自动注册。通过 `Server` 类，你可以查看已注册的所有消息（和事件）处理器，还可以访问并执行分配给它们的实际方法。
 为了验证这一点，我们可以在 `listen()` 方法中，在调用 `callback` 之前添加一个简单的 `console.log`：
 
-```typescript
+```ts
 listen(callback: () => void) {
   console.log(this.messageHandlers);
   callback();
@@ -87,7 +87,7 @@ listen(callback: () => void) {
 
 当应用重启后，你会在终端看到如下日志：
 
-```typescript
+```ts
 Map { 'echo' => [AsyncFunction] { isEventHandler: false } }
 ```
 
@@ -96,7 +96,7 @@ Map { 'echo' => [AsyncFunction] { isEventHandler: false } }
 如你所见，`messageHandlers` 属性是一个包含所有消息（和事件）处理器的 `Map` 集合，消息模式作为键。
 现在，你可以通过键（例如 "echo"）获取对应的消息处理器引用：
 
-```typescript
+```ts
 async listen(callback: () => void) {
   const echoHandler = this.messageHandlers.get('echo');
   console.log(await echoHandler('Hello world!'));
@@ -116,7 +116,7 @@ Hello world!
 
 下面是一个示例：
 
-```typescript
+```ts
 async listen(callback: () => void) {
   const echoHandler = this.messageHandlers.get('echo');
   const streamOrResult = await echoHandler('Hello World');
@@ -135,7 +135,7 @@ async listen(callback: () => void) {
 
 要与外部服务通信、发送和发布消息（或事件），你可以选择使用特定库的 SDK 包，或者实现一个继承自 `ClientProxy` 的自定义客户端类，如下所示：
 
-```typescript
+```ts
 import { ClientProxy, ReadPacket, WritePacket } from '@nestjs/microservices'
 
 class GoogleCloudPubSubClient extends ClientProxy {
@@ -156,7 +156,7 @@ class GoogleCloudPubSubClient extends ClientProxy {
 
 为了观察这些方法的执行时机和内容，我们可以像下面这样添加多个 `console.log` 调用：
 
-```typescript
+```ts
 class GoogleCloudPubSubClient extends ClientProxy {
   async connect(): Promise<any> {
     console.log('connect')
@@ -188,14 +188,14 @@ class GoogleCloudPubSubClient extends ClientProxy {
 
 有了上述实现后，我们可以创建 `GoogleCloudPubSubClient` 类的实例，并运行 `send()` 方法（你可能在前面的章节见过），并订阅返回的可观察流（observable stream）。
 
-```typescript
+```ts
 const googlePubSubClient = new GoogleCloudPubSubClient()
 googlePubSubClient.send('pattern', 'Hello world!').subscribe((response) => console.log(response))
 ```
 
 此时，你应该会在终端看到如下输出：
 
-```typescript
+```ts
 connect
 message: { pattern: 'pattern', data: 'Hello world!' }
 Hello world! // <-- 5 秒后输出
@@ -203,7 +203,7 @@ Hello world! // <-- 5 秒后输出
 
 为了测试我们的 "teardown" 方法（即 `publish()` 方法返回的函数）是否被正确执行，我们可以为流添加一个超时操作符（timeout operator），将超时时间设置为 2 秒，以确保它会在 `setTimeout` 调用 `callback` 之前抛出异常。
 
-```typescript
+```ts
 const googlePubSubClient = new GoogleCloudPubSubClient()
 googlePubSubClient
   .send('pattern', 'Hello world!')
@@ -218,7 +218,7 @@ googlePubSubClient
 
 应用 `timeout` 操作符后，你的终端输出应如下所示：
 
-```typescript
+```ts
 connect
 message: { pattern: 'pattern', data: 'Hello world!' }
 teardown // <-- teardown
@@ -227,13 +227,13 @@ Timeout has occurred
 
 如果你想分发事件（而不是发送消息），可以使用 `emit()` 方法：
 
-```typescript
+```ts
 googlePubSubClient.emit('event', 'Hello world!')
 ```
 
 此时，控制台输出如下：
 
-```typescript
+```ts
 connect
 event to dispatch:  { pattern: 'event', data: 'Hello world!' }
 ```
@@ -242,7 +242,7 @@ event to dispatch:  { pattern: 'event', data: 'Hello world!' }
 
 如果你需要在客户端响应的序列化过程中添加自定义逻辑，可以自定义一个继承自 `ClientProxy` 类或其子类的类。若要修改成功请求的响应内容，可以重写 `serializeResponse` 方法；若要处理通过该客户端的所有错误，则可以重写 `serializeError` 方法。要使用这个自定义类，只需通过 `customClass` 属性将该类本身传递给 `ClientsModule.register()` 方法即可。下面是一个自定义 `ClientProxy` 的示例，它会将每个错误序列化为 `RpcException`（RPC 异常）。
 
-```typescript
+```ts
 @@filename(error-handling.proxy)
 import { ClientTcp, RpcException } from '@nestjs/microservices';
 
@@ -255,7 +255,7 @@ class ErrorHandlingProxy extends ClientTCP {
 
 然后在 `ClientsModule` 中这样使用：
 
-```typescript
+```ts
 @@filename(app.module)
 @Module({
   imports: [

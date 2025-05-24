@@ -13,7 +13,7 @@ $ npm i -D @types/cookie-parser
 
 安装完成后，将 `cookie-parser` 中间件（Middleware）作为全局中间件应用（例如，在你的 `main.ts` 文件中）：
 
-```typescript
+```ts
 import * as cookieParser from 'cookie-parser'
 // 在初始化文件中某处
 app.use(cookieParser())
@@ -30,7 +30,7 @@ app.use(cookieParser())
 
 有了这些配置后，你就可以在路由处理器（Route Handler）中读取 Cookie，例如：
 
-```typescript
+```ts
 @Get()
 findAll(@Req() request: Request) {
   console.log(request.cookies); // 或 "request.cookies['cookieKey']"
@@ -42,7 +42,7 @@ findAll(@Req() request: Request) {
 
 要在响应对象（Response Object）中设置 Cookie，可以使用 `Response#cookie()` 方法：
 
-```typescript
+```ts
 @Get()
 findAll(@Res({ passthrough: true }) response: Response) {
   response.cookie('key', 'value')
@@ -63,7 +63,7 @@ $ npm i @fastify/cookie
 
 安装完成后，需要注册 `@fastify/cookie` 插件：
 
-```typescript
+```ts
 import fastifyCookie from '@fastify/cookie'
 
 // 在你的初始化文件中
@@ -75,7 +75,7 @@ await app.register(fastifyCookie, {
 
 完成上述配置后，你就可以在路由处理器中读取 Cookie 了，示例如下：
 
-```typescript
+```ts
 @Get()
 findAll(@Req() request: FastifyRequest) {
   console.log(request.cookies); // 或 "request.cookies['cookieKey']"
@@ -86,7 +86,7 @@ findAll(@Req() request: FastifyRequest) {
 
 如果需要在响应中设置 Cookie，可以使用 `FastifyReply#setCookie()` 方法：
 
-```typescript
+```ts
 @Get()
 findAll(@Res({ passthrough: true }) response: FastifyReply) {
   response.setCookie('key', 'value')
@@ -103,7 +103,7 @@ findAll(@Res({ passthrough: true }) response: FastifyReply) {
 
 为了让访问请求中的 Cookie 更加便捷和声明式，我们可以创建一个[自定义装饰器](/custom-decorators)。
 
-```typescript
+```ts
 import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 
 export const Cookies = createParamDecorator((data: string, ctx: ExecutionContext) => {
@@ -116,7 +116,7 @@ export const Cookies = createParamDecorator((data: string, ctx: ExecutionContext
 
 有了这个装饰器后，我们可以在路由处理器方法签名中这样使用：
 
-```typescript
+```ts
 @Get()
 findAll(@Cookies('name') name: string) {}
 ```

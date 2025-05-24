@@ -22,7 +22,7 @@ $ npm i --save-dev webpack-node-externals run-script-webpack-plugin webpack
 
 安装完成后，在应用程序根目录下创建一个 `webpack-hmr.config.js` 文件。
 
-```typescript
+```ts
 const nodeExternals = require('webpack-node-externals')
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin')
 
@@ -55,7 +55,7 @@ module.exports = function (options, webpack) {
 
 要启用 **热重载（HMR，Hot-Module Replacement）**，请打开应用的入口文件（`main.ts`），并添加以下与 webpack 相关的指令：
 
-```typescript
+```ts
 declare const module: any
 
 async function bootstrap() {
@@ -100,7 +100,7 @@ $ npm i --save-dev webpack webpack-cli webpack-node-externals ts-loader run-scri
 
 安装完成后，在你的应用根目录下创建一个 `webpack.config.js` 文件。
 
-```typescript
+```ts
 const webpack = require('webpack')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
@@ -146,7 +146,7 @@ module.exports = {
 
 要启用 **热模块替换（Hot Module Replacement, HMR）**，请打开应用的入口文件（`main.ts`），并添加以下与 webpack 相关的代码：
 
-```typescript
+```ts
 declare const module: any
 
 async function bootstrap() {

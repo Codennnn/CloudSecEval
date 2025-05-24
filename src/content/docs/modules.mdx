@@ -25,7 +25,7 @@
 
 接下来，我们将创建 `CatsModule`，演示如何将控制器和服务分组。
 
-```typescript
+```ts
 @@filename(cats/cats.module)
 import { Module } from '@nestjs/common';
 import { CatsController } from './cats.controller';
@@ -42,7 +42,7 @@ export class CatsModule {}
 
 如上，我们在 `cats.module.ts` 文件中定义了 `CatsModule`，并将与该模块相关的所有内容移至 `cats` 目录。最后一步是将该模块导入根模块（即 `app.module.ts` 文件中定义的 `AppModule`）。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { CatsModule } from './cats/cats.module';
@@ -87,7 +87,7 @@ export class AppModule {}
 
 每个模块自动成为**共享模块**。一旦创建，即可被任何模块复用。假设我们希望在多个其他模块之间共享 `CatsService` 的实例。为此，首先需要通过将 `CatsService` 添加到模块的 `exports` 数组中来**导出**该提供者，如下所示：
 
-```typescript
+```ts
 @@filename(cats.module)
 import { Module } from '@nestjs/common';
 import { CatsController } from './cats.controller';
@@ -113,7 +113,7 @@ export class CatsModule {}
 
 如上所述，模块可以导出其内部的提供者。此外，还可以再导出其导入的模块。如下例所示，`CommonModule` 被导入到 `CoreModule`，并同时被导出，这样其他导入 `CoreModule` 的模块也能使用 `CommonModule`。
 
-```typescript
+```ts
 @Module({
   imports: [CommonModule],
   exports: [CommonModule],
@@ -125,7 +125,7 @@ export class CoreModule {}
 
 模块类本身也可以**注入**提供者（例如用于配置）：
 
-```typescript
+```ts
 @@filename(cats.module)
 import { Module } from '@nestjs/common';
 import { CatsController } from './cats.controller';
@@ -163,7 +163,7 @@ export class CatsModule {
 
 当你希望某些提供者（如工具类、数据库连接等）在全局范围内可用时，可以使用 `@Global()` 装饰器将模块声明为**全局模块（global module）**。
 
-```typescript
+```ts
 import { Module, Global } from '@nestjs/common'
 import { CatsController } from './cats.controller'
 import { CatsService } from './cats.service'
@@ -185,7 +185,7 @@ export class CatsModule {}
 
 Nest 中的动态模块（dynamic module）允许你在运行时进行配置。这在需要根据选项或配置动态创建提供者时非常有用。下面简要介绍**动态模块**的工作方式。
 
-```typescript
+```ts
 @@filename()
 import { Module, DynamicModule } from '@nestjs/common';
 import { createDatabaseProviders } from './database.providers';
@@ -232,7 +232,7 @@ export class DatabaseModule {
 
 如果你希望将动态模块注册为全局模块，只需将 `global` 属性设为 `true`：
 
-```typescript
+```ts
 {
   global: true,
   module: DatabaseModule,
@@ -245,7 +245,7 @@ export class DatabaseModule {
 
 `DatabaseModule` 可以按如下方式导入和配置：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { DatabaseModule } from './database/database.module'
 import { User } from './users/entities/user.entity'
@@ -258,7 +258,7 @@ export class AppModule {}
 
 如果你希望再导出动态模块，可以在 `exports` 数组中省略 `forRoot()` 方法调用：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { DatabaseModule } from './database/database.module'
 import { User } from './users/entities/user.entity'

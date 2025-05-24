@@ -87,7 +87,7 @@ $ nest build my-library
 
 首先，需要注意的是，使用库模块与使用其他任何 Nest 模块是一样的。Monorepo 所做的工作，就是以一种让库导入和构建生成变得透明的方式来管理路径。要使用 `MyLibraryService`，我们需要导入其声明模块。可以如下修改 `my-project/src/app.module.ts`，导入 `MyLibraryModule`：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'

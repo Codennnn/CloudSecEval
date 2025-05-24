@@ -10,7 +10,7 @@
 
 首先，我们定义一个 `UsersModule`，用于提供并导出 `UsersService`。`UsersModule` 是 `UsersService` 的**宿主模块**：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { UsersService } from './users.service'
 
@@ -23,7 +23,7 @@ export class UsersModule {}
 
 接下来，定义一个 `AuthModule`，它导入了 `UsersModule`，这样 `UsersModule` 导出的提供者在 `AuthModule` 内部也可用：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { UsersModule } from '../users/users.module'
@@ -38,7 +38,7 @@ export class AuthModule {}
 
 通过这些结构，我们可以在 `AuthModule` 中的 `AuthService` 注入 `UsersService`：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { UsersService } from '../users/users.service'
 
@@ -77,7 +77,7 @@ export class AuthService {
 
 动态模块让我们可以在导入模块时传递参数，从而改变其行为。我们先从消费模块的视角出发，倒推实现方式。首先，回顾下*静态*导入 `ConfigModule` 的例子（即无法影响被导入模块行为的方式）。请注意 `@Module()` 装饰器中的 `imports` 数组：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -93,7 +93,7 @@ export class AppModule {}
 
 再来看下*动态模块*导入的方式，此时我们传递了一个配置对象。对比这两种方式在 `imports` 数组上的区别：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -115,7 +115,7 @@ export class AppModule {}
 
 实际上，`register()` 方法返回的是一个**动态模块（Dynamic Module）**。动态模块就是在运行时创建的模块，拥有与静态模块完全相同的属性，只是多了一个 `module` 属性。我们先回顾下静态模块声明，关注下传递给装饰器的模块选项：
 
-```typescript
+```ts
 @Module({
   imports: [DogsModule],
   controllers: [CatsController],
@@ -137,7 +137,7 @@ export class AppModule {}
 
 理解了这些，我们来看下动态 `ConfigModule` 的声明应该是什么样子。
 
-```typescript
+```ts
 import { DynamicModule, Module } from '@nestjs/common'
 import { ConfigService } from './config.service'
 
@@ -163,7 +163,7 @@ export class ConfigModule {
 
 要定制 `ConfigModule` 的行为，最直接的方式就是在静态 `register()` 方法中传递 `options` 对象。再看下消费模块的 `imports` 属性：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -179,7 +179,7 @@ export class AppModule {}
 
 这样就能把 `options` 对象传递给动态模块了。那如何在 `ConfigModule` 内部使用这个 `options` 呢？我们知道 `ConfigModule` 主要是提供并导出一个可注入的服务 —— ConfigService`。实际上需要用到 `options`的是`ConfigService`。假设我们已经能把 `register()`里的`options`传递给`ConfigService`，那就可以根据 `options`的属性定制服务行为了。（**注意**：目前我们还没实现参数传递，这里先写死`options`，后面会完善。）
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import * as dotenv from 'dotenv'
 import * as fs from 'fs'
@@ -210,7 +210,7 @@ export class ConfigService {
 
 我们先在静态 `register()` 方法里把 `options` 绑定到 IoC 容器。只需把 `options` 作为一个提供者定义即可，这样就能注入到 `ConfigService` 了。请看 `providers` 数组：
 
-```typescript
+```ts
 import { DynamicModule, Module } from '@nestjs/common'
 import { ConfigService } from './config.service'
 
@@ -234,7 +234,7 @@ export class ConfigModule {
 
 最后一步，就是在 `ConfigService` 里注入 `'CONFIG_OPTIONS'` 提供者。注意，使用非类 token 时，需要用 `@Inject()` 装饰器（详见[自定义提供者章节](https://docs.nestjs.com/fundamentals/custom-providers#non-class-based-provider-tokens)）。
 
-```typescript
+```ts
 import * as dotenv from 'dotenv'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -259,7 +259,7 @@ export class ConfigService {
 
 最后补充一点：上面为了简单直接用了字符串 `'CONFIG_OPTIONS'` 作为注入令牌，最佳实践是将其定义为常量（或 `Symbol`），并单独放在一个文件里，然后导入。例如：
 
-```typescript
+```ts
 export const CONFIG_OPTIONS = 'CONFIG_OPTIONS'
 ```
 
@@ -285,7 +285,7 @@ export const CONFIG_OPTIONS = 'CONFIG_OPTIONS'
 
 比如，我们将上面的 `ConfigModule` 用 `ConfigurableModuleBuilder` 重写。首先，定义一个接口，描述 `ConfigModule` 需要的选项：
 
-```typescript
+```ts
 export interface ConfigModuleOptions {
   folder: string
 }
@@ -293,7 +293,7 @@ export interface ConfigModuleOptions {
 
 然后，在 `config.module.ts` 同级新建 `config.module-definition.ts` 文件，利用 `ConfigurableModuleBuilder` 构建模块定义：
 
-```typescript
+```ts
 @@filename(config.module-definition)
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { ConfigModuleOptions } from './interfaces/config-module-options.interface';
@@ -309,7 +309,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 
 接下来，修改 `config.module.ts`，让其继承自动生成的 `ConfigurableModuleClass`：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { ConfigService } from './config.service'
 import { ConfigurableModuleClass } from './config.module-definition'
@@ -323,7 +323,7 @@ export class ConfigModule extends ConfigurableModuleClass {}
 
 将 `ConfigurableModuleClass` 作为父类进行扩展后，`ConfigModule` 不仅具备了之前自定义实现的 `register` 方法，还自动拥有了 `registerAsync` 方法。这样，使用者就可以通过异步工厂等方式，异步地配置该模块：
 
-```typescript
+```ts
 @Module({
   imports: [
     ConfigModule.register({ folder: './config' }),
@@ -343,7 +343,7 @@ export class AppModule {}
 
 最后，更新 `ConfigService`，注入自动生成的模块选项提供者，而不是之前的 `'CONFIG_OPTIONS'`：
 
-```typescript
+```ts
 @Injectable()
 export class ConfigService {
   constructor(@Inject(MODULE_OPTIONS_TOKEN) private options: ConfigModuleOptions) { ... }
@@ -354,7 +354,7 @@ export class ConfigService {
 
 `ConfigurableModuleClass` 默认提供 `register` 及其异步版本 `registerAsync`。如需自定义方法名，可用 `ConfigurableModuleBuilder#setClassMethodName`：
 
-```typescript
+```ts
 @@filename(config.module-definition)
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<ConfigModuleOptions>().setClassMethodName('forRoot').build();
@@ -365,7 +365,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 
 这样会生成带有 `forRoot` 和 `forRootAsync` 方法的类。例如：
 
-```typescript
+```ts
 @Module({
   imports: [
     ConfigModule.forRoot({ folder: './config' }), // 注意这里用的是 "forRoot"
@@ -387,7 +387,7 @@ export class AppModule {}
 
 由于 `registerAsync` 方法（或 `forRootAsync` 等，具体取决于配置）允许使用者传递一个用于生成模块配置的提供者定义，因此库的使用者可以提供一个类来构建配置对象。
 
-```typescript
+```ts
 @Module({
   imports: [
     ConfigModule.registerAsync({
@@ -400,7 +400,7 @@ export class AppModule {}
 
 默认情况下，这个类必须实现一个 `create()` 方法，用于返回模块的配置对象。不过，如果你的库采用了不同的命名规范，可以通过 `ConfigurableModuleBuilder#setFactoryMethodName` 方法自定义工厂方法名，例如 `createConfigOptions`：
 
-```typescript
+```ts
 @@filename(config.module-definition)
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<ConfigModuleOptions>().setFactoryMethodName('createConfigOptions').build();
@@ -411,7 +411,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 
 此时，`ConfigModuleOptionsFactory` 类必须实现 `createConfigOptions` 方法（而不是 `create`）：
 
-```typescript
+```ts
 @Module({
   imports: [
     ConfigModule.registerAsync({
@@ -428,7 +428,7 @@ export class AppModule {}
 
 此时，可以使用 `ConfigurableModuleBuilder#setExtras` 方法。示例如下：
 
-```typescript
+```ts
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<ConfigModuleOptions>()
     .setExtras(
@@ -447,7 +447,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 
 在消费该模块时，可以像下面这样传递额外的 `isGlobal` 标志：
 
-```typescript
+```ts
 @Module({
   imports: [
     ConfigModule.register({
@@ -461,7 +461,7 @@ export class AppModule {}
 
 但由于 `isGlobal` 被声明为"额外"属性，它不会出现在 `MODULE_OPTIONS_TOKEN` 提供者中：
 
-```typescript
+```ts
 @Injectable()
 export class ConfigService {
   constructor(@Inject(MODULE_OPTIONS_TOKEN) private options: ConfigModuleOptions) {
@@ -475,7 +475,7 @@ export class ConfigService {
 
 如有需要，可以扩展自动生成的静态方法（如 `register`、`registerAsync`）：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { ConfigService } from './config.service'
 import {
@@ -507,7 +507,7 @@ export class ConfigModule extends ConfigurableModuleClass {
 
 注意要从模块定义文件导出 `OPTIONS_TYPE` 和 `ASYNC_OPTIONS_TYPE` 类型：
 
-```typescript
+```ts
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN, OPTIONS_TYPE, ASYNC_OPTIONS_TYPE } =
   new ConfigurableModuleBuilder<ConfigModuleOptions>().build()
 ```

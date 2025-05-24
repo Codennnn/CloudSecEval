@@ -6,7 +6,7 @@
 
 如果你希望在通过 `setGlobalPrefix()` 设置路由全局前缀后，某些路由不受该前缀影响，可以使用 `ignoreGlobalPrefix` 选项：
 
-```typescript
+```ts
 const document = SwaggerModule.createDocument(app, options, {
   ignoreGlobalPrefix: true,
 })
@@ -16,7 +16,7 @@ const document = SwaggerModule.createDocument(app, options, {
 
 你可以使用 `DocumentBuilder` 为所有路由定义全局参数，示例如下：
 
-```typescript
+```ts
 const config = new DocumentBuilder()
   .addGlobalParameters({
     name: 'tenantId',
@@ -30,7 +30,7 @@ const config = new DocumentBuilder()
 
 你可以使用 `DocumentBuilder` 为所有路由定义全局响应。这对于在整个应用中为所有端点统一设置响应（如错误码 `401 Unauthorized` 或 `500 Internal Server Error`）非常有用。
 
-```typescript
+```ts
 const config = new DocumentBuilder()
   .addGlobalResponse({
     status: 500,
@@ -48,7 +48,7 @@ const config = new DocumentBuilder()
 
 你可以按照如下方式配置多规范支持：
 
-```typescript
+```ts
 import { NestFactory } from '@nestjs/core'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { AppModule } from './app.module'
@@ -126,7 +126,7 @@ $ npm run start
 
 以下是如何在 Explorer 栏的下拉菜单中设置多个规范的示例：
 
-```typescript
+```ts
 import { NestFactory } from '@nestjs/core'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { AppModule } from './app.module'

@@ -12,7 +12,7 @@ $ npm install --save @nestjs/schedule
 
 要启用任务调度功能，需要在根模块（AppModule）中导入 `ScheduleModule`，并按照如下方式调用其静态方法 `forRoot()`：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -36,7 +36,7 @@ export class AppModule {}
 
 你可以通过在方法定义前添加 `@Cron()` 装饰器（Decorator），来声明一个定时任务。被装饰的方法中包含需要执行的代码，示例如下：
 
-```typescript
+```ts
 import { Injectable, Logger } from '@nestjs/common'
 import { Cron } from '@nestjs/schedule'
 
@@ -108,7 +108,7 @@ export class TasksService {
 `@nestjs/schedule` 包提供了一个包含常用 cron 表达式（Cron
 Expression）的枚举，方便开发者直接使用。你可以按如下方式使用该枚举：
 
-```typescript
+```ts
 import { Injectable, Logger } from '@nestjs/common'
 import { Cron, CronExpression } from '@nestjs/schedule'
 
@@ -174,7 +174,7 @@ export class TasksService {
   </tbody>
 </table>
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { Cron, CronExpression } from '@nestjs/schedule'
 
@@ -194,7 +194,7 @@ export class NotificationService {
 
 要声明某个方法以指定的（周期性）间隔运行，只需在方法定义前添加 `@Interval()` 装饰器（Decorator）。如下面所示，将间隔时间（以毫秒为单位的数字）作为参数传递给装饰器：
 
-```typescript
+```ts
 @Interval(10000)
 handleInterval() {
   this.logger.debug('每 10 秒调用一次');
@@ -205,7 +205,7 @@ handleInterval() {
 
 如果你希望通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API（Dynamic API）</a> 在声明类外部控制声明式定时任务，可以通过如下方式为定时任务指定名称：
 
-```typescript
+```ts
 @Interval('notifications', 2500)
 handleInterval() {}
 ```
@@ -222,7 +222,7 @@ intervals），即在运行时定义定时任务的属性，并且可以**列出
 
 要声明某个方法在指定超时时间后（仅一次）运行，只需在方法定义前添加 `@Timeout()` 装饰器。如下所示，将相对于应用启动时间的延迟（以毫秒为单位）作为参数传递给装饰器：
 
-```typescript
+```ts
 @Timeout(5000)
 handleTimeout() {
   this.logger.debug('在 5 秒后调用一次');
@@ -235,7 +235,7 @@ handleTimeout() {
 
 如果你希望通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API</a> 在声明类外部控制声明式超时任务，可以通过如下方式为超时任务指定名称：
 
-```typescript
+```ts
 @Timeout('notifications', 2500)
 handleTimeout() {}
 ```
@@ -252,7 +252,7 @@ timeouts），即在运行时定义超时任务的属性，并且可以**列出�
 
 你可以通过 `SchedulerRegistry` API，在代码的任意位置根据名称获取 `CronJob` 实例的引用。首先，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
-```typescript
+```ts
 constructor(private schedulerRegistry: SchedulerRegistry) {}
 ```
 
@@ -260,7 +260,7 @@ constructor(private schedulerRegistry: SchedulerRegistry) {}
 
 然后在类中这样使用。假设你已经通过如下方式声明了一个定时任务：
 
-```typescript
+```ts
 @Cron('* * 8 * * *', {
   name: 'notifications',
 })
@@ -269,7 +269,7 @@ triggerNotifications() {}
 
 可以通过如下方式访问该任务：
 
-```typescript
+```ts
 const job = this.schedulerRegistry.getCronJob('notifications')
 
 job.stop()
@@ -289,7 +289,7 @@ console.log(job.lastDate())
 
 **动态创建** 新的定时任务，可以使用 `SchedulerRegistry#addCronJob` 方法，如下所示：
 
-```typescript
+```ts
 addCronJob(name: string, seconds: string) {
   const job = new CronJob(`${seconds} * * * * *`, () => {
     this.logger.warn(`time (${seconds}) for job ${name} to run!`);
@@ -310,7 +310,7 @@ addCronJob(name: string, seconds: string) {
 
 **删除** 指定名称的定时任务，可以使用 `SchedulerRegistry#deleteCronJob` 方法，如下所示：
 
-```typescript
+```ts
 deleteCron(name: string) {
   this.schedulerRegistry.deleteCronJob(name);
   this.logger.warn(`job ${name} deleted!`);
@@ -319,7 +319,7 @@ deleteCron(name: string) {
 
 **列出** 所有定时任务，可以使用 `SchedulerRegistry#getCronJobs` 方法，如下所示：
 
-```typescript
+```ts
 getCrons() {
   const jobs = this.schedulerRegistry.getCronJobs();
   jobs.forEach((value, key, map) => {
@@ -340,20 +340,20 @@ getCrons() {
 
 可以通过 `SchedulerRegistry#getInterval` 方法获取某个定时任务（interval）的引用。如前所述，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
-```typescript
+```ts
 constructor(private schedulerRegistry: SchedulerRegistry) {}
 ```
 
 然后可以这样使用：
 
-```typescript
+```ts
 const interval = this.schedulerRegistry.getInterval('notifications')
 clearInterval(interval)
 ```
 
 **动态创建**新的定时任务间隔，可以使用 `SchedulerRegistry#addInterval` 方法，示例如下：
 
-```typescript
+```ts
 addInterval(name: string, milliseconds: number) {
   const callback = () => {
     this.logger.warn(`Interval ${name} executing at time (${milliseconds})!`);
@@ -369,7 +369,7 @@ addInterval(name: string, milliseconds: number) {
 
 **删除**指定名称的定时任务，可以使用 `SchedulerRegistry#deleteInterval` 方法，示例如下：
 
-```typescript
+```ts
 deleteInterval(name: string) {
   this.schedulerRegistry.deleteInterval(name);
   this.logger.warn(`Interval ${name} deleted!`);
@@ -378,7 +378,7 @@ deleteInterval(name: string) {
 
 **列出**所有定时任务，可以使用 `SchedulerRegistry#getIntervals` 方法，示例如下：
 
-```typescript
+```ts
 getIntervals() {
   const intervals = this.schedulerRegistry.getIntervals();
   intervals.forEach(key => this.logger.log(`Interval: ${key}`));
@@ -389,20 +389,20 @@ getIntervals() {
 
 可以通过 `SchedulerRegistry#getTimeout` 方法获取某个超时（timeout）的引用。如前所述，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
-```typescript
+```ts
 constructor(private readonly schedulerRegistry: SchedulerRegistry) {}
 ```
 
 然后可以这样使用：
 
-```typescript
+```ts
 const timeout = this.schedulerRegistry.getTimeout('notifications')
 clearTimeout(timeout)
 ```
 
 **动态创建**新的超时任务，可以使用 `SchedulerRegistry#addTimeout` 方法，示例如下：
 
-```typescript
+```ts
 addTimeout(name: string, milliseconds: number) {
   const callback = () => {
     this.logger.warn(`Timeout ${name} executing after (${milliseconds})!`);
@@ -418,7 +418,7 @@ addTimeout(name: string, milliseconds: number) {
 
 **删除**指定名称的超时任务，可以使用 `SchedulerRegistry#deleteTimeout` 方法，示例如下：
 
-```typescript
+```ts
 deleteTimeout(name: string) {
   this.schedulerRegistry.deleteTimeout(name);
   this.logger.warn(`Timeout ${name} deleted!`);
@@ -427,7 +427,7 @@ deleteTimeout(name: string) {
 
 **列出**所有超时任务，可以使用 `SchedulerRegistry#getTimeouts` 方法，示例如下：
 
-```typescript
+```ts
 getTimeouts() {
   const timeouts = this.schedulerRegistry.getTimeouts();
   timeouts.forEach(key => this.logger.log(`Timeout: ${key}`));

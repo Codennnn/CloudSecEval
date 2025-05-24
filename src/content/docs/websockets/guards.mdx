@@ -8,7 +8,7 @@ WebSocket 守卫（Guard）与[常规 HTTP 应用守卫](/guards)在本质上没
 
 下例演示了方法作用域的守卫用法。与基于 HTTP 的应用类似，你也可以使用网关作用域的守卫（即在网关类前添加 `@UseGuards()` 装饰器）。
 
-```typescript
+```ts
 @@filename()
 @UseGuards(AuthGuard)
 @SubscribeMessage('events')

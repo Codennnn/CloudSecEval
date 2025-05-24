@@ -26,7 +26,7 @@ $ npm install --save @nestjs/cqrs
 
 安装完成后，进入应用的根模块（通常为 `AppModule`），并导入 `CqrsModule.forRoot()`：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { CqrsModule } from '@nestjs/cqrs'
 
@@ -51,7 +51,7 @@ export class AppModule {}
 
 命令用于更改应用程序状态。命令应以任务为导向，而非以数据为中心。当命令被分发时，会由对应的 **命令处理器（Command Handler）** 进行处理。处理器负责更新应用程序状态。
 
-```typescript
+```ts
 @@filename(heroes-game.service)
 @Injectable()
 export class HeroesGameService {
@@ -81,7 +81,7 @@ export class HeroesGameService {
 
 在上面的代码片段中，我们实例化了 `KillDragonCommand` 类，并将其实例传递给 `CommandBus` 的 `execute()` 方法。下面是演示用的命令类：
 
-```typescript
+```ts
 @@filename(kill-dragon.command)
 export class KillDragonCommand extends Command<{
   actionId: string // 此类型表示命令执行的结果
@@ -108,7 +108,7 @@ export class KillDragonCommand extends Command {
 
 接下来，我们为 `KillDragonCommand` 命令创建一个处理器。
 
-```typescript
+```ts
 @@filename(kill-dragon.handler)
 @CommandHandler(KillDragonCommand)
 export class KillDragonHandler implements ICommandHandler<KillDragonCommand> {
@@ -156,7 +156,7 @@ export class KillDragonHandler {
 
 最后，确保在模块中将 `KillDragonHandler` 注册为提供者：
 
-```typescript
+```ts
 providers: [KillDragonHandler]
 ```
 
@@ -166,7 +166,7 @@ providers: [KillDragonHandler]
 
 `QueryBus`（查询总线）遵循与 `CommandBus`（命令总线）相同的模式。查询处理器应实现 `IQueryHandler`（查询处理器接口）接口，并使用 `@QueryHandler()` 装饰器进行注解。请参考以下示例：
 
-```typescript
+```ts
 export class GetHeroQuery extends Query<Hero> {
   constructor(public readonly heroId: string) {}
 }
@@ -176,7 +176,7 @@ export class GetHeroQuery extends Query<Hero> {
 
 要检索 hero 数据，我们需要创建一个查询处理器：
 
-```typescript
+```ts
 @@filename(get-hero.handler)
 @QueryHandler(GetHeroQuery)
 export class GetHeroHandler implements IQueryHandler<GetHeroQuery> {
@@ -204,13 +204,13 @@ export class GetHeroHandler {
 
 最后，请确保在模块中将 `GetHeroHandler` 注册为提供者：
 
-```typescript
+```ts
 providers: [GetHeroHandler]
 ```
 
 现在，可以通过 `QueryBus` 分发查询：
 
-```typescript
+```ts
 const hero = await this.queryBus.execute(new GetHeroQuery(heroId)) // "hero" 的类型会被自动推断为 "Hero"
 ```
 
@@ -220,7 +220,7 @@ const hero = await this.queryBus.execute(new GetHeroQuery(heroId)) // "hero" 的
 
 下面我们以一个示例来创建一个事件类：
 
-```typescript
+```ts
 @@filename(hero-killed-dragon.event)
 export class HeroKilledDragonEvent {
   constructor(
@@ -239,7 +239,7 @@ export class HeroKilledDragonEvent {
 
 虽然我们可以直接通过 `EventBus.publish()` 方法分发事件，但同样也可以在模型中分发事件。下面我们将更新 `Hero` 模型，在调用 `killEnemy()` 方法时分发 `HeroKilledDragonEvent` 事件。
 
-```typescript
+```ts
 @@filename(hero.model)
 export class Hero extends AggregateRoot {
   constructor(private id: string) {
@@ -267,7 +267,7 @@ export class Hero extends AggregateRoot {
 
 `apply()` 方法用于分发事件。它接收一个事件对象作为参数。然而，由于我们的模型并不了解 `EventBus`，因此需要将事件发布器与模型关联起来。我们可以通过 `EventPublisher` 类来实现这一点。
 
-```typescript
+```ts
 @@filename(kill-dragon.handler)
 @CommandHandler(KillDragonCommand)
 export class KillDragonHandler implements ICommandHandler<KillDragonCommand> {
@@ -309,7 +309,7 @@ export class KillDragonHandler {
 
 请注意，在本例中我们还调用了模型的 `commit()` 方法。该方法用于分发所有待处理的事件。若希望自动分发事件，可以将 `autoCommit` 属性设置为 `true`：
 
-```typescript
+```ts
 export class Hero extends AggregateRoot {
   constructor(private id: string) {
     super()
@@ -320,7 +320,7 @@ export class Hero extends AggregateRoot {
 
 如果我们希望将事件发布器合并到一个尚未实例化的对象（而是一个类）中，可以使用 `EventPublisher#mergeClassContext` 方法：
 
-```typescript
+```ts
 const HeroModel = this.publisher.mergeClassContext(Hero)
 const hero = new HeroModel('id') // <-- HeroModel 是一个类
 ```
@@ -329,7 +329,7 @@ const hero = new HeroModel('id') // <-- HeroModel 是一个类
 
 此外，我们还可以通过 `EventBus` 手动发布事件：
 
-```typescript
+```ts
 this.eventBus.publish(new HeroKilledDragonEvent())
 ```
 
@@ -337,7 +337,7 @@ this.eventBus.publish(new HeroKilledDragonEvent())
 
 每个事件都可以拥有多个**事件处理器**。
 
-```typescript
+```ts
 @@filename(hero-killed-dragon.handler)
 @EventsHandler(HeroKilledDragonEvent)
 export class HeroKilledDragonHandler implements IEventHandler<HeroKilledDragonEvent> {
@@ -358,7 +358,7 @@ export class HeroKilledDragonHandler implements IEventHandler<HeroKilledDragonEv
 
 与命令和查询一样，记得在模块中将 `HeroKilledDragonHandler` 注册为提供者：
 
-```typescript
+```ts
 providers: [HeroKilledDragonHandler]
 ```
 
@@ -370,7 +370,7 @@ Saga 是非常强大的功能。单个 Saga 可以监听 1..\* 个事件。借�
 
 下面我们来创建一个 Saga，用于监听 `HeroKilledDragonEvent`，并分发 `DropAncientItemCommand`（掉落远古物品命令）。
 
-```typescript
+```ts
 @@filename(heroes-game.saga)
 @Injectable()
 export class HeroesGameSagas {
@@ -403,7 +403,7 @@ export class HeroesGameSagas {
 
 与查询、命令和事件处理器类似，请确保在模块中将 `HeroesGameSagas` 注册为提供者：
 
-```typescript
+```ts
 providers: [HeroesGameSagas]
 ```
 
@@ -411,7 +411,7 @@ providers: [HeroesGameSagas]
 
 事件处理器是异步执行的，因此必须始终妥善处理异常，以防止应用进入不一致的状态。如果异常未被处理，`EventBus` 会创建一个 `UnhandledExceptionInfo` 对象，并将其推送到 `UnhandledExceptionBus` 流中。该流是一个 `Observable`，可用于处理未捕获的异常。
 
-```typescript
+```ts
 private destroy$ = new Subject<void>();
 
 constructor(private unhandledExceptionsBus: UnhandledExceptionBus) {
@@ -431,7 +431,7 @@ onModuleDestroy() {
 
 如果需要筛选特定异常，可以使用 `ofType` 操作符，示例如下：
 
-```typescript
+```ts
 this.unhandledExceptionsBus
   .pipe(takeUntil(this.destroy$), UnhandledExceptionBus.ofType(TransactionNotAllowedException))
   .subscribe((exceptionInfo) => {
@@ -443,7 +443,7 @@ this.unhandledExceptionsBus
 
 `UnhandledExceptionInfo` 对象包含以下属性：
 
-```typescript
+```ts
 export interface UnhandledExceptionInfo<Cause = IEvent | ICommand, Exception = any> {
   /**
    * 抛出的异常。
@@ -460,7 +460,7 @@ export interface UnhandledExceptionInfo<Cause = IEvent | ICommand, Exception = a
 
 `CommandBus`、`QueryBus` 和 `EventBus` 都是 **可观察对象**。这意味着我们可以订阅整个事件流，例如处理所有事件。比如，我们可以将所有事件记录到控制台，或者保存到事件存储中。
 
-```typescript
+```ts
 private destroy$ = new Subject<void>();
 
 constructor(private eventBus: EventBus) {
@@ -490,7 +490,7 @@ onModuleDestroy() {
 1. 依赖于请求作用域的提供者。
 2. 或者，显式地在 `@CommandHandler`、`@QueryHandler` 或 `@EventsHandler` 装饰器中将其作用域设置为 `REQUEST`，如下所示：
 
-```typescript
+```ts
 @CommandHandler(KillDragonCommand, {
   scope: Scope.REQUEST,
 })
@@ -503,7 +503,7 @@ export class KillDragonHandler {
 
 请求载荷必须是继承自 `AsyncContext`（由 `@nestjs/cqrs` 提供）的类实例。`AsyncContext` 作为请求上下文，能够在整个请求生命周期中持有可访问的数据。
 
-```typescript
+```ts
 import { AsyncContext } from '@nestjs/cqrs'
 
 export class MyRequest extends AsyncContext {
@@ -515,14 +515,14 @@ export class MyRequest extends AsyncContext {
 
 在执行命令时，将自定义的请求上下文作为第二个参数传递给 `CommandBus#execute` 方法：
 
-```typescript
+```ts
 const myRequest = new MyRequest(user)
 await this.commandBus.execute(new KillDragonCommand(heroId, killDragonDto.dragonId), myRequest)
 ```
 
 这样，`MyRequest` 实例就会作为 `REQUEST` 提供者，注入到对应的处理器中：
 
-```typescript
+```ts
 @CommandHandler(KillDragonCommand, {
   scope: Scope.REQUEST,
 })
@@ -537,14 +537,14 @@ export class KillDragonHandler {
 
 对于查询（Query）同样适用：
 
-```typescript
+```ts
 const myRequest = new MyRequest(user)
 const hero = await this.queryBus.execute(new GetHeroQuery(heroId), myRequest)
 ```
 
 在查询处理器中：
 
-```typescript
+```ts
 @QueryHandler(GetHeroQuery, {
   scope: Scope.REQUEST,
 })
@@ -559,7 +559,7 @@ export class GetHeroHandler {
 
 对于事件（Event），虽然你可以将请求提供者传递给 `EventBus#publish`，但这种做法较少见。更常见的方式是使用 `EventPublisher`，将请求提供者合并到模型对象中：
 
-```typescript
+```ts
 const hero = this.publisher.mergeObjectContext(
   await this.repository.findOneById(+heroId),
   this.request // 在此注入请求上下文
@@ -570,7 +570,7 @@ const hero = this.publisher.mergeObjectContext(
 
 Saga 始终是单例实例，因为它们负责管理长生命周期的流程。不过，你可以从事件对象中获取请求提供者：
 
-```typescript
+```ts
 @Saga()
 dragonKilled = (events$: Observable<any>): Observable<ICommand> => {
   return events$.pipe(

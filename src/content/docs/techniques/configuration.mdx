@@ -24,7 +24,7 @@ $ npm i --save @nestjs/config
 
 安装完成后，我们可以导入 `ConfigModule`。通常会在根模块 `AppModule` 中导入，并通过其静态方法 `.forRoot()` 控制行为。在这一步，环境变量的键值对会被解析和加载。后续我们还会介绍如何在其他功能模块中访问 `ConfigModule` 提供的 `ConfigService`。
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -54,7 +54,7 @@ $ nest start --env-file .env
 
 默认情况下，`@nestjs/config` 包会在应用程序根目录查找 `.env` 文件。如果你希望指定其他路径，可以在传递给 `forRoot()` 的选项对象中设置 `envFilePath` 属性，例如：
 
-```typescript
+```ts
 ConfigModule.forRoot({
   envFilePath: '.development.env',
 })
@@ -62,7 +62,7 @@ ConfigModule.forRoot({
 
 你也可以同时指定多个 `.env` 文件路径，如下所示：
 
-```typescript
+```ts
 ConfigModule.forRoot({
   envFilePath: ['.env.development.local', '.env.development'],
 })
@@ -74,7 +74,7 @@ ConfigModule.forRoot({
 
 如果你不希望加载 `.env` 文件，而是只想直接访问运行环境中的环境变量（例如通过 shell 导出的 `export DATABASE_USER=test`），可以将选项对象的 `ignoreEnvFile` 属性设置为 `true`，如下所示：
 
-```typescript
+```ts
 ConfigModule.forRoot({
   ignoreEnvFile: true,
 })
@@ -84,7 +84,7 @@ ConfigModule.forRoot({
 
 如果你希望在其他模块中使用 `配置模块（ConfigModule）`，通常需要在每个模块中单独导入。或者，你也可以通过将选项对象的 `isGlobal` 属性设置为 `true`，将其声明为[全局模块](https://docs.nestjs.com/modules#global-modules)。这样一来，只需在根模块（如 `AppModule`）中导入一次，后续其他模块无需再单独导入。
 
-```typescript
+```ts
 ConfigModule.forRoot({
   isGlobal: true,
 })
@@ -96,7 +96,7 @@ ConfigModule.forRoot({
 
 自定义配置文件需要导出一个工厂函数，返回一个配置对象。该对象可以是任意嵌套的普通 JavaScript 对象。此时，`process.env` 对象中会包含所有已解析的环境变量（包括 `.env` 文件和外部定义的变量，合并方式见[上文](techniques/configuration#getting-started)）。你可以在工厂函数中添加类型转换、默认值等逻辑。例如：
 
-```typescript
+```ts
 @@filename(config/configuration)
 export default () => ({
   port: parseInt(process.env.PORT, 10) || 3000,
@@ -109,7 +109,7 @@ export default () => ({
 
 我们可以通过在传递给 `ConfigModule.forRoot()` 的选项对象中设置 `load` 属性来加载该文件：
 
-```typescript
+```ts
 import configuration from './config/configuration'
 
 @Module({
@@ -150,7 +150,7 @@ $ npm i -D @types/js-yaml
 
 安装完成后，可以使用 `yaml#load` 方法加载刚刚创建的 YAML 文件：
 
-```typescript
+```ts
 @@filename(config/configuration)
 import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
@@ -171,7 +171,7 @@ export default () => {
 
 例如，如果你希望确保端口号在某个范围内，可以在工厂函数中添加校验步骤：
 
-```typescript
+```ts
 @@filename(config/configuration)
 export default () => {
   const config = yaml.load(
@@ -194,7 +194,7 @@ export default () => {
 
 要访问 `配置服务（ConfigService）` 中的配置信息，首先需要注入 `ConfigService`。和其他提供者（Provider）一样，需要在使用它的模块中导入其所在的 `配置模块（ConfigModule）`（除非你在 `ConfigModule.forRoot()` 的选项对象中将 `isGlobal` 属性设置为 `true`）。在功能模块中导入方式如下：
 
-```typescript
+```ts
 @@filename(feature.module)
 @Module({
   imports: [ConfigModule],
@@ -204,7 +204,7 @@ export default () => {
 
 然后可以通过标准的构造函数注入方式注入 `ConfigService`：
 
-```typescript
+```ts
 constructor(private configService: ConfigService) {}
 ```
 
@@ -212,7 +212,7 @@ constructor(private configService: ConfigService) {}
 
 在类中即可这样使用：
 
-```typescript
+```ts
 // 获取环境变量
 const dbUser = this.configService.get<string>('DATABASE_USER')
 
@@ -224,7 +224,7 @@ const dbHost = this.configService.get<string>('database.host')
 
 你还可以通过接口类型提示获取整个嵌套的自定义配置对象：
 
-```typescript
+```ts
 interface DatabaseConfig {
   host: string
   port: number
@@ -238,14 +238,14 @@ const port = dbConfig.port
 
 `get()` 方法还支持可选的第二个参数，用于指定默认值（当对应 key 不存在时返回该值）：
 
-```typescript
+```ts
 // 当未定义 database.host 时，使用 "localhost" 作为默认值
 const dbHost = this.configService.get<string>('database.host', 'localhost')
 ```
 
 `ConfigService` 支持两个可选泛型参数。第一个用于防止访问不存在的配置属性，示例如下：
 
-```typescript
+```ts
 interface EnvironmentVariables {
   PORT: number;
   TIMEOUT: string;
@@ -264,7 +264,7 @@ constructor(private configService: ConfigService<EnvironmentVariables>) {
 
 此外，借助 `infer` 特性，即使使用点号语法访问嵌套自定义配置对象的属性，也能自动推断类型：
 
-```typescript
+```ts
 constructor(private configService: ConfigService<{ database: { host: string } }>) {
   const dbHost = this.configService.get('database.host', { infer: true })!;
   // typeof dbHost === "string"                                          |
@@ -274,7 +274,7 @@ constructor(private configService: ConfigService<{ database: { host: string } }>
 
 第二个泛型参数依赖于第一个，用于断言类型，去除 `ConfigService` 方法在启用 `strictNullChecks` 时可能返回的 `undefined` 类型。例如：
 
-```typescript
+```ts
 // ...
 constructor(private configService: ConfigService<{ PORT: number }, true>) {
   //                                                               ^^^^
@@ -289,7 +289,7 @@ constructor(private configService: ConfigService<{ PORT: number }, true>) {
 
 `配置模块（ConfigModule）` 允许你像前文[自定义配置文件](techniques/configuration#custom-configuration-files)所述一样，定义并加载多个自定义配置文件。你可以通过嵌套配置对象来管理复杂的配置层级结构。除此之外，还可以通过 `registerAs()` 函数返回一个"命名空间配置对象（namespaced configuration object）"，示例如下：
 
-```typescript
+```ts
 @@filename(config/database.config)
 export default registerAs('database', () => ({
   host: process.env.DATABASE_HOST,
@@ -303,7 +303,7 @@ export default registerAs('database', () => ({
 
 要加载命名空间配置，可以像加载自定义配置文件一样，将其传递给 `forRoot()` 方法选项对象的 `load` 属性：
 
-```typescript
+```ts
 import databaseConfig from './config/database.config'
 
 @Module({
@@ -318,13 +318,13 @@ export class AppModule {}
 
 此时，如果要从 `database` 命名空间获取 `host` 配置项，可以使用点号语法，前缀为命名空间名称（即 `registerAs()` 的第一个参数）：
 
-```typescript
+```ts
 const dbHost = this.configService.get<string>('database.host')
 ```
 
 另一种常用方式是直接注入 `database` 命名空间，这样可以获得更强的类型提示：
 
-```typescript
+```ts
 constructor(
   @Inject(databaseConfig.KEY)
   private dbConfig: ConfigType<typeof databaseConfig>,
@@ -339,7 +339,7 @@ constructor(
 
 示例：
 
-```typescript
+```ts
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -351,7 +351,7 @@ import databaseConfig from './config/database.config';
 
 要理解 `.asProvider()` 方法的作用，可以看下它的返回值结构：
 
-```typescript
+```ts
 // .asProvider() 方法的返回值
 {
   imports: [ConfigModule.forFeature(databaseConfig)],
@@ -366,7 +366,7 @@ import databaseConfig from './config/database.config';
 
 由于访问 `process.env` 可能存在性能瓶颈，你可以在传递给 `ConfigModule.forRoot()` 的选项对象中设置 `cache` 属性，以提升 `ConfigService#get` 方法读取环境变量时的性能。
 
-```typescript
+```ts
 ConfigModule.forRoot({
   cache: true,
 })
@@ -376,7 +376,7 @@ ConfigModule.forRoot({
 
 目前为止，我们通常在根模块（如 `AppModule`）中通过 `forRoot()` 方法加载所有配置文件。但如果你的项目结构较为复杂，存在多个特性模块分别拥有各自的配置文件，可以不必在根模块一次性加载所有配置。`@nestjs/config` 包提供了**局部注册（partial registration）**功能，只引用与当前特性模块相关的配置文件。你可以在特性模块中通过 `forFeature()` 静态方法实现局部注册，示例如下：
 
-```typescript
+```ts
 import databaseConfig from './config/database.config'
 
 @Module({
@@ -402,7 +402,7 @@ $ npm install --save joi
 
 安装完成后，可以像下面这样定义 Joi 校验模式，并通过 `forRoot()` 方法的 `validationSchema` 选项传递：
 
-```typescript
+```ts
 @@filename(app.module)
 import * as Joi from 'joi';
 
@@ -425,7 +425,7 @@ export class AppModule {}
 
 默认情况下，校验模式中未声明的环境变量（即未知环境变量）是允许的，不会触发校验异常。同时，所有校验错误都会被报告。你可以通过 `forRoot()` 选项对象的 `validationOptions` 属性传递一个选项对象，来修改这些行为。该对象可以包含 [Joi 校验选项](https://joi.dev/api/?v=17.3.0#anyvalidatevalue-options)支持的任何标准属性。例如，若要反转上述两个默认设置，可以这样写：
 
-```typescript
+```ts
 @@filename(app.module)
 import * as Joi from 'joi';
 
@@ -466,7 +466,7 @@ export class AppModule {}
 - 一个带有校验约束的类
 - 一个利用 `plainToInstance` 和 `validateSync` 方法的校验函数
 
-```typescript
+```ts
 @@filename(env.validation)
 import { plainToInstance } from 'class-transformer';
 import { IsEnum, IsNumber, Max, Min, validateSync } from 'class-validator';
@@ -505,7 +505,7 @@ export function validate(config: Record<string, unknown>) {
 
 定义好校验函数后，可以如下方式将其作为 `ConfigModule` 的配置选项：
 
-```typescript
+```ts
 @@filename(app.module)
 import { validate } from './env.validation';
 
@@ -523,7 +523,7 @@ export class AppModule {}
 
 `ConfigService` 提供了通用的 `get()` 方法，可以通过键名获取对应的配置信息。除此之外，我们还可以为其添加自定义的 `getter` 属性，使代码风格更加简洁、自然。
 
-```typescript
+```ts
 @@filename()
 @Injectable()
 export class ApiConfigService {
@@ -549,7 +549,7 @@ export class ApiConfigService {
 
 现在可以像下面这样使用 getter 函数：
 
-```typescript
+```ts
 @@filename(app.service)
 @Injectable()
 export class AppService {
@@ -575,7 +575,7 @@ export class AppService {
 
 如果某个模块的配置依赖于环境变量，并且这些变量是从 `.env` 文件加载的，你可以使用 `ConfigModule.envVariablesLoaded` 钩子，确保在操作 `process.env` 对象前，`.env` 文件已被加载。例如：
 
-```typescript
+```ts
 export async function getStorageModule() {
   await ConfigModule.envVariablesLoaded
   return process.env.STORAGE === 'S3' ? S3StorageModule : DefaultStorageModule

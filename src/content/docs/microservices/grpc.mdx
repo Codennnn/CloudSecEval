@@ -18,7 +18,7 @@ $ npm i --save @grpc/grpc-js @grpc/proto-loader
 
 与其他 Nest 微服务传输层实现类似，你可以通过传递给 `createMicroservice()` 方法的选项对象中的 `transport` 属性来选择 gRPC 传输机制。下面的示例将演示如何搭建一个 hero 服务。`options` 属性用于提供该服务的元数据，其各项属性将在<a href="microservices/grpc#options">下文</a>详细说明。
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.GRPC,
@@ -128,7 +128,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 下面我们来定义一个名为 `HeroesService` 的示例 gRPC 服务。在上文的 `options` 对象中，`protoPath` 属性指定了 `.proto` 定义文件 `hero.proto` 的路径。`hero.proto` 文件采用 <a href="https://developers.google.com/protocol-buffers">Protocol Buffers（协议缓冲）</a> 语法进行结构定义。示例如下：
 
-```typescript
+```ts
 // hero/hero.proto
 syntax = "proto3";
 
@@ -154,7 +154,7 @@ message Hero {
 
 > info **提示** 之前微服务章节介绍的 `@MessagePattern()` 装饰器（<a href="microservices/basics#request-response">详细说明</a>）在基于 gRPC 的微服务中不再使用。对于 gRPC 微服务，`@GrpcMethod()` 装饰器起到了同样的作用。
 
-```typescript
+```ts
 @@filename(heroes.controller)
 @Controller()
 export class HeroesController {
@@ -189,7 +189,7 @@ export class HeroesController {
 
 `@GrpcMethod()` 装饰器的两个参数都是可选的。如果省略第二个参数（如 `'FindOne'`），Nest 会自动将 `.proto` 文件中的 rpc 方法与处理器关联，关联规则是将处理器方法名转换为大驼峰命名（UpperCamelCase），例如 `findOne` 处理器会自动关联到 `FindOne` rpc 方法。如下所示：
 
-```typescript
+```ts
 @@filename(heroes.controller)
 @Controller()
 export class HeroesController {
@@ -218,7 +218,7 @@ export class HeroesController {
 
 你也可以省略 `@GrpcMethod()` 的第一个参数。在这种情况下，Nest 会根据处理器所在类的名称自动将其与 proto 定义文件中的服务定义关联。例如，下面的代码中，`HeroesService` 类会将其处理器方法与 `hero.proto` 文件中名称为 `HeroesService` 的服务定义自动关联。
 
-```typescript
+```ts
 @@filename(heroes.controller)
 @Controller()
 export class HeroesService {
@@ -251,7 +251,7 @@ Nest 应用可以作为 gRPC 客户端，消费在 `.proto` 文件中定义的�
 
 推荐的方式是导入 `ClientsModule`。使用 `register()` 方法，将在 `.proto` 文件中定义的一组服务绑定到一个注入令牌（injection token），并进行相关配置。`name` 属性即为注入令牌。对于 gRPC 服务，需设置 `transport: Transport.GRPC`。`options` 属性是一个对象，其属性与<a href="microservices/grpc#options">上文</a>描述一致。
 
-```typescript
+```ts
 imports: [
   ClientsModule.register([
     {
@@ -270,7 +270,7 @@ imports: [
 
 注册完成后，我们可以通过 `@Inject()` 注入已配置的 `ClientGrpc` 对象。然后，使用 `ClientGrpc` 对象的 `getService()` 方法获取服务实例，如下所示。
 
-```typescript
+```ts
 @Injectable()
 export class AppService implements OnModuleInit {
   private heroesService: HeroesService
@@ -293,7 +293,7 @@ export class AppService implements OnModuleInit {
 
 另外，你也可以使用 `@Client()` 装饰器来实例化 `ClientGrpc` 对象，如下所示：
 
-```typescript
+```ts
 @Injectable()
 export class AppService implements OnModuleInit {
   @Client({
@@ -323,7 +323,7 @@ export class AppService implements OnModuleInit {
 
 注意，所有服务方法都采用**小驼峰命名法（lower camel case）**（以符合语言的自然约定）。例如，虽然 `.proto` 文件 `HeroesService` 的定义中包含 `FindOne()` 函数，但 `heroesService` 实例会提供 `findOne()` 方法。
 
-```typescript
+```ts
 interface HeroesService {
   findOne(data: { id: number }): Observable<any>
 }
@@ -331,7 +331,7 @@ interface HeroesService {
 
 消息处理器（message handler）同样可以返回一个 `Observable`，此时结果值会在流结束前持续发出。
 
-```typescript
+```ts
 @@filename(heroes.controller)
 @Get()
 call(): Observable<any> {
@@ -346,7 +346,7 @@ call() {
 
 如需随请求发送 gRPC 元数据（metadata），可以传递第二个参数，如下所示：
 
-```typescript
+```ts
 call(): Observable<any> {
   const metadata = new Metadata();
   metadata.add('Set-Cookie', 'yummy_cookie=choco');
@@ -375,7 +375,7 @@ $ npm i --save @grpc/reflection
 
 然后，可以通过在 gRPC 服务器选项中的 `onLoadPackageDefinition` 钩子（hook）集成反射服务，示例如下：
 
-```typescript
+```ts
 @@filename(main)
 import { ReflectionService } from '@grpc/reflection';
 
@@ -405,7 +405,7 @@ Nest 支持两种方式实现 gRPC 流式处理器：
 
 我们来定义一个新的 gRPC 示例服务，名为 `HelloService`。`hello.proto` 文件采用 <a href="https://developers.google.com/protocol-buffers">Protocol Buffers（协议缓冲）</a> 进行结构定义。文件内容如下：
 
-```typescript
+```ts
 // hello/hello.proto
 syntax = "proto3";
 
@@ -429,7 +429,7 @@ message HelloResponse {
 
 基于上述 `.proto` 文件，我们定义 `HelloService` 接口如下：
 
-```typescript
+```ts
 interface HelloService {
   bidiHello(upstream: Observable<HelloRequest>): Observable<HelloResponse>
   lotsOfGreetings(upstream: Observable<HelloRequest>): Observable<HelloResponse>
@@ -450,7 +450,7 @@ interface HelloResponse {
 
 `@GrpcStreamMethod()` 装饰器会将函数参数作为 RxJS 的 `Observable`（可观察对象）传递。因此，我们可以接收并处理多条消息。
 
-```typescript
+```ts
 @GrpcStreamMethod()
 bidiHello(messages: Observable<any>, metadata: Metadata, call: ServerDuplexStream<any, any>): Observable<any> {
   const subject = new Subject();
@@ -477,7 +477,7 @@ bidiHello(messages: Observable<any>, metadata: Metadata, call: ServerDuplexStrea
 
 根据服务定义（在 `.proto` 文件中），`BidiHello` 方法应当以流的方式向服务端发送请求。为了从客户端向流发送多条异步消息，我们可以利用 RxJS 的 `ReplaySubject` 类。
 
-```typescript
+```ts
 const helloService = this.client.getService<HelloService>('HelloService')
 const helloRequest$ = new ReplaySubject<HelloRequest>()
 
@@ -498,7 +498,7 @@ return helloService.bidiHello(helloRequest$)
 
 我们先来实现支持全双工交互的 `BidiHello` 方法。
 
-```typescript
+```ts
 @GrpcStreamCall()
 bidiHello(requestStream: any) {
   requestStream.on('data', message => {
@@ -516,7 +516,7 @@ bidiHello(requestStream: any) {
 
 接下来我们来实现 `LotsOfGreetings` 方法。
 
-```typescript
+```ts
 @GrpcStreamCall()
 lotsOfGreetings(requestStream: any, callback: (err: unknown, value: HelloResponse) => void) {
   requestStream.on('data', message => {
@@ -540,7 +540,7 @@ $ npm i --save grpc-health-check
 
 然后，可以通过在 gRPC 服务器选项中的 `onLoadPackageDefinition` 钩子（hook）将其集成到 gRPC 服务中。请注意，`protoPath` 需要同时包含健康检查和 hero 包。
 
-```typescript
+```ts
 @@filename(main)
 import { HealthImplementation, protoPath as healthCheckProtoPath } from 'grpc-health-check';
 
@@ -572,7 +572,7 @@ gRPC 元数据是关于某个远程过程调用（RPC）的信息，以键值对
 
 如果需要从处理器中返回元数据，可以使用 `ServerUnaryCall#sendMetadata()` 方法（处理器的第三个参数）。
 
-```typescript
+```ts
 @@filename(heroes.controller)
 @Controller()
 export class HeroesService {
@@ -615,7 +615,7 @@ export class HeroesService {
 
 如果需要在[调用流处理器](microservices/grpc#call-stream-handler)（即使用 `@GrpcStreamCall()` 装饰器的处理器）中读取元数据，可以监听 `requestStream` 对象上的 `metadata` 事件，示例如下：
 
-```typescript
+```ts
 requestStream.on('metadata', (metadata: Metadata) => {
   const meta = metadata.get('X-Meta')
 })

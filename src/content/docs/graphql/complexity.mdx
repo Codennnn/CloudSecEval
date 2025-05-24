@@ -18,7 +18,7 @@ $ npm install --save graphql-query-complexity
 
 Once the installation process is complete, we can define the `ComplexityPlugin` class:
 
-```typescript
+```ts
 import { GraphQLSchemaHost } from '@nestjs/graphql'
 import { Plugin } from '@nestjs/apollo'
 import { ApolloServerPlugin, BaseContext, GraphQLRequestListener } from '@apollo/server'
@@ -65,14 +65,14 @@ For demonstration purposes, we specified the maximum allowed complexity as `20`.
 
 With this plugin in place, we can now define the complexity for any field by specifying the `complexity` property in the options object passed into the `@Field()` decorator, as follows:
 
-```typescript
+```ts
 @Field({ complexity: 3 })
 title: string;
 ```
 
 Alternatively, you can define the estimator function:
 
-```typescript
+```ts
 @Field({ complexity: (options: ComplexityEstimatorArgs) => ... })
 title: string;
 ```
@@ -81,7 +81,7 @@ title: string;
 
 In addition, `@Query()` and `@Mutation()` decorators may have a `complexity` property specified like so:
 
-```typescript
+```ts
 @Query({ complexity: (options: ComplexityEstimatorArgs) => options.args.count * options.childComplexity })
 items(@Args('count') count: number) {
   return this.itemsService.getItems({ count });

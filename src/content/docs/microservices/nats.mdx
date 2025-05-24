@@ -14,7 +14,7 @@ $ npm i --save nats
 
 要使用 NATS 作为传输层（Transport Layer），请将如下 options 对象传递给 `createMicroservice()` 方法：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.NATS,
@@ -72,7 +72,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入包含上述与 `createMicroservice()` 方法相同属性的配置对象，同时还需指定一个 `name` 属性作为注入令牌（injection token）。关于 `ClientsModule` 的更多内容可<a href="https://docs.nestjs.com/microservices/basics#client">参考这里</a>。
 
-```typescript
+```ts
 @Module({
   imports: [
     ClientsModule.register([
@@ -103,7 +103,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 NATS 提供了一种内置的负载均衡功能，称为 [分布式队列（distributed queues）](https://docs.nats.io/nats-concepts/queue)。要创建队列订阅，可以如下使用 `queue` 属性：
 
-```typescript
+```ts
 @@filename(main)
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.NATS,
@@ -118,7 +118,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 在更复杂的场景中，你可能需要访问有关传入请求的更多信息。使用 NATS 传输器时，可以访问 `NatsContext` 对象。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: NatsContext) {
@@ -138,7 +138,7 @@ getNotifications(data, context) {
 
 订阅可以是一个明确的主题（subject），也可以包含通配符。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('time.us.*')
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
@@ -158,7 +158,7 @@ getDate(data, context) {
 
 要配置消息选项，可以使用 `NatsRecordBuilder` 类（注意：事件驱动流程同样适用）。例如，若要添加 `x-version` 请求头（Header），可以使用 `setHeaders` 方法，如下所示：
 
-```typescript
+```ts
 import * as nats from 'nats';
 
 // 代码中的某处
@@ -173,7 +173,7 @@ this.client.send('replace-emoji', record).subscribe(...);
 
 你也可以在服务端通过访问 `NatsContext` 读取这些请求头，如下所示：
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('replace-emoji')
 replaceEmoji(@Payload() data: string, @Ctx() context: NatsContext): string {
@@ -191,7 +191,7 @@ replaceEmoji(data, context) {
 
 在某些情况下，你可能希望为多个请求统一配置请求头，可以在创建 `ClientProxyFactory` 时通过 options 传递 headers：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { ClientProxyFactory, Transport } from '@nestjs/microservices'
 
@@ -217,7 +217,7 @@ export class ApiModule {}
 
 要实时获取连接状态以及底层驱动实例的状态更新，可以订阅 `status` 流。该流会根据所选驱动提供特定的状态更新。以 NATS 驱动为例，`status` 流会发出 `connected`、`disconnected` 和 `reconnecting` 等事件。
 
-```typescript
+```ts
 this.client.status.subscribe((status: NatsStatus) => {
   console.log(status)
 })
@@ -227,7 +227,7 @@ this.client.status.subscribe((status: NatsStatus) => {
 
 同样地，你也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
-```typescript
+```ts
 const server = app.connectMicroservice<MicroserviceOptions>(...);
 server.status.subscribe((status: NatsStatus) => {
   console.log(status);
@@ -238,7 +238,7 @@ server.status.subscribe((status: NatsStatus) => {
 
 在某些场景下，你可能希望监听微服务内部发出的事件。例如，可以监听 `error` 事件，在发生错误时触发额外操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
-```typescript
+```ts
 this.client.on('error', (err) => {
   console.error(err)
 })
@@ -246,7 +246,7 @@ this.client.on('error', (err) => {
 
 同样地，也可以监听服务器的内部事件：
 
-```typescript
+```ts
 server.on<NatsEvents>('error', (err) => {
   console.error(err)
 })
@@ -260,12 +260,12 @@ server.on<NatsEvents>('error', (err) => {
 
 如需访问底层驱动实例，可以使用 `unwrap()` 方法。该方法会返回底层驱动实例，泛型类型参数应指定你期望的驱动实例类型。
 
-```typescript
+```ts
 const natsConnection = this.client.unwrap<import('nats').NatsConnection>()
 ```
 
 同样地，也可以访问服务器的底层驱动实例：
 
-```typescript
+```ts
 const natsConnection = server.unwrap<import('nats').NatsConnection>()
 ```

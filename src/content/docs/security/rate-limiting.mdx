@@ -8,7 +8,7 @@ $ npm i --save @nestjs/throttler
 
 安装完成后，可以像配置其他 Nest 包一样，使用 `forRoot` 或 `forRootAsync` 方法配置 `ThrottlerModule`（限流模块）。
 
-```typescript
+```ts
 @@filename(app.module)
 @Module({
   imports: [
@@ -29,7 +29,7 @@ export class AppModule {}
 
 引入该模块后，您可以选择如何绑定 `ThrottlerGuard`（限流守卫）。如 [守卫](https://docs.nestjs.com/guards) 一节所述，任何绑定方式都可以。如果您希望全局绑定该守卫，可以像下面这样将其作为 provider 添加到任意模块中：
 
-```typescript
+```ts
 {
   provide: APP_GUARD,
   useClass: ThrottlerGuard
@@ -40,7 +40,7 @@ export class AppModule {}
 
 有时您可能希望设置多组限流规则，例如：每秒不超过 3 次、10 秒内不超过 20 次、1 分钟内不超过 100 次。为此，您可以在数组中设置带有名称的限流选项，后续可通过 `@SkipThrottle()` 和 `@Throttle()` 装饰器引用这些选项，灵活切换限流策略。
 
-```typescript
+```ts
 @@filename(app.module)
 @Module({
   imports: [
@@ -70,7 +70,7 @@ export class AppModule {}
 
 有时候，你可能希望将守卫（Guard）绑定到控制器或全局，但又想为某些接口禁用限流功能。此时，可以使用 `@SkipThrottle()` 装饰器（Decorator），让整个类或单个路由不受限流器（Throttler）影响。`@SkipThrottle()` 装饰器还可以接收一个以字符串为键、布尔值为值的对象参数，适用于你想排除控制器中大部分路由但不是全部，或者在有多个限流器配置时按需设置。如果不传递对象参数，默认值为 `{{ '{' }} default: true {{ '}' }}`。
 
-```typescript
+```ts
 @SkipThrottle()
 @Controller('users')
 export class UsersController {}
@@ -78,7 +78,7 @@ export class UsersController {}
 
 `@SkipThrottle()` 装饰器既可以用于跳过某个路由或类的限流，也可以在已跳过的类中通过参数配置让某个路由重新启用限流。
 
-```typescript
+```ts
 @SkipThrottle()
 @Controller('users')
 export class UsersController {
@@ -96,7 +96,7 @@ export class UsersController {
 
 此外，还有 `@Throttle()` 装饰器，可以用来覆盖全局模块中设置的 `limit` 和 `ttl`，以实现更严格或更宽松的安全策略。该装饰器同样可以应用于类或方法。从第 5 版开始，装饰器接收一个对象，键为限流器配置的名称，值为包含 limit 和 ttl 的对象，格式与根模块配置类似。如果你的原始配置没有设置名称，请使用字符串 `default`。配置方式如下：
 
-```typescript
+```ts
 // 覆盖默认的限流次数和持续时间配置。
 @Throttle({ default: { limit: 3, ttl: 60000 } })
 @Get()
@@ -111,7 +111,7 @@ findAll() {
 
 以下示例演示了如何为 Express 适配器启用 `trust proxy`：
 
-```typescript
+```ts
 @@filename(main)
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -140,7 +140,7 @@ bootstrap();
 
 启用 `trust proxy` 后，你可以通过 `X-Forwarded-For` 请求头（Header）获取原始 IP 地址。你还可以通过重写 `getTracker()` 方法，自定义应用程序的行为，从该请求头中提取 IP 地址，而不是依赖 `req.ip`。下面的示例展示了如何在 Express 和 Fastify 中实现这一点：
 
-```typescript
+```ts
 @@filename(throttler-behind-proxy.guard)
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { Injectable } from '@nestjs/common';
@@ -159,7 +159,7 @@ export class ThrottlerBehindProxyGuard extends ThrottlerGuard {
 
 本模块同样支持 WebSocket 通信，但需要进行一定的类扩展。你可以通过继承 `ThrottlerGuard`（限流守卫）并重写 `handleRequest` 方法来实现，示例如下：
 
-```typescript
+```ts
 @Injectable()
 export class WsThrottlerGuard extends ThrottlerGuard {
   async handleRequest(requestProps: ThrottlerRequest): Promise<boolean> {
@@ -205,7 +205,7 @@ export class WsThrottlerGuard extends ThrottlerGuard {
 
 `ThrottlerGuard` 同样可以用于处理 GraphQL 请求。依然可以扩展该守卫，不过这一次需要重写 `getRequestResponse` 方法。
 
-```typescript
+```ts
 @Injectable()
 export class GqlThrottlerGuard extends ThrottlerGuard {
   getRequestResponse(context: ExecutionContext) {
@@ -337,7 +337,7 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 
 一种常见做法是使用工厂函数：
 
-```typescript
+```ts
 @Module({
   imports: [
     ThrottlerModule.forRootAsync({
@@ -357,7 +357,7 @@ export class AppModule {}
 
 你也可以使用 `useClass` 语法：
 
-```typescript
+```ts
 @Module({
   imports: [
     ThrottlerModule.forRootAsync({

@@ -18,7 +18,7 @@ Nest 内置了一个基于文本的日志记录器（Logger），用于应用引
 
 要禁用日志记录（Logger），请在传递给 `NestFactory.create()` 方法的（可选）Nest 应用程序选项对象中，将 `logger` 属性设置为 `false`，如下所示：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   logger: false,
 })
@@ -27,7 +27,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 如果只想启用特定的日志级别，可以将 `logger` 属性设置为一个字符串数组，指定要显示的日志级别，例如：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   logger: ['error', 'warn'],
 })
@@ -38,7 +38,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 如果需要禁用彩色输出，可以将带有 `colors` 属性设置为 `false` 的 `ConsoleLogger` 对象作为 `logger` 属性的值传入：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   logger: new ConsoleLogger({
     colors: false,
@@ -48,7 +48,7 @@ const app = await NestFactory.create(AppModule, {
 
 如果需要为每条日志消息配置前缀，可以传入带有 `prefix` 属性的 `ConsoleLogger` 对象：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   logger: new ConsoleLogger({
     prefix: 'MyApp', // 默认值为 "Nest"
@@ -78,7 +78,7 @@ const app = await NestFactory.create(AppModule, {
 
 JSON 日志记录对于现代应用的可观测性以及与日志管理系统的集成至关重要。要在 NestJS 应用中启用 JSON 日志记录，只需将 `ConsoleLogger` 对象的 `json` 属性设置为 `true`，然后在创建应用实例时，将该日志记录器配置作为 `logger` 属性的值传入。
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   logger: new ConsoleLogger({
     json: true,
@@ -115,7 +115,7 @@ const app = await NestFactory.create(AppModule, {
 
 一种推荐的做法是在每个服务（Service）中实例化 `@nestjs/common` 提供的 `Logger` 类。我们可以在 `Logger` 构造函数中传入服务名称作为 `context` 参数，例如：
 
-```typescript
+```ts
 import { Logger, Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -144,7 +144,7 @@ class MyService {
 
 要为每条日志消息启用时间戳记录，可以在创建日志记录器（Logger）实例时，使用可选的 `timestamp: true` 设置。
 
-```typescript
+```ts
 import { Logger, Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -169,7 +169,7 @@ class MyService {
 
 你可以通过将 `logger` 属性设置为一个实现了 `LoggerService` 接口的对象，为 Nest 提供自定义的日志记录器实现，用于系统日志记录。例如，你可以让 Nest 使用内置的全局 JavaScript `console` 对象（它实现了 `LoggerService` 接口），如下所示：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   logger: console,
 })
@@ -178,7 +178,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 实现自定义日志记录器非常简单。只需像下面这样实现 `LoggerService` 接口的每个方法即可。
 
-```typescript
+```ts
 import { LoggerService, Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -217,7 +217,7 @@ export class MyLogger implements LoggerService {
 
 然后，你可以通过 Nest 应用程序选项对象的 `logger` 属性，传入 `MyLogger` 的实例。
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   logger: new MyLogger(),
 })
@@ -230,7 +230,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 与其从零开始编写日志记录器，不如通过扩展内置的 `ConsoleLogger` 类，并重写默认实现中的部分行为，通常就能满足你的需求。
 
-```typescript
+```ts
 import { ConsoleLogger } from '@nestjs/common'
 
 export class MyLogger extends ConsoleLogger {
@@ -252,7 +252,7 @@ export class MyLogger extends ConsoleLogger {
 1. 定义一个 `MyLogger` 类，该类可以继承内置的 `ConsoleLogger`（控制台日志记录器），也可以完全重写其实现（如前文所示）。请确保实现了 `LoggerService` 接口。
 2. 如下所示，创建一个 `LoggerModule`（日志模块），并在该模块中提供 `MyLogger`。
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { MyLogger } from './my-logger.service'
 
@@ -269,7 +269,7 @@ export class LoggerModule {}
 
 随后，我们可以通过如下方式，指示 Nest 使用同一个 `MyLogger` 单例实例：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   bufferLogs: true,
 })
@@ -287,7 +287,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 首先，扩展内置的日志记录器（Logger）。可以参考如下代码。我们为 `ConsoleLogger` 类提供了 `scope` 选项，作为配置元数据，指定为[瞬态作用域（Transient Scope）](/fundamentals/injection-scopes)，以确保每个特性模块（feature module）中都会有唯一的 `MyLogger` 实例。在本例中，我们没有扩展 `ConsoleLogger` 的各个方法（如 `log()`、`warn()` 等），当然你也可以选择扩展这些方法。
 
-```typescript
+```ts
 import { Injectable, Scope, ConsoleLogger } from '@nestjs/common'
 
 @Injectable({ scope: Scope.TRANSIENT })
@@ -300,7 +300,7 @@ export class MyLogger extends ConsoleLogger {
 
 接下来，创建一个 `LoggerModule`，代码如下：
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { MyLogger } from './my-logger.service'
 
@@ -313,7 +313,7 @@ export class LoggerModule {}
 
 然后，将 `LoggerModule` 导入到你的特性模块中。由于我们扩展了默认的日志记录器（Logger），因此可以方便地使用 `setContext` 方法。这样就可以开始使用支持上下文的自定义日志记录器了，示例如下：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { MyLogger } from './my-logger.service'
 
@@ -339,7 +339,7 @@ export class CatsService {
 
 最后，在你的 `main.ts` 文件中，按照如下方式让 Nest 使用自定义日志记录器的实例。当然，在本例中我们实际上并没有通过扩展 `Logger` 的方法（如 `log()`、`warn()` 等）来定制日志行为，所以这一步其实不是必须的。但**如果**你为这些方法添加了自定义逻辑，并希望 Nest 使用相同的实现，则需要进行如下设置。
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   bufferLogs: true,
 })

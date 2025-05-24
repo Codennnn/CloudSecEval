@@ -16,7 +16,7 @@ $ npm i -D @types/multer
 
 要上传单个文件，只需在路由处理器上使用 `FileInterceptor()` 拦截器，并通过 `@UploadedFile()` 装饰器从请求中提取 `file`。
 
-```typescript
+```ts
 @@filename()
 @Post('upload')
 @UseInterceptors(FileInterceptor('file'))
@@ -45,7 +45,7 @@ uploadFile(file) {
 
 在处理文件上传时，通常我们需要对传入文件的元数据进行校验，比如文件大小或文件的 MIME 类型。为此，你可以自定义一个[管道（Pipe）](https://docs.nestjs.com/pipes)，并将其绑定到带有 `UploadedFile` 装饰器（Decorator）的参数上。下面的示例演示了如何实现一个基础的文件大小校验管道：
 
-```typescript
+```ts
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common'
 
 @Injectable()
@@ -60,7 +60,7 @@ export class FileSizeValidationPipe implements PipeTransform {
 
 你可以将其与 `FileInterceptor` 一起使用，示例如下：
 
-```typescript
+```ts
 @Post('file')
 @UseInterceptors(FileInterceptor('file'))
 uploadFileAndValidate(@UploadedFile(
@@ -73,7 +73,7 @@ uploadFileAndValidate(@UploadedFile(
 
 Nest 提供了一个内置管道，用于处理常见场景，并便于标准化地添加新的校验逻辑。这个管道叫做 `ParseFilePipe`，你可以这样使用：
 
-```typescript
+```ts
 @Post('file')
 uploadFileAndPassValidation(
   @Body() body: SampleDto,
@@ -115,7 +115,7 @@ uploadFileAndPassValidation(
 
 现在，让我们回到 `FileValidator` 接口。要将验证器集成到该管道中，你可以使用内置实现，也可以自定义 `FileValidator`。请参考以下示例：
 
-```typescript
+```ts
 export abstract class FileValidator<TValidationOptions = Record<string, any>> {
   constructor(protected readonly validationOptions: TValidationOptions) {}
 
@@ -142,7 +142,7 @@ export abstract class FileValidator<TValidationOptions = Record<string, any>> {
 
 要了解如何将这些校验器与前文提到的 `FileParsePipe`（文件解析管道）结合使用，我们来看一个基于上例修改的代码片段：
 
-```typescript
+```ts
 @UploadedFile(
   new ParseFilePipe({
     validators: [
@@ -158,7 +158,7 @@ file: Express.Multer.File,
 
 最后，你还可以使用特殊的 `ParseFilePipeBuilder`（文件解析管道构建器）类来组合和构建校验器。通过如下方式使用它，可以避免手动实例化每个校验器，只需直接传递它们的选项即可：
 
-```typescript
+```ts
 @UploadedFile(
   new ParseFilePipeBuilder()
     .addFileTypeValidator({
@@ -186,7 +186,7 @@ file: Express.Multer.File,
 
 使用 `FilesInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求对象中提取文件数组。
 
-```typescript
+```ts
 @@filename()
 @Post('upload')
 @UseInterceptors(FilesInterceptor('files'))
@@ -213,7 +213,7 @@ uploadFile(files) {
 
 使用 `FileFieldsInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求中提取文件。
 
-```typescript
+```ts
 @@filename()
 @Post('upload')
 @UseInterceptors(FileFieldsInterceptor([
@@ -241,7 +241,7 @@ uploadFile(files) {
 
 使用 `AnyFilesInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求中提取文件。
 
-```typescript
+```ts
 @@filename()
 @Post('upload')
 @UseInterceptors(AnyFilesInterceptor())
@@ -261,7 +261,7 @@ uploadFile(files) {
 
 如果你希望接收 `multipart/form-data`（多部分表单数据），但**不允许上传任何文件**，可以使用 `NoFilesInterceptor` 拦截器。该拦截器会将 multipart 数据作为属性添加到请求体（request body）中。如果请求中包含文件，将会抛出 `BadRequestException`（错误请求异常）。
 
-```typescript
+```ts
 @Post('upload')
 @UseInterceptors(NoFilesInterceptor())
 handleMultiPartData(@Body() body) {
@@ -273,7 +273,7 @@ handleMultiPartData(@Body() body) {
 
 你可以像上文所述，在文件拦截器中指定 multer 选项。若要设置全局默认选项，可以在导入 `MulterModule`（Multer 模块）时调用其静态方法 `register()`，并传入支持的选项。所有可用选项请参考 [这里](https://github.com/expressjs/multer#multeropts)。
 
-```typescript
+```ts
 MulterModule.register({
   dest: './upload',
 })
@@ -287,7 +287,7 @@ MulterModule.register({
 
 其中一种方式是使用工厂函数：
 
-```typescript
+```ts
 MulterModule.registerAsync({
   useFactory: () => ({
     dest: './upload',
@@ -297,7 +297,7 @@ MulterModule.registerAsync({
 
 与其他[工厂提供者（factory providers）](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory)类似，我们的工厂函数可以是 `async`，并且可以通过 `inject` 注入依赖。
 
-```typescript
+```ts
 MulterModule.registerAsync({
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => ({
@@ -309,7 +309,7 @@ MulterModule.registerAsync({
 
 另外，你也可以通过类而不是工厂函数来配置 `MulterModule`，如下所示：
 
-```typescript
+```ts
 MulterModule.registerAsync({
   useClass: MulterConfigService,
 })
@@ -317,7 +317,7 @@ MulterModule.registerAsync({
 
 上述写法会在 `MulterModule` 内部实例化 `MulterConfigService`，并使用它来创建所需的选项对象。需要注意的是，在这个例子中，`MulterConfigService` 必须实现 `MulterOptionsFactory` 接口，如下所示。`MulterModule` 会在所提供类的实例对象上调用 `createMulterOptions()` 方法。
 
-```typescript
+```ts
 @Injectable()
 class MulterConfigService implements MulterOptionsFactory {
   createMulterOptions(): MulterModuleOptions {
@@ -330,7 +330,7 @@ class MulterConfigService implements MulterOptionsFactory {
 
 如果你希望复用现有的选项提供者（options provider），而不是在 `MulterModule` 内部创建一个私有副本，可以使用 `useExisting` 语法。
 
-```typescript
+```ts
 MulterModule.registerAsync({
   imports: [ConfigModule],
   useExisting: ConfigService,
@@ -339,7 +339,7 @@ MulterModule.registerAsync({
 
 你还可以通过 `registerAsync()` 方法传递所谓的 `extraProviders`。这些提供者会与模块的提供者合并。
 
-```typescript
+```ts
 MulterModule.registerAsync({
   imports: [ConfigModule],
   useClass: ConfigService,

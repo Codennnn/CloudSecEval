@@ -40,7 +40,7 @@ Nest 提供了以下内置管道：
 
 要使用管道，需要将管道类的实例绑定到合适的上下文。以 `ParseIntPipe` 为例，我们希望将其绑定到某个路由处理器方法，并确保在方法调用前执行。可以通过如下方式在方法参数级别绑定管道：
 
-```typescript
+```ts
 @Get(':id')
 async findOne(@Param('id', ParseIntPipe) id: number) {
   return this.catsService.findOne(id);
@@ -69,7 +69,7 @@ Nest 会抛出如下异常：
 
 在上述例子中，我们传递的是类（`ParseIntPipe`），而不是实例，这样框架会负责实例化，并支持依赖注入。和守卫、拦截器类似，也可以直接传递实例，适用于需要自定义内置管道行为（如传递选项）的场景：
 
-```typescript
+```ts
 @Get(':id')
 async findOne(
   @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }))
@@ -83,7 +83,7 @@ async findOne(
 
 例如，绑定到查询参数：
 
-```typescript
+```ts
 @Get()
 async findOne(@Query('id', ParseIntPipe) id: number) {
   return this.catsService.findOne(id);
@@ -92,7 +92,7 @@ async findOne(@Query('id', ParseIntPipe) id: number) {
 
 下面是使用 `ParseUUIDPipe` 解析字符串参数并校验其是否为 UUID 的例子：
 
-```typescript
+```ts
 @@filename()
 @Get(':uuid')
 async findOne(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
@@ -118,7 +118,7 @@ async findOne(uuid) {
 
 我们先实现一个简单的 `验证管道（ValidationPipe）`。初始版本仅接收输入值并原样返回，相当于恒等函数。
 
-```typescript
+```ts
 @@filename(validation.pipe)
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 
@@ -146,7 +146,7 @@ export class ValidationPipe {
 - `value`：当前处理的方法参数（在被路由处理器接收前）
 - `metadata`：当前处理参数的元数据对象，包含以下属性：
 
-```typescript
+```ts
 export interface ArgumentMetadata {
   type: 'body' | 'query' | 'param' | 'custom'
   metatype?: Type<unknown>
@@ -193,7 +193,7 @@ export interface ArgumentMetadata {
 
 让我们让校验管道更有用些。以 `CatsController` 的 `create()` 方法为例，我们通常希望在调用服务方法前，确保请求体对象有效。
 
-```typescript
+```ts
 @@filename()
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
@@ -208,7 +208,7 @@ async create(@Body() createCatDto) {
 
 这里的 `createCatDto` 参数类型为 `CreateCatDto`：
 
-```typescript
+```ts
 @@filename(create-cat.dto)
 export class CreateCatDto {
   name: string;
@@ -241,7 +241,7 @@ $ npm install --save zod
 
 下节将介绍如何通过 `@UsePipes()` 装饰器为控制器方法传递 schema，使校验管道可复用。
 
-```typescript
+```ts
 @@filename()
 import { PipeTransform, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 import { ZodSchema  } from 'zod';
@@ -290,7 +290,7 @@ export class ZodValidationPipe {
 
 Zod schema 示例：
 
-```typescript
+```ts
 import { z } from 'zod'
 
 export const createCatSchema = z
@@ -306,7 +306,7 @@ export type CreateCatDto = z.infer<typeof createCatSchema>
 
 通过 `@UsePipes()` 装饰器绑定管道：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Post()
 @UsePipes(new ZodValidationPipe(createCatSchema))
@@ -340,7 +340,7 @@ $ npm i --save class-validator class-transformer
 
 安装完成后，我们可以在 `CreateCatDto` 类上添加一些装饰器。这样做的一个显著优势是：`CreateCatDto` 类本身就成为了 Post 请求体对象的唯一数据源（不需要单独创建校验类）。
 
-```typescript
+```ts
 @@filename(create-cat.dto)
 import { IsString, IsInt } from 'class-validator';
 
@@ -360,7 +360,7 @@ export class CreateCatDto {
 
 现在我们可以实现一个基于这些注解的 `验证管道（ValidationPipe）` 类：
 
-```typescript
+```ts
 @@filename(validation.pipe)
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 import { validate } from 'class-validator';
@@ -403,7 +403,7 @@ export class ValidationPipe implements PipeTransform<any> {
 
 最后一步是绑定 `ValidationPipe`。管道可以作用于参数级、方法级、控制器级或全局级。前文 Zod 校验管道的例子展示了方法级绑定。下面的例子展示了如何将管道实例绑定到路由处理器的 `@Body()` 装饰器，从而对 post body 进行校验：
 
-```typescript
+```ts
 @@filename(cats.controller)
 @Post()
 async create(
@@ -419,7 +419,7 @@ async create(
 
 由于 `ValidationPipe` 设计为通用管道，我们可以将其设置为**全局管道（global-scoped pipe）**，使其应用于整个应用的所有路由处理器。
 
-```typescript
+```ts
 @@filename(main)
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -435,7 +435,7 @@ bootstrap();
 
 需要注意的是，从模块外部（如上例通过 `useGlobalPipes()`）注册的全局管道，由于绑定发生在任何模块上下文之外，因此**无法进行依赖注入（Dependency Injection）**。为了解决这个问题，可以通过如下方式**直接在某个模块内设置全局管道**：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
@@ -465,7 +465,7 @@ export class AppModule {}
 
 下面是一个简单的 `ParseIntPipe`，用于将字符串解析为整数。（如前所述，Nest 内置的 `ParseIntPipe` 功能更完善，这里仅作为自定义转换管道的简单示例。）
 
-```typescript
+```ts
 @@filename(parse-int.pipe)
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 
@@ -496,7 +496,7 @@ export class ParseIntPipe {
 
 我们可以如下将该管道绑定到指定参数上：
 
-```typescript
+```ts
 @@filename()
 @Get(':id')
 async findOne(@Param('id', new ParseIntPipe()) id) {
@@ -512,7 +512,7 @@ async findOne(id) {
 
 另一个常见的转换场景是：根据请求中的 id，从数据库中查找**已存在的用户**实体：
 
-```typescript
+```ts
 @@filename()
 @Get(':id')
 findOne(@Param('id', UserByIdPipe) userEntity: UserEntity) {
@@ -532,7 +532,7 @@ findOne(userEntity) {
 
 `Parse*` 管道要求参数值必须已定义。如果收到 `null` 或 `undefined`，会抛出异常。为了让接口能够处理缺失的查询参数值，我们需要在 `Parse*` 管道处理前注入一个默认值。`DefaultValuePipe` 就是为此设计的。只需在 `@Query()` 装饰器中，将 `DefaultValuePipe` 实例放在对应的 `Parse*` 管道之前即可，如下所示：
 
-```typescript
+```ts
 @@filename()
 @Get()
 async findAll(

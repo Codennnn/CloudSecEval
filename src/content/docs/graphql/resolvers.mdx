@@ -23,7 +23,7 @@ type Author {
 
 在“code first”方法中，我们使用 TypeScript 类，并通过 TypeScript 装饰器为这些类的字段添加注解来定义模式。上述 SDL 的等价代码如下：
 
-```typescript
+```ts
 @@filename(authors/models/author.model)
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Post } from './post';
@@ -73,7 +73,7 @@ type Author {
 
 例如：
 
-```typescript
+```ts
 @Field({ description: `书名`, deprecationReason: '在 v2 模式中不再使用' })
 title: string;
 ```
@@ -82,7 +82,7 @@ title: string;
 
 当字段为数组时，必须在 `Field()` 装饰器的类型函数中手动指明数组类型，如下所示：
 
-```typescript
+```ts
 @Field(type => [Post])
 posts: Post[];
 ```
@@ -91,7 +91,7 @@ posts: Post[];
 
 如果要声明数组的元素（而不是数组本身）可为空，可以将 `nullable` 属性设置为 `'items'`，如下所示：
 
-```typescript
+```ts
 @Field(type => [Post], { nullable: 'items' })
 posts: Post[];
 ```
@@ -100,7 +100,7 @@ posts: Post[];
 
 现在我们已经创建了 `Author` 对象类型，接下来定义 `Post` 对象类型。
 
-```typescript
+```ts
 @@filename(posts/models/post.model)
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
@@ -131,7 +131,7 @@ type Post {
 
 到目前为止，我们已经定义了数据图中可以存在的对象（类型定义），但客户端还无法与这些对象进行交互。为了解决这个问题，我们需要创建一个解析器类。在代码优先方法中，解析器类既定义了解析器函数（resolver functions），**并且**会生成 **Query 类型**。通过下面的示例，你会更清楚地理解这一点：
 
-```typescript
+```ts
 @@filename(authors/authors.resolver)
 @Resolver(() => Author)
 export class AuthorsResolver {
@@ -175,7 +175,7 @@ export class AuthorsResolver {
 
 在上面的示例中，`@Query()` 装饰器会根据方法名生成 GraphQL 架构中的查询类型名称。例如，参考上文中的如下写法：
 
-```typescript
+```ts
 @Query(() => Author)
 async author(@Args('id', { type: () => Int }) id: number) {
   return this.authorsService.findOneById(id);
@@ -194,7 +194,7 @@ type Query {
 
 通常情况下，我们更倾向于将这些名称解耦。例如，我们更喜欢将查询处理方法命名为 `getAuthor()`，而查询类型名称仍然使用 `author`。字段解析器同理。我们可以通过将映射名称作为 `@Query()` 和 `@ResolveField()` 装饰器的参数传递，轻松实现这一点，如下所示：
 
-```typescript
+```ts
 @@filename(authors/authors.resolver)
 @Resolver(() => Author)
 export class AuthorsResolver {
@@ -239,13 +239,13 @@ type Query {
 
 通常情况下，`@Args()` 装饰器的用法很简单，不需要像上文 `getAuthor()` 方法那样传递对象参数。例如，如果标识符的类型为字符串，可以直接这样写，直接从传入的 GraphQL 请求中提取指定字段作为方法参数：
 
-```typescript
+```ts
 @Args('id') id: string
 ```
 
 在 `getAuthor()` 这个例子中，参数类型为 `number`，这会带来一些挑战。TypeScript 的 `number` 类型无法为我们提供足够的信息来确定期望的 GraphQL 表达方式（比如 `Int` 还是 `Float`）。因此，我们需要**显式**传递类型引用。具体做法是为 `Args()` 装饰器传递第二个参数，即参数选项对象，如下所示：
 
-```typescript
+```ts
 @Query(() => Author, { name: 'author' })
 async getAuthor(@Args('id', { type: () => Int }) id: number) {
   return this.authorsService.findOneById(id);
@@ -262,7 +262,7 @@ async getAuthor(@Args('id', { type: () => Int }) id: number) {
 
 查询处理方法可以接收多个参数。假设我们希望根据作者的 `firstName` 和 `lastName` 查询作者信息，此时可以多次使用 `@Args`：
 
-```typescript
+```ts
 getAuthor(
   @Args('firstName', { nullable: true }) firstName?: string,
   @Args('lastName', { defaultValue: '' }) lastName?: string,
@@ -275,13 +275,13 @@ getAuthor(
 
 如果直接在方法参数中内联使用 `@Args()`，如上例所示，代码会变得冗长。为此，你可以创建一个专用的 `GetAuthorArgs` 参数类，并在处理器方法中如下访问：
 
-```typescript
+```ts
 @Args() args: GetAuthorArgs
 ```
 
 使用 `@ArgsType()` 创建 `GetAuthorArgs` 类，示例如下：
 
-```typescript
+```ts
 @@filename(authors/dto/get-author.args)
 import { MinLength } from 'class-validator';
 import { Field, ArgsType } from '@nestjs/graphql';
@@ -315,7 +315,7 @@ type Query {
 
 基础 `@ArgsType()` 类：
 
-```typescript
+```ts
 @ArgsType()
 class PaginationArgs {
   @Field(() => Int)
@@ -328,7 +328,7 @@ class PaginationArgs {
 
 特定类型的 `@ArgsType()` 子类：
 
-```typescript
+```ts
 @ArgsType()
 class GetAuthorArgs extends PaginationArgs {
   @Field({ nullable: true })
@@ -342,7 +342,7 @@ class GetAuthorArgs extends PaginationArgs {
 
 同样的方法也适用于 `@ObjectType()` 对象。你可以在基类中定义通用属性：
 
-```typescript
+```ts
 @ObjectType()
 class Character {
   @Field(() => Int)
@@ -355,7 +355,7 @@ class Character {
 
 在子类中添加特定类型的属性：
 
-```typescript
+```ts
 @ObjectType()
 class Warrior extends Character {
   @Field()
@@ -365,7 +365,7 @@ class Warrior extends Character {
 
 你也可以在解析器（Resolver）中使用继承。通过结合继承和 TypeScript 泛型，可以确保类型安全。例如，若要创建一个带有通用 `findAll` 查询的基类，可以使用如下结构：
 
-```typescript
+```ts
 function BaseResolver<T extends Type<unknown>>(classRef: T): any {
   @Resolver({ isAbstract: true })
   abstract class BaseResolverHost {
@@ -386,7 +386,7 @@ function BaseResolver<T extends Type<unknown>>(classRef: T): any {
 
 下面展示如何生成 `BaseResolver` 的具体子类：
 
-```typescript
+```ts
 @Resolver(() => Recipe)
 export class RecipesResolver extends BaseResolver(Recipe) {
   constructor(private recipesService: RecipesService) {
@@ -407,7 +407,7 @@ type Query {
 
 我们在上文中已经见过一次泛型的用法。泛型是 TypeScript 的一项强大特性，可以用来创建实用的抽象。例如，下面是一个基于[官方文档](https://graphql.org/learn/pagination/#pagination-and-edges)的基于游标的分页实现示例：
 
-```typescript
+```ts
 import { Field, ObjectType, Int } from '@nestjs/graphql'
 import { Type } from '@nestjs/common'
 
@@ -453,7 +453,7 @@ export function Paginated<T>(classRef: Type<T>): Type<IPaginatedType<T>> {
 
 有了上面的基础类定义后，我们现在可以很方便地创建继承了该行为的专用类型。例如：
 
-```typescript
+```ts
 @ObjectType()
 class PaginatedAuthor extends Paginated(Author) {}
 ```
@@ -491,7 +491,7 @@ type Query {
 
 现在，让我们创建一个 `AuthorsResolver` 类，用于解析作者相关的查询：
 
-```typescript
+```ts
 @@filename(authors/authors.resolver)
 @Resolver('Author')
 export class AuthorsResolver {
@@ -519,7 +519,7 @@ export class AuthorsResolver {
 
 `@Resolver()` 装饰器是必需的。它可以接收一个可选的字符串参数，表示类名。只要类中包含 `@ResolveField()` 装饰器，就必须指定该类名，以便 Nest 知道被装饰的方法与哪个父类型（在本例中为 `Author` 类型）相关联。或者，也可以不在类顶部设置 `@Resolver()`，而是在每个方法上单独设置：
 
-```typescript
+```ts
 @Resolver('Author')
 @ResolveField()
 async posts(@Parent() author) {
@@ -536,7 +536,7 @@ async posts(@Parent() author) {
 
 在上面的示例中，`@Query()` 和 `@ResolveField()` 装饰器会根据方法名自动关联到 GraphQL schema 类型。例如，参考上面示例中的如下写法：
 
-```typescript
+```ts
 @Query()
 async author(@Args('id') id: number) {
   return this.authorsService.findOneById(id);
@@ -553,7 +553,7 @@ type Query {
 
 通常情况下，我们更倾向于将两者解耦，比如为解析器方法使用 `getAuthor()` 或 `getPosts()` 这样的名称。我们可以通过为装饰器传递映射名称参数来实现这一点，如下所示：
 
-```typescript
+```ts
 @@filename(authors/authors.resolver)
 @Resolver('Author')
 export class AuthorsResolver {
@@ -581,7 +581,7 @@ export class AuthorsResolver {
 
 假设我们采用了 schema first 方式，并且已经启用了类型自动生成功能（如在[上一章](/graphql/quick-start)中通过 `outputAs: 'class'` 配置所示），当你运行应用程序时，系统会自动生成如下文件（文件位置由你在 `GraphQLModule.forRoot()` 方法中指定）。例如，生成在 `src/graphql.ts`：
 
-```typescript
+```ts
 @@filename(graphql)
 export (class Author {
   id: number;
@@ -602,7 +602,7 @@ export abstract class IQuery {
 
 通过生成类（而不是默认的接口），你可以在 schema first 方案下结合使用声明式验证装饰器，这是一种非常实用的技术手段（详见[验证](/techniques/validation)）。例如，你可以像下面这样在自动生成的 `CreatePostInput` 类上添加 `class-validator` 装饰器，对 `title` 字段设置字符串的最小和最大长度限制：
 
-```typescript
+```ts
 import { MinLength, MaxLength } from 'class-validator'
 
 export class CreatePostInput {
@@ -616,7 +616,7 @@ export class CreatePostInput {
 
 然而，如果你直接在自动生成的文件中添加装饰器，每次重新生成文件时这些更改都会被**覆盖**。因此，推荐的做法是新建一个文件，并通过继承的方式扩展自动生成的类。
 
-```typescript
+```ts
 import { MinLength, MaxLength } from 'class-validator'
 import { Post } from '../../graphql.ts'
 
@@ -685,7 +685,7 @@ export class CreatePostInput extends Post {
 
 例如，我们可以在 `AuthorsModule` 中完成这些操作，同时在该模块中提供其他所需的服务（Service）。请确保在某处（比如根模块，或被根模块导入的其他模块中）导入了 `AuthorsModule`。
 
-```typescript
+```ts
 @@filename(authors/authors.module)
 @Module({
   imports: [PostsModule],

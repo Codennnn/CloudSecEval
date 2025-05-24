@@ -22,7 +22,7 @@ $ npm i --save @nestjs/microservices
 
 要实例化一个微服务，请使用 `NestFactory` 类的 `createMicroservice()` 方法：
 
-```typescript
+```ts
 @@filename(main)
 import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
@@ -163,7 +163,7 @@ bootstrap();
 
 要基于请求-响应范式创建消息处理器（message handler），请使用 `@MessagePattern()` 装饰器，该装饰器从 `@nestjs/microservices` 包中导入。此装饰器只能用于[控制器](https://docs.nestjs.com/controllers)类中，因为控制器是应用程序的入口点。如果在提供者中使用该装饰器，将不会生效，因为 Nest 运行时会忽略它。
 
-```typescript
+```ts
 @@filename(math.controller)
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
@@ -194,7 +194,7 @@ export class MathController {
 
 消息处理器既可以同步响应，也可以**异步**响应，这意味着 `async` 方法是被支持的。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern({ cmd: 'sum' })
 async accumulate(data: number[]): Promise<number> {
@@ -209,7 +209,7 @@ async accumulate(data) {
 
 消息处理器还可以返回一个 `Observable`，此时结果会在流（stream）结束前持续被发送。
 
-```typescript
+```ts
 @@filename()
 @MessagePattern({ cmd: 'sum' })
 accumulate(data: number[]): Observable<number> {
@@ -232,7 +232,7 @@ accumulate(data: number[]): Observable<number> {
 
 要创建事件处理器，可以使用 `@EventPattern()` 装饰器，该装饰器从 `@nestjs/microservices` 包中导入。
 
-```typescript
+```ts
 @@filename()
 @EventPattern('user_created')
 async handleUserCreated(data: Record<string, unknown>) {
@@ -255,7 +255,7 @@ async handleUserCreated(data) {
 
 在更高级的场景中，你可能需要访问关于传入请求的更多详细信息。例如，当使用 NATS 并采用通配符订阅时，你可能希望获取生产者实际发送消息时使用的原始主题（subject）。类似地，在使用 Kafka 时，你可能需要访问消息头（headers）。要实现这些需求，你可以利用内置装饰器，如下所示：
 
-```typescript
+```ts
 @@filename()
 @MessagePattern('time.us.*')
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
@@ -285,7 +285,7 @@ Nest 客户端应用可以使用 `ClientProxy` 类与 Nest 微服务进行消息
 
 `options` 属性是一个对象，包含了我们在前文 `createMicroservice()` 方法中见过的相同属性。
 
-```typescript
+```ts
 @Module({
   imports: [
     ClientsModule.register([
@@ -297,7 +297,7 @@ Nest 客户端应用可以使用 `ClientProxy` 类与 Nest 微服务进行消息
 
 如果你需要在设置过程中提供配置或执行其他异步操作，也可以使用 `registerAsync()` 方法。
 
-```typescript
+```ts
 @Module({
   imports: [
     ClientsModule.registerAsync([
@@ -319,7 +319,7 @@ Nest 客户端应用可以使用 `ClientProxy` 类与 Nest 微服务进行消息
 
 模块导入后，你可以使用 `@Inject()` 装饰器，基于指定的 `'MATH_SERVICE'` 传输器配置，注入 `ClientProxy` 实例。
 
-```typescript
+```ts
 constructor(
   @Inject('MATH_SERVICE') private client: ClientProxy,
 ) {}
@@ -329,7 +329,7 @@ constructor(
 
 有时，你可能需要从其他服务（如 `ConfigService`）获取传输器配置，而不是在客户端应用中硬编码。此时可以使用 `ClientProxyFactory` 类注册[自定义提供者](/fundamentals/custom-providers)。该类提供静态的 `create()` 方法，接收传输器选项对象并返回自定义的 `ClientProxy` 实例。
 
-```typescript
+```ts
 @Module({
   providers: [
     {
@@ -349,7 +349,7 @@ constructor(
 
 另一种方式是使用 `@Client()` 属性装饰器。
 
-```typescript
+```ts
 @Client({ transport: Transport.TCP })
 client: ClientProxy;
 ```
@@ -360,7 +360,7 @@ client: ClientProxy;
 
 `ClientProxy` 是**懒加载**的。它不会立即建立连接，而是在首次调用微服务时才建立连接，并在后续调用中复用该连接。不过，如果你希望在连接建立后再启动应用，可以在 `OnApplicationBootstrap` 生命周期钩子中，手动调用 `ClientProxy` 对象的 `connect()` 方法来主动建立连接。
 
-```typescript
+```ts
 @@filename()
 async onApplicationBootstrap() {
   await this.client.connect();
@@ -373,7 +373,7 @@ async onApplicationBootstrap() {
 
 `ClientProxy` 提供了 `send()` 方法。该方法用于调用微服务，并返回一个包含响应的 **冷 Observable**。因此，我们可以很方便地对其发出的值进行订阅。
 
-```typescript
+```ts
 @@filename()
 accumulate(): Observable<number> {
   const pattern = { cmd: 'sum' };
@@ -394,7 +394,7 @@ accumulate() {
 
 如需发送事件，可以使用 `ClientProxy` 对象的 `emit()` 方法。该方法会将事件发布到消息代理（message broker）。
 
-```typescript
+```ts
 @@filename()
 async publish() {
   this.client.emit<number>('user_created', new UserCreatedEvent());
@@ -417,7 +417,7 @@ async publish() {
 
 请求作用域的处理器和提供者可以通过 `@Inject()` 装饰器结合 `CONTEXT` 注入令牌，注入 `RequestContext`：
 
-```typescript
+```ts
 import { Injectable, Scope, Inject } from '@nestjs/common'
 import { CONTEXT, RequestContext } from '@nestjs/microservices'
 
@@ -429,7 +429,7 @@ export class CatsService {
 
 这样可以访问 `RequestContext` 对象，该对象包含两个属性：
 
-```typescript
+```ts
 export interface RequestContext<T = any> {
   pattern: string | Record<string, any>
   data: T
@@ -442,7 +442,7 @@ export interface RequestContext<T = any> {
 
 如果你希望实时获取连接和底层驱动实例的状态更新，可以订阅 `status` 流。该流会提供特定于所选驱动的状态更新。例如，如果你使用的是 TCP 传输器（默认选项），`status` 流会发出 `connected` 和 `disconnected` 事件。
 
-```typescript
+```ts
 this.client.status.subscribe((status: TcpStatus) => {
   console.log(status)
 })
@@ -452,7 +452,7 @@ this.client.status.subscribe((status: TcpStatus) => {
 
 同样，你也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
-```typescript
+```ts
 const server = app.connectMicroservice<MicroserviceOptions>(...);
 server.status.subscribe((status: TcpStatus) => {
   console.log(status);
@@ -463,7 +463,7 @@ server.status.subscribe((status: TcpStatus) => {
 
 在某些情况下，你可能希望监听微服务内部触发的事件。例如，你可以监听 `error` 事件，在发生错误时执行额外的操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
-```typescript
+```ts
 this.client.on('error', (err) => {
   console.error(err)
 })
@@ -471,7 +471,7 @@ this.client.on('error', (err) => {
 
 同样，你也可以监听服务端的内部事件：
 
-```typescript
+```ts
 server.on<TcpEvents>('error', (err) => {
   console.error(err)
 })
@@ -485,7 +485,7 @@ server.on<TcpEvents>('error', (err) => {
 
 要访问底层驱动实例，可以使用 `unwrap()` 方法。该方法会返回底层驱动实例。泛型类型参数应指定你期望的驱动实例类型。
 
-```typescript
+```ts
 const netServer = this.client.unwrap<Server>()
 ```
 
@@ -493,7 +493,7 @@ const netServer = this.client.unwrap<Server>()
 
 同样，你也可以访问服务端的底层驱动实例：
 
-```typescript
+```ts
 const netServer = server.unwrap<Server>()
 ```
 
@@ -503,7 +503,7 @@ const netServer = server.unwrap<Server>()
 
 要实现这一点，需要使用 [`rxjs`](https://github.com/ReactiveX/rxjs) 包。在管道中直接使用 `timeout` 操作符即可：
 
-```typescript
+```ts
 @@filename()
 this.client
   .send<TResult, TInput>(pattern, data)
@@ -524,7 +524,7 @@ this.client
 
 要为 TCP 服务器启用 TLS，需要准备 PEM 格式的私钥和证书。只需在服务器的配置选项中设置 `tlsOptions`，并指定 key 和 cert 文件，如下所示：
 
-```typescript
+```ts
 import * as fs from 'fs'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
@@ -551,7 +551,7 @@ bootstrap()
 
 客户端若要通过 TLS 安全通信，同样需要定义 `tlsOptions`，但此时应提供 CA 证书（即签署服务器证书的权威机构证书）。这样可以确保客户端信任服务器证书，从而建立安全连接。
 
-```typescript
+```ts
 import { Module } from '@nestjs/common'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 
@@ -583,7 +583,7 @@ export class AppModule {}
 
 当微服务需要通过 `ConfigService`（配置服务，ConfigService）进行配置，但注入上下文仅在微服务实例创建后才可用时，可以使用 `AsyncMicroserviceOptions`（异步微服务选项，AsyncMicroserviceOptions）来实现动态配置，从而顺利集成 `ConfigService`。
 
-```typescript
+```ts
 import { ConfigService } from '@nestjs/config'
 import { AsyncMicroserviceOptions, Transport } from '@nestjs/microservices'
 import { AppModule } from './app.module'

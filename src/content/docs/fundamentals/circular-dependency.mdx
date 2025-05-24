@@ -12,7 +12,7 @@
 
 **前向引用（forward reference）** 允许 Nest 通过 `forwardRef()` 工具函数引用尚未定义的类。例如，如果 `CatsService` 和 `CommonService` 互相依赖，双方都可以通过 `@Inject()` 和 `forwardRef()` 工具来解决循环依赖。否则，Nest 无法实例化它们，因为缺少必要的元数据。示例代码如下：
 
-```typescript
+```ts
 @@filename(cats.service)
 @Injectable()
 export class CatsService {
@@ -35,7 +35,7 @@ export class CatsService {
 
 这就完成了关系中的一方。接下来，对 `CommonService` 也做同样处理：
 
-```typescript
+```ts
 @@filename(common.service)
 @Injectable()
 export class CommonService {
@@ -64,7 +64,7 @@ export class CommonService {
 
 为了解决模块（Module）之间的循环依赖，同样可以在双方的模块关联中使用 `forwardRef()` 工具函数。例如：
 
-```typescript
+```ts
 @@filename(common.module)
 @Module({
   imports: [forwardRef(() => CatsModule)],
@@ -74,7 +74,7 @@ export class CommonModule {}
 
 这就完成了关系中的一方。接下来，对 `CatsModule` 也做同样处理：
 
-```typescript
+```ts
 @@filename(cats.module)
 @Module({
   imports: [forwardRef(() => CommonModule)],

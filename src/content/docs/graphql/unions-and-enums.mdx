@@ -6,7 +6,7 @@
 
 要定义一个 GraphQL 联合类型，我们需要先定义该联合类型所包含的各个类。参考 Apollo 官方文档中的[示例](https://www.apollographql.com/docs/apollo-server/schema/unions-interfaces/#union-type)，我们将创建两个类。首先是 `Book`：
 
-```typescript
+```ts
 import { Field, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
@@ -18,7 +18,7 @@ export class Book {
 
 接下来是 `Author`：
 
-```typescript
+```ts
 import { Field, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
@@ -30,7 +30,7 @@ export class Author {
 
 完成上述定义后，我们可以通过 `@nestjs/graphql` 包中导出的 `createUnionType` 函数注册 `ResultUnion` 联合类型：
 
-```typescript
+```ts
 export const ResultUnion = createUnionType({
   name: 'ResultUnion',
   types: () => [Author, Book] as const,
@@ -41,7 +41,7 @@ export const ResultUnion = createUnionType({
 
 现在，我们可以在查询中引用 `ResultUnion`：
 
-```typescript
+```ts
 @Query(() => [ResultUnion])
 search(): Array<typeof ResultUnion> {
   return [new Author(), new Book()];
@@ -70,7 +70,7 @@ type Query {
 
 如果需要自定义 `resolveType()` 函数，可以在传递给 `createUnionType()` 的选项对象中添加 `resolveType` 属性，如下所示：
 
-```typescript
+```ts
 export const ResultUnion = createUnionType({
   name: 'ResultUnion',
   types: () => [Author, Book] as const,
@@ -104,7 +104,7 @@ union ResultUnion = Author | Book
 
 接下来，你可以使用类型定义自动生成功能（详见[快速入门](/graphql/quick-start)章节），自动生成对应的 TypeScript 类型定义：
 
-```typescript
+```ts
 export class Author {
   name: string
 }
@@ -118,7 +118,7 @@ export type ResultUnion = Author | Book
 
 在 GraphQL 中，联合类型解析时需要在解析器映射（resolver map）中额外实现一个 `__resolveType` 字段，用于确定当前联合类型实际应解析为哪种类型。同时，需要注意，`ResultUnionResolver` 类必须作为提供者（Provider）注册到某个模块（Module）中。下面我们来创建一个 `ResultUnionResolver` 类，并定义 `__resolveType` 方法。
 
-```typescript
+```ts
 @Resolver('ResultUnion')
 export class ResultUnionResolver {
   @ResolveField()
@@ -147,7 +147,7 @@ export class ResultUnionResolver {
 
 在代码优先的方式下，你只需创建一个 TypeScript 枚举，即可定义一个 GraphQL 枚举类型。
 
-```typescript
+```ts
 export enum AllowedColor {
   RED,
   GREEN,
@@ -157,7 +157,7 @@ export enum AllowedColor {
 
 完成上述定义后，使用 `@nestjs/graphql` 包中导出的 `registerEnumType` 函数注册 `AllowedColor` 枚举：
 
-```typescript
+```ts
 registerEnumType(AllowedColor, {
   name: 'AllowedColor',
 })
@@ -165,7 +165,7 @@ registerEnumType(AllowedColor, {
 
 现在，你可以在类型定义中引用 `AllowedColor`：
 
-```typescript
+```ts
 @Field(type => AllowedColor)
 favoriteColor: AllowedColor;
 ```
@@ -182,7 +182,7 @@ enum AllowedColor {
 
 如需为枚举类型添加描述，可以在 `registerEnumType()` 函数中传入 `description` 属性：
 
-```typescript
+```ts
 registerEnumType(AllowedColor, {
   name: 'AllowedColor',
   description: '支持的颜色。',
@@ -191,7 +191,7 @@ registerEnumType(AllowedColor, {
 
 如需为枚举值添加描述，或标记某个值为已弃用，可以传入 `valuesMap` 属性，如下所示：
 
-```typescript
+```ts
 registerEnumType(AllowedColor, {
   name: 'AllowedColor',
   description: '支持的颜色。',
@@ -236,7 +236,7 @@ enum AllowedColor {
 
 然后，你可以使用类型定义自动生成工具（具体用法见[快速入门](/graphql/quick-start)章节）生成对应的 TypeScript 定义：
 
-```typescript
+```ts
 export enum AllowedColor {
   RED
   GREEN
@@ -246,7 +246,7 @@ export enum AllowedColor {
 
 有时，后端内部枚举值与 API 公共接口中的值不同。例如，API 中为 `RED`，但在解析器中实际使用 `#f00`（详细说明见 [这里](https://www.apollographql.com/docs/apollo-server/schema/scalars-enums/#internal-values)）。要实现这一点，可以为 `AllowedColor` 枚举声明一个解析器对象：
 
-```typescript
+```ts
 export const allowedColorResolver: Record<keyof typeof AllowedColor, any> = {
   RED: '#f00',
 }
@@ -256,7 +256,7 @@ export const allowedColorResolver: Record<keyof typeof AllowedColor, any> = {
 
 然后，将该解析器对象与 `GraphQLModule#forRoot()` 方法的 `resolvers` 属性一起使用，如下所示：
 
-```typescript
+```ts
 GraphQLModule.forRoot({
   resolvers: {
     AllowedColor: allowedColorResolver,

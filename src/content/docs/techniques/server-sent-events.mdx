@@ -6,7 +6,7 @@
 
 要在某个路由（注册在**控制器类（Controller）**中的路由）上启用服务端推送事件，只需为方法处理器添加 `@Sse()` 装饰器（Decorator）。
 
-```typescript
+```ts
 @Sse('sse')
 sse(): Observable<MessageEvent> {
   return interval(1000).pipe(map((_) => ({ data: { hello: 'world' } })));
@@ -21,7 +21,7 @@ sse(): Observable<MessageEvent> {
 
 `sse` 方法返回一个可观察对象（Observable），它会不断发出多个消息事件（MessageEvent）（本例中每秒发出一个新的消息事件）。`MessageEvent` 对象应遵循如下接口规范，以符合标准：
 
-```typescript
+```ts
 export interface MessageEvent {
   data: string | object
   id?: string

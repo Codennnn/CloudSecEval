@@ -4,7 +4,7 @@
 
 要开始调试你的本地应用，请打开 `main.ts` 文件，并确保在应用选项对象中将 `snapshot` 属性设置为 `true`，如下所示：
 
-```typescript
+```ts
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
@@ -25,7 +25,7 @@ $ npm i @nestjs/devtools-integration
 
 依赖安装完成后，打开 `app.module.ts` 文件，导入刚刚安装的 `DevtoolsModule`：
 
-```typescript
+```ts
 @Module({
   imports: [
     DevtoolsModule.register({
@@ -96,7 +96,7 @@ export class AppModule {}
 
 首先，打开 `main.ts` 文件，并按如下方式更新 `bootstrap()` 调用：
 
-```typescript
+```ts
 bootstrap().catch((err) => {
   fs.writeFileSync('graph.json', PartialGraphHost.toString() ?? '')
   process.exit(1)
@@ -105,7 +105,7 @@ bootstrap().catch((err) => {
 
 同时，确保将 `abortOnError` 设置为 `false`：
 
-```typescript
+```ts
 const app = await NestFactory.create(AppModule, {
   snapshot: true,
   abortOnError: false, // <--- 这里
@@ -208,7 +208,7 @@ const app = await NestFactory.create(AppModule, {
 
 如需将序列化后的依赖关系图保存为文件，可使用如下代码：
 
-```typescript
+```ts
 await app.listen(process.env.PORT ?? 3000) // 或 await app.init()
 fs.writeFileSync('./graph.json', app.get(SerializedGraph).toString())
 ```

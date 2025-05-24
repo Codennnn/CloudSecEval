@@ -8,7 +8,7 @@
 
 首先，我们定义一个提供者。`@Injectable()` 装饰器将 `CatsService` 类标记为可由 Nest IoC 容器管理的提供者。
 
-```typescript
+```ts
 @@filename(cats.service)
 import { Injectable } from '@nestjs/common';
 import { Cat } from './interfaces/cat.interface';
@@ -38,7 +38,7 @@ export class CatsService {
 
 然后，我们请求 Nest 将该提供者注入到控制器类中：
 
-```typescript
+```ts
 @@filename(cats.controller)
 import { Controller, Get } from '@nestjs/common';
 import { CatsService } from './cats.service';
@@ -73,7 +73,7 @@ export class CatsController {
 
 最后，我们在 Nest IoC 容器中注册该提供者：
 
-```typescript
+```ts
 @@filename(app.module)
 import { Module } from '@nestjs/common';
 import { CatsController } from './cats/cats.controller';
@@ -91,7 +91,7 @@ export class AppModule {}
 1. 在 `cats.service.ts` 中，`@Injectable()` 装饰器声明 `CatsService` 类为可由 Nest IoC 容器管理的类。
 2. 在 `cats.controller.ts` 中，`CatsController` 通过构造函数注入声明依赖于 `CatsService` 注入令牌（Injection Token）：
 
-```typescript
+```ts
   constructor(private catsService: CatsService)
 ```
 
@@ -105,7 +105,7 @@ export class AppModule {}
 
 让我们进一步了解 `@Module()` 装饰器。在 `app.module` 中，我们声明：
 
-```typescript
+```ts
 @Module({
   controllers: [CatsController],
   providers: [CatsService],
@@ -114,7 +114,7 @@ export class AppModule {}
 
 `providers` 属性接收一个提供者数组。到目前为止，我们通过类名列表传递这些提供者。实际上，`providers: [CatsService]` 是更完整语法的简写形式：
 
-```typescript
+```ts
 providers: [
   {
     provide: CatsService,
@@ -141,7 +141,7 @@ Nest 允许你通过自定义提供者来满足这些场景。它提供了多种
 
 `useValue` 语法适用于注入常量值、将外部库放入 Nest 容器，或用 mock 对象替换真实实现。例如，想在测试时让 Nest 使用 mock 版 `CatsService`：
 
-```typescript
+```ts
 import { CatsService } from './cats.service'
 
 const mockCatsService = {
@@ -168,7 +168,7 @@ export class AppModule {}
 
 到目前为止，我们一直用类名作为提供者的注入令牌（即 `provide` 属性的值）。这与[基于构造函数的注入](https://docs.nestjs.com/providers#dependency-injection)模式相匹配，即令牌也是类名。（如需回顾令牌概念，可参考<a href="/fundamentals/custom-providers#di-fundamentals">DI 基础</a>）。有时，我们希望用字符串或 symbol 作为 DI 令牌。例如：
 
-```typescript
+```ts
 import { connection } from './connection'
 
 @Module({
@@ -188,7 +188,7 @@ export class AppModule {}
 
 我们之前已经看到如何用标准[构造函数注入](https://docs.nestjs.com/providers#dependency-injection)模式注入提供者。该模式**要求**依赖项用类名声明。`'CONNECTION'` 自定义提供者用的是字符串令牌。要注入此类提供者，需要用 `@Inject()` 装饰器。该装饰器接收一个参数——令牌。
 
-```typescript
+```ts
 @@filename()
 @Injectable()
 export class CatsRepository {
@@ -210,7 +210,7 @@ export class CatsRepository {
 
 `useClass` 语法允许你动态决定令牌应解析为哪个类。例如，假设有一个抽象（或默认）`ConfigService` 类。根据当前环境，Nest 可提供不同的配置服务实现。如下：
 
-```typescript
+```ts
 const configServiceProvider = {
   provide: ConfigService,
   useClass:
@@ -234,7 +234,7 @@ export class AppModule {}
 1. 工厂函数可接收（可选）参数。
 2. `inject` 属性（可选）接收一个提供者数组，Nest 会在实例化时解析并按顺序传递给工厂函数。这些依赖项也可标记为可选。如下例所示：
 
-```typescript
+```ts
 @@filename()
 const connectionProvider = {
   provide: 'CONNECTION',
@@ -281,7 +281,7 @@ export class AppModule {}
 
 `useExisting` 语法允许为已有提供者创建别名。这样可以通过不同令牌访问同一个提供者。如下例，字符串令牌 `'AliasedLoggerService'` 是类令牌 `LoggerService` 的别名。假设有两个依赖项分别依赖 `'AliasedLoggerService'` 和 `LoggerService`，如果都为 `SINGLETON` 作用域，则解析为同一实例。
 
-```typescript
+```ts
 @Injectable()
 class LoggerService {
   /* 实现细节 */
@@ -302,7 +302,7 @@ export class AppModule {}
 
 虽然提供者通常用于提供服务，但不限于此。提供者可以提供**任意**值。例如，根据当前环境提供配置对象数组：
 
-```typescript
+```ts
 const configFactory = {
   provide: 'CONFIG',
   useFactory: () => {
@@ -322,7 +322,7 @@ export class AppModule {}
 
 以下示例展示了用令牌导出：
 
-```typescript
+```ts
 @@filename()
 const connectionFactory = {
   provide: 'CONNECTION',
@@ -357,7 +357,7 @@ export class AppModule {}
 
 或者，用完整提供者对象导出：
 
-```typescript
+```ts
 @@filename()
 const connectionFactory = {
   provide: 'CONNECTION',

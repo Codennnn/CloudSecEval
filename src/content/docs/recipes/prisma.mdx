@@ -275,7 +275,7 @@ $ npm install @prisma/client
 
 在 `src` 目录下，新建一个名为 `prisma.service.ts` 的文件，并添加如下代码：
 
-```typescript
+```ts
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { PrismaClient } from '@prisma/client'
 
@@ -293,7 +293,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
 同样在 `src` 目录下，新建 `user.service.ts` 文件，并添加如下代码：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from './prisma.service'
 import { User, Prisma } from '@prisma/client'
@@ -356,7 +356,7 @@ export class UsersService {
 
 继续在 `src` 目录下，新建 `post.service.ts` 文件，并添加如下代码：
 
-```typescript
+```ts
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from './prisma.service'
 import { Post, Prisma } from '@prisma/client'
@@ -423,7 +423,7 @@ export class PostsService {
 
 将 `app.controller.ts` 文件内容替换为如下代码：
 
-```typescript
+```ts
 import { Controller, Get, Param, Post, Body, Put, Delete } from '@nestjs/common'
 import { UsersService } from './user.service'
 import { PostsService } from './post.service'
