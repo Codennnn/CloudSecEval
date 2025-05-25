@@ -2,47 +2,32 @@
 
 在前面的章节中，我们已经介绍了 **依赖注入（Dependency Injection，DI）** 及其在 Nest 中的应用。例如，[基于构造函数的依赖注入](https://docs.nestjs.com/providers#dependency-injection) 用于将实例（通常是服务提供者）注入到类中。你可能已经注意到，依赖注入机制在 Nest 核心中扮演着至关重要的角色。到目前为止，我们只探索了一种主要模式。随着应用变得更加复杂，你可能需要充分利用 DI 系统的全部特性，下面我们将更详细地进行探讨。
 
-## DI 基础
+## 依赖注入基础
 
 依赖注入是一种 [控制反转（Inversion of Control，IoC）](https://en.wikipedia.org/wiki/Inversion_of_control) 技术，即将依赖项的实例化过程交由 IoC 容器（在本例中为 NestJS 运行时系统）管理，而不是在代码中手动创建。让我们通过 [提供者章节](https://docs.nestjs.com/providers) 的示例来分析其工作原理。
 
 首先，我们定义一个提供者。`@Injectable()` 装饰器将 `CatsService` 类标记为可由 Nest IoC 容器管理的提供者。
 
-```ts
-@@filename(cats.service)
-import { Injectable } from '@nestjs/common';
-import { Cat } from './interfaces/cat.interface';
+```ts filename='cats.service.ts'
+import { Injectable } from '@nestjs/common'
+import { Cat } from './interfaces/cat.interface'
 
 @Injectable()
 export class CatsService {
-  private readonly cats: Cat[] = [];
+  private readonly cats: Cat[] = []
 
   findAll(): Cat[] {
-    return this.cats;
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class CatsService {
-  constructor() {
-    this.cats = [];
-  }
-
-  findAll() {
-    return this.cats;
+    return this.cats
   }
 }
 ```
 
 然后，我们请求 Nest 将该提供者注入到控制器类中：
 
-```ts
-@@filename(cats.controller)
-import { Controller, Get } from '@nestjs/common';
-import { CatsService } from './cats.service';
-import { Cat } from './interfaces/cat.interface';
+```ts filename='cats.controller.ts'
+import { Controller, Get } from '@nestjs/common'
+import { CatsService } from './cats.service'
+import { Cat } from './interfaces/cat.interface'
 
 @Controller('cats')
 export class CatsController {
@@ -50,34 +35,17 @@ export class CatsController {
 
   @Get()
   async findAll(): Promise<Cat[]> {
-    return this.catsService.findAll();
-  }
-}
-@@switch
-import { Controller, Get, Bind, Dependencies } from '@nestjs/common';
-import { CatsService } from './cats.service';
-
-@Controller('cats')
-@Dependencies(CatsService)
-export class CatsController {
-  constructor(catsService) {
-    this.catsService = catsService;
-  }
-
-  @Get()
-  async findAll() {
-    return this.catsService.findAll();
+    return this.catsService.findAll()
   }
 }
 ```
 
 最后，我们在 Nest IoC 容器中注册该提供者：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { CatsController } from './cats/cats.controller';
-import { CatsService } from './cats/cats.service';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { CatsController } from './cats/cats.controller'
+import { CatsService } from './cats/cats.service'
 
 @Module({
   controllers: [CatsController],
@@ -95,7 +63,7 @@ export class AppModule {}
   constructor(private catsService: CatsService)
 ```
 
-3. 在 `app.module.ts` 中，我们将 `CatsService` 注入令牌与 `cats.service.ts` 文件中的 `CatsService` 类关联。稍后我们会在<a href="/fundamentals/custom-providers#standard-providers">下文</a>详细介绍这种关联（也称为 _注册_）。
+3. 在 `app.module.ts` 中，我们将 `CatsService` 注入令牌与 `cats.service.ts` 文件中的 `CatsService` 类关联。稍后我们会在[下文](#standard-providers)详细介绍这种关联（也称为 _注册_）。
 
 当 Nest IoC 容器实例化 `CatsController` 时，会首先查找其依赖项\*。当发现依赖 `CatsService` 时，会根据注册步骤（上文第 3 步）查找 `CatsService` 注入令牌，并返回对应的 `CatsService` 类。假设采用默认的 `SINGLETON` 作用域，Nest 会创建 `CatsService` 的实例、缓存并返回它，或者如果已缓存则直接返回现有实例。
 
@@ -135,7 +103,9 @@ providers: [
 
 Nest 允许你通过自定义提供者来满足这些场景。它提供了多种定义自定义提供者的方式。下面我们逐一介绍。
 
-> info **提示** 如果你遇到依赖解析问题，可以设置 `NEST_DEBUG` 环境变量，在启动时获取额外的依赖解析日志。
+<CalloutInfo>
+  如果你遇到依赖解析问题，可以设置 `NEST_DEBUG` 环境变量，在启动时获取额外的依赖解析日志。
+</CalloutInfo>
 
 ## 值提供者：`useValue`
 
@@ -166,7 +136,7 @@ export class AppModule {}
 
 ## 非类注入令牌
 
-到目前为止，我们一直用类名作为提供者的注入令牌（即 `provide` 属性的值）。这与[基于构造函数的注入](https://docs.nestjs.com/providers#dependency-injection)模式相匹配，即令牌也是类名。（如需回顾令牌概念，可参考<a href="/fundamentals/custom-providers#di-fundamentals">DI 基础</a>）。有时，我们希望用字符串或 symbol 作为 DI 令牌。例如：
+到目前为止，我们一直用类名作为提供者的注入令牌（即 `provide` 属性的值）。在与[基于构造函数的注入](https://docs.nestjs.com/providers#dependency-injection)模式相匹配时，令牌也是类名。如需回顾令牌概念，可参考[依赖注入基础](#dependency-injection-fundamentals)。有时，我们希望用字符串或 symbol 作为 DI 令牌。例如：
 
 ```ts
 import { connection } from './connection'
@@ -184,25 +154,22 @@ export class AppModule {}
 
 在此示例中，我们用字符串类型的令牌（`'CONNECTION'`）与已存在的 `connection` 对象关联。
 
-> warning **注意** 除了字符串，还可以用 JavaScript [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) 或 TypeScript [enum](https://www.typescriptlang.org/docs/handbook/enums.html) 作为令牌。
+<CalloutInfo type="warning">
+  除了字符串，还可以用 JavaScript
+  [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
+  或 TypeScript [enum](https://www.typescriptlang.org/docs/handbook/enums.html) 作为令牌。
+</CalloutInfo>
 
 我们之前已经看到如何用标准[构造函数注入](https://docs.nestjs.com/providers#dependency-injection)模式注入提供者。该模式**要求**依赖项用类名声明。`'CONNECTION'` 自定义提供者用的是字符串令牌。要注入此类提供者，需要用 `@Inject()` 装饰器。该装饰器接收一个参数——令牌。
 
 ```ts
-@@filename()
+import { Inject, Injectable } from '@nestjs/common'
+
 @Injectable()
 export class CatsRepository {
   constructor(@Inject('CONNECTION') connection: Connection) {}
 }
-@@switch
-@Injectable()
-@Dependencies('CONNECTION')
-export class CatsRepository {
-  constructor(connection) {}
-}
 ```
-
-> info **提示** `@Inject()` 装饰器需从 `@nestjs/common` 包导入。
 
 虽然上例直接用字符串 `'CONNECTION'`，但为了代码整洁，建议将令牌定义在单独文件（如 `constants.ts`），像管理 symbol 或 enum 一样集中管理和导入。
 
@@ -235,17 +202,16 @@ export class AppModule {}
 2. `inject` 属性（可选）接收一个提供者数组，Nest 会在实例化时解析并按顺序传递给工厂函数。这些依赖项也可标记为可选。如下例所示：
 
 ```ts
-@@filename()
 const connectionProvider = {
   provide: 'CONNECTION',
   useFactory: (optionsProvider: MyOptionsProvider, optionalProvider?: string) => {
-    const options = optionsProvider.get();
-    return new DatabaseConnection(options);
+    const options = optionsProvider.get()
+    return new DatabaseConnection(options)
   },
   inject: [MyOptionsProvider, { token: 'SomeOptionalProvider', optional: true }],
   //       \______________/             \__________________/
   //        此依赖项为必需                此依赖项可解析为 undefined
-};
+}
 
 @Module({
   providers: [
@@ -255,17 +221,19 @@ const connectionProvider = {
   ],
 })
 export class AppModule {}
-@@switch
+```
+
+```js hideInDoc
 const connectionProvider = {
   provide: 'CONNECTION',
   useFactory: (optionsProvider, optionalProvider) => {
-    const options = optionsProvider.get();
-    return new DatabaseConnection(options);
+    const options = optionsProvider.get()
+    return new DatabaseConnection(options)
   },
   inject: [MyOptionsProvider, { token: 'SomeOptionalProvider', optional: true }],
   //       \______________/            \__________________/
   //        此依赖项为必需               此依赖项可解析为 undefined
-};
+}
 
 @Module({
   providers: [
@@ -323,30 +291,31 @@ export class AppModule {}
 以下示例展示了用令牌导出：
 
 ```ts
-@@filename()
 const connectionFactory = {
   provide: 'CONNECTION',
   useFactory: (optionsProvider: OptionsProvider) => {
-    const options = optionsProvider.get();
-    return new DatabaseConnection(options);
+    const options = optionsProvider.get()
+    return new DatabaseConnection(options)
   },
   inject: [OptionsProvider],
-};
+}
 
 @Module({
   providers: [connectionFactory],
   exports: ['CONNECTION'],
 })
 export class AppModule {}
-@@switch
+```
+
+```js hideInDoc
 const connectionFactory = {
   provide: 'CONNECTION',
   useFactory: (optionsProvider) => {
-    const options = optionsProvider.get();
-    return new DatabaseConnection(options);
+    const options = optionsProvider.get()
+    return new DatabaseConnection(options)
   },
   inject: [OptionsProvider],
-};
+}
 
 @Module({
   providers: [connectionFactory],
@@ -358,30 +327,31 @@ export class AppModule {}
 或者，用完整提供者对象导出：
 
 ```ts
-@@filename()
 const connectionFactory = {
   provide: 'CONNECTION',
   useFactory: (optionsProvider: OptionsProvider) => {
-    const options = optionsProvider.get();
-    return new DatabaseConnection(options);
+    const options = optionsProvider.get()
+    return new DatabaseConnection(options)
   },
   inject: [OptionsProvider],
-};
+}
 
 @Module({
   providers: [connectionFactory],
   exports: [connectionFactory],
 })
 export class AppModule {}
-@@switch
+```
+
+```js
 const connectionFactory = {
   provide: 'CONNECTION',
   useFactory: (optionsProvider) => {
-    const options = optionsProvider.get();
-    return new DatabaseConnection(options);
+    const options = optionsProvider.get()
+    return new DatabaseConnection(options)
   },
   inject: [OptionsProvider],
-};
+}
 
 @Module({
   providers: [connectionFactory],

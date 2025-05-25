@@ -67,8 +67,6 @@ export class AuthService {
 
 换句话说，动态模块为模块间的导入提供了 API，可以在导入时自定义该模块的属性和行为，而不是像静态绑定那样一成不变。
 
-<app-banner-devtools></app-banner-devtools>
-
 ## 配置模块示例
 
 本节将使用[配置章节](https://docs.nestjs.com/techniques/configuration#service)中的基础示例代码。完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)获取。
@@ -155,7 +153,9 @@ export class ConfigModule {
 
 现在应该能看出各部分如何协同工作了。调用 `ConfigModule.register(...)` 会返回一个 `DynamicModule` 对象，其属性本质上与之前通过 `@Module` 装饰器声明的静态模块一致。
 
-> info **提示** 记得从 `@nestjs/common` 导入 `DynamicModule`。
+<CalloutInfo>
+  <p>记得从 `@nestjs/common` 导入 `DynamicModule`。</p>
+</CalloutInfo>
 
 不过目前我们的动态模块还没实现**可配置**的能力。接下来我们来实现这个功能。
 
@@ -206,7 +206,7 @@ export class ConfigService {
 
 现在 `ConfigService` 已经可以根据 `options` 指定的文件夹查找 `.env` 文件了。
 
-剩下的任务就是把 `register()` 传入的 `options` 注入到 `ConfigService`。当然，我们会用**依赖注入（Dependency Injection）**来实现。这是关键点，请务必理解。`ConfigModule` 提供了 `ConfigService`，而 `ConfigService` 依赖于运行时才提供的 `options` 对象。因此，我们需要先把 `options` 绑定到 Nest IoC 容器，然后让 Nest 注入到 `ConfigService`。回忆下[自定义提供者章节](https://docs.nestjs.com/fundamentals/custom-providers#non-service-based-providers)提到，提供者不仅可以是服务，也可以是任意值，所以用依赖注入处理简单对象完全没问题。
+剩下的任务就是把 `register()` 传入的 `options` 注入到 `ConfigService`。当然，我们会用**依赖注入**来实现。这是关键点，请务必理解。`ConfigModule` 提供了 `ConfigService`，而 `ConfigService` 依赖于运行时才提供的 `options` 对象。因此，我们需要先把 `options` 绑定到 Nest IoC 容器，然后让 Nest 注入到 `ConfigService`。回忆下[自定义提供者章节](https://docs.nestjs.com/fundamentals/custom-providers#non-service-based-providers)提到，提供者不仅可以是服务，也可以是任意值，所以用依赖注入处理简单对象完全没问题。
 
 我们先在静态 `register()` 方法里把 `options` 绑定到 IoC 容器。只需把 `options` 作为一个提供者定义即可，这样就能注入到 `ConfigService` 了。请看 `providers` 数组：
 
@@ -293,18 +293,12 @@ export interface ConfigModuleOptions {
 
 然后，在 `config.module.ts` 同级新建 `config.module-definition.ts` 文件，利用 `ConfigurableModuleBuilder` 构建模块定义：
 
-```ts
-@@filename(config.module-definition)
-import { ConfigurableModuleBuilder } from '@nestjs/common';
-import { ConfigModuleOptions } from './interfaces/config-module-options.interface';
+```ts filename='config.module-definition.ts'
+import { ConfigurableModuleBuilder } from '@nestjs/common'
+import { ConfigModuleOptions } from './interfaces/config-module-options.interface'
 
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder<ConfigModuleOptions>().build();
-@@switch
-import { ConfigurableModuleBuilder } from '@nestjs/common';
-
-export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder().build();
+  new ConfigurableModuleBuilder<ConfigModuleOptions>().build()
 ```
 
 接下来，修改 `config.module.ts`，让其继承自动生成的 `ConfigurableModuleClass`：
@@ -354,13 +348,9 @@ export class ConfigService {
 
 `ConfigurableModuleClass` 默认提供 `register` 及其异步版本 `registerAsync`。如需自定义方法名，可用 `ConfigurableModuleBuilder#setClassMethodName`：
 
-```ts
-@@filename(config.module-definition)
+```ts filename='config.module-definition.ts'
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder<ConfigModuleOptions>().setClassMethodName('forRoot').build();
-@@switch
-export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder().setClassMethodName('forRoot').build();
+  new ConfigurableModuleBuilder<ConfigModuleOptions>().setClassMethodName('forRoot').build()
 ```
 
 这样会生成带有 `forRoot` 和 `forRootAsync` 方法的类。例如：
@@ -400,13 +390,11 @@ export class AppModule {}
 
 默认情况下，这个类必须实现一个 `create()` 方法，用于返回模块的配置对象。不过，如果你的库采用了不同的命名规范，可以通过 `ConfigurableModuleBuilder#setFactoryMethodName` 方法自定义工厂方法名，例如 `createConfigOptions`：
 
-```ts
-@@filename(config.module-definition)
+```ts filename='config.module-definition.ts'
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder<ConfigModuleOptions>().setFactoryMethodName('createConfigOptions').build();
-@@switch
-export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
-  new ConfigurableModuleBuilder().setFactoryMethodName('createConfigOptions').build();
+  new ConfigurableModuleBuilder<ConfigModuleOptions>()
+    .setFactoryMethodName('createConfigOptions')
+    .build()
 ```
 
 此时，`ConfigModuleOptionsFactory` 类必须实现 `createConfigOptions` 方法（而不是 `create`）：

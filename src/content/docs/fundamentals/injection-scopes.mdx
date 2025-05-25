@@ -11,26 +11,20 @@
 <table>
   <tbody>
     <tr>
+      <td>`DEFAULT`</td>
       <td>
-        <code>DEFAULT</code>
-      </td>
-      <td>
-        提供者的单个实例在整个应用中共享。其实例的生命周期与应用生命周期直接绑定。应用引导（bootstrapped）后，所有单例（Singleton）提供者都会被实例化。默认情况下，使用单例作用域。
+        提供者的单个实例在整个应用中共享。其实例的生命周期与应用生命周期直接绑定。应用启动（bootstrapped）后，所有单例（Singleton）提供者都会被实例化。默认情况下，使用单例作用域。
       </td>
     </tr>
     <tr>
-      <td>
-        <code>REQUEST</code>
-      </td>
+      <td>`REQUEST`</td>
       <td>
         每个传入的<strong>请求（Request）</strong>
         都会创建一个新的提供者实例。该实例会在请求处理完成后被垃圾回收。
       </td>
     </tr>
     <tr>
-      <td>
-        <code>TRANSIENT</code>
-      </td>
+      <td>`TRANSIENT`</td>
       <td>
         瞬态（Transient）提供者不会在不同消费者之间共享。每个注入瞬态提供者的消费者都会获得一个全新的专属实例。
       </td>
@@ -38,7 +32,9 @@
   </tbody>
 </table>
 
-> info **提示** 绝大多数场景下，推荐使用单例作用域。让提供者在不同消费者和请求间共享，可以实现实例缓存，并且只在应用启动时初始化一次。
+<CalloutInfo>
+  绝大多数场景下，推荐使用单例作用域。让提供者在不同消费者和请求间共享，可以实现实例缓存，并且只在应用启动时初始化一次。
+</CalloutInfo>
 
 ## 用法
 
@@ -61,15 +57,22 @@ export class CatsService {}
 }
 ```
 
-> info **提示** 需要从 `@nestjs/common` 导入 `Scope` 枚举。
+<CalloutInfo>
+  <p>需要从 `@nestjs/common` 导入 `Scope` 枚举。</p>
+</CalloutInfo>
 
 默认情况下使用单例作用域，无需显式声明。如果你确实想声明为单例作用域，可以为 `scope` 属性设置 `Scope.DEFAULT`。
 
-> warning **注意** WebSocket 网关（Gateway）不应使用请求作用域（Request-scoped）提供者，因为它们必须作为单例存在。每个网关都封装了一个真实的 socket，不能被多次实例化。类似的限制也适用于某些其他提供者，比如 [_Passport 策略_](../security/authentication#request-scoped-strategies) 或 _Cron 控制器_。
+<CalloutInfo type="warning">
+  WebSocket
+  网关（Gateway）不应使用请求作用域（Request-scoped）提供者，因为它们必须作为单例存在。每个网关都封装了一个真实的
+  socket，不能被多次实例化。类似的限制也适用于某些其他提供者，比如 [Passport
+  策略](/security/authentication#request-scoped-strategies) 或 Cron 控制器。
+</CalloutInfo>
 
 ## 控制器作用域（Controller scope）
 
-控制器（Controller）同样可以设置作用域，这一作用域会应用于该控制器中声明的所有请求处理方法。与提供者作用域类似，控制器的作用域决定了其实例的生命周期。对于请求作用域的控制器，每个入站请求都会创建一个新的控制器实例，并在请求处理完成后自动进行垃圾回收。
+控制器同样可以设置作用域，这一作用域会应用于该控制器中声明的所有请求处理方法。与提供者作用域类似，控制器的作用域决定了其实例的生命周期。对于请求作用域的控制器，每个入站请求都会创建一个新的控制器实例，并在请求处理完成后自动进行垃圾回收。
 
 可以通过 `ControllerOptions` 对象的 `scope` 属性声明控制器作用域：
 
@@ -87,7 +90,7 @@ export class CatsController {}
 
 假设有如下依赖关系图：`CatsController <- CatsService <- CatsRepository`。如果 `CatsService` 被设置为请求作用域（而其他两个仍为默认的单例作用域），那么由于 `CatsController` 依赖于这个被注入的服务，它自身也会变成请求作用域。而 `CatsRepository` 因为没有被依赖，则依然保持单例作用域。
 
-瞬态作用域（Transient）的依赖并不遵循上述模式。例如，如果一个单例作用域的 `DogsService` 注入了一个瞬态的 `LoggerService` 提供者，每次注入时都会获得一个全新的 `LoggerService` 实例。然而，`DogsService` 本身依然保持单例作用域，无论在何处被注入，都不会生成新的 `DogsService` 实例。如果你希望 `DogsService` 也能每次注入时都创建新实例，则需要显式将其标记为瞬态作用域（TRANSIENT）。
+瞬态作用域（Transient）的依赖并不遵循上述模式。例如，如果一个单例作用域的 `DogsService` 注入了一个瞬态的 `LoggerService` 提供者，每次注入时都会获得一个全新的 `LoggerService` 实例。然而，`DogsService` 本身依然保持单例作用域，无论在何处被注入，都不会生成新的 `DogsService` 实例。如果你希望 `DogsService` 也能每次注入时都创建新实例，则需要显式将其标记为瞬态作用域。
 
 ## 请求对象提供者（Request provider）
 
@@ -120,9 +123,9 @@ export class CatsService {
 
 你需要在 `GraphQLModule` 的 `context` 配置中，将 `request` 作为其属性。
 
-## Inquirer 提供者（Inquirer provider）
+## Inquirer 提供者
 
-If you want to get the class where a provider was constructed, for instance in logging or metrics providers, you can inject the `INQUIRER` token.
+如果你想获取某个提供者被构造时所在的类（例如在日志记录或指标提供者中），你可以注入 `INQUIRER` 标识符。
 
 ```ts
 import { Inject, Injectable, Scope } from '@nestjs/common'
@@ -162,7 +165,9 @@ export class AppService {
 
 使用请求作用域（Request-scoped）提供者会影响应用性能。尽管 Nest 尽力缓存尽可能多的元数据，但它仍然需要在每个请求中创建一个新的类实例。这将导致平均响应时间延长，并降低整体基准测试表现。除非确实需要使用请求作用域，否则强烈建议使用默认的单例作用域（Singleton scope）。
 
-> info **提示** 虽然听起来有些吓人，但合理设计的应用，即使大量使用请求作用域提供者，延迟通常也不会超过 5% 左右。
+<CalloutInfo>
+  虽然听起来有些吓人，但合理设计的应用，即使大量使用请求作用域提供者，延迟通常也不会超过 5% 左右。
+</CalloutInfo>
 
 ## 持久化提供者（Durable providers）
 
@@ -202,9 +207,15 @@ export class AggregateByTenantContextIdStrategy implements ContextIdStrategy {
 }
 ```
 
-> info **提示** 类似于请求作用域，持久化（durability）特性也会沿着依赖注入链向上传递。也就是说，如果 A 依赖于被标记为 `durable` 的 B，那么 A 也会隐式地变为 durable（除非在 A 的提供者上显式将 `durable` 设置为 false）。
+<CalloutInfo>
+  类似于请求作用域，持久化（durability）特性也会沿着依赖注入链向上传递。也就是说，如果 A
+  依赖于被标记为 `durable` 的 B，那么 A 也会隐式地变为 durable（除非在 A 的提供者上显式将 `durable`
+  设置为 false）。
+</CalloutInfo>
 
-> warning **警告** 请注意，这种策略并不适用于操作大量租户的应用。
+<CalloutInfo type="warning">
+  <p>请注意，这种策略并不适用于操作大量租户的应用。</p>
+</CalloutInfo>
 
 `attach` 方法的返回值用于指示 Nest 应该为特定宿主（host）组件使用哪个上下文标识符（context identifier）。在本例中，我们指定当宿主组件（如请求作用域的控制器）被标记为 durable 时，应使用 `tenantSubTreeId`，而不是原本自动生成的 `contextId` 对象（关于如何将提供者标记为 durable，见下文）。另外，在上述示例中，并不会注册任何 payload（payload 即代表“根” —— 子树父级的 `REQUEST`/`CONTEXT` 提供者）。
 
@@ -223,10 +234,10 @@ return {
 有了上述策略后，你可以在代码中的任意位置注册它（因为它是全局生效的），例如可以放在 `main.ts` 文件中：
 
 ```ts
+import { ContextIdFactory } from '@nestjs/core'
+
 ContextIdFactory.apply(new AggregateByTenantContextIdStrategy())
 ```
-
-> info **提示** 需要从 `@nestjs/core` 包导入 `ContextIdFactory` 类。
 
 只要在应用接收任何请求之前完成注册，所有功能就会按预期工作。
 

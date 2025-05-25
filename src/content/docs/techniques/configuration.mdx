@@ -188,8 +188,6 @@ export default () => {
 
 这样，如果端口号超出指定范围，应用会在启动时抛出错误。
 
-<app-banner-devtools></app-banner-devtools>
-
 ## 使用 `配置服务（ConfigService）`
 
 要访问 `配置服务（ConfigService）` 中的配置信息，首先需要注入 `ConfigService`。和其他提供者（Provider）一样，需要在使用它的模块中导入其所在的 `配置模块（ConfigModule）`（除非你在 `ConfigModule.forRoot()` 的选项对象中将 `isGlobal` 属性设置为 `true`）。在功能模块中导入方式如下：

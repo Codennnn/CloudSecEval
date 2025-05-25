@@ -35,8 +35,6 @@ Potential solutions:
 
 另外，也要确保没有把提供者注入到自身，因为 NestJS 不允许自我注入。如果发生这种情况，`<unknown_token>` 很可能等于 `<provider>`。
 
-<app-banner-devtools></app-banner-devtools>
-
 如果你在 **多包仓库结构** 下开发，遇到类似的错误，但 `<unknown_token>` 是核心提供者 `ModuleRef`，错误信息如下：
 
 ```bash

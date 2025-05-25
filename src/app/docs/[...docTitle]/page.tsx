@@ -15,7 +15,7 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
       const { default: DocContent } = await import(`~/content/docs/${docPath}.mdx`) as { default: MDXContent }
 
       return (
-        <article className="prose text-[15px] dark:prose-invert mx-auto p-6 prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic prose-a:underline-offset-4">
+        <article className="prose max-w-[75ch] text-[15px] dark:prose-invert mx-auto p-6 prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic prose-a:underline-offset-4">
           <DocContent />
         </article>
       )

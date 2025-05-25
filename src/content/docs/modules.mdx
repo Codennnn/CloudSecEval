@@ -100,9 +100,7 @@ export class CatsModule {}
 
 如果我们在每个需要的模块中直接注册 `CatsService`，虽然也能正常工作，但每个模块都会获得各自独立的 `CatsService` 实例。这会导致内存占用增加（因为会创建多个相同服务的实例），还可能引发意外行为，比如服务内部状态不一致。
 
-通过将 `CatsService` 封装在模块（如 `CatsModule`）中并导出，我们确保所有导入 `CatsModule` 的模块都复用同一个 `CatsService` 实例。这不仅减少了内存消耗，还带来了更可预测的行为，因为所有模块共享同一个实例，便于管理共享状态或资源。这正是像 NestJS 这样框架的模块化和依赖注入（Dependency Injection）机制的关键优势之一 —— 让服务能在整个应用中高效共享。
-
-<app-banner-devtools></app-banner-devtools>
+通过将 `CatsService` 封装在模块（如 `CatsModule`）中并导出，我们确保所有导入 `CatsModule` 的模块都复用同一个 `CatsService` 实例。这不仅减少了内存消耗，还带来了更可预测的行为，因为所有模块共享同一个实例，便于管理共享状态或资源。这正是像 NestJS 这样框架的模块化和依赖注入机制的关键优势之一 —— 让服务能在整个应用中高效共享。
 
 ## 模块再导出（Module re-exporting）
 

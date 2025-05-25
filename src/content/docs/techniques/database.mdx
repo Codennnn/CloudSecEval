@@ -452,8 +452,6 @@ async createMany(users: User[]) {
 
 > info **提示** 请注意，`dataSource` 仅用于创建 `QueryRunner`。然而，测试该类时需要模拟整个 `DataSource` 对象（它暴露了多个方法）。因此，我们建议使用一个辅助工厂类（如 `QueryRunnerFactory`），并定义一个只包含维护事务所需方法的接口。这样可以更方便地对这些方法进行模拟。
 
-<app-banner-devtools></app-banner-devtools>
-
 另外，你也可以使用 `DataSource` 对象的 `transaction` 方法，采用回调风格来处理事务（[阅读更多](https://typeorm.io/#/transactions/creating-and-using-transactions)）。
 
 ```ts
@@ -515,7 +513,7 @@ export class UsersModule {}
 
 [数据库迁移（Migrations）](https://typeorm.io/#/migrations) 提供了一种方式，可以逐步更新数据库结构，使其与应用的数据模型保持同步，同时保留数据库中的现有数据。要生成、运行和回滚迁移，TypeORM 提供了专用的 [命令行工具（CLI）](https://typeorm.io/#/migrations/creating-a-new-migration)。
 
-迁移类与 Nest 应用的源代码是分离的。它们的生命周期由 TypeORM 命令行工具（CLI）进行管理。因此，在迁移中无法使用依赖注入（Dependency Injection）以及其他 Nest 特有的功能。想要了解更多关于迁移的内容，请参考 [TypeORM 官方文档](https://typeorm.io/#/migrations/creating-a-new-migration) 中的相关指南。
+迁移类与 Nest 应用的源代码是分离的。它们的生命周期由 TypeORM 命令行工具（CLI）进行管理。因此，在迁移中无法使用依赖注入以及其他 Nest 特有的功能。想要了解更多关于迁移的内容，请参考 [TypeORM 官方文档](https://typeorm.io/#/migrations/creating-a-new-migration) 中的相关指南。
 
 ## 多数据源（Multiple databases）
 

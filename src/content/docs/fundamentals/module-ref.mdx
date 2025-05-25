@@ -86,7 +86,7 @@ export class CatsService {
 }
 ```
 
-`resolve()` 方法会返回该提供者在其专属依赖注入（Dependency Injection）子树中的唯一实例。每个子树拥有唯一的上下文标识符（context identifier）。因此，如果多次调用该方法并比较返回的实例引用，会发现它们并不相等。
+`resolve()` 方法会返回该提供者在其专属依赖注入子树中的唯一实例。每个子树拥有唯一的上下文标识符（context identifier）。因此，如果多次调用该方法并比较返回的实例引用，会发现它们并不相等。
 
 ```ts
 @@filename(cats.service)
@@ -230,5 +230,3 @@ export class CatsService {
 ```
 
 这种方式可以让你在框架容器之外按需实例化不同的类。
-
-<app-banner-devtools></app-banner-devtools>

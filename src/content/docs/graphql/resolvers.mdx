@@ -675,8 +675,6 @@ export class CreatePostInput extends Post {
 - `info`：一个对象，包含关于查询执行状态的信息。
 - `args`：一个对象，包含查询字段中传入的参数。
 
-<app-banner-devtools></app-banner-devtools>
-
 ## 模块（Module）
 
 完成上述步骤后，我们就已经声明式地为 `GraphQLModule` 提供了生成解析器映射所需的全部信息。`GraphQLModule` 会利用反射机制（Reflection）检查通过装饰器提供的元数据（Metadata），并自动将类转换为正确的解析器映射。

@@ -87,8 +87,6 @@ export class CatsController {
   当处理器使用了 `@Res()` 或 `@Next()` 时，Nest 会检测到你选择了库特定方式。如果两种方式同时使用，标准方式会在该路由下被**自动禁用**，无法正常工作。如果你想同时使用（例如只注入响应对象用于设置 cookie/headers，其余交由框架处理），必须在 `@Res({ passthrough: true })` 装饰器中设置 `passthrough` 选项为 `true`。
 </CalloutInfo>
 
-<app-banner-devtools></app-banner-devtools>
-
 ## 请求对象（Request object）
 
 处理器通常需要访问客户端的 **请求** 详情。Nest 提供了对底层平台（默认是 Express）[请求对象](https://expressjs.com/en/api.html#req) 的访问方式。你可以通过在处理器参数中使用 `@Req()` 装饰器让 Nest 注入该对象。
