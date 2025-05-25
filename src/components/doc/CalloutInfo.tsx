@@ -5,6 +5,7 @@ import {
   XCircleIcon } from 'lucide-react'
 
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert'
+import { cn } from '~/lib/utils'
 
 interface CalloutInfoProps {
   type?: 'info' | 'warning' | 'error' | 'success'
@@ -14,6 +15,19 @@ interface CalloutInfoProps {
 
 export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   const { children, type = 'info', title, description } = props
+
+  const getColor = () => {
+    switch (type) {
+      case 'info':
+        return 'text-blue-500'
+
+      case 'warning':
+        return 'text-orange-500'
+
+      case 'error':
+        return 'text-red-500'
+    }
+  }
 
   const getIcon = () => {
     switch (type) {
@@ -58,7 +72,7 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   }
 
   return (
-    <Alert className="not-first:mt-5 prose-p:first:mt-0 prose-p:last:mb-0" variant={getVariant()}>
+    <Alert className={cn('not-first:mt-5 prose-p:first:mt-0 prose-p:last:mb-0', getColor())} variant={getVariant()}>
       {getIcon()}
 
       <AlertTitle>{title ?? getDefaultTitle()}</AlertTitle>
