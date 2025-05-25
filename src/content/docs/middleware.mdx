@@ -2,50 +2,46 @@
 
 中间件是一个在路由处理器**之前**被调用的函数。中间件函数可以访问 [请求对象（Request）](https://expressjs.com/en/4x/api.html#req) 和 [响应对象（Response）](https://expressjs.com/en/4x/api.html#res)，以及应用请求-响应周期中的 `next()` 中间件函数。**下一个**中间件函数通常用变量 `next` 表示。
 
-<figure>
-  <img class="illustrative-image" src="/assets/Middlewares_1.png" />
-</figure>
+<DocImage src="/assets/Middlewares_1.png" alt="中间件结构图" />
 
-Nest 中间件（Middleware）默认等同于 [Express（Node.js 框架）](https://expressjs.com/en/guide/using-middleware.html) 的中间件。以下是官方 Express 文档对中间件能力的描述：
+Nest 中间件默认等同于 [Express](https://expressjs.com/en/guide/using-middleware.html) 的中间件。以下是官方 Express 文档对中间件能力的描述：
 
-<blockquote class="external">
-  中间件函数可以执行以下任务：
-  <ul>
-    <li>执行任意代码。</li>
-    <li>对请求对象和响应对象进行修改。</li>
-    <li>结束请求-响应周期。</li>
-    <li>调用栈中的下一个中间件函数。</li>
-    <li>
-      如果当前中间件函数没有结束请求-响应周期，必须调用 <code>next()</code>
-      ，以将控制权交给下一个中间件函数。否则，请求将被挂起。
-    </li>
-  </ul>
-</blockquote>
+> 中间件函数可以执行以下任务：
+>
+> - 执行任意代码。
+> - 对请求对象和响应对象进行修改。
+> - 结束请求-响应周期。
+> - 调用栈中的下一个中间件函数。
+> - 如果当前中间件函数没有结束请求-响应周期，必须调用 `next()`，以将控制权交给下一个中间件函数。否则，请求将被挂起。
 
 你可以通过函数或带有 `@Injectable()` 装饰器的类来实现自定义 Nest 中间件。类方式应实现 `NestMiddleware` 接口，函数方式则没有特殊要求。我们先用类的方式实现一个简单的中间件功能。
 
-> warning **警告** `Express` 和 `Fastify（高性能 Node.js 框架）` 对中间件的处理方式和方法签名不同，详细说明见[此处](/techniques/performance#middleware)。
+<CalloutInfo type="warning">
+  `Express` 和 `Fastify`
+  对中间件的处理方式和方法签名不同，详细说明见[此处](/techniques/performance#middleware)。
+</CalloutInfo>
 
-```ts
-@@filename(logger.middleware)
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+```ts filename='logger.middleware.ts'
+import { Injectable, NestMiddleware } from '@nestjs/common'
+import { Request, Response, NextFunction } from 'express'
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    console.log('Request...');
-    next();
+    console.log('Request...')
+    next()
   }
 }
-@@switch
-import { Injectable } from '@nestjs/common';
+```
+
+```js hideInDoc filename='logger.middleware.js'
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class LoggerMiddleware {
   use(req, res, next) {
-    console.log('Request...');
-    next();
+    console.log('Request...')
+    next()
   }
 }
 ```
@@ -58,77 +54,78 @@ Nest 中间件完全支持依赖注入（Dependency Injection）。与提供者�
 
 中间件**不**在 `@Module()` 装饰器中声明，而是通过模块类的 `configure()` 方法进行设置。包含中间件的模块需要实现 `NestModule` 接口。下面我们在 `AppModule` 级别设置 `LoggerMiddleware`。
 
-```ts
-@@filename(app.module)
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { CatsModule } from './cats/cats.module';
+```ts filename='app.module.ts'
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
+import { LoggerMiddleware } from './common/middleware/logger.middleware'
+import { CatsModule } from './cats/cats.module'
 
 @Module({
   imports: [CatsModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes('cats');
+    consumer.apply(LoggerMiddleware).forRoutes('cats')
   }
 }
-@@switch
-import { Module } from '@nestjs/common';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { CatsModule } from './cats/cats.module';
+```
+
+```js hideInDoc filename='app.module.js'
+import { Module } from '@nestjs/common'
+import { LoggerMiddleware } from './common/middleware/logger.middleware'
+import { CatsModule } from './cats/cats.module'
 
 @Module({
   imports: [CatsModule],
 })
 export class AppModule {
   configure(consumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes('cats');
+    consumer.apply(LoggerMiddleware).forRoutes('cats')
   }
 }
 ```
 
 在上面的例子中，我们为 `/cats` 路由处理器（在 `CatsController` 中定义）设置了 `LoggerMiddleware`。你还可以通过向 `forRoutes()` 方法传递包含路由 `path` 和请求 `method` 的对象，进一步限定中间件应用于特定请求方法。如下例所示，我们引入了 `RequestMethod` 枚举来指定请求方法类型。
 
-```ts
-@@filename(app.module)
-import { Module, NestModule, RequestMethod, MiddlewareConsumer } from '@nestjs/common';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { CatsModule } from './cats/cats.module';
+```ts filename='app.module.ts'
+import { Module, NestModule, RequestMethod, MiddlewareConsumer } from '@nestjs/common'
+import { LoggerMiddleware } from './common/middleware/logger.middleware'
+import { CatsModule } from './cats/cats.module'
 
 @Module({
   imports: [CatsModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes({ path: 'cats', method: RequestMethod.GET });
+    consumer.apply(LoggerMiddleware).forRoutes({ path: 'cats', method: RequestMethod.GET })
   }
 }
-@@switch
-import { Module, RequestMethod } from '@nestjs/common';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { CatsModule } from './cats/cats.module';
+```
+
+```js hideInDoc filename='app.module.js'
+import { Module, RequestMethod } from '@nestjs/common'
+import { LoggerMiddleware } from './common/middleware/logger.middleware'
+import { CatsModule } from './cats/cats.module'
 
 @Module({
   imports: [CatsModule],
 })
 export class AppModule {
   configure(consumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes({ path: 'cats', method: RequestMethod.GET });
+    consumer.apply(LoggerMiddleware).forRoutes({ path: 'cats', method: RequestMethod.GET })
   }
 }
 ```
 
-> info **提示** `configure()` 方法可以通过 `async/await` 变为异步（例如，你可以在方法体内 `await` 某个异步操作完成）。
+<CalloutInfo>
+  `configure()` 方法可以通过 `async/await` 变为异步（例如，你可以在方法体内 `await`
+  某个异步操作完成）。
+</CalloutInfo>
 
-> warning **警告** 当使用 `express` 适配器时，NestJS 应用会默认注册 `body-parser` 包中的 `json` 和 `urlencoded` 中间件。如果你希望通过 `MiddlewareConsumer` 自定义这些中间件，需要在用 `NestFactory.create()` 创建应用时，将 `bodyParser` 选项设置为 `false`，以关闭全局中间件。
+<CalloutInfo type="warning">
+  当使用 `express` 适配器时，NestJS 应用会默认注册 `body-parser` 包中的 `json` 和 `urlencoded`
+  中间件。如果你希望通过 `MiddlewareConsumer` 自定义这些中间件，需要在用 `NestFactory.create()`
+  创建应用时，将 `bodyParser` 选项设置为 `false`，以关闭全局中间件。
+</CalloutInfo>
 
 ## 路由通配符
 
@@ -141,7 +138,9 @@ forRoutes({
 })
 ```
 
-> info **提示** `splat` 只是通配符参数的名称，没有特殊含义。你可以用任意名称，例如 `*wildcard`。
+<CalloutInfo>
+  `splat` 只是通配符参数的名称，没有特殊含义。你可以用任意名称，例如 `*wildcard`。
+</CalloutInfo>
 
 `'abcd/*'` 路由路径会匹配 `abcd/1`、`abcd/123`、`abcd/abc` 等。但连字符（`-`）和点（`.`）会被字面解释。注意，`abcd/`（没有后缀）不会被匹配。若需匹配这种情况，需要用大括号包裹通配符使其可选：
 
@@ -156,42 +155,42 @@ forRoutes({
 
 `MiddlewareConsumer` 是一个辅助类，提供了多种内置方法来管理中间件。所有方法都可以**链式调用**（[fluent style](https://en.wikipedia.org/wiki/Fluent_interface)）。`forRoutes()` 方法可以接收单个字符串、多个字符串、`RouteInfo` 对象、控制器类，甚至多个控制器类。大多数情况下，你可能会直接传递一个或多个控制器。下面是只传递一个控制器的例子：
 
-```ts
-@@filename(app.module)
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { CatsModule } from './cats/cats.module';
-import { CatsController } from './cats/cats.controller';
+```ts filename='app.module.ts'
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
+import { LoggerMiddleware } from './common/middleware/logger.middleware'
+import { CatsModule } from './cats/cats.module'
+import { CatsController } from './cats/cats.controller'
 
 @Module({
   imports: [CatsModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes(CatsController);
+    consumer.apply(LoggerMiddleware).forRoutes(CatsController)
   }
 }
-@@switch
-import { Module } from '@nestjs/common';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { CatsModule } from './cats/cats.module';
-import { CatsController } from './cats/cats.controller';
+```
+
+```js hideInDoc filename='app.module.js'
+import { Module } from '@nestjs/common'
+import { LoggerMiddleware } from './common/middleware/logger.middleware'
+import { CatsModule } from './cats/cats.module'
+import { CatsController } from './cats/cats.controller'
 
 @Module({
   imports: [CatsModule],
 })
 export class AppModule {
   configure(consumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes(CatsController);
+    consumer.apply(LoggerMiddleware).forRoutes(CatsController)
   }
 }
 ```
 
-> info **提示** `apply()` 方法可以接收单个中间件，也可以用逗号分隔传递多个中间件，详见<a href="/middleware#multiple-middleware">多中间件</a>。
+<CalloutInfo>
+  `apply()`
+  方法可以接收单个中间件，也可以用逗号分隔传递多个中间件，详见[多中间件](/middleware#multiple-middleware)。
+</CalloutInfo>
 
 ## 排除路由
 
@@ -210,7 +209,10 @@ consumer
   .forRoutes(CatsController)
 ```
 
-> info **提示** `exclude()` 方法支持使用 [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters) 包的通配符参数。
+<CalloutInfo>
+  `exclude()` 方法支持使用 [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters)
+  包的通配符参数。
+</CalloutInfo>
 
 如上例，`LoggerMiddleware` 会绑定到 `CatsController` 中定义的所有路由，**除了**传递给 `exclude()` 方法的这三个。
 
@@ -220,31 +222,24 @@ consumer
 
 我们一直用的 `LoggerMiddleware` 类非常简单，没有成员、额外方法或依赖。那为什么不能直接用函数来定义？其实完全可以。这种中间件称为**函数式中间件（Functional Middleware）**。我们将 logger 中间件从类改为函数，演示如下：
 
-```ts
-@@filename(logger.middleware)
-import { Request, Response, NextFunction } from 'express';
+```ts filename='logger.middleware.ts'
+import { Request, Response, NextFunction } from 'express'
 
 export function logger(req: Request, res: Response, next: NextFunction) {
-  console.log(`Request...`);
-  next();
-};
-@@switch
-export function logger(req, res, next) {
-  console.log(`Request...`);
-  next();
-};
+  console.log(`Request...`)
+  next()
+}
 ```
 
 然后在 `AppModule` 中使用：
 
-```ts
-@@filename(app.module)
-consumer
-  .apply(logger)
-  .forRoutes(CatsController);
+```ts filename='app.module.ts'
+consumer.apply(logger).forRoutes(CatsController)
 ```
 
-> info **提示** 如果你的中间件不需要依赖，建议优先使用更简单的**函数式中间件**。
+<CalloutInfo>
+  <p>如果你的中间件不需要依赖，建议优先使用更简单的**函数式中间件**。</p>
+</CalloutInfo>
 
 ## 多个中间件
 
@@ -258,11 +253,15 @@ consumer.apply(cors(), helmet(), logger).forRoutes(CatsController)
 
 如果希望将中间件绑定到所有已注册路由，可以通过 `INestApplication` 实例的 `use()` 方法实现：
 
-```ts
-@@filename(main)
-const app = await NestFactory.create(AppModule);
-app.use(logger);
-await app.listen(process.env.PORT ?? 3000);
+```ts filename='main.ts'
+const app = await NestFactory.create(AppModule)
+
+app.use(logger)
+
+await app.listen(process.env.PORT ?? 3000)
 ```
 
-> info **提示** 在全局中间件中无法访问依赖注入容器。此时建议使用[函数式中间件](middleware#functional-middleware)。或者，也可以用类中间件并在 `AppModule`（或其他模块）中通过 `.forRoutes('*')` 消费。
+<CalloutInfo>
+  在全局中间件中无法访问依赖注入容器。此时建议使用[函数式中间件](middleware#functional-middleware)。或者，也可以用类中间件并在
+  `AppModule`（或其他模块）中通过 `.forRoutes('*')` 消费。
+</CalloutInfo>

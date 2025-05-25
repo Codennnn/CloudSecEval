@@ -6,6 +6,7 @@ export function getPageTitle(title?: string): string {
 
 /**
  * 判断链接是否为外部链接的函数
+ *
  * @param href 链接地址
  * @returns 是否为外部链接
  */
@@ -17,4 +18,24 @@ export function isExternalLink(href: string): boolean {
 
   // 以 http:// 或 https:// 开头的链接视为外部链接
   return href.startsWith('http://') || href.startsWith('https://')
+}
+
+/**
+ * 判断链接是否为内部链接的函数
+ *
+ * @param href 链接地址
+ * @returns 是否为内部链接
+ */
+export function isInternalLink(href: string): boolean {
+  return href.startsWith('/') || href.startsWith('#') || href.startsWith('.')
+}
+
+/**
+ * 判断链接是否为锚点链接的函数
+ *
+ * @param href 链接地址
+ * @returns 是否为锚点链接
+ */
+export function isHashLink(href: string): boolean {
+  return href.startsWith('#')
 }

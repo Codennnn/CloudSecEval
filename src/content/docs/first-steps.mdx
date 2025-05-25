@@ -1,5 +1,3 @@
-import { FileTree } from '~/components/doc/FileTree'
-
 # 快速上手
 
 在本系列文章中，你将学习 Nest 的**核心基础知识**。为了帮助你熟悉 Nest 应用的基本构建模块，我们将通过构建一个基础的 CRUD 应用，涵盖入门阶段常见的功能特性。
@@ -30,7 +28,20 @@ $ nest new project-name
 
 上述命令会创建 `project-name` 目录，自动安装依赖和部分基础文件，并生成 `src/` 目录及多个核心文件。
 
-<FileTree />
+<FileTree
+  data={[
+    {
+      name: 'src',
+      children: [
+        { name: 'app.controller.spec.ts' },
+        { name: 'app.controller.ts' },
+        { name: 'app.module.ts' },
+        { name: 'app.service.ts' },
+        { name: 'main.ts' },
+      ],
+    },
+  ]}
+/>
 
 以下是这些核心文件的简要说明：
 

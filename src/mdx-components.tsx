@@ -4,8 +4,10 @@ import type { BundledLanguage } from 'shiki'
 
 import { CodeBlock } from '~/components/CodeBlock'
 import { CalloutInfo } from '~/components/doc/CalloutInfo'
+import { DocImage } from '~/components/doc/DocImage'
+import { FileTree } from '~/components/doc/FileTree'
 import { RoutePath } from '~/constants'
-import { isExternalLink } from '~/utils/common'
+import { isExternalLink, isHashLink, isInternalLink } from '~/utils/common'
 
 interface PreProps {
   children: React.ReactElement<{ className: string, children: React.ReactElement }>
@@ -41,7 +43,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
 
       return (
-        <Link href={href.startsWith('/') ? `${RoutePath.Docs}${href}` : `${RoutePath.Docs}/${href}`}>
+        <Link href={isInternalLink(href) ? isHashLink(href) ? href : `${RoutePath.Docs}${href}` : `${RoutePath.Docs}/${href}`}>
           {children}
         </Link>
       )
@@ -80,7 +82,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return <pre {...restProps}>{children}</pre>
     },
 
+    FileTree,
     CalloutInfo,
+    DocImage,
 
     ...components,
   }

@@ -1,5 +1,6 @@
 import { FolderOpenIcon } from 'lucide-react'
 
+import { IconTypescript } from '~/components/icon/IconTypescript'
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -8,48 +9,71 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '~/components/ui/sidebar'
+import { cn } from '~/lib/utils'
 
-import { IconTypescript } from '../icon/IconTypescript'
+export interface FileTreeItem {
+  name: string
+  icon?: React.ReactNode
+  isFolder?: boolean
+  children?: FileTreeItem[]
+}
 
-const fileTreeData = [
-  {
-    name: 'src',
-    children: [
-      { name: 'app.controller.spec.ts' },
-      { name: 'app.controller.ts' },
-      { name: 'app.module.ts' },
-      { name: 'app.service.ts' },
-      { name: 'main.ts' },
-    ],
-  },
-]
+export type FileTreeData = FileTreeItem[]
 
-export function FileTree() {
+export interface FileTreeProps {
+  data?: FileTreeData
+  className?: string
+}
+
+// 递归渲染文件树项目
+const FileTreeItemComponent = ({ item }: { item: FileTreeItem }) => {
+  // 文件夹
+  if (item.isFolder || item.children?.length) {
+    return (
+      <SidebarMenuItem key={item.name}>
+        <SidebarMenuButton>
+          {item.icon ?? <FolderOpenIcon />}
+          {item.name}
+        </SidebarMenuButton>
+
+        <SidebarMenuSub>
+          {item.children?.map((child) => (
+            <FileTreeItemComponent key={child.name} item={child} />
+          ))}
+        </SidebarMenuSub>
+      </SidebarMenuItem>
+    )
+  }
+
+  // 文件
   return (
-    <SidebarMenu className="not-prose font-medium">
-      {fileTreeData.map((folder) => (
-        <SidebarMenuItem key={folder.name}>
-          <SidebarMenuButton>
-            <FolderOpenIcon />
+    <SidebarMenuSubItem key={item.name}>
+      <SidebarMenuSubButton>
+        {item.icon ?? (
+          <span className="size-4 grayscale-100 inline-block">
+            <IconTypescript />
+          </span>
+        )}
+        {item.name}
+      </SidebarMenuSubButton>
+    </SidebarMenuSubItem>
+  )
+}
 
-            {folder.name}
-          </SidebarMenuButton>
+export function FileTree(props: FileTreeProps) {
+  const { data, className } = props
 
-          <SidebarMenuSub>
-            {folder.children.map((file) => (
-              <SidebarMenuSubItem key={file.name}>
-                <SidebarMenuSubButton>
-                  <span className="size-4 grayscale-100 inline-block">
-                    <IconTypescript />
-                  </span>
+  if (!data?.length) {
+    return null
+  }
 
-                  {file.name}
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
-          </SidebarMenuSub>
-        </SidebarMenuItem>
-      ))}
-    </SidebarMenu>
+  return (
+    <div className="border border-border rounded-lg p-3">
+      <SidebarMenu className={cn('not-prose font-medium', className)}>
+        {data.map((item) => (
+          <FileTreeItemComponent key={item.name} item={item} />
+        ))}
+      </SidebarMenu>
+    </div>
   )
 }

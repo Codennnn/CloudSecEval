@@ -83,7 +83,9 @@ export class CatsController {
   </tbody>
 </table>
 
-> warning **警告** 当处理器使用了 `@Res()` 或 `@Next()` 时，Nest 会检测到你选择了库特定方式。如果两种方式同时使用，标准方式会在该路由下被**自动禁用**，无法正常工作。如果你想同时使用（例如只注入响应对象用于设置 cookie/headers，其余交由框架处理），必须在 `@Res({ passthrough: true })` 装饰器中设置 `passthrough` 选项为 `true`。
+<CalloutInfo type="warning">
+  当处理器使用了 `@Res()` 或 `@Next()` 时，Nest 会检测到你选择了库特定方式。如果两种方式同时使用，标准方式会在该路由下被**自动禁用**，无法正常工作。如果你想同时使用（例如只注入响应对象用于设置 cookie/headers，其余交由框架处理），必须在 `@Res({ passthrough: true })` 装饰器中设置 `passthrough` 选项为 `true`。
+</CalloutInfo>
 
 <app-banner-devtools></app-banner-devtools>
 
@@ -91,27 +93,28 @@ export class CatsController {
 
 处理器通常需要访问客户端的 **请求** 详情。Nest 提供了对底层平台（默认是 Express）[请求对象](https://expressjs.com/en/api.html#req) 的访问方式。你可以通过在处理器参数中使用 `@Req()` 装饰器让 Nest 注入该对象。
 
-```ts
-@@filename(cats.controller)
-import { Controller, Get, Req } from '@nestjs/common';
-import { Request } from 'express';
+```ts filename='cats.controller.ts'
+import { Controller, Get, Req } from '@nestjs/common'
+import { Request } from 'express'
 
 @Controller('cats')
 export class CatsController {
   @Get()
   findAll(@Req() request: Request): string {
-    return 'This action returns all cats';
+    return 'This action returns all cats'
   }
 }
-@@switch
-import { Controller, Bind, Get, Req } from '@nestjs/common';
+```
+
+```js hideInDoc filename='cats.controller.js'
+import { Controller, Bind, Get, Req } from '@nestjs/common'
 
 @Controller('cats')
 export class CatsController {
   @Get()
   @Bind(Req())
   findAll(request) {
-    return 'This action returns all cats';
+    return 'This action returns all cats'
   }
 }
 ```
@@ -126,85 +129,47 @@ export class CatsController {
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>@Request(), @Req()</code>
-      </td>
-      <td>
-        <code>req</code>
-      </td>
+      <td>`@Request(), @Req()`</td>
+      <td>`req`</td>
     </tr>
     <tr>
       <td>
-        <code>@Response(), @Res()</code>
+        `@Response(), @Res()`
         <span class="table-code-asterisk">*</span>
       </td>
-      <td>
-        <code>res</code>
-      </td>
+      <td>`res`</td>
     </tr>
     <tr>
-      <td>
-        <code>@Next()</code>
-      </td>
-      <td>
-        <code>next</code>
-      </td>
+      <td>`@Next()`</td>
+      <td>`next`</td>
     </tr>
     <tr>
-      <td>
-        <code>@Session()</code>
-      </td>
-      <td>
-        <code>req.session</code>
-      </td>
+      <td>`@Session()`</td>
+      <td>`req.session`</td>
     </tr>
     <tr>
-      <td>
-        <code>@Param(key?: string)</code>
-      </td>
-      <td>
-        <code>req.params</code> / <code>req.params[key]</code>
-      </td>
+      <td>`@Param(key?: string)`</td>
+      <td>`req.params` / `req.params[key]`</td>
     </tr>
     <tr>
-      <td>
-        <code>@Body(key?: string)</code>
-      </td>
-      <td>
-        <code>req.body</code> / <code>req.body[key]</code>
-      </td>
+      <td>`@Body(key?: string)`</td>
+      <td>`req.body` / `req.body[key]`</td>
     </tr>
     <tr>
-      <td>
-        <code>@Query(key?: string)</code>
-      </td>
-      <td>
-        <code>req.query</code> / <code>req.query[key]</code>
-      </td>
+      <td>`@Query(key?: string)`</td>
+      <td>`req.query` / `req.query[key]`</td>
     </tr>
     <tr>
-      <td>
-        <code>@Headers(name?: string)</code>
-      </td>
-      <td>
-        <code>req.headers</code> / <code>req.headers[name]</code>
-      </td>
+      <td>`@Headers(name?: string)`</td>
+      <td>`req.headers` / `req.headers[name]`</td>
     </tr>
     <tr>
-      <td>
-        <code>@Ip()</code>
-      </td>
-      <td>
-        <code>req.ip</code>
-      </td>
+      <td>`@Ip()`</td>
+      <td>`req.ip`</td>
     </tr>
     <tr>
-      <td>
-        <code>@HostParam()</code>
-      </td>
-      <td>
-        <code>req.hosts</code>
-      </td>
+      <td>`@HostParam()`</td>
+      <td>`req.hosts`</td>
     </tr>
   </tbody>
 </table>
@@ -216,41 +181,44 @@ export class CatsController {
 `@Response()` 时，Nest 会进入**库特定模式**，此时你需要自行负责响应的发送（如调用 `res.json(...)` 或
 `res.send(...)`），否则 HTTP 服务会挂起。
 
-> info **提示** 想了解如何自定义装饰器，请参见[本章节](/custom-decorators)。
+<CalloutInfo>
+  <p>想了解如何自定义装饰器，请参见[这个章节](/custom-decorators)。</p>
+</CalloutInfo>
 
 ## 资源（Resource）
 
 前文我们定义了一个用于获取猫资源的端点（**GET** 路由）。通常我们还需要提供一个用于创建新记录的端点。下面是 **POST** 处理器的示例：
 
-```ts
-@@filename(cats.controller)
-import { Controller, Get, Post } from '@nestjs/common';
+```ts filename='cats.controller.ts'
+import { Controller, Get, Post } from '@nestjs/common'
 
 @Controller('cats')
 export class CatsController {
   @Post()
   create(): string {
-    return 'This action adds a new cat';
+    return 'This action adds a new cat'
   }
 
   @Get()
   findAll(): string {
-    return 'This action returns all cats';
+    return 'This action returns all cats'
   }
 }
-@@switch
-import { Controller, Get, Post } from '@nestjs/common';
+```
+
+```js hideInDoc filename='cats.controller.js'
+import { Controller, Get, Post } from '@nestjs/common'
 
 @Controller('cats')
 export class CatsController {
   @Post()
   create() {
-    return 'This action adds a new cat';
+    return 'This action adds a new cat'
   }
 
   @Get()
   findAll() {
-    return 'This action returns all cats';
+    return 'This action returns all cats'
   }
 }
 ```
@@ -279,14 +247,14 @@ findAll() {
 如前所述，响应的默认 **状态码（status code）** 总是 **200**，POST 请求除外（默认为 **201**）。你可以通过在处理器级别使用 `@HttpCode(...)` 装饰器轻松更改这一行为。
 
 ```ts
+import { HttpCode, Post } from '@nestjs/common'
+
 @Post()
 @HttpCode(204)
 create() {
   return 'This action adds a new cat';
 }
 ```
-
-> info **提示** 需要从 `@nestjs/common` 包中引入 `HttpCode`。
 
 有时，状态码并不是固定的，而是取决于多种因素。这种情况下，可以使用库特定的 **响应（response）**（通过 `@Res()` 注入）对象（或在出错时抛出异常）。
 
@@ -295,14 +263,14 @@ create() {
 要指定自定义响应头，可以使用 `@Header()` 装饰器，或直接通过库特定响应对象（如 `res.header()`）设置。
 
 ```ts
+import { Header, Post } from '@nestjs/common'
+
 @Post()
 @Header('Cache-Control', 'no-store')
 create() {
   return 'This action adds a new cat';
 }
 ```
-
-> info **提示** 需要从 `@nestjs/common` 包中引入 `Header`。
 
 ## 重定向（Redirection）
 
@@ -315,7 +283,10 @@ create() {
 @Redirect('https://nestjs.com', 301)
 ```
 
-> info **提示** 有时你可能希望动态确定 HTTP 状态码或重定向 URL。此时可以返回一个符合 `HttpRedirectResponse` 接口（来自 `@nestjs/common`）的对象。
+<CalloutInfo>
+  有时你可能希望动态确定 HTTP 状态码或重定向 URL。此时可以返回一个符合 `HttpRedirectResponse`
+  接口（来自 `@nestjs/common`）的对象。
+</CalloutInfo>
 
 返回值会覆盖传递给 `@Redirect()` 装饰器的参数。例如：
 
@@ -333,16 +304,23 @@ getDocs(@Query('version') version) {
 
 静态路径的路由无法满足需要在请求中携带**动态数据**的场景（如 `GET /cats/1` 获取 id 为 1 的猫）。要定义带参数的路由，可以在路由路径中添加参数 **标记**，以捕获 URL 中的动态值。如下例所示，这些参数可以通过 `@Param()` 装饰器在方法参数中获取。
 
-> info **提示** 带参数的路由应声明在所有静态路径之后，以避免参数化路径拦截原本属于静态路径的流量。
+<CalloutInfo>
+  带参数的路由应声明在所有静态路径之后，以避免参数化路径拦截原本属于静态路径的流量。
+</CalloutInfo>
 
 ```ts
-@@filename()
+import { Param, Get } from '@nestjs/common'
+
 @Get(':id')
 findOne(@Param() params: any): string {
   console.log(params.id);
   return `This action returns a #${params.id} cat`;
 }
-@@switch
+```
+
+```js hideInDoc
+import { Param, Get } from '@nestjs/common'
+
 @Get(':id')
 @Bind(Param())
 findOne(params) {
@@ -353,15 +331,15 @@ findOne(params) {
 
 `@Param()` 装饰器用于修饰方法参数（如上例中的 `params`），使**路由**参数作为该参数的属性在方法体内可用。你可以通过 `params.id` 访问 `id` 参数。也可以为装饰器传递具体参数名，直接在方法体内引用该参数。
 
-> info **提示** 需要从 `@nestjs/common` 包中引入 `Param`。
-
 ```ts
 @@filename()
 @Get(':id')
 findOne(@Param('id') id: string): string {
   return `This action returns a #${id} cat`;
 }
-@@switch
+```
+
+```js
 @Get(':id')
 @Bind(Param('id'))
 findOne(id) {
@@ -383,7 +361,9 @@ export class AdminController {
 }
 ```
 
-> warning **警告** 由于 **Fastify** 不支持嵌套路由，如果你需要使用子域名路由，建议使用默认的 Express 适配器。
+<CalloutInfo type="warning">
+  由于 **Fastify** 不支持嵌套路由，如果你需要使用子域名路由，建议使用默认的 Express 适配器。
+</CalloutInfo>
 
 与路由 `path` 类似，`hosts` 选项也可以使用参数标记来捕获主机名中的动态值。如下例所示，这些参数可以通过 `@HostParam()` 装饰器在方法参数中获取。
 
@@ -407,30 +387,18 @@ export class AccountController {
 
 我们热爱现代 JavaScript，尤其是其对**异步**数据处理的强调。因此，Nest 完全支持 `async` 函数。每个 `async` 函数都必须返回一个 `Promise`，这样 Nest 就能自动解析其最终值。如下例所示：
 
-```ts
-@@filename(cats.controller)
+```ts filename='cats.controller.ts'
 @Get()
 async findAll(): Promise<any[]> {
-  return [];
-}
-@@switch
-@Get()
-async findAll() {
   return [];
 }
 ```
 
 这段代码完全有效。但 Nest 更进一步，允许路由处理器返回 RxJS [可观察流（observable stream）](https://rxjs-dev.firebaseapp.com/guide/observable)。Nest 会自动订阅流，并在流结束时解析最终值。
 
-```ts
-@@filename(cats.controller)
+```ts filename='cats.controller.ts'
 @Get()
 findAll(): Observable<any[]> {
-  return of([]);
-}
-@@switch
-@Get()
-findAll() {
   return of([]);
 }
 ```
@@ -445,32 +413,28 @@ findAll() {
 
 让我们创建 `CreateCatDto` 类：
 
-```ts
-@@filename(create-cat.dto)
+```ts filename='create-cat.dto.ts'
 export class CreateCatDto {
-  name: string;
-  age: number;
-  breed: string;
+  name: string
+  age: number
+  breed: string
 }
 ```
 
 它只包含三个基础属性。之后我们可以在 `CatsController` 中使用新建的 DTO：
 
-```ts
-@@filename(cats.controller)
+```ts filename='cats.controller.ts'
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
   return 'This action adds a new cat';
 }
-@@switch
-@Post()
-@Bind(Body())
-async create(createCatDto) {
-  return 'This action adds a new cat';
-}
 ```
 
-> info **提示** 我们的 `ValidationPipe` 可以过滤掉不应被方法处理器接收的属性。比如在 `CreateCatDto` 示例中，白名单属性为 `name`、`age` 和 `breed`，不在白名单内的属性会被自动剔除。详细内容见[这里](https://docs.nestjs.com/techniques/validation#stripping-properties)。
+<CalloutInfo>
+  我们的 `ValidationPipe` 可以过滤掉不应被方法处理器接收的属性。比如在 `CreateCatDto`
+  示例中，白名单属性为 `name`、`age` 和
+  `breed`，不在白名单内的属性会被自动剔除。详细内容见[这里](https://docs.nestjs.com/techniques/validation#stripping-properties)。
+</CalloutInfo>
 
 ## 查询参数（Query parameters）
 
@@ -478,8 +442,7 @@ async create(createCatDto) {
 
 假设我们希望根据查询参数 `age` 和 `breed` 过滤猫列表。首先在 `CatsController` 中定义查询参数：
 
-```ts
-@@filename(cats.controller)
+```ts filename='cats.controller.ts'
 @Get()
 async findAll(@Query('age') age: number, @Query('breed') breed: string) {
   return `This action returns all cats filtered by age: ${age} and breed: ${breed}`;
@@ -519,7 +482,9 @@ const app = await NestFactory.create<NestFastifyApplication>(
 )
 ```
 
-> info **提示** `qs` 是一个支持嵌套和数组的查询字符串解析器。可通过 `npm install qs` 安装。
+<CalloutInfo>
+  `qs` 是一个支持嵌套和数组的查询字符串解析器。可通过 `npm install qs` 安装。
+</CalloutInfo>
 
 ## 错误处理（Handling errors）
 
@@ -529,77 +494,43 @@ const app = await NestFactory.create<NestFastifyApplication>(
 
 下面的示例展示了如何使用多种装饰器创建一个基础控制器。该控制器提供了若干方法，用于访问和操作内部数据。
 
-```ts
-@@filename(cats.controller)
-import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto';
+```ts filename='cats.controller.ts'
+import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/common'
+import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto'
 
 @Controller('cats')
 export class CatsController {
   @Post()
   create(@Body() createCatDto: CreateCatDto) {
-    return 'This action adds a new cat';
+    return 'This action adds a new cat'
   }
 
   @Get()
   findAll(@Query() query: ListAllEntities) {
-    return `This action returns all cats (limit: ${query.limit} items)`;
+    return `This action returns all cats (limit: ${query.limit} items)`
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return `This action returns a #${id} cat`;
+    return `This action returns a #${id} cat`
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
-    return `This action updates a #${id} cat`;
+    return `This action updates a #${id} cat`
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return `This action removes a #${id} cat`;
-  }
-}
-@@switch
-import { Controller, Get, Query, Post, Body, Put, Param, Delete, Bind } from '@nestjs/common';
-
-@Controller('cats')
-export class CatsController {
-  @Post()
-  @Bind(Body())
-  create(createCatDto) {
-    return 'This action adds a new cat';
-  }
-
-  @Get()
-  @Bind(Query())
-  findAll(query) {
-    console.log(query);
-    return `This action returns all cats (limit: ${query.limit} items)`;
-  }
-
-  @Get(':id')
-  @Bind(Param('id'))
-  findOne(id) {
-    return `This action returns a #${id} cat`;
-  }
-
-  @Put(':id')
-  @Bind(Param('id'), Body())
-  update(id, updateCatDto) {
-    return `This action updates a #${id} cat`;
-  }
-
-  @Delete(':id')
-  @Bind(Param('id'))
-  remove(id) {
-    return `This action removes a #${id} cat`;
+    return `This action removes a #${id} cat`
   }
 }
 ```
 
-> info **提示** Nest CLI 提供了生成器（schematic），可以自动创建**所有样板代码**，无需手动编写，大大提升开发体验。详细内容见[这里](/recipes/crud-generator)。
+<CalloutInfo>
+  Nest CLI
+  提供了生成器（schematic），可以自动创建**所有样板代码**，无需手动编写，大大提升开发体验。详细内容见[这里](/recipes/crud-generator)。
+</CalloutInfo>
 
 ## 快速上手（Getting up and running）
 
@@ -607,10 +538,9 @@ export class CatsController {
 
 控制器必须始终属于某个模块，因此我们需要在 `@Module()` 装饰器的 `controllers` 数组中注册它。由于目前只定义了根模块 `AppModule`，我们可以直接在其中注册 `CatsController`：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { CatsController } from './cats/cats.controller';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { CatsController } from './cats/cats.controller'
 
 @Module({
   controllers: [CatsController],
@@ -625,37 +555,19 @@ export class AppModule {}
 前文介绍了标准的 Nest 响应处理方式。另一种方式是使用库特定的 [响应对象](https://expressjs.com/en/api.html#res)。要注入特定响应对象，可以使用 `@Res()` 装饰器。下面通过重写 `CatsController` 展示两种方式的区别：
 
 ```ts
-@@filename()
-import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common'
+import { Response } from 'express'
 
 @Controller('cats')
 export class CatsController {
   @Post()
   create(@Res() res: Response) {
-    res.status(HttpStatus.CREATED).send();
+    res.status(HttpStatus.CREATED).send()
   }
 
   @Get()
   findAll(@Res() res: Response) {
-     res.status(HttpStatus.OK).json([]);
-  }
-}
-@@switch
-import { Controller, Get, Post, Bind, Res, Body, HttpStatus } from '@nestjs/common';
-
-@Controller('cats')
-export class CatsController {
-  @Post()
-  @Bind(Res(), Body())
-  create(res, createCatDto) {
-    res.status(HttpStatus.CREATED).send();
-  }
-
-  @Get()
-  @Bind(Res())
-  findAll(res) {
-     res.status(HttpStatus.OK).json([]);
+    res.status(HttpStatus.OK).json([])
   }
 }
 ```
@@ -665,16 +577,8 @@ export class CatsController {
 另外，采用这种方式会失去与 Nest 标准响应处理相关的特性（如拦截器、`@HttpCode()`、`@Header()` 装饰器等）的兼容性。为了解决这个问题，可以启用 `passthrough` 选项，如下所示：
 
 ```ts
-@@filename()
 @Get()
 findAll(@Res({ passthrough: true }) res: Response) {
-  res.status(HttpStatus.OK);
-  return [];
-}
-@@switch
-@Get()
-@Bind(Res({ passthrough: true }))
-findAll(res) {
   res.status(HttpStatus.OK);
   return [];
 }
