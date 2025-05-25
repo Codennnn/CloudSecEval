@@ -116,4 +116,4 @@ export class AppModule {}
 
 简而言之，monorepo 与库功能的结合，让在应用中引入库模块变得简单直观。
 
-同样的机制也支持构建和部署由多个库组成的应用。一旦导入了 `MyLibraryModule`，运行 `nest build` 命令时，所有模块解析都会自动处理，并将应用与所有库依赖一同打包，便于部署。monorepo 的默认编译器是 **webpack**，因此最终的分发文件会将所有已转译的 JavaScript 文件打包为一个单一文件。当然，你也可以按照 [这里](https://docs.nestjs.com/cli/monorepo#global-compiler-options) 的说明切换为 `tsc` 编译器。
+同样的机制也支持构建和部署由多个库组成的应用。一旦导入了 `MyLibraryModule`，运行 `nest build` 命令时，所有模块解析都会自动处理，并将应用与所有库依赖一同打包，便于部署。monorepo 的默认编译器是 **webpack**，因此最终的分发文件会将所有已转译的 JavaScript 文件打包为一个单一文件。当然，你也可以按照 [这里](/cli/monorepo#global-compiler-options) 的说明切换为 `tsc` 编译器。

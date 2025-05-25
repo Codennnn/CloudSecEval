@@ -12,7 +12,7 @@ Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。
 
 ## 生命周期事件
 
-生命周期事件会在应用程序引导和关闭时发生。Nest 会在每个生命周期事件节点，调用已注册的生命周期钩子方法（Lifecycle Hook Method），这些方法可定义在模块、提供者或控制器上（**关闭钩子（shutdown hook）** 需先启用，详见[下文](https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown)）。如上图所示，Nest 还会调用底层方法来开始监听连接或停止监听连接。
+生命周期事件会在应用程序引导和关闭时发生。Nest 会在每个生命周期事件节点，调用已注册的生命周期钩子方法（Lifecycle Hook Method），这些方法可定义在模块、提供者或控制器上（**关闭钩子（shutdown hook）** 需先启用，详见[下文](/fundamentals/lifecycle-events#application-shutdown)）。如上图所示，Nest 还会调用底层方法来开始监听连接或停止监听连接。
 
 下表中，`onModuleInit` 和 `onApplicationBootstrap` 只有在你显式调用 `app.init()` 或 `app.listen()` 时才会触发。
 

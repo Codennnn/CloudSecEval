@@ -1,10 +1,10 @@
 # 自定义提供者（Custom Provider）
 
-在前面的章节中，我们已经介绍了 **依赖注入（Dependency Injection，DI）** 及其在 Nest 中的应用。例如，[基于构造函数的依赖注入](https://docs.nestjs.com/providers#dependency-injection) 用于将实例（通常是服务提供者）注入到类中。你可能已经注意到，依赖注入机制在 Nest 核心中扮演着至关重要的角色。到目前为止，我们只探索了一种主要模式。随着应用变得更加复杂，你可能需要充分利用 DI 系统的全部特性，下面我们将更详细地进行探讨。
+在前面的章节中，我们已经介绍了 **依赖注入（Dependency Injection，DI）** 及其在 Nest 中的应用。例如，[基于构造函数的依赖注入](/providers#dependency-injection) 用于将实例（通常是服务提供者）注入到类中。你可能已经注意到，依赖注入机制在 Nest 核心中扮演着至关重要的角色。到目前为止，我们只探索了一种主要模式。随着应用变得更加复杂，你可能需要充分利用 DI 系统的全部特性，下面我们将更详细地进行探讨。
 
 ## 依赖注入基础
 
-依赖注入是一种 [控制反转（Inversion of Control，IoC）](https://en.wikipedia.org/wiki/Inversion_of_control) 技术，即将依赖项的实例化过程交由 IoC 容器（在本例中为 NestJS 运行时系统）管理，而不是在代码中手动创建。让我们通过 [提供者章节](https://docs.nestjs.com/providers) 的示例来分析其工作原理。
+依赖注入是一种 [控制反转（Inversion of Control，IoC）](https://en.wikipedia.org/wiki/Inversion_of_control) 技术，即将依赖项的实例化过程交由 IoC 容器（在本例中为 NestJS 运行时系统）管理，而不是在代码中手动创建。让我们通过 [提供者章节](/providers) 的示例来分析其工作原理。
 
 首先，我们定义一个提供者。`@Injectable()` 装饰器将 `CatsService` 类标记为可由 Nest IoC 容器管理的提供者。
 
@@ -136,7 +136,7 @@ export class AppModule {}
 
 ## 非类注入令牌
 
-到目前为止，我们一直用类名作为提供者的注入令牌（即 `provide` 属性的值）。在与[基于构造函数的注入](https://docs.nestjs.com/providers#dependency-injection)模式相匹配时，令牌也是类名。如需回顾令牌概念，可参考[依赖注入基础](#dependency-injection-fundamentals)。有时，我们希望用字符串或 symbol 作为 DI 令牌。例如：
+到目前为止，我们一直用类名作为提供者的注入令牌（即 `provide` 属性的值）。在与[基于构造函数的注入](/providers#dependency-injection)模式相匹配时，令牌也是类名。如需回顾令牌概念，可参考[依赖注入基础](#dependency-injection-fundamentals)。有时，我们希望用字符串或 symbol 作为 DI 令牌。例如：
 
 ```ts
 import { connection } from './connection'
@@ -160,7 +160,7 @@ export class AppModule {}
   或 TypeScript [enum](https://www.typescriptlang.org/docs/handbook/enums.html) 作为令牌。
 </CalloutInfo>
 
-我们之前已经看到如何用标准[构造函数注入](https://docs.nestjs.com/providers#dependency-injection)模式注入提供者。该模式**要求**依赖项用类名声明。`'CONNECTION'` 自定义提供者用的是字符串令牌。要注入此类提供者，需要用 `@Inject()` 装饰器。该装饰器接收一个参数——令牌。
+我们之前已经看到如何用标准[构造函数注入](/providers#dependency-injection)模式注入提供者。该模式**要求**依赖项用类名声明。`'CONNECTION'` 自定义提供者用的是字符串令牌。要注入此类提供者，需要用 `@Inject()` 装饰器。该装饰器接收一个参数——令牌。
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common'

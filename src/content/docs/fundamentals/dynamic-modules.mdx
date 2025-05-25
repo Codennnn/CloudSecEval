@@ -1,6 +1,6 @@
 # 动态模块（Dynamic Modules）
 
-[模块章节](/modules) 介绍了 Nest 模块（Module）的基础知识，并简要提及了[动态模块](https://docs.nestjs.com/modules#dynamic-modules)。本章节将深入讲解动态模块。学习完本章后，你将能够很好地理解什么是动态模块，以及如何、何时使用它们。
+[模块章节](/modules) 介绍了 Nest 模块（Module）的基础知识，并简要提及了[动态模块](/modules#dynamic-modules)。本章节将深入讲解动态模块。学习完本章后，你将能够很好地理解什么是动态模块，以及如何、何时使用它们。
 
 ## 简介
 
@@ -53,7 +53,7 @@ export class AuthService {
 
 我们将这种方式称为**静态模块绑定**。Nest 需要将模块组装在一起的所有信息，都已在宿主模块和消费模块中声明。让我们来拆解下这个过程发生了什么。Nest 通过以下步骤让 `UsersService` 在 `AuthModule` 内可用：
 
-1. 实例化 `UsersModule`，包括递归导入 `UsersModule` 所依赖的其他模块，并解析所有依赖（参见[自定义提供者](https://docs.nestjs.com/fundamentals/custom-providers)）。
+1. 实例化 `UsersModule`，包括递归导入 `UsersModule` 所依赖的其他模块，并解析所有依赖（参见[自定义提供者](/fundamentals/custom-providers)）。
 2. 实例化 `AuthModule`，并将 `UsersModule` 导出的提供者提供给 `AuthModule` 内的组件（就像这些提供者直接在 `AuthModule` 中声明一样）。
 3. 在 `AuthService` 中注入 `UsersService` 的实例。
 
@@ -69,7 +69,7 @@ export class AuthService {
 
 ## 配置模块示例
 
-本节将使用[配置章节](https://docs.nestjs.com/techniques/configuration#service)中的基础示例代码。完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)获取。
+本节将使用[配置章节](/techniques/configuration#service)中的基础示例代码。完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)获取。
 
 我们的需求是让 `ConfigModule` 能接受一个 `options` 对象进行定制。基础示例中 `.env` 文件的位置是写死在项目根目录下的。假设我们希望这个位置可配置，比如将所有 `.env` 文件放在项目根目录下的 `config` 文件夹（即与 `src` 同级）。你希望在不同项目中使用 `ConfigModule` 时可以选择不同的文件夹。
 
@@ -206,7 +206,7 @@ export class ConfigService {
 
 现在 `ConfigService` 已经可以根据 `options` 指定的文件夹查找 `.env` 文件了。
 
-剩下的任务就是把 `register()` 传入的 `options` 注入到 `ConfigService`。当然，我们会用**依赖注入**来实现。这是关键点，请务必理解。`ConfigModule` 提供了 `ConfigService`，而 `ConfigService` 依赖于运行时才提供的 `options` 对象。因此，我们需要先把 `options` 绑定到 Nest IoC 容器，然后让 Nest 注入到 `ConfigService`。回忆下[自定义提供者章节](https://docs.nestjs.com/fundamentals/custom-providers#non-service-based-providers)提到，提供者不仅可以是服务，也可以是任意值，所以用依赖注入处理简单对象完全没问题。
+剩下的任务就是把 `register()` 传入的 `options` 注入到 `ConfigService`。当然，我们会用**依赖注入**来实现。这是关键点，请务必理解。`ConfigModule` 提供了 `ConfigService`，而 `ConfigService` 依赖于运行时才提供的 `options` 对象。因此，我们需要先把 `options` 绑定到 Nest IoC 容器，然后让 Nest 注入到 `ConfigService`。回忆下[自定义提供者章节](/fundamentals/custom-providers#non-service-based-providers)提到，提供者不仅可以是服务，也可以是任意值，所以用依赖注入处理简单对象完全没问题。
 
 我们先在静态 `register()` 方法里把 `options` 绑定到 IoC 容器。只需把 `options` 作为一个提供者定义即可，这样就能注入到 `ConfigService` 了。请看 `providers` 数组：
 
@@ -232,7 +232,7 @@ export class ConfigModule {
 }
 ```
 
-最后一步，就是在 `ConfigService` 里注入 `'CONFIG_OPTIONS'` 提供者。注意，使用非类 token 时，需要用 `@Inject()` 装饰器（详见[自定义提供者章节](https://docs.nestjs.com/fundamentals/custom-providers#non-class-based-provider-tokens)）。
+最后一步，就是在 `ConfigService` 里注入 `'CONFIG_OPTIONS'` 提供者。注意，使用非类 token 时，需要用 `@Inject()` 装饰器（详见[自定义提供者章节](/fundamentals/custom-providers#non-class-based-provider-tokens)）。
 
 ```ts
 import * as dotenv from 'dotenv'

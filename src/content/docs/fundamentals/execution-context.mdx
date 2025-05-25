@@ -6,7 +6,7 @@ Nest 提供了若干实用类，帮助开发者轻松编写可在多种应用上
 
 ## ArgumentsHost 类
 
-`ArgumentsHost` 类提供了一组方法，用于获取传递给处理器（handler）的参数。它允许我们根据不同的上下文（如 HTTP、RPC（微服务）或 WebSocket）来获取对应的参数。框架会在需要访问参数的场景下，自动提供 `ArgumentsHost` 实例，通常以 `host` 作为参数名。例如，在 [异常过滤器](https://docs.nestjs.com/exception-filters#arguments-host) 的 `catch()` 方法中会接收到一个 `ArgumentsHost` 实例。
+`ArgumentsHost` 类提供了一组方法，用于获取传递给处理器（handler）的参数。它允许我们根据不同的上下文（如 HTTP、RPC（微服务）或 WebSocket）来获取对应的参数。框架会在需要访问参数的场景下，自动提供 `ArgumentsHost` 实例，通常以 `host` 作为参数名。例如，在 [异常过滤器](/exception-filters#arguments-host) 的 `catch()` 方法中会接收到一个 `ArgumentsHost` 实例。
 
 `ArgumentsHost` 本质上是对处理器参数的抽象。例如，在 HTTP 服务器应用（使用 `@nestjs/platform-express` 时），`host` 对象封装了 Express 的 `[request, response, next]` 数组，其中 `request` 是请求对象，`response` 是响应对象，`next` 是控制请求-响应流程的函数。而在 [GraphQL](/graphql/quick-start) 应用中，`host` 对象则包含 `[root, args, context, info]` 数组。
 

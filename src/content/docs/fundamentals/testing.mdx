@@ -436,7 +436,7 @@ const moduleRef = await Test.createTestingModule({
 
 [请求作用域（Request-scoped）](/fundamentals/injection-scopes) 提供者会为每个传入的**请求**单独创建实例。请求处理完成后，这些实例会被垃圾回收。这带来一个问题：我们无法直接访问为某次测试请求生成的依赖注入子树。
 
-如前文所述，可以通过 `resolve()` 方法获取动态实例。同时，正如[这里](https://docs.nestjs.com/fundamentals/module-ref#resolving-scoped-providers)所述，我们可以传递唯一的上下文标识符（context identifier），以控制依赖注入容器子树的生命周期。那么在测试场景下，如何利用这一点？
+如前文所述，可以通过 `resolve()` 方法获取动态实例。同时，正如[这里](/fundamentals/module-ref#resolving-scoped-providers)所述，我们可以传递唯一的上下文标识符（context identifier），以控制依赖注入容器子树的生命周期。那么在测试场景下，如何利用这一点？
 
 解决方案是：提前生成一个上下文标识符，并强制 Nest 在所有传入请求中都使用该 ID。这样，我们就能访问为某次测试请求生成的实例。
 
