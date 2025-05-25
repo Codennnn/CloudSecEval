@@ -10,36 +10,43 @@
 
 要创建一个基础控制器，我们使用类和 **装饰器（decorator）**。装饰器为类添加必要的元数据，使 Nest 能够创建请求与控制器之间的路由映射。
 
-> info **提示** 如果你想快速创建带有内置 [校验（validation）](https://docs.nestjs.com/techniques/validation) 的 CRUD 控制器，可以使用 CLI 的 [CRUD 生成器（CRUD generator）](https://docs.nestjs.com/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
+<CalloutInfo>
+  如果你想快速创建带有内置 [校验（validation）](https://docs.nestjs.com/techniques/validation) 的
+  CRUD 控制器，可以使用 CLI 的 [CRUD
+  生成器](https://docs.nestjs.com/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
+</CalloutInfo>
 
 ## 路由（Routing）
 
 在下面的示例中，我们将使用 `@Controller()` 装饰器，它是定义基础控制器所 **必需** 的。我们会为其指定一个可选的路由前缀 `cats`。在 `@Controller()` 装饰器中使用路径前缀，可以帮助我们将相关路由分组，减少重复代码。例如，如果我们希望将所有与猫（cat）实体相关的路由统一在 `/cats` 路径下，只需在 `@Controller()` 装饰器中指定 `cats` 前缀，这样就无需在每个路由中重复该部分路径。
 
-```ts
-@@filename(cats.controller)
-import { Controller, Get } from '@nestjs/common';
+```ts filename='cats.controller.ts'
+import { Controller, Get } from '@nestjs/common'
 
 @Controller('cats')
 export class CatsController {
   @Get()
   findAll(): string {
-    return 'This action returns all cats';
+    return 'This action returns all cats'
   }
 }
-@@switch
-import { Controller, Get } from '@nestjs/common';
+```
+
+```js hideInDoc filename='cats.controller.js'
+import { Controller, Get } from '@nestjs/common'
 
 @Controller('cats')
 export class CatsController {
   @Get()
   findAll() {
-    return 'This action returns all cats';
+    return 'This action returns all cats'
   }
 }
 ```
 
-> info **提示** 你可以通过 CLI 执行 `$ nest g controller [name]` 命令来创建控制器。
+<CalloutInfo>
+  <p>你可以通过 CLI 执行 `$ nest g controller [name]` 命令来创建控制器。</p>
+</CalloutInfo>
 
 `@Get()` HTTP 请求方法装饰器放在 `findAll()` 方法前，告诉 Nest 为该方法创建一个特定的 HTTP 路由处理器。这个端点由 HTTP 请求方法（这里是 GET）和路由路径共同决定。那么，路由路径是什么？路由路径由控制器声明的（可选）前缀和方法装饰器中指定的路径拼接而成。由于我们为控制器设置了 `cats` 前缀，并且方法装饰器没有指定额外路径，所以 Nest 会将 `GET /cats` 请求映射到该处理器。
 
@@ -52,30 +59,25 @@ export class CatsController {
 <table>
   <tbody>
     <tr>
-      <td>标准方式（推荐）</td>
+      <td className="whitespace-nowrap">标准方式（推荐）</td>
       <td>
-        使用这种内置方式时，当请求处理器返回 JavaScript 对象或数组时，Nest 会<strong>自动</strong>
-        将其序列化为 JSON。当返回 JavaScript 原始类型（如 <code>string</code>、<code>number</code>、
-        <code>boolean</code>）时，Nest
+        使用这种内置方式时，当请求处理器返回 JavaScript 对象或数组时，Nest 会**自动**将其序列化为
+        JSON。当返回 JavaScript 原始类型（如 `string`、`number`、 `boolean`）时，Nest
         会直接发送该值，而不会尝试序列化。这让响应处理变得非常简单：只需返回值，Nest
         会自动处理剩下的事情。
         <br />
         此外，响应的<strong>状态码</strong>默认总是 200，POST
-        请求除外（默认为201）。我们可以通过在处理器级别添加 <code>@HttpCode(...)</code> 装饰器（详见
-        <a href="controllers#status-code">状态码</a>）轻松更改这一行为。
+        请求除外（默认为201）。我们可以通过在处理器级别添加 `@HttpCode(...)` 装饰器（详见
+        [状态码](#status-code)）轻松更改这一行为。
       </td>
     </tr>
     <tr>
-      <td>库特定方式</td>
+      <td className="whitespace-nowrap">库特定方式</td>
       <td>
-        我们可以使用特定库（如 Express）的{' '}
-        <a href="https://expressjs.com/en/api.html#res" rel="nofollow" target="_blank">
-          响应对象
-        </a>
-        ，通过在方法参数中使用 <code>@Res()</code> 装饰器注入（如{' '}
-        <code>findAll(@Res() response)</code>
+        我们可以使用特定库（如 Express）的 [响应对象](https://expressjs.com/en/api.html#res)
+        ，通过在方法参数中使用 `@Res()` 装饰器注入（如 `findAll(@Res() response)`
         ）。采用这种方式，你可以使用该对象提供的原生响应处理方法。例如，在 Express 中，可以通过{' '}
-        <code>response.status(200).send()</code> 构造响应。
+        `response.status(200).send()` 构造响应。
       </td>
     </tr>
   </tbody>
@@ -114,7 +116,10 @@ export class CatsController {
 }
 ```
 
-> info **提示** 如果你想使用 `express` 类型定义（如上例中的 `request: Request`），请确保安装了 `@types/express` 包。
+<CalloutInfo>
+  如果你想使用 `express` 类型定义（如上例中的 `request: Request`），请确保安装了 `@types/express`
+  包。
+</CalloutInfo>
 
 请求对象代表 HTTP 请求，包含查询字符串、参数、HTTP 头、请求体等属性（详细见 [这里](https://expressjs.com/en/api.html#req)）。大多数情况下，你无需手动访问这些属性，而是可以直接使用如 `@Body()`、`@Query()` 等专用装饰器。下表列出了常用装饰器及其对应的平台对象：
 

@@ -35,7 +35,7 @@ export async function CodeBlock(props: CodeBlockProps) {
   const fileIcon = lang === 'ts' || lang === 'typescript' ? <IconTypescript /> : null
 
   return (
-    <div className="not-prose border border-border rounded-lg overflow-hidden">
+    <div className="not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden">
       {(!!fileIcon || !!filename) && (
         <div className="flex items-center gap-2 text-sm px-4 py-3 bg-muted">
           {!!fileIcon && (

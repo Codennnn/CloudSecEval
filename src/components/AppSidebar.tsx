@@ -58,10 +58,12 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarTrigger className="-ml-1" />
+      <div className="flex items-center gap-2 p-2">
+        <SidebarTrigger className="-ml-1" />
 
-      <div className="ml-auto">
-        <ThemeModeToggle />
+        <div className="ml-auto">
+          <ThemeModeToggle />
+        </div>
       </div>
 
       <SidebarRail />

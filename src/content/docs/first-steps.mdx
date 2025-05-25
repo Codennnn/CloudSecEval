@@ -112,7 +112,7 @@ $ npm run start:dev
   不清楚格式化工具和检查工具的区别？可在[这里](https://prettier.io/docs/en/comparison.html)了解。
 </CalloutInfo>
 
-为确保最大稳定性和可扩展性，我们使用基础 [`eslint`](https://www.npmjs.com/package/eslint) 和 [`prettier`](https://www.npmjs.com/package/prettier) CLI 包。这一配置便于与官方 IDE 插件集成。
+为了最大程度地确保稳定性和可扩展性，我们使用了基础的 [`eslint`](https://www.npmjs.com/package/eslint) 和 [`prettier`](https://www.npmjs.com/package/prettier) CLI 包，他们从设计上就支持通过官方扩展实现出色的 IDE 集成体验。
 
 对于不依赖 IDE 的无头环境（如持续集成、Git hooks 等），Nest 项目也内置了可直接使用的 `npm` 脚本。
 
