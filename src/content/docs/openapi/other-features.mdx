@@ -1,8 +1,8 @@
-### 其他功能
+# 其他功能
 
 本页列出了你可能会用到的其他可用功能。
 
-#### 全局前缀
+## 全局前缀
 
 如果你希望在通过 `setGlobalPrefix()` 设置路由全局前缀后，某些路由不受该前缀影响，可以使用 `ignoreGlobalPrefix` 选项：
 
@@ -12,7 +12,7 @@ const document = SwaggerModule.createDocument(app, options, {
 })
 ```
 
-#### 全局参数
+## 全局参数
 
 你可以使用 `DocumentBuilder` 为所有路由定义全局参数，示例如下：
 
@@ -26,7 +26,7 @@ const config = new DocumentBuilder()
   .build()
 ```
 
-#### 全局响应
+## 全局响应
 
 你可以使用 `DocumentBuilder` 为所有路由定义全局响应。这对于在整个应用中为所有端点统一设置响应（如错误码 `401 Unauthorized` 或 `500 Internal Server Error`）非常有用。
 
@@ -40,7 +40,7 @@ const config = new DocumentBuilder()
   .build()
 ```
 
-#### 多规范支持
+## 多规范支持
 
 `SwaggerModule` 提供了支持多规范（Multiple specifications）的方法。换句话说，你可以在不同的端点（endpoint）上，分别展示不同的文档和不同的界面。
 
@@ -117,7 +117,7 @@ $ npm run start
   <img src="/assets/swagger-dogs.png" />
 </figure>
 
-#### 在 Explorer 栏中使用下拉菜单
+## 在 Explorer 栏中使用下拉菜单
 
 要在 Explorer（探索器）栏的下拉菜单中支持多个规范，你需要在 `SwaggerCustomOptions` 中设置 `explorer: true`，并配置 `swaggerOptions.urls`。
 

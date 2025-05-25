@@ -1,4 +1,4 @@
-### 模块（Module）
+# 模块（Module）
 
 模块是一个使用 `@Module()` 装饰器注解的类。该装饰器提供的元数据可帮助 **Nest** 高效地组织和管理应用结构。
 
@@ -19,7 +19,7 @@
 
 模块默认**封装**其提供者，这意味着你只能注入当前模块内的提供者，或从其他已导入模块中显式导出的提供者。模块导出的提供者本质上构成了该模块的公共接口或 API。
 
-#### 功能模块（Feature modules）
+## 功能模块（Feature modules）
 
 在我们的示例中，`CatsController` 和 `CatsService` 紧密相关，服务于同一应用领域。将它们归为一个功能模块（feature module）是合理的。功能模块用于组织与特定功能相关的代码，有助于保持清晰的边界和更好的组织结构。随着应用或团队规模的增长，这一点尤为重要，同时也符合 [SOLID](https://en.wikipedia.org/wiki/SOLID) 原则。
 
@@ -77,7 +77,7 @@ export class AppModule {}
   </div>
 </div>
 
-#### 共享模块（Shared modules）
+## 共享模块（Shared modules）
 
 在 Nest 中，模块默认是**单例（singleton）**，因此你可以轻松地在多个模块之间共享同一个提供者实例。
 
@@ -109,7 +109,7 @@ export class CatsModule {}
 
 <app-banner-devtools></app-banner-devtools>
 
-#### 模块再导出（Module re-exporting）
+## 模块再导出（Module re-exporting）
 
 如上所述，模块可以导出其内部的提供者。此外，还可以再导出其导入的模块。如下例所示，`CommonModule` 被导入到 `CoreModule`，并同时被导出，这样其他导入 `CoreModule` 的模块也能使用 `CommonModule`。
 
@@ -121,7 +121,7 @@ export class CatsModule {}
 export class CoreModule {}
 ```
 
-#### 依赖注入（Dependency injection）
+## 依赖注入（Dependency injection）
 
 模块类本身也可以**注入**提供者（例如用于配置）：
 
@@ -157,7 +157,7 @@ export class CatsModule {
 
 但需要注意，模块类本身**不能**作为提供者被注入，否则会导致[循环依赖](/fundamentals/circular-dependency)问题。
 
-#### 全局模块（Global modules）
+## 全局模块（Global modules）
 
 如果你需要在各处频繁导入同一组模块，可能会觉得繁琐。与 [Angular](https://angular.dev) 不同，Nest 的 `providers` 并不会全局注册，而是被封装在模块作用域内。你无法在未导入模块的情况下直接使用其提供者。
 
@@ -181,7 +181,7 @@ export class CatsModule {}
 
 > info **提示** 并不推荐将所有内容都设为全局。虽然全局模块能减少样板代码，但更推荐通过 `imports` 数组有选择地暴露模块 API，这样结构更清晰、可维护性更高，也能避免不相关模块间产生不必要的耦合。
 
-#### 动态模块（Dynamic modules）
+## 动态模块（Dynamic modules）
 
 Nest 中的动态模块（dynamic module）允许你在运行时进行配置。这在需要根据选项或配置动态创建提供者时非常有用。下面简要介绍**动态模块**的工作方式。
 

@@ -1,4 +1,4 @@
-### 异步提供者（Async Provider）
+# 异步提供者（Async Provider）
 
 有时，应用程序的启动需要等到一个或多个**异步任务**完成后才能进行。例如，你可能希望在与数据库建立连接之前，不要开始接收请求。你可以通过使用异步提供者来实现这一需求。
 
@@ -16,10 +16,10 @@
 
 > info **提示** 你可以在[这里](/fundamentals/custom-providers)了解更多自定义提供者（Custom Provider）语法。
 
-#### 注入方式
+## 注入方式
 
 异步提供者与其他提供者一样，通过其注入令牌（Injection Token）注入到其他组件中。在上面的示例中，你可以使用 `@Inject('ASYNC_CONNECTION')` 进行注入。
 
-#### 示例
+## 示例
 
 [TypeORM 实践](/recipes/sql-typeorm)中有一个更完整的异步提供者示例。

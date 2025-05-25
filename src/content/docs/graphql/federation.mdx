@@ -1,4 +1,4 @@
-### 联邦（Federation）
+# 联邦（Federation）
 
 联邦为你提供了一种将单体 GraphQL 服务器拆分为独立微服务的方法。它包含两个核心组件：网关（Gateway）和一个或多个联邦微服务（Federated Microservices）。每个微服务持有部分 GraphQL 架构（Schema），网关会将这些架构合并为一个可被客户端消费的完整架构。
 
@@ -15,7 +15,7 @@
 
 在接下来的章节中，我们将搭建一个演示应用，其中包含一个网关和两个联邦端点：用户服务（Users service）和帖子服务（Posts service）。
 
-#### 使用 Apollo 实现联邦
+## 使用 Apollo 实现联邦
 
 首先，安装所需依赖：
 
@@ -23,7 +23,7 @@
 $ npm install --save @apollo/subgraph
 ```
 
-#### 模式优先（Schema First）
+## 模式优先（Schema First）
 
 “用户服务（User service）” 提供了一个简单的 schema（模式）。请注意 `@key` 指令：它告诉 Apollo 查询规划器，只要指定了 `User` 的 `id`，就可以获取到对应的用户实例。同时，我们对 `Query` 类型进行了 `extend` 扩展。
 
@@ -80,7 +80,7 @@ import { UsersResolver } from './users.resolver'
 export class AppModule {}
 ```
 
-#### 代码优先（Code first）
+## 代码优先（Code first）
 
 首先，为 `User` 实体类添加一些额外的装饰器。
 
@@ -143,11 +143,11 @@ export class AppModule {}
 
 你可以在 [这里](https://github.com/nestjs/nest/tree/master/sample/31-graphql-federation-code-first/users-application) 查看代码优先模式的完整示例，在 [这里](https://github.com/nestjs/nest/tree/master/sample/32-graphql-federation-schema-first/users-application) 查看 schema 优先模式的示例。
 
-#### 联邦示例：Posts
+## 联邦示例：Posts
 
 Post 服务负责通过 `getPosts` 查询聚合并返回所有帖子，同时还会通过 `user.posts` 字段扩展我们的 User 类型。
 
-#### 模式优先（Schema First）
+## 模式优先（Schema First）
 
 "Posts 服务"在其 schema 中通过 `extend` 关键字引用了 `User` 类型，并且在 `User` 类型上声明了一个额外的属性（`posts`）。请注意，`@key` 指令用于匹配 User 实例，而 `@external` 指令则表明 `id` 字段由其他地方管理。
 
@@ -212,7 +212,7 @@ import { PostsResolver } from './posts.resolver'
 export class AppModule {}
 ```
 
-#### 代码优先（Code First）
+## 代码优先（Code First）
 
 首先，我们需要声明一个代表 `User` 实体的类。虽然该实体本身存在于另一个服务中，但我们将在此处使用它（扩展其定义）。请注意 `@extends` 和 `@external` 指令的用法。
 
@@ -331,7 +331,7 @@ export class AppModule {}
 
 一个可用的示例可在 [这里](https://github.com/nestjs/nest/tree/master/sample/31-graphql-federation-code-first/posts-application)（Code First 模式）和 [这里](https://github.com/nestjs/nest/tree/master/sample/32-graphql-federation-schema-first/posts-application)（Schema First 模式）找到。
 
-#### 联邦示例：网关（Gateway）
+## 联邦示例：网关（Gateway）
 
 首先，安装所需的依赖包：
 
@@ -374,7 +374,7 @@ export class AppModule {}
 - [代码优先模式示例](https://github.com/nestjs/nest/tree/master/sample/31-graphql-federation-code-first/gateway)
 - [模式优先模式示例](https://github.com/nestjs/nest/tree/master/sample/32-graphql-federation-schema-first/gateway)
 
-#### 使用 Mercurius 实现联邦
+## 使用 Mercurius 实现联邦
 
 首先，安装所需的依赖包：
 
@@ -384,7 +384,7 @@ $ npm install --save @apollo/subgraph @nestjs/mercurius
 
 > info **注意** `@apollo/subgraph` 包是构建子图模式（buildSubgraphSchema、printSubgraphSchema 函数）所必需的。
 
-#### 模式优先（Schema First）
+## 模式优先（Schema First）
 
 “用户服务”（User service）提供了一个简单的 schema（模式）。请注意 `@key` 指令：它告诉 Mercurius 查询规划器，只要指定了 `User` 的 `id` 字段，就可以获取到对应的用户实例。同时，我们对 `Query` 类型进行了 `extend`（扩展）。
 
@@ -442,7 +442,7 @@ import { UsersResolver } from './users.resolver'
 export class AppModule {}
 ```
 
-#### 代码优先（Code First）
+## 代码优先（Code First）
 
 首先，在 `User` 实体上添加一些额外的装饰器。
 
@@ -504,11 +504,11 @@ import { UsersService } from './users.service' // 本示例未包含实现
 export class AppModule {}
 ```
 
-#### 联邦示例：Posts（帖子）
+## 联邦示例：Posts（帖子）
 
 Post 服务负责通过 `getPosts` 查询返回聚合的帖子数据，同时扩展我们的 `User` 类型，增加 `user.posts` 字段。
 
-#### 模式优先（Schema First）
+## 模式优先（Schema First）
 
 "Posts 服务" 在其 schema 中通过 `extend` 关键字引用了 `User` 类型，并声明了 `User` 类型的一个额外属性（`posts`）。请注意，`@key` 指令用于匹配 User 实例，`@external` 指令则表明 `id` 字段由其他地方管理。
 
@@ -574,7 +574,7 @@ import { PostsResolver } from './posts.resolver'
 export class AppModule {}
 ```
 
-#### 代码优先（Code First）
+## 代码优先（Code First）
 
 首先，我们需要声明一个代表 `User` 实体的类。虽然该实体实际存在于另一个服务中，但我们需要在此处使用（扩展其定义）。请注意 `@extends` 和 `@external` 指令的用法。
 
@@ -692,7 +692,7 @@ import { PostsService } from './posts.service' // 示例中未包含
 export class AppModule {}
 ```
 
-#### 联邦示例：网关（Gateway）
+## 联邦示例：网关（Gateway）
 
 网关需要指定一组端点（endpoints），并会自动发现对应的模式。因此，无论是代码优先还是模式优先方式，网关服务的实现方式保持一致。
 
@@ -717,7 +717,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 export class AppModule {}
 ```
 
-### Federation 2
+# Federation 2
 
 引用 [Apollo 官方文档](https://www.apollographql.com/docs/federation/federation-2/new-in-federation-2)：Federation 2 在原有 Apollo Federation（本文称为 Federation 1）的基础上，进一步提升了开发者体验，并且与大多数原有超级图（supergraph）向后兼容。
 
@@ -725,11 +725,11 @@ export class AppModule {}
 
 在接下来的章节中，我们将把前面的示例升级到 Federation 2。
 
-#### 联邦示例：用户服务（Users）
+## 联邦示例：用户服务（Users）
 
 Federation 2 的一个变化是实体不再有原始子图（originating subgraph），因此我们不需要再扩展 `Query`。更多细节请参考 Apollo Federation 2 文档中的 [实体主题](https://www.apollographql.com/docs/federation/federation-2/new-in-federation-2#entities)。
 
-#### 模式优先（Schema First）
+## 模式优先（Schema First）
 
 我们只需从模式中移除 `extend` 关键字。
 
@@ -744,7 +744,7 @@ type Query {
 }
 ```
 
-#### 代码优先（Code First）
+## 代码优先（Code First）
 
 要使用 Federation 2，需要在 `autoSchemaFile` 选项中指定联邦版本。
 
@@ -768,11 +768,11 @@ import { UsersService } from './users.service' // 本示例未包含该服务实
 export class AppModule {}
 ```
 
-#### 联邦示例：帖子服务（Posts）
+## 联邦示例：帖子服务（Posts）
 
 出于同样的原因，我们不再需要扩展 `User` 和 `Query`。
 
-#### 模式优先（Schema First）
+## 模式优先（Schema First）
 
 我们只需从模式中移除 `extend` 和 `external` 指令（Directive）。
 
@@ -794,7 +794,7 @@ type Query {
 }
 ```
 
-#### 代码优先（Code First）
+## 代码优先（Code First）
 
 由于我们不再扩展 `User` 实体，因此可以直接移除 `extends` 和 `external` 指令。
 

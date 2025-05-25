@@ -1,4 +1,4 @@
-### 异常过滤器（Exception filter）
+# 异常过滤器（Exception filter）
 
 Nest 内置了一个**异常层（exceptions layer）**，负责处理应用中所有未被捕获的异常。当你的应用代码未能处理某个异常时，这一层会捕获该异常，并自动返回一个适合用户阅读的响应。
 
@@ -17,7 +17,7 @@ Nest 内置了一个**异常层（exceptions layer）**，负责处理应用中�
 
 > info **提示** 全局异常过滤器对 `http-errors` 库有部分支持。只要抛出的异常对象包含 `statusCode` 和 `message` 属性，这些属性就会被正确填充并返回（否则会返回默认的 `InternalServerErrorException`）。
 
-#### 抛出标准异常
+## 抛出标准异常
 
 Nest 提供了内置的 `HttpException` 类（从 `@nestjs/common` 包导出）。对于典型的 HTTP REST/GraphQL API 应用，建议在出现错误时返回标准的 HTTP 响应对象。
 
@@ -86,7 +86,7 @@ async findAll() {
 }
 ```
 
-#### 异常日志记录
+## 异常日志记录
 
 默认情况下，异常过滤器不会记录内置异常（如 `HttpException` 及其子类）。这些异常被视为正常应用流程的一部分，因此不会出现在控制台日志中。`WsException`、`RpcException` 等其他内置异常也有同样行为。
 
@@ -94,7 +94,7 @@ async findAll() {
 
 如果你希望记录这些异常，可以自定义异常过滤器。下一节将介绍如何实现。
 
-#### 自定义异常
+## 自定义异常
 
 大多数情况下，你无需自定义异常，直接使用内置的 HTTP 异常即可。如果确实需要自定义异常，建议建立自己的**异常层级结构**，让自定义异常继承自基础 `HttpException` 类。这样，Nest 能自动识别并处理你的异常。
 
@@ -119,7 +119,7 @@ async findAll() {
 }
 ```
 
-#### 内置 HTTP 异常
+## 内置 HTTP 异常
 
 Nest 提供了一组继承自基础 `HttpException` 的标准异常，这些异常从 `@nestjs/common` 包导出，涵盖了常见的 HTTP 异常类型：
 
@@ -163,7 +163,7 @@ throw new BadRequestException('Something bad happened', {
 }
 ```
 
-#### 异常过滤器（Exception filter）
+## 异常过滤器（Exception filter）
 
 虽然内置异常过滤器能自动处理大多数情况，但有时你可能需要**完全控制**异常处理流程。例如，你可能希望添加日志记录，或根据动态因素返回不同的 JSON 结构。**异常过滤器**正是为此设计的，它允许你精确控制异常处理流程和返回给客户端的响应内容。
 
@@ -219,13 +219,13 @@ export class HttpExceptionFilter {
 
 `@Catch(HttpException)` 装饰器为异常过滤器绑定所需元数据，告诉 Nest 该过滤器只处理 `HttpException` 类型的异常。`@Catch()` 装饰器可接收单个参数或逗号分隔的多个参数，从而让过滤器同时处理多种异常类型。
 
-#### Arguments host
+## Arguments host
 
 我们来看看 `catch()` 方法的参数。`exception` 是当前正在处理的异常对象，`host` 是一个 `ArgumentsHost` 对象。`ArgumentsHost` 是一个强大的工具对象，后续会在[执行上下文章节](/fundamentals/execution-context)详细介绍。在本例中，我们用它获取传递给原始请求处理器（即异常发生的控制器方法）的 `Request` 和 `Response` 对象。通过 `ArgumentsHost` 的辅助方法可以方便地获取所需对象。更多关于 `ArgumentsHost` 的内容见[这里](/fundamentals/execution-context)。
 
 \*之所以采用这种抽象，是因为 `ArgumentsHost` 能适用于所有上下文（如当前的 HTTP 服务器上下文、微服务、WebSocket 等）。在执行上下文章节中，我们会看到如何利用 `ArgumentsHost` 及其辅助方法访问**任意**上下文下的底层参数，从而编写可跨多种上下文通用的异常过滤器。
 
-#### 绑定过滤器
+## 绑定过滤器
 
 我们将新建的 `HttpExceptionFilter` 绑定到 `CatsController` 的 `create()` 方法：
 
@@ -316,7 +316,7 @@ export class AppModule {}
 
 如需注册多个过滤器，只需将它们都添加到 providers 数组中即可。
 
-#### 捕获所有异常
+## 捕获所有异常
 
 如需捕获**所有**未处理异常（无论异常类型），只需让 `@Catch()` 装饰器参数列表为空，例如 `@Catch()`。
 
@@ -352,7 +352,7 @@ export class CatchEverythingFilter implements ExceptionFilter {
 
 > warning **警告** 如果同时存在"捕获所有异常"的过滤器和绑定特定类型的过滤器，应先声明"捕获所有异常"的过滤器，以便特定过滤器能正确处理对应类型。
 
-#### 继承
+## 继承
 
 通常你会根据应用需求自定义异常过滤器。但有时你可能只想扩展内置的**全局异常过滤器**，并根据特定条件重写部分行为。
 

@@ -1,8 +1,8 @@
-### 简介
+# 简介
 
 [OpenAPI](https://swagger.io/specification/) 规范是一种与语言无关的定义格式，用于描述 RESTful API。Nest 提供了专用的 [模块](https://github.com/nestjs/swagger)，通过装饰器机制帮助我们自动生成此类规范文档。
 
-#### 安装
+## 安装
 
 要开始使用该功能，首先需要安装相关依赖。
 
@@ -10,7 +10,7 @@
 $ npm install --save @nestjs/swagger
 ```
 
-#### 启动
+## 启动
 
 安装完成后，打开 `main.ts` 文件，并使用 `SwaggerModule` 类初始化 Swagger：
 
@@ -93,7 +93,7 @@ $ npm run start
 > })
 > ```
 
-#### 文档选项
+## 文档选项
 
 在创建文档时，可以提供一些额外的选项来微调该库的行为。这些选项应为 `SwaggerDocumentOptions` 类型，具体如下：
 
@@ -161,7 +161,7 @@ const options: SwaggerDocumentOptions =  {
 const documentFactory = () => SwaggerModule.createDocument(app, config, options);
 ```
 
-#### 配置选项
+## 配置选项
 
 你可以通过将满足 `SwaggerCustomOptions` 接口的选项对象，作为 `SwaggerModule#setup` 方法的第四个参数，来配置 Swagger UI。
 
@@ -302,6 +302,6 @@ export interface SwaggerCustomOptions {
 >
 > 在此情况下，http://localhost:3000/api-json 仍然可访问，但 http://localhost:3000/api（Swagger UI）将不可用。
 
-#### 示例
+## 示例
 
 你可以在 [这里](https://github.com/nestjs/nest/tree/master/sample/11-swagger) 查看一个可用的示例。

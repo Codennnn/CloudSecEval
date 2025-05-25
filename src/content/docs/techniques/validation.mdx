@@ -1,4 +1,4 @@
-### 验证（Validation）
+# 验证（Validation）
 
 在 Web 应用中，验证传入数据的正确性是一项最佳实践。为了自动验证传入请求，Nest 提供了多种开箱即用的管道（Pipe）：
 
@@ -10,11 +10,11 @@
 
 `验证管道（ValidationPipe）` 利用了功能强大的 [class-validator](https://github.com/typestack/class-validator) 包及其声明式验证装饰器。通过 `验证管道`，可以方便地为所有传入客户端的数据强制执行验证规则，这些规则通过在每个模块的本地类或数据传输对象（DTO）声明中以注解方式定义。
 
-#### 概述
+## 概述
 
 在 [管道](/pipes) 章节中，我们已经介绍了如何构建简单的管道，并将其绑定到控制器、方法或全局应用，以演示其工作原理。建议先回顾该章节，以便更好地理解本章内容。本章将聚焦于 `验证管道` 的各种**实际应用场景**，并展示如何使用其高级自定义功能。
 
-#### 使用内置的验证管道（ValidationPipe）
+## 使用内置的验证管道（ValidationPipe）
 
 要开始使用验证功能，首先需要安装相关依赖：
 
@@ -215,7 +215,7 @@ export interface ValidationPipeOptions extends ValidatorOptions {
 
 > info **Notice** Find more information about the `class-validator` package in its [repository](https://github.com/typestack/class-validator).
 
-#### 自动验证（Auto-validation）
+## 自动验证（Auto-validation）
 
 我们首先将在应用程序级别绑定验证管道（ValidationPipe），这样可以确保所有端点都能防止接收不正确的数据。
 
@@ -285,7 +285,7 @@ export class FindOneParams {
 }
 ```
 
-#### 关闭详细错误信息
+## 关闭详细错误信息
 
 错误信息有助于解释请求中出现了哪些问题。然而，在某些生产环境中，通常会选择关闭详细错误信息。你可以通过向 `验证管道（ValidationPipe）` 传递一个选项对象来实现：
 
@@ -299,7 +299,7 @@ app.useGlobalPipes(
 
 这样一来，响应体中将不会显示详细的错误信息。
 
-#### 属性剥离
+## 属性剥离
 
 我们的 `验证管道（ValidationPipe）` 还可以过滤掉那些不应被方法处理器接收的属性。在这种情况下，我们可以**白名单**（whitelist）允许的属性，任何未包含在白名单中的属性都会自动从结果对象中移除。例如，如果处理器期望接收 `email` 和 `password` 属性，但请求中还包含了 `age` 属性，那么该属性会被自动从最终的数据传输对象（DTO）中移除。要启用此行为，只需将 `whitelist` 选项设置为 `true`：
 
@@ -315,7 +315,7 @@ app.useGlobalPipes(
 
 另外，你也可以选择在请求包含非白名单属性时，直接阻止请求继续处理，并向用户返回错误响应。要启用此功能，需要将 `forbidNonWhitelisted` 选项属性设置为 `true`，并同时启用 `whitelist`。
 
-#### 转换请求载荷对象
+## 转换请求载荷对象
 
 通过网络传入的请求载荷通常是普通的 JavaScript 对象。`验证管道（ValidationPipe）` 可以自动将这些载荷转换为根据其数据传输对象（Data Transfer Object，DTO）类类型化的对象。要启用自动转换功能，只需将 `transform` 选项设置为 `true`。你可以在方法级别进行设置：
 
@@ -350,7 +350,7 @@ findOne(@Param('id') id: number) {
 
 默认情况下，所有路径参数和查询参数（Query Parameter）通过网络传递时都是 `string` 类型。在上述示例中，我们在方法签名中将 `id` 的类型指定为 `number`。因此，`验证管道（ValidationPipe）` 会尝试自动将字符串标识符转换为数字。
 
-#### 显式类型转换
+## 显式类型转换
 
 在上面的部分，我们展示了 `验证管道（ValidationPipe）` 如何根据期望类型隐式转换查询参数和路径参数。但需要注意，这一特性依赖于自动转换功能已启用。
 
@@ -370,7 +370,7 @@ findOne(
 
 > info **提示** `ParseIntPipe` 和 `ParseBoolPipe` 都由 `@nestjs/common` 包导出。
 
-#### 映射类型
+## 映射类型
 
 在开发 **CRUD**（创建/读取/更新/删除）等功能时，通常需要基于某个基础实体类型构建不同的变体。Nest 提供了一些实用函数，可以对类型进行转换，帮助你更方便地完成这项工作。
 
@@ -461,7 +461,7 @@ export class UpdateCatDto extends IntersectionType(CreateCatDto, AdditionalCatIn
 export class UpdateCatDto extends PartialType(OmitType(CreateCatDto, ['name'] as const)) {}
 ```
 
-#### 解析与验证数组
+## 解析与验证数组
 
 TypeScript 不会存储关于泛型或接口的元数据，因此当你在数据传输对象（DTO）中使用它们时，验证管道（ValidationPipe）可能无法正确验证传入的数据。例如，在下面的代码中，`createUserDtos` 无法被正确验证：
 
@@ -502,10 +502,10 @@ findByIds(
 GET /?ids=1,2,3
 ```
 
-#### WebSocket 通信和微服务
+## WebSocket 通信和微服务
 
 虽然本章主要以 HTTP 风格的应用（如 Express 或 Fastify）为例进行讲解，但无论使用哪种传输方式，`验证管道（ValidationPipe）` 在 WebSocket 通信和微服务中同样适用。
 
-#### 了解更多
+## 了解更多
 
 想要进一步了解自定义验证器、错误消息以及 `class-validator` 包中可用的装饰器，请查阅 [相关文档](https://github.com/typestack/class-validator)。

@@ -1,4 +1,4 @@
-### gRPC
+# gRPC
 
 [gRPC](https://github.com/grpc/grpc-node) 是一个现代化、开源且高性能的远程过程调用（RPC，Remote Procedure Call）框架，可以在任何环境中运行。它能够高效地连接数据中心内外的服务，并且支持可插拔的负载均衡、链路追踪、健康检查和身份验证等功能。
 
@@ -6,7 +6,7 @@
 
 在 gRPC 传输层（Transport Layer）中，Nest 使用 `.proto` 文件动态绑定客户端和服务端，从而简化远程过程调用的实现，并自动对结构化数据进行序列化和反序列化。
 
-#### 安装
+## 安装
 
 要开始构建基于 gRPC 的微服务，首先需要安装以下依赖包：
 
@@ -14,7 +14,7 @@
 $ npm i --save @grpc/grpc-js @grpc/proto-loader
 ```
 
-#### 概述
+## 概述
 
 与其他 Nest 微服务传输层实现类似，你可以通过传递给 `createMicroservice()` 方法的选项对象中的 `transport` 属性来选择 gRPC 传输机制。下面的示例将演示如何搭建一个 hero 服务。`options` 属性用于提供该服务的元数据，其各项属性将在<a href="microservices/grpc#options">下文</a>详细说明。
 
@@ -50,7 +50,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 }
 ```
 
-#### 选项
+## 选项
 
 <strong>gRPC</strong> 传输器选项对象包含以下属性。
 
@@ -124,7 +124,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
   </tr>
 </table>
 
-#### gRPC 服务示例
+## gRPC 服务示例
 
 下面我们来定义一个名为 `HeroesService` 的示例 gRPC 服务。在上文的 `options` 对象中，`protoPath` 属性指定了 `.proto` 定义文件 `hero.proto` 的路径。`hero.proto` 文件采用 <a href="https://developers.google.com/protocol-buffers">Protocol Buffers（协议缓冲）</a> 语法进行结构定义。示例如下：
 
@@ -245,7 +245,7 @@ export class HeroesService {
 }
 ```
 
-#### 客户端（Client）
+## 客户端（Client）
 
 Nest 应用可以作为 gRPC 客户端，消费在 `.proto` 文件中定义的服务。你可以通过 `ClientGrpc` 对象访问远程服务。获取 `ClientGrpc` 对象有多种方式。
 
@@ -359,11 +359,11 @@ call(): Observable<any> {
 
 请注意，这需要我们前面定义的 `HeroesService` 接口进行相应更新。
 
-#### 示例
+## 示例
 
 一个可用的完整示例可在 [这里](https://github.com/nestjs/nest/tree/master/sample/04-grpc) 查看。
 
-#### gRPC 反射机制（Reflection）
+## gRPC 反射机制（Reflection）
 
 [gRPC 服务器反射规范（gRPC Server Reflection Specification）](https://grpc.io/docs/guides/reflection/#overview) 是一项标准，允许 gRPC 客户端请求服务器所暴露 API 的详细信息，类似于为 RESTful API 公开 OpenAPI 文档。这将极大地方便开发者使用如 grpc-ui 或 postman 等调试工具进行接口调试。
 
@@ -390,7 +390,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 现在，服务器将能够响应基于反射规范的 API 信息请求。
 
-#### gRPC 流式通信（Streaming）
+## gRPC 流式通信（Streaming）
 
 gRPC 本身支持长期保持的实时连接，通常被称为 `流（streams）`。流在诸如聊天、实时观测或分块数据传输等场景中非常有用。更多详细信息可参考官方文档 [这里](https://grpc.io/docs/guides/concepts/)。
 
@@ -401,7 +401,7 @@ Nest 支持两种方式实现 gRPC 流式处理器：
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### 流式通信示例
+## 流式通信示例
 
 我们来定义一个新的 gRPC 示例服务，名为 `HelloService`。`hello.proto` 文件采用 <a href="https://developers.google.com/protocol-buffers">Protocol Buffers（协议缓冲）</a> 进行结构定义。文件内容如下：
 
@@ -446,7 +446,7 @@ interface HelloResponse {
 
 > info **提示** 该 proto 接口可通过 [ts-proto](https://github.com/stephenh/ts-proto) 包自动生成，详细用法见 [这里](https://github.com/stephenh/ts-proto/blob/main/NESTJS.markdown)。
 
-#### Subject 策略
+## Subject 策略
 
 `@GrpcStreamMethod()` 装饰器会将函数参数作为 RxJS 的 `Observable`（可观察对象）传递。因此，我们可以接收并处理多条消息。
 
@@ -490,7 +490,7 @@ return helloService.bidiHello(helloRequest$)
 
 在上面的示例中，我们向流中写入了两条消息（通过 `next()` 方法），并通过 `complete()` 方法通知服务端我们已完成数据发送。
 
-#### 调用流处理器（Call stream handler）
+## 调用流处理器（Call stream handler）
 
 当方法的返回值被定义为 `stream` 时，`@GrpcStreamCall()` 装饰器会将函数参数提供为 `grpc.ServerDuplexStream`，它支持标准方法，例如 `.on('data', callback)`、`.write(message)` 或 `.cancel()`。关于可用方法的完整文档，请参见[此处](https://grpc.github.io/grpc/node/grpc-ClientDuplexStream.html)。
 
@@ -528,7 +528,7 @@ lotsOfGreetings(requestStream: any, callback: (err: unknown, value: HelloRespons
 
 在这里，我们使用 `callback` 函数在 `requestStream` 处理完成后发送响应。
 
-#### 健康检查（Health checks）
+## 健康检查（Health checks）
 
 在 Kubernetes 等编排器（orchestrator）中运行 gRPC 应用时，通常需要了解应用是否正在运行且处于健康状态。[gRPC 健康检查规范](https://grpc.io/docs/guides/health-checking/) 是一个标准，允许 gRPC 客户端暴露其健康状态，以便编排器能够据此做出相应操作。
 
@@ -564,7 +564,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 > info **提示** [gRPC health probe](https://github.com/grpc-ecosystem/grpc-health-probe) 是一个在容器化环境中测试 gRPC 健康检查非常实用的命令行工具（CLI）。
 
-#### gRPC 元数据（Metadata）
+## gRPC 元数据（Metadata）
 
 gRPC 元数据是关于某个远程过程调用（RPC）的信息，以键值对列表的形式存在。键为字符串，值通常为字符串，也可以是二进制数据。元数据对于 gRPC 本身是透明的 —— 它允许客户端在调用时向服务器传递相关信息，服务器也可以向客户端传递信息。元数据常用于包含身份验证令牌、请求标识符、监控标签，以及诸如数据集记录数等数据相关信息。
 

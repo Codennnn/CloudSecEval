@@ -1,8 +1,8 @@
-### NATS
+# NATS
 
 [NATS](https://nats.io) 是一个简单、安全且高性能的开源消息系统，适用于云原生应用、物联网（IoT）消息传递以及微服务（Microservices）架构。NATS 服务器由 Go 编程语言编写，但与服务器交互的客户端库已覆盖数十种主流编程语言。NATS 支持 **最多一次（At Most Once）** 和 **至少一次（At Least Once）** 的消息投递。它可以运行在各种环境中，包括大型服务器、云实例、边缘网关，甚至物联网设备。
 
-#### 安装
+## 安装
 
 要开始构建基于 NATS 的微服务，请首先安装所需的包：
 
@@ -10,7 +10,7 @@
 $ npm i --save nats
 ```
 
-#### 概述
+## 概述
 
 要使用 NATS 作为传输层（Transport Layer），请将如下 options 对象传递给 `createMicroservice()` 方法：
 
@@ -33,7 +33,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 > info **提示** `Transport` 枚举类型需从 `@nestjs/microservices` 包中导入。
 
-#### 选项
+## 选项
 
 `options` 对象是针对所选传输层特定的配置。<strong>NATS</strong> 传输层支持 [此处](https://github.com/nats-io/node-nats#connection-options) 描述的属性，以及下列额外属性：
 
@@ -66,7 +66,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
   </tr>
 </table>
 
-#### 客户端
+## 客户端
 
 与其他微服务传输层类似，你有<a href="https://docs.nestjs.com/microservices/basics#client">多种方式</a>来创建 NATS `ClientProxy` 实例。
 
@@ -91,15 +91,15 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 你也可以选择其他方式来创建客户端（如 `ClientProxyFactory` 或 `@Client()` 装饰器）。相关内容可<a href="https://docs.nestjs.com/microservices/basics#client">在此查阅</a>。
 
-#### 请求-响应
+## 请求-响应
 
 对于 **请求-响应（request-response）** 消息风格（[详细说明](https://docs.nestjs.com/microservices/basics#request-response)），NATS 传输器（NATS transporter）并未使用 NATS 内置的 [请求-回复（Request-Reply）](https://docs.nats.io/nats-concepts/reqreply) 机制。相反，"请求"会通过 `publish()` 方法在指定主题（subject）上发布，并带有唯一的回复主题名称，响应方会监听该主题并将响应发送到该回复主题。无论请求方和响应方位于何处，回复主题都会动态地指向请求方。
 
-#### 事件驱动
+## 事件驱动
 
 对于 **事件驱动（event-based）** 消息风格（[详细说明](https://docs.nestjs.com/microservices/basics#event-based)），NATS 传输器会使用 NATS 内置的 [发布-订阅（Publish-Subscribe）](https://docs.nats.io/nats-concepts/pubsub) 机制。发布者会在某个主题上发送消息，任何正在监听该主题的活跃订阅者都会收到该消息。订阅者还可以注册通配符主题（wildcard subjects），其工作方式类似于正则表达式。这种一对多的模式有时也被称为"扇出（fan-out）"。
 
-#### 队列组
+## 队列组
 
 NATS 提供了一种内置的负载均衡功能，称为 [分布式队列（distributed queues）](https://docs.nats.io/nats-concepts/queue)。要创建队列订阅，可以如下使用 `queue` 属性：
 
@@ -114,7 +114,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 });
 ```
 
-#### 上下文
+## 上下文
 
 在更复杂的场景中，你可能需要访问有关传入请求的更多信息。使用 NATS 传输器时，可以访问 `NatsContext` 对象。
 
@@ -134,7 +134,7 @@ getNotifications(data, context) {
 
 > info **提示** `@Payload()`、`@Ctx()` 和 `NatsContext` 都从 `@nestjs/microservices` 包中导入。
 
-#### 通配符（Wildcards）
+## 通配符（Wildcards）
 
 订阅可以是一个明确的主题（subject），也可以包含通配符。
 
@@ -154,7 +154,7 @@ getDate(data, context) {
 }
 ```
 
-#### 消息记录构建器（Record builders）
+## 消息记录构建器（Record builders）
 
 要配置消息选项，可以使用 `NatsRecordBuilder` 类（注意：事件驱动流程同样适用）。例如，若要添加 `x-version` 请求头（Header），可以使用 `setHeaders` 方法，如下所示：
 
@@ -213,7 +213,7 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices'
 export class ApiModule {}
 ```
 
-#### 实例状态更新
+## 实例状态更新
 
 要实时获取连接状态以及底层驱动实例的状态更新，可以订阅 `status` 流。该流会根据所选驱动提供特定的状态更新。以 NATS 驱动为例，`status` 流会发出 `connected`、`disconnected` 和 `reconnecting` 等事件。
 
@@ -234,7 +234,7 @@ server.status.subscribe((status: NatsStatus) => {
 });
 ```
 
-#### 监听 Nats 事件
+## 监听 Nats 事件
 
 在某些场景下，你可能希望监听微服务内部发出的事件。例如，可以监听 `error` 事件，在发生错误时触发额外操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
@@ -254,7 +254,7 @@ server.on<NatsEvents>('error', (err) => {
 
 > info **提示** `NatsEvents` 类型需从 `@nestjs/microservices` 包中导入。
 
-#### 访问底层驱动实例
+## 访问底层驱动实例
 
 对于更高级的用例，你可能需要访问底层驱动实例。这在需要手动关闭连接或调用驱动特有方法等场景下非常有用。但请注意，在大多数情况下，你**无需**直接操作驱动实例。
 

@@ -1,4 +1,4 @@
-### Mongo 数据库
+# Mongo 数据库
 
 Nest 支持两种方式集成 [MongoDB](https://www.mongodb.com/) 数据库。你可以使用内置的 [TypeORM](https://github.com/typeorm/typeorm) 模块（详见[此处](/techniques/database)），该模块内置了 MongoDB 连接器；也可以选择 [Mongoose](https://mongoosejs.com)，这是最流行的 MongoDB 对象建模工具。本章将重点介绍后者，即如何使用专用的 `@nestjs/mongoose` 包。
 
@@ -23,7 +23,7 @@ export class AppModule {}
 
 `forRoot()` 方法接受与 Mongoose 包中的 `mongoose.connect()` 相同的配置对象，具体说明可参考 [此处](https://mongoosejs.com/docs/connections.html)。
 
-#### 模型注入
+## 模型注入
 
 在 Mongoose 中，一切都源自 [Schema（模式）](http://mongoosejs.com/docs/guide.html)。每个模式对应一个 MongoDB 集合，并定义该集合内文档的结构。模式用于定义 [Model（模型）](https://mongoosejs.com/docs/models.html)。模型负责在底层 MongoDB 数据库中创建和读取文档。
 
@@ -199,7 +199,7 @@ export class CatsService {
 }
 ```
 
-#### 连接
+## 连接
 
 有时你可能需要访问原生的 [Mongoose Connection](https://mongoosejs.com/docs/api.html#Connection) 对象。例如，你可能希望在连接对象上调用原生 API。你可以通过 `@InjectConnection()` 装饰器注入 Mongoose 连接对象，示例如下：
 
@@ -214,7 +214,7 @@ export class CatsService {
 }
 ```
 
-#### 会话（Sessions）
+## 会话（Sessions）
 
 要在 Mongoose 中启动会话，推荐通过 `@InjectConnection` 注入数据库连接，而不是直接调用 `mongoose.startSession()`。这种方式可以更好地与 NestJS 的依赖注入机制集成，确保连接管理的规范性。
 
@@ -238,7 +238,7 @@ export class CatsService {
 
 在上述示例中，`@InjectConnection()` 用于将 Mongoose 连接对象注入到服务中。连接对象注入后，你可以通过 `connection.startSession()` 启动新的会话。该会话可用于管理数据库事务，确保多条查询的原子性操作。启动会话后，请根据你的业务逻辑选择提交或中止事务。
 
-#### 多数据库连接
+## 多数据库连接
 
 在某些项目中，可能需要连接多个数据库。通过本模块也可以实现这一需求。要使用多个连接，首先需要创建这些连接。在这种情况下，**必须**为每个连接指定名称。
 
@@ -314,7 +314,7 @@ export class CatsService {
 }
 ```
 
-#### 钩子（中间件）/ Hooks
+## 钩子（中间件）/ Hooks
 
 中间件（也称为前置和后置钩子）是在异步函数执行过程中被调用的函数。中间件是在 schema 层级上指定的，常用于编写插件（[参考来源](https://mongoosejs.com/docs/middleware.html)）。在 Mongoose 中，模型编译后再调用 `pre()` 或 `post()` 方法不会生效。要在模型注册**之前**注册钩子，可以结合 `MongooseModule` 的 `forFeatureAsync()` 方法和工厂提供者（即 `useFactory`）来实现。通过这种方式，你可以获取 schema 对象，并使用 `pre()` 或 `post()` 方法在该 schema 上注册钩子。示例如下：
 
@@ -364,7 +364,7 @@ export class AppModule {}
 export class AppModule {}
 ```
 
-#### 插件（Plugins）
+## 插件（Plugins）
 
 要为指定的 schema 注册 [插件](https://mongoosejs.com/docs/plugins.html)，请使用 `forFeatureAsync()` 方法。
 
@@ -406,7 +406,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 export class AppModule {}
 ```
 
-#### 判别器（Discriminators）
+## 判别器（Discriminators）
 
 [判别器](https://mongoosejs.com/docs/discriminators.html) 是一种模式继承机制。它允许你在同一个底层 MongoDB 集合上，拥有多个具有重叠模式（Schema）的模型。
 
@@ -491,7 +491,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 export class EventsModule {}
 ```
 
-#### 测试
+## 测试
 
 在进行单元测试时，我们通常希望避免任何数据库连接，这样可以让测试套件更易于搭建，并且执行速度更快。但我们的类可能依赖于从连接实例中获取的模型。那么，我们该如何解决这些类的依赖问题？解决方案是创建模拟模型（mock model）。
 
@@ -512,7 +512,7 @@ export class CatsModule {}
 
 在上述示例中，每当有消费者通过 `@InjectModel()` 装饰器注入 `Model<Cat>` 时，都会注入一个硬编码的 `catModel`。
 
-#### 异步配置
+## 异步配置
 
 当你需要以异步方式（而非静态方式）传递模块选项时，可以使用 `forRootAsync()` 方法。与大多数动态模块一样，Nest 提供了多种处理异步配置的技术。
 
@@ -568,7 +568,7 @@ MongooseModule.forRootAsync({
 })
 ```
 
-#### 连接事件
+## 连接事件
 
 你可以通过 `onConnectionCreate` 配置项监听 Mongoose 的[连接事件](https://mongoosejs.com/docs/connections.html#connection-events)。这样可以在每次建立连接时执行自定义逻辑。例如，你可以为 `connected`、`open`、`disconnected`、`reconnected` 和 `disconnecting` 等事件注册监听器，示例如下：
 
@@ -610,7 +610,7 @@ MongooseModule.forRootAsync({
 
 这种方式为管理连接事件提供了灵活的手段，使你能够高效地处理连接状态的变化。
 
-#### 子文档
+## 子文档
 
 要在父文档中嵌套子文档，可以按如下方式定义你的 schema：
 
@@ -666,7 +666,7 @@ export type PersonDocumentOverride = {
 export type PersonDocument = HydratedDocument<Person, PersonDocumentOverride>;
 ```
 
-#### 虚拟属性（Virtuals）
+## 虚拟属性（Virtuals）
 
 在 Mongoose 中，**虚拟属性** 是指存在于文档对象上但不会被持久化到 MongoDB 的属性。也就是说，这类属性不会存储在数据库中，而是在每次访问时动态计算得出。虚拟属性通常用于派生值或计算值，例如将多个字段组合（如通过拼接 `firstName` 和 `lastName` 创建 `fullName` 属性），或者用于依赖文档中现有数据生成的新属性。
 
@@ -691,6 +691,6 @@ class Person {
 
 在上述示例中，`fullName` 虚拟属性是根据 `firstName` 和 `lastName` 计算得出的。虽然访问时表现得像普通属性，但它实际上并不会被保存到 MongoDB 文档中。
 
-#### 示例
+## 示例
 
 可用的完整示例请参见 [这里](https://github.com/nestjs/nest/tree/master/sample/06-mongoose)。

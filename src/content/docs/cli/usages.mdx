@@ -1,6 +1,6 @@
-### CLI 命令参考
+# CLI 命令参考
 
-#### nest new
+## nest new
 
 创建一个新的（标准模式）Nest 项目。
 
@@ -9,7 +9,7 @@ $ nest new <name> [options]
 $ nest n <name> [options]
 ```
 
-##### 描述
+# 描述
 
 创建并初始化一个新的 Nest 项目，并提示选择包管理器。
 
@@ -18,13 +18,13 @@ $ nest n <name> [options]
 - 创建用于源代码（`/src`）和端到端测试（`/test`）的子文件夹
 - 在子文件夹中填充应用组件和测试的默认文件
 
-##### 参数
+# 参数
 
 | 参数     | 描述         |
 | -------- | ------------ |
 | `<name>` | 新项目的名称 |
 
-##### 选项
+# 选项
 
 | 选项                                  | 描述                                                                                                                                                                 |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -36,7 +36,7 @@ $ nest n <name> [options]
 | `--collection [collectionName]`       | 指定原型生成器（Schematics）集合。使用已安装 npm 包的包名。<br/>别名：`-c`                                                                                           |
 | `--strict`                            | 启用以下 TypeScript 编译器严格模式选项：`strictNullChecks`、`noImplicitAny`、`strictBindCallApply`、`forceConsistentCasingInFileNames`、`noFallthroughCasesInSwitch` |
 
-#### nest generate
+## nest generate
 
 基于原型生成器（Schematics）生成和/或修改文件。
 
@@ -45,14 +45,14 @@ $ nest generate <schematic> <name> [options]
 $ nest g <schematic> <name> [options]
 ```
 
-##### 参数
+# 参数
 
 | 参数          | 描述                                                             |
 | ------------- | ---------------------------------------------------------------- |
 | `<schematic>` | 要生成的 `schematic` 或 `collection:schematic`。可用原型见下表。 |
 | `<name>`      | 生成组件的名称。                                                 |
 
-##### 可用原型（Schematics）
+# 可用原型（Schematics）
 
 | 名称          | 别名 | 描述                                                                                    |
 | ------------- | ---- | --------------------------------------------------------------------------------------- |
@@ -74,7 +74,7 @@ $ nest g <schematic> <name> [options]
 | `resource`    | res  | 生成新的 CRUD 资源。详情见 [CRUD（资源）生成器](/recipes/crud-generator)（仅支持 TS）。 |
 | `service`     | s    | 生成服务声明。                                                                          |
 
-##### 选项
+# 选项
 
 | 选项                            | 描述                                                                       |
 | ------------------------------- | -------------------------------------------------------------------------- |
@@ -85,7 +85,7 @@ $ nest g <schematic> <name> [options]
 | `--spec`                        | 强制生成测试（spec）文件（默认开启）。                                     |
 | `--no-spec`                     | 禁用测试（spec）文件生成。                                                 |
 
-#### nest build
+## nest build
 
 将应用或工作空间编译到输出文件夹中。
 
@@ -99,13 +99,13 @@ $ nest g <schematic> <name> [options]
 $ nest build <name> [options]
 ```
 
-##### 参数
+# 参数
 
 | 参数     | 描述                        |
 | -------- | --------------------------- |
 | `<name>` | 要构建的项目（Project）名称 |
 
-##### 选项
+# 选项
 
 | 选项                    | 描述                                                                                                                           |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -121,7 +121,7 @@ $ nest build <name> [options]
 | `--all`                 | 构建多包仓库结构（Monorepo）中的所有项目。                                                                                     |
 | `--preserveWatchOutput` | 在监听模式下保留旧的控制台输出，不清屏（仅适用于 `tsc` 监听模式）。                                                            |
 
-#### nest start
+## nest start
 
 编译并运行应用（或工作空间中的默认项目）。
 
@@ -129,13 +129,13 @@ $ nest build <name> [options]
 $ nest start <name> [options]
 ```
 
-##### 参数
+# 参数
 
 | 参数     | 描述                        |
 | -------- | --------------------------- |
 | `<name>` | 要运行的项目（Project）名称 |
 
-##### 选项
+# 选项
 
 | 选项                    | 描述                                                                                 |
 | ----------------------- | ------------------------------------------------------------------------------------ |
@@ -154,7 +154,7 @@ $ nest start <name> [options]
 | `--env-file`            | 从当前目录下的文件加载环境变量，使其可通过 `process.env` 获取。                      |
 | `-- [key=value]`        | 可通过 `process.argv` 引用的命令行参数。                                             |
 
-#### nest add
+## nest add
 
 导入已打包为 **Nest 库（nest library）** 的库，并运行其安装原型（schematic）。
 
@@ -162,13 +162,13 @@ $ nest start <name> [options]
 $ nest add <name> [options]
 ```
 
-##### 参数
+# 参数
 
 | 参数     | 描述           |
 | -------- | -------------- |
 | `<name>` | 要导入的库名称 |
 
-#### nest info
+## nest info
 
 显示已安装的 nest 包及其他有用的系统信息。例如：
 

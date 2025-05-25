@@ -1,10 +1,10 @@
-### HTTP 模块
+# HTTP 模块
 
 [Axios](https://github.com/axios/axios) 是一个功能丰富且被广泛使用的 HTTP 客户端库。Nest 对 Axios 进行了封装，并通过内置的 `HttpModule`（HTTP 模块）对外暴露。`HttpModule` 会导出 `HttpService` 类，该类基于 Axios 提供了多种用于发起 HTTP 请求的方法。同时，该库会将 HTTP 响应结果转换为 `Observable`。
 
 > info **提示** 你也可以直接使用任何通用的 Node.js HTTP 客户端库，例如 [got](https://github.com/sindresorhus/got) 或 [undici](https://github.com/nodejs/undici)。
 
-#### 安装依赖
+## 安装依赖
 
 要开始使用，需要先安装相关依赖包。
 
@@ -12,7 +12,7 @@
 $ npm i --save @nestjs/axios axios
 ```
 
-#### 快速上手
+## 快速上手
 
 安装完成后，若要使用 `HttpService`，首先需要导入 `HttpModule`。
 
@@ -56,7 +56,7 @@ export class CatsService {
 
 所有 `HttpService` 的方法都会返回一个被 `Observable` 包裹的 `AxiosResponse` 对象。
 
-#### 配置
+## 配置
 
 [Axios](https://github.com/axios/axios) 可以通过多种选项进行配置，从而自定义 `HttpService` 的行为。你可以在 [这里](https://github.com/axios/axios#request-config) 阅读更多相关内容。要配置底层的 Axios 实例，可以在导入 `HttpModule` 时，向其 `register()` 方法传递一个可选的配置对象。该配置对象会被直接传递给底层的 Axios 构造函数。
 
@@ -73,7 +73,7 @@ export class CatsService {
 export class CatsModule {}
 ```
 
-#### 异步配置
+## 异步配置
 
 当你需要以异步方式（而非静态方式）传递模块选项时，可以使用 `registerAsync()` 方法。与大多数动态模块一样，Nest 提供了多种处理异步配置的技术手段。
 
@@ -144,7 +144,7 @@ HttpModule.registerAsync({
 
 当你希望为工厂函数或类构造函数提供额外依赖时，这种方式非常有用。
 
-#### 直接使用 Axios
+## 直接使用 Axios
 
 如果你觉得 `HttpModule.register` 的配置选项无法满足你的需求，或者你只是想直接访问由 `@nestjs/axios` 创建的底层 Axios 实例，可以通过 `HttpService#axiosRef` 属性来实现，如下所示：
 
@@ -160,7 +160,7 @@ export class CatsService {
 }
 ```
 
-#### 完整示例
+## 完整示例
 
 由于 `HttpService` 方法的返回值是 Observable，因此我们可以使用 `rxjs` 的 `firstValueFrom` 或 `lastValueFrom`，以 Promise 的形式获取请求的数据。
 

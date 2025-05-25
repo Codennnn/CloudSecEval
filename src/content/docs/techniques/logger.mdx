@@ -1,4 +1,4 @@
-### 日志记录器（Logger）
+# 日志记录器（Logger）
 
 Nest 内置了一个基于文本的日志记录器（Logger），用于应用引导过程（bootstrapping）以及多种场景下的系统日志输出（如捕获异常时的日志展示）。该功能由 `@nestjs/common` 包中的 `Logger` 类提供。你可以完全控制日志系统的行为，包括以下方面：
 
@@ -14,7 +14,7 @@ Nest 内置了一个基于文本的日志记录器（Logger），用于应用引
 
 如果你的应用需要集成外部日志系统、自动文件日志，或将日志转发到集中式日志服务，可以结合 Node.js 日志库实现完全自定义的日志方案。其中，较为流行的选择有 [Pino](https://github.com/pinojs/pino)，以高性能和灵活性著称。
 
-#### 基础自定义
+## 基础自定义
 
 要禁用日志记录（Logger），请在传递给 `NestFactory.create()` 方法的（可选）Nest 应用程序选项对象中，将 `logger` 属性设置为 `false`，如下所示：
 
@@ -74,7 +74,7 @@ const app = await NestFactory.create(AppModule, {
 | `showHidden`      | 如果为 true，则会在格式化结果中包含对象的不可枚举符号和属性。WeakMap 和 WeakSet 的条目以及用户自定义的原型属性也会被包含。                                                                                                                                         | `false`                                        |
 | `breakLength`     | 输入值在多长时会被拆分为多行。设置为 Infinity 可将输入格式化为单行（需与 "compact" 一起设置为 true）。当 "compact" 为 true 时，默认值为 Infinity，否则为 80。当启用 `json`、禁用 colors 且 `compact` 设置为 true 时，该选项会被忽略，因为此时输出为可解析的 JSON。 | `Infinity`                                     |
 
-#### JSON 日志记录
+## JSON 日志记录
 
 JSON 日志记录对于现代应用的可观测性以及与日志管理系统的集成至关重要。要在 NestJS 应用中启用 JSON 日志记录，只需将 `ConsoleLogger` 对象的 `json` 属性设置为 `true`，然后在创建应用实例时，将该日志记录器配置作为 `logger` 属性的值传入。
 
@@ -109,7 +109,7 @@ const app = await NestFactory.create(AppModule, {
 
 你可以在这个 [Pull Request](https://github.com/nestjs/nest/pull/14121) 中查看更多不同的日志格式示例。
 
-#### 在应用中使用日志记录器进行日志记录
+## 在应用中使用日志记录器进行日志记录
 
 我们可以结合上述多种技术，实现 Nest 系统日志与自定义应用事件/消息日志在行为和格式上的一致性。
 
@@ -140,7 +140,7 @@ class MyService {
 
 这种方式对于大多数场景已经足够。如果你需要更高级的自定义（例如添加和调用自定义方法），请继续阅读下一节。
 
-#### 带有时间戳的日志
+## 带有时间戳的日志
 
 要为每条日志消息启用时间戳记录，可以在创建日志记录器（Logger）实例时，使用可选的 `timestamp: true` 设置。
 
@@ -165,7 +165,7 @@ class MyService {
 
 请注意，行尾的 `+5ms` 表示与上一条日志消息的时间差。每次日志输出时，都会计算并显示距离上一条消息的时间间隔。
 
-#### 自定义实现
+## 自定义实现
 
 你可以通过将 `logger` 属性设置为一个实现了 `LoggerService` 接口的对象，为 Nest 提供自定义的日志记录器实现，用于系统日志记录。例如，你可以让 Nest 使用内置的全局 JavaScript `console` 对象（它实现了 `LoggerService` 接口），如下所示：
 
@@ -226,7 +226,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 这种方式虽然简单，但并没有利用依赖注入（Dependency Injection）机制来管理 `MyLogger` 类。这在测试时可能带来一些挑战，并且会限制 `MyLogger` 的复用性。更优的方案请参考下方 <a href="techniques/logger#dependency-injection">依赖注入</a> 部分。
 
-#### 扩展内置日志记录器
+## 扩展内置日志记录器
 
 与其从零开始编写日志记录器，不如通过扩展内置的 `ConsoleLogger` 类，并重写默认实现中的部分行为，通常就能满足你的需求。
 
@@ -245,7 +245,7 @@ export class MyLogger extends ConsoleLogger {
 
 你还可以通过在应用选项对象的 `logger` 属性中传入该扩展日志记录器的实例（如上方 <a href="techniques/logger#custom-logger-implementation">自定义实现</a> 一节所示），或者采用下方 <a href="techniques/logger#dependency-injection">依赖注入（Dependency Injection）</a> 一节中的方法，让 Nest 用你的扩展日志记录器进行系统日志记录。如果你这样做，务必像上方示例代码那样调用 `super`，将具体的日志方法调用委托给父类（内置类），以便 Nest 能依赖其预期的内置特性。
 
-#### 依赖注入
+## 依赖注入
 
 如果你需要更高级的日志记录功能，建议充分利用依赖注入机制。例如，你可能希望将 `ConfigService` 注入到自定义日志记录器中，以实现个性化配置，并进一步将自定义日志记录器注入到其他控制器（Controller）或提供者中。要为自定义日志记录器启用依赖注入，请创建一个实现了 `LoggerService`（日志记录器服务）接口的类，并将该类作为提供者注册到某个模块（Module）中。例如：
 
@@ -283,7 +283,7 @@ await app.listen(process.env.PORT ?? 3000)
 
 你还可以在功能类中注入该 `MyLogger` 提供者，从而确保 Nest 系统日志和应用日志都能保持一致的日志行为。更多信息请参见<a href="techniques/logger#using-the-logger-for-application-logging">应用日志记录的用法</a>和<a href="techniques/logger#injecting-a-custom-logger">自定义日志记录器的注入</a>。
 
-#### 注入自定义日志记录器
+## 注入自定义日志记录器
 
 首先，扩展内置的日志记录器（Logger）。可以参考如下代码。我们为 `ConsoleLogger` 类提供了 `scope` 选项，作为配置元数据，指定为[瞬态作用域（Transient Scope）](/fundamentals/injection-scopes)，以确保每个特性模块（feature module）中都会有唯一的 `MyLogger` 实例。在本例中，我们没有扩展 `ConsoleLogger` 的各个方法（如 `log()`、`warn()` 等），当然你也可以选择扩展这些方法。
 
@@ -349,6 +349,6 @@ await app.listen(process.env.PORT ?? 3000)
 
 > info **提示** 另外，你也可以选择不设置 `bufferLogs: true`，而是通过 `logger: false` 临时禁用日志记录器。需要注意的是，如果你在 `NestFactory.create` 时传入 `logger: false`，那么在调用 `useLogger` 之前，所有日志都不会被记录，这可能导致你错过一些重要的初始化错误。如果你不介意部分初始化信息仍然由默认日志记录器输出，也可以省略 `logger: false` 选项。
 
-#### 使用外部日志记录器
+## 使用外部日志记录器
 
 在生产环境下，应用通常有更为复杂的日志需求，比如高级过滤、格式化以及集中式日志管理。Nest 内置的日志记录器（Logger）主要用于监控 Nest 系统行为，同时在开发阶段也可以为功能模块提供基础的格式化文本日志。但在生产环境中，通常会采用专用的日志记录模块，例如 [Winston](https://github.com/winstonjs/winston)。与任何标准 Node.js 应用一样，你可以在 Nest 中充分利用这些日志模块的强大功能。

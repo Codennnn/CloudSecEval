@@ -1,8 +1,8 @@
-### 服务端推送事件（Server-Sent Events，SSE）
+# 服务端推送事件（Server-Sent Events，SSE）
 
 服务端推送事件（Server-Sent Events，SSE）是一种服务端推送（server push）技术，允许客户端通过 HTTP 连接自动接收来自服务器的实时更新。每条通知都会作为一段以两个换行符结尾的文本块发送（详细介绍可参考 [这里](https://developer.mozilla.org/zh-CN/docs/Web/API/Server-sent_events) ）。
 
-#### 用法
+## 用法
 
 要在某个路由（注册在**控制器类（Controller）**中的路由）上启用服务端推送事件，只需为方法处理器添加 `@Sse()` 装饰器（Decorator）。
 
@@ -43,6 +43,6 @@ eventSource.onmessage = ({ data }) => {
 }
 ```
 
-#### 示例
+## 示例
 
 可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/28-sse)。

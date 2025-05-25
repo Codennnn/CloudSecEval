@@ -5,6 +5,7 @@ import { GalleryVerticalEndIcon } from 'lucide-react'
 
 import { CollapsibleNavItem } from '~/components/CollapsibleNavItem'
 import { SearchForm } from '~/components/SearchForm'
+import { ThemeModeToggle } from '~/components/ThemeModeToggle'
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarTrigger,
 } from '~/components/ui/sidebar'
 import { navMainData } from '~/lib/data/nav'
 
@@ -53,6 +55,12 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarTrigger className="-ml-1" />
+
+      <div className="ml-auto">
+        <ThemeModeToggle />
+      </div>
 
       <SidebarRail />
     </Sidebar>

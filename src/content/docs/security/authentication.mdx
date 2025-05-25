@@ -1,4 +1,4 @@
-### 身份验证（Authentication）
+# 身份验证（Authentication）
 
 身份验证（Authentication）是大多数应用程序中**至关重要**的一环。处理身份验证有许多不同的方法和策略，具体采用哪种方式，取决于每个项目的实际需求。本章将介绍几种可适配不同需求的身份验证方案。
 
@@ -6,7 +6,7 @@
 
 我们将从第一个需求开始：用户身份验证。接着扩展为签发 JWT，最后创建一个在请求中检查有效 JWT 的受保护路由。
 
-#### 创建身份验证模块
+## 创建身份验证模块
 
 首先，我们需要生成一个 `AuthModule`，并在其中创建 `AuthService` 和 `AuthController`。`AuthService` 用于实现身份验证逻辑，`AuthController` 用于暴露身份验证相关的接口。
 
@@ -100,7 +100,7 @@ import { UsersService } from './users.service';
 export class UsersModule {}
 ```
 
-#### 实现 “登录” 接口
+## 实现 “登录” 接口
 
 我们的 `AuthService`（认证服务）负责检索用户并验证密码。为此，我们创建了一个 `signIn()` 方法。在下面的代码中，我们使用了便捷的 ES6 展开运算符（spread operator），在返回用户对象前去除 password 属性。这是返回用户对象时的常见做法，因为你不希望暴露诸如密码或其他安全密钥等敏感字段。
 
@@ -202,7 +202,7 @@ export class AuthController {
 
 <app-banner-courses-auth></app-banner-courses-auth>
 
-#### JWT 令牌（JWT token）
+## JWT 令牌（JWT token）
 
 接下来，我们将进入认证系统的 JWT 部分。让我们先回顾并细化一下需求：
 
@@ -355,7 +355,7 @@ $ curl -X POST http://localhost:3000/auth/login -d '{"username": "john", "passwo
 $ # 注意：上方 JWT 已截断
 ```
 
-#### 实现身份验证守卫（Authentication Guard）
+## 实现身份验证守卫（Authentication Guard）
 
 现在我们可以解决最后一个需求：通过要求请求中必须携带有效的 JWT（JSON Web Token）来保护接口。我们将通过创建一个 `AuthGuard`（身份验证守卫）来实现路由保护。
 
@@ -463,7 +463,7 @@ $ curl http://localhost:3000/auth/profile -H "Authorization: Bearer eyJhbGciOiJI
 
 至此，我们已经完成了 JWT 身份验证的实现。JavaScript 客户端（如 Angular、React、Vue）以及其他 JavaScript 应用现在可以安全地与我们的 API 服务器进行身份验证和通信。
 
-#### 全局启用身份验证
+## 全局启用身份验证
 
 如果你的绝大多数接口默认都需要保护，可以将身份验证守卫（AuthGuard）注册为[全局守卫](/guards#binding-guards)。这样就无需在每个控制器上都使用 `@UseGuards()` 装饰器，而只需为需要公开访问的路由单独标记即可。
 
@@ -546,12 +546,12 @@ export class AuthGuard implements CanActivate {
 }
 ```
 
-#### 集成 Passport
+## 集成 Passport
 
 [Passport](https://github.com/jaredhanson/passport) 是社区中最受欢迎的 Node.js 身份验证（Authentication）库，已经在众多生产环境的应用中成功使用。通过 `@nestjs/passport` 模块，可以非常方便地将该库集成到 **Nest** 应用中。
 
 如果你想了解如何将 Passport 集成到 NestJS 中，请参考本章的[相关内容](/recipes/passport)。
 
-#### 示例
+## 示例
 
 你可以在本章[这里](https://github.com/nestjs/nest/tree/master/sample/19-auth-jwt)找到完整的示例代码。

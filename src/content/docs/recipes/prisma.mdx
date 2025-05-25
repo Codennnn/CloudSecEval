@@ -1,4 +1,4 @@
-### Prisma
+# Prisma
 
 [Prisma](https://www.prisma.io) 是一个 [开源](https://github.com/prisma/prisma) 的 ORM（Object-Relational Mapping，对象关系映射）工具，适用于 Node.js 和 TypeScript。它作为编写原生 SQL 或使用其他数据库访问工具（如 SQL 查询构建器 [knex.js](https://knexjs.org/) 或其他 ORM，如 [TypeORM](https://typeorm.io/) 和 [Sequelize](https://sequelize.org/)）的**替代方案**。Prisma 目前支持 PostgreSQL、MySQL、SQL Server、SQLite、MongoDB 以及 CockroachDB（[预览版](https://www.prisma.io/docs/reference/database-reference/supported-databases)）。
 
@@ -6,7 +6,7 @@
 
 > info **注意** 如果你想快速了解 Prisma 的工作原理，可以参考 [快速上手](https://www.prisma.io/docs/getting-started/quickstart) 或阅读 [文档中的介绍](https://www.prisma.io/docs/understand-prisma/introduction)。在 [`prisma-examples`](https://github.com/prisma/prisma-examples/) 仓库中也有可直接运行的 [REST](https://github.com/prisma/prisma-examples/tree/b53fad046a6d55f0090ddce9fd17ec3f9b95cab3/orm/nest) 和 [GraphQL](https://github.com/prisma/prisma-examples/tree/b53fad046a6d55f0090ddce9fd17ec3f9b95cab3/orm/nest-graphql) 示例。
 
-#### 快速开始
+## 快速开始
 
 本教程将带你从零开始，学习如何在 NestJS 中集成 Prisma。你将构建一个示例 NestJS 应用，并实现一个可以读写数据库数据的 RESTful API。
 
@@ -14,7 +14,7 @@
 
 > info **注意** 如果你已经有现有项目，想要迁移到 Prisma，可以参考[为现有项目添加 Prisma 的指南](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project-typescript-postgres)。如果你是从 TypeORM 迁移，可以阅读[从 TypeORM 迁移到 Prisma 的指南](https://www.prisma.io/docs/guides/migrate-to-prisma/migrate-from-typeorm)。
 
-#### 创建你的 NestJS 项目
+## 创建你的 NestJS 项目
 
 首先，安装 Nest 命令行工具（Nest CLI），并通过以下命令创建项目骨架：
 
@@ -25,7 +25,7 @@ $ nest new hello-prisma
 
 更多关于该命令创建的项目文件说明，请参见 [First steps](https://docs.nestjs.com/first-steps) 页面。你现在可以运行 `npm start` 启动应用。此时，运行在 `http://localhost:3000/` 的 RESTful 接口只包含一个在 `src/app.controller.ts` 中实现的路由。接下来你将逐步实现更多路由，用于存储和获取 _用户_ 和 _帖子_ 的数据。
 
-#### 配置 Prisma
+## 配置 Prisma
 
 首先，在你的项目中将 Prisma CLI 作为开发依赖进行安装：
 
@@ -68,7 +68,7 @@ $ npx prisma init
 - `schema.prisma`：用于指定数据库连接信息并包含数据库模式定义
 - `.env`：一个 [dotenv](https://github.com/motdotla/dotenv) 文件，通常用于通过一组环境变量存储你的数据库凭据
 
-#### 配置数据库连接
+## 配置数据库连接
 
 你的数据库连接配置在 `schema.prisma` 文件中的 `datasource` 块。默认情况下，`provider` 字段设置为 `postgresql`，但本指南使用的是 SQLite 数据库，因此你需要将 `datasource` 块的 `provider` 字段修改为 `sqlite`：
 
@@ -181,7 +181,7 @@ DATABASE_URL="sqlserver://HOST:PORT;database=DATABASE;user=USER;password=PASSWOR
 
 </details>
 
-#### 使用 Prisma Migrate 创建两张数据库表
+## 使用 Prisma Migrate 创建两张数据库表
 
 本节将指导你如何使用 [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate) 在数据库中创建两张新表。Prisma Migrate 会根据你在 Prisma schema 中声明式的数据模型定义生成 SQL 迁移文件。这些迁移文件可以完全自定义，你可以根据需要配置底层数据库的其他特性，或添加额外命令（例如用于数据填充 seeding）。
 
@@ -253,7 +253,7 @@ CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 
 </details>
 
-#### 安装并生成 Prisma 客户端（Prisma Client）
+## 安装并生成 Prisma 客户端（Prisma Client）
 
 Prisma 客户端（Prisma Client）是一款类型安全的数据库客户端，它会根据你的 Prisma 模型定义自动 _生成_。得益于这种方式，Prisma 客户端能够为你的模型 _量身定制_ [CRUD](https://www.prisma.io/docs/concepts/components/prisma-client/crud) 操作。
 
@@ -267,7 +267,7 @@ $ npm install @prisma/client
 
 > info **注意** `prisma generate` 命令会读取你的 Prisma schema，并在 `node_modules/@prisma/client` 目录下更新生成的 Prisma 客户端库。
 
-#### 在 NestJS 服务中使用 Prisma Client
+## 在 NestJS 服务中使用 Prisma Client
 
 现在，你已经可以通过 Prisma Client 发送数据库查询。如果你想进一步了解如何使用 Prisma Client 构建查询，可以参考 [API 文档](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/crud)。
 
@@ -417,7 +417,7 @@ export class PostsService {
 
 记得在 `AppModule` 中注册这些新服务。
 
-##### 在主控制器中实现 REST API 路由
+# 在主控制器中实现 REST API 路由
 
 最后，你将使用前面创建的服务，在应用的主控制器（AppController）中实现各类路由。为简化演示，本指南将所有路由都放在已存在的 `AppController` 类中。
 
@@ -500,13 +500,13 @@ export class AppController {
 
 该控制器实现了如下路由：
 
-###### `GET`
+## `GET`
 
 - `/post/:id`：根据 `id` 获取单个帖子
 - `/feed`：获取所有已发布的帖子
 - `/filter-posts/:searchString`：根据 `title` 或 `content` 过滤帖子
 
-###### `POST`
+## `POST`
 
 - `/post`：创建新帖子
   - 请求体：
@@ -518,15 +518,15 @@ export class AppController {
     - `email: String`（必填）：用户邮箱
     - `name: String`（可选）：用户名
 
-###### `PUT`
+## `PUT`
 
 - `/publish/:id`：根据 `id` 发布帖子
 
-###### `DELETE`
+## `DELETE`
 
 - `/post/:id`：根据 `id` 删除帖子
 
-#### 总结
+## 总结
 
 在本教程中，你学习了如何结合使用 Prisma 和 NestJS 来实现一个 RESTful 接口。实现接口路由的控制器会调用 `PrismaService`，而该服务则通过 Prisma Client 向数据库发送查询，以满足传入请求的数据需求。
 

@@ -1,10 +1,10 @@
-### 管道（Pipes）
+# 管道（Pipes）
 
 [常规管道](/pipes)与微服务管道（microservices pipes）在本质上没有区别。唯一的不同在于，微服务中不应抛出 `HttpException`，而是应该使用 `RpcException`。
 
 > info **提示** `RpcException` 类由 `@nestjs/microservices` 包提供。
 
-#### 绑定管道
+## 绑定管道
 
 下例演示了如何手动实例化一个方法作用域的管道。与基于 HTTP 的应用类似，你也可以使用控制器作用域的管道（即在控制器类前添加 `@UsePipes()` 装饰器）。
 

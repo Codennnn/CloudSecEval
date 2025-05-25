@@ -1,4 +1,4 @@
-### Redis
+# Redis
 
 [Redis](https://redis.io/) 传输器实现了发布/订阅（publish/subscribe）消息范式，并利用了 Redis 的 [Pub/Sub](https://redis.io/topics/pubsub) 功能。发布的消息会被分类到不同的频道（channel）中，发布者无需关心最终会有哪些订阅者（subscriber）接收消息。每个微服务都可以订阅任意数量的频道，并且可以同时订阅多个频道。通过频道交换的消息属于**即发即弃（fire-and-forget）**，也就是说，如果消息发布时没有任何订阅者感兴趣，该消息会被移除且无法恢复。因此，无法保证每条消息或事件至少会被一个服务处理。单条消息可以被多个订阅者订阅（并接收）。
 
@@ -6,7 +6,7 @@
   <img class="illustrative-image" src="/assets/Redis_1.png" />
 </figure>
 
-#### 安装
+## 安装
 
 要开始构建基于 Redis 的微服务，首先需要安装所需的依赖包：
 
@@ -14,7 +14,7 @@
 $ npm i --save ioredis
 ```
 
-#### 概述
+## 概述
 
 要使用 Redis 传输器，只需将如下选项对象传递给 `createMicroservice()` 方法：
 
@@ -39,7 +39,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 > info **提示** `Transport` 枚举（enum）需从 `@nestjs/microservices` 包中导入。
 
-#### 选项
+## 选项
 
 `options` 属性是针对所选传输层（transporter）特有的配置项。<strong>Redis</strong> 传输层支持以下属性：
 
@@ -85,7 +85,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 此外，该传输层还支持官方 [ioredis](https://redis.github.io/ioredis/index.html#RedisOptions) 客户端支持的所有属性。
 
-#### 客户端（Client）
+## 客户端（Client）
 
 与其他微服务传输器类似，你有多种方式可以创建 Redis `ClientProxy` 实例，详见 <a href="https://docs.nestjs.com/microservices/basics#client">官方文档</a>。
 
@@ -111,7 +111,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 除此之外，你还可以选择其他方式来创建客户端，例如 `ClientProxyFactory` 或 `@Client()` 装饰器。相关内容可参考 <a href="https://docs.nestjs.com/microservices/basics#client">官方文档</a>。
 
-#### 上下文（Context）
+## 上下文（Context）
 
 在更复杂的场景下，你可能需要访问有关传入请求的更多信息。当使用 Redis 传输器时，可以通过 `RedisContext` 对象获取这些信息。
 
@@ -131,7 +131,7 @@ getNotifications(data, context) {
 
 > info **提示** `@Payload()`、`@Ctx()` 以及 `RedisContext` 都需要从 `@nestjs/microservices` 包中导入。
 
-#### 通配符（Wildcards）
+## 通配符（Wildcards）
 
 要启用通配符支持，需要将 `wildcards` 选项设置为 `true`。这样会指示传输层在底层使用 `psubscribe` 和 `pmessage`。
 
@@ -153,7 +153,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 @EventPattern('notifications.*')
 ```
 
-#### 实例状态更新（Instance status updates）
+## 实例状态更新（Instance status updates）
 
 如需实时获取连接和底层驱动实例状态的更新，可以订阅 `status` 流。该流会提供特定于所选驱动的状态更新。对于 Redis 驱动，`status` 流会发出 `connected`、`disconnected` 和 `reconnecting` 事件。
 
@@ -174,7 +174,7 @@ server.status.subscribe((status: RedisStatus) => {
 });
 ```
 
-#### 监听 Redis 事件
+## 监听 Redis 事件
 
 在某些情况下，你可能希望监听微服务内部触发的事件。例如，你可以监听 `error` 事件，在发生错误时执行额外的操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
@@ -194,7 +194,7 @@ server.on<RedisEvents>('error', (err) => {
 
 > info **提示** `RedisEvents` 类型需从 `@nestjs/microservices` 包中导入。
 
-#### 底层驱动访问
+## 底层驱动访问
 
 对于更高级的用例，你可能需要访问底层驱动实例。这在需要手动关闭连接或使用驱动特有方法等场景下非常有用。但请注意，在大多数情况下，你**无需**直接操作驱动实例。
 

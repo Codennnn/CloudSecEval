@@ -1,4 +1,4 @@
-### 配置
+# 配置
 
 应用程序通常会运行在不同的 **环境（Environment）** 下。根据环境的不同，应当使用不同的配置设置。例如，本地环境通常依赖于只对本地数据库实例有效的特定数据库凭据，而生产环境则会使用另一套数据库凭据。由于配置变量会发生变化，最佳实践是将[配置变量](https://12factor.net/config)存储在环境变量（Environment Variable）中。
 
@@ -8,7 +8,7 @@
 
 在 Nest 中，推荐的做法是创建一个 `配置模块（ConfigModule）`，并通过 `配置服务（ConfigService）` 加载对应的 `.env` 文件。虽然你可以自行实现这样的模块，但 Nest 已经内置提供了 `@nestjs/config` 包，极大简化了配置管理。本章节将详细介绍该包的用法。
 
-#### 安装
+## 安装
 
 要开始使用，首先需要安装相关依赖：
 
@@ -20,7 +20,7 @@ $ npm i --save @nestjs/config
 
 > warning **注意** `@nestjs/config` 需要 TypeScript 4.1 或更高版本。
 
-#### 快速上手
+## 快速上手
 
 安装完成后，我们可以导入 `ConfigModule`。通常会在根模块 `AppModule` 中导入，并通过其静态方法 `.forRoot()` 控制行为。在这一步，环境变量的键值对会被解析和加载。后续我们还会介绍如何在其他功能模块中访问 `ConfigModule` 提供的 `ConfigService`。
 
@@ -50,7 +50,7 @@ DATABASE_PASSWORD=test
 $ nest start --env-file .env
 ```
 
-#### 自定义 env 文件路径
+## 自定义 env 文件路径
 
 默认情况下，`@nestjs/config` 包会在应用程序根目录查找 `.env` 文件。如果你希望指定其他路径，可以在传递给 `forRoot()` 的选项对象中设置 `envFilePath` 属性，例如：
 
@@ -70,7 +70,7 @@ ConfigModule.forRoot({
 
 如果同一个变量在多个文件中都存在，则以第一个文件中的值为准。
 
-#### 禁用 env 文件加载
+## 禁用 env 文件加载
 
 如果你不希望加载 `.env` 文件，而是只想直接访问运行环境中的环境变量（例如通过 shell 导出的 `export DATABASE_USER=test`），可以将选项对象的 `ignoreEnvFile` 属性设置为 `true`，如下所示：
 
@@ -80,7 +80,7 @@ ConfigModule.forRoot({
 })
 ```
 
-#### 全局使用配置模块
+## 全局使用配置模块
 
 如果你希望在其他模块中使用 `配置模块（ConfigModule）`，通常需要在每个模块中单独导入。或者，你也可以通过将选项对象的 `isGlobal` 属性设置为 `true`，将其声明为[全局模块](https://docs.nestjs.com/modules#global-modules)。这样一来，只需在根模块（如 `AppModule`）中导入一次，后续其他模块无需再单独导入。
 
@@ -90,7 +90,7 @@ ConfigModule.forRoot({
 })
 ```
 
-#### 自定义配置文件
+## 自定义配置文件
 
 对于更复杂的项目，你可以使用自定义配置文件，返回嵌套的配置对象。这样可以按功能（如数据库相关配置）对配置进行分组，并将相关配置分别存放在独立文件中，便于维护和管理。
 
@@ -190,7 +190,7 @@ export default () => {
 
 <app-banner-devtools></app-banner-devtools>
 
-#### 使用 `配置服务（ConfigService）`
+## 使用 `配置服务（ConfigService）`
 
 要访问 `配置服务（ConfigService）` 中的配置信息，首先需要注入 `ConfigService`。和其他提供者（Provider）一样，需要在使用它的模块中导入其所在的 `配置模块（ConfigModule）`（除非你在 `ConfigModule.forRoot()` 的选项对象中将 `isGlobal` 属性设置为 `true`）。在功能模块中导入方式如下：
 
@@ -285,7 +285,7 @@ constructor(private configService: ConfigService<{ PORT: number }, true>) {
 
 > info **提示** 如果希望 `ConfigService#get` 方法只从自定义配置文件获取值而忽略 `process.env` 变量，可以在 `ConfigModule.forRoot()` 的选项对象中设置 `skipProcessEnv: true`。
 
-#### 配置命名空间（Configuration namespaces）
+## 配置命名空间（Configuration namespaces）
 
 `配置模块（ConfigModule）` 允许你像前文[自定义配置文件](techniques/configuration#custom-configuration-files)所述一样，定义并加载多个自定义配置文件。你可以通过嵌套配置对象来管理复杂的配置层级结构。除此之外，还可以通过 `registerAs()` 函数返回一个"命名空间配置对象（namespaced configuration object）"，示例如下：
 
@@ -333,7 +333,7 @@ constructor(
 
 > info **提示** `ConfigType` 由 `@nestjs/config` 包导出。
 
-#### 在模块中使用命名空间配置
+## 在模块中使用命名空间配置
 
 如果你希望将命名空间配置作为其他模块的配置对象，可以使用配置对象的 `.asProvider()` 方法。该方法会将命名空间配置转换为一个提供者（Provider），然后可以将其传递给目标模块的 `forRootAsync()`（或类似方法）。
 
@@ -362,7 +362,7 @@ import databaseConfig from './config/database.config';
 
 这种结构可以让你无缝地将命名空间配置集成到各个模块中，保证应用结构清晰、模块化，无需编写重复样板代码。
 
-#### 缓存环境变量（Cache environment variables）
+## 缓存环境变量（Cache environment variables）
 
 由于访问 `process.env` 可能存在性能瓶颈，你可以在传递给 `ConfigModule.forRoot()` 的选项对象中设置 `cache` 属性，以提升 `ConfigService#get` 方法读取环境变量时的性能。
 
@@ -372,7 +372,7 @@ ConfigModule.forRoot({
 })
 ```
 
-#### 局部注册（Partial registration）
+## 局部注册（Partial registration）
 
 目前为止，我们通常在根模块（如 `AppModule`）中通过 `forRoot()` 方法加载所有配置文件。但如果你的项目结构较为复杂，存在多个特性模块分别拥有各自的配置文件，可以不必在根模块一次性加载所有配置。`@nestjs/config` 包提供了**局部注册（partial registration）**功能，只引用与当前特性模块相关的配置文件。你可以在特性模块中通过 `forFeature()` 静态方法实现局部注册，示例如下：
 
@@ -387,7 +387,7 @@ export class DatabaseModule {}
 
 > info **警告** 某些情况下，你可能需要通过 `onModuleInit()` 钩子访问通过局部注册加载的配置属性，而不是在构造函数中访问。原因在于 `forFeature()` 方法会在模块初始化阶段运行，而模块初始化顺序是不确定的。如果你在构造函数中访问其他模块通过局部注册加载的配置，可能会遇到依赖的模块尚未初始化的问题。`onModuleInit()` 方法会在所有依赖模块初始化完成后才执行，因此这种方式更安全。
 
-#### 配置校验（Schema validation）
+## 配置校验（Schema validation）
 
 在应用程序启动时，如果缺少必要的环境变量，或者这些变量不符合特定的校验规则，通常应当抛出异常。`@nestjs/config` 包支持两种校验方式：
 
@@ -457,7 +457,7 @@ export class AppModule {}
 
 > info **提示** 如果希望禁用对预定义环境变量的校验，可以在 `forRoot()` 方法的选项对象中设置 `validatePredefined: false`。预定义环境变量指的是在导入模块前就已设置的进程变量（`process.env` 变量）。例如，使用 `PORT=3000 node main.js` 启动应用时，`PORT` 就是预定义环境变量。
 
-#### 自定义校验函数
+## 自定义校验函数
 
 你还可以指定一个**同步**的 `validate` 函数。该函数接收一个包含所有环境变量（来自 env 文件和进程环境变量）的对象，并返回一个经过校验和（如有需要）转换后的环境变量对象。如果该函数抛出错误，应用将会在启动阶段被中断，无法正常启动。
 
@@ -519,7 +519,7 @@ import { validate } from './env.validation';
 export class AppModule {}
 ```
 
-#### 自定义 getter 函数
+## 自定义 getter 函数
 
 `ConfigService` 提供了通用的 `get()` 方法，可以通过键名获取对应的配置信息。除此之外，我们还可以为其添加自定义的 `getter` 属性，使代码风格更加简洁、自然。
 
@@ -571,7 +571,7 @@ export class AppService {
 }
 ```
 
-#### 环境变量加载钩子（Environment variables loaded hook）
+## 环境变量加载钩子（Environment variables loaded hook）
 
 如果某个模块的配置依赖于环境变量，并且这些变量是从 `.env` 文件加载的，你可以使用 `ConfigModule.envVariablesLoaded` 钩子，确保在操作 `process.env` 对象前，`.env` 文件已被加载。例如：
 

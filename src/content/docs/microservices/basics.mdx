@@ -1,4 +1,4 @@
-### 概述
+# 概述
 
 除了传统的（有时称为单体架构）应用架构之外，Nest 还原生支持微服务架构风格的开发。文档其他部分讨论的大多数核心概念，如依赖注入、装饰器（Decorator）、异常过滤器、管道、守卫和拦截器等，同样适用于微服务。Nest 尽可能地对实现细节进行抽象，使得相同的组件能够在基于 HTTP 的平台、WebSocket 通信（WebSockets）以及微服务之间无缝运行。本节将介绍 Nest 针对微服务特性相关的内容。
 
@@ -10,7 +10,7 @@
 
 Nest 提供了多种内置的传输层实现，称为**传输器**，它们负责在不同微服务实例之间传递消息。大多数传输器原生支持**请求-响应**和**基于事件的通信（Event-based communication）**两种消息模式。Nest 将每种传输器的实现细节抽象在统一的接口之下，无论是请求-响应还是事件驱动消息，都能轻松切换传输层。例如，你可以根据实际需求选择特定传输层以获得更高的可靠性或性能，而无需修改应用代码。
 
-#### 安装
+## 安装
 
 要开始构建微服务，首先需要安装相关依赖包：
 
@@ -18,7 +18,7 @@ Nest 提供了多种内置的传输层实现，称为**传输器**，它们负�
 $ npm i --save @nestjs/microservices
 ```
 
-#### 快速上手
+## 快速上手
 
 要实例化一个微服务，请使用 `NestFactory` 类的 `createMicroservice()` 方法：
 
@@ -151,11 +151,11 @@ bootstrap();
 
 > info **提示** 上述属性仅适用于 TCP 传输器。关于其他传输器的可用选项，请参阅相关章节。
 
-#### 消息与事件模式
+## 消息与事件模式
 
 微服务通过**模式（Pattern）**来识别消息和事件。模式是一个普通的值，例如字面量对象或字符串。模式会被自动序列化，并与消息的数据部分一起通过网络发送。通过这种方式，消息发送方和消费者可以协调，确定哪些请求由哪些处理器消费。
 
-#### 请求-响应
+## 请求-响应
 
 当你需要在多个外部服务之间**交换**消息时，请求-响应消息风格非常有用。这种范式确保服务确实收到了消息（无需你手动实现确认协议）。然而，请求-响应方式并不总是最佳选择。例如，像 [Kafka](https://docs.confluent.io/3.0.0/streams/) 或 [NATS streaming](https://github.com/nats-io/node-nats-streaming) 这样的流式传输器（streaming transporter），它们采用基于日志的持久化机制，更适合应对另一类挑战，这类挑战更贴合事件消息（event messaging）范式（详见 [基于事件的消息传递](https://docs.nestjs.com/microservices/basics#event-based)）。
 
@@ -190,7 +190,7 @@ export class MathController {
 
 在上述代码中，`accumulate()` **消息处理器**会监听与 `{{ '{' }} cmd: 'sum' {{ '}' }}` 消息模式匹配的消息。该消息处理器接收一个参数，即客户端传递的 `data`。在本例中，`data` 是一个需要累加的数字数组。
 
-#### 异步响应
+## 异步响应
 
 消息处理器既可以同步响应，也可以**异步**响应，这意味着 `async` 方法是被支持的。
 
@@ -224,7 +224,7 @@ accumulate(data: number[]): Observable<number> {
 
 在上面的示例中，消息处理器会**响应三次**，每次返回数组中的一个元素。
 
-#### 基于事件
+## 基于事件
 
 虽然请求-响应方式非常适合服务之间的消息交换，但在事件驱动消息场景下 —— 也就是你只想发布**事件**而不需要等待响应时 —— 这种方式就不太合适了。此时，为请求-响应维护两条通道的开销是没有必要的。
 
@@ -251,7 +251,7 @@ async handleUserCreated(data) {
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### 获取更多请求详情
+## 获取更多请求详情
 
 在更高级的场景中，你可能需要访问关于传入请求的更多详细信息。例如，当使用 NATS 并采用通配符订阅时，你可能希望获取生产者实际发送消息时使用的原始主题（subject）。类似地，在使用 Kafka 时，你可能需要访问消息头（headers）。要实现这些需求，你可以利用内置装饰器，如下所示：
 
@@ -275,7 +275,7 @@ getDate(data, context) {
 
 > info **提示** 你还可以为 `@Payload()` 装饰器传入属性键，以便从传入的 payload 对象中提取特定属性，例如：`@Payload('id')`。
 
-#### 客户端（生产者类）
+## 客户端（生产者类）
 
 Nest 客户端应用可以使用 `ClientProxy` 类与 Nest 微服务进行消息交换或事件发布。该类提供了多种方法，例如 `send()`（用于请求-响应消息模式）和 `emit()`（用于事件驱动消息模式），从而实现与远程微服务的通信。你可以通过以下方式获取该类的实例：
 
@@ -369,7 +369,7 @@ async onApplicationBootstrap() {
 
 如果连接无法建立，`connect()` 方法会抛出相应的错误对象。
 
-#### 发送消息
+## 发送消息
 
 `ClientProxy` 提供了 `send()` 方法。该方法用于调用微服务，并返回一个包含响应的 **冷 Observable**。因此，我们可以很方便地对其发出的值进行订阅。
 
@@ -390,7 +390,7 @@ accumulate() {
 
 `send()` 方法接收两个参数：`pattern` 和 `payload`。其中，`pattern` 需要与 `@MessagePattern()` 装饰器中定义的模式相匹配，`payload` 则是我们希望传递给远程微服务的数据。该方法返回一个**冷 Observable**，也就是说，只有在你显式订阅它之后，消息才会被真正发送。
 
-#### 发布事件
+## 发布事件
 
 如需发送事件，可以使用 `ClientProxy` 对象的 `emit()` 方法。该方法会将事件发布到消息代理（message broker）。
 
@@ -409,7 +409,7 @@ async publish() {
 
 <app-banner-devtools></app-banner-devtools>
 
-#### 请求作用域（Request-scoped）
+## 请求作用域（Request-scoped）
 
 对于来自不同编程语言背景的开发者来说，可能会惊讶地发现，在 Nest 中，大多数内容在所有传入请求之间是共享的。这包括数据库的连接池、具有全局状态的单例服务等。需要注意的是，Node.js 并不采用每个请求由独立线程处理的请求/响应多线程无状态模型。因此，在我们的应用程序中使用单例实例是**安全**的。
 
@@ -438,7 +438,7 @@ export interface RequestContext<T = any> {
 
 `data` 属性是消息生产者发送的消息载荷（payload）。`pattern` 属性用于标识用于处理传入消息的合适处理器的消息模式（pattern）。
 
-#### 实例状态更新
+## 实例状态更新
 
 如果你希望实时获取连接和底层驱动实例的状态更新，可以订阅 `status` 流。该流会提供特定于所选驱动的状态更新。例如，如果你使用的是 TCP 传输器（默认选项），`status` 流会发出 `connected` 和 `disconnected` 事件。
 
@@ -459,7 +459,7 @@ server.status.subscribe((status: TcpStatus) => {
 });
 ```
 
-#### 监听内部事件
+## 监听内部事件
 
 在某些情况下，你可能希望监听微服务内部触发的事件。例如，你可以监听 `error` 事件，在发生错误时执行额外的操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
@@ -479,7 +479,7 @@ server.on<TcpEvents>('error', (err) => {
 
 > info **提示** `TcpEvents` 类型从 `@nestjs/microservices` 包中导入。
 
-#### 访问底层驱动实例
+## 访问底层驱动实例
 
 对于更高级的用例，你可能需要访问底层驱动实例（driver instance）。这在需要手动关闭连接或调用驱动特有方法等场景下非常有用。但请注意，在大多数情况下，你**不需要**直接操作驱动。
 
@@ -497,7 +497,7 @@ const netServer = this.client.unwrap<Server>()
 const netServer = server.unwrap<Server>()
 ```
 
-#### 处理超时
+## 处理超时
 
 在分布式系统中，微服务有时可能会宕机或不可用。为了避免无限期等待，可以使用超时机制（timeout）。在与其他服务通信时，超时是一种非常实用的模式。要为微服务调用应用超时，可以使用 [RxJS](https://rxjs.dev) 的 `timeout` 操作符（operator）。如果微服务在指定时间内没有响应，将会抛出异常，你可以捕获并妥善处理。
 
@@ -518,7 +518,7 @@ this.client
 
 如果在 5 秒内微服务没有响应，将会抛出错误。
 
-#### TLS 支持
+## TLS 支持
 
 当服务需要在私有网络之外进行通信时，确保通信加密对于安全性至关重要。在 NestJS 中，可以通过 Node 内置的 [TLS](https://nodejs.org/api/tls.html) 模块，在 TCP 之上实现 TLS 加密。Nest 在其 TCP 传输层内置了对 TLS 的支持，使我们能够加密微服务或客户端之间的通信。
 
@@ -579,7 +579,7 @@ export class AppModule {}
 
 更多信息请参考 Node 的 [TLS 文档](https://nodejs.org/api/tls.html)。
 
-#### 动态配置
+## 动态配置
 
 当微服务需要通过 `ConfigService`（配置服务，ConfigService）进行配置，但注入上下文仅在微服务实例创建后才可用时，可以使用 `AsyncMicroserviceOptions`（异步微服务选项，AsyncMicroserviceOptions）来实现动态配置，从而顺利集成 `ConfigService`。
 

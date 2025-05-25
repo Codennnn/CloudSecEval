@@ -6,7 +6,7 @@
 
 你也可以自行构建专用的驱动（详细内容请参见[此处](/graphql/other-features#creating-a-custom-driver)）。
 
-#### 安装
+## 安装
 
 首先安装所需依赖包：
 
@@ -23,7 +23,7 @@ $ npm i @nestjs/graphql @nestjs/apollo @apollo/server graphql
 
 > warning **警告** `@nestjs/graphql@>=9` 和 `@nestjs/apollo^10` 这两个包与 **Apollo v3** 兼容（更多细节请参考 Apollo Server 3 [迁移指南](https://www.apollographql.com/docs/apollo-server/migration/)），而 `@nestjs/graphql@^8` 仅支持 **Apollo v2**（例如 `apollo-server-express@2.x.x` 包）。
 
-#### 概述
+## 概述
 
 Nest 提供了两种构建 GraphQL 应用的方式，分别是 **代码优先（code first）** 和 **模式优先（schema first）**。你可以根据实际需求选择最适合自己的方式。本章节的大部分内容也会分为两部分：采用 **代码优先** 的读者请参考一部分，采用 **模式优先** 的读者请参考另一部分。
 
@@ -33,7 +33,7 @@ Nest 提供了两种构建 GraphQL 应用的方式，分别是 **代码优先（
 
 <app-banner-courses-graphql-cf></app-banner-courses-graphql-cf>
 
-#### 使用 GraphQL 和 TypeScript 快速上手
+## 使用 GraphQL 和 TypeScript 快速上手
 
 > info **提示**  
 > 在接下来的章节中，我们将集成 `@nestjs/apollo` 包。如果你希望使用 `mercurius` 包，请前往[本节](/graphql/quick-start#mercurius-integration)查看相关内容。
@@ -81,7 +81,7 @@ export class AppModule {}
 
 在上述示例中，这些选项会被转发给 `ApolloServer` 的构造函数。
 
-#### GraphQL Playground（图形化交互式 IDE）
+## GraphQL Playground（图形化交互式 IDE）
 
 Playground 是一个图形化、交互式的浏览器内 GraphQL IDE，默认情况下可通过与 GraphQL 服务器相同的 URL 访问。要使用 Playground，您需要先配置并运行一个基础的 GraphQL 服务器。想要立即体验，可以[安装并构建此处的示例项目](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first)。另外，如果您正在跟随本系列代码示例学习，完成[解析器章节](/graphql/resolvers-map)的步骤后，也可以访问 Playground。
 
@@ -104,7 +104,7 @@ Playground 是一个图形化、交互式的浏览器内 GraphQL IDE，默认情
 >
 > 如果您的应用使用了[订阅功能](/graphql/subscriptions)，请确保使用 `graphql-ws`，因为 GraphiQL 不支持 `subscriptions-transport-ws`。
 
-#### 代码优先（Code first）
+## 代码优先（Code first）
 
 在 **代码优先** 方式中，你可以通过装饰器和 TypeScript 类来生成对应的 GraphQL 模式（schema）。
 
@@ -136,11 +136,11 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-#### 示例
+## 示例
 
 一个完整可用的代码优先（code first）示例可在 [这里](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first) 查看。
 
-#### 模式优先（schema first）
+## 模式优先（schema first）
 
 要使用模式优先方式，首先需要在配置对象中添加 `typePaths` 属性。`typePaths` 属性用于指示 `GraphQLModule` 应该在哪里查找你编写的 GraphQL SDL 模式定义文件。这些文件会在内存中合并，这样你就可以将模式拆分到多个文件，并将它们放在靠近各自解析器的位置。
 
@@ -236,7 +236,7 @@ definitionsFactory.generate({
 })
 ```
 
-#### Apollo Sandbox（沙盒）
+## Apollo Sandbox（沙盒）
 
 如需在本地开发中使用 [Apollo Sandbox](https://www.apollographql.com/blog/announcement/platform/apollo-sandbox-an-open-graphql-ide-for-local-development/) 作为 GraphQL 集成开发环境（IDE），以替代 `graphql-playground`，请参考以下配置：
 
@@ -258,11 +258,11 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 export class AppModule {}
 ```
 
-#### 示例
+## 示例
 
 一个完整可用的 schema-first（以 schema 为主）示例可在 [此处](https://github.com/nestjs/nest/tree/master/sample/12-graphql-schema-first) 查看。
 
-#### 获取已生成的 schema（模式）对象
+## 获取已生成的 schema（模式）对象
 
 在某些情况下（例如端到端测试（End-to-End Testing）），你可能希望获取已生成的 schema（模式）对象的引用。在端到端测试中，你可以直接使用 `graphql` 对象运行查询，而无需通过任何 HTTP 监听器。
 
@@ -274,7 +274,7 @@ const { schema } = app.get(GraphQLSchemaHost)
 
 > info **提示** 你必须在应用初始化完成后（即在 `onModuleInit` 生命周期钩子被 `app.listen()` 或 `app.init()` 方法触发后），再调用 `GraphQLSchemaHost#schema` 的 getter。
 
-#### 异步配置（Async configuration）
+## 异步配置（Async configuration）
 
 当你需要以异步方式（而非静态方式）传递模块（Module）选项时，可以使用 `forRootAsync()` 方法。与大多数动态模块（Dynamic Module）一样，Nest 提供了多种处理异步配置的技术手段。
 
@@ -333,7 +333,7 @@ GraphQLModule.forRootAsync<ApolloDriverConfig>({
 }),
 ```
 
-#### Mercurius 集成
+## Mercurius 集成
 
 对于 Fastify 用户（详细内容请参阅[此处](/techniques/performance)），除了使用 Apollo 外，还可以选择使用 `@nestjs/mercurius` 驱动。
 
@@ -358,7 +358,7 @@ export class AppModule {}
 
 `forRoot()` 方法接收一个选项对象作为参数。这些选项会传递给底层驱动实例。关于可用设置的更多信息，请参阅[这里](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)。
 
-#### 多端点支持
+## 多端点支持
 
 `@nestjs/graphql` 模块的另一个实用特性是能够同时提供多个端点。这让你可以灵活决定哪些模块应包含在哪个端点中。默认情况下，GraphQL 会在整个应用中查找解析器（Resolver）。如果你希望只在部分模块中查找，可以使用 `include` 属性进行限制。
 
@@ -370,10 +370,10 @@ GraphQLModule.forRoot({
 
 > warning **警告** 如果你在单个应用中结合 `@apollo/server` 与 `@as-integrations/fastify` 包使用多个 GraphQL 端点，请务必在 `GraphQLModule` 配置中启用 `disableHealthCheck` 设置。
 
-#### 第三方集成
+## 第三方集成
 
 - [GraphQL Yoga](https://github.com/dotansimha/graphql-yoga)
 
-#### 示例
+## 示例
 
 一个可运行的示例可在[此处](https://github.com/nestjs/nest/tree/master/sample/33-graphql-mercurius)查看。

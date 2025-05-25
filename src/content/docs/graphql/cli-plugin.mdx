@@ -1,4 +1,4 @@
-### CLI 插件
+# CLI 插件
 
 > warning **警告** 本章节仅适用于代码优先（code first）方式。
 
@@ -6,7 +6,7 @@ TypeScript 的元数据反射（metadata reflection）系统存在一些限制�
 
 > info **提示** 该插件为**可选**。如果你愿意，也可以手动声明所有装饰器，或者只在需要的地方声明特定装饰器。
 
-#### 概述
+## 概述
 
 GraphQL 插件会自动完成以下操作：
 
@@ -57,7 +57,7 @@ export class Author {
 
 > info **提示** 插件会自动生成所有缺失的 GraphQL 属性。如果你需要覆盖默认行为，只需通过 `@Field()` 显式设置即可。
 
-#### 注释自动提取功能
+## 注释自动提取功能
 
 启用注释自动提取（comments introspection）功能后，CLI 插件会根据注释内容为字段自动生成描述信息。
 
@@ -82,7 +82,7 @@ roles: string[];
 roles: string[];
 ```
 
-#### 使用命令行工具插件
+## 使用命令行工具插件
 
 要启用该插件，请打开 `nest-cli.json`（如果你使用 [Nest 命令行工具](/cli/overview)），并添加如下 `plugins` 配置：
 
@@ -159,7 +159,7 @@ getCustomTransformers: (program: any) => ({
 }),
 ```
 
-#### SWC 构建器（SWC builder）
+## SWC 构建器（SWC builder）
 
 对于标准项目结构（非多包仓库结构（Monorepo）），如果希望在 SWC 构建器中使用 CLI 插件，需要按照[此处](/recipes/swc#type-checking)说明启用类型检查（type checking）。
 
@@ -185,7 +185,7 @@ GraphQLModule.forRoot<...>({
 }),
 ```
 
-#### 与 `ts-jest` 的集成（端到端测试）
+## 与 `ts-jest` 的集成（端到端测试）
 
 当你在启用此插件的情况下运行端到端测试（e2e tests）时，可能会遇到 schema 编译相关的问题。例如，最常见的错误之一是：
 

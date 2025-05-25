@@ -1,8 +1,8 @@
-### 会话（Session）
+# 会话（Session）
 
 **HTTP 会话（HTTP sessions）** 提供了一种在多个请求之间存储用户信息的方式，这对于 [MVC](/techniques/mvc) 应用尤其有用。
 
-#### 在 Express（默认）中使用
+## 在 Express（默认）中使用
 
 首先安装[所需依赖包](https://github.com/expressjs/session)（TypeScript 用户还需安装类型声明）：
 
@@ -59,7 +59,7 @@ findAll(@Session() session: Record<string, any>) {
 
 > info **提示** `@Session()` 装饰器从 `@nestjs/common` 包导入。
 
-#### 在 Fastify 中使用
+## 在 Fastify 中使用
 
 首先安装所需的依赖包：
 

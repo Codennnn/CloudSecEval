@@ -1,12 +1,12 @@
-### SQL（TypeORM）
+# SQL（TypeORM）
 
-##### 本章节仅适用于 TypeScript
+# 本章节仅适用于 TypeScript
 
 > **警告** 本文将介绍如何基于 **TypeORM** 包，使用自定义提供者（Custom Provider）机制从零创建一个 `DatabaseModule`（数据库模块）。因此，该方案包含了许多额外的步骤，实际开发中你可以直接使用现成的、开箱即用的专用包 `@nestjs/typeorm` 来简化流程。了解更多信息，请参见[此处](/techniques/sql)。
 
 [TypeORM](https://github.com/typeorm/typeorm) 是目前 node.js 生态中最成熟的对象关系映射（Object Relational Mapper，ORM）工具。由于其采用 TypeScript 编写，因此与 Nest 框架配合良好。
 
-#### 快速开始
+## 快速开始
 
 要开始使用该库，首先需要安装所有必需的依赖：
 
@@ -63,7 +63,7 @@ export class DatabaseModule {}
 
 现在，我们可以通过 `@Inject()` 装饰器注入 `DATA_SOURCE` 对象。所有依赖该异步提供者的类都会在 `Promise` 被解析后再进行实例化。
 
-#### 仓储模式（Repository pattern）
+## 仓储模式（Repository pattern）
 
 [TypeORM](https://github.com/typeorm/typeorm) 支持仓储设计模式，因此每个实体（Entity）都有其专属的仓储（Repository）。这些仓储可以通过数据库连接获取。
 

@@ -1,4 +1,4 @@
-### 保持连接（Keep-Alive Connections）
+# 保持连接（Keep-Alive Connections）
 
 默认情况下，NestJS 的 HTTP 适配器会在响应结束后才关闭应用程序。但有时，这种行为并不符合预期，或者并非你所期望。某些请求可能会使用 `Connection: Keep-Alive` 请求头，这会导致连接长时间保持活动状态。
 
@@ -6,7 +6,7 @@
 
 > warning **提示** 绝大多数用户无需启用此选项。只有在你发现应用程序未能按预期退出时，才可能需要用到它。通常，这种情况会出现在你启用了 `app.enableShutdownHooks()`，并且注意到应用程序无法正常重启或退出时。最常见的场景是在开发过程中使用 `--watch` 运行 NestJS 应用程序时。
 
-#### 用法
+## 用法
 
 在你的 `main.ts` 文件中，创建 NestJS 应用程序时启用该选项：
 

@@ -1,8 +1,8 @@
-### 生命周期事件（Lifecycle Events）
+# 生命周期事件（Lifecycle Events）
 
 Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。Nest 提供了**生命周期钩子（Lifecycle Hook）**，让你能够感知关键的生命周期事件（Lifecycle Event），并在这些事件发生时执行相应操作（如在模块、提供者或控制器上运行已注册的代码）。
 
-#### 生命周期流程
+## 生命周期流程
 
 下图展示了应用程序从引导（bootstrapping）到 Node 进程退出期间，关键生命周期事件的顺序。整个生命周期可分为三个阶段：**初始化（initializing）**、**运行中（running）** 和 **终止中（terminating）**。通过理解这一生命周期，你可以合理规划模块和服务的初始化、管理活跃连接，并在收到终止信号时优雅地关闭应用。
 
@@ -10,7 +10,7 @@ Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。
   <img class="illustrative-image" src="/assets/lifecycle-events.png" />
 </figure>
 
-#### 生命周期事件
+## 生命周期事件
 
 生命周期事件会在应用程序引导和关闭时发生。Nest 会在每个生命周期事件节点，调用已注册的生命周期钩子方法（Lifecycle Hook Method），这些方法可定义在模块、提供者或控制器上（**关闭钩子（shutdown hook）** 需先启用，详见[下文](https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown)）。如上图所示，Nest 还会调用底层方法来开始监听连接或停止监听连接。
 
@@ -32,7 +32,7 @@ Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。
 
 > info **提示** `onModuleInit()` 和 `onApplicationBootstrap()` 的执行顺序直接依赖于模块导入顺序，会等待前一个钩子完成。
 
-#### 用法
+## 用法
 
 每个生命周期钩子都由一个接口（Interface）表示。接口在 TypeScript 编译后不会存在，因此技术上是可选的。但推荐实现接口，这样可以获得类型检查和编辑器工具的支持。要注册生命周期钩子，只需在类（如控制器、提供者或模块）中实现相应接口并提供对应方法。例如，若要在模块初始化期间注册方法，只需实现 `OnModuleInit` 接口并提供 `onModuleInit()` 方法，如下所示：
 
@@ -57,7 +57,7 @@ export class UsersService {
 }
 ```
 
-#### 异步初始化
+## 异步初始化
 
 `OnModuleInit` 和 `OnApplicationBootstrap` 钩子都支持异步操作（即方法可返回 `Promise`，或将方法声明为 `async` 并在方法体内 `await` 异步操作完成），从而延迟应用初始化流程。
 
@@ -72,7 +72,7 @@ async onModuleInit() {
 }
 ```
 
-#### 应用关闭
+## 应用关闭
 
 `onModuleDestroy()`、`beforeApplicationShutdown()` 和 `onApplicationShutdown()` 钩子会在终止阶段被调用（响应显式调用 `app.close()` 或收到如 SIGTERM 的系统信号，前提是已主动开启）。此特性常用于 [Kubernetes](https://kubernetes.io/) 管理容器生命周期，或 [Heroku](https://www.heroku.com/) 等平台管理 dyno 或类似服务。
 

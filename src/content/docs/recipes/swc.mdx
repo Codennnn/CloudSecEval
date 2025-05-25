@@ -1,11 +1,11 @@
-### SWC
+# SWC
 
 [SWC](https://swc.rs/)（Speedy Web Compiler）是一个可扩展的、基于 Rust 的平台，可用于代码编译和打包。
 在 Nest 命令行工具（Nest CLI）中使用 SWC，可以极大提升开发效率，是一种简单且高效的加速方式。
 
 > info **提示** SWC 的编译速度大约比默认的 TypeScript 编译器快 **20 倍**。
 
-#### 安装
+## 安装
 
 首先，安装以下开发依赖包：
 
@@ -13,7 +13,7 @@
 $ npm i --save-dev @swc/cli @swc/core
 ```
 
-#### 快速上手
+## 快速上手
 
 安装完成后，你可以通过如下方式在 Nest 命令行工具中使用 `swc` 构建器：
 
@@ -56,7 +56,7 @@ $ nest start -b swc -w
 # 或 nest start --builder swc --watch
 ```
 
-#### 类型检查
+## 类型检查
 
 SWC 本身**不执行类型检查**（与默认的 TypeScript 编译器不同），如需启用类型检查，需要使用 `--type-check` 参数：
 
@@ -75,11 +75,11 @@ $ nest start -b swc --type-check
 }
 ```
 
-#### CLI 插件（SWC）
+## CLI 插件（SWC）
 
 `--type-check` 标志会自动执行 **NestJS 命令行工具（Nest CLI）插件**，并生成一个序列化的元数据文件，应用在运行时可以加载该文件。
 
-#### SWC 配置
+## SWC 配置
 
 SWC 构建器已预先配置，以满足 NestJS 应用的需求。不过，你也可以通过在根目录下创建 `.swcrc` 文件并根据需要调整选项，来自定义配置。
 
@@ -99,7 +99,7 @@ SWC 构建器已预先配置，以满足 NestJS 应用的需求。不过，你�
 }
 ```
 
-#### 多包仓库结构（Monorepo）
+## 多包仓库结构（Monorepo）
 
 如果你的代码仓库是多包仓库结构，那么你需要配置 `webpack` 使用 `swc-loader`，而不是直接使用 `swc` 构建器。
 
@@ -131,7 +131,7 @@ module.exports = {
 }
 ```
 
-#### 多包仓库结构与 CLI 插件
+## 多包仓库结构与 CLI 插件
 
 如果你在项目中使用了 Nest 命令行工具（Nest CLI）插件，`swc-loader` 不会自动加载这些插件。你需要手动创建一个文件来加载插件。具体做法如下：
 在 `main.ts` 文件旁边新建一个 `generate-metadata.ts` 文件，内容如下：
@@ -169,7 +169,7 @@ $ npx ts-node src/generate-metadata.ts
 # 或 npx ts-node apps/{YOUR_APP}/src/generate-metadata.ts
 ```
 
-#### 常见陷阱
+## 常见陷阱
 
 如果你在应用中使用 TypeORM、MikroORM 或其他 ORM，可能会遇到循环依赖问题。SWC 对**循环依赖**的处理并不理想，因此建议采用如下解决方案：
 
@@ -207,7 +207,7 @@ export class UsersService {
 }
 ```
 
-### Jest + SWC
+# Jest + SWC
 
 要在项目中结合使用 SWC 和 Jest，需要先安装以下依赖包：
 
@@ -251,11 +251,11 @@ $ npm i --save-dev jest @swc/core @swc/jest
 
 如果你的项目中使用了 NestJS 命令行工具（Nest CLI）插件，则需要手动运行 `PluginMetadataGenerator`。具体操作方法请参见[本节](/recipes/swc#monorepo-and-cli-plugins)。
 
-### Vitest
+# Vitest
 
 [Vitest](https://vitest.dev/) 是一个专为 Vite 设计的快速且轻量的测试运行器（Test Runner）。它为 NestJS 项目提供了现代、高效且易用的测试解决方案。
 
-#### 安装
+## 安装
 
 首先，安装所需的依赖包：
 
@@ -263,7 +263,7 @@ $ npm i --save-dev jest @swc/core @swc/jest
 $ npm i --save-dev vitest unplugin-swc @swc/core @vitest/coverage-v8
 ```
 
-#### 配置
+## 配置
 
 在应用根目录下创建一个 `vitest.config.ts` 配置文件（Configuration Service），内容如下：
 
@@ -334,7 +334,7 @@ export default defineConfig({
 })
 ```
 
-### 路径别名
+# 路径别名
 
 与 Jest 不同，Vitest 不会自动解析 TypeScript 的路径别名（如 `src/`）。这可能会导致测试过程中依赖解析错误。为了解决这个问题，请在你的 `vitest.config.ts` 文件中添加如下 `resolve.alias` 配置：
 
@@ -352,7 +352,7 @@ export default defineConfig({
 
 这样可以确保 Vitest 正确解析模块导入，避免因依赖缺失导致的错误。
 
-#### 更新 E2E 测试中的导入方式
+## 更新 E2E 测试中的导入方式
 
 将所有 E2E 测试中使用的 `import * as request from 'supertest'` 语句，修改为 `import request from 'supertest'`。这是因为 Vitest 在与 Vite 一起使用时，期望 supertest 采用默认导入。如果继续使用命名空间导入，可能会在该环境下出现问题。
 

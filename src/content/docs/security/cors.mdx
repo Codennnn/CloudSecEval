@@ -1,8 +1,8 @@
-### 跨源资源共享（CORS）
+# 跨源资源共享（CORS）
 
 跨源资源共享（CORS，Cross-origin resource sharing）是一种允许从其他域请求资源的机制。在底层，Nest 会根据所用平台自动使用 Express 的 [cors](https://github.com/expressjs/cors) 或 Fastify 的 [@fastify/cors](https://github.com/fastify/fastify-cors) 包。这些包提供了多种可自定义的选项，您可以根据实际需求进行配置。
 
-#### 快速上手
+## 快速上手
 
 要启用跨源资源共享，只需在 Nest 应用对象上调用 `enableCors()` 方法。
 

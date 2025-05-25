@@ -1,8 +1,8 @@
-### 标量类型（Scalar）
+# 标量类型（Scalar）
 
 GraphQL 对象类型（Object Type）具有名称和字段，但这些字段最终必须解析为具体的数据。这时就需要用到标量类型（Scalar Type）：它们代表查询的叶子节点。可以在[这里](https://graphql.org/learn/schema/#scalar-types)阅读更多相关内容。GraphQL 默认包含以下几种类型：`Int`、`Float`、`String`、`Boolean` 和 `ID`。除了这些内置类型外，你可能还需要支持自定义的原子数据类型（例如 `Date`）。
 
-#### 代码优先（Code first）
+## 代码优先（Code first）
 
 代码优先方式内置了五种标量类型，其中三种是现有 GraphQL 类型的简单别名。
 
@@ -34,7 +34,7 @@ GraphQLModule.forRoot({
 
 此外，你还可以创建自定义标量类型。
 
-#### 重写默认标量类型
+## 重写默认标量类型
 
 要为 `Date` 标量类型创建自定义实现，只需新建一个类即可。
 
@@ -79,7 +79,7 @@ export class CommonModule {}
 creationDate: Date;
 ```
 
-#### 导入自定义标量类型
+## 导入自定义标量类型
 
 要使用自定义标量类型，需要将其作为解析器（resolver）导入并注册。这里我们以 `graphql-type-json` 包为例进行演示。该 npm 包定义了一个 `JSON` GraphQL 标量类型。
 
@@ -113,7 +113,7 @@ info: JSON;
 
 如果你需要更多实用的标量类型，可以参考 [graphql-scalars](https://www.npmjs.com/package/graphql-scalars) 包。
 
-#### 创建自定义标量类型
+## 创建自定义标量类型
 
 要定义自定义标量类型，需要创建一个新的 `GraphQLScalarType` 实例。下面我们将创建一个自定义的 `UUID` 标量类型。
 
@@ -156,7 +156,7 @@ export class AppModule {}
 uuid: string;
 ```
 
-#### 模式优先（Schema first）
+## 模式优先（Schema first）
 
 要定义自定义标量类型（关于标量类型的更多内容可参考 [这里](https://www.apollographql.com/docs/graphql-tools/scalars.html)），你需要创建类型定义并实现专用的解析器。这里（与官方文档一致），我们将使用 `graphql-type-json` 包作为演示。这个 npm 包定义了一个 `JSON` GraphQL 标量类型。
 

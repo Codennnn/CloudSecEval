@@ -1,4 +1,4 @@
-### Nest CLI 和脚本
+# Nest CLI 和脚本
 
 本节将为 DevOps 人员提供关于 `nest` 命令如何与编译器和脚本协作的补充背景，帮助大家更好地管理开发环境。
 
@@ -10,27 +10,27 @@ Nest 应用本质上是一个**标准**的 TypeScript 应用，需要先编译�
 
 这一目标通过 `nest` 命令、本地安装的 TypeScript 编译器以及 `package.json` 脚本的组合实现。下文将介绍这些技术如何协同工作，帮助你理解构建/执行流程的每一步发生了什么，以及如有需要，如何自定义这些行为。
 
-#### nest 可执行文件
+## nest 可执行文件
 
 `nest` 命令是一个操作系统级别的可执行文件（即可在操作系统命令行中运行）。该命令实际上涵盖了 3 个不同的领域，具体如下。我们建议通过项目自动生成的 `package.json` 脚本来运行构建（`nest build`）和启动（`nest start`）子命令（如果你希望通过克隆仓库而不是运行 `nest new` 来开始项目，可以参考 [typescript starter](https://github.com/nestjs/typescript-starter) ）。
 
-#### 构建
+## 构建
 
 `nest build` 是对标准 `tsc` 编译器或 `swc` 编译器（用于[标准项目](https://docs.nestjs.com/cli/overview#project-structure)）的封装，或对 webpack 打包器结合 `ts-loader`（用于[多包仓库结构](https://docs.nestjs.com/cli/overview#project-structure)）的封装。它不会添加其他编译特性或步骤，唯一的额外处理是开箱即用地支持 `tsconfig-paths`。之所以存在这个命令，是因为大多数开发者，尤其是刚接触 Nest 时，并不需要调整编译器选项（如 `tsconfig.json` 文件），而这些配置有时会比较棘手。
 
 详细内容可参考 [nest build](https://docs.nestjs.com/cli/usages#nest-build) 文档。
 
-#### 启动
+## 启动
 
 `nest start` 仅仅确保项目已完成构建（与 `nest build` 相同），然后以便捷、可移植的方式调用 `node` 命令来执行已编译的应用。与构建流程类似，你可以根据需要自定义这一过程，无论是使用 `nest start` 命令及其选项，还是完全替换它。整个流程本质上就是标准的 TypeScript 应用构建与执行流程，你可以自由管理。
 
 详细内容可参考 [nest start](https://docs.nestjs.com/cli/usages#nest-start) 文档。
 
-#### 生成
+## 生成
 
 `nest generate` 命令，顾名思义，用于生成新的 Nest 项目或其中的各类组件。
 
-#### 包管理脚本
+## 包管理脚本
 
 在操作系统命令行层面运行 `nest` 命令，需要全局安装 `nest` 可执行文件。这是 npm 的标准特性，并不受 Nest 直接控制。其结果是，全局安装的 `nest` 可执行文件**不会**作为项目依赖在 `package.json` 中进行管理。例如，不同开发者可能会使用不同版本的 `nest` 可执行文件。标准的解决方案是使用包管理脚本（package scripts），这样你就可以将构建和执行步骤中用到的工具作为开发依赖进行管理。
 
@@ -54,11 +54,11 @@ $ npm run start
 
 对于大多数开发者或团队，推荐使用包管理脚本来构建和运行 Nest 项目。你可以通过选项（如 `--path`、`--webpack`、`--webpackPath`）完全自定义这些脚本的行为，或根据需要自定义 `tsc` 或 webpack 的编译器配置文件（如 `tsconfig.json`）。你也可以自由地运行完全自定义的构建流程来编译 TypeScript（甚至可以直接用 `ts-node` 执行 TypeScript 代码）。
 
-#### 向后兼容性
+## 向后兼容性
 
 由于 Nest 应用本质上是纯 TypeScript 应用，之前版本的 Nest 构建/执行脚本依然可以正常工作。你无需强制升级。你可以在准备好时选择使用新的 `nest build` 和 `nest start` 命令，也可以继续使用旧的或自定义的脚本。
 
-#### 迁移说明
+## 迁移说明
 
 虽然你无需强制更改，但如果你希望从 `tsc-watch` 或 `ts-node` 等工具迁移到新的 CLI 命令，只需全局和本地安装最新版的 `@nestjs/cli`：
 

@@ -1,8 +1,8 @@
-### Interfaces
+# Interfaces
 
 Like many type systems, GraphQL supports interfaces. An **Interface** is an abstract type that includes a certain set of fields that a type must include to implement the interface (read more [here](https://graphql.org/learn/schema/#interfaces)).
 
-#### Code first
+## Code first
 
 When using the code first approach, you define a GraphQL interface by creating an abstract class annotated with the `@InterfaceType()` decorator exported from the `@nestjs/graphql`.
 
@@ -66,7 +66,7 @@ export abstract class Book {
 }
 ```
 
-#### Interface resolvers
+## Interface resolvers
 
 So far, using interfaces, you could only share field definitions with your objects. If you also want to share the actual field resolvers implementation, you can create a dedicated interface resolver, as follows:
 
@@ -91,7 +91,7 @@ Now the `friends` field resolver is auto-registered for all object types that im
 
 > warning **Warning** This requires the `inheritResolversFromInterfaces` property set to be true in the `GraphQLModule` configuration.
 
-#### Schema first
+## Schema first
 
 To define an interface in the schema first approach, simply create a GraphQL interface with SDL.
 

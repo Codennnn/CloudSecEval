@@ -1,4 +1,4 @@
-### 适配器（Adapters）
+# 适配器（Adapters）
 
 WebSocket 模块本身与平台无关，因此你可以通过实现 `WebSocketAdapter` 接口，集成你自己的库（甚至是原生实现）。该接口要求你实现下表中描述的几个方法：
 
@@ -35,7 +35,7 @@ WebSocket 模块本身与平台无关，因此你可以通过实现 `WebSocketAd
   </tr>
 </table>
 
-#### 扩展 socket.io
+## 扩展 socket.io
 
 [socket.io](https://github.com/socketio/socket.io) 包被封装在 `IoAdapter` 类中。如果你希望增强适配器的基础功能，比如你的技术需求要求能够在多个负载均衡的 Web 服务实例之间广播事件，你可以通过继承 `IoAdapter` 并重写负责实例化新 socket.io 服务器的方法来实现。首先，我们需要安装相关依赖包。
 
@@ -83,7 +83,7 @@ await redisIoAdapter.connectToRedis()
 app.useWebSocketAdapter(redisIoAdapter)
 ```
 
-#### Ws 库（library）
+## Ws 库（library）
 
 另一个可用的适配器是 `WsAdapter`，它充当框架与高性能且经过充分测试的 [ws](https://github.com/websockets/ws) 库之间的代理。该适配器与原生浏览器 WebSocket 通信（WebSockets）完全兼容，并且速度远超 socket.io 包。不过，遗憾的是，它开箱即用的功能明显较少。但在某些场景下，你其实并不一定需要这些额外功能。
 
@@ -118,7 +118,7 @@ const wsAdapter = new WsAdapter(app, {
 
 另外，你也可以在创建适配器后，通过 `setMessageParser` 方法配置消息解析器。
 
-#### 高级用法（自定义适配器）
+## 高级用法（自定义适配器）
 
 为了演示，我们将手动集成 [ws](https://github.com/websockets/ws) 库。正如前文所述，该库的适配器已经实现，并通过 `@nestjs/platform-ws` 包中的 `WsAdapter` 类对外暴露。下面是一个简化实现的示例：
 
@@ -185,6 +185,6 @@ const app = await NestFactory.create(AppModule);
 app.useWebSocketAdapter(new WsAdapter(app));
 ```
 
-#### 示例
+## 示例
 
 一个使用 `WsAdapter` 的完整示例可在[此处](https://github.com/nestjs/nest/tree/master/sample/16-gateways-ws)查看。

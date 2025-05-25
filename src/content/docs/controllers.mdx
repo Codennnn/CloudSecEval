@@ -1,4 +1,4 @@
-### 控制器（Controller）
+# 控制器（Controller）
 
 控制器负责处理传入的 **请求（request）**，并将 **响应（response）** 发送回客户端。
 
@@ -12,7 +12,7 @@
 
 > info **提示** 如果你想快速创建带有内置 [校验（validation）](https://docs.nestjs.com/techniques/validation) 的 CRUD 控制器，可以使用 CLI 的 [CRUD 生成器（CRUD generator）](https://docs.nestjs.com/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
 
-#### 路由（Routing）
+## 路由（Routing）
 
 在下面的示例中，我们将使用 `@Controller()` 装饰器，它是定义基础控制器所 **必需** 的。我们会为其指定一个可选的路由前缀 `cats`。在 `@Controller()` 装饰器中使用路径前缀，可以帮助我们将相关路由分组，减少重复代码。例如，如果我们希望将所有与猫（cat）实体相关的路由统一在 `/cats` 路径下，只需在 `@Controller()` 装饰器中指定 `cats` 前缀，这样就无需在每个路由中重复该部分路径。
 
@@ -85,7 +85,7 @@ export class CatsController {
 
 <app-banner-devtools></app-banner-devtools>
 
-#### 请求对象（Request object）
+## 请求对象（Request object）
 
 处理器通常需要访问客户端的 **请求** 详情。Nest 提供了对底层平台（默认是 Express）[请求对象](https://expressjs.com/en/api.html#req) 的访问方式。你可以通过在处理器参数中使用 `@Req()` 装饰器让 Nest 注入该对象。
 
@@ -213,7 +213,7 @@ export class CatsController {
 
 > info **提示** 想了解如何自定义装饰器，请参见[本章节](/custom-decorators)。
 
-#### 资源（Resource）
+## 资源（Resource）
 
 前文我们定义了一个用于获取猫资源的端点（**GET** 路由）。通常我们还需要提供一个用于创建新记录的端点。下面是 **POST** 处理器的示例：
 
@@ -252,7 +252,7 @@ export class CatsController {
 
 就是这么简单。Nest 为所有标准 HTTP 方法都提供了装饰器：`@Get()`、`@Post()`、`@Put()`、`@Delete()`、`@Patch()`、`@Options()` 和 `@Head()`。此外，`@All()` 可以定义一个同时处理所有方法的端点。
 
-#### 路由通配符（Route wildcards）
+## 路由通配符（Route wildcards）
 
 NestJS 也支持基于模式的路由。例如，星号（`*`）可以作为通配符，用于匹配路径末尾的任意字符组合。如下例所示，`findAll()` 方法会匹配所有以 `abcd/` 开头的路由，无论后面跟着多少字符。
 
@@ -269,7 +269,7 @@ findAll() {
 
 当在**路由中间**使用星号时，Express 要求使用命名通配符（例如 `ab{{ '{' }}*splat&#125;cd`），而 Fastify 则完全不支持这种用法。
 
-#### 状态码（Status code）
+## 状态码（Status code）
 
 如前所述，响应的默认 **状态码（status code）** 总是 **200**，POST 请求除外（默认为 **201**）。你可以通过在处理器级别使用 `@HttpCode(...)` 装饰器轻松更改这一行为。
 
@@ -285,7 +285,7 @@ create() {
 
 有时，状态码并不是固定的，而是取决于多种因素。这种情况下，可以使用库特定的 **响应（response）**（通过 `@Res()` 注入）对象（或在出错时抛出异常）。
 
-#### 响应头（Response headers）
+## 响应头（Response headers）
 
 要指定自定义响应头，可以使用 `@Header()` 装饰器，或直接通过库特定响应对象（如 `res.header()`）设置。
 
@@ -299,7 +299,7 @@ create() {
 
 > info **提示** 需要从 `@nestjs/common` 包中引入 `Header`。
 
-#### 重定向（Redirection）
+## 重定向（Redirection）
 
 要将响应重定向到特定 URL，可以使用 `@Redirect()` 装饰器，或直接通过库特定响应对象（如 `res.redirect()`）实现。
 
@@ -324,7 +324,7 @@ getDocs(@Query('version') version) {
 }
 ```
 
-#### 路由参数（Route parameters）
+## 路由参数（Route parameters）
 
 静态路径的路由无法满足需要在请求中携带**动态数据**的场景（如 `GET /cats/1` 获取 id 为 1 的猫）。要定义带参数的路由，可以在路由路径中添加参数 **标记**，以捕获 URL 中的动态值。如下例所示，这些参数可以通过 `@Param()` 装饰器在方法参数中获取。
 
@@ -364,7 +364,7 @@ findOne(id) {
 }
 ```
 
-#### 子域名路由（Sub-domain routing）
+## 子域名路由（Sub-domain routing）
 
 `@Controller` 装饰器可以通过 `host` 选项，要求传入请求的 HTTP host 必须匹配特定值。
 
@@ -392,13 +392,13 @@ export class AccountController {
 }
 ```
 
-#### 状态共享（State sharing）
+## 状态共享（State sharing）
 
 对于来自其他编程语言的开发者来说，可能会惊讶于在 Nest 中，几乎所有内容都是在请求间共享的。这包括数据库连接池、带有全局状态的单例服务等。需要理解的是，Node.js 并不采用请求/响应多线程无状态模型（Multi-Threaded Stateless Model），即每个请求由独立线程处理。因此，在 Nest 中使用单例实例是完全**安全**的。
 
 当然，在某些特定场景下，可能需要基于请求的控制器生命周期。例如 GraphQL 应用中的每请求缓存、请求追踪或多租户实现。你可以在[这里](/fundamentals/injection-scopes)了解如何控制注入作用域。
 
-#### 异步处理（Asynchronicity）
+## 异步处理（Asynchronicity）
 
 我们热爱现代 JavaScript，尤其是其对**异步**数据处理的强调。因此，Nest 完全支持 `async` 函数。每个 `async` 函数都必须返回一个 `Promise`，这样 Nest 就能自动解析其最终值。如下例所示：
 
@@ -432,7 +432,7 @@ findAll() {
 
 两种方式都可以，你可以根据实际需求选择。
 
-#### 请求载荷（Request payloads）
+## 请求载荷（Request payloads）
 
 在前面的示例中，POST 路由处理器没有接收任何客户端参数。现在我们通过添加 `@Body()` 装饰器来实现。
 
@@ -467,7 +467,7 @@ async create(createCatDto) {
 
 > info **提示** 我们的 `ValidationPipe` 可以过滤掉不应被方法处理器接收的属性。比如在 `CreateCatDto` 示例中，白名单属性为 `name`、`age` 和 `breed`，不在白名单内的属性会被自动剔除。详细内容见[这里](https://docs.nestjs.com/techniques/validation#stripping-properties)。
 
-#### 查询参数（Query parameters）
+## 查询参数（Query parameters）
 
 在路由中处理查询参数时，可以使用 `@Query()` 装饰器从请求中提取。下面通过实际示例演示：
 
@@ -516,11 +516,11 @@ const app = await NestFactory.create<NestFastifyApplication>(
 
 > info **提示** `qs` 是一个支持嵌套和数组的查询字符串解析器。可通过 `npm install qs` 安装。
 
-#### 错误处理（Handling errors）
+## 错误处理（Handling errors）
 
 关于错误处理（如异常处理），请参见[专门章节](/exception-filters)。
 
-#### 完整资源示例（Full resource sample）
+## 完整资源示例（Full resource sample）
 
 下面的示例展示了如何使用多种装饰器创建一个基础控制器。该控制器提供了若干方法，用于访问和操作内部数据。
 
@@ -596,7 +596,7 @@ export class CatsController {
 
 > info **提示** Nest CLI 提供了生成器（schematic），可以自动创建**所有样板代码**，无需手动编写，大大提升开发体验。详细内容见[这里](/recipes/crud-generator)。
 
-#### 快速上手（Getting up and running）
+## 快速上手（Getting up and running）
 
 即使 `CatsController` 已经定义完成，Nest 也不会自动识别并创建其实例。
 
@@ -615,7 +615,7 @@ export class AppModule {}
 
 我们通过 `@Module()` 装饰器为模块类添加元数据，Nest 就能据此确定需要挂载哪些控制器。
 
-#### 库特定方式（Library-specific approach）
+## 库特定方式（Library-specific approach）
 
 前文介绍了标准的 Nest 响应处理方式。另一种方式是使用库特定的 [响应对象](https://expressjs.com/en/api.html#res)。要注入特定响应对象，可以使用 `@Res()` 装饰器。下面通过重写 `CatsController` 展示两种方式的区别：
 

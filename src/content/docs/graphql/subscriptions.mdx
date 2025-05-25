@@ -1,10 +1,10 @@
-### 订阅（Subscription）
+# 订阅（Subscription）
 
 除了通过查询（Query）获取数据和通过变更（Mutation）修改数据之外，GraphQL 规范还支持第三种操作类型，称为 `订阅（subscription）`。GraphQL 订阅是一种允许服务器主动向选择监听实时消息的客户端推送数据的机制。订阅与查询类似，都需要指定要返回给客户端的字段集合，但不同之处在于，订阅会打开一个通道，每当服务器端发生特定事件时，就会向客户端发送结果，而不是立即返回单一结果。
 
 订阅的常见用例是通知客户端某些特定事件的发生，例如新对象的创建、字段的更新等（详细说明可参考 [这里](https://www.apollographql.com/docs/react/data/subscriptions)）。
 
-#### 使用 Apollo 驱动启用订阅
+## 使用 Apollo 驱动启用订阅
 
 要启用订阅功能，需要将 `installSubscriptionHandlers` 属性设置为 `true`。
 
@@ -30,7 +30,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 > info **提示** 你也可以同时使用这两个包（`subscriptions-transport-ws` 和 `graphql-ws`），例如用于兼容旧版本。
 
-#### 代码优先（Code first）
+## 代码优先（Code first）
 
 要使用代码优先方式创建订阅（Subscription），我们需要使用 `@Subscription()` 装饰器（由 `@nestjs/graphql` 包导出）以及 `graphql-subscriptions` 包中的 `PubSub` 类。`PubSub` 提供了一个简单的**发布/订阅 API（publish/subscribe API）**。
 
@@ -74,7 +74,7 @@ subscribeToCommentAdded() {
 
 这种写法生成的 SDL 与前面的代码示例相同，但允许我们将方法名与订阅名称解耦。
 
-#### 发布事件
+## 发布事件
 
 现在，要发布事件，我们可以使用 `PubSub#publish` 方法。这个方法通常在变更操作中使用，用于在对象图的某一部分发生变化时，触发客户端的更新。例如：
 
@@ -101,7 +101,7 @@ type Subscription {
 
 这告诉我们，订阅必须返回一个顶层属性名为 `commentAdded` 的对象，并且该属性的值是一个 `Comment` 对象。需要注意的重要一点是，`PubSub#publish` 方法发布的事件负载的结构，必须与订阅期望返回的值的结构一致。因此，在上面的示例中，`pubSub.publish('commentAdded', { commentAdded: newComment })` 语句发布了一个 `commentAdded` 事件，并携带了结构正确的负载。如果这两者的结构不匹配，订阅将在 GraphQL 验证阶段失败。
 
-#### 过滤订阅事件
+## 过滤订阅事件
 
 要过滤特定事件，可以为 `filter` 属性指定一个过滤函数。该函数的作用类似于数组的 `filter` 方法。它接收两个参数：`payload`（事件负载，由事件发布者发送）和 `variables`（在订阅请求时传入的参数）。该函数返回一个布尔值，用于决定该事件是否应该发布给客户端监听者。
 
@@ -115,7 +115,7 @@ commentAdded(@Args('title') title: string) {
 }
 ```
 
-#### 修改订阅事件负载
+## 修改订阅事件负载
 
 如果需要修改发布的事件负载，可以为 `resolve` 属性指定一个函数。该函数接收事件负载（由事件发布者发送），并返回最终要传递给客户端的值。
 
@@ -159,7 +159,7 @@ commentAdded() {
 }
 ```
 
-#### 模式优先（Schema first）
+## 模式优先（Schema first）
 
 要在 Nest 中创建等效的订阅，我们需要使用 `@Subscription()` 装饰器。
 
@@ -259,7 +259,7 @@ type Subscription {
 
 至此，我们已经创建了一个 `commentAdded(title: String!): Comment` 订阅。你可以在[这里](https://github.com/nestjs/nest/blob/master/sample/12-graphql-schema-first)查看完整的示例实现。
 
-#### PubSub
+## PubSub
 
 在上文中，我们实例化了一个本地的 `PubSub` 实例。更推荐的做法是将 `PubSub` 定义为一个[提供者](/fundamentals/custom-providers)，并通过构造函数注入（使用 `@Inject()` 装饰器）。这样可以在整个应用中复用该实例。例如，可以如下定义一个提供者，然后在需要的地方注入 `'PUB_SUB'`。
 
@@ -270,7 +270,7 @@ type Subscription {
 }
 ```
 
-#### 自定义订阅服务器
+## 自定义订阅服务器
 
 如果需要自定义订阅服务器（例如更改路径），可以使用 `subscriptions` 选项属性。
 
@@ -298,7 +298,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-#### 通过 WebSocket 进行身份验证
+## 通过 WebSocket 进行身份验证
 
 你可以在 `subscriptions` 选项中指定的 `onConnect` 回调函数内，检查用户是否已通过身份验证。
 
@@ -353,7 +353,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 })
 ```
 
-#### 使用 Mercurius 驱动启用订阅
+## 使用 Mercurius 驱动启用订阅
 
 要启用订阅功能，只需将 `subscription` 属性设置为 `true`。
 
@@ -366,7 +366,7 @@ GraphQLModule.forRoot<MercuriusDriverConfig>({
 
 > info **提示** 你也可以传递 options 对象，以自定义事件发射器、验证连接等。详细内容请参阅 [这里](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)（见 `subscription` 相关内容）。
 
-#### 代码优先（Code first）
+## 代码优先（Code first）
 
 要使用代码优先方式创建订阅，我们需要用到 `@Subscription()` 装饰器（由 `@nestjs/graphql` 包导出）以及 `mercurius` 包中的 `PubSub` 类。`PubSub` 提供了简单的**发布/订阅 API**。
 
@@ -408,7 +408,7 @@ subscribeToCommentAdded(@Context('pubsub') pubSub: PubSub) {
 
 这种写法生成的 SDL 与前面的代码示例相同，但允许我们将方法名与订阅名称解耦。
 
-#### 发布事件（Publishing）
+## 发布事件（Publishing）
 
 现在，要发布事件，我们可以使用 `PubSub#publish` 方法。通常会在变更（Mutation）中使用它，以便在对象图的某部分发生变化时触发客户端更新。例如：
 
@@ -441,7 +441,7 @@ type Subscription {
 
 这表明订阅必须返回一个对象，该对象有一个顶层属性名为 `commentAdded`，其值为一个 `Comment` 对象。需要特别注意的是，`PubSub#publish` 方法发布的事件负载（payload）结构必须与订阅期望返回的值结构一致。因此，在上面的示例中，`pubSub.publish({ topic: 'commentAdded', payload: { commentAdded: newComment } })` 语句发布了一个 `commentAdded` 事件，并携带了结构正确的负载。如果这两者的结构不匹配，订阅将在 GraphQL 校验阶段失败。
 
-#### 过滤订阅事件
+## 过滤订阅事件
 
 要过滤特定事件，可以设置 `filter` 属性为一个过滤函数。该函数的作用类似于数组的 `filter` 方法。它接收两个参数：`payload`（事件发布者发送的事件负载）和 `variables`（订阅请求时传入的参数）。该函数返回一个布尔值，用于决定该事件是否应该发布给客户端监听者。
 
@@ -469,7 +469,7 @@ commentAdded(@Args('title') title: string, @Context('pubsub') pubSub: PubSub) {
 }
 ```
 
-#### 模式优先（Schema first）
+## 模式优先（Schema first）
 
 要在 Nest 中创建等效的订阅，我们需要使用 `@Subscription()` 装饰器。
 
@@ -544,7 +544,7 @@ type Subscription {
 
 至此，我们就创建了一个 `commentAdded(title: String!): Comment` 订阅。
 
-#### 发布订阅（PubSub）
+## 发布订阅（PubSub）
 
 在上面的示例中，我们使用了默认的 `PubSub` 事件发射器（[mqemitter](https://github.com/mcollina/mqemitter)）。
 在生产环境中，推荐的做法是使用 `mqemitter-redis`。当然，你也可以提供自定义的 `PubSub` 实现（详细说明请参见[这里](https://github.com/mercurius-js/mercurius/blob/master/docs/subscriptions.md)）。
@@ -561,7 +561,7 @@ GraphQLModule.forRoot<MercuriusDriverConfig>({
 })
 ```
 
-#### 通过 WebSocket 进行身份验证
+## 通过 WebSocket 进行身份验证
 
 你可以在 `subscription` 选项中指定的 `verifyClient` 回调函数内，检查用户是否已通过身份验证。
 

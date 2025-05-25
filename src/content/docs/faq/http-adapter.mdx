@@ -1,10 +1,10 @@
-### HTTP 适配器
+# HTTP 适配器
 
 有时，你可能希望在 Nest 应用上下文（ApplicationContext）内部或外部访问底层的 HTTP 服务器。
 
 每个原生（特定平台的）HTTP 服务器或库（如 Express 和 Fastify）实例都会被封装在一个**适配器**中。适配器会作为全局可用的提供者（Provider）注册，可以从应用上下文中获取，也可以注入到其他提供者中。
 
-#### 应用上下文外的获取方式
+## 应用上下文外的获取方式
 
 如果需要在应用上下文外部获取 `HttpAdapter` 的引用，可以调用 `getHttpAdapter()` 方法。
 
@@ -14,7 +14,7 @@ const app = await NestFactory.create(AppModule);
 const httpAdapter = app.getHttpAdapter();
 ```
 
-#### 作为可注入的依赖
+## 作为可注入的依赖
 
 如果需要在应用上下文内部获取 `HttpAdapterHost` 的引用，可以像注入其他提供者一样，通过构造函数注入的方式实现。
 
@@ -49,7 +49,7 @@ const httpAdapter = adapterHost.httpAdapter
 const instance = httpAdapter.getInstance()
 ```
 
-#### 监听事件（Listening event）
+## 监听事件（Listening event）
 
 如果你希望在服务器开始监听请求时执行某些操作，可以订阅 `listen$` 流，如下所示：
 

@@ -1,10 +1,10 @@
-### Mongoose（MongoDB）
+# Mongoose（MongoDB）
 
 > **警告** 本文将介绍如何基于 **Mongoose** 包，从零开始自定义组件创建一个 `DatabaseModule`。因此，这种方案会带来较多的样板代码（overhead），而这些其实可以通过官方现成的 `@nestjs/mongoose` 专用包轻松实现。建议优先使用该包，详情请参见[这里](/techniques/mongodb)。
 
 [Mongoose](https://mongoosejs.com) 是目前最流行的 [MongoDB](https://www.mongodb.org/) 对象建模工具。
 
-#### 快速开始
+## 快速开始
 
 要开始使用这个库，首先需要安装所有必需的依赖：
 
@@ -54,7 +54,7 @@ export class DatabaseModule {}
 
 现在，我们可以通过 `@Inject()` 装饰器注入 `Connection` 对象。任何依赖于 `Connection` 异步提供者的类都会在 `Promise` 被解析后再进行实例化。
 
-#### 模型注入（Model injection）
+## 模型注入（Model injection）
 
 在 Mongoose 中，一切都源自于 [Schema](https://mongoosejs.com/docs/guide.html)。我们先来定义一个 `CatSchema`：
 
@@ -182,6 +182,6 @@ export class CatsModule {}
 
 > info **提示** 不要忘记将 `CatsModule` 导入到根模块 `AppModule` 中。
 
-#### 示例
+## 示例
 
 可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/14-mongoose-base)。

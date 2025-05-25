@@ -1,4 +1,4 @@
-### 类型与参数
+# 类型与参数
 
 `SwaggerModule` 会在路由处理器（Route Handler）中查找所有的 `@Body()`、`@Query()` 和 `@Param()` 装饰器（Decorator），以生成 API 文档（API Documentation）。同时，它还会利用反射机制（Reflection）自动创建相应的模型定义。请参考以下代码示例：
 
@@ -64,7 +64,7 @@ age: number;
 age: number;
 ```
 
-#### 数组
+## 数组
 
 当属性为数组时，我们必须手动指定数组的类型，如下所示：
 
@@ -79,7 +79,7 @@ names: string[];
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### 循环依赖
+## 循环依赖
 
 当类之间存在循环依赖时，可以使用惰性函数（lazy function）为 `SwaggerModule` 提供类型信息：
 
@@ -90,7 +90,7 @@ node: Node;
 
 > info **提示** 建议使用 Swagger 插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测循环依赖。
 
-#### 泛型与接口
+## 泛型与接口
 
 由于 TypeScript 不会存储关于泛型（Generics）或接口（Interfaces）的元数据（Metadata），当你在数据传输对象中使用它们时，`SwaggerModule` 可能无法在运行时正确生成模型定义。例如，下面的代码无法被 Swagger 模块正确识别：
 
@@ -105,7 +105,7 @@ createBulk(@Body() usersDto: CreateUserDto[])
 createBulk(@Body() usersDto: CreateUserDto[])
 ```
 
-#### 枚举（Enum）
+## 枚举（Enum）
 
 要让 `SwaggerModule` 识别一个枚举（enum），我们必须在 `@ApiProperty` 装饰器中手动设置 `enum` 属性，并传入一个值数组。
 
@@ -141,7 +141,7 @@ async filterByRole(@Query('role') role: UserRole = UserRole.User) {}
   <img src="/assets/enum_query_array.gif" />
 </figure>
 
-#### 枚举 schema
+## 枚举 schema
 
 默认情况下，`enum` 属性会在 `parameter` 上添加一个原始的 [枚举（Enum）](https://swagger.io/docs/specification/data-models/enums/) 定义。
 
@@ -211,7 +211,7 @@ CatBreed:
 
 > info **提示** 任何带有 `enum` 属性的**装饰器**，同样支持 `enumName` 属性。
 
-#### 属性值示例
+## 属性值示例
 
 你可以通过 `example` 键为属性设置单个示例，示例如下：
 
@@ -236,7 +236,7 @@ breed: string;
 breed: string;
 ```
 
-#### 原始定义
+## 原始定义
 
 在某些情况下，例如深度嵌套的数组或矩阵，你可能需要手动定义类型：
 
@@ -290,7 +290,7 @@ rawDefinition: Record<string, any>;
 async create(@Body() coords: number[][]) {}
 ```
 
-#### 额外模型
+## 额外模型
 
 如果你需要定义一些不会被控制器直接引用、但希望被 Swagger 模块扫描的额外模型，可以使用 `@ApiExtraModels()` 装饰器：
 
@@ -318,7 +318,7 @@ const documentFactory = () =>
 },
 ```
 
-#### oneOf、anyOf、allOf
+## oneOf、anyOf、allOf
 
 要组合多个模式（schema），可以使用 `oneOf`、`anyOf` 或 `allOf` 关键字（[详细说明](https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/)）。
 
@@ -353,7 +353,7 @@ pets: Pet[];
 
 `Cat` 和 `Dog` 都必须通过 `@ApiExtraModels()` 装饰器（应用于类级别）声明为额外模型。
 
-#### 模式名称与描述
+## 模式名称与描述
 
 你可能已经注意到，生成的模式名称基于原始模型类的名称（例如，`CreateCatDto` 模型会生成 `CreateCatDto` 模式）。如果你希望更改模式名称，可以使用 `@ApiSchema()` 装饰器。
 

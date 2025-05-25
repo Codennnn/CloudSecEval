@@ -1,8 +1,8 @@
-### 概述
+# 概述
 
 [Nest 命令行工具（Nest CLI）](https://github.com/nestjs/nest-cli) 是一个命令行界面工具，帮助你初始化、开发并维护 Nest 应用程序。它在多个方面为你提供支持，包括项目脚手架生成、开发模式下的服务启动，以及为生产环境分发而进行的构建与打包。Nest CLI 体现了最佳实践的架构模式，鼓励开发结构良好的应用。
 
-#### 安装
+## 安装
 
 **注意**：本指南描述了使用 [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) 安装依赖包（包括 Nest 命令行工具）的方式。你也可以根据需要选择其他包管理器。使用 npm 时，有多种方式可以让操作系统命令行正确解析 `nest` CLI 可执行文件的位置。这里，我们介绍使用 `-g` 选项全局安装 `nest` 可执行文件的方法。这种方式较为方便，因此本手册默认采用全局安装的方式。需要注意的是，**任何** npm 包的全局安装都意味着你需要自行确保所用版本的正确性。此外，如果你有多个项目，每个项目都会使用**相同**版本的 CLI。一个合理的替代方案是使用 [npx](https://github.com/npm/cli/blob/latest/docs/lib/content/commands/npx.md) 工具（已内置于 npm CLI，或其他包管理器的类似功能），以确保你运行的是**受管理的版本**的 Nest CLI。建议你查阅 [npx 文档](https://github.com/npm/cli/blob/latest/docs/lib/content/commands/npx.md) 和/或咨询你的 DevOps 支持团队以获取更多信息。
 
@@ -14,7 +14,7 @@ $ npm install -g @nestjs/cli
 
 > info **提示** 你也可以使用 `npx @nestjs/cli@latest` 命令，无需全局安装 CLI。
 
-#### 基本工作流程
+## 基本工作流程
 
 安装完成后，你可以直接在操作系统命令行中通过 `nest` 可执行文件调用 CLI 命令。输入以下命令可查看所有可用的 `nest` 命令：
 
@@ -40,7 +40,7 @@ $ npm run start:dev
 
 > info **提示** 推荐使用 [SWC 构建器](/recipes/swc) 以获得更快的构建速度（比默认 TypeScript 编译器快 10 倍）。
 
-#### 项目结构
+## 项目结构
 
 当你运行 `nest new` 命令时，Nest 会通过创建一个新文件夹并填充初始文件，生成一套模板代码应用结构。你可以在这个默认结构中继续开发，按照本指南的说明添加新的组件。我们将由 `nest new` 生成的项目结构称为**标准模式**。Nest 还支持另一种用于管理多个项目和库的结构，称为**多包仓库结构（Monorepo 模式）**。
 
@@ -60,7 +60,7 @@ $ npm run start:dev
 
 如需帮助你决定采用哪种模式，请阅读 [工作空间](/cli/monorepo) 和 [库](/cli/libraries) 相关章节，获取更详细的信息。
 
-#### CLI 命令语法
+## CLI 命令语法
 
 所有 `nest` 命令都遵循相同的格式：
 
@@ -82,7 +82,7 @@ $ nest n my-nest-project -d
 
 大多数命令及部分选项都支持别名。你可以运行 `nest new --help` 查看这些选项和别名，并加深对上述结构的理解。
 
-#### 命令总览
+## 命令总览
 
 运行 `nest <command> --help` 可以查看下列任意命令的专属选项。
 
@@ -97,7 +97,7 @@ $ nest n my-nest-project -d
 | `add`      |      | 导入已打包为 **nest 库** 的库，并运行其安装原型生成器。          |
 | `info`     | `i`  | 显示已安装的 nest 包及其他有用的系统信息。                       |
 
-#### 环境要求
+## 环境要求
 
 Nest 命令行工具（Nest CLI）需要 Node.js 的 [国际化支持](https://nodejs.org/api/intl.html)（ICU），建议使用 [Node.js 官方页面](https://nodejs.org/en/download) 提供的官方二进制文件。如果你遇到与 ICU 相关的错误，请检查你的 Node.js 是否满足此要求。
 

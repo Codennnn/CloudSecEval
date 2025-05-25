@@ -1,4 +1,4 @@
-### 请求频率限制（Rate Limiting）
+# 请求频率限制（Rate Limiting）
 
 一种常见的防护应用免受暴力破解攻击的技术是**rate-limiting**。要开始使用，您需要安装 `@nestjs/throttler` 包。
 
@@ -36,7 +36,7 @@ export class AppModule {}
 }
 ```
 
-#### 多重限流定义
+## 多重限流定义
 
 有时您可能希望设置多组限流规则，例如：每秒不超过 3 次、10 秒内不超过 20 次、1 分钟内不超过 100 次。为此，您可以在数组中设置带有名称的限流选项，后续可通过 `@SkipThrottle()` 和 `@Throttle()` 装饰器引用这些选项，灵活切换限流策略。
 
@@ -66,7 +66,7 @@ export class AppModule {}
 export class AppModule {}
 ```
 
-#### 个性化定制
+## 个性化定制
 
 有时候，你可能希望将守卫（Guard）绑定到控制器或全局，但又想为某些接口禁用限流功能。此时，可以使用 `@SkipThrottle()` 装饰器（Decorator），让整个类或单个路由不受限流器（Throttler）影响。`@SkipThrottle()` 装饰器还可以接收一个以字符串为键、布尔值为值的对象参数，适用于你想排除控制器中大部分路由但不是全部，或者在有多个限流器配置时按需设置。如果不传递对象参数，默认值为 `{{ '{' }} default: true {{ '}' }}`。
 
@@ -105,7 +105,7 @@ findAll() {
 }
 ```
 
-#### 代理服务器
+## 代理服务器
 
 如果你的应用程序部署在代理服务器（proxy server）之后，务必配置 HTTP 适配器（HTTP adapter）以信任代理。你可以参考 [Express](http://expressjs.com/en/guide/behind-proxies.html) 和 [Fastify](https://www.fastify.io/docs/latest/Reference/Server/#trustproxy) 的官方文档，启用 `trust proxy` 设置。
 
@@ -155,7 +155,7 @@ export class ThrottlerBehindProxyGuard extends ThrottlerGuard {
 
 > info **提示** 你可以在 express 的 [官方文档](https://expressjs.com/en/api.html#req.ips) 和 fastify 的 [官方文档](https://www.fastify.io/docs/latest/Reference/Request/) 中查阅 `req` 请求对象（Request Object）的 API。
 
-#### WebSocket 通信
+## WebSocket 通信
 
 本模块同样支持 WebSocket 通信，但需要进行一定的类扩展。你可以通过继承 `ThrottlerGuard`（限流守卫）并重写 `handleRequest` 方法来实现，示例如下：
 
@@ -201,7 +201,7 @@ export class WsThrottlerGuard extends ThrottlerGuard {
 
 > info **提示** 如果你使用的是 `@nestjs/platform-ws` 包，可以直接使用 `client._socket.remoteAddress`。
 
-#### GraphQL 查询
+## GraphQL 查询
 
 `ThrottlerGuard` 同样可以用于处理 GraphQL 请求。依然可以扩展该守卫，不过这一次需要重写 `getRequestResponse` 方法。
 
@@ -216,7 +216,7 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 }
 ```
 
-#### 配置
+## 配置
 
 以下选项可用于传递给 `ThrottlerModule` 选项数组的对象：
 
@@ -331,7 +331,7 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
   </tbody>
 </table>
 
-#### 异步配置
+## 异步配置
 
 有时你可能希望以异步方式获取限流配置，而不是同步方式。你可以使用 `forRootAsync()` 方法，该方法支持依赖注入（Dependency Injection）和 `async` 方法。
 
@@ -371,7 +371,7 @@ export class AppModule {}
 
 只要 `ThrottlerConfigService` 实现了 `ThrottlerOptionsFactory` 接口，这种方式也是可行的。
 
-#### 存储方式
+## 存储方式
 
 内置存储是一种内存缓存（in memory cache），用于记录请求，直到它们超过全局选项中设置的 TTL 为止。你可以通过将自定义存储类传递给 `ThrottlerModule` 的 `storage` 选项，来替换默认存储，只要该类实现了 `ThrottlerStorage` 接口即可。
 
@@ -379,11 +379,11 @@ export class AppModule {}
 
 > info **注意** `ThrottlerStorage` 可从 `@nestjs/throttler` 导入。
 
-#### 时间辅助方法
+## 时间辅助方法
 
 如果你希望让时间设置更易读，`@nestjs/throttler` 提供了几个辅助方法。它导出了五个不同的时间辅助函数：`seconds`、`minutes`、`hours`、`days` 和 `weeks`。你只需调用 `seconds(5)` 或其他辅助方法，即可获得对应的毫秒数。
 
-#### 迁移指南
+## 迁移指南
 
 对于大多数用户来说，只需将你的选项包裹在一个数组中即可。
 

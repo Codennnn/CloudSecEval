@@ -1,8 +1,8 @@
-### 操作（Operations）
+# 操作（Operations）
 
 在 OpenAPI 中，路径（paths）指的是 API 暴露的端点（如 `/users` 或 `/reports/summary`），而操作（operations）则是用于操作这些路径的 HTTP 方法，例如 `GET`、`POST` 或 `DELETE`。
 
-#### 标签
+## 标签
 
 要将控制器关联到特定标签，可以使用 `@ApiTags(...tags)` 装饰器。
 
@@ -12,7 +12,7 @@
 export class CatsController {}
 ```
 
-#### 请求头
+## 请求头
 
 如果需要定义请求中期望包含的自定义请求头，可以使用 `@ApiHeader()` 装饰器。
 
@@ -25,7 +25,7 @@ export class CatsController {}
 export class CatsController {}
 ```
 
-#### 响应
+## 响应
 
 要自定义 HTTP 响应，可以使用 `@ApiResponse()` 装饰器。
 
@@ -129,7 +129,7 @@ const config = new DocumentBuilder()
   .build()
 ```
 
-#### 文件上传
+## 文件上传
 
 你可以通过结合使用 `@ApiBody` 装饰器和 `@ApiConsumes()`，为特定方法启用文件上传功能。以下是一个完整示例，演示如何使用 [文件上传](/techniques/file-upload) 技巧：
 
@@ -161,7 +161,7 @@ class FilesUploadDto {
 }
 ```
 
-#### 扩展（Extensions）
+## 扩展（Extensions）
 
 要为请求添加扩展，请使用 `@ApiExtension()` 装饰器。扩展名称必须以 `x-` 为前缀。
 
@@ -169,7 +169,7 @@ class FilesUploadDto {
 @ApiExtension('x-foo', { hello: 'world' })
 ```
 
-#### 进阶：通用 `ApiResponse`
+## 进阶：通用 `ApiResponse`
 
 通过提供 [原始定义](/openapi/types-and-parameters#raw-definitions)，我们可以为 Swagger UI 定义通用（泛型）模式。假设我们有如下的数据传输对象：
 

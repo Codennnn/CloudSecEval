@@ -1,10 +1,10 @@
-### MikroORM
+# MikroORM
 
 本教程旨在帮助用户在 Nest 中快速上手使用 MikroORM。MikroORM 是一款基于 Data Mapper、Unit of Work 和 Identity Map 设计模式的 TypeScript ORM（对象关系映射）工具，适用于 Node.js。它是 TypeORM 的优秀替代方案，从 TypeORM 迁移过来也相对容易。完整的 MikroORM 文档可参考 [官方文档](https://mikro-orm.io/docs)。
 
 > info **提示** `@mikro-orm/nestjs` 是第三方包，并非由 NestJS 核心团队维护。如遇到相关问题，请前往 [对应仓库](https://github.com/mikro-orm/nestjs) 反馈。
 
-#### 安装
+## 安装
 
 将 MikroORM 集成到 Nest 最简单的方式是通过 [`@mikro-orm/nestjs` 模块](https://github.com/mikro-orm/nestjs)。
 只需在 Nest、MikroORM 及其底层驱动的基础上安装该模块：
@@ -80,7 +80,7 @@ export class MyService {
 
 > info **提示** 请注意，`EntityManager（实体管理器）` 需要从你所用驱动的包（如 `mysql`、`sqlite`、`postgres` 等）中导入。如果你已将 `@mikro-orm/knex` 作为依赖安装，也可以直接从该包导入 `EntityManager`。
 
-#### 仓库（Repository）
+## 仓库（Repository）
 
 MikroORM 支持仓库设计模式（repository design pattern）。对于每一个实体（entity），我们都可以创建一个仓库。你可以在[这里](https://mikro-orm.io/docs/repositories)阅读关于仓库的完整文档。要定义当前作用域中需要注册哪些仓库，可以使用 `forFeature()` 方法。例如：
 
@@ -118,7 +118,7 @@ export class PhotoService {
 }
 ```
 
-#### 使用自定义仓库（Custom Repository）
+## 使用自定义仓库（Custom Repository）
 
 当使用自定义仓库时，就不再需要 `@InjectRepository()` 装饰器，因为 Nest 的依赖注入会根据类引用自动解析。
 
@@ -145,7 +145,7 @@ export class MyService {
 }
 ```
 
-#### 自动加载实体
+## 自动加载实体
 
 手动将实体添加到连接配置的 entities 数组中会非常繁琐。此外，在根模块中引用实体会打破应用的领域边界，并导致实现细节泄漏到应用的其他部分。为了解决这个问题，可以使用静态 glob 路径。
 
@@ -169,7 +169,7 @@ export class AppModule {}
 
 > info **提示** 使用 `autoLoadEntities` 对 MikroORM CLI 没有影响 —— 在这种情况下，仍然需要在 CLI 配置中完整列出所有实体。不过，CLI 配置可以使用 glob 路径，因为 CLI 不会经过 webpack 处理。
 
-#### 序列化
+## 序列化
 
 > warning **注意** MikroORM 会将每一个实体关系都包裹在 `Reference<T>` 或 `Collection<T>` 对象中，以提升类型安全性。这会导致 [Nest 内置的序列化器](/techniques/serialization) 无法识别被包裹的关系。换句话说，如果你在 HTTP 或 WebSocket 处理器中直接返回 MikroORM 实体，其所有关系字段都**不会被序列化**。
 
@@ -192,7 +192,7 @@ export class Book {
 }
 ```
 
-#### 队列中的请求作用域处理器
+## 队列中的请求作用域处理器
 
 如 [官方文档](https://mikro-orm.io/docs/identity-map) 所述，我们需要为每个请求创建一个干净的状态。通过中间件注册的 `RequestContext` 辅助工具，可以自动实现这一点。
 
@@ -214,7 +214,7 @@ export class MyService {
 
 > warning **注意** 顾名思义，这个装饰器每次都会创建新的上下文，而它的替代方案 `@EnsureRequestContext` 只会在当前不在其他上下文中时才创建。
 
-#### 测试
+## 测试
 
 `@mikro-orm/nestjs` 包提供了 `getRepositoryToken()` 函数，根据给定实体返回已准备好的令牌，方便对仓库进行模拟（mock）。
 
@@ -232,6 +232,6 @@ export class MyService {
 export class PhotoModule {}
 ```
 
-#### 示例
+## 示例
 
 可以在 [这里](https://github.com/mikro-orm/nestjs-realworld-example-app) 查看一个基于 NestJS 和 MikroORM 的真实项目示例。

@@ -1,8 +1,8 @@
-### 动态模块（Dynamic Modules）
+# 动态模块（Dynamic Modules）
 
 [模块章节](/modules) 介绍了 Nest 模块（Module）的基础知识，并简要提及了[动态模块](https://docs.nestjs.com/modules#dynamic-modules)。本章节将深入讲解动态模块。学习完本章后，你将能够很好地理解什么是动态模块，以及如何、何时使用它们。
 
-#### 简介
+## 简介
 
 在文档的 **概览** 部分，大多数应用代码示例都使用了常规的、即静态模块（Static Module）。模块用于定义一组组件，如[提供者](/providers)和[控制器](/controllers)，它们作为应用整体的一个模块化部分协同工作。模块为这些组件提供了执行上下文（Execution Context）或作用域。例如，在模块中定义的提供者对该模块的其他成员可见，无需导出即可访问。当需要让某个提供者在模块外部可见时，需先从其宿主模块导出，然后在消费模块中导入。
 
@@ -57,7 +57,7 @@ export class AuthService {
 2. 实例化 `AuthModule`，并将 `UsersModule` 导出的提供者提供给 `AuthModule` 内的组件（就像这些提供者直接在 `AuthModule` 中声明一样）。
 3. 在 `AuthService` 中注入 `UsersService` 的实例。
 
-#### 动态模块的使用场景
+## 动态模块的使用场景
 
 使用静态模块绑定时，消费模块**无法影响**宿主模块中提供者的配置方式。为什么这很重要？考虑这样一种情况：我们有一个通用模块，需要在不同场景下有不同的行为。这类似于许多系统中的"插件"概念，即通用功能在被消费前需要一些配置。
 
@@ -69,7 +69,7 @@ export class AuthService {
 
 <app-banner-devtools></app-banner-devtools>
 
-#### 配置模块示例
+## 配置模块示例
 
 本节将使用[配置章节](https://docs.nestjs.com/techniques/configuration#service)中的基础示例代码。完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)获取。
 
@@ -159,7 +159,7 @@ export class ConfigModule {
 
 不过目前我们的动态模块还没实现**可配置**的能力。接下来我们来实现这个功能。
 
-#### 模块配置
+## 模块配置
 
 要定制 `ConfigModule` 的行为，最直接的方式就是在静态 `register()` 方法中传递 `options` 对象。再看下消费模块的 `imports` 属性：
 
@@ -263,11 +263,11 @@ export class ConfigService {
 export const CONFIG_OPTIONS = 'CONFIG_OPTIONS'
 ```
 
-#### 示例
+## 示例
 
 本章完整代码示例可见[这里](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)。
 
-#### 社区命名规范
+## 社区命名规范
 
 你可能见过一些 `@nestjs/` 包中有 `forRoot`、`register`、`forFeature` 等方法，不禁好奇它们的区别。虽然没有硬性规定，但 `@nestjs/` 官方包通常遵循如下约定：
 
@@ -279,7 +279,7 @@ export const CONFIG_OPTIONS = 'CONFIG_OPTIONS'
 
 这些方法通常还有对应的异步版本，如 `registerAsync`、`forRootAsync`、`forFeatureAsync`，它们的含义类似，只是配置方式用到了 Nest 的依赖注入。
 
-#### 可配置模块构建器（ConfigurableModuleBuilder）
+## 可配置模块构建器（ConfigurableModuleBuilder）
 
 手动创建高度可配置、支持异步方法（如 `registerAsync`、`forRootAsync` 等）的动态模块对新手来说较为复杂。为此，Nest 提供了 `ConfigurableModuleBuilder` 类，能让你用极少的代码构建模块"蓝图"。
 
@@ -350,7 +350,7 @@ export class ConfigService {
 }
 ```
 
-#### 自定义方法名
+## 自定义方法名
 
 `ConfigurableModuleClass` 默认提供 `register` 及其异步版本 `registerAsync`。如需自定义方法名，可用 `ConfigurableModuleBuilder#setClassMethodName`：
 
@@ -383,7 +383,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 export class AppModule {}
 ```
 
-#### 自定义选项工厂类
+## 自定义选项工厂类
 
 由于 `registerAsync` 方法（或 `forRootAsync` 等，具体取决于配置）允许使用者传递一个用于生成模块配置的提供者定义，因此库的使用者可以提供一个类来构建配置对象。
 
@@ -422,7 +422,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 export class AppModule {}
 ```
 
-#### 额外选项
+## 额外选项
 
 有些情况下，模块可能需要额外的选项来决定其行为（比如 `isGlobal` 标志，或直接叫 `global`），但这些选项又不应该包含在 `MODULE_OPTIONS_TOKEN` 提供者中（因为它们与模块内注册的服务/提供者无关，例如 `ConfigService` 并不需要知道其宿主模块是否被注册为全局模块）。
 
@@ -471,7 +471,7 @@ export class ConfigService {
 }
 ```
 
-#### 扩展自动生成的方法
+## 扩展自动生成的方法
 
 如有需要，可以扩展自动生成的静态方法（如 `register`、`registerAsync`）：
 

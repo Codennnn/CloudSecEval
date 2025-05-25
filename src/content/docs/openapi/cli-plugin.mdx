@@ -1,10 +1,10 @@
-### CLI 插件
+# CLI 插件
 
 [TypeScript](https://www.typescriptlang.org/docs/handbook/decorators.html) 的元数据反射系统存在一些限制，例如无法确定一个类包含哪些属性，或识别某个属性是可选还是必填。不过，其中部分限制可以在编译阶段通过插件解决。Nest 提供了一个插件，用于增强 TypeScript 的编译过程，从而减少模板代码的编写量。
 
 > info **提示** 该插件为**可选使用**（opt-in）。如果你愿意，也可以手动为所有属性声明装饰器，或者只在需要的地方声明特定装饰器。
 
-#### 概述
+## 概述
 
 Swagger 插件会自动完成以下操作：
 
@@ -62,7 +62,7 @@ export class CreateUserDto {
 
 > info **提示** 插件会自动生成所有缺失的 swagger 属性，如果需要覆盖这些属性，只需通过 `@ApiProperty()` 显式设置即可。
 
-#### 注释自动提取
+## 注释自动提取
 
 启用注释自动提取功能后，CLI 插件会根据注释为属性生成描述和示例值（example）。
 
@@ -126,7 +126,7 @@ export class SomeController {
 async create(): Promise<Cat> {}
 ```
 
-#### 使用 CLI 插件
+## 使用 CLI 插件
 
 要启用该插件，请打开 `nest-cli.json`（如果你使用 [Nest 命令行工具（Nest CLI）](/cli/overview)），并添加如下 `plugins` 配置：
 
@@ -279,7 +279,7 @@ getCustomTransformers: (program: any) => ({
 }),
 ```
 
-#### SWC 构建器
+## SWC 构建器
 
 对于标准项目结构（非多包仓库结构 Monorepo），如需在 SWC 构建器中使用 CLI 插件，需要启用类型检查，具体操作请参考[此处](/recipes/swc#type-checking)。
 
@@ -303,7 +303,7 @@ await SwaggerModule.loadPluginMetadata(metadata) // <-- 在这里加载
 const document = SwaggerModule.createDocument(app, config)
 ```
 
-#### 与 `ts-jest` 集成（端到端测试 e2e tests）
+## 与 `ts-jest` 集成（端到端测试 e2e tests）
 
 在运行端到端测试时，`ts-jest` 会在内存中即时编译你的源代码文件。这意味着它不会使用 Nest 命令行工具（Nest CLI）编译器，也不会应用任何插件或执行 AST 转换。
 
@@ -361,7 +361,7 @@ module.exports.factory = (cs) => {
 }
 ```
 
-#### `jest`（端到端测试）故障排查
+## `jest`（端到端测试）故障排查
 
 如果 `jest` 没有正确应用你的配置更改，通常是因为 Jest 已经**缓存**了构建结果。要使新配置生效，你需要清除 Jest 的缓存目录。
 

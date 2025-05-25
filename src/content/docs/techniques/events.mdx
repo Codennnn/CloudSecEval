@@ -1,10 +1,10 @@
-### 事件（Events）
+# 事件（Events）
 
 [Event Emitter](https://www.npmjs.com/package/@nestjs/event-emitter) 包（`@nestjs/event-emitter`）提供了一个简单的观察者（Observer）实现，允许你订阅并监听应用中发生的各种事件。事件是一种极佳的解耦方式，因为同一个事件可以拥有多个互不依赖的监听器。
 
 `EventEmitterModule` 在内部使用了 [eventemitter2](https://github.com/EventEmitter2/EventEmitter2) 包。
 
-#### 快速开始
+## 快速开始
 
 首先，安装所需的包：
 
@@ -50,7 +50,7 @@ EventEmitterModule.forRoot({
 })
 ```
 
-#### 事件派发
+## 事件派发
 
 要派发（即触发）一个事件，首先需要通过标准的构造函数依赖注入（Dependency Injection）方式注入 `EventEmitter2`：
 
@@ -72,7 +72,7 @@ this.eventEmitter.emit(
 )
 ```
 
-#### 事件监听
+## 事件监听
 
 要声明一个事件监听器（event listener），只需在方法定义前使用 `@OnEvent()` 装饰器（Decorator），如下所示：
 
@@ -140,7 +140,7 @@ handleEverything(payload: any) {
 
 > info **提示** `EventEmitter2` 类还提供了许多用于事件交互的实用方法，如 `waitFor` 和 `onAny`。详细内容可参考 [官方文档](https://github.com/EventEmitter2/EventEmitter2)。
 
-#### 避免事件丢失
+## 避免事件丢失
 
 在 `onApplicationBootstrap` 生命周期钩子之前或期间触发的事件 —— 例如在模块构造函数或 `onModuleInit` 方法中触发的事件 —— 可能会因为 `EventSubscribersLoader` 尚未完成监听器注册而被遗漏。
 
@@ -153,6 +153,6 @@ await this.eventEmitter.emit('order.created', new OrderCreatedEvent({ orderId: 1
 
 > info **注意** 仅当在 `onApplicationBootstrap` 生命周期钩子完成之前触发事件时，才需要这样处理。
 
-#### 示例
+## 示例
 
 可用的完整示例请参见 [这里](https://github.com/nestjs/nest/tree/master/sample/30-event-emitter)。

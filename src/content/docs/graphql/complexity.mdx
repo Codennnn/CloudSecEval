@@ -1,4 +1,4 @@
-### Complexity
+# Complexity
 
 > warning **Warning** This chapter applies only to the code first approach.
 
@@ -6,7 +6,7 @@ Query complexity allows you to define how complex certain fields are, and to res
 
 The `@nestjs/graphql` package integrates very well with tools like [graphql-query-complexity](https://github.com/slicknode/graphql-query-complexity) that provides a cost analysis-based solution. With this library, you can reject queries to your GraphQL server that are deemed too costly to execute.
 
-#### Installation
+## Installation
 
 To begin using it, we first install the required dependency.
 
@@ -14,7 +14,7 @@ To begin using it, we first install the required dependency.
 $ npm install --save graphql-query-complexity
 ```
 
-#### Getting started
+## Getting started
 
 Once the installation process is complete, we can define the `ComplexityPlugin` class:
 
@@ -61,7 +61,7 @@ For demonstration purposes, we specified the maximum allowed complexity as `20`.
 
 > info **Hint** Remember to add this class to the providers array in any module.
 
-#### Field-level complexity
+## Field-level complexity
 
 With this plugin in place, we can now define the complexity for any field by specifying the `complexity` property in the options object passed into the `@Field()` decorator, as follows:
 
@@ -77,7 +77,7 @@ Alternatively, you can define the estimator function:
 title: string;
 ```
 
-#### Query/Mutation-level complexity
+## Query/Mutation-level complexity
 
 In addition, `@Query()` and `@Mutation()` decorators may have a `complexity` property specified like so:
 

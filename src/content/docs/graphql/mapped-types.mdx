@@ -1,10 +1,10 @@
-### 映射类型（Mapped types）
+# 映射类型（Mapped types）
 
 > warning **警告** 本章节仅适用于代码优先（code first）方式。
 
 在开发诸如 CRUD（创建/读取/更新/删除）等功能时，通常需要基于某个基础实体类型构建不同的变体。Nest 提供了若干实用函数，用于类型转换，使这一过程更加便捷。
 
-#### 可选类型（Partial）
+## 可选类型（Partial）
 
 在构建输入校验类型（通常称为数据传输对象（Data Transfer Object，DTO））时，通常需要基于同一个类型创建 **创建** 和 **更新** 两种变体。例如，**创建** 变体可能要求所有字段都是必填的，而 **更新** 变体则可能希望所有字段都是可选的。
 
@@ -42,7 +42,7 @@ export class UpdateUserInput extends PartialType(CreateUserInput) {}
 export class UpdateUserInput extends PartialType(User, InputType) {}
 ```
 
-#### 选择类型（Pick）
+## 选择类型（Pick）
 
 `PickType()` 工具函数可以通过从输入类型中挑选一组属性，构造出一个新的类型（类）。例如，假设我们有如下类型：
 
@@ -69,7 +69,7 @@ export class UpdateEmailInput extends PickType(CreateUserInput, ['email'] as con
 
 > info **提示** `PickType()` 工具函数需从 `@nestjs/graphql` 包中导入。
 
-#### 忽略类型（Omit）
+## 忽略类型（Omit）
 
 `OmitType()` 函数用于基于输入类型，移除指定属性后，构造出一个新的类型。例如，假设我们有如下类型：
 
@@ -96,7 +96,7 @@ export class UpdateUserInput extends OmitType(CreateUserInput, ['email'] as cons
 
 > info **提示** `OmitType()` 函数需从 `@nestjs/graphql` 包中导入。
 
-#### 交集类型（Intersection）
+## 交集类型（Intersection）
 
 `IntersectionType()` 函数可以将两个类型（类）合并为一个新的类型。例如，假设我们有如下两个类型：
 
@@ -129,7 +129,7 @@ export class UpdateUserInput extends IntersectionType(CreateUserInput, Additiona
 
 > info **提示** `IntersectionType()` 函数从 `@nestjs/graphql` 包中导入。
 
-#### 组合类型（Composition）
+## 组合类型（Composition）
 
 类型映射工具函数是可以组合使用的。例如，下面的写法会生成一个类型（类），它包含 `CreateUserInput` 类型中除 `email` 之外的所有属性，并且这些属性都变为可选：
 

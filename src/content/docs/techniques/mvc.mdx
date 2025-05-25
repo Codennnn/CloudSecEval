@@ -1,4 +1,4 @@
-### MVC 模式
+# MVC 模式
 
 Nest 默认在底层使用了 [Express](https://github.com/expressjs/express) 库。因此，所有适用于 Express 的 MVC（模型-视图-控制器）模式的用法，同样适用于 Nest。
 
@@ -57,7 +57,7 @@ bootstrap();
 
 在上述代码中，我们告知 [Express](https://github.com/expressjs/express)（Node.js 框架）：`public` 目录用于存放静态资源，`views` 目录用于存放视图模板，渲染 HTML 输出时使用 `hbs` 模板引擎。
 
-#### 模板渲染
+## 模板渲染
 
 现在，让我们创建一个 `views` 目录，并在其中添加一个 `index.hbs` 模板。在该模板中，我们将输出从控制器传递过来的 `message` ：
 
@@ -94,7 +94,7 @@ export class AppController {
 
 当应用正在运行时，打开浏览器并访问 `http://localhost:3000`，你应该可以看到 `Hello world!` 消息。
 
-#### 动态模板渲染
+## 动态模板渲染
 
 如果应用程序逻辑需要动态决定渲染哪个模板，则应使用 `@Res()` 装饰器（Decorator），并在路由处理器中传递视图名称，而不是在 `@Render()` 装饰器中指定：
 
@@ -120,11 +120,11 @@ export class AppController {
 }
 ```
 
-#### 示例
+## 示例
 
 一个可用的示例项目可在 [这里](https://github.com/nestjs/nest/tree/master/sample/15-mvc) 查看。
 
-#### 在 Fastify 中使用
+## 在 Fastify 中使用
 
 如本[章节](/techniques/performance)所述，我们可以将任何兼容的 HTTP 提供者（HTTP provider）与 Nest 一起使用。其中一个常用库就是 [Fastify](https://github.com/fastify/fastify)。要使用 Fastify 创建 MVC 应用，需要安装以下依赖包：
 
@@ -214,6 +214,6 @@ root(@Res() res: FastifyReply) {
 
 当应用正在运行时，打开浏览器并访问 `http://localhost:3000`，你应该可以看到 `Hello world!` 的消息。
 
-#### 示例
+## 示例
 
 一个可用的示例项目可在 [这里](https://github.com/nestjs/nest/tree/master/sample/17-mvc-fastify) 查看。

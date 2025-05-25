@@ -1,10 +1,10 @@
-### 加密与哈希
+# 加密与哈希
 
 **加密（Encryption）** 是对信息进行编码的过程。该过程会将原始信息（明文，plaintext）转换为另一种形式，即密文（ciphertext）。理想情况下，只有被授权的用户才能将密文解码回明文，从而访问原始信息。加密本身并不能阻止信息被拦截，但可以让潜在的拦截者无法理解内容。加密是一个双向过程；被加密的信息可以通过正确的密钥解密。
 
 **哈希（Hashing）** 是将给定数据通过哈希函数（hash function）转换为另一个值的过程。哈希函数会根据数学算法生成新的值。哈希操作完成后，理论上无法通过输出结果反推出输入内容。
 
-#### 加密
+## 加密
 
 Node.js 提供了内置的 [crypto 模块](https://nodejs.org/api/crypto.html)，你可以用它来加密和解密字符串、数字、Buffer、流等。Nest 本身没有在此模块之上额外封装其他包，以避免引入不必要的抽象。
 
@@ -35,7 +35,7 @@ const decipher = createDecipheriv('aes-256-ctr', key, iv)
 const decryptedText = Buffer.concat([decipher.update(encryptedText), decipher.final()])
 ```
 
-#### 哈希
+## 哈希
 
 对于哈希操作，我们推荐使用 [bcrypt](https://www.npmjs.com/package/bcrypt) 或 [argon2](https://www.npmjs.com/package/argon2) 这两个包。Nest 本身没有对这些模块进行额外封装，以避免引入不必要的抽象（让学习曲线更平缓）。
 

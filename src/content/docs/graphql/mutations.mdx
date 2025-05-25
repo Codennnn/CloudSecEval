@@ -1,10 +1,10 @@
-### 变更（Mutation）
+# 变更（Mutation）
 
 大多数关于 GraphQL 的讨论都集中在数据获取上，但任何完整的数据平台都需要一种修改服务端数据的方式。在 REST 中，任何请求都可能会对服务器产生副作用，但最佳实践建议我们不应在 GET 请求中修改数据。GraphQL 也类似 —— 从技术上讲，任何查询都可以实现为数据写入操作。然而，和 REST 一样，推荐遵循约定：所有会导致数据写入的操作应通过 mutation（变更）显式发送（详细内容可参见 [这里](https://graphql.org/learn/queries/#mutations)）。
 
 官方 [Apollo](https://www.apollographql.com/docs/graphql-tools/generate-schema.html) 文档中使用了一个 `upvotePost()` 变更的示例。这个变更实现了一个方法，用于增加某个帖子（post）的 `votes` 属性值。要在 Nest 中实现类似的变更，我们将使用 `@Mutation()` 装饰器（Decorator）。
 
-#### 代码优先（Code first）
+## 代码优先（Code first）
 
 让我们为上一节中用到的 `AuthorResolver` 再添加一个方法（参见 [解析器](/graphql/resolvers)）。
 
@@ -50,7 +50,7 @@ async upvotePost(
 ) {}
 ```
 
-#### 模式优先（Schema first）
+## 模式优先（Schema first）
 
 让我们扩展上一节中使用的 `AuthorResolver`（参见 [resolvers](/graphql/resolvers)）。
 

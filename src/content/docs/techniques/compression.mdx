@@ -1,10 +1,10 @@
-### 压缩（Compression）
+# 压缩（Compression）
 
 压缩可以大幅减小响应体的体积，从而提升 Web 应用的响应速度。
 
 对于**高并发**的生产环境网站，强烈建议将压缩操作从应用服务器中剥离，通常应交由反向代理（如 Nginx）处理。在这种情况下，不应在应用中使用压缩中间件（Middleware）。
 
-#### 在 Express（默认）中使用
+## 在 Express（默认）中使用
 
 可以使用 [compression](https://github.com/expressjs/compression) 中间件包来启用 gzip 压缩。
 
@@ -23,7 +23,7 @@ import * as compression from 'compression'
 app.use(compression())
 ```
 
-#### 在 Fastify 中使用
+## 在 Fastify 中使用
 
 如果你使用的是 `FastifyAdapter`，推荐使用 [fastify-compress](https://github.com/fastify/fastify-compress)：
 

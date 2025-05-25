@@ -1,4 +1,4 @@
-### 管道（Pipe）
+# 管道（Pipe）
 
 管道是一个带有 `@Injectable()` 装饰器的类，并实现了 `PipeTransform` 接口。
 
@@ -17,7 +17,7 @@ Nest 提供了多种内置管道（Pipe），可直接使用。你也可以自�
 
 > info **提示** 管道在异常区域（exceptions zone）内运行。这意味着当管道抛出异常时，会被异常层（全局异常过滤器和当前上下文应用的 [异常过滤器](/exception-filters)）处理。由此可见，当管道抛出异常时，控制器方法不会被执行。这为在系统边界校验外部输入数据提供了最佳实践。
 
-#### 内置管道
+## 内置管道
 
 Nest 提供了以下内置管道：
 
@@ -36,7 +36,7 @@ Nest 提供了以下内置管道：
 
 下面以 `ParseIntPipe` 为例，演示**转换**场景。该管道确保方法处理器参数被转换为 JavaScript 整数（如果转换失败则抛出异常）。本章后面还会展示一个简单的自定义 `ParseIntPipe` 实现。下述用法同样适用于其他内置转换管道（如 `ParseBoolPipe`、`ParseFloatPipe`、`ParseEnumPipe`、`ParseArrayPipe`、`ParseDatePipe`、`ParseUUIDPipe`，本章统称为 `Parse*` 管道）。
 
-#### 绑定管道
+## 绑定管道
 
 要使用管道，需要将管道类的实例绑定到合适的上下文。以 `ParseIntPipe` 为例，我们希望将其绑定到某个路由处理器方法，并确保在方法调用前执行。可以通过如下方式在方法参数级别绑定管道：
 
@@ -112,7 +112,7 @@ async findOne(uuid) {
 
 > info **提示** 更多校验管道用法详见 [校验技术](/techniques/validation)。
 
-#### 自定义管道
+## 自定义管道
 
 如前所述，你可以自定义管道。虽然 Nest 已内置了强大的 `ParseIntPipe` 和 `验证管道（ValidationPipe）`，但我们还是从零实现一个简单版本，帮助理解自定义管道的构建方式。
 
@@ -189,7 +189,7 @@ export interface ArgumentMetadata {
 
 > warning **警告** TypeScript 接口在转译后会消失。因此，如果方法参数类型声明为接口而非类，`metatype` 的值会是 `Object`。
 
-#### 基于模式的校验
+## 基于模式的校验
 
 让我们让校验管道更有用些。以 `CatsController` 的 `create()` 方法为例，我们通常希望在调用服务方法前，确保请求体对象有效。
 
@@ -225,7 +225,7 @@ export class CreateCatDto {
 
 这正是管道的用武之地。下面我们来完善校验管道。
 
-#### 对象模式校验
+## 对象模式校验
 
 有多种方式可以优雅地实现对象校验，常见做法是**基于模式（schema-based）**的校验。我们以 [Zod](https://zod.dev/) 库为例，构建一个基于 Zod 的校验管道。
 
@@ -276,7 +276,7 @@ export class ZodValidationPipe {
 
 ```
 
-#### 绑定校验管道
+## 绑定校验管道
 
 前文介绍了转换管道（如 `ParseIntPipe`）的绑定方式。
 
@@ -326,7 +326,7 @@ async create(createCatDto) {
 
 > warning **警告** `zod` 库要求在 `tsconfig.json` 文件中启用 `strictNullChecks` 配置。
 
-#### 类装饰器校验器（Class validator）
+## 类装饰器校验器（Class validator）
 
 > warning **警告** 本节介绍的技术仅适用于 TypeScript，如果你的应用是用原生 JavaScript 编写，则无法使用。
 
@@ -415,7 +415,7 @@ async create(
 
 参数级管道适用于只需校验某个特定参数的场景。
 
-#### 全局作用域管道（Global scoped pipes）
+## 全局作用域管道（Global scoped pipes）
 
 由于 `ValidationPipe` 设计为通用管道，我们可以将其设置为**全局管道（global-scoped pipe）**，使其应用于整个应用的所有路由处理器。
 
@@ -453,11 +453,11 @@ export class AppModule {}
 
 > info **提示** 当使用此方法为管道执行依赖注入时，请注意，无论在哪个模块中使用此构造，管道实际上都是全局性的。应该在哪里执行此操作？选择定义管道的模块。此外，`useClass` 不是处理自定义提供程序注册的唯一方法。了解更多 [这里](/fundamentals/custom-providers)。
 
-#### 内置 ValidationPipe
+## 内置 ValidationPipe
 
 需要再次提醒的是，你无需自行实现通用的验证管道（ValidationPipe），因为 Nest 已经开箱即用地提供了 `ValidationPipe`。内置的 `ValidationPipe` 提供了比本章示例更多的选项，本章的实现仅用于演示自定义管道的基本机制。完整用法和丰富示例请参见[这里](/techniques/validation)。
 
-#### 转换（Transformation）用例
+## 转换（Transformation）用例
 
 自定义管道（Pipe）的用途不仅限于校验。在本章开头我们提到，管道还可以**转换**输入数据为期望的格式。这是因为 `transform` 方法的返回值会完全覆盖参数的原始值。
 
@@ -528,7 +528,7 @@ findOne(userEntity) {
 
 这个管道的具体实现留给读者练习。需要注意的是，和其他转换管道一样，它接收一个输入值（如 id），返回一个输出值（如 UserEntity 对象）。这样可以将样板代码从处理器中抽离到通用管道中，使代码更加声明式并遵循 [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) 原则。
 
-#### 提供默认值
+## 提供默认值
 
 `Parse*` 管道要求参数值必须已定义。如果收到 `null` 或 `undefined`，会抛出异常。为了让接口能够处理缺失的查询参数值，我们需要在 `Parse*` 管道处理前注入一个默认值。`DefaultValuePipe` 就是为此设计的。只需在 `@Query()` 装饰器中，将 `DefaultValuePipe` 实例放在对应的 `Parse*` 管道之前即可，如下所示：
 

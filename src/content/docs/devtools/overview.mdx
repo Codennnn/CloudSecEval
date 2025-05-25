@@ -1,4 +1,4 @@
-### 概述
+# 概述
 
 > info **提示** 本章节介绍了 Nest Devtools 与 Nest 框架的集成。如果你想了解 Devtools 应用本身，请访问 [Devtools](https://devtools.nestjs.com) 官网。
 
@@ -88,7 +88,7 @@ export class AppModule {}
   ></iframe>
 </figure>
 
-#### 排查 “无法解析依赖关系” 错误
+## 排查 “无法解析依赖关系” 错误
 
 > info **注意** 此功能仅在 `@nestjs/core` >= `v9.3.10` 版本中受支持。
 
@@ -134,7 +134,7 @@ const app = await NestFactory.create(AppModule, {
 
 该依赖图展示了我们希望注入到 `TasksService` 的 `DiagnosticsService` 并未在 `TasksModule` 的上下文中找到。通常，只需将 `DiagnosticsModule` 导入到 `TasksModule` 即可解决此问题！
 
-#### 路由资源浏览器（Routes explorer）
+## 路由资源浏览器（Routes explorer）
 
 当你导航到 **路由资源浏览器（Routes explorer）** 页面时，你会看到所有已注册的入口点：
 
@@ -148,7 +148,7 @@ const app = await NestFactory.create(AppModule, {
 
 如果你点击某个具体的入口点，会显示**流程图（flow graph）**。该图展示了该入口点的执行流程（例如绑定到该路由的守卫（Guard）、拦截器（Interceptor）、管道（Pipe）等）。当你想要了解某个路由的请求/响应周期，或者排查某个守卫、拦截器或管道未被执行的原因时，这个功能非常有用。
 
-#### 沙盒（Sandbox）
+## 沙盒（Sandbox）
 
 如果你希望即时执行 JavaScript 代码并实时与应用交互，可以导航到 **沙盒（Sandbox）** 页面：
 
@@ -182,7 +182,7 @@ const app = await NestFactory.create(AppModule, {
   ></iframe>
 </figure>
 
-#### 启动性能分析器
+## 启动性能分析器
 
 要查看所有类节点（如 控制器、提供者、增强器等）及其对应的实例化耗时，请导航至 **Bootstrap 性能** 页面：
 
@@ -192,7 +192,7 @@ const app = await NestFactory.create(AppModule, {
 
 当你希望找出应用程序启动流程中最慢的部分时（例如：你想优化应用的启动时间，这对于无服务器（serverless）环境等场景至关重要），该页面会非常有用。
 
-#### 审计
+## 审计
 
 要查看自动生成的审计结果（包括错误、警告和提示），请导航至 **审计** 页面：
 
@@ -204,7 +204,7 @@ const app = await NestFactory.create(AppModule, {
 
 该页面有助于你发现应用中潜在的问题。
 
-#### 预览静态文件
+## 预览静态文件
 
 如需将序列化后的依赖关系图保存为文件，可使用如下代码：
 

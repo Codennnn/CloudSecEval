@@ -12,7 +12,7 @@ import {
 } from '~/components/ui/dropdown-menu'
 
 export function ThemeModeToggle() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
   return (
     <DropdownMenu>
@@ -24,13 +24,13 @@ export function ThemeModeToggle() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => { setTheme('light') }}>
+        <DropdownMenuItem variant={theme === 'light' ? 'default' : 'highlight'} onClick={() => { setTheme('light') }}>
           亮色
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => { setTheme('dark') }}>
+        <DropdownMenuItem variant={theme === 'dark' ? 'default' : 'highlight'} onClick={() => { setTheme('dark') }}>
           暗色
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => { setTheme('system') }}>
+        <DropdownMenuItem variant={theme === 'system' ? 'default' : 'highlight'} onClick={() => { setTheme('system') }}>
           跟随系统
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -1,4 +1,4 @@
-### 异常过滤器（Exception filters）
+# 异常过滤器（Exception filters）
 
 HTTP [异常过滤器](/exception-filters) 层与对应的微服务层唯一的区别在于，这里不应抛出 `HttpException`，而是应使用 `RpcException`。
 
@@ -17,7 +17,7 @@ throw new RpcException('Invalid credentials.')
 }
 ```
 
-#### 过滤器（Filters）
+## 过滤器（Filters）
 
 微服务异常过滤器的行为与 HTTP 异常过滤器类似，但有一个小区别：`catch()` 方法必须返回一个 `Observable`（可观察对象）。
 
@@ -64,7 +64,7 @@ accumulate(data) {
 }
 ```
 
-#### 继承（Inheritance）
+## 继承（Inheritance）
 
 通常情况下，你会根据应用需求，完全自定义异常过滤器。但在某些场景下，你可能只需要扩展**核心异常过滤器（core exception filter）**，并根据特定因素重写其行为。
 

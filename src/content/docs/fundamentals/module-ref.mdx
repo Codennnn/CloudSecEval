@@ -1,4 +1,4 @@
-### 模块引用（Module Reference）
+# 模块引用（Module Reference）
 
 Nest 提供了 `ModuleRef` 类，用于在内部的提供者（Provider）列表中导航，并通过注入令牌（Injection Token）作为查找键获取任意提供者的引用。`ModuleRef` 类还支持动态实例化静态和作用域提供者（Scoped Provider）。你可以像普通依赖注入一样，将 `ModuleRef` 注入到类中：
 
@@ -20,7 +20,7 @@ export class CatsService {
 
 > info **提示** `ModuleRef` 类需从 `@nestjs/core` 包中导入。
 
-#### 获取实例
+## 获取实例
 
 `ModuleRef` 实例（下文简称"模块引用"）拥有 `get()` 方法。默认情况下，该方法会返回在当前模块中注册并已实例化的提供者、控制器（Controller）或可注入对象（如守卫、拦截器等），查找方式为注入令牌或类名。如果未找到实例，则会抛出异常。
 
@@ -57,7 +57,7 @@ export class CatsService {
 this.moduleRef.get(Service, { strict: false })
 ```
 
-#### 解析作用域提供者
+## 解析作用域提供者
 
 如需动态解析作用域提供者（瞬态或请求作用域），请使用 `resolve()` 方法，并传入提供者的注入令牌：
 
@@ -158,7 +158,7 @@ export class CatsService {
 
 > info **提示** `ContextIdFactory` 类需从 `@nestjs/core` 包中导入。
 
-#### 注册 `REQUEST` 提供者
+## 注册 `REQUEST` 提供者
 
 手动生成的上下文标识符（通过 `ContextIdFactory.create()`）代表的依赖注入子树中，`REQUEST` 提供者为 `undefined`，因为它们并非由 Nest 依赖注入系统自动实例化和管理。
 
@@ -169,7 +169,7 @@ const contextId = ContextIdFactory.create();
 this.moduleRef.registerRequestByContextId(/* YOUR_REQUEST_OBJECT */, contextId);
 ```
 
-#### 获取当前子树
+## 获取当前子树
 
 有时你可能希望在**请求上下文**中解析请求作用域的提供者实例。假设 `CatsService` 是请求作用域，并且你希望解析同样为请求作用域的 `CatsRepository` 实例。为了让它们共享同一个依赖注入子树，必须获取当前的上下文标识符，而不是像上文那样新建一个。你可以通过注入请求对象（使用 `@Inject()` 装饰器）来实现：
 
@@ -200,7 +200,7 @@ const contextId = ContextIdFactory.getByRequest(this.request)
 const catsRepository = await this.moduleRef.resolve(CatsRepository, contextId)
 ```
 
-#### 动态实例化自定义类
+## 动态实例化自定义类
 
 如需动态实例化**未被注册为提供者**的类，可使用模块引用的 `create()` 方法：
 

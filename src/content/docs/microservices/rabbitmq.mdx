@@ -1,8 +1,8 @@
-### RabbitMQ（消息代理）
+# RabbitMQ（消息代理）
 
 [RabbitMQ](https://www.rabbitmq.com/) 是一个开源且轻量级的消息代理（message broker），支持多种消息协议。它可以以分布式和联邦式架构进行部署，以满足高扩展性和高可用性的需求。此外，RabbitMQ 是全球应用最广泛的消息代理，无论是初创公司还是大型企业都在使用。
 
-#### 安装
+## 安装
 
 要开始构建基于 RabbitMQ 的微服务，首先需要安装以下依赖包：
 
@@ -10,7 +10,7 @@
 $ npm i --save amqplib amqp-connection-manager
 ```
 
-#### 概述
+## 概述
 
 要使用 RabbitMQ 作为传输层（Transport Layer），请将如下 options 对象传递给 `createMicroservice()` 方法：
 
@@ -41,7 +41,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 > info **提示** `Transport` 枚举类型需从 `@nestjs/microservices` 包中导入。
 
-#### 选项
+## 选项
 
 `options` 属性是针对所选传输器特有的配置。<strong>RabbitMQ</strong> 传输器支持以下属性：
 
@@ -188,7 +188,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
   </tr>
 </table>
 
-#### 客户端（Client）
+## 客户端（Client）
 
 与其他微服务传输器类似，您有<a href="https://docs.nestjs.com/microservices/basics#client">多种方式</a>可以创建 RabbitMQ 客户端代理（ClientProxy）实例。
 
@@ -217,7 +217,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 除此之外，您还可以选择其他方式来创建客户端，例如 `ClientProxyFactory` 或 `@Client()` 装饰器。相关内容可<a href="https://docs.nestjs.com/microservices/basics#client">在此查阅</a>。
 
-#### 上下文
+## 上下文
 
 在更复杂的场景中，你可能需要访问有关传入请求的更多信息。当使用 RabbitMQ 传输层时，可以访问 `RmqContext` 对象。
 
@@ -269,7 +269,7 @@ getNotifications(data, context) {
 }
 ```
 
-#### 消息确认（Message acknowledgement）
+## 消息确认（Message acknowledgement）
 
 为了确保消息不会丢失，RabbitMQ 支持[消息确认机制](https://www.rabbitmq.com/confirms.html)。消费者会向 RabbitMQ 发送一个确认（acknowledgement），告知 RabbitMQ 某条消息已被接收和处理，RabbitMQ 可以安全地将其删除。如果消费者在未发送确认的情况下终止（如其通道关闭、连接关闭或 TCP 连接丢失），RabbitMQ 会认为该消息尚未被完整处理，并会将其重新入队。
 
@@ -308,7 +308,7 @@ getNotifications(data, context) {
 }
 ```
 
-#### 消息构建器（Record builders）
+## 消息构建器（Record builders）
 
 如需配置消息选项，可以使用 `RmqRecordBuilder` 类（注意：事件驱动流程同样适用）。例如，要设置 `headers` 和 `priority` 属性，可以使用 `setOptions` 方法，如下所示：
 
@@ -346,7 +346,7 @@ replaceEmoji(data, context) {
 }
 ```
 
-#### 实例状态更新
+## 实例状态更新
 
 要实时获取连接状态以及底层驱动实例的状态更新，可以订阅 `status` 流。该流会根据所选驱动提供特定的状态更新。以 RMQ 驱动为例，`status` 流会发出 `connected`（已连接）和 `disconnected`（已断开）事件。
 
@@ -367,7 +367,7 @@ server.status.subscribe((status: RmqStatus) => {
 });
 ```
 
-#### 监听 RabbitMQ 事件
+## 监听 RabbitMQ 事件
 
 在某些场景下，你可能希望监听微服务内部发出的事件。例如，可以监听 `error`（错误）事件，在发生错误时触发额外操作。为此，可以使用 `on()` 方法，如下所示：
 
@@ -387,7 +387,7 @@ server.on<RmqEvents>('error', (err) => {
 
 > info **提示** `RmqEvents` 类型需从 `@nestjs/microservices` 包中导入。
 
-#### 底层驱动访问
+## 底层驱动访问
 
 在更高级的用例中，你可能需要访问底层驱动实例。这在需要手动关闭连接或使用驱动特有方法等场景下非常有用。但请注意，在大多数情况下，你**无需**直接访问驱动。
 
@@ -403,7 +403,7 @@ const managerRef = this.client.unwrap<import('amqp-connection-manager').AmqpConn
 const managerRef = server.unwrap<import('amqp-connection-manager').AmqpConnectionManager>()
 ```
 
-#### 通配符
+## 通配符
 
 RabbitMQ 支持在路由键中使用通配符，从而实现灵活的消息路由。`#` 通配符可以匹配零个或多个单词，而 `*` 通配符只能匹配一个单词。
 

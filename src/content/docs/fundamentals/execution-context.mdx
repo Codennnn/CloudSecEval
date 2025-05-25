@@ -1,16 +1,16 @@
-### 执行上下文（Execution Context）
+# 执行上下文（Execution Context）
 
 Nest 提供了若干实用类，帮助开发者轻松编写可在多种应用上下文（如基于 Nest 的 HTTP 服务器、微服务（Microservices）以及 WebSocket 应用上下文）下运行的应用程序。这些工具类能够提供当前执行上下文的信息，使我们能够构建通用的 [守卫](/guards)、[异常过滤器](/exception-filters) 和 [拦截器](/interceptors)，让它们可以适配各种控制器、方法和执行环境。
 
 本章将介绍其中的两个类：`ArgumentsHost` 和 `ExecutionContext`。
 
-#### ArgumentsHost 类
+## ArgumentsHost 类
 
 `ArgumentsHost` 类提供了一组方法，用于获取传递给处理器（handler）的参数。它允许我们根据不同的上下文（如 HTTP、RPC（微服务）或 WebSocket）来获取对应的参数。框架会在需要访问参数的场景下，自动提供 `ArgumentsHost` 实例，通常以 `host` 作为参数名。例如，在 [异常过滤器](https://docs.nestjs.com/exception-filters#arguments-host) 的 `catch()` 方法中会接收到一个 `ArgumentsHost` 实例。
 
 `ArgumentsHost` 本质上是对处理器参数的抽象。例如，在 HTTP 服务器应用（使用 `@nestjs/platform-express` 时），`host` 对象封装了 Express 的 `[request, response, next]` 数组，其中 `request` 是请求对象，`response` 是响应对象，`next` 是控制请求-响应流程的函数。而在 [GraphQL](/graphql/quick-start) 应用中，`host` 对象则包含 `[root, args, context, info]` 数组。
 
-#### 当前应用上下文
+## 当前应用上下文
 
 当我们需要编写可在多种应用上下文下运行的通用 [守卫](/guards)、[异常过滤器](/exception-filters) 和 [拦截器](/interceptors) 时，需要一种方式来判断当前方法所处的应用类型。可以通过 `ArgumentsHost` 的 `getType()` 方法实现：
 
@@ -28,7 +28,7 @@ if (host.getType() === 'http') {
 
 通过获取应用类型，我们可以编写更通用的组件，如下所示。
 
-#### 处理器参数获取
+## 处理器参数获取
 
 要获取传递给处理器的参数数组，可以使用 host 对象的 `getArgs()` 方法：
 
@@ -99,7 +99,7 @@ export interface RpcArgumentsHost {
 }
 ```
 
-#### ExecutionContext 类
+## ExecutionContext 类
 
 `ExecutionContext` 继承自 `ArgumentsHost`，并在此基础上提供了更多关于当前执行流程的详细信息。与 `ArgumentsHost` 类似，Nest 会在你需要的地方自动提供 `ExecutionContext` 实例，比如 [守卫](/guards#execution-context) 的 `canActivate()` 方法和 [拦截器](/interceptors#execution-context) 的 `intercept()` 方法。它提供了如下方法：
 
@@ -127,7 +127,7 @@ const className = ctx.getClass().name // "CatsController"
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### 反射与元数据（Reflection and metadata）
+## 反射与元数据（Reflection and metadata）
 
 Nest 支持通过 `Reflector#createDecorator` 方法自定义装饰器，或通过内置的 `@SetMetadata()` 装饰器，为路由处理器附加**自定义元数据（Metadata）**。本节将对比这两种方式，并演示如何在守卫或拦截器中访问这些元数据。
 
@@ -256,7 +256,7 @@ const roles = this.reflector.getAllAndMerge(Roles, [context.getHandler(), contex
 
 这两个合并方法的第一个参数为元数据键，第二个参数为元数据目标上下文数组（即 `getHandler()` 和/或 `getClass()` 的调用结果）。
 
-#### 低阶用法（Low-level approach）
+## 低阶用法（Low-level approach）
 
 如前所述，除了使用 `Reflector#createDecorator`，你还可以用内置的 `@SetMetadata()` 装饰器为处理器附加元数据。
 

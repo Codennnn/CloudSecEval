@@ -1,8 +1,8 @@
-### 任务调度（Task scheduling）
+# 任务调度（Task scheduling）
 
 任务调度允许你按照固定的日期/时间、周期性间隔，或在指定间隔后执行任意代码（方法/函数）。在 Linux 世界中，这通常由操作系统层面的 [cron](https://en.wikipedia.org/wiki/Cron) 等软件包处理。对于 Node.js 应用，有多个软件包可以模拟类似 cron 的功能。Nest 提供了 `@nestjs/schedule` 包，该包集成了流行的 Node.js [cron](https://github.com/kelektiv/node-cron) 包。本章将介绍如何使用该包。
 
-#### 安装
+## 安装
 
 要开始使用任务调度功能，首先需要安装相关依赖。
 
@@ -27,7 +27,7 @@ export class AppModule {}
 
 调用 `.forRoot()` 方法会初始化调度器，并注册应用中所有声明式的 [定时任务（cron jobs）](techniques/task-scheduling#declarative-cron-jobs)、[超时任务（timeouts）](techniques/task-scheduling#declarative-timeouts) 和 [间隔任务（intervals）](techniques/task-scheduling#declarative-intervals)。这些任务会在 `onApplicationBootstrap` 生命周期钩子（lifecycle hook）触发时注册，确保所有模块都已加载并声明了各自的调度任务。
 
-#### 声明式定时任务（cron jobs）
+## 声明式定时任务（cron jobs）
 
 定时任务（cron job）用于自动调度执行任意函数（方法调用）。定时任务可以：
 
@@ -190,7 +190,7 @@ export class NotificationService {
 
 你可以在声明后访问和控制定时任务（cron job），也可以通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API</a> 动态创建定时任务（其 cron 表达式在运行时定义）。要通过 API 访问声明式定时任务，必须通过装饰器（Decorator）第二个参数 options 对象中的 `name` 属性为任务指定名称。
 
-#### 声明式定时任务
+## 声明式定时任务
 
 要声明某个方法以指定的（周期性）间隔运行，只需在方法定义前添加 `@Interval()` 装饰器（Decorator）。如下面所示，将间隔时间（以毫秒为单位的数字）作为参数传递给装饰器：
 
@@ -218,7 +218,7 @@ intervals），即在运行时定义定时任务的属性，并且可以**列出
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### 声明式超时任务
+## 声明式超时任务
 
 要声明某个方法在指定超时时间后（仅一次）运行，只需在方法定义前添加 `@Timeout()` 装饰器。如下所示，将相对于应用启动时间的延迟（以毫秒为单位）作为参数传递给装饰器：
 
@@ -244,11 +244,11 @@ handleTimeout() {}
 还支持**创建**动态超时任务（dynamic
 timeouts），即在运行时定义超时任务的属性，并且可以**列出和删除**这些任务。
 
-#### 动态调度模块 API
+## 动态调度模块 API
 
 `@nestjs/schedule` 模块提供了一个动态 API，支持管理声明式的 <a href="techniques/task-scheduling#declarative-cron-jobs">定时任务（cron jobs）</a>、<a href="techniques/task-scheduling#declarative-timeouts">超时（timeouts）</a> 和 <a href="techniques/task-scheduling#declarative-intervals">间隔任务（intervals）</a>。该 API 还支持在运行时动态创建和管理 **动态** 定时任务、超时和间隔任务。
 
-#### 动态定时任务（cron jobs）
+## 动态定时任务（cron jobs）
 
 你可以通过 `SchedulerRegistry` API，在代码的任意位置根据名称获取 `CronJob` 实例的引用。首先，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
@@ -336,7 +336,7 @@ getCrons() {
 
 `getCronJobs()` 方法会返回一个 `map`。在上述代码中，我们遍历该 map，并尝试访问每个 `CronJob` 的 `nextDate()` 方法。在 `CronJob` 的 API 中，如果任务已经执行完毕且没有未来的触发时间，则会抛出异常。
 
-#### 动态定时任务间隔
+## 动态定时任务间隔
 
 可以通过 `SchedulerRegistry#getInterval` 方法获取某个定时任务（interval）的引用。如前所述，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
@@ -385,7 +385,7 @@ getIntervals() {
 }
 ```
 
-#### 动态超时
+## 动态超时
 
 可以通过 `SchedulerRegistry#getTimeout` 方法获取某个超时（timeout）的引用。如前所述，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
 
@@ -434,6 +434,6 @@ getTimeouts() {
 }
 ```
 
-#### 示例
+## 示例
 
 可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/27-scheduling)。

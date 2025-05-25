@@ -1,4 +1,4 @@
-### 队列（Queues）
+# 队列（Queues）
 
 队列（Queues）是一种强大的设计模式，能够帮助你应对常见的应用扩展性和性能挑战。以下是队列可以帮助你解决的一些典型问题：
 
@@ -12,7 +12,7 @@ BullMQ 和 Bull 都使用 [Redis](https://redis.io/) 来持久化作业数据，
 
 本章将介绍 `@nestjs/bullmq` 和 `@nestjs/bull` 这两个包。我们也推荐你阅读 [BullMQ](https://docs.bullmq.io/) 和 [Bull](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md) 的官方文档，以获取更多背景信息和具体实现细节。
 
-#### BullMQ 安装
+## BullMQ 安装
 
 要开始使用 BullMQ，我们首先需要安装所需的依赖包。
 
@@ -90,7 +90,7 @@ BullModule.registerFlowProducer({
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### 命名配置
+## 命名配置
 
 如果你的队列需要连接多个不同的 Redis 实例，可以使用一种称为**命名配置（named configurations）**的技术。该特性允许你以指定的键注册多个配置，然后在队列选项中引用这些配置。
 
@@ -115,7 +115,7 @@ BullModule.registerQueue({
 })
 ```
 
-#### 生产者（Producers）
+## 生产者（Producers）
 
 作业生产者负责向队列添加作业。生产者通常是应用服务（Nest 提供者（Provider））。要向队列添加作业，首先需要像下面这样在服务中注入队列：
 
@@ -140,7 +140,7 @@ const job = await this.audioQueue.add('transcode', {
 })
 ```
 
-#### 任务选项
+## 任务选项
 
 任务（Job）可以携带额外的选项。你可以在 `Queue.add()` 方法中，将一个选项对象作为 `job` 参数之后的参数传入。常用的任务选项属性包括：
 
@@ -195,7 +195,7 @@ const job = await this.audioQueue.add(
 
 完整的选项列表请参考 API 文档：[这里](https://api.docs.bullmq.io/types/v4.JobsOptions.html) 和 [这里](https://api.docs.bullmq.io/interfaces/v4.BaseJobOptions.html)。
 
-#### 消费者（Consumer）
+## 消费者（Consumer）
 
 消费者是一个**类**，用于定义处理添加到队列中的任务（job）的方法，或监听队列上的事件，或两者兼而有之。可以使用 `@Processor()` 装饰器声明一个消费者类，示例如下：
 
@@ -271,7 +271,7 @@ export class AudioConsumer extends WorkerHost {
 
 相关内容可参考 BullMQ 文档的 [named processor](https://docs.bullmq.io/patterns/named-processor) 部分。
 
-#### 请求作用域消费者
+## 请求作用域消费者
 
 当消费者被标记为请求作用域（关于注入作用域的更多信息可参考[此处](/fundamentals/injection-scopes#provider-scope)），每个作业（job）都会专属创建该类的新实例。作业完成后，该实例会被垃圾回收。
 
@@ -292,7 +292,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 
 > info **提示** `JOB_REF` 令牌需从 `@nestjs/bullmq` 包中导入。
 
-#### 事件监听器
+## 事件监听器
 
 当队列或作业状态发生变化时，BullMQ 会生成一系列有用的事件。这些事件可以在 Worker 层通过 `@OnWorkerEvent(event)` 装饰器进行订阅，或在 Queue 层通过专用监听器类和 `@OnQueueEvent(event)` 装饰器进行订阅。
 
@@ -335,7 +335,7 @@ export class AudioEventsListener extends QueueEventsHost {
 
 你可以在 QueueEventsListener 的[官方文档](https://api.docs.bullmq.io/interfaces/v4.QueueEventsListener.html)中查看完整的事件列表及其参数。
 
-#### 队列管理
+## 队列管理
 
 队列（Queue）提供了 API，允许你执行诸如暂停、恢复、获取不同状态任务数量等管理操作。完整的队列 API 可参考 [这里](https://api.docs.bullmq.io/classes/v4.Queue.html)。你可以直接在 `Queue` 对象上调用这些方法，下面以暂停和恢复队列为例进行说明。
 
@@ -351,7 +351,7 @@ await audioQueue.pause()
 await audioQueue.resume()
 ```
 
-#### 独立进程处理
+## 独立进程处理
 
 任务处理器（Job handler）也可以在独立（fork 出的）进程中运行（[参考来源](https://docs.bullmq.io/guide/workers/sandboxed-processors)）。这样做有以下几个优点：
 
@@ -379,7 +379,7 @@ export class AppModule {}
 
 > warning **警告** 请注意，由于你的函数会在独立进程中执行，依赖注入（Dependency Injection）和 IoC 容器将不可用。这意味着你的处理器函数需要自行包含（或创建）所需的所有外部依赖实例。
 
-#### 异步配置
+## 异步配置
 
 有时你可能希望以异步方式传递 `bullmq` 选项，而不是静态配置。此时，可以使用 `forRootAsync()` 方法，该方法提供了多种处理异步配置的方式。同样地，如果你希望以异步方式传递队列选项，可以使用 `registerQueueAsync()` 方法。
 
@@ -460,7 +460,7 @@ BullModule.registerQueueAsync({
 })
 ```
 
-#### 手动注册
+## 手动注册
 
 默认情况下，`BullModule` 会在 `onModuleInit` 生命周期钩子（Lifecycle Hook）中自动注册 BullMQ 组件（队列、处理器和事件监听服务）。但在某些场景下，这种自动注册行为可能并不理想。若需禁止自动注册，可以在 `BullModule` 中启用 `manualRegistration` 选项，示例如下：
 
@@ -492,7 +492,7 @@ export class AudioService implements OnModuleInit {
 
 只有在调用了 `BullRegistrar#register` 方法后，BullMQ 组件才会生效 —— 否则不会有任何任务被处理。
 
-#### 安装 Bull
+## 安装 Bull
 
 > warning **注意** 如果你决定使用 BullMQ，请跳过本节及后续相关章节。
 
@@ -561,7 +561,7 @@ BullModule.registerQueue({
 
 <app-banner-enterprise></app-banner-enterprise>
 
-#### 命名配置
+## 命名配置
 
 如果你的队列需要连接多个 Redis 实例，可以使用一种称为**命名配置（named configurations）**的技术。该特性允许你以指定的键注册多个配置，然后可以在队列选项中引用这些配置。
 
@@ -586,7 +586,7 @@ BullModule.registerQueue({
 })
 ```
 
-#### 生产者（Producers）
+## 生产者（Producers）
 
 任务生产者（Job producers）会向队列中添加任务。生产者通常是应用服务（Nest 提供者（Provider））。要向队列添加任务，首先需要像下面这样在服务中注入队列：
 
@@ -611,7 +611,7 @@ const job = await this.audioQueue.add({
 })
 ```
 
-#### 命名任务（Named jobs）
+## 命名任务（Named jobs）
 
 任务可以拥有唯一的名称。这允许你创建专门的<a href="techniques/queues#consumers">消费者</a>，只处理具有特定名称的任务。
 
@@ -623,7 +623,7 @@ const job = await this.audioQueue.add('transcode', {
 
 > Warning **警告** 当你使用命名任务时，必须为队列中添加的每个唯一名称创建对应的处理器，否则队列会提示缺少该任务名称的处理器。更多关于消费命名任务的信息请参见<a href="techniques/queues#consumers">此处</a>。
 
-#### 任务选项
+## 任务选项
 
 任务可以携带额外的选项。你可以在 `Queue.add()` 方法中，将一个选项对象作为 `job` 参数之后的第二个参数传入。任务选项的属性包括：
 
@@ -674,7 +674,7 @@ const job = await this.audioQueue.add(
 )
 ```
 
-#### 消费者（Consumer）
+## 消费者（Consumer）
 
 消费者是一个**类**，用于定义处理添加到队列中的任务（job）的方法，或监听队列上的事件的方法，或者两者兼有。可以使用 `@Processor()` 装饰器声明一个消费者类，示例如下：
 
@@ -723,7 +723,7 @@ async transcode(job: Job<unknown>) { ... }
 
 > warning **警告** 当为同一个队列定义多个消费者时，`@Process({ concurrency: 1 })` 中的 `concurrency`（并发数）选项不会生效。最小的并发数会等于定义的消费者数量。即使 `@Process()` 处理器使用不同的 `name` 处理命名任务，这一规则同样适用。
 
-#### 请求作用域消费者
+## 请求作用域消费者
 
 当消费者被标记为请求作用域（详细了解依赖注入作用域可参考[此处](/fundamentals/injection-scopes#provider-scope)），每个任务都会专门创建该类的新实例。任务完成后，该实例会被垃圾回收机制自动销毁。
 
@@ -744,7 +744,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 
 > info **提示** `JOB_REF` 令牌需从 `@nestjs/bull` 包中导入。
 
-#### 事件监听器
+## 事件监听器
 
 当队列或任务状态发生变化时，Bull 会生成一系列有用的事件。Nest 提供了一组装饰器，用于订阅这些标准核心事件。这些装饰器由 `@nestjs/bull` 包导出。
 
@@ -933,7 +933,7 @@ async onGlobalCompleted(jobId: number, result: any) {
 
 除了这些特定的事件监听装饰器外，你还可以结合使用通用的 `@OnQueueEvent()` 装饰器和 `BullQueueEvents` 或 `BullQueueGlobalEvents` 枚举来监听事件。你可以在[这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#events)阅读更多关于事件的内容。
 
-#### 队列管理
+## 队列管理
 
 队列（Queue）提供了 API，允许你执行诸如暂停和恢复、获取不同状态下任务数量等管理操作。完整的队列 API 可参考 [这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。你可以直接在 `Queue` 对象上调用这些方法，下方以暂停/恢复为例进行演示。
 
@@ -949,7 +949,7 @@ await audioQueue.pause()
 await audioQueue.resume()
 ```
 
-#### 独立进程处理
+## 独立进程处理
 
 任务处理器（Job handler）也可以在独立（fork）进程中运行（[参考来源](https://github.com/OptimalBits/bull#separate-processes)）。这样做有以下几个优点：
 
@@ -987,7 +987,7 @@ export default function (job: Job, cb: DoneCallback) {
 }
 ```
 
-#### 异步配置
+## 异步配置
 
 有时你可能希望以异步方式（而非静态方式）传递 `bull` 选项。此时，可以使用 `forRootAsync()` 方法，该方法提供了多种处理异步配置的方式。
 
@@ -1068,6 +1068,6 @@ BullModule.registerQueueAsync({
 })
 ```
 
-#### 示例
+## 示例
 
 你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/26-queues)查看完整示例。

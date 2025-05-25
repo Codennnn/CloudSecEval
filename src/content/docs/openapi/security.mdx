@@ -1,4 +1,4 @@
-### 安全性（Security）
+# 安全性（Security）
 
 要为特定操作指定应使用哪些安全机制，可以使用 `@ApiSecurity()` 装饰器。
 
@@ -19,7 +19,7 @@ const options = new DocumentBuilder().addSecurity('basic', {
 
 部分常用的身份验证（Authentication）技术（如 `basic` 和 `bearer`）已内置，因此无需像上面那样手动定义安全机制。
 
-#### 基本身份验证（Basic authentication）
+## 基本身份验证（Basic authentication）
 
 要启用基本身份验证，可以使用 `@ApiBasicAuth()`。
 
@@ -35,7 +35,7 @@ export class CatsController {}
 const options = new DocumentBuilder().addBasicAuth()
 ```
 
-#### Bearer 身份验证（Bearer authentication）
+## Bearer 身份验证（Bearer authentication）
 
 要启用 Bearer 身份验证，可以使用 `@ApiBearerAuth()`。
 
@@ -51,7 +51,7 @@ export class CatsController {}
 const options = new DocumentBuilder().addBearerAuth()
 ```
 
-#### OAuth2 身份验证（OAuth2 authentication）
+## OAuth2 身份验证（OAuth2 authentication）
 
 要启用 OAuth2，可以使用 `@ApiOAuth2()`。
 
@@ -67,7 +67,7 @@ export class CatsController {}
 const options = new DocumentBuilder().addOAuth2()
 ```
 
-#### Cookie 身份验证（Cookie authentication）
+## Cookie 身份验证（Cookie authentication）
 
 要启用 Cookie 身份验证，可以使用 `@ApiCookieAuth()`。
 

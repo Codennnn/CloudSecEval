@@ -1,4 +1,4 @@
-### Passport（认证）
+# Passport（认证）
 
 [Passport](https://github.com/jaredhanson) 是目前社区中最流行的 Node.js 身份验证库，已经在众多生产环境应用中被广泛使用。通过 `@nestjs/passport` 模块，可以非常方便地将该库集成到 **Nest** 应用中。从整体上看，Passport 会执行以下几个主要步骤：
 
@@ -10,7 +10,7 @@ Passport 拥有丰富的 [策略（Strategy）](http://www.passportjs.org/) 生�
 
 在本章节中，我们将基于这些强大且灵活的模块，为 RESTful 接口（RESTful API）服务器实现一套完整的端到端身份验证解决方案。你可以根据本章介绍的思路，选择任意 Passport 策略，定制属于自己的身份验证方案。只需按照本章的步骤，即可构建出完整的示例。
 
-#### 身份验证需求
+## 身份验证需求
 
 让我们先明确下需求。在本例中，客户端会先通过用户名和密码进行身份验证。认证通过后，服务器会签发一个 JWT（JSON Web Token），后续请求可将该 JWT 作为 [授权头（Authorization Header）中的 Bearer Token](https://tools.ietf.org/html/rfc6750) 发送，用于证明身份。我们还会创建一个受保护的路由，仅允许携带有效 JWT 的请求访问。
 
@@ -25,7 +25,7 @@ $ npm install --save-dev @types/passport-local
 
 > warning **注意** 无论你选择哪种 Passport 策略，都必须安装 `@nestjs/passport` 和 `passport` 这两个包。然后，根据具体的身份验证策略（如 `passport-jwt` 或 `passport-local`），再安装对应的策略包。此外，建议像上面这样安装策略的类型定义包（如 `@types/passport-local`），这样在编写 TypeScript 代码时会有更好的类型提示和开发体验。
 
-#### 实现 Passport 策略
+## 实现 Passport 策略
 
 现在我们已经准备好实现身份验证功能了。我们先来概述一下实现**任意** Passport 策略的通用流程。可以将 Passport 理解为一个小型框架。它的优雅之处在于将身份验证流程抽象为几个基础步骤，开发者只需根据所选策略进行自定义。之所以称其为框架，是因为你可以通过传递自定义参数（通常为普通 JSON 对象）和自定义回调函数来配置它，Passport 会在合适的时机调用这些回调函数。`@nestjs/passport` 模块将这个框架以 Nest 风格的包进行封装，使其能够轻松集成到 Nest 应用中。下面我们会用到 `@nestjs/passport`，但首先让我们了解下**原生 Passport** 的工作方式。
 
@@ -196,7 +196,7 @@ import { UsersModule } from '../users/users.module';
 export class AuthModule {}
 ```
 
-#### 实现 Passport 本地策略
+## 实现 Passport 本地策略
 
 现在我们可以实现 Passport 的**本地身份验证策略**了。在 `auth` 文件夹下创建一个名为 `local.strategy.ts` 的文件，并添加如下代码：
 
@@ -284,7 +284,7 @@ import { LocalStrategy } from './local.strategy';
 export class AuthModule {}
 ```
 
-#### 内置 Passport 守卫（Guard）
+## 内置 Passport 守卫（Guard）
 
 <a href="guards">守卫</a> 章节介绍了守卫的主要功能：决定某个请求是否会被路由处理器（Route
 Handler）处理。这个结论依然成立，我们很快会用到这种标准能力。不过，在使用 `@nestjs/passport`
@@ -305,7 +305,7 @@ Handler）处理。这个结论依然成立，我们很快会用到这种标准�
 
 <app-banner-courses-auth></app-banner-courses-auth>
 
-#### 登录路由
+## 登录路由
 
 有了策略之后，我们现在可以实现一个最基础的 `/auth/login` 路由，并应用内置的守卫来启动 passport-local 流程。
 
@@ -372,7 +372,7 @@ async login(@Request() req) {
 }
 ```
 
-#### 注销路由
+## 注销路由
 
 要实现注销功能，我们可以创建一个额外的路由，调用 `res.logout()` 来清除用户的会话（Session）。这种方式是基于会话认证（session-based authentication）中常见的做法，但并不适用于 JWT。
 
@@ -384,7 +384,7 @@ async logout(@Request() req) {
 }
 ```
 
-#### JWT 功能
+## JWT 功能
 
 接下来我们将进入认证系统中的 JWT 部分。让我们回顾并细化一下需求：
 
@@ -585,7 +585,7 @@ $ # 返回结果 -> {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
 $ # 注意：上方 JWT 已截断
 ```
 
-#### 实现 Passport JWT
+## 实现 Passport JWT
 
 现在我们可以解决最后一个需求：通过要求请求中必须携带有效的 JWT 来保护接口。Passport 同样可以帮助我们实现这一点。它提供了用于保护 RESTful 接口的 [passport-jwt](https://github.com/mikenicholson/passport-jwt) 策略。首先，在 `auth` 文件夹下创建一个名为 `jwt.strategy.ts` 的文件，并添加如下代码：
 
@@ -710,7 +710,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class JwtAuthGuard extends AuthGuard('jwt') {}
 ```
 
-#### 实现受保护路由与 JWT 策略守卫
+## 实现受保护路由与 JWT 策略守卫
 
 现在我们可以实现受保护的路由及其相关的守卫。
 
@@ -790,7 +790,7 @@ $ # 结果 -> {"userId":1,"username":"john"}
 
 至此，我们已经完成了 JWT 身份验证的实现。JavaScript 客户端（如 Angular/React/Vue）以及其他 JavaScript 应用现在可以安全地与我们的 API 服务器进行身份验证和通信。
 
-#### 扩展守卫
+## 扩展守卫
 
 在大多数情况下，直接使用内置的 `AuthGuard` 类就已经足够了。然而，在某些场景下，你可能希望扩展默认的错误处理或身份验证逻辑。为此，你可以继承内置类，并在子类中重写相关方法。
 
@@ -822,7 +822,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 export class JwtAuthGuard extends AuthGuard(['strategy_jwt_1', 'strategy_jwt_2', '...']) { ... }
 ```
 
-#### 全局启用身份验证
+## 全局启用身份验证
 
 如果你希望绝大多数接口默认都受到保护，可以将身份验证守卫（Guard）注册为[全局守卫](/guards#binding-guards)。这样就无需在每个控制器上都使用 `@UseGuards()` 装饰器，只需为需要公开访问的路由单独标记即可。
 
@@ -882,7 +882,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 }
 ```
 
-#### 请求作用域策略
+## 请求作用域策略
 
 Passport API 的核心机制是将策略注册到全局实例。因此，策略本身并不是为依赖请求的选项或按请求动态实例化而设计的（详细说明请参见[请求作用域](/fundamentals/injection-scopes)提供者）。当你将策略配置为请求作用域时，Nest 并不会实例化它，因为它并未绑定到具体的路由上。实际上，无法物理区分每个请求应执行哪些"请求作用域"策略。
 
@@ -921,7 +921,7 @@ async validate(
 
 在上面的示例中，`resolve()` 方法会异步返回 `AuthService` 提供者的请求作用域实例（假设 `AuthService` 已被标记为请求作用域提供者）。
 
-#### 自定义 Passport
+## 自定义 Passport
 
 你可以通过 `register()` 方法传递任何标准的 Passport 自定义选项。可用的选项取决于你实现的具体策略。例如：
 
@@ -943,7 +943,7 @@ constructor(private authService: AuthService) {
 
 更多属性名称请参考官方 [Passport 网站](http://www.passportjs.org/docs/oauth/)。
 
-#### 命名策略
+## 命名策略
 
 在实现策略时，你可以通过给 `PassportStrategy` 函数传递第二个参数为其指定名称。如果不指定，每个策略会有默认名称（例如 jwt 策略默认为 'jwt'）：
 
@@ -953,7 +953,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'myjwt')
 
 之后，你可以通过装饰器 `@UseGuards(AuthGuard('myjwt'))` 来引用该策略。
 
-#### GraphQL
+## GraphQL
 
 如果你想在 [GraphQL](https://docs.nestjs.com/graphql/quick-start) 中使用 AuthGuard，需要继承内置的 `AuthGuard` 类，并重写 `getRequest()` 方法。
 

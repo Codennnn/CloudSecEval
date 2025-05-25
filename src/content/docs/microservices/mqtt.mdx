@@ -1,8 +1,8 @@
-### MQTT（消息队列遥测传输协议）
+# MQTT（消息队列遥测传输协议）
 
 [MQTT](https://mqtt.org/) 是一种开源、轻量级的消息协议，专为低延迟场景优化。该协议通过**发布/订阅（publish/subscribe）**模型，为设备间连接提供了可扩展且高性价比的解决方案。基于 MQTT 的通信系统通常由发布服务器、代理（Broker）以及一个或多个客户端组成。MQTT 专为受限设备和低带宽、高延迟或不稳定网络环境设计。
 
-#### 安装
+## 安装
 
 要开始构建基于 MQTT 的微服务，请先安装所需依赖包：
 
@@ -10,7 +10,7 @@
 $ npm i --save mqtt
 ```
 
-#### 概述
+## 概述
 
 要使用 MQTT 传输层，请将如下 options 对象传递给 `createMicroservice()` 方法：
 
@@ -33,11 +33,11 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 > info **提示** `Transport` 枚举类型需从 `@nestjs/microservices` 包中导入。
 
-#### 配置项
+## 配置项
 
 `options` 对象是针对所选传输层（Transporter）定制的。<strong>MQTT</strong> 传输层支持的属性详见[此处](https://github.com/mqttjs/MQTT.js/#mqttclientstreambuilder-options)。
 
-#### 客户端（Client）
+## 客户端（Client）
 
 与其他微服务传输器类似，你有多种方式可以创建 MQTT `ClientProxy` 实例，详见 <a href="https://docs.nestjs.com/microservices/basics#client">官方文档</a>。
 
@@ -62,7 +62,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 你也可以选择其他方式来创建客户端，例如使用 `ClientProxyFactory` 或 `@Client()` 装饰器。相关内容可在 <a href="https://docs.nestjs.com/microservices/basics#client">这里</a> 查阅。
 
-#### 上下文（Context）
+## 上下文（Context）
 
 在更复杂的场景下，你可能需要访问有关传入请求的更多信息。使用 MQTT 传输器时，可以通过 `MqttContext` 对象获取这些信息。
 
@@ -98,7 +98,7 @@ getNotifications(data, context) {
 }
 ```
 
-#### 通配符（Wildcards）
+## 通配符（Wildcards）
 
 订阅可以是某个明确的主题（topic），也可以包含通配符。MQTT 协议中有两种通配符：`+` 和 `#`。其中，`+` 是单层通配符，表示匹配单个主题层级；而 `#` 是多层通配符，可以匹配多个主题层级。
 
@@ -116,7 +116,7 @@ getTemperature(context) {
 }
 ```
 
-#### 服务质量（Quality of Service，QoS）
+## 服务质量（Quality of Service，QoS）
 
 通过 `@MessagePattern` 或 `@EventPattern` 装饰器创建的任何订阅，默认使用 QoS 0。如果需要更高的 QoS，可以在建立连接时通过 `subscribeOptions` 全局设置，如下所示：
 
@@ -145,7 +145,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 如果需要针对某个主题设置特定的 QoS，建议实现[自定义传输器](https://docs.nestjs.com/microservices/custom-transport)。
 
-#### 消息记录构建器（Record builders）
+## 消息记录构建器（Record builders）
 
 要配置消息选项（如调整 QoS 等级、设置 Retain 或 DUP 标志，或为负载添加额外属性），可以使用 `MqttRecordBuilder` 类。例如，要将 `QoS` 设置为 `2`，可以使用 `setQoS` 方法，如下所示：
 
@@ -202,7 +202,7 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices'
 export class ApiModule {}
 ```
 
-#### 实例状态更新
+## 实例状态更新
 
 要实时获取连接和底层驱动实例的状态更新，可以订阅 `status` 流。该流会提供所选驱动专属的状态更新。以 MQTT 驱动为例，`status` 流会发出 `connected`、`disconnected`、`reconnecting` 和 `closed` 事件。
 
@@ -223,7 +223,7 @@ server.status.subscribe((status: MqttStatus) => {
 });
 ```
 
-#### 监听 MQTT 事件
+## 监听 MQTT 事件
 
 在某些情况下，你可能希望监听微服务内部发出的事件。例如，可以监听 `error` 事件，在发生错误时触发额外操作。要实现这一点，可以使用 `on()` 方法，如下所示：
 
@@ -243,7 +243,7 @@ server.on<MqttEvents>('error', (err) => {
 
 > info **提示** `MqttEvents` 类型需从 `@nestjs/microservices` 包中导入。
 
-#### 访问底层驱动实例
+## 访问底层驱动实例
 
 对于更高级的用例，你可能需要访问底层驱动实例。这在需要手动关闭连接或调用驱动专有方法等场景下非常有用。但请注意，在大多数情况下，你**无需**直接访问驱动。
 

@@ -1,10 +1,10 @@
-### 依赖注入作用域（Injection scopes）
+# 依赖注入作用域（Injection scopes）
 
 对于来自不同编程语言背景的开发者来说，可能会对 Nest 中"几乎所有内容都是在所有请求间共享的"这一点感到意外。我们通常会有数据库连接池、带有全局状态的单例服务等。请记住，Node.js 并不遵循"请求/响应多线程无状态模型"，即每个请求由独立线程处理。因此，在 Nest 应用中使用单例实例是完全**安全**的。
 
 不过，在某些特殊场景下，我们可能需要基于请求的生命周期行为，例如在 GraphQL 应用中进行每请求缓存、请求追踪、多租户（multi-tenancy）等。依赖注入作用域（Injection scopes）机制可以帮助我们实现期望的提供者（Provider）生命周期行为。
 
-#### 提供者作用域（Provider scope）
+## 提供者作用域（Provider scope）
 
 一个提供者可以拥有以下几种作用域：
 
@@ -40,7 +40,7 @@
 
 > info **提示** 绝大多数场景下，推荐使用单例作用域。让提供者在不同消费者和请求间共享，可以实现实例缓存，并且只在应用启动时初始化一次。
 
-#### 用法
+## 用法
 
 可以通过在 `@Injectable()` 装饰器的 options 对象中传递 `scope` 属性来指定依赖注入作用域：
 
@@ -67,7 +67,7 @@ export class CatsService {}
 
 > warning **注意** WebSocket 网关（Gateway）不应使用请求作用域（Request-scoped）提供者，因为它们必须作为单例存在。每个网关都封装了一个真实的 socket，不能被多次实例化。类似的限制也适用于某些其他提供者，比如 [_Passport 策略_](../security/authentication#request-scoped-strategies) 或 _Cron 控制器_。
 
-#### 控制器作用域（Controller scope）
+## 控制器作用域（Controller scope）
 
 控制器（Controller）同样可以设置作用域，这一作用域会应用于该控制器中声明的所有请求处理方法。与提供者作用域类似，控制器的作用域决定了其实例的生命周期。对于请求作用域的控制器，每个入站请求都会创建一个新的控制器实例，并在请求处理完成后自动进行垃圾回收。
 
@@ -81,7 +81,7 @@ export class CatsService {}
 export class CatsController {}
 ```
 
-#### 作用域层级（Scope hierarchy）
+## 作用域层级（Scope hierarchy）
 
 `REQUEST` 作用域会沿着依赖注入链向上传递。一个依赖于请求作用域提供者的控制器自身也会变成请求作用域。
 
@@ -89,7 +89,7 @@ export class CatsController {}
 
 瞬态作用域（Transient）的依赖并不遵循上述模式。例如，如果一个单例作用域的 `DogsService` 注入了一个瞬态的 `LoggerService` 提供者，每次注入时都会获得一个全新的 `LoggerService` 实例。然而，`DogsService` 本身依然保持单例作用域，无论在何处被注入，都不会生成新的 `DogsService` 实例。如果你希望 `DogsService` 也能每次注入时都创建新实例，则需要显式将其标记为瞬态作用域（TRANSIENT）。
 
-#### 请求对象提供者（Request provider）
+## 请求对象提供者（Request provider）
 
 在基于 HTTP 服务器的应用中（例如使用 `@nestjs/platform-express` 或 `@nestjs/platform-fastify`），如果你在请求作用域的提供者中需要访问原始的请求对象，可以通过注入 REQUEST 对象来实现。
 
@@ -120,7 +120,7 @@ export class CatsService {
 
 你需要在 `GraphQLModule` 的 `context` 配置中，将 `request` 作为其属性。
 
-#### Inquirer 提供者（Inquirer provider）
+## Inquirer 提供者（Inquirer provider）
 
 If you want to get the class where a provider was constructed, for instance in logging or metrics providers, you can inject the `INQUIRER` token.
 
@@ -158,13 +158,13 @@ export class AppService {
 
 在上面的例子中，当调用 `AppService#getRoot` 时，控制台会输出：`"AppService: My name is getRoot"`。
 
-#### 性能（Performance）
+## 性能（Performance）
 
 使用请求作用域（Request-scoped）提供者会影响应用性能。尽管 Nest 尽力缓存尽可能多的元数据，但它仍然需要在每个请求中创建一个新的类实例。这将导致平均响应时间延长，并降低整体基准测试表现。除非确实需要使用请求作用域，否则强烈建议使用默认的单例作用域（Singleton scope）。
 
 > info **提示** 虽然听起来有些吓人，但合理设计的应用，即使大量使用请求作用域提供者，延迟通常也不会超过 5% 左右。
 
-#### 持久化提供者（Durable providers）
+## 持久化提供者（Durable providers）
 
 请求作用域（Request-scoped）提供者，如前文所述，可能会导致应用延迟增加。因为只要有一个请求作用域的提供者被注入到控制器实例（或更深层的依赖链中），该控制器也会变为请求作用域。这意味着每个请求都需要重新创建（实例化）控制器（以及其请求作用域的依赖），并在请求结束后进行垃圾回收。举例来说，如果有 3 万个并发请求，就会同时存在 3 万个临时的控制器实例（以及其请求作用域的依赖）。
 

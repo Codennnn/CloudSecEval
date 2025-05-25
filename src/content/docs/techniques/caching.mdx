@@ -1,8 +1,8 @@
-### 缓存（Caching）
+# 缓存（Caching）
 
 缓存是一种强大且简单的**技术手段**，可以显著提升应用程序的性能。作为临时存储层，缓存能够更快地访问常用数据，减少重复获取或计算相同信息的需求，从而带来更快的响应速度和整体效率的提升。
 
-#### 安装
+## 安装
 
 要在 Nest 中开始使用缓存功能，需要安装 `@nestjs/cache-manager` 包以及 `cache-manager` 包。
 
@@ -12,7 +12,7 @@ $ npm install @nestjs/cache-manager cache-manager
 
 默认情况下，所有内容都存储在内存中。由于 `cache-manager` 底层使用了 [Keyv](https://keyv.org/docs/)，你可以通过安装相应的包，轻松切换为更高级的存储方案（如 Redis）。后文会详细介绍相关内容。
 
-#### 内存缓存
+## 内存缓存
 
 要在应用中启用缓存，只需导入 `CacheModule` 并通过 `register()` 方法进行配置：
 
@@ -30,7 +30,7 @@ export class AppModule {}
 
 上述配置会以默认设置初始化内存缓存，让你可以立即开始缓存数据。
 
-#### 与缓存存储交互
+## 与缓存存储交互
 
 如需操作缓存管理器实例，可通过如下方式，使用 `CACHE_MANAGER` 注入令牌将其注入到你的类中：
 
@@ -80,7 +80,7 @@ await this.cacheManager.del('key')
 await this.cacheManager.clear()
 ```
 
-#### 自动缓存响应
+## 自动缓存响应
 
 > warning **警告** 在 [GraphQL](/graphql/quick-start) 应用中，拦截器会针对每个字段解析器单独执行。因此，`CacheModule`（其通过拦截器缓存响应）在此场景下无法正常工作。
 
@@ -122,7 +122,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core'
 export class AppModule {}
 ```
 
-#### 有效期（TTL）
+## 有效期（TTL）
 
 `ttl` 的默认值为 `0`，表示缓存永不过期。要自定义 [TTL（Time to live，存活时间）](https://en.wikipedia.org/wiki/Time_to_live)，可以在 `register()` 方法中通过 `ttl` 选项进行设置，如下所示：
 
@@ -132,7 +132,7 @@ CacheModule.register({
 })
 ```
 
-#### 全局使用模块
+## 全局使用模块
 
 当你希望在其他模块中使用 `CacheModule` 时，需要像导入其他 Nest 模块一样进行导入。或者，也可以通过在选项对象中设置 `isGlobal` 属性为 `true`，将其声明为[全局模块](https://docs.nestjs.com/modules#global-modules)。这样一来，只需在根模块（例如 `AppModule`）中加载一次 `CacheModule`，之后在其他模块中无需再次导入。
 
@@ -142,7 +142,7 @@ CacheModule.register({
 })
 ```
 
-#### 全局缓存重写
+## 全局缓存重写
 
 启用全局缓存后，缓存项会根据路由路径自动生成的 `CacheKey` 进行存储。你可以在每个方法级别上通过 `@CacheKey()` 和 `@CacheTTL()` 装饰器重写部分缓存设置，从而为单独的控制器方法定制缓存策略。这在使用[不同的缓存存储](https://docs.nestjs.com/techniques/caching#different-stores)时尤其有用。
 
@@ -164,7 +164,7 @@ export class AppController {
 
 `@CacheKey()` 装饰器可以单独使用，也可以与 `@CacheTTL()` 搭配使用，反之亦然。你可以只重写 `@CacheKey()` 或只重写 `@CacheTTL()`。未被装饰器重写的设置将使用全局注册时的默认值（参见[自定义缓存](https://docs.nestjs.com/techniques/caching#customize-caching)）。
 
-#### WebSocket 和微服务
+## WebSocket 和微服务
 
 你也可以将 `CacheInterceptor` 应用于 WebSocket 订阅者以及微服务（Microservices）的消息模式（无论使用哪种传输方式）。
 
@@ -208,7 +208,7 @@ handleEvent(client, data) {
 
 > info **提示** `@CacheTTL()` 装饰器可以单独使用，也可以与 `@CacheKey()` 搭配使用。
 
-#### 调整追踪方式
+## 调整追踪方式
 
 默认情况下，Nest 会使用请求 URL（在 HTTP 应用中）或缓存键（在 WebSocket 和微服务应用中，通过 `@CacheKey()` 装饰器设置）来将缓存记录与端点关联。然而，有时你可能希望基于其他因素进行追踪，例如使用 HTTP 请求头（如 `Authorization`，以便正确识别 `profile` 端点）。
 
@@ -223,7 +223,7 @@ class HttpCacheInterceptor extends CacheInterceptor {
 }
 ```
 
-#### 使用其他缓存存储
+## 使用其他缓存存储
 
 切换到不同的缓存存储非常简单。首先，安装相应的包。例如，如果你想使用 Redis，可以安装 `@keyv/redis` 包：
 
@@ -265,7 +265,7 @@ export class AppModule {}
 
 想了解更多可用存储的信息，请查阅 [Keyv 文档](https://keyv.org/docs/)。
 
-#### 异步配置
+## 异步配置
 
 有时你可能希望在运行时异步传递模块（Module）选项，而不是在编译时静态传递。在这种情况下，可以使用 `registerAsync()` 方法。该方法提供了多种方式来处理异步配置。
 
@@ -337,6 +337,6 @@ CacheModule.registerAsync({
 
 当你希望为工厂函数或类构造函数提供额外依赖时，这种方式非常有用。
 
-#### 示例
+## 示例
 
 可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/20-cache)。

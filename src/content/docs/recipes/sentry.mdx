@@ -1,8 +1,8 @@
-### Sentry
+# Sentry
 
 [Sentry](https://sentry.io) 是一个错误追踪和性能监控平台，能够帮助开发者实时发现并修复问题。本文将介绍如何将 Sentry 的 [NestJS SDK](https://docs.sentry.io/platforms/javascript/guides/nestjs/) 集成到你的 NestJS 应用中。
 
-#### 安装
+## 安装
 
 首先，安装所需依赖：
 
@@ -12,7 +12,7 @@ $ npm install --save @sentry/nestjs @sentry/profiling-node
 
 > info **提示** `@sentry/profiling-node` 是可选依赖，但推荐用于性能分析。
 
-#### 基本配置
+## 基本配置
 
 要开始使用 Sentry，需要新建一个名为 `instrument.ts` 的文件，并确保在应用中最先被引入：
 
@@ -78,7 +78,7 @@ import { AppService } from "./app.service";
 export class AppModule {}
 ```
 
-#### 异常处理
+## 异常处理
 
 如果你正在使用全局兜底异常过滤器（即通过 `app.useGlobalFilters()` 注册的过滤器，或在应用模块的 providers 中注册、且带有无参数 `@Catch()` 装饰器的过滤器），请在过滤器的 `catch()` 方法上添加 `@SentryExceptionCaptured()` 装饰器。该装饰器会将所有由全局错误过滤器接收到的未预期错误上报到 Sentry：
 
@@ -119,7 +119,7 @@ import { SentryGlobalFilter } from "@sentry/nestjs/setup";
 export class AppModule {}
 ```
 
-#### 可读性更高的堆栈追踪
+## 可读性更高的堆栈追踪
 
 根据你的项目配置，Sentry 错误中的堆栈追踪信息可能不会直接对应到你的实际代码。
 
@@ -129,7 +129,7 @@ export class AppModule {}
 npx @sentry/wizard@latest -i sourcemaps
 ```
 
-#### 测试集成效果
+## 测试集成效果
 
 为了验证 Sentry 集成是否生效，你可以添加一个测试接口并主动抛出错误：
 
@@ -142,7 +142,7 @@ getError() {
 
 访问你的应用的 `/debug-sentry` 路径，你应该能在 Sentry 控制台看到该错误。
 
-### 总结
+# 总结
 
 如需获取 Sentry NestJS SDK 的完整文档，包括高级配置选项和功能，请访问 [Sentry 官方文档](https://docs.sentry.io/platforms/javascript/guides/nestjs/)。
 

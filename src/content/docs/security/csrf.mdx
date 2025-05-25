@@ -1,8 +1,8 @@
-### CSRF 防护
+# CSRF 防护
 
 跨站请求伪造（CSRF，Cross-site request forgery，也称为 XSRF）是一种攻击方式，攻击者会以受信任用户的身份向 Web 应用发送**未授权**的指令。为防止此类攻击，你可以使用 [csrf-csrf](https://github.com/Psifi-Solutions/csrf-csrf) 包。
 
-#### 在 Express 中使用（默认）
+## 在 Express 中使用（默认）
 
 首先安装所需的依赖包：
 
@@ -27,7 +27,7 @@ const {
 app.use(doubleCsrfProtection)
 ```
 
-#### 在 Fastify 中使用
+## 在 Fastify 中使用
 
 首先安装所需的依赖包：
 

@@ -1,4 +1,4 @@
-### 文件流式传输
+# 文件流式传输
 
 > info **注意** 本章节介绍如何在 **HTTP 应用程序** 中实现文件流式传输。以下示例不适用于 GraphQL 或微服务应用。
 
@@ -17,17 +17,17 @@ export class FileController {
 
 但这样做会导致你无法使用控制器后置的拦截器逻辑。为了解决这个问题，你可以返回一个 `StreamableFile` 实例，底层框架会自动处理响应的流式传输。
 
-#### StreamableFile 类
+## StreamableFile 类
 
 `StreamableFile` 是一个用于持有待返回流的类。你可以通过向 `StreamableFile` 构造函数传入 `Buffer` 或 `Stream` 来创建新的实例。
 
 > info **提示** `StreamableFile` 类可从 `@nestjs/common` 包中导入。
 
-#### 跨平台支持
+## 跨平台支持
 
 Fastify 默认支持直接发送文件，无需调用 `stream.pipe(res)`，因此无需使用 `StreamableFile` 类。不过，Nest 在两种平台类型中都支持 `StreamableFile`，因此如果你在 Express 和 Fastify 之间切换，无需担心两者的兼容性。
 
-#### 示例
+## 示例
 
 下面是一个简单示例，演示如何将 `package.json` 作为文件返回，而不是以 JSON 格式返回。当然，这一思路同样适用于图片、文档等任意类型的文件。
 

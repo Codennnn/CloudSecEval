@@ -1,4 +1,4 @@
-### 健康检查（Healthcheck / Terminus）
+# 健康检查（Healthcheck / Terminus）
 
 Terminus 集成为你提供了 **就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查至关重要。简而言之，Web 开发中的健康检查通常指的是一个特殊的地址，例如：`https://my-website.com/health/readiness`。
 你的基础设施中的某个服务或组件（例如 [Kubernetes](https://kubernetes.io/)）会持续检查这个地址。根据对该地址发起 `GET` 请求后返回的 HTTP 状态码，服务会在收到“不健康”响应时采取相应措施。
@@ -7,7 +7,7 @@ Terminus 集成为你提供了 **就绪性/存活性（readiness/liveness）** �
 举个例子，如果你的 Web 服务器使用 MongoDB 存储数据，那么 MongoDB 是否仍在运行就是非常重要的信息。
 在这种情况下，你可以使用 `MongooseHealthIndicator`。如果配置正确（后文会详细介绍），你的健康检查地址会根据 MongoDB 是否运行返回健康或不健康的 HTTP 状态码。
 
-#### 快速开始
+## 快速开始
 
 要开始使用 `@nestjs/terminus`，我们需要安装所需的依赖包。
 
@@ -15,7 +15,7 @@ Terminus 集成为你提供了 **就绪性/存活性（readiness/liveness）** �
 $ npm install --save @nestjs/terminus
 ```
 
-#### 配置健康检查
+## 配置健康检查
 
 健康检查是由多个 **健康指示器** 组成的汇总。健康指示器会检查某个服务是否处于健康或不健康状态。如果所有分配的健康指示器都正常运行，则健康检查为通过。由于许多应用都需要类似的健康指示器，[`@nestjs/terminus`](https://github.com/nestjs/terminus) 提供了一组预定义的指示器，例如：
 
@@ -53,7 +53,7 @@ $ nest g controller health
 
 > info **提示** 强烈建议在你的应用中启用关闭钩子（Shutdown Hook）。Terminus 集成在启用后会利用此生命周期事件（Lifecycle Event）。你可以在[这里](fundamentals/lifecycle-events#application-shutdown)阅读更多关于关闭钩子的内容。
 
-#### HTTP 健康检查
+## HTTP 健康检查
 
 当我们已经安装了 `@nestjs/terminus`，导入了 `TerminusModule` 并创建了新的控制器后，就可以开始编写健康检查了。
 
@@ -160,7 +160,7 @@ export class HealthModule {}
 | `error`   | 包含所有不健康（'down'）健康指示器信息的对象。                                                                                 | `object`                             |
 | `details` | 包含所有健康指示器详细信息的对象。                                                                                             | `object`                             |
 
-##### 检查特定 HTTP 响应码
+# 检查特定 HTTP 响应码
 
 在某些情况下，你可能希望检查特定条件并验证响应。例如，假设 `https://my-external-service.com` 返回响应码 `204`。通过 `HttpHealthIndicator.responseCheck`，你可以专门检查该响应码，并将其他所有响应码视为不健康。
 
@@ -184,7 +184,7 @@ check() {
 }
 ```
 
-#### TypeOrm 健康检查指示器
+## TypeOrm 健康检查指示器
 
 Terminus 提供了为健康检查添加数据库检查的能力。要开始使用该健康检查指示器，请先阅读[数据库章节](/techniques/sql)，并确保你的应用中数据库连接已成功建立。
 
@@ -271,7 +271,7 @@ export class HealthController {
 }
 ```
 
-#### 磁盘健康指示器
+## 磁盘健康指示器
 
 使用 `DiskHealthIndicator`，我们可以检查磁盘的存储使用情况。首先，请确保在你的 `HealthController`（健康检查控制器）中注入 `DiskHealthIndicator`。下面的示例会检查路径 `/`（在 Windows 系统中可以使用 `C:\`）的存储使用情况。如果已用存储空间超过总空间的 50%，则会返回不健康的健康检查结果。
 
@@ -323,7 +323,7 @@ check() {
 }
 ```
 
-#### 内存健康指示器
+## 内存健康指示器
 
 为了确保你的进程不会超过指定的内存限制，可以使用 `MemoryHealthIndicator`。下面的示例演示了如何检查进程的堆内存（heap）。
 
@@ -383,7 +383,7 @@ check() {
 }
 ```
 
-#### 自定义健康指示器
+## 自定义健康指示器
 
 在某些情况下，`@nestjs/terminus` 提供的预定义健康指示器并不能覆盖你所有的健康检查需求。这时，你可以根据实际需要设置自定义健康指示器。
 
@@ -519,7 +519,7 @@ export class HealthController {
 }
 ```
 
-#### 日志记录
+## 日志记录
 
 Terminus 只会记录错误信息，例如当健康检查失败时。通过 `TerminusModule.forRoot()` 方法，你可以更灵活地控制错误日志的记录方式，甚至可以完全接管日志记录。
 
@@ -595,7 +595,7 @@ Terminus 允许你配置健康检查错误在日志中的展示方式。
 export class HealthModule {}
 ```
 
-#### 优雅关闭超时时间
+## 优雅关闭超时时间
 
 如果你的应用需要延迟其关闭（shutdown）过程，Terminus 可以为你处理。
 这个设置在使用如 Kubernetes 这样的编排器（orchestrator）时尤其有用。
@@ -613,6 +613,6 @@ export class HealthModule {}
 export class HealthModule {}
 ```
 
-#### 更多示例
+## 更多示例
 
 更多可用的示例请参见 [这里](https://github.com/nestjs/terminus/tree/master/sample)。

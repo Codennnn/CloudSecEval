@@ -1,4 +1,4 @@
-### 指令（Directive）
+# 指令（Directive）
 
 指令（Directive）可以附加在字段或片段包含（fragment inclusion）上，并且可以按照服务器的需求以任意方式影响查询的执行（详细内容可参考 [这里](https://graphql.org/learn/queries/#directives)）。GraphQL 规范提供了若干默认指令：
 
@@ -8,7 +8,7 @@
 
 指令是以 `@` 字符开头的标识符，后面可以跟一个命名参数列表。指令几乎可以出现在 GraphQL 查询和模式语言（schema language）的任何元素之后。
 
-#### 自定义指令（Custom directives）
+## 自定义指令（Custom directives）
 
 如果你希望 Apollo 或 Mercurius 在遇到你的自定义指令时执行特定操作，可以创建一个转换器函数（transformer function）。该函数会使用 `mapSchema` 方法遍历你的模式（如字段定义、类型定义等），并执行相应的转换。
 
@@ -51,7 +51,7 @@ GraphQLModule.forRoot({
 
 注册后，即可在模式中使用 `@upper` 指令。不过，具体如何应用该指令，取决于你采用的是“代码优先”还是“模式优先”方式。
 
-#### 代码优先（Code first）
+## 代码优先（Code first）
 
 在代码优先方式中，可以使用 `@Directive()` 装饰器来应用指令。
 
@@ -94,7 +94,7 @@ GraphQLModule.forRoot({
 
 > info **提示** `GraphQLDirective` 和 `DirectiveLocation` 都由 `graphql` 包导出。
 
-#### 模式优先（Schema first）
+## 模式优先（Schema first）
 
 在以模式优先的方法中，可以直接在 SDL 中应用指令。
 

@@ -1,4 +1,4 @@
-### 中间件（Middleware）
+# 中间件（Middleware）
 
 中间件是一个在路由处理器**之前**被调用的函数。中间件函数可以访问 [请求对象（Request）](https://expressjs.com/en/4x/api.html#req) 和 [响应对象（Response）](https://expressjs.com/en/4x/api.html#res)，以及应用请求-响应周期中的 `next()` 中间件函数。**下一个**中间件函数通常用变量 `next` 表示。
 
@@ -50,11 +50,11 @@ export class LoggerMiddleware {
 }
 ```
 
-#### 依赖注入（Dependency Injection）
+## 依赖注入（Dependency Injection）
 
 Nest 中间件完全支持依赖注入（Dependency Injection）。与提供者（Provider）和控制器（Controller）一样，中间件也可以**注入同一模块内可用的依赖**。通常通过 `constructor` 实现。
 
-#### 应用中间件
+## 应用中间件
 
 中间件**不**在 `@Module()` 装饰器中声明，而是通过模块类的 `configure()` 方法进行设置。包含中间件的模块需要实现 `NestModule` 接口。下面我们在 `AppModule` 级别设置 `LoggerMiddleware`。
 
@@ -130,7 +130,7 @@ export class AppModule {
 
 > warning **警告** 当使用 `express` 适配器时，NestJS 应用会默认注册 `body-parser` 包中的 `json` 和 `urlencoded` 中间件。如果你希望通过 `MiddlewareConsumer` 自定义这些中间件，需要在用 `NestFactory.create()` 创建应用时，将 `bodyParser` 选项设置为 `false`，以关闭全局中间件。
 
-#### 路由通配符
+## 路由通配符
 
 NestJS 中间件也支持基于模式的路由。例如，命名通配符（`*splat`）可用于匹配路由中的任意字符组合。如下例所示，该中间件会应用于所有以 `abcd/` 开头的路由，无论后面跟多少字符。
 
@@ -152,7 +152,7 @@ forRoutes({
 })
 ```
 
-#### 中间件消费者（MiddlewareConsumer）
+## 中间件消费者（MiddlewareConsumer）
 
 `MiddlewareConsumer` 是一个辅助类，提供了多种内置方法来管理中间件。所有方法都可以**链式调用**（[fluent style](https://en.wikipedia.org/wiki/Fluent_interface)）。`forRoutes()` 方法可以接收单个字符串、多个字符串、`RouteInfo` 对象、控制器类，甚至多个控制器类。大多数情况下，你可能会直接传递一个或多个控制器。下面是只传递一个控制器的例子：
 
@@ -193,7 +193,7 @@ export class AppModule {
 
 > info **提示** `apply()` 方法可以接收单个中间件，也可以用逗号分隔传递多个中间件，详见<a href="/middleware#multiple-middleware">多中间件</a>。
 
-#### 排除路由
+## 排除路由
 
 有时我们希望**排除**某些路由不应用中间件。可以通过 `exclude()` 方法轻松实现。`exclude()` 方法可以接收单个字符串、多个字符串或 `RouteInfo` 对象来指定要排除的路由。
 
@@ -216,7 +216,7 @@ consumer
 
 这种方式为按需应用或排除中间件提供了极大灵活性。
 
-#### 函数式中间件（Functional Middleware）
+## 函数式中间件（Functional Middleware）
 
 我们一直用的 `LoggerMiddleware` 类非常简单，没有成员、额外方法或依赖。那为什么不能直接用函数来定义？其实完全可以。这种中间件称为**函数式中间件（Functional Middleware）**。我们将 logger 中间件从类改为函数，演示如下：
 
@@ -246,7 +246,7 @@ consumer
 
 > info **提示** 如果你的中间件不需要依赖，建议优先使用更简单的**函数式中间件**。
 
-#### 多个中间件
+## 多个中间件
 
 如前所述，若要绑定多个按顺序执行的中间件，只需在 `apply()` 方法中用逗号分隔列出：
 
@@ -254,7 +254,7 @@ consumer
 consumer.apply(cors(), helmet(), logger).forRoutes(CatsController)
 ```
 
-#### 全局中间件
+## 全局中间件
 
 如果希望将中间件绑定到所有已注册路由，可以通过 `INestApplication` 实例的 `use()` 方法实现：
 

@@ -1,4 +1,4 @@
-### 自定义传输器（Custom transporters）
+# 自定义传输器（Custom transporters）
 
 Nest 提供了多种**传输器（Transporters）**，并且还为开发者提供了 API，可以构建全新的自定义传输层策略（custom transport strategies）。
 传输器让你能够通过可插拔的通信层和极其简单的应用层消息协议（message protocol），在网络中连接各个组件。你可以阅读完整[文章](https://dev.to/nestjs/integrate-nestjs-with-external-services-using-microservice-transporters-part-1-p3)。
@@ -10,7 +10,7 @@ Nest 提供了多种**传输器（Transporters）**，并且还为开发者提�
 
 > info **提示** 如果你想深入了解 Nest 微服务的工作原理，以及如何扩展现有传输器的能力，推荐阅读 [NestJS Microservices in Action](https://dev.to/johnbiundo/series/4724) 和 [Advanced NestJS Microservices](https://dev.to/nestjs/part-1-introduction-and-setup-1a2l) 系列文章。
 
-#### 创建自定义策略
+## 创建自定义策略
 
 首先，我们来定义一个代表自定义传输器（Transporter）的类。
 
@@ -127,7 +127,7 @@ async listen(callback: () => void) {
 }
 ```
 
-#### 客户端代理（Client proxy）
+## 客户端代理（Client proxy）
 
 正如我们在第一节中提到的，你并不一定需要使用 `@nestjs/microservices` 包来创建微服务，但如果你决定这样做，并且需要集成自定义策略（custom strategy），你还需要提供一个"客户端"类。
 
@@ -238,7 +238,7 @@ connect
 event to dispatch:  { pattern: 'event', data: 'Hello world!' }
 ```
 
-#### 消息序列化（Message serialization）
+## 消息序列化（Message serialization）
 
 如果你需要在客户端响应的序列化过程中添加自定义逻辑，可以自定义一个继承自 `ClientProxy` 类或其子类的类。若要修改成功请求的响应内容，可以重写 `serializeResponse` 方法；若要处理通过该客户端的所有错误，则可以重写 `serializeError` 方法。要使用这个自定义类，只需通过 `customClass` 属性将该类本身传递给 `ClientsModule.register()` 方法即可。下面是一个自定义 `ClientProxy` 的示例，它会将每个错误序列化为 `RpcException`（RPC 异常）。
 

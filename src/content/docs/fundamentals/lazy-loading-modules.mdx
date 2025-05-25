@@ -1,4 +1,4 @@
-### 懒加载模块（Lazy loading modules）
+# 懒加载模块（Lazy loading modules）
 
 默认情况下，模块（Module）会被急切加载（eagerly loaded），也就是说，当应用启动时，所有模块都会被加载，无论它们是否立即需要。对于大多数应用来说，这种方式没有问题，但在 **无服务器环境（serverless environment）** 下运行的应用或 worker，启动延迟（"冷启动"）至关重要，这时急切加载可能成为瓶颈。
 
@@ -8,7 +8,7 @@
 
 > warning **警告** 使用懒加载模块和服务时，[生命周期钩子方法](https://docs.nestjs.com/fundamentals/lifecycle-events)不会被调用。
 
-#### 快速上手
+## 快速上手
 
 要按需加载模块，Nest 提供了 `LazyModuleLoader` 类，你可以像常规依赖注入（Dependency Injection）一样将其注入到类中：
 
@@ -97,7 +97,7 @@ const lazyService = moduleRef.get(LazyService)
 >
 > 配置好这些选项后，你就可以利用 [代码分割（code splitting）](https://webpack.js.org/guides/code-splitting/) 功能。
 
-#### 懒加载控制器、网关和解析器
+## 懒加载控制器、网关和解析器
 
 在 Nest 中，控制器（Controller）或 GraphQL 应用中的解析器（Resolver）代表一组路由/路径/主题（或查询/变更）。你**无法**通过 `LazyModuleLoader` 类懒加载它们。
 
@@ -109,6 +109,6 @@ const lazyService = moduleRef.get(LazyService)
 
 最后，`@nestjs/graphql` 包在启用 code first 方式时，会根据元数据动态生成 GraphQL schema。这就要求所有类必须预先加载，否则无法生成有效的 schema。
 
-#### 常见使用场景
+## 常见使用场景
 
 懒加载模块最常见于如下场景：你的 worker、定时任务（cron job）、lambda & serverless 函数、webhook 需要根据输入参数（如路由路径、日期、查询参数等）触发不同服务（不同逻辑）。而对于启动时间无关紧要的单体应用，懒加载模块意义不大。

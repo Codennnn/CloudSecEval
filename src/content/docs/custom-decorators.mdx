@@ -1,4 +1,4 @@
-### 自定义路由装饰器
+# 自定义路由装饰器
 
 Nest 的核心基于一种被称为 **装饰器（Decorator）** 的语言特性。装饰器在许多主流编程语言中都是广为人知的概念，但在 JavaScript 世界中仍然相对较新。为了更好地理解装饰器的工作原理，建议阅读[这篇文章](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841)。下面是一个简单的定义：
 
@@ -8,7 +8,7 @@ Nest 的核心基于一种被称为 **装饰器（Decorator）** 的语言特性
   <code>@</code> 字符来应用装饰器。装饰器既可以用于类，也可以用于方法或属性。
 </blockquote>
 
-#### 参数装饰器（Param decorators）
+## 参数装饰器（Param decorators）
 
 Nest 提供了一组非常实用的 **参数装饰器（param decorators）**，可与 HTTP 路由处理器（Route Handler）配合使用。下表列出了内置装饰器及其对应的原生 Express（Express（Node.js 框架））或 Fastify（Fastify（高性能 Node.js 框架））对象：
 
@@ -135,7 +135,7 @@ async findOne(user) {
 }
 ```
 
-#### 传递数据（Passing data）
+## 传递数据（Passing data）
 
 当你的装饰器行为依赖于某些条件时，可以通过 `data` 参数向装饰器工厂函数传递参数。一个常见用例是自定义装饰器根据 key 从请求对象中提取属性。例如，假设我们的 <a href="techniques/authentication#implementing-passport-strategies">认证层</a> 验证请求并将用户实体（user entity）附加到请求对象上。一个已认证请求的用户实体可能如下：
 
@@ -194,7 +194,7 @@ async findOne(firstName) {
 
 > info **提示** 对于 TypeScript 用户，`createParamDecorator<T>()` 是一个泛型方法。这意味着你可以显式地指定类型，例如 `createParamDecorator<string>((data, ctx) => ...)`。或者在工厂函数中为参数指定类型，如 `createParamDecorator((data: string, ctx) => ...)`。如果两者都省略，`data` 的类型将为 `any`。
 
-#### 配合管道（Working with pipes）
+## 配合管道（Working with pipes）
 
 Nest 对自定义参数装饰器的处理方式与内置装饰器（如 `@Body()`、`@Param()` 和 `@Query()`）一致。这意味着自定义装饰器参数同样会执行管道（Pipe）。此外，你还可以直接在自定义装饰器上应用管道：
 
@@ -217,7 +217,7 @@ async findOne(user) {
 
 > info **提示** 需要注意的是，必须将 `validateCustomDecorators` 选项设置为 true。`ValidationPipe` 默认不会校验自定义装饰器标注的参数。
 
-#### 装饰器组合（Decorator composition）
+## 装饰器组合（Decorator composition）
 
 Nest 提供了一个辅助方法用于组合多个装饰器。例如，假设你想将所有与认证相关的装饰器合并为一个装饰器，可以这样实现：
 

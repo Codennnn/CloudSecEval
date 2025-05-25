@@ -1,4 +1,4 @@
-### 授权（Authorization）
+# 授权（Authorization）
 
 **授权（Authorization）** 指的是确定用户可以执行哪些操作的过程。例如，管理员用户可以创建、编辑和删除帖子，而非管理员用户仅被授权阅读帖子。
 
@@ -6,7 +6,7 @@
 
 处理授权有多种不同的方法和策略。具体采用哪种方式，取决于项目的实际应用需求。本章将介绍几种可适配不同需求的授权实现方式。
 
-#### 基础 RBAC 实现
+## 基础 RBAC 实现
 
 基于角色的访问控制（Role-based access control，**RBAC**）是一种围绕角色和权限定义的、与策略无关的访问控制机制。本节将演示如何使用 Nest 的 [守卫（Guard）](/guards) 实现一个非常基础的 RBAC 机制。
 
@@ -144,7 +144,7 @@ providers: [
 
 <app-banner-courses-auth></app-banner-courses-auth>
 
-#### 基于声明的授权（Claims-based authorization）
+## 基于声明的授权（Claims-based authorization）
 
 当身份被创建时，可信任方可以为其分配一个或多个声明（Claim）。声明是一个名称-值对，用于表示主体（subject）可以做什么，而不是主体是什么。
 
@@ -168,7 +168,7 @@ create(createCatDto) {
 
 > info **提示** 在上面的示例中，`Permission`（类似于我们在 RBAC 部分展示的 `Role`）是一个 TypeScript 枚举类型，包含了系统中所有可用的权限。
 
-#### 集成 CASL
+## 集成 CASL
 
 [CASL](https://casl.js.org/) 是一个同构的授权（Authorization）库，用于限制客户端可访问的资源。它设计为可渐进式集成，能够轻松扩展，既支持简单的声明式权限，也支持完整的基于主体和属性的授权。
 
@@ -330,7 +330,7 @@ ability.can(Action.Update, article) // false
 
 如你所见，`MongoAbility` 实例让我们可以非常直观地检查权限。同样，`AbilityBuilder` 也允许我们以类似方式定义权限和条件。更多示例请参阅官方文档。
 
-#### 进阶：实现 `PoliciesGuard`（策略守卫）
+## 进阶：实现 `PoliciesGuard`（策略守卫）
 
 本节将演示如何构建一个更为复杂的守卫（Guard），用于检查用户是否满足可在方法级别配置的特定**授权策略（authorization policies）**。你也可以扩展它以支持类级别的策略配置。本例中，我们仅以 CASL 包为例进行说明，但实际使用中并不一定要选择该库。此外，我们将使用在上一节中创建的 `CaslAbilityFactory` 提供者（Provider）。
 
