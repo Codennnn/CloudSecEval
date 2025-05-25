@@ -27,13 +27,15 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
               <Link href="/">
-                <div className="flex justify-center items-center bg-sidebar-primary rounded-lg size-8 aspect-square text-sidebar-primary-foreground">
-                  <GalleryVerticalEndIcon className="size-4" />
-                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex justify-center items-center bg-sidebar-primary rounded-lg size-8 aspect-square text-sidebar-primary-foreground">
+                    <GalleryVerticalEndIcon className="size-4" />
+                  </div>
 
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">NestJS 中文文档</span>
-                  <span className="">v10.0.0</span>
+                  <div className="flex flex-col gap-0.5 leading-none">
+                    <div className="font-semibold">NestJS 中文文档</div>
+                    <div className="text-xs text-muted-foreground font-medium">v10.0.0</div>
+                  </div>
                 </div>
               </Link>
             </SidebarMenuButton>

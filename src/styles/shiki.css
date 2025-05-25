@@ -38,12 +38,6 @@
   }
 }
 
-/* Shiki 代码块容器样式 */
-code[class*='language-'],
-pre[class*='language-'] {
-  @apply font-mono text-sm;
-}
-
 pre[class*='language-'] {
   @apply relative my-4 overflow-hidden rounded-lg p-4;
 
@@ -55,10 +49,12 @@ pre[class*='language-'] {
 }
 
 pre.shiki {
-  @apply overflow-x-auto p-1.5;
+  @apply overflow-x-auto px-4 py-3;
 
-  /* code {
-    counter-increment: step 0;
+  code {
+    @apply font-mono text-sm;
+
+    /* counter-increment: step 0;
     counter-reset: step;
 
     .line::before {
@@ -69,8 +65,8 @@ pre.shiki {
       margin-right: 1.5rem;
       color: rgb(115 138 148 / 40%);
       text-align: right;
-    }
-  } */
+    } */
+  }
 
   .line {
     &.highlighted {

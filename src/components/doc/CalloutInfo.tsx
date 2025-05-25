@@ -58,12 +58,12 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   }
 
   return (
-    <Alert variant={getVariant()}>
+    <Alert className="not-first:mt-5 prose-p:m-0" variant={getVariant()}>
       {getIcon()}
 
       <AlertTitle>{title ?? getDefaultTitle()}</AlertTitle>
 
-      <AlertDescription className="prose-p:m-0">
+      <AlertDescription>
         {children ?? description}
       </AlertDescription>
     </Alert>

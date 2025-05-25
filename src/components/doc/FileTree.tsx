@@ -1,4 +1,4 @@
-import { FileText, Folder } from 'lucide-react'
+import { FolderOpenIcon } from 'lucide-react'
 
 import {
   SidebarMenu,
@@ -8,6 +8,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '~/components/ui/sidebar'
+
+import { IconTypescript } from '../icon/IconTypescript'
 
 const fileTreeData = [
   {
@@ -24,11 +26,12 @@ const fileTreeData = [
 
 export function FileTree() {
   return (
-    <SidebarMenu className="not-prose">
+    <SidebarMenu className="not-prose font-medium">
       {fileTreeData.map((folder) => (
         <SidebarMenuItem key={folder.name}>
           <SidebarMenuButton>
-            <Folder className="mr-2" />
+            <FolderOpenIcon />
+
             {folder.name}
           </SidebarMenuButton>
 
@@ -36,7 +39,10 @@ export function FileTree() {
             {folder.children.map((file) => (
               <SidebarMenuSubItem key={file.name}>
                 <SidebarMenuSubButton>
-                  <FileText className="mr-2" />
+                  <span className="size-4 grayscale-100 inline-block">
+                    <IconTypescript />
+                  </span>
+
                   {file.name}
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>

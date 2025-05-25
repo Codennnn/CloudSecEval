@@ -169,7 +169,7 @@ export const navMainData: NavMenuItem[] = [
     items: [
       { title: 'REPL', titleEn: 'REPL', url: '/recipes/repl' },
       { title: 'CRUD 生成器', titleEn: 'CRUD generator', url: '/recipes/crud-generator' },
-      { title: 'SWC（快速编译器）', titleEn: 'SWC (fast compiler)', url: '/recipes/swc' },
+      { title: 'SWC', titleEn: 'SWC (fast compiler)', url: '/recipes/swc' },
       { title: 'Passport（认证）', titleEn: 'Passport (auth)', url: '/recipes/passport' },
       { title: '热重载', titleEn: 'Hot reload', url: '/recipes/hot-reload' },
       { title: 'MikroORM', titleEn: 'MikroORM', url: '/recipes/mikroorm' },

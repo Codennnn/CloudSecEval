@@ -11,6 +11,7 @@ interface PreProps {
   children: React.ReactElement<{ className: string, children: React.ReactElement }>
   filename?: string
   showLineNumbers?: boolean
+  hideInDoc?: boolean
 }
 
 interface AnchorProps {
@@ -46,8 +47,20 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       )
     },
 
-    pre: ({ children, filename, showLineNumbers = false, ...props }: PreProps) => {
+    pre: (props: PreProps) => {
+      const {
+        children,
+        filename,
+        showLineNumbers = false,
+        hideInDoc = false,
+        ...restProps
+      } = props
+
       if (children.type === 'code') {
+        if (hideInDoc) {
+          return null
+        }
+
         const { className = '', children: codeContent = '' } = children.props
 
         const lang = (className.replace(/language-/, '') || 'text') as BundledLanguage
@@ -64,7 +77,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         }
       }
 
-      return <pre {...props}>{children}</pre>
+      return <pre {...restProps}>{children}</pre>
     },
 
     CalloutInfo,
