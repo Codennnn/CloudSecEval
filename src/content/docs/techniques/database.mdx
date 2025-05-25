@@ -4,7 +4,7 @@ Nest 是一个与数据库无关的框架，允许你轻松集成任意 SQL 或 
 
 你也可以直接使用任意通用的 Node.js 数据库集成**库**或 ORM（对象关系映射，Object Relational Mapper），比如 [MikroORM](https://mikro-orm.io/)（参见 [MikroORM 实践](/recipes/mikroorm)）、[Sequelize](https://sequelize.org/)（参见 [Sequelize 集成](/techniques/database#sequelize-integration)）、[Knex.js](https://knexjs.org/)（参见 [Knex.js 教程](https://dev.to/nestjs/build-a-nestjs-module-for-knex-js-or-other-resource-based-libraries-in-5-minutes-12an)）、[TypeORM](https://github.com/typeorm/typeorm) 以及 [Prisma](https://www.github.com/prisma/prisma)（参见 [Prisma 实践](/recipes/prisma)），以获得更高层次的抽象操作体验。
 
-为了方便开发，Nest 针对 TypeORM 和 Sequelize 提供了开箱即用的深度集成，分别通过 `@nestjs/typeorm` 和 `@nestjs/sequelize` 包实现，本章将详细介绍这两种集成方式。对于 Mongoose 的集成，请参见[本章节](/techniques/mongodb)。这些集成不仅让你更容易访问所选数据库，还带来了如模型/仓库注入、可测试性、异步配置等 NestJS 特有功能。
+为了方便开发，Nest 针对 TypeORM 和 Sequelize 提供了开箱即用的深度集成，分别通过 `@nestjs/typeorm` 和 `@nestjs/sequelize` 包实现，本章将详细介绍这两种集成方式。对于 Mongoose 的集成，请参见[此章节](/techniques/mongodb)。这些集成不仅让你更容易访问所选数据库，还带来了如模型/仓库注入、可测试性、异步配置等 NestJS 特有功能。
 
 # TypeORM 集成
 
@@ -1072,7 +1072,7 @@ export class User extends Model {
 ```
 
 > info **提示**
-> 想要了解更多关于 Sequelize 关联（association）的内容，请阅读[本章节](https://github.com/RobinBuschmann/sequelize-typescript#model-association)。
+> 想要了解更多关于 Sequelize 关联（association）的内容，请阅读[此章节](https://github.com/RobinBuschmann/sequelize-typescript#model-association)。
 
 ## 自动加载模型
 

@@ -1,48 +1,37 @@
 # 守卫（Guard）
 
-守卫（Guard）是一个带有 `@Injectable()` 装饰器的类，并实现了 `CanActivate` 接口。
+守卫是一个带有 `@Injectable()` 装饰器的类，并实现了 `CanActivate` 接口。
 
-<figure>
-  <img class="illustrative-image" src="/assets/Guards_1.png" />
-</figure>
+<DocImage src="/assets/Guards_1.png" alt="守卫结构图" />
 
-守卫具有**单一职责**：它们根据运行时的特定条件（如权限、角色、访问控制列表等）来决定某个请求是否会被路由处理器（Route Handler）处理。这通常被称为**授权（Authorization）**。授权（以及通常与之协作的**身份验证（Authentication）**）在传统的 Express（Node.js 框架）应用中，往往由[中间件（Middleware）](/middleware)处理。中间件非常适合做身份验证，因为像令牌校验、为 `请求对象（Request Object）` 附加属性等操作，并不强依赖于具体的路由上下文（及其元数据）。
+守卫具有**单一职责**：它们根据运行时的特定条件（如权限、角色、访问控制列表等）来决定某个请求是否会被路由处理器（Route Handler）处理。这通常被称为**授权（Authorization）**。授权（以及通常与之协作的**身份验证（Authentication）**）在传统的 Express 应用中，往往由[中间件](/middleware)处理。中间件非常适合做身份验证，因为像令牌校验、为 `请求对象（Request Object）` 附加属性等操作，并不强依赖于具体的路由上下文（及其元数据）。
 
-但中间件本身是"无脑"的。它并不知道在调用 `next()` 函数后会执行哪个处理器。而**守卫**则可以访问 `执行上下文（ExecutionContext）` 实例，因此能够准确知道接下来会执行什么。它们的设计初衷与异常过滤器（Exception Filter）、管道（Pipe）、拦截器（Interceptor）类似，都是为了让你能在请求/响应周期的恰当时机以声明式方式插入处理逻辑。这有助于让你的代码更加 DRY（Don't Repeat Yourself）且声明式。
+但中间件本身是"无脑"的。它并不知道在调用 `next()` 函数后会执行哪个处理器。而**守卫**则可以访问 `执行上下文（ExecutionContext）` 实例，因此能够准确知道接下来会执行什么。它们的设计初衷与异常过滤器、管道、拦截器类似，都是为了让你能在请求/响应周期的恰当时机以声明式方式插入处理逻辑。这有助于让你的代码更加 DRY（Don't Repeat Yourself）且声明式。
 
-> info **提示** 守卫会在所有中间件之后、但在任何拦截器或管道之前执行。
+<CalloutInfo>
+  <p>守卫会在所有中间件之后、但在任何拦截器或管道之前执行。</p>
+</CalloutInfo>
 
 ## 授权守卫
 
 如前所述，**授权**是守卫的一个典型应用场景，因为某些特定路由只有在调用者（通常是已认证的用户）拥有足够权限时才能访问。我们现在要构建的 `AuthGuard` 假设用户已通过身份验证（即请求头中已携带令牌）。它会提取并校验令牌，并利用提取的信息判断请求是否可以继续。
 
-```ts
-@@filename(auth.guard)
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Observable } from 'rxjs';
+```ts filename='auth.guard.ts'
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
+import { Observable } from 'rxjs'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest();
-    return validateRequest(request);
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class AuthGuard {
-  async canActivate(context) {
-    const request = context.switchToHttp().getRequest();
-    return validateRequest(request);
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const request = context.switchToHttp().getRequest()
+    return validateRequest(request)
   }
 }
 ```
 
-> info **提示** 如果你想了解如何在实际项目中实现身份验证机制，请参阅[本章节](/security/authentication)。如需更复杂的授权示例，请查看[此页面](/security/authorization)。
+<CalloutInfo>
+  如果你想了解如何在实际项目中实现身份验证机制，请参阅[此章节](/security/authentication)。如需更复杂的授权示例，请查看[此页面](/security/authorization)。
+</CalloutInfo>
 
 `validateRequest()` 函数中的逻辑可以根据需要简单或复杂。这里的重点是展示守卫如何融入请求/响应周期。
 
@@ -63,26 +52,14 @@ export class AuthGuard {
 
 我们来构建一个更实用的守卫，只允许拥有特定角色的用户访问。我们先用一个基础模板，后续再逐步完善。当前它允许所有请求通过：
 
-```ts
-@@filename(roles.guard)
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Observable } from 'rxjs';
+```ts filename='roles.guard.ts'
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
+import { Observable } from 'rxjs'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return true;
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class RolesGuard {
-  canActivate(context) {
-    return true;
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    return true
   }
 }
 ```
@@ -92,18 +69,16 @@ export class RolesGuard {
 与管道（Pipe）和异常过滤器类似，守卫可以是**控制器作用域**、**方法作用域**或**全局作用域**。下面我们用 `@UseGuards()` 装饰器设置一个控制器作用域的守卫。该装饰器可以接收一个或多个参数（逗号分隔），让你能方便地为控制器声明需要的守卫。
 
 ```ts
-@@filename()
+import { UseGuards } from '@nestjs/common'
+
 @Controller('cats')
 @UseGuards(RolesGuard)
 export class CatsController {}
 ```
 
-> info **提示** `@UseGuards()` 装饰器需从 `@nestjs/common` 包中导入。
-
 如上，我们传入的是 `RolesGuard` 类（而不是其实例），这样框架会负责其实例化，并支持依赖注入。和管道、异常过滤器一样，也可以直接传入实例：
 
 ```ts
-@@filename()
 @Controller('cats')
 @UseGuards(new RolesGuard())
 export class CatsController {}
@@ -114,19 +89,21 @@ export class CatsController {}
 如果要设置全局守卫，可以通过 Nest 应用实例的 `useGlobalGuards()` 方法实现：
 
 ```ts
-@@filename()
-const app = await NestFactory.create(AppModule);
-app.useGlobalGuards(new RolesGuard());
+const app = await NestFactory.create(AppModule)
+app.useGlobalGuards(new RolesGuard())
 ```
 
-> warning **注意** 对于混合应用，`useGlobalGuards()` 默认不会为网关（Gateway）和微服务（Microservices）设置守卫（详见[混合应用](/faq/hybrid-application)章节）。对于"标准"（非混合）微服务应用，`useGlobalGuards()` 会全局挂载守卫。
+<CalloutInfo type="warning">
+  对于混合应用，`useGlobalGuards()`
+  默认不会为网关和微服务设置守卫（详见[混合应用](/faq/hybrid-application)章节）。对于"标准"（非混合）微服务应用，`useGlobalGuards()`
+  会全局挂载守卫。
+</CalloutInfo>
 
 全局守卫会应用于整个应用的所有控制器和路由处理器。需要注意的是，通过 `useGlobalGuards()` 在模块外注册的全局守卫无法注入依赖，因为这发生在任何模块上下文之外。为了解决这个问题，可以直接在模块内通过如下方式注册守卫：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { APP_GUARD } from '@nestjs/core'
 
 @Module({
   providers: [
@@ -139,7 +116,11 @@ import { APP_GUARD } from '@nestjs/core';
 export class AppModule {}
 ```
 
-> info **提示** 采用这种方式进行依赖注入时，无论在哪个模块注册，守卫实际上都是全局的。应在守卫（如上例中的 `RolesGuard`）定义的模块中进行注册。此外，`useClass` 并不是自定义提供者注册的唯一方式，详情可见[这里](/fundamentals/custom-providers)。
+<CalloutInfo>
+  采用这种方式进行依赖注入时，无论在哪个模块注册，守卫实际上都是全局的。应在守卫（如上例中的
+  `RolesGuard`）定义的模块中进行注册。此外，`useClass`
+  并不是自定义提供者注册的唯一方式，详情可见[这里](/fundamentals/custom-providers)。
+</CalloutInfo>
 
 ## 为处理器设置角色
 
@@ -149,29 +130,20 @@ export class AppModule {}
 
 例如，我们可以用 `Reflector.createDecorator` 方法创建一个 `@Roles()` 装饰器，将元数据附加到处理器上。`Reflector` 由框架内置并通过 `@nestjs/core` 包暴露。
 
-```ts
-@@filename(roles.decorator)
-import { Reflector } from '@nestjs/core';
+```ts filename='roles.decorator.ts'
+import { Reflector } from '@nestjs/core'
 
-export const Roles = Reflector.createDecorator<string[]>();
+export const Roles = Reflector.createDecorator<string[]>()
 ```
 
 这里的 `Roles` 装饰器是一个接收 `string[]` 类型参数的函数。
 
 现在，我们只需在处理器上使用该装饰器即可：
 
-```ts
-@@filename(cats.controller)
+```ts filename='cats.controller.ts'
 @Post()
 @Roles(['admin'])
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
-}
-@@switch
-@Post()
-@Roles(['admin'])
-@Bind(Body())
-async create(createCatDto) {
   this.catsService.create(createCatDto);
 }
 ```
@@ -184,53 +156,36 @@ async create(createCatDto) {
 
 现在我们回到 `RolesGuard`，将其与上面的内容结合。当前它总是返回 `true`，允许所有请求通过。我们希望根据**当前用户的角色**与**当前路由所需角色（自定义元数据）**进行比对，决定是否放行。为此，我们再次用到 `Reflector` 辅助类：
 
-```ts
-@@filename(roles.guard)
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Roles } from './roles.decorator';
+```ts filename='roles.guard.ts'
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
+import { Roles } from './roles.decorator'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get(Roles, context.getHandler());
+    const roles = this.reflector.get(Roles, context.getHandler())
     if (!roles) {
-      return true;
+      return true
     }
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    return matchRoles(roles, user.roles);
-  }
-}
-@@switch
-import { Injectable, Dependencies } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Roles } from './roles.decorator';
-
-@Injectable()
-@Dependencies(Reflector)
-export class RolesGuard {
-  constructor(reflector) {
-    this.reflector = reflector;
-  }
-
-  canActivate(context) {
-    const roles = this.reflector.get(Roles, context.getHandler());
-    if (!roles) {
-      return true;
-    }
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-    return matchRoles(roles, user.roles);
+    const request = context.switchToHttp().getRequest()
+    const user = request.user
+    return matchRoles(roles, user.roles)
   }
 }
 ```
 
-> info **提示** 在 Node.js 世界中，通常会将已授权用户附加到 `请求对象（Request Object）` 上。因此在上面的示例中，我们假设 `request.user` 包含了用户实例及其角色。在你的应用中，通常会在自定义**身份验证守卫**（或中间件）中完成该关联。更多信息请参阅[本章节](/security/authentication)。
+<CalloutInfo>
+  在 Node.js 世界中，通常会将已授权用户附加到 `请求对象（Request Object）`
+  上。因此在上面的示例中，我们假设 `request.user`
+  包含了用户实例及其角色。在你的应用中，通常会在自定义**身份验证守卫**（或中间件）中完成该关联。更多信息请参阅[此章节](/security/authentication)。
+</CalloutInfo>
 
-> warning **警告** `matchRoles()` 函数中的逻辑可以根据需要简单或复杂。这里的重点是展示守卫如何融入请求/响应周期。
+<CalloutInfo type="warning">
+  `matchRoles()` 函数中的逻辑可以根据需要简单或复杂。这里的重点是展示守卫如何融入请求/响应周期。
+</CalloutInfo>
 
 更多关于如何在上下文敏感场景下使用 `Reflector`，请参考**执行上下文**章节的<a href="https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata">反射与元数据</a>部分。
 
@@ -252,4 +207,6 @@ throw new UnauthorizedException()
 
 守卫抛出的任何异常都会被[异常层](/exception-filters)（全局异常过滤器及当前上下文应用的异常过滤器）处理。
 
-> info **提示** 如果你想了解实际项目中的授权实现，请参阅[本章节](/security/authorization)。
+<CalloutInfo>
+  如果你想了解实际项目中的授权实现，请参阅[此章节](/security/authorization)。
+</CalloutInfo>

@@ -374,7 +374,7 @@ findOne(
 
 在开发 **CRUD**（创建/读取/更新/删除）等功能时，通常需要基于某个基础实体类型构建不同的变体。Nest 提供了一些实用函数，可以对类型进行转换，帮助你更方便地完成这项工作。
 
-> **警告** 如果你的应用使用了 `@nestjs/swagger` 包，请参阅[本章节](/openapi/mapped-types)以获取关于映射类型的更多信息。同样地，如果你使用了 `@nestjs/graphql` 包，请参阅[本章节](/graphql/mapped-types)。这两个包都大量依赖类型系统，因此需要使用不同的导入方式。如果你使用了 `@nestjs/mapped-types`（而不是根据应用类型选择 `@nestjs/swagger` 或 `@nestjs/graphql`），可能会遇到各种未记录的副作用。
+> **警告** 如果你的应用使用了 `@nestjs/swagger` 包，请参阅[此章节](/openapi/mapped-types)以获取关于映射类型的更多信息。同样地，如果你使用了 `@nestjs/graphql` 包，请参阅[此章节](/graphql/mapped-types)。这两个包都大量依赖类型系统，因此需要使用不同的导入方式。如果你使用了 `@nestjs/mapped-types`（而不是根据应用类型选择 `@nestjs/swagger` 或 `@nestjs/graphql`），可能会遇到各种未记录的副作用。
 
 在构建输入验证类型（也称为数据传输对象（Data Transfer Object，DTO））时，通常需要基于同一个类型分别创建 **create** 和 **update** 版本。例如，**create** 版本可能要求所有字段都是必填的，而 **update** 版本则可以将所有字段设为可选。
 

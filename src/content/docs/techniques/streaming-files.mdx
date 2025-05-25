@@ -52,7 +52,7 @@ export class FileController {
 import { Controller, Get, StreamableFile, Res } from '@nestjs/common'
 import { createReadStream } from 'fs'
 import { join } from 'path'
-import type { Response } from 'express' // 假设我们使用的是 Express（Node.js 框架）HTTP 适配器
+import type { Response } from 'express' // 假设我们使用的是 Express HTTP 适配器
 
 @Controller('file')
 export class FileController {
