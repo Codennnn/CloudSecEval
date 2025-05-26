@@ -20,19 +20,10 @@ export class ExampleModule {}
 
 模块配置完成后，就可以在任何需要动态发现能力的提供者或服务中注入 `DiscoveryService`：
 
-```ts
-@@filename(example.service)
+```ts filename='example.service.ts'
 @Injectable()
 export class ExampleService {
   constructor(private readonly discoveryService: DiscoveryService) {}
-}
-@@switch
-@Injectable()
-@Dependencies(DiscoveryService)
-export class ExampleService {
-  constructor(discoveryService) {
-    this.discoveryService = discoveryService;
-  }
 }
 ```
 

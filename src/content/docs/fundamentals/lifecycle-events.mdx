@@ -1,14 +1,12 @@
 # 生命周期事件（Lifecycle Events）
 
-Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。Nest 提供了**生命周期钩子（Lifecycle Hook）**，让你能够感知关键的生命周期事件（Lifecycle Event），并在这些事件发生时执行相应操作（如在模块、提供者或控制器上运行已注册的代码）。
+Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。Nest 提供了**生命周期钩子（Lifecycle Hook）**，让你能够感知关键的生命周期事件，并在这些事件发生时执行相应操作（如在模块、提供者或控制器上运行已注册的代码）。
 
 ## 生命周期流程
 
-下图展示了应用程序从引导（bootstrapping）到 Node 进程退出期间，关键生命周期事件的顺序。整个生命周期可分为三个阶段：**初始化（initializing）**、**运行中（running）** 和 **终止中（terminating）**。通过理解这一生命周期，你可以合理规划模块和服务的初始化、管理活跃连接，并在收到终止信号时优雅地关闭应用。
+下图展示了应用程序从启动（bootstrapping）到 Node 进程退出期间，关键生命周期事件的顺序。整个生命周期可分为三个阶段：**初始化（initializing）**、**运行中（running）** 和 **终止中（terminating）**。通过理解这一生命周期，你可以合理规划模块和服务的初始化、管理活跃连接，并在收到终止信号时优雅地关闭应用。
 
-<figure>
-  <img class="illustrative-image" src="/assets/lifecycle-events.png" />
-</figure>
+<DocImage src="/assets/lifecycle-events.png" alt="生命周期事件流程图" />
 
 ## 生命周期事件
 
@@ -18,41 +16,36 @@ Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。
 
 同样，`onModuleDestroy`、`beforeApplicationShutdown` 和 `onApplicationShutdown` 只有在你显式调用 `app.close()`，或进程收到特殊系统信号（如 SIGTERM）且你已在应用引导时正确调用了 `enableShutdownHooks` 时才会触发（详见下文 **应用关闭** 部分）。
 
-| 生命周期钩子方法（Lifecycle hook method） | 触发钩子方法调用的生命周期事件（Lifecycle event triggering the hook method call）                                                                                           |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onModuleInit()`                          | 当宿主模块的依赖关系已被解析后调用。                                                                                                                                        |
-| `onApplicationBootstrap()`                | 当所有模块初始化完成，但尚未开始监听连接时调用。                                                                                                                            |
-| `onModuleDestroy()`\*                     | 在收到终止信号（如 `SIGTERM`）后调用。                                                                                                                                      |
-| `beforeApplicationShutdown()`\*           | 在所有 `onModuleDestroy()` 处理器完成（Promise 已 resolve 或 reject）后调用；<br />一旦完成（Promise 已 resolve 或 reject），所有现有连接将被关闭（调用了 `app.close()`）。 |
-| `onApplicationShutdown()`\*               | 在连接关闭后（`app.close()` resolve 后）调用。                                                                                                                              |
+| 生命周期钩子方法                | 触发钩子方法调用的生命周期事件                                                                                                                                              |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onModuleInit()`                | 当宿主模块的依赖关系已被解析后调用。                                                                                                                                        |
+| `onApplicationBootstrap()`      | 当所有模块初始化完成，但尚未开始监听连接时调用。                                                                                                                            |
+| `onModuleDestroy()`\*           | 在收到终止信号（如 `SIGTERM`）后调用。                                                                                                                                      |
+| `beforeApplicationShutdown()`\* | 在所有 `onModuleDestroy()` 处理器完成（Promise 已 resolve 或 reject）后调用；<br />一旦完成（Promise 已 resolve 或 reject），所有现有连接将被关闭（调用了 `app.close()`）。 |
+| `onApplicationShutdown()`\*     | 在连接关闭后（`app.close()` resolve 后）调用。                                                                                                                              |
 
 \* 对于这些事件，如果你没有显式调用 `app.close()`，则必须主动开启它们才能响应如 `SIGTERM` 这样的系统信号。详见[应用关闭](fundamentals/lifecycle-events#application-shutdown)。
 
-> warning **警告** 上述生命周期钩子不会在**请求作用域（Request-scoped）**类中触发。请求作用域类不受应用生命周期管理，其生命周期不可预测。它们仅为每个请求单独创建，并在响应发送后自动被垃圾回收。
+<CalloutInfo type="warning">
+  上述生命周期钩子不会在**请求作用域（Request-scoped）**类中触发。请求作用域类不受应用生命周期管理，其生命周期不可预测。它们仅为每个请求单独创建，并在响应发送后自动被垃圾回收。
+</CalloutInfo>
 
-> info **提示** `onModuleInit()` 和 `onApplicationBootstrap()` 的执行顺序直接依赖于模块导入顺序，会等待前一个钩子完成。
+<CalloutInfo>
+  `onModuleInit()` 和 `onApplicationBootstrap()`
+  的执行顺序直接依赖于模块导入顺序，会等待前一个钩子完成。
+</CalloutInfo>
 
 ## 用法
 
 每个生命周期钩子都由一个接口（Interface）表示。接口在 TypeScript 编译后不会存在，因此技术上是可选的。但推荐实现接口，这样可以获得类型检查和编辑器工具的支持。要注册生命周期钩子，只需在类（如控制器、提供者或模块）中实现相应接口并提供对应方法。例如，若要在模块初始化期间注册方法，只需实现 `OnModuleInit` 接口并提供 `onModuleInit()` 方法，如下所示：
 
 ```ts
-@@filename()
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common'
 
 @Injectable()
 export class UsersService implements OnModuleInit {
   onModuleInit() {
-    console.log(`The module has been initialized.`);
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class UsersService {
-  onModuleInit() {
-    console.log(`The module has been initialized.`);
+    console.log(`The module has been initialized.`)
   }
 }
 ```
@@ -62,12 +55,7 @@ export class UsersService {
 `OnModuleInit` 和 `OnApplicationBootstrap` 钩子都支持异步操作（即方法可返回 `Promise`，或将方法声明为 `async` 并在方法体内 `await` 异步操作完成），从而延迟应用初始化流程。
 
 ```ts
-@@filename()
 async onModuleInit(): Promise<void> {
-  await this.fetch();
-}
-@@switch
-async onModuleInit() {
   await this.fetch();
 }
 ```
@@ -90,30 +78,37 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000)
 }
+
 bootstrap()
 ```
 
-> warning **警告** 由于平台本身的限制，NestJS 在 Windows 上对应用关闭钩子的支持有限。你可以预期 `SIGINT`、`SIGBREAK` 以及部分 `SIGHUP` 能正常工作 ——[详细说明](https://nodejs.org/api/process.html#process_signal_events)。但 `SIGTERM` 在 Windows 上永远无法生效，因为在任务管理器中强制结束进程是无条件的，即"应用无法检测或阻止该操作"。更多信息可参考 [libuv 官方文档](https://docs.libuv.org/en/v1.x/signal.html) 以及 Node.js 的 [进程信号事件文档](https://nodejs.org/api/process.html#process_signal_events)。
+<CalloutInfo type="warning">
+  由于平台本身的限制，NestJS 在 Windows 上对应用关闭钩子的支持有限。你可以预期 `SIGINT`、`SIGBREAK`
+  以及部分 `SIGHUP` 能正常工作
+  ——[详细说明](https://nodejs.org/api/process.html#process_signal_events)。但 `SIGTERM` 在 Windows
+  上永远无法生效，因为在任务管理器中强制结束进程是无条件的，即"应用无法检测或阻止该操作"。更多信息可参考
+  [libuv 官方文档](https://docs.libuv.org/en/v1.x/signal.html) 以及 Node.js 的
+  [进程信号事件文档](https://nodejs.org/api/process.html#process_signal_events)。
+</CalloutInfo>
 
-> info **提示** `enableShutdownHooks` 会通过启动监听器消耗内存。如果你在单个 Node 进程中运行多个 Nest 应用（如使用 Jest 并行测试时），Node 可能会因监听器过多而发出警告。因此，`enableShutdownHooks` 默认未启用。运行多个实例时请注意此情况。
+<CalloutInfo>
+  `enableShutdownHooks` 会通过启动监听器消耗内存。如果你在单个 Node 进程中运行多个 Nest 应用（如使用
+  Jest 并行测试时），Node 可能会因监听器过多而发出警告。因此，`enableShutdownHooks`
+  默认未启用。运行多个实例时请注意此情况。
+</CalloutInfo>
 
 当应用收到终止信号时，会依次调用已注册的 `onModuleDestroy()`、`beforeApplicationShutdown()`，再到 `onApplicationShutdown()` 方法（顺序如上），并将对应信号作为第一个参数传递。如果注册的方法为异步（返回 Promise），Nest 会等待 Promise resolve 或 reject 后再继续后续流程。
 
 ```ts
-@@filename()
 @Injectable()
 class UsersService implements OnApplicationShutdown {
   onApplicationShutdown(signal: string) {
-    console.log(signal); // 例如 "SIGINT"
-  }
-}
-@@switch
-@Injectable()
-class UsersService implements OnApplicationShutdown {
-  onApplicationShutdown(signal) {
-    console.log(signal); // 例如 "SIGINT"
+    console.log(signal) // 例如 "SIGINT"
   }
 }
 ```
 
-> info **提示** 调用 `app.close()` 并不会终止 Node 进程，只会触发 `onModuleDestroy()` 和 `onApplicationShutdown()` 钩子。因此，如果存在定时器、长时间运行的后台任务等，进程不会自动退出。
+<CalloutInfo>
+  调用 `app.close()` 并不会终止 Node 进程，只会触发 `onModuleDestroy()` 和 `onApplicationShutdown()`
+  钩子。因此，如果存在定时器、长时间运行的后台任务等，进程不会自动退出。
+</CalloutInfo>

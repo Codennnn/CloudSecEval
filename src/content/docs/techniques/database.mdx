@@ -18,10 +18,9 @@ $ npm install --save @nestjs/typeorm typeorm mysql2
 
 安装完成后，我们可以在根模块 `AppModule` 中导入 `TypeOrmModule`。
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
   imports: [
@@ -40,7 +39,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 export class AppModule {}
 ```
 
-> warning **警告** 生产环境下请勿使用 `synchronize: true`，否则可能导致生产数据丢失。
+<CalloutInfo type="warning">
+  生产环境下请勿使用 `synchronize: true`，否则可能导致生产数据丢失。
+</CalloutInfo>
 
 `forRoot()` 方法支持所有由 [TypeORM](https://typeorm.io/data-source-options#common-data-source-options) 包中 `DataSource` 构造函数暴露的配置项。此外，还提供了如下额外配置项：
 
@@ -73,31 +74,20 @@ export class AppModule {}
   </tbody>
 </table>
 
-> info **提示** 你可以在 [这里](https://typeorm.io/data-source-options) 了解更多数据源配置项。
+<CalloutInfo>
+  你可以在 [这里](https://typeorm.io/data-source-options) 了解更多数据源配置项。
+</CalloutInfo>
 
 一旦完成上述配置，TypeORM 的 `DataSource` 和 `EntityManager` 对象就可以在整个项目中被注入使用（无需额外导入任何模块），例如：
 
-```ts
-@@filename(app.module)
-import { DataSource } from 'typeorm';
+```ts filename='app.module.ts'
+import { DataSource } from 'typeorm'
 
 @Module({
   imports: [TypeOrmModule.forRoot(), UsersModule],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
-}
-@@switch
-import { DataSource } from 'typeorm';
-
-@Dependencies(DataSource)
-@Module({
-  imports: [TypeOrmModule.forRoot(), UsersModule],
-})
-export class AppModule {
-  constructor(dataSource) {
-    this.dataSource = dataSource;
-  }
 }
 ```
 
@@ -107,37 +97,37 @@ export class AppModule {
 
 继续上面的示例，我们至少需要一个实体。下面定义 `User` 实体：
 
-```ts
-@@filename(user.entity)
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+```ts filename='user.entity.ts'
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column()
-  firstName: string;
+  firstName: string
 
   @Column()
-  lastName: string;
+  lastName: string
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive: boolean
 }
 ```
 
-> info **提示** 你可以在 [TypeORM 文档](https://typeorm.io/#/entities) 中了解更多关于实体（Entity）的内容。
+<CalloutInfo>
+  你可以在 [TypeORM 文档](https://typeorm.io/#/entities) 中了解更多关于实体（Entity）的内容。
+</CalloutInfo>
 
 `User` 实体文件位于 `users` 目录。该目录包含了与 `UsersModule` 相关的所有文件。你可以自行决定模型文件的存放位置，但我们推荐将其放在靠近其**领域**的对应模块目录下。
 
 要开始使用 `User` 实体，需要在模块的 `forRoot()` 方法选项中的 `entities` 数组里声明它（除非你使用了静态 glob 路径）：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/user.entity';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { User } from './users/user.entity'
 
 @Module({
   imports: [
@@ -158,13 +148,12 @@ export class AppModule {}
 
 接下来，我们来看一下 `UsersModule`：
 
-```ts
-@@filename(users.module)
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { User } from './user.entity';
+```ts filename='users.module.ts'
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { UsersService } from './users.service'
+import { UsersController } from './users.controller'
+import { User } from './user.entity'
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -176,88 +165,63 @@ export class UsersModule {}
 
 该模块通过 `forFeature()` 方法声明了当前作用域内注册的仓库（Repository）。这样，我们就可以在 `UsersService` 中通过 `@InjectRepository()` 装饰器注入 `UsersRepository`：
 
-```ts
-@@filename(users.service)
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
+```ts filename='users.service.ts'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { User } from './user.entity'
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private usersRepository: Repository<User>
   ) {}
 
   findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.find()
   }
 
   findOne(id: number): Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
+    return this.usersRepository.findOneBy({ id })
   }
 
   async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
-  }
-}
-@@switch
-import { Injectable, Dependencies } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from './user.entity';
-
-@Injectable()
-@Dependencies(getRepositoryToken(User))
-export class UsersService {
-  constructor(usersRepository) {
-    this.usersRepository = usersRepository;
-  }
-
-  findAll() {
-    return this.usersRepository.find();
-  }
-
-  findOne(id) {
-    return this.usersRepository.findOneBy({ id });
-  }
-
-  async remove(id) {
-    await this.usersRepository.delete(id);
+    await this.usersRepository.delete(id)
   }
 }
 ```
 
-> warning **注意** 别忘了在根模块 `AppModule` 中导入 `UsersModule`。
+<CalloutInfo type="warning">
+  <p>别忘了在根模块 `AppModule` 中导入 `UsersModule`。</p>
+</CalloutInfo>
 
 如果你希望在导入了 `TypeOrmModule.forFeature` 的模块之外使用该仓库，需要重新导出由其生成的 provider。你可以像下面这样导出整个模块：
 
-```ts
-@@filename(users.module)
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user.entity';
+```ts filename='users.module.ts'
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { User } from './user.entity'
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  exports: [TypeOrmModule]
+  exports: [TypeOrmModule],
 })
 export class UsersModule {}
 ```
 
 现在，如果我们在 `UserHttpModule` 中导入 `UsersModule`，就可以在后者的 provider 中使用 `@InjectRepository(User)` 了。
 
-```ts
-@@filename(users-http.module)
-import { Module } from '@nestjs/common';
-import { UsersModule } from './users.module';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
+```ts filename='users-http.module.ts'
+import { Module } from '@nestjs/common'
+import { UsersModule } from './users.module'
+import { UsersService } from './users.service'
+import { UsersController } from './users.controller'
 
 @Module({
   imports: [UsersModule],
   providers: [UsersService],
-  controllers: [UsersController]
+  controllers: [UsersController],
 })
 export class UserHttpModule {}
 ```
@@ -302,41 +266,40 @@ export class UserHttpModule {}
 
 在实体（Entity）中定义关系时，需要使用相应的装饰器（Decorator）。例如，如果要定义每个 `User`（用户）可以拥有多张照片，可以使用 `@OneToMany()` 装饰器（Decorator）。
 
-```ts
-@@filename(user.entity)
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Photo } from '../photos/photo.entity';
+```ts filename='user.entity.ts'
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Photo } from '../photos/photo.entity'
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column()
-  firstName: string;
+  firstName: string
 
   @Column()
-  lastName: string;
+  lastName: string
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive: boolean
 
-  @OneToMany(type => Photo, photo => photo.user)
-  photos: Photo[];
+  @OneToMany((type) => Photo, (photo) => photo.user)
+  photos: Photo[]
 }
 ```
 
-> info **提示**
-> 想要了解更多关于 TypeORM 关系的内容，请访问 [TypeORM 官方文档](https://typeorm.io/#/relations)。
+<CalloutInfo>
+  想要了解更多关于 TypeORM 关系的内容，请访问 [TypeORM 官方文档](https://typeorm.io/#/relations)。
+</CalloutInfo>
 
 ## 自动加载实体
 
 手动将实体（Entity）添加到数据源配置对象的 `entities` 数组中，过程繁琐。而且，如果在根模块（Root Module）中引用实体，会打破应用的领域边界，并导致实现细节泄漏到应用的其他部分。为了解决这个问题，Nest 提供了一种替代方案。你可以通过在配置对象（传递给 `forRoot()` 方法）中设置 `autoLoadEntities` 属性为 `true`，实现实体的自动加载，示例如下：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
   imports: [
@@ -351,7 +314,10 @@ export class AppModule {}
 
 启用该选项后，通过 `forFeature()` 方法注册的每个实体都会被自动添加到配置对象的 `entities` 数组中。
 
-> warning **警告** 请注意，仅通过实体间关系被引用、但未通过 `forFeature()` 方法注册的实体，不会被 `autoLoadEntities` 设置自动包含。
+<CalloutInfo type="warning">
+  仅通过实体间关系被引用、但未通过 `forFeature()` 方法注册的实体，不会被 `autoLoadEntities`
+  设置自动包含。
+</CalloutInfo>
 
 ## 分离实体定义
 
@@ -425,7 +391,9 @@ export class UsersService {
 }
 ```
 
-> info **提示** `DataSource` 类需从 `typeorm` 包中导入。
+<CalloutInfo>
+  <p>`DataSource` 类需从 `typeorm` 包中导入。</p>
+</CalloutInfo>
 
 现在，我们可以使用该对象来创建事务。
 
@@ -450,7 +418,11 @@ async createMany(users: User[]) {
 }
 ```
 
-> info **提示** 请注意，`dataSource` 仅用于创建 `QueryRunner`。然而，测试该类时需要模拟整个 `DataSource` 对象（它暴露了多个方法）。因此，我们建议使用一个辅助工厂类（如 `QueryRunnerFactory`），并定义一个只包含维护事务所需方法的接口。这样可以更方便地对这些方法进行模拟。
+<CalloutInfo>
+  请注意，`dataSource` 仅用于创建 `QueryRunner`。然而，测试该类时需要模拟整个 `DataSource`
+  对象（它暴露了多个方法）。因此，我们建议使用一个辅助工厂类（如
+  `QueryRunnerFactory`），并定义一个只包含维护事务所需方法的接口。这样可以更方便地对这些方法进行模拟。
+</CalloutInfo>
 
 另外，你也可以使用 `DataSource` 对象的 `transaction` 方法，采用回调风格来处理事务（[阅读更多](https://typeorm.io/#/transactions/creating-and-using-transactions)）。
 
@@ -487,7 +459,10 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
 }
 ```
 
-> error **警告** 事件订阅者（Event subscribers）不能为[请求作用域](/fundamentals/injection-scopes)（request-scoped）。
+<CalloutInfo type="error">
+  事件订阅者（Event
+  subscribers）不能为[请求作用域](/fundamentals/injection-scopes)（request-scoped）。
+</CalloutInfo>
 
 现在，将 `UserSubscriber` 类添加到 `providers`（提供者）数组中：
 
@@ -507,7 +482,10 @@ import { UserSubscriber } from './user.subscriber'
 export class UsersModule {}
 ```
 
-> info **提示** 你可以在 [这里](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber) 了解更多关于实体订阅者的信息。
+<CalloutInfo>
+  你可以在 [这里](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber)
+  了解更多关于实体订阅者的信息。
+</CalloutInfo>
 
 ## 数据库迁移（Migrations）
 
@@ -549,19 +527,26 @@ const defaultOptions = {
 export class AppModule {}
 ```
 
-> warning **注意** 如果你没有为数据源（data source）设置 `name`，则其名称会被设为 `default`。请注意，**不要**创建多个未命名或同名的连接，否则它们会被覆盖。
+<CalloutInfo type="warning">
+  如果你没有为数据源（data source）设置 `name`，则其名称会被设为
+  `default`。请注意，**不要**创建多个未命名或同名的连接，否则它们会被覆盖。
+</CalloutInfo>
 
-> warning **注意** 如果你使用 `TypeOrmModule.forRootAsync`，**也必须**在 `useFactory` 之外设置数据源名称。例如：
->
-> ```ts
-> TypeOrmModule.forRootAsync({
->   name: 'albumsConnection',
->   useFactory: ...,
->   inject: ...,
-> }),
-> ```
->
-> 详情可参考 [这个 issue](https://github.com/nestjs/typeorm/issues/86)。
+<CalloutInfo type="warning">
+<p>
+如果你使用 `TypeOrmModule.forRootAsync`，**也必须**在 `useFactory` 之外设置数据源名称。例如：
+</p>
+
+```ts
+TypeOrmModule.forRootAsync({
+  name: 'albumsConnection',
+  useFactory: ...,
+  inject: ...,
+}),
+```
+
+<p>详情可参考 [这个 issue](https://github.com/nestjs/typeorm/issues/86)。</p>
+</CalloutInfo>
 
 此时，你已经将 `User` 和 `Album` 实体分别注册到了各自的数据源中。在这种配置下，你需要在调用 `TypeOrmModule.forFeature()` 方法和使用 `@InjectRepository()` 装饰器时，指定应使用哪个数据源。如果不传递数据源名称，则会默认使用 `default` 数据源。
 
@@ -706,7 +691,10 @@ TypeOrmModule.forRootAsync({
 
 这种写法与 `useClass` 类似，但有一个关键区别 —— `TypeOrmModule` 会在已导入的模块中查找并复用现有的 `ConfigService`，而不是新建一个实例。
 
-> info **提示** 请确保 `name` 属性与 `useFactory`、`useClass` 或 `useValue` 属性处于同一级别。这样可以让 Nest 正确地在相应的注入令牌下注册数据源。
+<CalloutInfo>
+  请确保 `name` 属性与 `useFactory`、`useClass` 或 `useValue` 属性处于同一级别。这样可以让 Nest
+  正确地在相应的注入令牌下注册数据源。
+</CalloutInfo>
 
 ## 自定义数据源工厂（Custom DataSource Factory）
 
@@ -739,7 +727,9 @@ TypeOrmModule.forRootAsync({
 })
 ```
 
-> info **提示** `DataSource` 类需从 `typeorm` 包中导入。
+<CalloutInfo>
+  <p>`DataSource` 类需从 `typeorm` 包中导入。</p>
+</CalloutInfo>
 
 ## 示例
 
@@ -760,10 +750,9 @@ $ npm install --save-dev @types/sequelize
 
 依赖安装完成后，我们可以在根模块（AppModule）中导入 `SequelizeModule`。
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { SequelizeModule } from '@nestjs/sequelize'
 
 @Module({
   imports: [
@@ -830,25 +819,13 @@ export class AppModule {}
 
 完成上述配置后，`Sequelize` 对象会在整个项目中自动可用（无需额外导入模块），例如：
 
-```ts
-@@filename(app.service)
-import { Injectable } from '@nestjs/common';
-import { Sequelize } from 'sequelize-typescript';
+```ts filename='app.service.ts'
+import { Injectable } from '@nestjs/common'
+import { Sequelize } from 'sequelize-typescript'
 
 @Injectable()
 export class AppService {
   constructor(private sequelize: Sequelize) {}
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-import { Sequelize } from 'sequelize-typescript';
-
-@Dependencies(Sequelize)
-@Injectable()
-export class AppService {
-  constructor(sequelize) {
-    this.sequelize = sequelize;
-  }
 }
 ```
 
@@ -856,34 +833,35 @@ export class AppService {
 
 Sequelize 实现了 Active Record（活动记录）模式。采用这种模式时，你可以直接通过模型类与数据库进行交互。继续前面的示例，我们至少需要一个模型。下面我们来定义 `User` 模型。
 
-```ts
-@@filename(user.model)
-import { Column, Model, Table } from 'sequelize-typescript';
+```ts filename='user.model.ts'
+import { Column, Model, Table } from 'sequelize-typescript'
 
 @Table
 export class User extends Model {
   @Column
-  firstName: string;
+  firstName: string
 
   @Column
-  lastName: string;
+  lastName: string
 
   @Column({ defaultValue: true })
-  isActive: boolean;
+  isActive: boolean
 }
 ```
 
-> info **提示** 你可以在 [这里](https://github.com/RobinBuschmann/sequelize-typescript#column) 了解更多可用的装饰器（Decorator）信息。
+<CalloutInfo>
+  你可以在 [这里](https://github.com/RobinBuschmann/sequelize-typescript#column)
+  了解更多可用的装饰器（Decorator）信息。
+</CalloutInfo>
 
 `User` 模型文件位于 `users` 目录。该目录包含了所有与 `UsersModule`（用户模块）相关的文件。你可以自行决定模型文件的存放位置，但我们推荐将其放在靠近其**领域**的对应模块目录下。
 
 要开始使用 `User` 模型，需要通过在模块的 `forRoot()` 方法选项中的 `models` 数组插入该模型，让 Sequelize 知道它的存在：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './users/user.model';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { SequelizeModule } from '@nestjs/sequelize'
+import { User } from './users/user.model'
 
 @Module({
   imports: [
@@ -903,13 +881,12 @@ export class AppModule {}
 
 接下来，我们来看一下 `UsersModule`：
 
-```ts
-@@filename(users.module)
-import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './user.model';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
+```ts filename='users.module.ts'
+import { Module } from '@nestjs/common'
+import { SequelizeModule } from '@nestjs/sequelize'
+import { User } from './user.model'
+import { UsersController } from './users.controller'
+import { UsersService } from './users.service'
 
 @Module({
   imports: [SequelizeModule.forFeature([User])],
@@ -921,21 +898,20 @@ export class UsersModule {}
 
 该模块通过 `forFeature()` 方法定义了当前作用域内注册的模型。有了这个配置后，我们就可以在 `UsersService`（用户服务）中通过 `@InjectModel()` 装饰器注入 `User` 模型：
 
-```ts
-@@filename(users.service)
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { User } from './user.model';
+```ts filename='users.service.ts'
+import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/sequelize'
+import { User } from './user.model'
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User)
-    private userModel: typeof User,
+    private userModel: typeof User
   ) {}
 
   async findAll(): Promise<User[]> {
-    return this.userModel.findAll();
+    return this.userModel.findAll()
   }
 
   findOne(id: string): Promise<User> {
@@ -943,76 +919,47 @@ export class UsersService {
       where: {
         id,
       },
-    });
+    })
   }
 
   async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
-    await user.destroy();
-  }
-}
-@@switch
-import { Injectable, Dependencies } from '@nestjs/common';
-import { getModelToken } from '@nestjs/sequelize';
-import { User } from './user.model';
-
-@Injectable()
-@Dependencies(getModelToken(User))
-export class UsersService {
-  constructor(usersRepository) {
-    this.usersRepository = usersRepository;
-  }
-
-  async findAll() {
-    return this.userModel.findAll();
-  }
-
-  findOne(id) {
-    return this.userModel.findOne({
-      where: {
-        id,
-      },
-    });
-  }
-
-  async remove(id) {
-    const user = await this.findOne(id);
-    await user.destroy();
+    const user = await this.findOne(id)
+    await user.destroy()
   }
 }
 ```
 
-> warning **注意** 别忘了将 `UsersModule`导入到根模块 `AppModule`中。
+<CalloutInfo>
+  <p>别忘了将 `UsersModule`导入到根模块 `AppModule`中。</p>
+</CalloutInfo>
 
 如果你希望在导入了 `SequelizeModule.forFeature` 的模块之外使用该模型的仓库（Repository），需要重新导出由其生成的提供者（Provider）。
 你可以像下面这样导出整个模块：
 
-```ts
-@@filename(users.module)
-import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './user.entity';
+```ts filename='users.module.ts'
+import { Module } from '@nestjs/common'
+import { SequelizeModule } from '@nestjs/sequelize'
+import { User } from './user.entity'
 
 @Module({
   imports: [SequelizeModule.forFeature([User])],
-  exports: [SequelizeModule]
+  exports: [SequelizeModule],
 })
 export class UsersModule {}
 ```
 
 现在，如果我们在 `UserHttpModule`中导入 `UsersModule`，就可以在后者的提供者中使用 `@InjectModel(User)` 了。
 
-```ts
-@@filename(users-http.module)
-import { Module } from '@nestjs/common';
-import { UsersModule } from './users.module';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
+```ts filename='users-http.module.ts'
+import { Module } from '@nestjs/common'
+import { UsersModule } from './users.module'
+import { UsersService } from './users.service'
+import { UsersController } from './users.controller'
 
 @Module({
   imports: [UsersModule],
   providers: [UsersService],
-  controllers: [UsersController]
+  controllers: [UsersController],
 })
 export class UserHttpModule {}
 ```
@@ -1048,38 +995,38 @@ export class UserHttpModule {}
 
 在模型中定义关系时，需要使用相应的 **装饰器（Decorator）**。例如，如果要定义每个 `User`（用户）可以拥有多张照片，可以使用 `@HasMany()` 装饰器。
 
-```ts
-@@filename(user.model)
-import { Column, Model, Table, HasMany } from 'sequelize-typescript';
-import { Photo } from '../photos/photo.model';
+```ts filename='user.model.ts'
+import { Column, Model, Table, HasMany } from 'sequelize-typescript'
+import { Photo } from '../photos/photo.model'
 
 @Table
 export class User extends Model {
   @Column
-  firstName: string;
+  firstName: string
 
   @Column
-  lastName: string;
+  lastName: string
 
   @Column({ defaultValue: true })
-  isActive: boolean;
+  isActive: boolean
 
   @HasMany(() => Photo)
-  photos: Photo[];
+  photos: Photo[]
 }
 ```
 
-> info **提示**
-> 想要了解更多关于 Sequelize 关联（association）的内容，请阅读[此章节](https://github.com/RobinBuschmann/sequelize-typescript#model-association)。
+<CalloutInfo>
+  想要了解更多关于 Sequelize
+  关联（association）的内容，请阅读[此章节](https://github.com/RobinBuschmann/sequelize-typescript#model-association)。
+</CalloutInfo>
 
 ## 自动加载模型
 
 手动将模型（Model）添加到连接配置的 `models` 数组中既繁琐又容易出错。此外，在根模块（Root Module）中引用模型，会打破应用的领域边界，并导致实现细节泄漏到应用的其他部分。为了解决这个问题，可以通过在 `forRoot()` 方法的配置对象中同时设置 `autoLoadModels` 和 `synchronize` 属性为 `true`，实现自动加载模型，如下所示：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { SequelizeModule } from '@nestjs/sequelize'
 
 @Module({
   imports: [
@@ -1095,7 +1042,10 @@ export class AppModule {}
 
 启用该选项后，通过 `forFeature()` 方法注册的每个模型都会被自动添加到配置对象的 `models` 数组中。
 
-> warning **警告** 请注意，仅通过模型间关联（association）被引用、但未通过 `forFeature()` 方法注册的模型，将不会被包含在内。
+<CalloutInfo type="warning">
+  请注意，仅通过模型间关联（association）被引用、但未通过 `forFeature()`
+  方法注册的模型，将不会被包含在内。
+</CalloutInfo>
 
 ## Sequelize 事务
 
@@ -1112,7 +1062,9 @@ export class UsersService {
 }
 ```
 
-> info **提示** `Sequelize` 类需从 `sequelize-typescript` 包中导入。
+<CalloutInfo>
+  <p>`Sequelize` 类需从 `sequelize-typescript` 包中导入。</p>
+</CalloutInfo>
 
 现在，我们可以使用该对象来创建事务。
 
@@ -1138,7 +1090,11 @@ async createMany() {
 }
 ```
 
-> info **提示** 请注意，`Sequelize` 实例仅用于启动事务。然而，若要对该类进行测试，则需要模拟整个 `Sequelize` 对象（该对象暴露了多个方法）。因此，我们推荐使用一个辅助工厂类（如 `TransactionRunner`），并定义一个仅包含维护事务所需方法的接口。此技巧可以让模拟这些方法变得非常简单。
+<CalloutInfo>
+  请注意，`Sequelize` 实例仅用于启动事务。然而，若要对该类进行测试，则需要模拟整个 `Sequelize`
+  对象（该对象暴露了多个方法）。因此，我们推荐使用一个辅助工厂类（如
+  `TransactionRunner`），并定义一个仅包含维护事务所需方法的接口。此技巧可以让模拟这些方法变得非常简单。
+</CalloutInfo>
 
 ## 迁移
 
@@ -1180,7 +1136,10 @@ const defaultOptions = {
 export class AppModule {}
 ```
 
-> warning **注意** 如果你没有为连接设置 `name`，则该连接的名称会被设置为 `default`。请注意，不应存在多个未命名或同名的连接，否则它们会被覆盖。
+<CalloutInfo type="warning">
+  如果你没有为连接设置 `name`，则该连接的名称会被设置为
+  `default`。请注意，不应存在多个未命名或同名的连接，否则它们会被覆盖。
+</CalloutInfo>
 
 此时，你已经将 `User` 和 `Album` 模型分别注册到了各自的连接中。在这种设置下，你需要在 `SequelizeModule.forFeature()` 方法和 `@InjectModel()` 装饰器（Decorator）中指定要使用的连接名称。如果没有传递连接名称，则会使用 `default` 连接。
 

@@ -39,6 +39,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@nestjs/common": "^11.1.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.1",
     "@shikijs/transformers": "^3.4.2",
     "@shikijs/twoslash": "^3.4.2",
@@ -51,6 +52,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.5.3",
     "rehype-mdx-code-props": "^3.0.1",
+    "rehype-slug": "^6.0.0",
     "shiki": "^3.4.2",
     "stylelint": "^16.19.1",
     "stylelint-config-clean-order": "^7.0.0",

@@ -19,13 +19,13 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   const getColor = () => {
     switch (type) {
       case 'info':
-        return 'text-blue-500'
+        return 'text-blue-500 border-blue-500'
 
       case 'warning':
-        return 'text-orange-500'
+        return 'text-amber-500 border-amber-500'
 
       case 'error':
-        return 'text-red-500'
+        return 'text-red-500 border-red-500'
     }
   }
 
@@ -57,7 +57,7 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
         return '注意'
 
       case 'error':
-        return '错误'
+        return '警告'
 
       case 'success':
         return '成功'
@@ -72,7 +72,13 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   }
 
   return (
-    <Alert className={cn('not-first:mt-5 prose-p:first:mt-0 prose-p:last:mb-0', getColor())} variant={getVariant()}>
+    <Alert
+      className={cn(
+        'not-first:mt-5 prose-p:first:mt-0 prose-p:last:mb-0',
+        getColor(),
+      )}
+      variant={getVariant()}
+    >
       {getIcon()}
 
       <AlertTitle>{title ?? getDefaultTitle()}</AlertTitle>
