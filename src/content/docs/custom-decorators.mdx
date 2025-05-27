@@ -1,6 +1,6 @@
 # 自定义路由装饰器
 
-Nest 的核心基于一种被称为 **装饰器（Decorator）** 的语言特性。装饰器在许多主流编程语言中都是广为人知的概念，但在 JavaScript 世界中仍然相对较新。为了更好地理解装饰器的工作原理，建议阅读[这篇文章](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841)。下面是一个简单的定义：
+Nest 的核心基于一种被称为 **装饰器** 的语言特性。装饰器在许多主流编程语言中都是广为人知的概念，但在 JavaScript 世界中仍然相对较新。为了更好地理解装饰器的工作原理，建议阅读[这篇文章](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841)。下面是一个简单的定义：
 
 > ES2016 装饰器是一种返回函数的表达式，可以接收目标对象、名称和属性描述符作为参数。你可以通过在需要装饰的内容前加上 `@` 字符来应用装饰器。装饰器既可以用于类，也可以用于方法或属性。
 
@@ -125,7 +125,7 @@ async findOne(@User('firstName') firstName: string) {
 
 ## 配合管道（Working with pipes）
 
-Nest 对自定义参数装饰器的处理方式与内置装饰器（如 `@Body()`、`@Param()` 和 `@Query()`）一致。这意味着自定义装饰器参数同样会执行管道（Pipe）。此外，你还可以直接在自定义装饰器上应用管道：
+Nest 对自定义参数装饰器的处理方式与内置装饰器（如 `@Body()`、`@Param()` 和 `@Query()`）一致。这意味着自定义装饰器参数同样会执行管道。此外，你还可以直接在自定义装饰器上应用管道：
 
 ```ts
 @Get()

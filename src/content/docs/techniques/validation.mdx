@@ -1,6 +1,6 @@
 # 验证（Validation）
 
-在 Web 应用中，验证传入数据的正确性是一项最佳实践。为了自动验证传入请求，Nest 提供了多种开箱即用的管道（Pipe）：
+在 Web 应用中，验证传入数据的正确性是一项最佳实践。为了自动验证传入请求，Nest 提供了多种开箱即用的管道：
 
 - `验证管道（ValidationPipe）`
 - `ParseIntPipe`
@@ -167,7 +167,7 @@ create(@Body() createUserDto: CreateUserDto) {
   type {CreateUserDto}`。
 </CalloutInfo>
 
-现在我们可以在 `CreateUserDto` 中添加一些验证规则。这些规则是通过 `class-validator` 包提供的装饰器（Decorator）来实现的，详细说明可参考 [这里](https://github.com/typestack/class-validator#validation-decorators)。通过这种方式，任何使用 `CreateUserDto` 的路由都会自动强制执行这些验证规则。
+现在我们可以在 `CreateUserDto` 中添加一些验证规则。这些规则是通过 `class-validator` 包提供的装饰器来实现的，详细说明可参考 [这里](https://github.com/typestack/class-validator#validation-decorators)。通过这种方式，任何使用 `CreateUserDto` 的路由都会自动强制执行这些验证规则。
 
 ```ts
 import { IsEmail, IsNotEmpty } from 'class-validator'

@@ -315,7 +315,7 @@ return {
 
 ## 使用独立应用功能
 
-另外，如果你希望让你的函数保持非常轻量，并且不需要任何 HTTP 相关功能（如路由、守卫（Guard）、拦截器（Interceptor）、管道等），你可以像前文所述，直接使用 `NestFactory.createApplicationContext`，而不是运行整个 HTTP 服务器（底层为 `express`），示例如下：
+另外，如果你希望让你的函数保持非常轻量，并且不需要任何 HTTP 相关功能（如路由、守卫（Guard）、拦截器、管道等），你可以像前文所述，直接使用 `NestFactory.createApplicationContext`，而不是运行整个 HTTP 服务器（底层为 `express`），示例如下：
 
 ```ts filename='main.ts'
 import { HttpStatus } from '@nestjs/common'

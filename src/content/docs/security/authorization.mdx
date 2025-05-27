@@ -323,7 +323,7 @@ ability.can(Action.Update, article) // false
 
 ## 进阶：实现 `PoliciesGuard`（策略守卫）
 
-本节将演示如何构建一个更为复杂的守卫（Guard），用于检查用户是否满足可在方法级别配置的特定**授权策略（authorization policies）**。你也可以扩展它以支持类级别的策略配置。本例中，我们仅以 CASL 包为例进行说明，但实际使用中并不一定要选择该库。此外，我们将使用在上一节中创建的 `CaslAbilityFactory` 提供者（Provider）。
+本节将演示如何构建一个更为复杂的守卫，用于检查用户是否满足可在方法级别配置的特定**授权策略（authorization policies）**。你也可以扩展它以支持类级别的策略配置。本例中，我们仅以 CASL 包为例进行说明，但实际使用中并不一定要选择该库。此外，我们将使用在上一节中创建的 `CaslAbilityFactory` 提供者（Provider）。
 
 首先，让我们明确需求。目标是提供一种机制，允许为每个路由处理器（Route Handler）指定策略检查。我们将同时支持对象和函数两种方式（适用于简单检查或偏好函数式风格代码的开发者）。
 
@@ -343,7 +343,7 @@ export type PolicyHandler = IPolicyHandler | PolicyHandlerCallback
 
 如上所述，我们提供了两种定义策略处理器的方式：一种是对象（实现了 `IPolicyHandler` 接口的类实例），另一种是函数（符合 `PolicyHandlerCallback` 类型）。
 
-有了这些定义，我们可以创建一个 `@CheckPolicies()` 装饰器（Decorator）。该装饰器允许指定访问特定资源必须满足的策略。
+有了这些定义，我们可以创建一个 `@CheckPolicies()` 装饰器。该装饰器允许指定访问特定资源必须满足的策略。
 
 ```ts
 export const CHECK_POLICIES_KEY = 'check_policy'
