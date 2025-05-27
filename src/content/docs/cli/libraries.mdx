@@ -33,25 +33,33 @@ What prefix would you like to use for the library (default: @app)?
 
 为库生成的文件与为应用生成的文件略有不同。以下是在执行上述命令后 `libs` 文件夹的内容：
 
-<div class="file-tree">
-  <div class="item">libs</div>
-  <div class="children">
-    <div class="item">my-library</div>
-    <div class="children">
-      <div class="item">src</div>
-      <div class="children">
-        <div class="item">index.ts</div>
-        <div class="item">my-library.module.ts</div>
-        <div class="item">my-library.service.ts</div>
-      </div>
-      <div class="item">tsconfig.lib.json</div>
-    </div>
-  </div>
-</div>
+<FileTree
+  data={[
+    {
+      name: 'libs',
+      children: [
+        {
+          name: 'my-library',
+          children: [
+            {
+              name: 'src',
+              children: [
+                { name: 'index.ts' },
+                { name: 'my-library.module.ts' },
+                { name: 'my-library.service.ts' },
+              ],
+            },
+            { name: 'tsconfig.lib.json' },
+          ],
+        },
+      ],
+    },
+  ]}
+/>
 
 `nest-cli.json` 文件会在 `"projects"` 键下为该库新增一项：
 
-```javascript
+```js
 ...
 {
     "my-library": {
@@ -103,7 +111,7 @@ export class AppModule {}
 
 请注意，上述 ES 模块的 `import` 语句中使用了 `@app` 路径别名，这正是我们在前面通过 `nest g library` 命令指定的 `prefix`。在底层，Nest 通过 tsconfig 路径映射（path mapping）来实现这一点。当添加库时，Nest 会自动更新全局（monorepo）`tsconfig.json` 文件中的 `"paths"` 配置项，如下所示：
 
-```javascript
+```js
 "paths": {
     "@app/my-library": [
         "libs/my-library/src"

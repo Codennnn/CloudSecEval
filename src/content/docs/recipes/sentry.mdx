@@ -10,16 +10,19 @@
 $ npm install --save @sentry/nestjs @sentry/profiling-node
 ```
 
-> info **提示** `@sentry/profiling-node` 是可选依赖，但推荐用于性能分析。
+<CalloutInfo>
+
+`@sentry/profiling-node` 是可选依赖，但推荐用于性能分析。
+
+</CalloutInfo>
 
 ## 基本配置
 
 要开始使用 Sentry，需要新建一个名为 `instrument.ts` 的文件，并确保在应用中最先被引入：
 
-```ts
-@@filename(instrument)
-const Sentry = require("@sentry/nestjs");
-const { nodeProfilingIntegration } = require("@sentry/profiling-node");
+```ts filename='instrument.ts'
+const Sentry = require('@sentry/nestjs')
+const { nodeProfilingIntegration } = require('@sentry/profiling-node')
 
 // 一定要在引入其他模块前调用！
 Sentry.init({
@@ -36,36 +39,33 @@ Sentry.init({
   // 设置性能分析采样率
   // 该值相对于 tracesSampleRate
   profilesSampleRate: 1.0,
-});
+})
 ```
 
 在 `main.ts` 文件中，需确保最先引入 `instrument.ts`，再引入其他模块：
 
-```ts
-@@filename(main)
-// 一定要最先引入！
-import "./instrument";
+```ts filename='main.ts'
+import './instrument' // 一定要最先引入！
 
 // 然后再引入其他模块
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  const app = await NestFactory.create(AppModule)
+  await app.listen(3000)
 }
 
-bootstrap();
+bootstrap()
 ```
 
 接下来，在主模块中将 `SentryModule` 作为根模块引入：
 
-```ts
-@@filename(app.module)
-import { Module } from "@nestjs/common";
-import { SentryModule } from "@sentry/nestjs/setup";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { SentryModule } from '@sentry/nestjs/setup'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
 
 @Module({
   imports: [
@@ -99,13 +99,16 @@ export class YourCatchAllExceptionFilter implements ExceptionFilter {
 
 如果你没有全局兜底异常过滤器，可以在主模块的 providers 中添加 `SentryGlobalFilter`。该过滤器会将未被其他异常过滤器捕获的所有未处理错误上报到 Sentry。
 
-> warning **警告** `SentryGlobalFilter` 必须在所有其他异常过滤器之前注册。
+<CalloutInfo type="warning">
 
-```ts
-@@filename(app.module)
-import { Module } from "@nestjs/common";
-import { APP_FILTER } from "@nestjs/core";
-import { SentryGlobalFilter } from "@sentry/nestjs/setup";
+`SentryGlobalFilter` 必须在所有其他异常过滤器之前注册。
+
+</CalloutInfo>
+
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { APP_FILTER } from '@nestjs/core'
+import { SentryGlobalFilter } from '@sentry/nestjs/setup'
 
 @Module({
   providers: [

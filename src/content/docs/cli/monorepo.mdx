@@ -31,20 +31,24 @@ $ nest new my-project
 
 此时我们构建了一个 _标准模式_ 结构，其文件夹结构如下：
 
-<div class="file-tree">
-  <div class="item">node_modules</div>
-  <div class="item">src</div>
-  <div class="children">
-    <div class="item">app.controller.ts</div>
-    <div class="item">app.module.ts</div>
-    <div class="item">app.service.ts</div>
-    <div class="item">main.ts</div>
-  </div>
-  <div class="item">nest-cli.json</div>
-  <div class="item">package.json</div>
-  <div class="item">tsconfig.json</div>
-  <div class="item">eslint.config.mjs</div>
-</div>
+<FileTree
+  data={[
+    { name: 'node_modules', type: 'folder' },
+    {
+      name: 'src',
+      children: [
+        { name: 'app.controller.ts' },
+        { name: 'app.module.ts' },
+        { name: 'app.service.ts' },
+        { name: 'main.ts' },
+      ],
+    },
+    { name: 'nest-cli.json' },
+    { name: 'package.json' },
+    { name: 'tsconfig.json' },
+    { name: 'eslint.config.mjs' },
+  ]}
+/>
 
 我们可以通过如下方式将其转换为 monorepo 模式结构：
 
@@ -55,41 +59,57 @@ $ nest generate app my-app
 
 此时，`nest` 会将现有结构转换为 **monorepo 模式** 结构。这会带来几个重要变化。文件夹结构现在如下所示：
 
-<div class="file-tree">
-  <div class="item">apps</div>
-  <div class="children">
-    <div class="item">my-app</div>
-    <div class="children">
-      <div class="item">src</div>
-      <div class="children">
-        <div class="item">app.controller.ts</div>
-        <div class="item">app.module.ts</div>
-        <div class="item">app.service.ts</div>
-        <div class="item">main.ts</div>
-      </div>
-      <div class="item">tsconfig.app.json</div>
-    </div>
-    <div class="item">my-project</div>
-    <div class="children">
-      <div class="item">src</div>
-      <div class="children">
-        <div class="item">app.controller.ts</div>
-        <div class="item">app.module.ts</div>
-        <div class="item">app.service.ts</div>
-        <div class="item">main.ts</div>
-      </div>
-      <div class="item">tsconfig.app.json</div>
-    </div>
-  </div>
-  <div class="item">nest-cli.json</div>
-  <div class="item">package.json</div>
-  <div class="item">tsconfig.json</div>
-  <div class="item">eslint.config.mjs</div>
-</div>
+<FileTree
+  data={[
+    {
+      name: 'apps',
+      children: [
+        {
+          name: 'my-app',
+          children: [
+            {
+              name: 'src',
+              children: [
+                { name: 'app.controller.ts' },
+                { name: 'app.module.ts' },
+                { name: 'app.service.ts' },
+                { name: 'main.ts' },
+              ],
+            },
+            { name: 'tsconfig.app.json' },
+          ],
+        },
+        {
+          name: 'my-project',
+          children: [
+            {
+              name: 'src',
+              children: [
+                { name: 'app.controller.ts' },
+                { name: 'app.module.ts' },
+                { name: 'app.service.ts' },
+                { name: 'main.ts' },
+              ],
+            },
+            { name: 'tsconfig.app.json' },
+          ],
+        },
+      ],
+    },
+    { name: 'nest-cli.json' },
+    { name: 'package.json' },
+    { name: 'tsconfig.json' },
+    { name: 'eslint.config.mjs' },
+  ]}
+/>
 
 `generate app` 原型生成器（Schematics）会对代码进行重组 —— 将每个 **应用（Application）** 项目移动到 `apps` 文件夹下，并在每个项目根目录下添加项目专属的 `tsconfig.app.json` 文件。我们最初的 `my-project` 应用现在成为 monorepo 的**默认项目（default project）**，并与刚刚添加的 `my-app` 作为同级项目，共同位于 `apps` 文件夹下。关于默认项目的内容我们将在下文介绍。
 
-> error **警告** 只有遵循标准 Nest 项目结构的项目，才能成功将标准模式结构转换为 monorepo。具体来说，在转换过程中，原型生成器尝试将 `src` 和 `test` 文件夹迁移到根目录下的 `apps` 文件夹中。如果项目未采用该结构，转换过程可能会失败或产生不可预期的结果。
+<CalloutInfo type="warning">
+  只有遵循标准 Nest 项目结构的项目，才能成功将标准模式结构转换为
+  monorepo。具体来说，在转换过程中，原型生成器尝试将 `src` 和 `test` 文件夹迁移到根目录下的 `apps`
+  文件夹中。如果项目未采用该结构，转换过程可能会失败或产生不可预期的结果。
+</CalloutInfo>
 
 ## 工作空间项目
 
@@ -132,7 +152,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 在按照上述步骤创建多包仓库结构后，我们的 `nest-cli.json` 文件如下所示：
 
-```javascript
+```js
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "apps/my-project/src",
@@ -206,7 +226,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 以下示例使用 boolean 值指定所有项目默认禁用 spec 文件生成：
 
-```javascript
+```js
 {
   "generateOptions": {
     "spec": false
@@ -217,7 +237,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 以下示例使用 boolean 值指定所有项目默认生成扁平结构：
 
-```javascript
+```js
 {
   "generateOptions": {
     "flat": true
@@ -228,7 +248,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 在下例中，仅为 `service` 原型生成器（如 `nest generate service...`）禁用 spec 文件生成：
 
-```javascript
+```js
 {
   "generateOptions": {
     "spec": {
@@ -239,19 +259,24 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 }
 ```
 
-> warning **警告** 当 `spec` 以对象形式指定时，生成 schematic 的 key 目前不支持自动别名处理。这意味着如果只指定了 `service: false`，但通过别名 `s` 生成 service，仍会生成 spec 文件。为确保命令名和别名都按预期工作，请同时指定命令名和别名，如下所示：
->
-> ```javascript
-> {
->   "generateOptions": {
->     "spec": {
->       "service": false,
->       "s": false
->     }
->   },
->   ...
-> }
-> ```
+<CalloutInfo type="warning">
+  <p className='mb-0'>
+    当 `spec` 以对象形式指定时，生成 schematic 的 key 目前不支持自动别名处理。这意味着如果只指定了 `service: false`，但通过别名 `s` 生成 service，仍会生成 spec 文件。为确保命令名和别名都按预期工作，请同时指定命令名和别名，如下所示：
+  </p>
+
+```js
+{
+  "generateOptions": {
+    "spec": {
+      "service": false,
+      "s": false
+    }
+  },
+  ...
+}
+```
+
+</CalloutInfo>
 
 ## 项目专属 generate 选项
 
@@ -259,7 +284,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 项目专属 generate 选项会覆盖全局 generate 选项。
 
-```javascript
+```js
 {
   "projects": {
     "cats-project": {
@@ -275,7 +300,10 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 }
 ```
 
-> warning **警告** generate 选项的优先级顺序如下：命令行中通过 CLI 指定的选项优先级最高，其次是项目专属选项，最后是全局选项。也就是说，命令行选项会覆盖项目专属选项，项目专属选项会覆盖全局选项。
+<CalloutInfo type="warning">
+  generate 选项的优先级顺序如下：命令行中通过 CLI
+  指定的选项优先级最高，其次是项目专属选项，最后是全局选项。也就是说，命令行选项会覆盖项目专属选项，项目专属选项会覆盖全局选项。
+</CalloutInfo>
 
 ## 指定编译器
 
@@ -285,7 +313,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 webpack 配置文件可以包含标准的 [webpack 配置选项](https://webpack.js.org/configuration/)。例如，如果你希望 webpack 打包 `node_modules`（默认情况下会被排除），可以在 `webpack.config.js` 中添加如下内容：
 
-```javascript
+```js
 module.exports = {
   externals: [],
 }
@@ -293,7 +321,7 @@ module.exports = {
 
 由于 webpack 配置文件本质上是一个 JavaScript 文件，你甚至可以导出一个函数，该函数接收默认选项并返回修改后的对象：
 
-```javascript
+```js
 module.exports = function (options) {
   return {
     ...options,
@@ -330,7 +358,10 @@ TypeScript 编译会自动将编译输出（`.js` 和 `.d.ts` 文件）分发到
 ]
 ```
 
-> warning **警告** 如果在顶层 `compilerOptions` 属性中设置了 `watchAssets`，会覆盖 `assets` 属性中任何 `watchAssets` 的设置。
+<CalloutInfo type="warning">
+  如果在顶层 `compilerOptions` 属性中设置了 `watchAssets`，会覆盖 `assets` 属性中任何 `watchAssets`
+  的设置。
+</CalloutInfo>
 
 ## 项目属性
 

@@ -14,30 +14,35 @@ $ npm install --save @nestjs/swagger
 
 安装完成后，打开 `main.ts` 文件，并使用 `SwaggerModule` 类初始化 Swagger：
 
-```ts
-@@filename(main)
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+```ts filename='main.ts'
+import { NestFactory } from '@nestjs/core'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
 
   const config = new DocumentBuilder()
     .setTitle('Cats example')
     .setDescription('The cats API description')
     .setVersion('1.0')
     .addTag('cats')
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+    .build()
+  const documentFactory = () => SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup('api', app, documentFactory)
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
+
+bootstrap()
 ```
 
-> info **提示** 工厂方法 `SwaggerModule#createDocument()` 专门用于在需要时生成 Swagger 文档。此方法有助于节省部分初始化时间，并且生成的文档是一个符合 [OpenAPI 文档](https://swagger.io/specification/#openapi-document) 规范的可序列化对象。除了通过 HTTP 提供该文档外，你还可以将其保存为 JSON 或 YAML 文件，并以多种方式使用。
+<CalloutInfo>
+  工厂方法 `SwaggerModule#createDocument()` 专门用于在需要时生成 Swagger
+  文档。此方法有助于节省部分初始化时间，并且生成的文档是一个符合 [OpenAPI
+  文档](https://swagger.io/specification/#openapi-document) 规范的可序列化对象。除了通过 HTTP
+  提供该文档外，你还可以将其保存为 JSON 或 YAML 文件，并以多种方式使用。
+</CalloutInfo>
 
 `DocumentBuilder` 用于构建符合 OpenAPI 规范的基础文档。它提供了多种方法，可以设置标题、描述、版本等属性。为了生成包含所有 HTTP 路由定义的完整文档，我们使用 `SwaggerModule` 类的 `createDocument()` 方法。该方法接收两个参数：应用实例和 Swagger 配置对象。你也可以传递第三个参数，其类型为 `SwaggerDocumentOptions`。更多内容请参见 [文档选项部分](/openapi/introduction#document-options)。
 
@@ -56,75 +61,78 @@ $ npm run start
 
 应用运行后，在浏览器中访问 `http://localhost:3000/api`，你将看到 Swagger UI。
 
-<figure>
-  <img src="/assets/swagger1.png" />
-</figure>
+<DocImage src="/assets/swagger1.png" />
 
 如你所见，`SwaggerModule` 会自动反映你所有的端点。
 
-> info **提示** 如果你想生成并下载 Swagger JSON 文件，可以访问 `http://localhost:3000/api-json`（假设你的 Swagger 文档挂载在 `http://localhost:3000/api`）。
-> 你也可以仅通过 `@nestjs/swagger` 的 setup 方法，将其暴露在自定义路由下，例如：
->
-> ```ts
-> SwaggerModule.setup('swagger', app, documentFactory, {
->   jsonDocumentUrl: 'swagger/json',
-> })
-> ```
->
-> 这样就可以通过 `http://localhost:3000/swagger/json` 访问 JSON 文档。
+<CalloutInfo>
+如果你想生成并下载 Swagger JSON 文件，可以访问 `http://localhost:3000/api-json`（假设你的 Swagger 文档挂载在 `http://localhost:3000/api`）。你也可以仅通过 `@nestjs/swagger` 的 setup 方法，将其暴露在自定义路由下，例如：
 
-> warning **警告** 当你同时使用 `fastify` 和 `helmet` 时，可能会遇到 [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)（内容安全策略）相关问题。为了解决该冲突，请按如下方式配置 CSP：
->
-> ```ts
-> app.register(helmet, {
->   contentSecurityPolicy: {
->     directives: {
->       defaultSrc: [`'self'`],
->       styleSrc: [`'self'`, `'unsafe-inline'`],
->       imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
->       scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
->     },
->   },
-> })
->
-> // 如果你完全不打算使用 CSP，可以这样配置：
-> app.register(helmet, {
->   contentSecurityPolicy: false,
-> })
-> ```
+```ts
+SwaggerModule.setup('swagger', app, documentFactory, {
+  jsonDocumentUrl: 'swagger/json',
+})
+```
+
+这样就可以通过 `http://localhost:3000/swagger/json` 访问 JSON 文档。
+
+</CalloutInfo>
+
+<CalloutInfo type="warning">
+当你同时使用 `fastify` 和 `helmet` 时，可能会遇到 [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)（内容安全策略）相关问题。为了解决该冲突，请按如下方式配置 CSP：
+
+```ts
+app.register(helmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: [`'self'`],
+      styleSrc: [`'self'`, `'unsafe-inline'`],
+      imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+      scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+    },
+  },
+})
+
+// 如果你完全不打算使用 CSP，可以这样配置：
+app.register(helmet, {
+  contentSecurityPolicy: false,
+})
+```
+
+</CalloutInfo>
 
 ## 文档选项
 
 在创建文档时，可以提供一些额外的选项来微调该库的行为。这些选项应为 `SwaggerDocumentOptions` 类型，具体如下：
 
-```TypeScript
+```ts
 export interface SwaggerDocumentOptions {
   /**
    * 要包含在规范中的模块（Module）列表
    */
-  include?: Function[];
+  include?: Function[]
 
   /**
    * 需要检查并包含在规范中的额外模型（Model）
    */
-  extraModels?: Function[];
+  extraModels?: Function[]
 
   /**
    * 如果为 `true`，则 swagger 会忽略通过 `setGlobalPrefix()` 方法设置的全局前缀
    */
-  ignoreGlobalPrefix?: boolean;
+  ignoreGlobalPrefix?: boolean
 
   /**
    * 如果为 `true`，swagger 还会加载由 `include` 模块（Module）导入的模块中的路由
    */
-  deepScanRoutes?: boolean;
+  deepScanRoutes?: boolean
 
   /**
    * 用于生成 `operationId` 的自定义 operationIdFactory，
    * 该工厂函数基于 `controllerKey`、`methodKey` 和版本生成 operationId。
    * @default () => controllerKey_methodKey_version
    */
-  operationIdFactory?: OperationIdFactory;
+  operationIdFactory?: OperationIdFactory
 
   /**
    * 用于生成响应中 `links` 字段名称的自定义 linkNameFactory。
@@ -133,11 +141,7 @@ export interface SwaggerDocumentOptions {
    *
    * @default () => `${controllerKey}_${methodKey}_from_${fieldKey}`
    */
-  linkNameFactory?: (
-    controllerKey: string,
-    methodKey: string,
-    fieldKey: string
-  ) => string;
+  linkNameFactory?: (controllerKey: string, methodKey: string, fieldKey: string) => string
 
   /*
    * 是否基于控制器（Controller）名称自动生成标签（tag）。
@@ -145,34 +149,31 @@ export interface SwaggerDocumentOptions {
    * 否则，将使用去除 `Controller` 后缀的控制器名称作为标签。
    * @default true
    */
-  autoTagControllers?: boolean;
+  autoTagControllers?: boolean
 }
 ```
 
 例如，如果你希望该库生成的操作名称为 `createUser`，而不是 `UsersController_createUser`，可以这样设置：
 
-```TypeScript
-const options: SwaggerDocumentOptions =  {
-  operationIdFactory: (
-    controllerKey: string,
-    methodKey: string
-  ) => methodKey
-};
-const documentFactory = () => SwaggerModule.createDocument(app, config, options);
+```ts
+const options: SwaggerDocumentOptions = {
+  operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+}
+const documentFactory = () => SwaggerModule.createDocument(app, config, options)
 ```
 
 ## 配置选项
 
 你可以通过将满足 `SwaggerCustomOptions` 接口的选项对象，作为 `SwaggerModule#setup` 方法的第四个参数，来配置 Swagger UI。
 
-```TypeScript
+```ts
 export interface SwaggerCustomOptions {
   /**
    * 如果设置为 `true`，Swagger 相关资源路径将会被全局前缀（通过 `setGlobalPrefix()` 设置）所前缀。
    * 默认值：`false`。
    * @see https://docs.nestjs.com/faq/global-prefix
    */
-  useGlobalPrefix?: boolean;
+  useGlobalPrefix?: boolean
 
   /**
    * 如果设置为 `false`，将不会提供 Swagger UI，仅能访问 API 定义（JSON 和 YAML），
@@ -180,14 +181,14 @@ export interface SwaggerCustomOptions {
    * 默认值：`true`。
    * @deprecated 请改用 `ui` 选项。
    */
-  swaggerUiEnabled?: boolean;
+  swaggerUiEnabled?: boolean
 
   /**
    * 如果设置为 `false`，将不会提供 Swagger UI，仅能访问 API 定义（JSON 和 YAML），
    * 可通过 `/{path}-json` 和 `/{path}-yaml` 访问。若要完全禁用 Swagger UI 和 API 定义，请使用 `raw: false`。
    * 默认值：`true`。
    */
-  ui?: boolean;
+  ui?: boolean
 
   /**
    * 如果设置为 `true`，将会提供所有格式的原始定义。
@@ -196,24 +197,24 @@ export interface SwaggerCustomOptions {
    * 使用此选项可以控制 Swagger 相关端点的可用性。
    * 默认值：`true`。
    */
-  raw?: boolean | Array<'json' | 'yaml'>;
+  raw?: boolean | Array<'json' | 'yaml'>
 
   /**
    * 指定 Swagger UI 加载的 API 定义的 URL。
    */
-  swaggerUrl?: string;
+  swaggerUrl?: string
 
   /**
    * 提供 JSON API 定义的路径。
    * 默认值：`<path>-json`。
    */
-  jsonDocumentUrl?: string;
+  jsonDocumentUrl?: string
 
   /**
    * 提供 YAML API 定义的路径。
    * 默认值：`<path>-yaml`。
    */
-  yamlDocumentUrl?: string;
+  yamlDocumentUrl?: string
 
   /**
    * 钩子函数，允许在 OpenAPI 文档被提供前进行修改。
@@ -223,84 +224,88 @@ export interface SwaggerCustomOptions {
     req: TRequest,
     res: TResponse,
     document: OpenAPIObject
-  ) => OpenAPIObject;
+  ) => OpenAPIObject
 
   /**
    * 如果设置为 `true`，将在 Swagger UI 界面中显示 OpenAPI 定义选择器。
    * 默认值：`false`。
    */
-  explorer?: boolean;
+  explorer?: boolean
 
   /**
    * 额外的 Swagger UI 选项
    */
-  swaggerOptions?: SwaggerUiOptions;
+  swaggerOptions?: SwaggerUiOptions
 
   /**
    * 要注入到 Swagger UI 页面的自定义 CSS 样式。
    */
-  customCss?: string;
+  customCss?: string
 
   /**
    * 要在 Swagger UI 页面加载的自定义 CSS 样式表 URL（可为单个或多个）。
    */
-  customCssUrl?: string | string[];
+  customCssUrl?: string | string[]
 
   /**
    * 要在 Swagger UI 页面加载的自定义 JavaScript 文件 URL（可为单个或多个）。
    */
-  customJs?: string | string[];
+  customJs?: string | string[]
 
   /**
    * 要在 Swagger UI 页面加载的自定义 JavaScript 脚本（可为单个或多个）。
    */
-  customJsStr?: string | string[];
+  customJsStr?: string | string[]
 
   /**
    * Swagger UI 页面的自定义 favicon。
    */
-  customfavIcon?: string;
+  customfavIcon?: string
 
   /**
    * Swagger UI 页面的自定义标题。
    */
-  customSiteTitle?: string;
+  customSiteTitle?: string
 
   /**
    * 包含静态 Swagger UI 资源的文件系统路径（如：./node_modules/swagger-ui-dist）。
    */
-  customSwaggerUiPath?: string;
+  customSwaggerUiPath?: string
 
   /**
    * @deprecated 此属性无效。
    */
-  validatorUrl?: string;
+  validatorUrl?: string
 
   /**
    * @deprecated 此属性无效。
    */
-  url?: string;
+  url?: string
 
   /**
    * @deprecated 此属性无效。
    */
-  urls?: Record<'url' | 'name', string>[];
+  urls?: Record<'url' | 'name', string>[]
 }
 ```
 
-> info **提示** `ui` 和 `raw` 是相互独立的选项。禁用 Swagger UI（`ui: false`）不会禁用 API 定义（JSON/YAML）；反之，禁用 API 定义（`raw: []`）也不会禁用 Swagger UI。
->
-> 例如，以下配置将禁用 Swagger UI，但仍允许访问 API 定义：
->
-> ```ts
-> const options: SwaggerCustomOptions = {
->   ui: false, // Swagger UI 已禁用
->   raw: ['json'], // 仍可访问 JSON API 定义（YAML 已禁用）
-> }
-> SwaggerModule.setup('api', app, options)
-> ```
->
-> 在此情况下，http://localhost:3000/api-json 仍然可访问，但 http://localhost:3000/api（Swagger UI）将不可用。
+<CalloutInfo>
+  `ui` 和 `raw` 是相互独立的选项。禁用 Swagger UI（`ui: false`）不会禁用 API
+  定义（JSON/YAML）；反之，禁用 API 定义（`raw: []`）也不会禁用 Swagger UI。
+
+例如，以下配置将禁用 Swagger UI，但仍允许访问 API 定义：
+
+```ts
+const options: SwaggerCustomOptions = {
+  ui: false, // Swagger UI 已禁用
+  raw: ['json'], // 仍可访问 JSON API 定义（YAML 已禁用）
+}
+SwaggerModule.setup('api', app, options)
+```
+
+在此情况下，http://localhost:3000/api-json 仍然可访问，但 http://localhost:3000/api（Swagger UI）将不可用。
+
+</CalloutInfo>
 
 ## 示例
 

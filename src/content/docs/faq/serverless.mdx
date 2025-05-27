@@ -79,7 +79,7 @@ bootstrap()
 
 接下来，我们将所有基准测试重复一遍，但这次使用 `webpack` 进行打包（如果你已安装 [Nest 命令行工具（Nest CLI）](/cli/overview)，可以通过 `nest build --webpack` 命令将应用打包为单一可执行 JavaScript 文件）。不过，我们不会使用 Nest CLI 默认的 `webpack` 配置，而是确保将所有依赖（`node_modules`）一并打包，配置如下：
 
-```javascript
+```js
 module.exports = (options, webpack) => {
   const lazyImports = [
     '@nestjs/microservices/microservices-module',
@@ -274,7 +274,7 @@ $ npx serverless offline
 
 在上文中我们提到，使用 `webpack` 对应用进行打包会显著影响整体启动时间。不过，为了让本例正常运行，还需在 `webpack.config.js` 文件中做一些额外配置。通常，为确保 `handler` 函数能被正确识别，需要将 `output.libraryTarget` 属性设置为 `commonjs2`。
 
-```javascript
+```js
 return {
   ...options,
   externals: [],
@@ -290,7 +290,7 @@ return {
 
 此外，推荐（但**非必需**，因为会降低构建速度）安装 `terser-webpack-plugin` 包，并重写其配置，在生产环境压缩代码时保留类名。否则在应用中使用 `class-validator` 时，可能会出现异常行为。
 
-```javascript
+```js
 const TerserPlugin = require('terser-webpack-plugin')
 
 return {

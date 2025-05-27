@@ -2,7 +2,10 @@
 
 Suites 是一个主张明确且灵活的测试元框架，旨在提升后端系统的软件测试体验。通过将多种测试工具整合到统一框架中，Suites 简化了可靠测试的创建流程，帮助开发者确保高质量软件的开发。
 
-> info **提示** `Suites` 是第三方包，并非由 NestJS 核心团队维护。如遇到该库相关问题，请前往[对应仓库](https://github.com/suites-dev/suites)反馈。
+<CalloutInfo>
+  `Suites` 是第三方包，并非由 NestJS
+  核心团队维护。如遇到该库相关问题，请前往[对应仓库](https://github.com/suites-dev/suites)反馈。
+</CalloutInfo>
 
 ## 简介
 
@@ -16,16 +19,18 @@ Suites 是一个主张明确且灵活的测试元框架，旨在提升后端系�
 $ npm i -D @suites/unit @suites/di.nestjs @suites/doubles.jest
 ```
 
-> info **提示** `Suites` 同样支持 Vitest 和 Sinon 作为测试替身（test double），可分别使用 `@suites/doubles.vitest` 和 `@suites/doubles.sinon`。
+<CalloutInfo>
+  `Suites` 同样支持 Vitest 和 Sinon 作为测试替身（test double），可分别使用 `@suites/doubles.vitest`
+  和 `@suites/doubles.sinon`。
+</CalloutInfo>
 
 ## 示例与模块设置
 
 假设我们有一个 `CatsService` 的模块设置，其中包含了 `CatsApiService`、`CatsDAL`、`HttpClient` 和 `Logger`。这将作为本示例的基础：
 
-```ts
-@@filename(cats.module)
-import { HttpModule } from '@nestjs/axios';
-import { PrismaModule } from '../prisma.module';
+```ts filename='cats.module.ts'
+import { HttpModule } from '@nestjs/axios'
+import { PrismaModule } from '../prisma.module'
 
 @Module({
   imports: [HttpModule.register({ baseUrl: 'https://api.cats.com/' }), PrismaModule],
@@ -39,51 +44,55 @@ export class CatsModule {}
 
 接下来我们将以隔离的方式测试 `CatsHttpService`。该服务负责从 API 获取猫的数据，并记录日志。
 
-```ts
-@@filename(cats-http.service)
+```ts filename='cats-http.service.ts'
 @Injectable()
 export class CatsHttpService {
-  constructor(private httpClient: HttpClient, private logger: Logger) {}
+  constructor(
+    private httpClient: HttpClient,
+    private logger: Logger
+  ) {}
 
   async fetchCats(): Promise<Cat[]> {
-    this.logger.log('Fetching cats from the API');
-    const response = await this.httpClient.get('/cats');
-    return response.data;
+    this.logger.log('Fetching cats from the API')
+    const response = await this.httpClient.get('/cats')
+    return response.data
   }
 }
 ```
 
 我们希望对 `CatsHttpService` 进行隔离测试，并对其依赖项 `HttpClient` 和 `Logger` 进行模拟（Mock）。Suites 可以通过 `TestBed` 的 `.solitary()` 方法轻松实现这一点。
 
-```ts
-@@filename(cats-http.service.spec)
-import { TestBed, Mocked } from '@suites/unit';
+```ts filename='cats-http.service.spec.ts'
+import { TestBed, Mocked } from '@suites/unit'
 
 describe('Cats Http Service 单元测试', () => {
-  let catsHttpService: CatsHttpService;
-  let httpClient: Mocked<HttpClient>;
-  let logger: Mocked<Logger>;
+  let catsHttpService: CatsHttpService
+  let httpClient: Mocked<HttpClient>
+  let logger: Mocked<Logger>
 
   beforeAll(async () => {
     // 隔离 CatsHttpService，并模拟 HttpClient 和 Logger
-    const { unit, unitRef } = await TestBed.solitary(CatsHttpService).compile();
+    const { unit, unitRef } = await TestBed.solitary(CatsHttpService).compile()
 
-    catsHttpService = unit;
-    httpClient = unitRef.get(HttpClient);
-    logger = unitRef.get(Logger);
-  });
+    catsHttpService = unit
+    httpClient = unitRef.get(HttpClient)
+    logger = unitRef.get(Logger)
+  })
 
   it('应从 API 获取猫的数据并记录操作日志', async () => {
-    const catsFixtures: Cat[] = [{ id: 1, name: 'Catty' }, { id: 2, name: 'Mitzy' }];
-    httpClient.get.mockResolvedValue({ data: catsFixtures });
+    const catsFixtures: Cat[] = [
+      { id: 1, name: 'Catty' },
+      { id: 2, name: 'Mitzy' },
+    ]
+    httpClient.get.mockResolvedValue({ data: catsFixtures })
 
-    const cats = await catsHttpService.fetchCats();
+    const cats = await catsHttpService.fetchCats()
 
-    expect(logger.log).toHaveBeenCalledWith('Fetching cats from the API');
-    expect(httpClient.get).toHaveBeenCalledWith('/cats');
-    expect(cats).toEqual<Cat[]>(catsFixtures);
-  });
-});
+    expect(logger.log).toHaveBeenCalledWith('Fetching cats from the API')
+    expect(httpClient.get).toHaveBeenCalledWith('/cats')
+    expect(cats).toEqual<Cat[]>(catsFixtures)
+  })
+})
 ```
 
 在上面的示例中，Suites 会自动为 `CatsHttpService` 的所有依赖项生成模拟对象，通过 `TestBed.solitary()` 方法让测试设置变得更加简单，无需手动为每个依赖项编写模拟。
@@ -100,78 +109,74 @@ describe('Cats Http Service 单元测试', () => {
 
 在本例中，我们不使用 Suites，而是使用 Nest 的 `TestingModule` 来测试 `HttpModule` 的实际配置。我们将利用 `nock` 来模拟 HTTP 请求，而不是在本场景下模拟 `HttpClient`。
 
-```ts
-@@filename(cats-api.service)
-import { HttpClient } from '@nestjs/axios';
+```ts filename='cats-api.service.ts'
+import { HttpClient } from '@nestjs/axios'
 
 @Injectable()
 export class CatsApiService {
   constructor(private httpClient: HttpClient) {}
 
   async getCatById(id: number): Promise<Cat> {
-    const response = await this.httpClient.get(`/cats/${id}`);
-    return response.data;
+    const response = await this.httpClient.get(`/cats/${id}`)
+    return response.data
   }
 }
 ```
 
 我们需要使用真实（未被模拟）的 `HttpClient` 来测试 `CatsApiService`，以确保依赖注入和 `Axios`（http）的配置是正确的。这涉及导入 `CatsModule` 并使用 `nock` 进行 HTTP 请求模拟。
 
-```ts
-@@filename(cats-api.service.integration.test)
-import { Test } from '@nestjs/testing';
-import * as nock from 'nock';
+```ts filename='cats-api.service.integration.test.ts'
+import { Test } from '@nestjs/testing'
+import * as nock from 'nock'
 
 describe('Cats Api Service 集成测试', () => {
-  let catsApiService: CatsApiService;
+  let catsApiService: CatsApiService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [CatsModule],
-    }).compile();
+    }).compile()
 
-    catsApiService = moduleRef.get(CatsApiService);
-  });
+    catsApiService = moduleRef.get(CatsApiService)
+  })
 
   afterEach(() => {
-    nock.cleanAll();
-  });
+    nock.cleanAll()
+  })
 
   it('应当使用真实 HttpClient 根据 id 获取猫信息', async () => {
-    const catFixture: Cat = { id: 1, name: 'Catty' };
+    const catFixture: Cat = { id: 1, name: 'Catty' }
 
     nock('https://api.cats.com') // 该 URL 应与 HttpModule 注册时配置的保持一致
       .get('/cats/1')
-      .reply(200, catFixture);
+      .reply(200, catFixture)
 
-    const cat = await catsApiService.getCatById(1);
-    expect(cat).toEqual<Cat>(catFixture);
-  });
-});
+    const cat = await catsApiService.getCatById(1)
+    expect(cat).toEqual<Cat>(catFixture)
+  })
+})
 ```
 
 ## Sociable Testing 示例
 
 接下来，我们来测试 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`。我们将对 `CatsApiService` 进行模拟（mock），并暴露 `CatsDAL`。
 
-```ts
-@@filename(cats.dal)
-import { PrismaClient } from '@prisma/client';
+```ts filename='cats.dal.ts'
+import { PrismaClient } from '@prisma/client'
 
 @Injectable()
 export class CatsDAL {
   constructor(private prisma: PrismaClient) {}
 
   async saveCat(cat: Cat): Promise<Cat> {
-    return this.prisma.cat.create({data: cat});
+    return this.prisma.cat.create({ data: cat })
   }
 }
 ```
 
 接下来是 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`：
 
-```ts
-@@filename(cats.service)
+```ts filename='cats.service.ts'
 @Injectable()
 export class CatsService {
   constructor(
@@ -180,46 +185,45 @@ export class CatsService {
   ) {}
 
   async getAndSaveCat(id: number): Promise<Cat> {
-    const cat = await this.catsApiService.getCatById(id);
-    return this.catsDAL.saveCat(cat);
+    const cat = await this.catsApiService.getCatById(id)
+    return this.catsDAL.saveCat(cat)
   }
 }
 ```
 
 现在，我们使用 Suites 进行友好测试，来测试 `CatsService`：
 
-```ts
-@@filename(cats.service.spec)
-import { TestBed, Mocked } from '@suites/unit';
-import { PrismaClient } from '@prisma/client';
+```ts filename='cats.service.spec.ts'
+import { TestBed, Mocked } from '@suites/unit'
+import { PrismaClient } from '@prisma/client'
 
 describe('Cats Service Sociable Unit Test', () => {
-  let catsService: CatsService;
-  let prisma: Mocked<PrismaClient>;
-  let catsApiService: Mocked<CatsApiService>;
+  let catsService: CatsService
+  let prisma: Mocked<PrismaClient>
+  let catsApiService: Mocked<CatsApiService>
 
   beforeAll(async () => {
     // 友好测试环境搭建，暴露 CatsDAL 并模拟 CatsApiService
     const { unit, unitRef } = await TestBed.sociable(CatsService)
       .expose(CatsDAL)
       .mock(CatsApiService)
-      .final({ getCatById: async () => ({ id: 1, name: 'Catty' })})
-      .compile();
+      .final({ getCatById: async () => ({ id: 1, name: 'Catty' }) })
+      .compile()
 
-    catsService = unit;
-    prisma = unitRef.get(PrismaClient);
-  });
+    catsService = unit
+    prisma = unitRef.get(PrismaClient)
+  })
 
   it('应根据 id 获取猫并保存', async () => {
-    const catFixture: Cat = { id: 1, name: 'Catty' };
-    prisma.cat.create.mockResolvedValue(catFixture);
+    const catFixture: Cat = { id: 1, name: 'Catty' }
+    prisma.cat.create.mockResolvedValue(catFixture)
 
-    const savedCat = await catsService.getAndSaveCat(1);
+    const savedCat = await catsService.getAndSaveCat(1)
 
-    expect(prisma.cat.create).toHaveBeenCalledWith({ data: catFixture });
-    expect(savedCat).toEqual(catFixture);
-  });
-});
+    expect(prisma.cat.create).toHaveBeenCalledWith({ data: catFixture })
+    expect(savedCat).toEqual(catFixture)
+  })
+})
 ```
 
 在本示例中，我们使用 `.sociable()` 方法来搭建测试环境。通过 `.expose()` 方法允许与 `CatsDAL` 进行真实交互，同时使用 `.mock()` 方法对 `CatsApiService` 进行模拟。`.final()` 方法为 `CatsApiService` 设定固定行为，确保测试结果的一致性。

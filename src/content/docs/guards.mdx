@@ -40,8 +40,6 @@ export class AuthGuard implements CanActivate {
 - 如果返回 `true`，请求将被处理。
 - 如果返回 `false`，Nest 会拒绝该请求。
 
-<app-banner-enterprise></app-banner-enterprise>
-
 ## 执行上下文（ExecutionContext）
 
 `canActivate()` 方法接收一个参数，即 `执行上下文（ExecutionContext）` 实例。`ExecutionContext` 继承自 `ArgumentsHost`。我们在异常过滤器章节已经见过 `ArgumentsHost`。在上面的示例中，我们只是用它来获取 `请求对象（Request Object）` 的引用。你可以回顾[异常过滤器](https://docs.nestjs.com/exception-filters#arguments-host)章节的**Arguments host**部分，了解更多相关内容。

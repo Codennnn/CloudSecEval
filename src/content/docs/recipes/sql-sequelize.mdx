@@ -2,7 +2,12 @@
 
 # 本章节仅适用于 TypeScript
 
-> **警告** 本文将介绍如何基于 **Sequelize** 包，从零开始使用自定义组件创建一个 `DatabaseModule`。需要注意的是，这种做法会带来较多的额外工作量。你可以通过使用专门的、开箱即用的 `@nestjs/sequelize` 包来避免这些繁琐步骤。想了解更多信息，请参见[这里](/techniques/database#sequelize-integration)。
+<CalloutInfo type="warning">
+  本文将介绍如何基于 **Sequelize** 包，从零开始使用自定义组件创建一个
+  `DatabaseModule`。需要注意的是，这种做法会带来较多的额外工作量。你可以通过使用专门的、开箱即用的
+  `@nestjs/sequelize`
+  包来避免这些繁琐步骤。想了解更多信息，请参见[这里](/techniques/database#sequelize-integration)。
+</CalloutInfo>
 
 [Sequelize](https://github.com/sequelize/sequelize) 是一个流行的对象关系映射器（Object Relational Mapper，ORM），采用原生 JavaScript 编写。不过，社区还提供了一个 [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript) 的 TypeScript 封装，它为基础的 Sequelize 提供了一系列装饰器（Decorator）和其他扩展功能。
 
@@ -17,10 +22,9 @@ $ npm install --save-dev @types/sequelize
 
 第一步，我们需要创建一个 **Sequelize** 实例，并在构造函数中传入配置对象。同时，需要将所有模型添加到实例中（也可以使用 `modelPaths` 属性），并通过 `sync()` 方法同步数据库表。
 
-```ts
-@@filename(database.providers)
-import { Sequelize } from 'sequelize-typescript';
-import { Cat } from '../cats/cat.entity';
+```ts filename='database.providers.ts'
+import { Sequelize } from 'sequelize-typescript'
+import { Cat } from '../cats/cat.entity'
 
 export const databaseProviders = [
   {
@@ -33,16 +37,18 @@ export const databaseProviders = [
         username: 'root',
         password: 'password',
         database: 'nest',
-      });
-      sequelize.addModels([Cat]);
-      await sequelize.sync();
-      return sequelize;
+      })
+      sequelize.addModels([Cat])
+      await sequelize.sync()
+      return sequelize
     },
   },
-];
+]
 ```
 
-> info **提示** 按照最佳实践，我们将自定义提供者声明在单独的文件中，文件名以 `*.providers.ts` 结尾。
+<CalloutInfo>
+  按照最佳实践，我们将自定义提供者声明在单独的文件中，文件名以 `*.providers.ts` 结尾。
+</CalloutInfo>
 
 接下来，我们需要导出这些提供者，以便应用程序的其他部分可以访问。
 
@@ -63,48 +69,48 @@ export class DatabaseModule {}
 
 在 [Sequelize](https://github.com/sequelize/sequelize) 中，**模型** 定义了数据库中的一张表。该类的实例代表数据库中的一行。首先，我们需要至少定义一个实体：
 
-```ts
-@@filename(cat.entity)
-import { Table, Column, Model } from 'sequelize-typescript';
+```ts filename='cat.entity.ts'
+import { Table, Column, Model } from 'sequelize-typescript'
 
 @Table
 export class Cat extends Model {
   @Column
-  name: string;
+  name: string
 
   @Column
-  age: number;
+  age: number
 
   @Column
-  breed: string;
+  breed: string
 }
 ```
 
 `Cat` 实体位于 `cats` 目录下。该目录代表 `CatsModule`。接下来，我们需要创建一个**仓库**提供者：
 
-```ts
-@@filename(cats.providers)
-import { Cat } from './cat.entity';
+```ts filename='cats.providers.ts'
+import { Cat } from './cat.entity'
 
 export const catsProviders = [
   {
     provide: 'CATS_REPOSITORY',
     useValue: Cat,
   },
-];
+]
 ```
 
-> warning **警告** 在实际应用中应避免使用魔法字符串。`CATS_REPOSITORY` 和 `SEQUELIZE` 都应当放在单独的 `constants.ts` 文件中进行管理。
+<CalloutInfo type="warning">
+  在实际应用中应避免使用魔法字符串。`CATS_REPOSITORY` 和 `SEQUELIZE` 都应当放在单独的 `constants.ts`
+  文件中进行管理。
+</CalloutInfo>
 
 在 Sequelize 中，我们使用静态方法来操作数据，因此这里创建了一个**别名（alias）**。
 
 现在，我们可以通过 `@Inject()` 装饰器将 `CATS_REPOSITORY` 注入到 `CatsService`中：
 
-```ts
-@@filename(cats.service)
-import { Injectable, Inject } from '@nestjs/common';
-import { CreateCatDto } from './dto/create-cat.dto';
-import { Cat } from './cat.entity';
+```ts filename='cats.service.ts'
+import { Injectable, Inject } from '@nestjs/common'
+import { CreateCatDto } from './dto/create-cat.dto'
+import { Cat } from './cat.entity'
 
 @Injectable()
 export class CatsService {
@@ -114,7 +120,7 @@ export class CatsService {
   ) {}
 
   async findAll(): Promise<Cat[]> {
-    return this.catsRepository.findAll<Cat>();
+    return this.catsRepository.findAll<Cat>()
   }
 }
 ```
@@ -123,23 +129,23 @@ export class CatsService {
 
 下面是最终的 `CatsModule`：
 
-```ts
-@@filename(cats.module)
-import { Module } from '@nestjs/common';
-import { CatsController } from './cats.controller';
-import { CatsService } from './cats.service';
-import { catsProviders } from './cats.providers';
-import { DatabaseModule } from '../database/database.module';
+```ts filename='cats.module.ts'
+import { Module } from '@nestjs/common'
+import { CatsController } from './cats.controller'
+import { CatsService } from './cats.service'
+import { catsProviders } from './cats.providers'
+import { DatabaseModule } from '../database/database.module'
 
 @Module({
   imports: [DatabaseModule],
   controllers: [CatsController],
-  providers: [
-    CatsService,
-    ...catsProviders,
-  ],
+  providers: [CatsService, ...catsProviders],
 })
 export class CatsModule {}
 ```
 
-> info **提示** 不要忘记在根模块 `AppModule` 中导入 `CatsModule`。
+<CalloutInfo>
+
+不要忘记在根模块 `AppModule` 中导入 `CatsModule`。
+
+</CalloutInfo>

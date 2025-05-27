@@ -88,8 +88,6 @@ BullModule.registerFlowProducer({
 
 每个队列可以有一个或多个生产者、消费者和监听器。消费者会以特定顺序（默认 FIFO，先进先出；也支持 LIFO 或按优先级）从队列中获取作业。如何控制队列处理顺序，请参见[此处](/techniques/queues#consumers)。
 
-<app-banner-enterprise></app-banner-enterprise>
-
 ## 命名配置
 
 如果你的队列需要连接多个不同的 Redis 实例，可以使用一种称为**命名配置（named configurations）**的技术。该特性允许你以指定的键注册多个配置，然后在队列选项中引用这些配置。
@@ -580,8 +578,6 @@ BullModule.registerQueue({
 由于任务会持久化在 Redis 中，每当某个特定名称的队列被实例化（例如应用启动/重启时），它会尝试处理前一次未完成会话中遗留的旧任务。
 
 每个队列可以有一个或多个生产者、消费者和监听器。消费者会以特定顺序（默认 FIFO，也可为 LIFO 或按优先级）从队列中获取任务。如何控制队列处理顺序将在[此处](/techniques/queues#consumers)详细讨论。
-
-<app-banner-enterprise></app-banner-enterprise>
 
 ## 命名配置
 

@@ -125,8 +125,6 @@ const className = ctx.getClass().name // "CatsController"
 
 能够同时访问当前类和处理器方法的引用极大提升了灵活性。最重要的是，这让我们可以在守卫或拦截器中访问通过 `Reflector#createDecorator` 或内置 `@SetMetadata()` 装饰器设置的元数据。我们将在下文介绍相关用法。
 
-<app-banner-enterprise></app-banner-enterprise>
-
 ## 反射与元数据（Reflection and metadata）
 
 Nest 支持通过 `Reflector#createDecorator` 方法自定义装饰器，或通过内置的 `@SetMetadata()` 装饰器，为路由处理器附加**自定义元数据（Metadata）**。本节将对比这两种方式，并演示如何在守卫或拦截器中访问这些元数据。

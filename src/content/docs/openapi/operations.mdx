@@ -290,7 +290,9 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) =>
 }
 ```
 
-> info **提示** `Type<any>` 接口和 `applyDecorators` 函数均从 `@nestjs/common` 包中导入。
+<CalloutInfo>
+  `Type<any>` 接口和 `applyDecorators` 函数均从 `@nestjs/common` 包中导入。
+</CalloutInfo>
 
 为了确保 `SwaggerModule` 能为我们的模型生成定义，必须像前面在控制器中为 `PaginatedDto` 添加额外模型一样，将其作为额外模型添加。
 

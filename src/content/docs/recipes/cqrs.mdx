@@ -51,96 +51,53 @@ export class AppModule {}
 
 命令用于更改应用程序状态。命令应以任务为导向，而非以数据为中心。当命令被分发时，会由对应的 **命令处理器（Command Handler）** 进行处理。处理器负责更新应用程序状态。
 
-```ts
-@@filename(heroes-game.service)
+```ts filename='heroes-game.service.ts'
 @Injectable()
 export class HeroesGameService {
   constructor(private commandBus: CommandBus) {}
 
   async killDragon(heroId: string, killDragonDto: KillDragonDto) {
-    return this.commandBus.execute(
-      new KillDragonCommand(heroId, killDragonDto.dragonId)
-    );
-  }
-}
-@@switch
-@Injectable()
-@Dependencies(CommandBus)
-export class HeroesGameService {
-  constructor(commandBus) {
-    this.commandBus = commandBus;
-  }
-
-  async killDragon(heroId, killDragonDto) {
-    return this.commandBus.execute(
-      new KillDragonCommand(heroId, killDragonDto.dragonId)
-    );
+    return this.commandBus.execute(new KillDragonCommand(heroId, killDragonDto.dragonId))
   }
 }
 ```
 
 在上面的代码片段中，我们实例化了 `KillDragonCommand` 类，并将其实例传递给 `CommandBus` 的 `execute()` 方法。下面是演示用的命令类：
 
-```ts
-@@filename(kill-dragon.command)
+```ts filename='kill-dragon.command.ts'
 export class KillDragonCommand extends Command<{
   actionId: string // 此类型表示命令执行的结果
 }> {
   constructor(
     public readonly heroId: string,
-    public readonly dragonId: string,
+    public readonly dragonId: string
   ) {}
-}
-@@switch
-export class KillDragonCommand extends Command {
-  constructor(heroId, dragonId) {
-    this.heroId = heroId;
-    this.dragonId = dragonId;
-  }
 }
 ```
 
 如你所见，`KillDragonCommand` 类继承自 `Command` 类。`Command` 是从 `@nestjs/cqrs` 包中导出的一个简单工具类，用于定义命令的返回类型。在本例中，返回类型是一个包含 `actionId` 属性的对象。现在，每当分发 `KillDragonCommand` 命令时，`CommandBus#execute()` 方法的返回类型会被推断为 `Promise<{ actionId: string }>`。当你希望从命令处理器返回一些数据时，这种方式非常有用。
 
-> info **提示** 继承 `Command` 类是可选的。只有在你需要定义命令的返回类型时才有必要。
+<CalloutInfo>
+
+继承 `Command` 类是可选的。只有在你需要定义命令的返回类型时才有必要。
+
+</CalloutInfo>
 
 `CommandBus` 代表命令的**流**。它负责将命令分发给合适的处理器。`execute()` 方法返回一个 Promise，该 Promise 会解析为处理器返回的值。
 
 接下来，我们为 `KillDragonCommand` 命令创建一个处理器。
 
-```ts
-@@filename(kill-dragon.handler)
+```ts filename='kill-dragon.handler.ts'
 @CommandHandler(KillDragonCommand)
 export class KillDragonHandler implements ICommandHandler<KillDragonCommand> {
   constructor(private repository: HeroesRepository) {}
 
   async execute(command: KillDragonCommand) {
-    const { heroId, dragonId } = command;
-    const hero = this.repository.findOneById(+heroId);
+    const { heroId, dragonId } = command
+    const hero = this.repository.findOneById(+heroId)
 
-    hero.killEnemy(dragonId);
-    await this.repository.persist(hero);
-
-    // "ICommandHandler<KillDragonCommand>" 会强制你返回与命令返回类型一致的值
-    return {
-      actionId: crypto.randomUUID(), // 该值会返回给调用方
-    }
-  }
-}
-@@switch
-@CommandHandler(KillDragonCommand)
-@Dependencies(HeroesRepository)
-export class KillDragonHandler {
-  constructor(repository) {
-    this.repository = repository;
-  }
-
-  async execute(command) {
-    const { heroId, dragonId } = command;
-    const hero = this.repository.findOneById(+heroId);
-
-    hero.killEnemy(dragonId);
-    await this.repository.persist(hero);
+    hero.killEnemy(dragonId)
+    await this.repository.persist(hero)
 
     // "ICommandHandler<KillDragonCommand>" 会强制你返回与命令返回类型一致的值
     return {
@@ -176,26 +133,13 @@ export class GetHeroQuery extends Query<Hero> {
 
 要检索 hero 数据，我们需要创建一个查询处理器：
 
-```ts
-@@filename(get-hero.handler)
+```ts filename='get-hero.handler.ts'
 @QueryHandler(GetHeroQuery)
 export class GetHeroHandler implements IQueryHandler<GetHeroQuery> {
   constructor(private repository: HeroesRepository) {}
 
   async execute(query: GetHeroQuery) {
-    return this.repository.findOneById(query.hero);
-  }
-}
-@@switch
-@QueryHandler(GetHeroQuery)
-@Dependencies(HeroesRepository)
-export class GetHeroHandler {
-  constructor(repository) {
-    this.repository = repository;
-  }
-
-  async execute(query) {
-    return this.repository.findOneById(query.hero);
+    return this.repository.findOneById(query.hero)
   }
 }
 ```
@@ -220,87 +164,45 @@ const hero = await this.queryBus.execute(new GetHeroQuery(heroId)) // "hero" 的
 
 下面我们以一个示例来创建一个事件类：
 
-```ts
-@@filename(hero-killed-dragon.event)
+```ts filename='hero-killed-dragon.event.ts'
 export class HeroKilledDragonEvent {
   constructor(
     public readonly heroId: string,
-    public readonly dragonId: string,
+    public readonly dragonId: string
   ) {}
-}
-@@switch
-export class HeroKilledDragonEvent {
-  constructor(heroId, dragonId) {
-    this.heroId = heroId;
-    this.dragonId = dragonId;
-  }
 }
 ```
 
 虽然我们可以直接通过 `EventBus.publish()` 方法分发事件，但同样也可以在模型中分发事件。下面我们将更新 `Hero` 模型，在调用 `killEnemy()` 方法时分发 `HeroKilledDragonEvent` 事件。
 
-```ts
-@@filename(hero.model)
+```ts filename='hero.model.ts'
 export class Hero extends AggregateRoot {
   constructor(private id: string) {
-    super();
+    super()
   }
 
   killEnemy(enemyId: string) {
     // 业务逻辑
-    this.apply(new HeroKilledDragonEvent(this.id, enemyId));
-  }
-}
-@@switch
-export class Hero extends AggregateRoot {
-  constructor(id) {
-    super();
-    this.id = id;
-  }
-
-  killEnemy(enemyId) {
-    // 业务逻辑
-    this.apply(new HeroKilledDragonEvent(this.id, enemyId));
+    this.apply(new HeroKilledDragonEvent(this.id, enemyId))
   }
 }
 ```
 
 `apply()` 方法用于分发事件。它接收一个事件对象作为参数。然而，由于我们的模型并不了解 `EventBus`，因此需要将事件发布器与模型关联起来。我们可以通过 `EventPublisher` 类来实现这一点。
 
-```ts
-@@filename(kill-dragon.handler)
+```ts filename='kill-dragon.handler.ts'
 @CommandHandler(KillDragonCommand)
 export class KillDragonHandler implements ICommandHandler<KillDragonCommand> {
   constructor(
     private repository: HeroesRepository,
-    private publisher: EventPublisher,
+    private publisher: EventPublisher
   ) {}
 
   async execute(command: KillDragonCommand) {
-    const { heroId, dragonId } = command;
-    const hero = this.publisher.mergeObjectContext(
-      await this.repository.findOneById(+heroId),
-    );
-    hero.killEnemy(dragonId);
-    hero.commit();
-  }
-}
-@@switch
-@CommandHandler(KillDragonCommand)
-@Dependencies(HeroesRepository, EventPublisher)
-export class KillDragonHandler {
-  constructor(repository, publisher) {
-    this.repository = repository;
-    this.publisher = publisher;
-  }
-
-  async execute(command) {
-    const { heroId, dragonId } = command;
-    const hero = this.publisher.mergeObjectContext(
-      await this.repository.findOneById(+heroId),
-    );
-    hero.killEnemy(dragonId);
-    hero.commit();
+    const { heroId, dragonId } = command
+    const hero = this.publisher.mergeObjectContext(await this.repository.findOneById(+heroId))
+    hero.killEnemy(dragonId)
+    hero.commit()
   }
 }
 ```
@@ -333,12 +235,15 @@ const hero = new HeroModel('id') // <-- HeroModel 是一个类
 this.eventBus.publish(new HeroKilledDragonEvent())
 ```
 
-> info **提示** `EventBus` 是一个可注入的类。
+<CalloutInfo>
+
+`EventBus` 是一个可注入的类。
+
+</CalloutInfo>
 
 每个事件都可以拥有多个**事件处理器**。
 
-```ts
-@@filename(hero-killed-dragon.handler)
+```ts filename='hero-killed-dragon.handler.ts'
 @EventsHandler(HeroKilledDragonEvent)
 export class HeroKilledDragonHandler implements IEventHandler<HeroKilledDragonEvent> {
   constructor(private repository: HeroesRepository) {}
@@ -349,12 +254,26 @@ export class HeroKilledDragonHandler implements IEventHandler<HeroKilledDragonEv
 }
 ```
 
-> info **提示** 当你开始使用事件处理器时，需要注意你已经脱离了传统的 HTTP Web 上下文。
->
-> - `CommandHandler`（命令处理器）中的错误仍然可以被内置的 [异常过滤器](/exception-filters) 捕获。
-> - `EventHandler`（事件处理器）中的错误无法被异常过滤器捕获：你需要手动处理这些错误。可以通过简单的 `try/catch`，或者使用 [Sagas](/recipes/cqrs#sagas) 触发补偿事件，或采用其他解决方案。
-> - `CommandHandler` 中仍然可以向客户端发送 HTTP 响应。
-> - `EventHandler` 中则无法发送 HTTP 响应。如果你需要向客户端推送信息，可以使用 [WebSocket](/websockets/gateways)、[SSE](/techniques/server-sent-events) 或其他方案。
+<CalloutInfo>
+
+<p className="mb-0">当你开始使用事件处理器时，需要注意你已经脱离了传统的 HTTP Web 上下文。</p>
+
+<ul className="!m-0">
+  <li>
+    `CommandHandler`（命令处理器）中的错误仍然可以被内置的 [异常过滤器](/exception-filters) 捕获。
+  </li>
+  <li>
+    `EventHandler`（事件处理器）中的错误无法被异常过滤器捕获：你需要手动处理这些错误。可以通过简单的
+    `try/catch`，或者使用 [Sagas](/recipes/cqrs#sagas) 触发补偿事件，或采用其他解决方案。
+  </li>
+  <li>`CommandHandler` 中仍然可以向客户端发送 HTTP 响应。</li>
+  <li>
+    `EventHandler` 中则无法发送 HTTP 响应。如果你需要向客户端推送信息，可以使用
+    [WebSocket](/websockets/gateways)、[SSE](/techniques/server-sent-events) 或其他方案。
+  </li>
+</ul>
+
+</CalloutInfo>
 
 与命令和查询一样，记得在模块中将 `HeroKilledDragonHandler` 注册为提供者：
 
@@ -370,32 +289,24 @@ Saga 是非常强大的功能。单个 Saga 可以监听 1..\* 个事件。借�
 
 下面我们来创建一个 Saga，用于监听 `HeroKilledDragonEvent`，并分发 `DropAncientItemCommand`（掉落远古物品命令）。
 
-```ts
-@@filename(heroes-game.saga)
+```ts filename='heroes-game.saga.ts'
 @Injectable()
 export class HeroesGameSagas {
   @Saga()
   dragonKilled = (events$: Observable<any>): Observable<ICommand> => {
     return events$.pipe(
       ofType(HeroKilledDragonEvent),
-      map((event) => new DropAncientItemCommand(event.heroId, fakeItemID)),
-    );
-  }
-}
-@@switch
-@Injectable()
-export class HeroesGameSagas {
-  @Saga()
-  dragonKilled = (events$) => {
-    return events$.pipe(
-      ofType(HeroKilledDragonEvent),
-      map((event) => new DropAncientItemCommand(event.heroId, fakeItemID)),
-    );
+      map((event) => new DropAncientItemCommand(event.heroId, fakeItemID))
+    )
   }
 }
 ```
 
-> info **提示** `ofType` 操作符和 `@Saga()` 装饰器均由 `@nestjs/cqrs` 包导出。
+<CalloutInfo>
+
+`ofType` 操作符和 `@Saga()` 装饰器均由 `@nestjs/cqrs` 包导出。
+
+</CalloutInfo>
 
 `@Saga()` 装饰器用于将方法标记为 Saga。`events$` 参数是包含所有事件的 Observable 流。`ofType` 操作符会根据指定的事件类型过滤事件流。`map` 操作符则将事件映射为新的命令实例。
 

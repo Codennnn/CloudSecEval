@@ -32,15 +32,18 @@ $ npm install --save @nestjs/terminus
 
 接下来，让我们创建 `HealthModule`，并在其 imports 数组中引入 `TerminusModule`。
 
-> info **提示** 你可以通过 [Nest 命令行工具（Nest CLI）](cli/overview) 快速创建模块，只需执行 `$ nest g module health` 命令。
+<CalloutInfo>
 
-```ts
-@@filename(health.module)
-import { Module } from '@nestjs/common';
-import { TerminusModule } from '@nestjs/terminus';
+你可以通过 [Nest 命令行工具（Nest CLI）](cli/overview) 快速创建模块，只需执行 `$ nest g module health` 命令。
+
+</CalloutInfo>
+
+```ts filename='health.module.ts'
+import { Module } from '@nestjs/common'
+import { TerminusModule } from '@nestjs/terminus'
 
 @Module({
-  imports: [TerminusModule]
+  imports: [TerminusModule],
 })
 export class HealthModule {}
 ```
@@ -51,7 +54,11 @@ export class HealthModule {}
 $ nest g controller health
 ```
 
-> info **提示** 强烈建议在你的应用中启用关闭钩子（Shutdown Hook）。Terminus 集成在启用后会利用此生命周期事件（Lifecycle Event）。你可以在[这里](fundamentals/lifecycle-events#application-shutdown)阅读更多关于关闭钩子的内容。
+<CalloutInfo>
+  强烈建议在你的应用中启用关闭钩子（Shutdown Hook）。Terminus
+  集成在启用后会利用此生命周期事件（Lifecycle
+  Event）。你可以在[这里](fundamentals/lifecycle-events#application-shutdown)阅读更多关于关闭钩子的内容。
+</CalloutInfo>
 
 ## HTTP 健康检查
 
@@ -65,65 +72,30 @@ $ npm i --save @nestjs/axios axios
 
 现在我们可以设置 `HealthController`：
 
-```ts
-@@filename(health.controller)
-import { Controller, Get } from '@nestjs/common';
-import { HealthCheckService, HttpHealthIndicator, HealthCheck } from '@nestjs/terminus';
+```ts filename='health.controller.ts'
+import { Controller, Get } from '@nestjs/common'
+import { HealthCheckService, HttpHealthIndicator, HealthCheck } from '@nestjs/terminus'
 
 @Controller('health')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
-    private http: HttpHealthIndicator,
+    private http: HttpHealthIndicator
   ) {}
 
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([
-      () => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com'),
-    ]);
-  }
-}
-@@switch
-import { Controller, Dependencies, Get } from '@nestjs/common';
-import { HealthCheckService, HttpHealthIndicator, HealthCheck } from '@nestjs/terminus';
-
-@Controller('health')
-@Dependencies(HealthCheckService, HttpHealthIndicator)
-export class HealthController {
-  constructor(
-    private health,
-    private http,
-  ) { }
-
-  @Get()
-  @HealthCheck()
-  healthCheck() {
-    return this.health.check([
-      () => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com'),
-    ])
+    return this.health.check([() => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com')])
   }
 }
 ```
 
-```ts
-@@filename(health.module)
-import { Module } from '@nestjs/common';
-import { TerminusModule } from '@nestjs/terminus';
-import { HttpModule } from '@nestjs/axios';
-import { HealthController } from './health.controller';
-
-@Module({
-  imports: [TerminusModule, HttpModule],
-  controllers: [HealthController],
-})
-export class HealthModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { TerminusModule } from '@nestjs/terminus';
-import { HttpModule } from '@nestjs/axios';
-import { HealthController } from './health.controller';
+```ts filename='health.module.ts'
+import { Module } from '@nestjs/common'
+import { TerminusModule } from '@nestjs/terminus'
+import { HttpModule } from '@nestjs/axios'
+import { HealthController } from './health.controller'
 
 @Module({
   imports: [TerminusModule, HttpModule],
@@ -166,8 +138,7 @@ export class HealthModule {}
 
 如果返回的不是 `204` 响应码，则下方示例会判定为不健康。第三个参数需要你提供一个函数（同步或异步），用于判断响应是否健康（`true` 表示健康，`false` 表示不健康）。
 
-```ts
-@@filename(health.controller)
+```ts filename='health.controller.ts'
 // 在 `HealthController` 类中
 
 @Get()
@@ -188,40 +159,24 @@ check() {
 
 Terminus 提供了为健康检查添加数据库检查的能力。要开始使用该健康检查指示器，请先阅读[数据库章节](/techniques/sql)，并确保你的应用中数据库连接已成功建立。
 
-> info **提示** 其实在底层，`TypeOrmHealthIndicator` 只是简单地执行了一条 `SELECT 1` SQL 命令，这通常用于验证数据库是否仍然存活。如果你使用的是 Oracle 数据库，则会执行 `SELECT 1 FROM DUAL`。
+<CalloutInfo>
+  其实在底层，`TypeOrmHealthIndicator` 只是简单地执行了一条 `SELECT 1` SQL
+  命令，这通常用于验证数据库是否仍然存活。如果你使用的是 Oracle 数据库，则会执行 `SELECT 1 FROM
+  DUAL`。
+</CalloutInfo>
 
-```ts
-@@filename(health.controller)
+```ts filename='health.controller.ts'
 @Controller('health')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
-    private db: TypeOrmHealthIndicator,
+    private db: TypeOrmHealthIndicator
   ) {}
 
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([
-      () => this.db.pingCheck('database'),
-    ]);
-  }
-}
-@@switch
-@Controller('health')
-@Dependencies(HealthCheckService, TypeOrmHealthIndicator)
-export class HealthController {
-  constructor(
-    private health,
-    private db,
-  ) { }
-
-  @Get()
-  @HealthCheck()
-  healthCheck() {
-    return this.health.check([
-      () => this.db.pingCheck('database'),
-    ])
+    return this.health.check([() => this.db.pingCheck('database')])
   }
 }
 ```
@@ -247,8 +202,7 @@ export class HealthController {
 
 如果你的应用使用了[多数据库](techniques/database#multiple-databases)，你需要将每个连接都注入到 `HealthController` 中。然后，只需将连接引用传递给 `TypeOrmHealthIndicator` 即可。
 
-```ts
-@@filename(health.controller)
+```ts filename='health.controller.ts'
 @Controller('health')
 export class HealthController {
   constructor(
@@ -257,7 +211,7 @@ export class HealthController {
     @InjectConnection('albumsConnection')
     private albumsConnection: Connection,
     @InjectConnection()
-    private defaultConnection: Connection,
+    private defaultConnection: Connection
   ) {}
 
   @Get()
@@ -266,7 +220,7 @@ export class HealthController {
     return this.health.check([
       () => this.db.pingCheck('albums-database', { connection: this.albumsConnection }),
       () => this.db.pingCheck('database', { connection: this.defaultConnection }),
-    ]);
+    ])
   }
 }
 ```
@@ -275,32 +229,17 @@ export class HealthController {
 
 使用 `DiskHealthIndicator`，我们可以检查磁盘的存储使用情况。首先，请确保在你的 `HealthController`（健康检查控制器）中注入 `DiskHealthIndicator`。下面的示例会检查路径 `/`（在 Windows 系统中可以使用 `C:\`）的存储使用情况。如果已用存储空间超过总空间的 50%，则会返回不健康的健康检查结果。
 
-```ts
-@@filename(health.controller)
+```ts filename='health.controller.ts'
 @Controller('health')
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
-    private readonly disk: DiskHealthIndicator,
+    private readonly disk: DiskHealthIndicator
   ) {}
 
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([
-      () => this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.5 }),
-    ]);
-  }
-}
-@@switch
-@Controller('health')
-@Dependencies(HealthCheckService, DiskHealthIndicator)
-export class HealthController {
-  constructor(health, disk) {}
-
-  @Get()
-  @HealthCheck()
-  healthCheck() {
     return this.health.check([
       () => this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.5 }),
     ])
@@ -310,8 +249,7 @@ export class HealthController {
 
 通过 `DiskHealthIndicator.checkStorage` 方法，你还可以检查是否超过了固定的存储空间阈值。下面的示例会检查路径 `/my-app/`，如果其占用空间超过 250 GB，则健康检查会被判定为不健康。
 
-```ts
-@@filename(health.controller)
+```ts filename='health.controller.ts'
 // 在 `HealthController` 类中
 
 @Get()
@@ -327,51 +265,42 @@ check() {
 
 为了确保你的进程不会超过指定的内存限制，可以使用 `MemoryHealthIndicator`。下面的示例演示了如何检查进程的堆内存（heap）。
 
-> info **提示** 堆（Heap）是用于存放动态分配内存（即通过 malloc 分配的内存）的内存区域。分配在堆上的内存会一直保留，直到发生以下情况之一：
->
-> - 该内存被 _free_ 释放
-> - 程序终止
+<CalloutInfo>
+<p className='mb-0'>
+堆（Heap）是用于存放动态分配内存（即通过 malloc 分配的内存）的内存区域。分配在堆上的内存会一直保留，直到发生以下情况之一：
+</p>
 
-```ts
-@@filename(health.controller)
+<ul className="!m-0">
+  <li>该内存被 _free_ 释放</li>
+  <li>程序终止</li>
+</ul>
+
+</CalloutInfo>
+
+```ts filename='health.controller.ts'
 @Controller('health')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
-    private memory: MemoryHealthIndicator,
+    private memory: MemoryHealthIndicator
   ) {}
 
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([
-      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
-    ]);
-  }
-}
-@@switch
-@Controller('health')
-@Dependencies(HealthCheckService, MemoryHealthIndicator)
-export class HealthController {
-  constructor(health, memory) {}
-
-  @Get()
-  @HealthCheck()
-  healthCheck() {
-    return this.health.check([
-      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
-    ])
+    return this.health.check([() => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024)])
   }
 }
 ```
 
 你还可以通过 `MemoryHealthIndicator.checkRSS` 方法检查进程的 RSS（Resident Set Size，常驻集大小）。下面的示例会在进程分配的内存超过 150 MB 时，返回不健康的响应码。
 
-> info **提示** RSS 用于表示分配给该进程并实际驻留在 RAM 中的内存总量。
-> 它不包括已被交换出去的内存，但包括共享库中实际驻留在内存中的页面，也包括所有的栈和堆内存。
+<CalloutInfo>
+  RSS 用于表示分配给该进程并实际驻留在 RAM
+  中的内存总量。它不包括已被交换出去的内存，但包括共享库中实际驻留在内存中的页面，也包括所有的栈和堆内存。
+</CalloutInfo>
 
-```ts
-@@filename(health.controller)
+```ts filename='health.controller.ts'
 // 在 `HealthController` 类中
 
 @Get()
@@ -389,94 +318,64 @@ check() {
 
 我们先来创建一个服务，用于实现自定义指示器。为了帮助理解指示器的结构，这里以 `DogHealthIndicator` 为例。该服务会在所有 `Dog` 对象的 type 属性为 `'goodboy'` 时，返回状态 `'up'`。如果条件不满足，则抛出错误。
 
-```ts
-@@filename(dog.health)
-import { Injectable } from '@nestjs/common';
-import { HealthIndicatorService } from '@nestjs/terminus';
+```ts filename='dog.health.ts'
+import { Injectable } from '@nestjs/common'
+import { HealthIndicatorService } from '@nestjs/terminus'
 
 export interface Dog {
-  name: string;
-  type: string;
+  name: string
+  type: string
 }
 
 @Injectable()
 export class DogHealthIndicator {
-  constructor(
-    private readonly healthIndicatorService: HealthIndicatorService
-  ) {}
+  constructor(private readonly healthIndicatorService: HealthIndicatorService) {}
 
   private dogs: Dog[] = [
     { name: 'Fido', type: 'goodboy' },
     { name: 'Rex', type: 'badboy' },
-  ];
+  ]
 
-  async isHealthy(key: string){
-    const indicator = this.healthIndicatorService.check(key);
-    const badboys = this.dogs.filter(dog => dog.type === 'badboy');
-    const isHealthy = badboys.length === 0;
-
-    if (!isHealthy) {
-      return indicator.down({ badboys: badboys.length });
-    }
-
-    return indicator.up();
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-import { HealthIndicatorService } from '@nestjs/terminus';
-
-@Injectable()
-@Dependencies(HealthIndicatorService)
-export class DogHealthIndicator {
-  constructor(healthIndicatorService) {
-    this.healthIndicatorService = healthIndicatorService;
-  }
-
-  private dogs = [
-    { name: 'Fido', type: 'goodboy' },
-    { name: 'Rex', type: 'badboy' },
-  ];
-
-  async isHealthy(key){
-    const indicator = this.healthIndicatorService.check(key);
-    const badboys = this.dogs.filter(dog => dog.type === 'badboy');
-    const isHealthy = badboys.length === 0;
+  async isHealthy(key: string) {
+    const indicator = this.healthIndicatorService.check(key)
+    const badboys = this.dogs.filter((dog) => dog.type === 'badboy')
+    const isHealthy = badboys.length === 0
 
     if (!isHealthy) {
-      return indicator.down({ badboys: badboys.length });
+      return indicator.down({ badboys: badboys.length })
     }
 
-    return indicator.up();
+    return indicator.up()
   }
 }
 ```
 
 接下来，需要将健康指示器注册为提供者。
 
-```ts
-@@filename(health.module)
-import { Module } from '@nestjs/common';
-import { TerminusModule } from '@nestjs/terminus';
-import { DogHealthIndicator } from './dog.health';
+```ts filename='health.module.ts'
+import { Module } from '@nestjs/common'
+import { TerminusModule } from '@nestjs/terminus'
+import { DogHealthIndicator } from './dog.health'
 
 @Module({
   controllers: [HealthController],
   imports: [TerminusModule],
-  providers: [DogHealthIndicator]
+  providers: [DogHealthIndicator],
 })
-export class HealthModule { }
+export class HealthModule {}
 ```
 
-> info **提示** 在实际项目中，`DogHealthIndicator` 应当在单独的模块（如 `DogModule`）中提供，然后由 `HealthModule` 导入。
+<CalloutInfo>
+  在实际项目中，`DogHealthIndicator` 应当在单独的模块（如 `DogModule`）中提供，然后由 `HealthModule`
+  导入。
+</CalloutInfo>
 
 最后一步是在健康检查接口中，调用我们自定义的健康指示器。回到 `HealthController`，在 `check` 方法中加入该指示器。
 
-```ts
-@@filename(health.controller)
-import { HealthCheckService, HealthCheck } from '@nestjs/terminus';
-import { Injectable, Dependencies, Get } from '@nestjs/common';
-import { DogHealthIndicator } from './dog.health';
+```ts filename='health.controller.ts'
+import { HealthCheckService, HealthCheck } from '@nestjs/terminus'
+import { Injectable, Dependencies, Get } from '@nestjs/common'
+import { DogHealthIndicator } from './dog.health'
 
 @Injectable()
 export class HealthController {
@@ -488,33 +387,7 @@ export class HealthController {
   @Get()
   @HealthCheck()
   healthCheck() {
-    return this.health.check([
-      () => this.dogHealthIndicator.isHealthy('dog'),
-    ])
-  }
-}
-@@switch
-import { HealthCheckService, HealthCheck } from '@nestjs/terminus';
-import { Injectable, Get } from '@nestjs/common';
-import { DogHealthIndicator } from './dog.health';
-
-@Injectable()
-@Dependencies(HealthCheckService, DogHealthIndicator)
-export class HealthController {
-  constructor(
-    health,
-    dogHealthIndicator
-  ) {
-    this.health = health;
-    this.dogHealthIndicator = dogHealthIndicator;
-  }
-
-  @Get()
-  @HealthCheck()
-  healthCheck() {
-    return this.health.check([
-      () => this.dogHealthIndicator.isHealthy('dog'),
-    ])
+    return this.health.check([() => this.dogHealthIndicator.isHealthy('dog')])
   }
 }
 ```
@@ -525,22 +398,19 @@ Terminus 只会记录错误信息，例如当健康检查失败时。通过 `Ter
 
 本节将带你了解如何创建自定义日志记录器 `TerminusLogger`。该日志记录器继承自内置日志记录器（Logger），因此你可以按需选择性地重写日志记录器的部分功能。
 
-> info **提示** 如果你想了解更多关于 NestJS 自定义日志记录器的信息，[请阅读此处](/techniques/logger#injecting-a-custom-logger)。
+<CalloutInfo>
+  如果你想了解更多关于 NestJS
+  自定义日志记录器的信息，[请阅读此处](/techniques/logger#injecting-a-custom-logger)。
+</CalloutInfo>
 
-```ts
-@@filename(terminus-logger.service)
-import { Injectable, Scope, ConsoleLogger } from '@nestjs/common';
+```ts filename='terminus-logger.service.ts'
+import { Injectable, Scope, ConsoleLogger } from '@nestjs/common'
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class TerminusLogger extends ConsoleLogger {
-  error(message: any, stack?: string, context?: string): void;
-  error(message: any, ...optionalParams: any[]): void;
-  error(
-    message: unknown,
-    stack?: unknown,
-    context?: unknown,
-    ...rest: unknown[]
-  ): void {
+  error(message: any, stack?: string, context?: string): void
+  error(message: any, ...optionalParams: any[]): void
+  error(message: unknown, stack?: unknown, context?: unknown, ...rest: unknown[]): void {
     // 在这里重写错误信息的日志记录方式
   }
 }
@@ -548,28 +418,26 @@ export class TerminusLogger extends ConsoleLogger {
 
 创建好自定义日志记录器后，只需将其传递给 `TerminusModule.forRoot()` 即可，如下所示：
 
-```ts
-@@filename(health.module)
+```ts filename='health.module.ts'
 @Module({
-imports: [
-  TerminusModule.forRoot({
-    logger: TerminusLogger,
-  }),
-],
+  imports: [
+    TerminusModule.forRoot({
+      logger: TerminusLogger,
+    }),
+  ],
 })
 export class HealthModule {}
 ```
 
 如果你希望完全屏蔽 Terminus 输出的所有日志（包括错误日志），可以按如下方式配置 Terminus：
 
-```ts
-@@filename(health.module)
+```ts filename='health.module.ts'
 @Module({
-imports: [
-  TerminusModule.forRoot({
-    logger: false,
-  }),
-],
+  imports: [
+    TerminusModule.forRoot({
+      logger: false,
+    }),
+  ],
 })
 export class HealthModule {}
 ```
@@ -583,14 +451,13 @@ Terminus 允许你配置健康检查错误在日志中的展示方式。
 
 你可以通过如下配置项 `errorLogStyle` 来切换日志样式：
 
-```ts
-@@filename(health.module)
+```ts filename='health.module.ts'
 @Module({
   imports: [
     TerminusModule.forRoot({
       errorLogStyle: 'pretty',
     }),
-  ]
+  ],
 })
 export class HealthModule {}
 ```
@@ -601,14 +468,13 @@ export class HealthModule {}
 这个设置在使用如 Kubernetes 这样的编排器（orchestrator）时尤其有用。
 通过将延迟时间设置得比就绪检查（readiness check）间隔稍长，你可以在关闭容器时实现零停机时间（zero downtime）。
 
-```ts
-@@filename(health.module)
+```ts filename='health.module.ts'
 @Module({
   imports: [
     TerminusModule.forRoot({
       gracefulShutdownTimeoutMs: 1000,
     }),
-  ]
+  ],
 })
 export class HealthModule {}
 ```

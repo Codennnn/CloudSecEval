@@ -86,7 +86,7 @@ roles: string[];
 
 要启用该插件，请打开 `nest-cli.json`（如果你使用 [Nest 命令行工具](/cli/overview)），并添加如下 `plugins` 配置：
 
-```javascript
+```js
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
@@ -98,7 +98,7 @@ roles: string[];
 
 你可以通过 `options` 属性自定义插件的行为。
 
-```javascript
+```js
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
@@ -153,7 +153,7 @@ export interface PluginOptions {
 
 如果你没有使用命令行工具，而是采用自定义的 `webpack` 配置，也可以将该插件与 `ts-loader` 结合使用：
 
-```javascript
+```js
 getCustomTransformers: (program: any) => ({
   before: [require('@nestjs/graphql/plugin').before({}, program)]
 }),
@@ -197,7 +197,7 @@ Object type <name> must define one or more fields.
 
 为了解决这个问题，请在你的端到端测试目录下创建如下文件：
 
-```javascript
+```js
 const transformer = require('@nestjs/graphql/plugin')
 
 module.exports.name = 'nestjs-graphql-transformer'

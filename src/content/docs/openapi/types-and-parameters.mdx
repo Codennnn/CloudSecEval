@@ -9,13 +9,14 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-> info **提示** 如果需要显式设置请求体（Request Body）定义，可以使用 `@ApiBody()` 装饰器（从 `@nestjs/swagger` 包中导入）。
+<CalloutInfo>
+  如果需要显式设置请求体（Request Body）定义，可以使用 `@ApiBody()` 装饰器（从 `@nestjs/swagger`
+  包中导入）。
+</CalloutInfo>
 
 基于 `CreateCatDto`，Swagger UI 会生成如下模型定义：
 
-<figure>
-  <img src="/assets/swagger-dto.png" />
-</figure>
+<DocImage src="/assets/swagger-dto.png" alt="Swagger DTO" />
 
 如上图所示，虽然类中声明了多个属性，但定义却是空的。为了让 `SwaggerModule` 能够识别并展示类的属性，我们需要为每个属性添加 `@ApiProperty()` 装饰器，或者使用 CLI 插件（详见 **插件** 部分），该插件会自动完成此操作：
 
@@ -34,13 +35,14 @@ export class CreateCatDto {
 }
 ```
 
-> info **提示** 如果不想手动为每个属性添加注解，可以考虑使用 Swagger 插件（详见 [插件](/openapi/cli-plugin) 部分），该插件会自动为你处理。
+<CalloutInfo>
+  如果不想手动为每个属性添加注解，可以考虑使用 Swagger 插件（详见 [插件](/openapi/cli-plugin)
+  部分），该插件会自动为你处理。
+</CalloutInfo>
 
 接下来，我们可以在浏览器中查看生成的 `CreateCatDto` 模型：
 
-<figure>
-  <img src="/assets/swagger-dto2.png" />
-</figure>
+<DocImage src="/assets/swagger-dto2.png" alt="Swagger DTO" />
 
 此外，`@ApiProperty()` 装饰器允许你设置多种 [Schema Object](https://swagger.io/specification/#schemaObject) 属性，例如：
 
@@ -53,7 +55,9 @@ export class CreateCatDto {
 age: number;
 ```
 
-> info **提示** 如果你想让属性变为可选项，可以直接使用 `@ApiPropertyOptional()` 装饰器，无需显式书写 `{{"@ApiProperty({ required: false })"}}`。
+<CalloutInfo>
+  如果你想让属性变为可选项，可以直接使用 `@ApiPropertyOptional()` 装饰器，无需显式书写 `{{"@ApiProperty({ required: false })"}}`。
+</CalloutInfo>
 
 如果需要显式指定属性的类型，可以使用 `type` 键：
 
@@ -73,11 +77,11 @@ age: number;
 names: string[];
 ```
 
-> info **提示** 建议使用 Swagger 插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测数组类型。
+<CalloutInfo>
+  建议使用 Swagger 插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测数组类型。
+</CalloutInfo>
 
 你可以像上面这样，将类型作为数组的第一个元素传递，或者设置 `isArray` 属性为 `true`。
-
-<app-banner-enterprise></app-banner-enterprise>
 
 ## 循环依赖
 
@@ -88,7 +92,9 @@ names: string[];
 node: Node;
 ```
 
-> info **提示** 建议使用 Swagger 插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测循环依赖。
+<CalloutInfo>
+  建议使用 Swagger 插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测循环依赖。
+</CalloutInfo>
 
 ## 泛型与接口
 
@@ -131,15 +137,11 @@ export enum UserRole {
 async filterByRole(@Query('role') role: UserRole = UserRole.User) {}
 ```
 
-<figure>
-  <img src="/assets/enum_query.gif" />
-</figure>
+<DocImage src="/assets/enum_query.gif" alt="Enum Query" />
 
 当 `isArray` 设置为 **true** 时，枚举可以作为**多选**项：
 
-<figure>
-  <img src="/assets/enum_query_array.gif" />
-</figure>
+<DocImage src="/assets/enum_query_array.gif" alt="Enum Query Array" />
 
 ## 枚举 schema
 
@@ -179,7 +181,9 @@ export enum CatInformationEnum {
 }
 ```
 
-> info **提示** 上述代码片段是通过名为 [NSwag](https://github.com/RicoSuter/NSwag) 的工具生成的。
+<CalloutInfo>
+  上述代码片段是通过名为 [NSwag](https://github.com/RicoSuter/NSwag) 的工具生成的。
+</CalloutInfo>
 
 你可以看到，现在有两个完全相同的 `枚举`。
 为了解决这个问题，你可以在装饰器中为 `enum` 属性同时传递一个 `enumName`。
@@ -209,7 +213,11 @@ CatBreed:
     - Siamese
 ```
 
-> info **提示** 任何带有 `enum` 属性的**装饰器**，同样支持 `enumName` 属性。
+<CalloutInfo>
+
+任何带有 `enum` 属性的**装饰器**，同样支持 `enumName` 属性。
+
+</CalloutInfo>
 
 ## 属性值示例
 
@@ -299,7 +307,11 @@ async create(@Body() coords: number[][]) {}
 export class CreateCatDto {}
 ```
 
-> info **提示** 对于同一个模型类，你只需要使用一次 `@ApiExtraModels()`。
+<CalloutInfo>
+
+对于同一个模型类，你只需要使用一次 `@ApiExtraModels()`。
+
+</CalloutInfo>
 
 另外，你也可以在调用 `SwaggerModule#createDocument()` 方法时，通过传递包含 `extraModels` 属性的选项对象来实现：
 
@@ -349,7 +361,11 @@ type Pet = Cat | Dog;
 pets: Pet[];
 ```
 
-> info **提示** `getSchemaPath()` 函数需从 `@nestjs/swagger` 导入。
+<CalloutInfo>
+
+`getSchemaPath()` 函数需从 `@nestjs/swagger` 导入。
+
+</CalloutInfo>
 
 `Cat` 和 `Dog` 都必须通过 `@ApiExtraModels()` 装饰器（应用于类级别）声明为额外模型。
 

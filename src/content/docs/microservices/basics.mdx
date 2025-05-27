@@ -249,8 +249,6 @@ async handleUserCreated(data) {
 
 `handleUserCreated()` **事件处理器**会监听 `'user_created'` 事件。事件处理器接收一个参数，即客户端传递的 `data`（在本例中，是通过网络发送的事件负载）。
 
-<app-banner-enterprise></app-banner-enterprise>
-
 ## 获取更多请求详情
 
 在更高级的场景中，你可能需要访问关于传入请求的更多详细信息。例如，当使用 NATS 并采用通配符订阅时，你可能希望获取生产者实际发送消息时使用的原始主题（subject）。类似地，在使用 Kafka 时，你可能需要访问消息头（headers）。要实现这些需求，你可以利用内置装饰器，如下所示：

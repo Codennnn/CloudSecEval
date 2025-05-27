@@ -2,7 +2,7 @@
 
 `AsyncLocalStorage` 是一个 [Node.js API](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage)（基于 `async_hooks` API），它提供了一种在应用程序中传播本地状态的替代方式，无需显式地将其作为函数参数传递。它类似于其他语言中的线程本地存储。
 
-Async Local Storage（异步本地存储）的核心思想是，我们可以用 `AsyncLocalStorage#run` 方法 _包裹_ 某个函数调用。所有在该包裹调用内被执行的代码，都能访问到同一个 `store`，而这个 `store` 对每个调用链来说都是唯一的。
+异步本地存储的核心思想是，我们可以用 `AsyncLocalStorage#run` 方法 _包裹_ 某个函数调用。所有在该包裹调用内被执行的代码，都能访问到同一个 `store`，而这个 `store` 对每个调用链来说都是唯一的。
 
 在 NestJS 的上下文中，这意味着如果我们能在请求的生命周期中找到一个合适的位置，用来包裹后续的请求处理代码，就可以访问和修改仅对该请求可见的状态。这为请求作用域提供者及其部分局限性提供了一种替代方案。
 
@@ -12,12 +12,13 @@ Async Local Storage（异步本地存储）的核心思想是，我们可以用 
 
 NestJS 本身没有为 `AsyncLocalStorage` 提供内置抽象，因此我们以最简单的 HTTP 场景为例，演示如何自行实现，以便更好地理解这一概念：
 
-> info **提示** 如需现成的 [专用包](recipes/async-local-storage#nestjs-cls)，请继续阅读下文。
+<CalloutInfo>
+  **注意** 如需现成的 [专用包](recipes/async-local-storage#nestjs-cls)，请继续阅读下文。
+</CalloutInfo>
 
 1. 首先，在某个共享源文件中创建一个新的 `AsyncLocalStorage` 实例。由于我们使用的是 NestJS，建议将其封装为一个模块，并通过自定义提供者（Custom Provider）注册。
 
-```ts
-@@filename(als.module)
+```ts filename='als.module.ts'
 @Module({
   providers: [
     {
@@ -30,12 +31,15 @@ NestJS 本身没有为 `AsyncLocalStorage` 提供内置抽象，因此我们以�
 export class AlsModule {}
 ```
 
-> info **提示** `AsyncLocalStorage` 需从 `async_hooks` 导入。
+<CalloutInfo>
+
+`AsyncLocalStorage` 需从 `async_hooks` 导入。
+
+</CalloutInfo>
 
 2. 由于我们只关注 HTTP 场景，可以通过中间件将 `next` 函数用 `AsyncLocalStorage#run` 包裹。中间件是请求进入的第一站，这样 `store` 就能在所有增强器和后续系统中被访问。
 
-```ts
-@@filename(app.module)
+```ts filename='app.module.ts'
 @Module({
   imports: [AlsModule],
   providers: [CatsService],
@@ -54,81 +58,39 @@ export class AppModule implements NestModule {
         // 根据请求初始化 store 的默认值
         const store = {
           userId: req.headers['x-user-id'],
-        };
+        }
         // 用 als.run 方法和 store 包裹 "next" 回调
-        this.als.run(store, () => next());
+        this.als.run(store, () => next())
       })
-      .forRoutes('*path');
-  }
-}
-@@switch
-@Module({
-  imports: [AlsModule],
-  providers: [CatsService],
-  controllers: [CatsController],
-})
-@Dependencies(AsyncLocalStorage)
-export class AppModule {
-  constructor(als) {
-    // 在模块构造函数中注入 AsyncLocalStorage 实例
-    this.als = als
-  }
-
-  configure(consumer) {
-    // 绑定中间件
-    consumer
-      .apply((req, res, next) => {
-        // 根据请求初始化 store 的默认值
-        const store = {
-          userId: req.headers['x-user-id'],
-        };
-        // 用 als.run 方法和 store 包裹 "next" 回调
-        this.als.run(store, () => next());
-      })
-      .forRoutes('*path');
+      .forRoutes('*path')
   }
 }
 ```
 
 3. 现在，在请求的生命周期内的任意位置，我们都可以访问本地 store 实例。
 
-```ts
-@@filename(cats.service)
+```ts filename='cats.service.ts'
 @Injectable()
 export class CatsService {
   constructor(
     // 可以注入 ALS 实例
     private readonly als: AsyncLocalStorage,
-    private readonly catsRepository: CatsRepository,
+    private readonly catsRepository: CatsRepository
   ) {}
 
   getCatForUser() {
     // getStore 方法始终返回与当前请求关联的 store 实例
-    const userId = this.als.getStore()["userId"] as number;
-    return this.catsRepository.getForUser(userId);
-  }
-}
-@@switch
-@Injectable()
-@Dependencies(AsyncLocalStorage, CatsRepository)
-export class CatsService {
-  constructor(als, catsRepository) {
-    // 可以注入 ALS 实例
-    this.als = als
-    this.catsRepository = catsRepository
-  }
-
-  getCatForUser() {
-    // getStore 方法始终返回与当前请求关联的 store 实例
-    const userId = this.als.getStore()["userId"] as number;
-    return this.catsRepository.getForUser(userId);
+    const userId = this.als.getStore()['userId'] as number
+    return this.catsRepository.getForUser(userId)
   }
 }
 ```
 
 4. 就这样，我们无需注入整个 `REQUEST` 对象，也能在请求间共享相关状态。
 
-> warning **警告** 请注意，虽然该技术适用于许多场景，但它本质上会让代码流程变得隐式（即创建了隐式上下文），因此请谨慎使用，尤其要避免创建上下文“[上帝对象](https://en.wikipedia.org/wiki/God_object)”。
+<CalloutInfo type="warning">
+  请注意，虽然该技术适用于许多场景，但它本质上会让代码流程变得隐式（即创建了隐式上下文），因此请谨慎使用，尤其要避免创建上下文“[上帝对象](https://en.wikipedia.org/wiki/God_object)”。
+</CalloutInfo>
 
 # NestJS CLS
 
@@ -136,7 +98,10 @@ export class CatsService {
 
 随后，可以通过可注入的 `ClsService` 访问 store，或者通过 [代理提供者（Proxy Providers）](https://www.npmjs.com/package/nestjs-cls#proxy-providers) 完全将其从业务逻辑中抽象出来。
 
-> info **信息** `nestjs-cls` 是第三方包，并非由 NestJS 核心团队维护。如遇到问题，请在[对应仓库](https://github.com/Papooch/nestjs-cls/issues)提交 issue。
+<CalloutInfo>
+  `nestjs-cls` 是第三方包，并非由 NestJS
+  核心团队维护。如遇到问题，请在[对应仓库](https://github.com/Papooch/nestjs-cls/issues)提交 issue。
+</CalloutInfo>
 
 ## 安装
 
@@ -152,8 +117,7 @@ npm i nestjs-cls
 
 1. 在根模块中导入 `ClsModule`。
 
-```ts
-@@filename(app.module)
+```ts filename='app.module.ts'
 @Module({
   imports: [
     // 注册 ClsModule
@@ -165,7 +129,7 @@ npm i nestjs-cls
         // 并通过 setup 方法
         // 提供默认 store 值
         setup: (cls, req) => {
-          cls.set('userId', req.headers['x-user-id']);
+          cls.set('userId', req.headers['x-user-id'])
         },
       },
     }),
@@ -178,36 +142,19 @@ export class AppModule {}
 
 2. 然后可以通过 `ClsService` 访问 store 中的值。
 
-```ts
-@@filename(cats.service)
+```ts filename='cats.service.ts'
 @Injectable()
 export class CatsService {
   constructor(
     // 注入 ClsService 实例
     private readonly cls: ClsService,
-    private readonly catsRepository: CatsRepository,
+    private readonly catsRepository: CatsRepository
   ) {}
 
   getCatForUser() {
     // 使用 "get" 方法获取存储的值
-    const userId = this.cls.get('userId');
-    return this.catsRepository.getForUser(userId);
-  }
-}
-@@switch
-@Injectable()
-@Dependencies(AsyncLocalStorage, CatsRepository)
-export class CatsService {
-  constructor(cls, catsRepository) {
-    // 注入 ClsService 实例
-    this.cls = cls
-    this.catsRepository = catsRepository
-  }
-
-  getCatForUser() {
-    // 使用 "get" 方法获取存储的值
-    const userId = this.cls.get('userId');
-    return this.catsRepository.getForUser(userId);
+    const userId = this.cls.get('userId')
+    return this.catsRepository.getForUser(userId)
   }
 }
 ```
@@ -220,7 +167,10 @@ export interface MyClsStore extends ClsStore {
 }
 ```
 
-> info **提示** 该包还可以自动生成请求 ID，并通过 `cls.getId()` 获取，或通过 `cls.get(CLS_REQ)` 获取完整的请求对象。
+<CalloutInfo>
+  该包还可以自动生成请求 ID，并通过 `cls.getId()` 获取，或通过 `cls.get(CLS_REQ)`
+  获取完整的请求对象。
+</CalloutInfo>
 
 ## 测试
 

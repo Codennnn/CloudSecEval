@@ -2,11 +2,14 @@
 
 对应用程序引导过程（Bootstrapping）影响最大的是 **TypeScript 编译**。幸运的是，借助 [webpack](https://github.com/webpack/webpack) 的 HMR（热模块替换，Hot-Module Replacement），每次发生更改时我们无需重新编译整个项目。这大大减少了实例化应用程序所需的时间，使迭代开发变得更加高效和便捷。
 
-> warning **警告** 请注意，`webpack` 不会自动将你的资源文件（例如 `graphql` 文件）复制到 `dist` 文件夹。同样，`webpack` 也不兼容静态 glob 路径（例如 `TypeOrmModule` 中的 `entities` 属性）。
+<CalloutInfo type="warning">
+  请注意，`webpack` 不会自动将你的资源文件（例如 `graphql` 文件）复制到 `dist`
+  文件夹。同样，`webpack` 也不兼容静态 glob 路径（例如 `TypeOrmModule` 中的 `entities` 属性）。
+</CalloutInfo>
 
 # 使用 CLI
 
-如果你正在使用 [Nest 命令行工具（Nest CLI）](https://docs.nestjs.com/cli/overview)，配置过程非常简单。CLI 封装了 `webpack`，允许你使用 `HotModuleReplacementPlugin`。
+如果你正在使用 [Nest 命令行工具（Nest CLI）](/cli/overview)，配置过程非常简单。CLI 封装了 `webpack`，允许你使用 `HotModuleReplacementPlugin`。
 
 ## 安装依赖
 
@@ -16,7 +19,10 @@
 $ npm i --save-dev webpack-node-externals run-script-webpack-plugin webpack
 ```
 
-> info **提示** 如果你使用的是 **Yarn Berry**（而非经典版 Yarn），请安装 `webpack-pnp-externals` 包，而不是 `webpack-node-externals`。
+<CalloutInfo>
+  如果你使用的是 **Yarn Berry**（而非经典版 Yarn），请安装 `webpack-pnp-externals` 包，而不是
+  `webpack-node-externals`。
+</CalloutInfo>
 
 ## 配置
 
@@ -47,7 +53,10 @@ module.exports = function (options, webpack) {
 }
 ```
 
-> info **提示** 如果你使用的是 **Yarn Berry**（而非经典版 Yarn），在 `externals` 配置项中请使用 `webpack-pnp-externals` 包的 `WebpackPnpExternals`，而不是 `nodeExternals`：`WebpackPnpExternals({ exclude: ['webpack/hot/poll?100'] })`。
+<CalloutInfo>
+  如果你使用的是 **Yarn Berry**（而非经典版 Yarn），在 `externals` 配置项中请使用 `webpack-pnp-externals`
+  包的 `WebpackPnpExternals`，而不是 `nodeExternals`：`WebpackPnpExternals({ exclude: ['webpack/hot/poll?100'] })`。
+</CalloutInfo>
 
 该函数接收包含默认 webpack 配置的原始对象作为第一个参数，Nest 命令行工具（Nest CLI）所用的底层 `webpack` 包的引用作为第二个参数。它返回一个经过修改的 webpack 配置对象，包含了 `HotModuleReplacementPlugin`、`WatchIgnorePlugin` 和 `RunScriptWebpackPlugin` 插件。
 
@@ -94,7 +103,10 @@ $ npm run start:dev
 $ npm i --save-dev webpack webpack-cli webpack-node-externals ts-loader run-script-webpack-plugin
 ```
 
-> info **提示** 如果你使用的是 **Yarn Berry**（而不是经典版 Yarn），请安装 `webpack-pnp-externals` 包，替代 `webpack-node-externals`。
+<CalloutInfo>
+  如果你使用的是 **Yarn Berry**（而不是经典版 Yarn），请安装 `webpack-pnp-externals` 包，替代
+  `webpack-node-externals`。
+</CalloutInfo>
 
 ## 配置
 
@@ -138,7 +150,11 @@ module.exports = {
 }
 ```
 
-> info **提示** 如果你使用 **Yarn Berry**（而不是经典版 Yarn），在 `externals` 配置项中不要使用 `nodeExternals`，而应使用 `webpack-pnp-externals` 包中的 `WebpackPnpExternals`：`WebpackPnpExternals({{ '{' }} exclude: ['webpack/hot/poll?100'] {{ '}' }})`。
+<CalloutInfo>
+  如果你使用 **Yarn Berry**（而不是经典版 Yarn），在 `externals` 配置项中不要使用 `nodeExternals`，而应使用
+  `webpack-pnp-externals` 包中的 `WebpackPnpExternals`：`WebpackPnpExternals({{ '{' }}
+  exclude: ['webpack/hot/poll?100'] {{ '}' }})`。
+</CalloutInfo>
 
 这个配置文件告诉 webpack 一些关于你的应用的关键信息：入口文件的位置、编译后文件的输出目录，以及我们希望用什么 loader 来编译源码。通常情况下，即使你不完全理解所有选项，也可以直接使用这个配置文件。
 

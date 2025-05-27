@@ -1,6 +1,10 @@
 # 路由模块（Router module）
 
-> info **提示** 本章节仅适用于基于 HTTP 的应用程序。
+<CalloutInfo >
+
+本章节仅适用于基于 HTTP 的应用程序。
+
+</CalloutInfo>
 
 在 HTTP 应用程序（例如 RESTful 接口）中，路由处理器的路径由控制器中 `@Controller` 装饰器声明的（可选）前缀与方法装饰器（如 `@Get('users')`）中指定的路径拼接而成。你可以在[本节](/controllers#routing)了解更多相关内容。此外，你还可以为应用中注册的所有路由定义一个[全局前缀](/faq/global-prefix)，或启用[版本控制](/techniques/versioning)。
 
@@ -21,7 +25,11 @@
 export class AppModule {}
 ```
 
-> info **提示** `RouterModule` 类由 `@nestjs/core` 包导出。
+<CalloutInfo>
+
+`RouterModule` 类由 `@nestjs/core` 包导出。
+
+</CalloutInfo>
 
 此外，你还可以定义层级结构。这意味着每个模块都可以拥有 `children` 子模块。子模块会继承其父模块的前缀。如下例所示，我们将 `AdminModule` 注册为 `DashboardModule` 和 `MetricsModule` 的父模块。
 
@@ -51,6 +59,10 @@ export class AppModule {}
 });
 ```
 
-> info **提示** 请谨慎使用此特性，过度使用可能导致代码后期难以维护。
+<CalloutInfo>
+
+请谨慎使用此特性，过度使用可能导致代码后期难以维护。
+
+</CalloutInfo>
 
 在上述示例中，注册在 `DashboardModule` 内的任何控制器都会额外获得 `/admin/dashboard` 前缀（因为模块会自顶向下递归拼接路径，即父到子）。同理，`MetricsModule` 内定义的每个控制器也会拥有额外的模块级前缀 `/admin/metrics`。

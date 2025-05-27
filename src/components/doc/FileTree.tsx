@@ -14,7 +14,7 @@ import { cn } from '~/lib/utils'
 export interface FileTreeItem {
   name: string
   icon?: React.ReactNode
-  isFolder?: boolean
+  type?: 'folder' | 'file'
   children?: FileTreeItem[]
 }
 
@@ -28,7 +28,7 @@ export interface FileTreeProps {
 // 递归渲染文件树项目
 const FileTreeItemComponent = ({ item }: { item: FileTreeItem }) => {
   // 文件夹
-  if (item.isFolder || item.children?.length) {
+  if (item.type === 'folder' || item.children) {
     return (
       <SidebarMenuItem key={item.name}>
         <SidebarMenuButton>

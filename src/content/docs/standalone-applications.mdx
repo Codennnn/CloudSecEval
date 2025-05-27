@@ -7,12 +7,12 @@
 要创建一个 Nest 独立应用，请使用如下方式：
 
 ```ts
-@@filename()
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const app = await NestFactory.createApplicationContext(AppModule)
   // 你的应用逻辑 ...
 }
-bootstrap();
+
+bootstrap()
 ```
 
 ## 从静态模块获取提供者
@@ -20,15 +20,13 @@ bootstrap();
 独立应用对象允许你获取在 Nest 应用中注册的任何实例的引用。假设我们在 `AppModule` 模块中导入了一个 `TasksModule` 模块，并且其中有一个 `TasksService` 提供者。这个类提供了一组我们希望在 CRON 任务中调用的方法。
 
 ```ts
-@@filename()
-const tasksService = app.get(TasksService);
+const tasksService = app.get(TasksService)
 ```
 
 要访问 `TasksService` 实例，我们使用 `get()` 方法。`get()` 方法类似于一次**查询**，会在每个已注册模块中查找对应的实例。你可以传递任何提供者的令牌（token）给它。或者，为了进行严格的上下文检查，可以传递一个带有 `strict: true` 属性的选项对象。启用该选项后，你需要手动遍历特定模块，才能从选定的上下文中获取特定实例。
 
 ```ts
-@@filename()
-const tasksService = app.select(TasksModule).get(TasksService, { strict: true });
+const tasksService = app.select(TasksModule).get(TasksService, { strict: true })
 ```
 
 下面是独立应用对象可用的实例引用获取方法的简要说明：
@@ -50,7 +48,9 @@ const tasksService = app.select(TasksModule).get(TasksService, { strict: true })
   </tbody>
 </table>
 
-> info **提示** 在非严格模式下，默认会选择根模块。若需选择其他模块，你需要手动逐步遍历模块图。
+<CalloutInfo>
+  在非严格模式下，默认会选择根模块。若需选择其他模块，你需要手动逐步遍历模块图。
+</CalloutInfo>
 
 请注意，独立应用没有任何网络监听器，因此所有与 HTTP 相关的 Nest 特性（如中间件、拦截器、管道、守卫等）在此上下文中均不可用。
 
@@ -61,8 +61,7 @@ const tasksService = app.select(TasksModule).get(TasksService, { strict: true })
 当你在使用[动态模块](/fundamentals/dynamic-modules)时，应该将代表已注册动态模块的对象传递给 `app.select`。例如：
 
 ```ts
-@@filename()
-export const dynamicConfigModule = ConfigModule.register({ folder: './config' });
+export const dynamicConfigModule = ConfigModule.register({ folder: './config' })
 
 @Module({
   imports: [dynamicConfigModule],
@@ -73,8 +72,7 @@ export class AppModule {}
 然后你可以这样选择该模块：
 
 ```ts
-@@filename()
-const configService = app.select(dynamicConfigModule).get(ConfigService, { strict: true });
+const configService = app.select(dynamicConfigModule).get(ConfigService, { strict: true })
 ```
 
 ## 终止阶段
@@ -82,13 +80,13 @@ const configService = app.select(dynamicConfigModule).get(ConfigService, { stric
 如果你希望 Node 应用在脚本执行完毕后自动关闭（例如用于运行 CRON 任务的脚本），需要在 `bootstrap` 函数的最后调用 `app.close()` 方法，如下所示：
 
 ```ts
-@@filename()
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const app = await NestFactory.createApplicationContext(AppModule)
   // 应用逻辑 ...
-  await app.close();
+  await app.close()
 }
-bootstrap();
+
+bootstrap()
 ```
 
 如[生命周期事件](/fundamentals/lifecycle-events)章节所述，这将触发生命周期钩子（Lifecycle Hook）。

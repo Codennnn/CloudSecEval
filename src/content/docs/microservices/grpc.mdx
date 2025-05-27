@@ -399,8 +399,6 @@ Nest 支持两种方式实现 gRPC 流式处理器：
 - 使用 RxJS 的 `Subject` + `Observable` 处理器：可以直接在控制器方法内部编写响应逻辑，或将其传递给 `Subject`/`Observable` 的消费者。
 - 纯 gRPC 调用流处理器：适用于将流传递给某个执行器，由其处理后续的分发，符合 Node 标准的 `Duplex` 流处理器。
 
-<app-banner-enterprise></app-banner-enterprise>
-
 ## 流式通信示例
 
 我们来定义一个新的 gRPC 示例服务，名为 `HelloService`。`hello.proto` 文件采用 <a href="https://developers.google.com/protocol-buffers">Protocol Buffers（协议缓冲）</a> 进行结构定义。文件内容如下：
