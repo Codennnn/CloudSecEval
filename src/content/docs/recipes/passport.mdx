@@ -23,7 +23,12 @@ $ npm install --save @nestjs/passport passport passport-local
 $ npm install --save-dev @types/passport-local
 ```
 
-> warning **注意** 无论你选择哪种 Passport 策略，都必须安装 `@nestjs/passport` 和 `passport` 这两个包。然后，根据具体的身份验证策略（如 `passport-jwt` 或 `passport-local`），再安装对应的策略包。此外，建议像上面这样安装策略的类型定义包（如 `@types/passport-local`），这样在编写 TypeScript 代码时会有更好的类型提示和开发体验。
+<CalloutInfo type="warning">
+  无论你选择哪种 Passport 策略，都必须安装 `@nestjs/passport` 和 `passport`
+  这两个包。然后，根据具体的身份验证策略（如 `passport-jwt` 或
+  `passport-local`），再安装对应的策略包。此外，建议像上面这样安装策略的类型定义包（如
+  `@types/passport-local`），这样在编写 TypeScript 代码时会有更好的类型提示和开发体验。
+</CalloutInfo>
 
 ## 实现 Passport 策略
 
@@ -52,12 +57,11 @@ $ nest g service users
 
 将这些自动生成文件的默认内容替换为如下所示。在我们的示例应用中，`UsersService` 仅维护一个硬编码的内存用户列表，并提供一个根据用户名查找用户的方法。在实际应用中，这里通常会构建你的用户模型和持久化层，可以选择你喜欢的库（如 TypeORM、Sequelize、Mongoose 等）。
 
-```ts
-@@filename(users/users.service)
-import { Injectable } from '@nestjs/common';
+```ts filename='users/users.service.ts'
+import { Injectable } from '@nestjs/common'
 
 // 这里应该是一个真正代表用户实体的类或接口
-export type User = any;
+export type User = any
 
 @Injectable()
 export class UsersService {
@@ -72,53 +76,19 @@ export class UsersService {
       username: 'maria',
       password: 'guess',
     },
-  ];
+  ]
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class UsersService {
-  constructor() {
-    this.users = [
-      {
-        userId: 1,
-        username: 'john',
-        password: 'changeme',
-      },
-      {
-        userId: 2,
-        username: 'maria',
-        password: 'guess',
-      },
-    ];
-  }
-
-  async findOne(username) {
-    return this.users.find(user => user.username === username);
+    return this.users.find((user) => user.username === username)
   }
 }
 ```
 
 在 `UsersModule` 中，唯一需要做的更改就是在 `@Module` 装饰器的 exports 数组中添加 `UsersService`，这样它才能在该模块之外被访问到（我们很快会在 `AuthService` 中用到它）。
 
-```ts
-@@filename(users/users.module)
-import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-
-@Module({
-  providers: [UsersService],
-  exports: [UsersService],
-})
-export class UsersModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
+```ts filename='users/users.module.ts'
+import { Module } from '@nestjs/common'
+import { UsersService } from './users.service'
 
 @Module({
   providers: [UsersService],
@@ -129,65 +99,37 @@ export class UsersModule {}
 
 我们的 `AuthService` 负责检索用户并验证密码。为此，我们创建了一个 `validateUser()` 方法。在下面的代码中，我们使用了便捷的 ES6 展开运算符，在返回用户对象前去除了 password 属性。稍后我们会在 Passport 的本地策略（local strategy）中调用 `validateUser()` 方法。
 
-```ts
-@@filename(auth/auth.service)
-import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+```ts filename='auth/auth.service.ts'
+import { Injectable } from '@nestjs/common'
+import { UsersService } from '../users/users.service'
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOne(username)
     if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+      const { password, ...result } = user
+      return result
     }
-    return null;
-  }
-}
-@@switch
-import { Injectable, Dependencies } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-
-@Injectable()
-@Dependencies(UsersService)
-export class AuthService {
-  constructor(usersService) {
-    this.usersService = usersService;
-  }
-
-  async validateUser(username, pass) {
-    const user = await this.usersService.findOne(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
+    return null
   }
 }
 ```
 
-> Warning **警告** 当然，在真实应用中，你绝不能以明文形式存储密码。你应该使用像 [bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme) 这样的库，采用加盐的单向哈希算法。这样，你只会存储经过哈希处理的密码，并将存储的密码与**传入**密码的哈希值进行比较，从而永远不会以明文形式存储或暴露用户密码。为了让我们的示例应用更简单，这里违反了这一绝对原则，直接使用明文密码。**请不要在你的真实应用中这样做！**
+<CalloutInfo type="warning">
+  当然，在真实应用中，你绝不能以明文形式存储密码。你应该使用像
+  [bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
+  这样的库，采用加盐的单向哈希算法。这样，你只会存储经过哈希处理的密码，并将存储的密码与**传入**密码的哈希值进行比较，从而永远不会以明文形式存储或暴露用户密码。为了让我们的示例应用更简单，这里违反了这一绝对原则，直接使用明文密码。**请不要在你的真实应用中这样做！**
+</CalloutInfo>
 
 现在，我们需要更新 `AuthModule`，导入 `UsersModule`。
 
-```ts
-@@filename(auth/auth.module)
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-
-@Module({
-  imports: [UsersModule],
-  providers: [AuthService],
-})
-export class AuthModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
+```ts filename='auth/auth.module.ts'
+import { Module } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { UsersModule } from '../users/users.module'
 
 @Module({
   imports: [UsersModule],
@@ -200,54 +142,33 @@ export class AuthModule {}
 
 现在我们可以实现 Passport 的**本地身份验证策略**了。在 `auth` 文件夹下创建一个名为 `local.strategy.ts` 的文件，并添加如下代码：
 
-```ts
-@@filename(auth/local.strategy)
-import { Strategy } from 'passport-local';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from './auth.service';
+```ts filename='auth/local.strategy.ts'
+import { Strategy } from 'passport-local'
+import { PassportStrategy } from '@nestjs/passport'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { AuthService } from './auth.service'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
-    super();
+    super()
   }
 
   async validate(username: string, password: string): Promise<any> {
-    const user = await this.authService.validateUser(username, password);
+    const user = await this.authService.validateUser(username, password)
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
-    return user;
-  }
-}
-@@switch
-import { Strategy } from 'passport-local';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException, Dependencies } from '@nestjs/common';
-import { AuthService } from './auth.service';
-
-@Injectable()
-@Dependencies(AuthService)
-export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(authService) {
-    super();
-    this.authService = authService;
-  }
-
-  async validate(username, password) {
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
+    return user
   }
 }
 ```
 
 我们遵循了前文介绍的 Passport 策略实现方式。在本例中，passport-local 策略没有额外的配置选项，因此构造函数中只需调用 `super()`，无需传递配置对象。
 
-> info **提示** 你可以在调用 `super()` 时传递一个配置对象，以自定义 passport 策略的行为。在本例中，passport-local 策略默认期望请求体中包含 `username` 和 `password` 字段。你可以通过传递配置对象来指定不同的字段名，例如：`super({{ '{' }} usernameField: 'email' {{ '}' }})`。更多信息请参考 [Passport 官方文档](http://www.passportjs.org/docs/configure/)。
+<CalloutInfo>
+  你可以在调用 `super()` 时传递一个配置对象，以自定义 passport 策略的行为。在本例中，passport-local 策略默认期望请求体中包含 `username` 和 `password` 字段。你可以通过传递配置对象来指定不同的字段名，例如：`super({{ '{' }} usernameField: 'email' {{ '}' }})`。更多信息请参考 [Passport 官方文档](http://www.passportjs.org/docs/configure/)。
+</CalloutInfo>
 
 我们还实现了 `validate()` 方法。对于每种策略，Passport 都会调用验证函数（在 `@nestjs/passport` 中通过 `validate()` 方法实现），并传递相应的参数。对于本地策略，Passport 期望 `validate()` 方法的签名为：`validate(username: string, password: string): any`。
 
@@ -257,25 +178,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 接下来需要配置我们的 `AuthModule`，以使用刚刚定义的 Passport 相关功能。将 `auth.module.ts` 更新为如下内容：
 
-```ts
-@@filename(auth/auth.module)
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './local.strategy';
-
-@Module({
-  imports: [UsersModule, PassportModule],
-  providers: [AuthService, LocalStrategy],
-})
-export class AuthModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './local.strategy';
+```ts filename='auth/auth.module.ts'
+import { Module } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { UsersModule } from '../users/users.module'
+import { PassportModule } from '@nestjs/passport'
+import { LocalStrategy } from './local.strategy'
 
 @Module({
   imports: [UsersModule, PassportModule],
@@ -309,30 +217,16 @@ Handler）处理。这个结论依然成立，我们很快会用到这种标准�
 
 打开 `app.controller.ts` 文件，并将其内容替换为如下代码：
 
-```ts
-@@filename(app.controller)
-import { Controller, Request, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+```ts filename='app.controller.ts'
+import { Controller, Request, Post, UseGuards } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 
 @Controller()
 export class AppController {
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   async login(@Request() req) {
-    return req.user;
-  }
-}
-@@switch
-import { Controller, Bind, Request, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-
-@Controller()
-export class AppController {
-  @UseGuards(AuthGuard('local'))
-  @Post('auth/login')
-  @Bind(Request())
-  async login(req) {
-    return req.user;
+    return req.user
   }
 }
 ```
@@ -351,10 +245,9 @@ $ # 结果 -> {"userId":1,"username":"john"}
 
 虽然这样可以正常工作，但直接将策略名称传递给 `AuthGuard()` 会在代码中引入魔法字符串（magic string）。因此，我们推荐如下所示创建你自己的类：
 
-```ts
-@@filename(auth/local-auth.guard)
-import { Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+```ts filename='auth/local-auth.guard.ts'
+import { Injectable } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {}
@@ -405,11 +298,10 @@ $ npm install --save-dev @types/passport-jwt
 
 基于以上内容，我们现在可以生成一个真正的 JWT，并在该路由中返回。为了保持服务的模块化，我们将在 `authService` 中处理 JWT 的生成。请打开 `auth` 文件夹下的 `auth.service.ts` 文件，添加 `login()` 方法，并按如下方式引入 `JwtService`：
 
-```ts
-@@filename(auth/auth.service)
-import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
+```ts filename='auth/auth.service.ts'
+import { Injectable } from '@nestjs/common'
+import { UsersService } from '../users/users.service'
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
@@ -419,49 +311,19 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOne(username)
     if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+      const { password, ...result } = user
+      return result
     }
-    return null;
+    return null
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { username: user.username, sub: user.userId }
     return {
       access_token: this.jwtService.sign(payload),
-    };
-  }
-}
-
-@@switch
-import { Injectable, Dependencies } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
-
-@Dependencies(UsersService, JwtService)
-@Injectable()
-export class AuthService {
-  constructor(usersService, jwtService) {
-    this.usersService = usersService;
-    this.jwtService = jwtService;
-  }
-
-  async validateUser(username, pass) {
-    const user = await this.usersService.findOne(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
     }
-    return null;
-  }
-
-  async login(user) {
-    const payload = { username: user.username, sub: user.userId };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
   }
 }
 ```
@@ -472,54 +334,29 @@ export class AuthService {
 
 首先，在 `auth` 文件夹下创建 `constants.ts` 文件，并添加如下代码：
 
-```ts
-@@filename(auth/constants)
+```ts filename='auth/constants.ts'
 export const jwtConstants = {
-  secret: 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
-};
-@@switch
-export const jwtConstants = {
-  secret: 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
-};
+  secret:
+    'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
+}
 ```
 
 我们将使用该常量在 JWT 签名和验证步骤之间共享密钥。
 
-> Warning **警告** **请勿公开暴露此密钥**。这里为了演示代码的作用才将密钥明文展示，但在生产环境中，**你必须通过机密管理工具、环境变量或配置服务等方式妥善保护此密钥**。
+<CalloutInfo type="warning">
+  请勿公开暴露此密钥。这里为了演示代码的作用才将密钥明文展示，但在生产环境中，**你必须通过机密管理工具、环境变量或配置服务等方式妥善保护此密钥**。
+</CalloutInfo>
 
 接下来，打开 `auth` 文件夹下的 `auth.module.ts` 文件，并将其更新为如下内容：
 
-```ts
-@@filename(auth/auth.module)
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
-import { UsersModule } from '../users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
-
-@Module({
-  imports: [
-    UsersModule,
-    PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
-    }),
-  ],
-  providers: [AuthService, LocalStrategy],
-  exports: [AuthService],
-})
-export class AuthModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
-import { UsersModule } from '../users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
+```ts filename='auth/auth.module.ts'
+import { Module } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { LocalStrategy } from './local.strategy'
+import { UsersModule } from '../users/users.module'
+import { PassportModule } from '@nestjs/passport'
+import { JwtModule } from '@nestjs/jwt'
+import { jwtConstants } from './constants'
 
 @Module({
   imports: [
@@ -540,11 +377,10 @@ export class AuthModule {}
 
 现在我们可以更新 `/auth/login` 路由，使其返回 JWT。
 
-```ts
-@@filename(app.controller)
-import { Controller, Request, Post, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { AuthService } from './auth/auth.service';
+```ts filename='app.controller.ts'
+import { Controller, Request, Post, UseGuards } from '@nestjs/common'
+import { LocalAuthGuard } from './auth/local-auth.guard'
+import { AuthService } from './auth/auth.service'
 
 @Controller()
 export class AppController {
@@ -553,23 +389,7 @@ export class AppController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
-    return this.authService.login(req.user);
-  }
-}
-@@switch
-import { Controller, Bind, Request, Post, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { AuthService } from './auth/auth.service';
-
-@Controller()
-export class AppController {
-  constructor(private authService: AuthService) {}
-
-  @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
-  @Bind(Request())
-  async login(req) {
-    return this.authService.login(req.user);
+    return this.authService.login(req.user)
   }
 }
 ```
@@ -587,12 +407,11 @@ $ # 注意：上方 JWT 已截断
 
 现在我们可以解决最后一个需求：通过要求请求中必须携带有效的 JWT 来保护接口。Passport 同样可以帮助我们实现这一点。它提供了用于保护 RESTful 接口的 [passport-jwt](https://github.com/mikenicholson/passport-jwt) 策略。首先，在 `auth` 文件夹下创建一个名为 `jwt.strategy.ts` 的文件，并添加如下代码：
 
-```ts
-@@filename(auth/jwt.strategy)
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
-import { jwtConstants } from './constants';
+```ts filename='auth/jwt.strategy.ts'
+import { ExtractJwt, Strategy } from 'passport-jwt'
+import { PassportStrategy } from '@nestjs/passport'
+import { Injectable } from '@nestjs/common'
+import { jwtConstants } from './constants'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -601,31 +420,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: jwtConstants.secret,
-    });
+    })
   }
 
   async validate(payload: any) {
-    return { userId: payload.sub, username: payload.username };
-  }
-}
-@@switch
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
-import { jwtConstants } from './constants';
-
-@Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: jwtConstants.secret,
-    });
-  }
-
-  async validate(payload) {
-    return { userId: payload.sub, username: payload.username };
+    return { userId: payload.sub, username: payload.username }
   }
 }
 ```
@@ -646,39 +445,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 将新的 `JwtStrategy` 作为 provider 添加到 `AuthModule` 中：
 
-```ts
-@@filename(auth/auth.module)
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
-import { UsersModule } from '../users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
-
-@Module({
-  imports: [
-    UsersModule,
-    PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
-    }),
-  ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
-  exports: [AuthService],
-})
-export class AuthModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
-import { UsersModule } from '../users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
+```ts filename='auth/auth.module.ts'
+import { Module } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { LocalStrategy } from './local.strategy'
+import { JwtStrategy } from './jwt.strategy'
+import { UsersModule } from '../users/users.module'
+import { PassportModule } from '@nestjs/passport'
+import { JwtModule } from '@nestjs/jwt'
+import { jwtConstants } from './constants'
 
 @Module({
   imports: [
@@ -699,10 +474,9 @@ export class AuthModule {}
 
 最后，我们定义一个继承自内置 `AuthGuard` 的 `JwtAuthGuard` 类：
 
-```ts
-@@filename(auth/jwt-auth.guard)
-import { Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+```ts filename='auth/jwt-auth.guard.ts'
+import { Injectable } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {}
@@ -714,12 +488,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {}
 
 打开 `app.controller.ts` 文件，并按如下方式进行更新：
 
-```ts
-@@filename(app.controller)
-import { Controller, Get, Request, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { AuthService } from './auth/auth.service';
+```ts filename='app.controller.ts'
+import { Controller, Get, Request, Post, UseGuards } from '@nestjs/common'
+import { JwtAuthGuard } from './auth/jwt-auth.guard'
+import { LocalAuthGuard } from './auth/local-auth.guard'
+import { AuthService } from './auth/auth.service'
 
 @Controller()
 export class AppController {
@@ -728,40 +501,13 @@ export class AppController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
-    return this.authService.login(req.user);
+    return this.authService.login(req.user)
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
-  }
-}
-@@switch
-import { Controller, Dependencies, Bind, Get, Request, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { AuthService } from './auth/auth.service';
-
-@Dependencies(AuthService)
-@Controller()
-export class AppController {
-  constructor(authService) {
-    this.authService = authService;
-  }
-
-  @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
-  @Bind(Request())
-  async login(req) {
-    return this.authService.login(req.user);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  @Bind(Request())
-  getProfile(req) {
-    return req.user;
+    return req.user
   }
 }
 ```
@@ -889,14 +635,14 @@ Passport API 的核心机制是将策略注册到全局实例。因此，策略�
 首先，打开 `local.strategy.ts` 文件，并以常规方式注入 `ModuleRef`：
 
 ```ts
+import { ModuleRef } from '@nestjs/core';
+
 constructor(private moduleRef: ModuleRef) {
   super({
     passReqToCallback: true,
   });
 }
 ```
-
-> info **提示** `ModuleRef` 类需从 `@nestjs/core` 包中导入。
 
 请确保如上所示，将 `passReqToCallback` 配置属性设置为 `true`。
 
@@ -953,7 +699,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'myjwt')
 
 ## GraphQL
 
-如果你想在 [GraphQL](https://docs.nestjs.com/graphql/quick-start) 中使用 AuthGuard，需要继承内置的 `AuthGuard` 类，并重写 `getRequest()` 方法。
+如果你想在 [GraphQL](/graphql/quick-start) 中使用 AuthGuard，需要继承内置的 `AuthGuard` 类，并重写 `getRequest()` 方法。
 
 ```ts
 @Injectable()

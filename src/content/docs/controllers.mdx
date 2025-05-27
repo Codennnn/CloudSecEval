@@ -83,7 +83,7 @@ export class CatsController {
   </tbody>
 </table>
 
-<CalloutInfo type="warning">
+<CalloutInfo type='warning'>
   当处理器使用了 `@Res()` 或 `@Next()` 时，Nest 会检测到你选择了库特定方式。如果两种方式同时使用，标准方式会在该路由下被**自动禁用**，无法正常工作。如果你想同时使用（例如只注入响应对象用于设置 cookie/headers，其余交由框架处理），必须在 `@Res({ passthrough: true })` 装饰器中设置 `passthrough` 选项为 `true`。
 </CalloutInfo>
 

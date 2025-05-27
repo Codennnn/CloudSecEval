@@ -4,7 +4,11 @@
 
 针对这些场景，如果你希望应用程序无需等待所有请求结束就直接退出，可以在创建 NestJS 应用程序时启用 `forceCloseConnections` 选项。
 
-> warning **提示** 绝大多数用户无需启用此选项。只有在你发现应用程序未能按预期退出时，才可能需要用到它。通常，这种情况会出现在你启用了 `app.enableShutdownHooks()`，并且注意到应用程序无法正常重启或退出时。最常见的场景是在开发过程中使用 `--watch` 运行 NestJS 应用程序时。
+<CalloutInfo type="warning">
+  绝大多数用户无需启用此选项。只有在你发现应用程序未能按预期退出时，才可能需要用到它。通常，这种情况会出现在你启用了
+  `app.enableShutdownHooks()`，并且注意到应用程序无法正常重启或退出时。最常见的场景是在开发过程中使用
+  `--watch` 运行 NestJS 应用程序时。
+</CalloutInfo>
 
 ## 用法
 

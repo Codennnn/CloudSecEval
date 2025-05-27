@@ -7,23 +7,15 @@ REPL 功能允许你直接在终端中检查依赖关系图，并调用你的提
 
 要在 REPL 模式下运行你的 NestJS 应用，请新建一个 `repl.ts` 文件（与现有的 `main.ts` 文件同级），并添加如下代码：
 
-```ts
-@@filename(repl)
-import { repl } from '@nestjs/core';
-import { AppModule } from './src/app.module';
+```ts filename='repl.ts'
+import { repl } from '@nestjs/core'
+import { AppModule } from './src/app.module'
 
 async function bootstrap() {
-  await repl(AppModule);
+  await repl(AppModule)
 }
-bootstrap();
-@@switch
-import { repl } from '@nestjs/core';
-import { AppModule } from './src/app.module';
 
-async function bootstrap() {
-  await repl(AppModule);
-}
-bootstrap();
+bootstrap()
 ```
 
 然后在终端中使用以下命令启动 REPL：
@@ -32,7 +24,9 @@ bootstrap();
 $ npm run start -- --entryFile repl
 ```
 
-> info **提示** `repl` 会返回一个 [Node.js REPL 服务器](https://nodejs.org/api/repl.html) 对象。
+<CalloutInfo>
+  `repl` 会返回一个 [Node.js REPL 服务器](https://nodejs.org/api/repl.html) 对象。
+</CalloutInfo>
 
 启动后，你应该会在控制台看到如下信息：
 
@@ -100,7 +94,11 @@ NestJS REPL 内置了一些原生函数，在启动 REPL 时会全局可用。�
 接口：$(token: InjectionToken) => any
 ```
 
-> info **提示** 这些函数接口采用 [TypeScript 函数类型表达式语法](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-type-expressions) 编写。
+<CalloutInfo>
+  这些函数接口采用 [TypeScript
+  函数类型表达式语法](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-type-expressions)
+  编写。
+</CalloutInfo>
 
 | 函数         | 描述                                                                         | 签名                                                                  |
 | ------------ | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |

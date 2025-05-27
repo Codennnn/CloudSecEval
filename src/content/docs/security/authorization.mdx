@@ -187,7 +187,7 @@ export enum Action {
 }
 ```
 
-<CalloutInfo type="warning">
+<CalloutInfo type='warning'>
 
 `manage` 是 CASL 中的特殊关键字，表示"任意操作"。
 
@@ -420,6 +420,6 @@ findAll() {
 }
 ```
 
-<CalloutInfo type="warning">
+<CalloutInfo type='warning'>
   由于我们必须使用 `new` 关键字就地实例化策略处理器，`ReadArticlePolicyHandler` 类无法使用依赖注入。这个问题可以通过 `ModuleRef#get` 方法解决（详情参见[此处](/fundamentals/module-ref)）。基本上，你需要允许通过 `@CheckPolicies()` 装饰器传递 `Type<IPolicyHandler>` 类型，而不是注册函数和实例。然后，在守卫内部，你可以使用类型引用获取实例：`moduleRef.get(YOUR_HANDLER_TYPE)` 或者甚至使用 `ModuleRef#create` 方法动态实例化它。
 </CalloutInfo>

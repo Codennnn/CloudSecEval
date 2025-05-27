@@ -9,9 +9,8 @@
 如果需要在应用上下文外部获取 `HttpAdapter` 的引用，可以调用 `getHttpAdapter()` 方法。
 
 ```ts
-@@filename()
-const app = await NestFactory.create(AppModule);
-const httpAdapter = app.getHttpAdapter();
+const app = await NestFactory.create(AppModule)
+const httpAdapter = app.getHttpAdapter()
 ```
 
 ## 作为可注入的依赖
@@ -19,20 +18,12 @@ const httpAdapter = app.getHttpAdapter();
 如果需要在应用上下文内部获取 `HttpAdapterHost` 的引用，可以像注入其他提供者一样，通过构造函数注入的方式实现。
 
 ```ts
-@@filename()
+import { HttpAdapterHost } from '@nestjs/core'
+
 export class CatsService {
   constructor(private adapterHost: HttpAdapterHost) {}
 }
-@@switch
-@Dependencies(HttpAdapterHost)
-export class CatsService {
-  constructor(adapterHost) {
-    this.adapterHost = adapterHost;
-  }
-}
 ```
-
-> info **提示** `HttpAdapterHost` 需要从 `@nestjs/core` 包中导入。
 
 需要注意，`HttpAdapterHost` 本身**不是**实际的 `HttpAdapter`。要获取实际的 `HttpAdapter` 实例，只需访问其 `httpAdapter` 属性即可。
 

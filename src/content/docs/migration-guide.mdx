@@ -38,7 +38,9 @@ findAll() {
 }
 ```
 
-> warning **警告** 请注意，`*splat` 是一个具名通配符，匹配除根路径外的所有路径。如果你需要同时匹配根路径（`/users`），可以使用 `/users/{{ '{' }}*splat&#125;`，即用大括号包裹通配符（可选分组）。再次提醒，`splat` 只是参数名，没有特殊含义，你可以自定义为任意名称，例如 `*wildcard`。
+<CalloutInfo type='warning'>
+  请注意，`*splat` 是一个具名通配符，匹配除根路径外的所有路径。如果你需要同时匹配根路径（`/users`），可以使用 `/users/{{ '{' }}*splat&#125;`，即用大括号包裹通配符（可选分组）。再次提醒，`splat` 只是参数名，没有特殊含义，你可以自定义为任意名称，例如 `*wildcard`。
+</CalloutInfo>
 
 同样地，如果你有中间件需要应用于所有路由，也需要将路径更新为具名通配符：
 
@@ -58,7 +60,11 @@ forRoutes('{*splat}') // <-- 这在 Express v5 中可用
 
 ## 查询参数解析
 
-> info **注意** 此更改仅适用于 Express v5。
+<CalloutInfo>
+
+此更改仅适用于 Express v5。
+
+</CalloutInfo>
 
 在 Express v5 中，查询参数默认不再使用 `qs` 库进行解析，而是采用了 `simple` 解析器。该解析器不支持嵌套对象或数组。
 
@@ -88,7 +94,11 @@ bootstrap()
 
 `@nestjs/platform-fastify` v11 现已正式支持 Fastify v5。对于大多数用户来说，此更新过程应当十分顺利；但需要注意，Fastify v5 引入了一些不兼容变更，不过这些变更对大多数 NestJS 用户影响不大。更多详细信息，请参阅 [Fastify v5 迁移指南](https://fastify.dev/docs/v5.1.x/Guides/Migration-Guide-V5/)。
 
-> info **提示** Fastify v5 的路径匹配方式没有变化（中间件除外，详见下文），因此你可以像以前一样继续使用通配符语法。行为保持一致，使用通配符（如 `*`）定义的路由依然可以正常工作。
+<CalloutInfo>
+  Fastify v5
+  的路径匹配方式没有变化（中间件除外，详见下文），因此你可以像以前一样继续使用通配符语法。行为保持一致，使用通配符（如
+  `*`）定义的路由依然可以正常工作。
+</CalloutInfo>
 
 ## Fastify CORS
 
@@ -173,7 +183,9 @@ C -> B -> A
 A -> B -> C
 ```
 
-> info **提示** 全局模块（Global Module）会被视为依赖所有其他模块。这意味着全局模块会最先初始化，并在最后销毁。
+<CalloutInfo>
+  全局模块（Global Module）会被视为依赖所有其他模块。这意味着全局模块会最先初始化，并在最后销毁。
+</CalloutInfo>
 
 ## 中间件注册顺序
 
@@ -222,7 +234,9 @@ CacheModule.registerAsync({
 
 其中，`KeyvRedis` 需从 `@keyv/redis` 包中引入。更多内容请参阅[缓存（Caching）文档](/techniques/caching)。
 
-> warning **警告** 本次升级后，Keyv 库处理的缓存数据结构变为包含 `value` 和 `expires` 字段的对象，例如：`{{ '{' }}"value": "yourData", "expires": 1678901234567{{ '}' }}`。通过 Keyv API 访问数据时会自动获取 `value` 字段，但如果你直接操作缓存数据（如绕过 cache-manager API），或需要兼容旧版 `@nestjs/cache-manager` 写入的数据，请注意此变更。
+<CalloutInfo type='warning'>
+  本次升级后，Keyv 库处理的缓存数据结构变为包含 `value` 和 `expires` 字段的对象，例如：`{{ '{' }}"value": "yourData", "expires": 1678901234567{{ '}' }}`。通过 Keyv API 访问数据时会自动获取 `value` 字段，但如果你直接操作缓存数据（如绕过 cache-manager API），或需要兼容旧版 `@nestjs/cache-manager` 写入的数据，请注意此变更。
+</CalloutInfo>
 
 ## 配置模块（ConfigModule）
 
@@ -324,7 +338,9 @@ export class DogHealthIndicator {
 - `HealthIndicatorService` 取代了旧的 `HealthIndicator` 和 `HealthCheckError` 类，提供了更简洁的健康检查 API。
 - `check` 方法便于跟踪健康状态（`up` 或 `down`），同时支持在健康检查响应中添加额外的元数据。
 
-> info **提示** 请注意，`HealthIndicator` 和 `HealthCheckError` 类已被标记为弃用，并计划在下一个主要版本中移除。
+<CalloutInfo>
+  请注意，`HealthIndicator` 和 `HealthCheckError` 类已被标记为弃用，并计划在下一个主要版本中移除。
+</CalloutInfo>
 
 ## Node.js v16 和 v18 不再受支持
 

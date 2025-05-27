@@ -17,7 +17,10 @@
 
 为了加快这一重复流程，[Nest 命令行工具（Nest CLI）](/cli/overview) 提供了一个生成器（原型生成器，schematic），可以自动生成所有模板代码，帮助我们避免手动操作，大大简化开发体验。
 
-> info **注意** 该原型生成器支持生成 **HTTP** 控制器、**微服务** 控制器、**GraphQL** 解析器（支持 code first 和 schema first 两种模式）以及 **WebSocket** 网关。
+<CalloutInfo>
+  该原型生成器支持生成 **HTTP** 控制器、**微服务** 控制器、**GraphQL** 解析器（支持 code first 和
+  schema first 两种模式）以及 **WebSocket** 网关。
+</CalloutInfo>
 
 ## 生成新资源
 
@@ -65,7 +68,10 @@ export class UsersController {
 
 此外，生成器会自动为所有 CRUD 接口（RESTful API 的路由、GraphQL 的查询和变更、微服务和 WebSocket 网关的消息订阅）创建占位符，无需手动编写。
 
-> warning **注意** 生成的服务类默认**不依赖于任何特定 ORM（或数据源）**，这使得生成器足够通用，能够满足各种项目需求。所有方法默认仅包含占位实现，便于你根据项目实际数据源进行填充。
+<CalloutInfo type="warning">
+  生成的服务类默认**不依赖于任何特定
+  ORM（或数据源）**，这使得生成器足够通用，能够满足各种项目需求。所有方法默认仅包含占位实现，便于你根据项目实际数据源进行填充。
+</CalloutInfo>
 
 同样，如果你希望为 GraphQL 应用生成解析器，只需选择 `GraphQL（code first）`（或 `GraphQL（schema first）`）作为传输层（Transport Layer）。
 
@@ -87,7 +93,9 @@ $ nest g resource users
 > UPDATE src/app.module.ts (312 bytes)
 ```
 
-> info **提示** 如果不想生成测试文件，可以添加 `--no-spec` 参数，例如：`nest g resource users --no-spec`
+<CalloutInfo>
+  如果不想生成测试文件，可以添加 `--no-spec` 参数，例如：`nest g resource users --no-spec`。
+</CalloutInfo>
 
 可以看到，不仅所有模板代码（包括变更和查询）都已生成，而且各部分已自动关联。我们在使用 `UsersService`、`User` 实体和 DTO。
 

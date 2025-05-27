@@ -12,7 +12,10 @@ await app.startAllMicroservices()
 await app.listen(3001)
 ```
 
-> info **提示** `app.listen(port)` 方法会在指定地址启动一个 HTTP 服务器。如果你的应用不需要处理 HTTP 请求，则应使用 `app.init()` 方法。
+<CalloutInfo>
+  `app.listen(port)` 方法会在指定地址启动一个 HTTP 服务器。如果你的应用不需要处理 HTTP
+  请求，则应使用 `app.init()` 方法。
+</CalloutInfo>
 
 如果需要连接多个微服务实例，只需为每个微服务调用一次 `connectMicroservice()`：
 
@@ -41,7 +44,6 @@ await app.listen(3001)
 如果你希望在混合应用中，将 `@MessagePattern()` 仅绑定到某一种传输策略（例如 MQTT），可以传递第二个参数 `Transport`，它是一个包含所有内置传输策略的枚举类型。
 
 ```ts
-@@filename()
 @MessagePattern('time.us.*', Transport.NATS)
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
   console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
@@ -51,21 +53,11 @@ getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
 getTCPDate(@Payload() data: number[]) {
   return new Date().toLocaleTimeString(...);
 }
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('time.us.*', Transport.NATS)
-getDate(data, context) {
-  console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
-  return new Date().toLocaleTimeString(...);
-}
-@Bind(Payload(), Ctx())
-@MessagePattern({ cmd: 'time.us' }, Transport.TCP)
-getTCPDate(data, context) {
-  return new Date().toLocaleTimeString(...);
-}
 ```
 
-> info **提示** `@Payload()`、`@Ctx()`、`Transport` 和 `NatsContext` 都是从 `@nestjs/microservices` 导入的。
+<CalloutInfo>
+  `@Payload()`、`@Ctx()`、`Transport` 和 `NatsContext` 都是从 `@nestjs/microservices` 导入的。
+</CalloutInfo>
 
 ## 共享配置（Sharing configuration）
 

@@ -4,8 +4,11 @@
 
 采用 **无服务器架构（serverless architecture）** 时，开发者只需专注于应用代码中的各个独立函数。像 AWS Lambda、Google Cloud Functions 和 Microsoft Azure Functions 这样的服务，会负责所有物理硬件、虚拟机操作系统以及 Web 服务器软件的管理工作。
 
-> info **提示**  
-> 本章节不讨论无服务器函数的优缺点，也不会深入介绍任何云服务商的具体实现。
+<CalloutInfo>
+
+本章节不讨论无服务器函数的优缺点，也不会深入介绍任何云服务商的具体实现。
+
+</CalloutInfo>
 
 ## 冷启动（Cold start）
 
@@ -70,7 +73,9 @@ bootstrap()
 | Nest（独立应用）                        | 0.1117 秒（111.7 毫秒） |
 | 原生 Node.js 脚本                       | 0.0071 秒（7.1 毫秒）   |
 
-> info **说明** 机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
+<CalloutInfo title="说明">
+  机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
+</CalloutInfo>
 
 接下来，我们将所有基准测试重复一遍，但这次使用 `webpack` 进行打包（如果你已安装 [Nest 命令行工具（Nest CLI）](/cli/overview)，可以通过 `nest build --webpack` 命令将应用打包为单一可执行 JavaScript 文件）。不过，我们不会使用 Nest CLI 默认的 `webpack` 配置，而是确保将所有依赖（`node_modules`）一并打包，配置如下：
 
@@ -103,7 +108,9 @@ module.exports = (options, webpack) => {
 }
 ```
 
-> info **提示** 如需让 Nest CLI 使用此配置，请在项目根目录下新建 `webpack.config.js` 文件。
+<CalloutInfo>
+  如需让 Nest CLI 使用此配置，请在项目根目录下新建 `webpack.config.js` 文件。
+</CalloutInfo>
 
 采用上述配置后，得到如下测试结果：
 
@@ -114,9 +121,11 @@ module.exports = (options, webpack) => {
 | Nest（独立应用）                        | 0.0319 秒（31.9 毫秒） |
 | 原生 Node.js 脚本                       | 0.0066 秒（6.6 毫秒）  |
 
-> info **说明** 机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
+<CalloutInfo title="说明">
+  机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
+</CalloutInfo>
 
-> info **提示** 你还可以通过进一步的代码压缩和优化（如使用 `webpack` 插件等）来提升性能。
+<CalloutInfo>你还可以通过进一步的代码压缩和优化（如使用 `webpack` 插件等）来提升性能。</CalloutInfo>
 
 可以看到，编译方式（以及是否打包代码）对整体启动时间有着至关重要的影响。通过 `webpack` 打包后，独立 Nest 应用（包含一个模块、一个控制器和一个服务）的启动时间平均可降至约 32 毫秒，基于 Express 的常规 NestJS 应用约为 81.5 毫秒。
 
@@ -175,7 +184,10 @@ $ npm i @codegenie/serverless-express aws-lambda
 $ npm i -D @types/aws-lambda serverless-offline
 ```
 
-> info **提示** 为了加快开发迭代速度，我们安装了 `serverless-offline` 插件，它可以模拟 AWS Lambda 和 API Gateway 的本地环境。
+<CalloutInfo>
+  为了加快开发迭代速度，我们安装了 `serverless-offline` 插件，它可以模拟 AWS Lambda 和 API Gateway
+  的本地环境。
+</CalloutInfo>
 
 安装完成后，创建 `serverless.yml` 文件，用于配置 Serverless 框架：
 
@@ -201,7 +213,10 @@ functions:
           path: '{proxy+}'
 ```
 
-> info **提示** 想了解更多关于 Serverless 框架的信息，请访问 [官方文档](https://www.serverless.com/framework/docs/)。
+<CalloutInfo>
+  想了解更多关于 Serverless 框架的信息，请访问
+  [官方文档](https://www.serverless.com/framework/docs/)。
+</CalloutInfo>
 
 接下来，打开 `main.ts` 文件，按照如下方式更新启动代码，加入所需的模板代码（Boilerplate）：
 
@@ -227,9 +242,15 @@ export const handler: Handler = async (event: any, context: Context, callback: C
 }
 ```
 
-> info **提示** 如果你需要创建多个无服务器函数，并在它们之间共享通用模块，建议使用 [CLI 多包仓库结构（Monorepo）模式](/cli/monorepo#monorepo-mode)。
+<CalloutInfo>
+  如果你需要创建多个无服务器函数，并在它们之间共享通用模块，建议使用 [CLI
+  多包仓库结构（Monorepo）模式](/cli/monorepo#monorepo-mode)。
+</CalloutInfo>
 
-> warning **警告** 如果你使用了 `@nestjs/swagger` 包，在无服务器函数场景下还需额外配置，才能正常工作。详情请参考此 [讨论帖](https://github.com/nestjs/swagger/issues/199)。
+<CalloutInfo type="warning">
+  如果你使用了 `@nestjs/swagger` 包，在无服务器函数场景下还需额外配置，才能正常工作。详情请参考此
+  [讨论帖](https://github.com/nestjs/swagger/issues/199)。
+</CalloutInfo>
 
 然后，打开 `tsconfig.json` 文件，确保启用了 `esModuleInterop` 选项，以便正确加载 `@codegenie/serverless-express` 包。
 
@@ -296,30 +317,28 @@ return {
 
 另外，如果你希望让你的函数保持非常轻量，并且不需要任何 HTTP 相关功能（如路由、守卫（Guard）、拦截器（Interceptor）、管道等），你可以像前文所述，直接使用 `NestFactory.createApplicationContext`，而不是运行整个 HTTP 服务器（底层为 `express`），示例如下：
 
-```ts
-@@filename(main)
-import { HttpStatus } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { Callback, Context, Handler } from 'aws-lambda';
-import { AppModule } from './app.module';
-import { AppService } from './app.service';
+```ts filename='main.ts'
+import { HttpStatus } from '@nestjs/common'
+import { NestFactory } from '@nestjs/core'
+import { Callback, Context, Handler } from 'aws-lambda'
+import { AppModule } from './app.module'
+import { AppService } from './app.service'
 
-export const handler: Handler = async (
-  event: any,
-  context: Context,
-  callback: Callback,
-) => {
-  const appContext = await NestFactory.createApplicationContext(AppModule);
-  const appService = appContext.get(AppService);
+export const handler: Handler = async (event: any, context: Context, callback: Callback) => {
+  const appContext = await NestFactory.createApplicationContext(AppModule)
+  const appService = appContext.get(AppService)
 
   return {
     body: appService.getHello(),
     statusCode: HttpStatus.OK,
-  };
-};
+  }
+}
 ```
 
-> info **提示** 请注意，`NestFactory.createApplicationContext` 不会为控制器方法应用增强器（如守卫、拦截器等）。如需此功能，必须使用 `NestFactory.create` 方法。
+<CalloutInfo>
+  请注意，`NestFactory.createApplicationContext`
+  不会为控制器方法应用增强器（如守卫、拦截器等）。如需此功能，必须使用 `NestFactory.create` 方法。
+</CalloutInfo>
 
 你也可以将 `event` 对象传递给，比如说，`EventsService` 提供者（Provider），让其根据输入值和你的业务逻辑进行处理并返回相应结果。
 

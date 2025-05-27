@@ -2,7 +2,10 @@
 
 在实际开发中，最常见的原始请求体使用场景之一，就是进行 Webhook 签名校验。通常，进行 Webhook 签名验证时，需要使用未被序列化的请求体来计算 HMAC 哈希值。
 
-> warning **警告** 只有在启用了内置全局 body parser 中间件时，才能使用此功能。也就是说，创建应用时不能传递 `bodyParser: false`。
+<CalloutInfo type="warning">
+  只有在启用了内置全局 body parser 中间件时，才能使用此功能。也就是说，创建应用时不能传递
+  `bodyParser: false`。
+</CalloutInfo>
 
 ## 在 Express 中使用
 
@@ -45,7 +48,10 @@ class CatsController {
 app.useBodyParser('text')
 ```
 
-> warning **警告** 请确保在调用 `NestFactory.create` 时传递了正确的应用类型。对于 Express 应用，类型应为 `NestExpressApplication`，否则 `.useBodyParser` 方法将无法使用。
+<CalloutInfo type="warning">
+  请确保在调用 `NestFactory.create` 时传递了正确的应用类型。对于 Express 应用，类型应为
+  `NestExpressApplication`，否则 `.useBodyParser` 方法将无法使用。
+</CalloutInfo>
 
 ## 请求体大小限制
 
@@ -98,7 +104,10 @@ class CatsController {
 app.useBodyParser('text/plain')
 ```
 
-> warning **警告** 请确保在调用 `NestFactory.create` 时传递了正确的应用类型。对于 Fastify 应用，类型应为 `NestFastifyApplication`，否则 `.useBodyParser` 方法将无法使用。
+<CalloutInfo type="warning">
+  请确保在调用 `NestFactory.create` 时传递了正确的应用类型。对于 Fastify 应用，类型应为
+  `NestFastifyApplication`，否则 `.useBodyParser` 方法将无法使用。
+</CalloutInfo>
 
 ## 请求体大小限制
 
