@@ -12,56 +12,42 @@
 
 首先，创建一个 `Role` 枚举（enum），用于表示系统中的角色：
 
-```ts
-@@filename(role.enum)
+```ts filename='role.enum.ts'
 export enum Role {
   User = 'user',
   Admin = 'admin',
 }
 ```
 
-> info **提示** 在更复杂的系统中，角色信息通常会存储在数据库中，或由外部身份验证提供方获取。
+<CalloutInfo>
+  在更复杂的系统中，角色信息通常会存储在数据库中，或由外部身份验证提供方获取。
+</CalloutInfo>
 
 有了这个枚举后，我们可以创建一个 `@Roles()` 装饰器（Decorator）。该装饰器允许为特定资源指定所需的角色。
 
-```ts
-@@filename(roles.decorator)
-import { SetMetadata } from '@nestjs/common';
-import { Role } from '../enums/role.enum';
+```ts filename='roles.decorator.ts'
+import { SetMetadata } from '@nestjs/common'
+import { Role } from '../enums/role.enum'
 
-export const ROLES_KEY = 'roles';
-export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
-@@switch
-import { SetMetadata } from '@nestjs/common';
-
-export const ROLES_KEY = 'roles';
-export const Roles = (...roles) => SetMetadata(ROLES_KEY, roles);
+export const ROLES_KEY = 'roles'
+export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles)
 ```
 
 现在我们有了自定义的 `@Roles()` 装饰器，可以用它来装饰任意路由处理器（Route Handler）。
 
-```ts
-@@filename(cats.controller)
+```ts filename='cats.controller.ts'
 @Post()
 @Roles(Role.Admin)
 create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
-}
-@@switch
-@Post()
-@Roles(Role.Admin)
-@Bind(Body())
-create(createCatDto) {
   this.catsService.create(createCatDto);
 }
 ```
 
 最后，我们需要创建一个 `RolesGuard` 类，用于将当前用户拥有的角色与当前路由所需的角色进行比对。为了获取路由的角色（自定义元数据），我们将使用框架自带、由 `@nestjs/core` 包提供的 `Reflector` 辅助类。
 
-```ts
-@@filename(roles.guard)
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+```ts filename='roles.guard.ts'
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -71,42 +57,24 @@ export class RolesGuard implements CanActivate {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]);
+    ])
     if (!requiredRoles) {
-      return true;
+      return true
     }
-    const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
-  }
-}
-@@switch
-import { Injectable, Dependencies } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-
-@Injectable()
-@Dependencies(Reflector)
-export class RolesGuard {
-  constructor(reflector) {
-    this.reflector = reflector;
-  }
-
-  canActivate(context) {
-    const requiredRoles = this.reflector.getAllAndOverride(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (!requiredRoles) {
-      return true;
-    }
-    const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles.includes(role));
+    const { user } = context.switchToHttp().getRequest()
+    return requiredRoles.some((role) => user.roles?.includes(role))
   }
 }
 ```
 
-> info **提示** 关于如何在上下文中灵活使用 `Reflector`，请参考“[反射与元数据](/fundamentals/execution-context#reflection-and-metadata)”章节。
+<CalloutInfo>
+  关于如何在上下文中灵活使用
+  `Reflector`，请参考“[反射与元数据](/fundamentals/execution-context#reflection-and-metadata)”章节。
+</CalloutInfo>
 
-> warning **注意** 本示例被称为“基础”实现，是因为我们只在路由处理器级别检查角色。在实际应用中，某些接口/处理器可能涉及多个操作，每个操作都需要特定的权限。此时，你需要在业务逻辑中自行实现角色检查机制，这样会导致权限与具体操作的关联分散在各处，维护难度增加。
+<CalloutInfo type="warning">
+  本示例被称为“基础”实现，是因为我们只在路由处理器级别检查角色。在实际应用中，某些接口/处理器可能涉及多个操作，每个操作都需要特定的权限。此时，你需要在业务逻辑中自行实现角色检查机制，这样会导致权限与具体操作的关联分散在各处，维护难度增加。
+</CalloutInfo>
 
 本示例假设 `request.user` 包含用户实例及其拥有的角色（`roles` 属性）。在你的应用中，通常会在自定义的 **身份验证守卫（Authentication Guard）** 中完成该关联。更多细节请参见 [身份验证](/security/authentication) 章节。
 
@@ -140,9 +108,11 @@ providers: [
 }
 ```
 
-> info **提示** 如果你希望返回不同的错误响应，可以抛出自定义异常，而不是直接返回布尔值。
+<CalloutInfo>
 
-<app-banner-courses-auth></app-banner-courses-auth>
+如果你希望返回不同的错误响应，可以抛出自定义异常，而不是直接返回布尔值。
+
+</CalloutInfo>
 
 ## 基于声明的授权（Claims-based authorization）
 
@@ -150,23 +120,18 @@ providers: [
 
 要在 Nest 中实现基于声明的授权，可以按照上文 [RBAC](/security/authorization#basic-rbac-implementation) 部分展示的步骤进行，唯一显著的区别在于：不再检查特定角色，而是比较**权限**。每个用户都会被分配一组权限。同样，每个资源或端点会定义访问所需的权限（例如，通过专用的 `@RequirePermissions()` 装饰器来指定）。
 
-```ts
-@@filename(cats.controller)
+```ts filename='cats.controller.ts'
 @Post()
 @RequirePermissions(Permission.CREATE_CAT)
 create(@Body() createCatDto: CreateCatDto) {
   this.catsService.create(createCatDto);
 }
-@@switch
-@Post()
-@RequirePermissions(Permission.CREATE_CAT)
-@Bind(Body())
-create(createCatDto) {
-  this.catsService.create(createCatDto);
-}
 ```
 
-> info **提示** 在上面的示例中，`Permission`（类似于我们在 RBAC 部分展示的 `Role`）是一个 TypeScript 枚举类型，包含了系统中所有可用的权限。
+<CalloutInfo>
+  在上面的示例中，`Permission`（类似于我们在 RBAC 部分展示的 `Role`）是一个 TypeScript
+  枚举类型，包含了系统中所有可用的权限。
+</CalloutInfo>
 
 ## 集成 CASL
 
@@ -178,7 +143,9 @@ create(createCatDto) {
 $ npm i @casl/ability
 ```
 
-> info **提示** 本示例选择了 CASL，但你也可以根据项目需求和个人偏好选择其他库，如 `accesscontrol` 或 `acl`。
+<CalloutInfo>
+  本示例选择了 CASL，但你也可以根据项目需求和个人偏好选择其他库，如 `accesscontrol` 或 `acl`。
+</CalloutInfo>
 
 安装完成后，为了演示 CASL 的机制，我们先定义两个实体类：`User` 和 `Article`。
 
@@ -220,7 +187,11 @@ export enum Action {
 }
 ```
 
-> warning **注意** `manage` 是 CASL 中的特殊关键字，表示"任意操作"。
+<CalloutInfo type="warning">
+
+`manage` 是 CASL 中的特殊关键字，表示"任意操作"。
+
+</CalloutInfo>
 
 为了封装 CASL 库，我们现在生成 `CaslModule` 和 `CaslAbilityFactory`。
 
@@ -258,13 +229,27 @@ export class CaslAbilityFactory {
 }
 ```
 
-> warning **注意** `all` 是 CASL 中的特殊关键字，表示"任意主体"。
+<CalloutInfo>
 
-> info **提示** 自 CASL v6 起，`MongoAbility` 成为默认的能力类，取代了旧版的 `Ability`，以更好地支持基于条件的权限（采用 MongoDB 风格语法）。尽管名称中带有 Mongo，但它并不依赖于 MongoDB，只是用类似 Mongo 的语法进行条件判断。
+`all` 是 CASL 中的特殊关键字，表示"任意主体"。
 
-> info **提示** `MongoAbility`、`AbilityBuilder`、`AbilityClass` 和 `ExtractSubjectType` 类均由 `@casl/ability` 包导出。
+</CalloutInfo>
 
-> info **提示** `detectSubjectType` 选项让 CASL 能够识别对象的主体类型。更多信息请参阅 [CASL 文档](https://casl.js.org/v6/en/guide/subject-type-detection#use-classes-as-subject-types)。
+<CalloutInfo>
+  自 CASL v6 起，`MongoAbility` 成为默认的能力类，取代了旧版的
+  `Ability`，以更好地支持基于条件的权限（采用 MongoDB 风格语法）。尽管名称中带有
+  Mongo，但它并不依赖于 MongoDB，只是用类似 Mongo 的语法进行条件判断。
+</CalloutInfo>
+
+<CalloutInfo>
+  `MongoAbility`、`AbilityBuilder`、`AbilityClass` 和 `ExtractSubjectType` 类均由 `@casl/ability`
+  包导出。
+</CalloutInfo>
+
+<CalloutInfo>
+  `detectSubjectType` 选项让 CASL 能够识别对象的主体类型。更多信息请参阅 [CASL
+  文档](https://casl.js.org/v6/en/guide/subject-type-detection#use-classes-as-subject-types)。
+</CalloutInfo>
 
 在上述示例中，我们通过 `AbilityBuilder` 类创建了 `MongoAbility` 实例。正如你所见，`can` 和 `cannot` 方法参数相同但含义相反，`can` 允许执行某操作，`cannot` 禁止。两者最多可接收 4 个参数。详细用法请参考 [CASL 官方文档](https://casl.js.org/v6/en/guide/intro)。
 
@@ -296,7 +281,10 @@ if (ability.can(Action.Read, 'all')) {
 }
 ```
 
-> info **提示** 了解更多 `MongoAbility` 类相关内容，请参阅 [CASL 官方文档](https://casl.js.org/v6/en/guide/intro)。
+<CalloutInfo>
+  了解更多 `MongoAbility` 类相关内容，请参阅 [CASL
+  官方文档](https://casl.js.org/v6/en/guide/intro)。
+</CalloutInfo>
 
 举例来说，假设有一个非管理员用户。此时，该用户可以读取文章，但不能新建或删除文章：
 
@@ -310,7 +298,10 @@ ability.can(Action.Delete, Article) // false
 ability.can(Action.Create, Article) // false
 ```
 
-> info **提示** 虽然 `MongoAbility` 和 `AbilityBuilder` 都提供了 `can` 和 `cannot` 方法，但它们的用途不同，参数也略有差异。
+<CalloutInfo>
+  虽然 `MongoAbility` 和 `AbilityBuilder` 都提供了 `can` 和 `cannot`
+  方法，但它们的用途不同，参数也略有差异。
+</CalloutInfo>
 
 同时，正如我们在需求中所述，用户应当可以更新自己撰写的文章：
 
@@ -389,7 +380,11 @@ export class PoliciesGuard implements CanActivate {
 }
 ```
 
-> info **提示** 在本例中，我们假设 `request.user` 包含用户实例。在你的应用中，你可能会在自定义**身份验证守卫（authentication guard）**中创建这种关联 - 详见[身份验证](/security/authentication)章节获取更多详情。
+<CalloutInfo>
+  在本例中，我们假设 `request.user`
+  包含用户实例。在你的应用中，你可能会在自定义**身份验证守卫（authentication guard）**中创建这种关联
+  - 详见[身份验证](/security/authentication)章节获取更多详情。
+</CalloutInfo>
 
 让我们分解一下这个例子。`policyHandlers` 是通过 `@CheckPolicies()` 装饰器分配给方法的处理器数组。接下来，我们使用 `CaslAbilityFactory#create` 方法构建 `Ability` 对象，用于验证用户是否有足够权限执行特定操作。我们将该对象传递给策略处理器，它可能是一个函数或实现了 `IPolicyHandler` 接口的类实例，后者暴露返回布尔值的 `handle()` 方法。最后，我们使用 `Array#every` 方法确保每个处理器都返回 `true` 值。
 
@@ -425,4 +420,6 @@ findAll() {
 }
 ```
 
-> warning **注意** 由于我们必须使用 `new` 关键字就地实例化策略处理器，`ReadArticlePolicyHandler` 类无法使用依赖注入。这个问题可以通过 `ModuleRef#get` 方法解决（详情参见[此处](/fundamentals/module-ref)）。基本上，你需要允许通过 `@CheckPolicies()` 装饰器传递 `Type<IPolicyHandler>` 类型，而不是注册函数和实例。然后，在守卫内部，你可以使用类型引用获取实例：`moduleRef.get(YOUR_HANDLER_TYPE)` 或者甚至使用 `ModuleRef#create` 方法动态实例化它。
+<CalloutInfo type="warning">
+  由于我们必须使用 `new` 关键字就地实例化策略处理器，`ReadArticlePolicyHandler` 类无法使用依赖注入。这个问题可以通过 `ModuleRef#get` 方法解决（详情参见[此处](/fundamentals/module-ref)）。基本上，你需要允许通过 `@CheckPolicies()` 装饰器传递 `Type<IPolicyHandler>` 类型，而不是注册函数和实例。然后，在守卫内部，你可以使用类型引用获取实例：`moduleRef.get(YOUR_HANDLER_TYPE)` 或者甚至使用 `ModuleRef#create` 方法动态实例化它。
+</CalloutInfo>

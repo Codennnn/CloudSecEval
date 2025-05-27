@@ -17,42 +17,23 @@ $ npm install --save hbs
 
 这里我们使用了 `hbs`（[Handlebars](https://github.com/pillarjs/hbs#readme)）模板引擎，你也可以根据实际需求选择其他模板引擎。安装完成后，需要通过以下代码配置 Express 实例：
 
-```ts
-@@filename(main)
-import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
-import { AppModule } from './app.module';
+```ts filename='main.ts'
+import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
+import { join } from 'path'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
-  );
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
+  app.useStaticAssets(join(__dirname, '..', 'public'))
+  app.setBaseViewsDir(join(__dirname, '..', 'views'))
+  app.setViewEngine('hbs')
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
-@@switch
-import { NestFactory } from '@nestjs/core';
-import { join } from 'path';
-import { AppModule } from './app.module';
 
-async function bootstrap() {
-  const app = await NestFactory.create(
-    AppModule,
-  );
-
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
-
-  await app.listen(process.env.PORT ?? 3000);
-}
-bootstrap();
+bootstrap()
 ```
 
 在上述代码中，我们告知 [Express](https://github.com/expressjs/express)：`public` 目录用于存放静态资源，`views` 目录用于存放视图模板，渲染 HTML 输出时使用 `hbs` 模板引擎。
@@ -76,16 +57,15 @@ bootstrap();
 
 接下来，打开 `app.controller` 文件，并将 `root()` 方法替换为以下代码：
 
-```ts
-@@filename(app.controller)
-import { Get, Controller, Render } from '@nestjs/common';
+```ts filename='app.controller.ts'
+import { Get, Controller, Render } from '@nestjs/common'
 
 @Controller()
 export class AppController {
   @Get()
   @Render('index')
   root() {
-    return { message: 'Hello world!' };
+    return { message: 'Hello world!' }
   }
 }
 ```
@@ -98,13 +78,16 @@ export class AppController {
 
 如果应用程序逻辑需要动态决定渲染哪个模板，则应使用 `@Res()` 装饰器（Decorator），并在路由处理器中传递视图名称，而不是在 `@Render()` 装饰器中指定：
 
-> info **提示** 当 Nest 检测到 `@Res()` 装饰器时，会注入特定库的响应对象（Response Object）。我们可以使用该对象动态渲染模板。详细了解响应对象 API，请参见 [这里](https://expressjs.com/en/api.html)。
+<CalloutInfo>
+  当 Nest 检测到 `@Res()` 装饰器时，会注入特定库的响应对象（Response
+  Object）。我们可以使用该对象动态渲染模板。详细了解响应对象 API，请参见
+  [这里](https://expressjs.com/en/api.html)。
+</CalloutInfo>
 
-```ts
-@@filename(app.controller)
-import { Get, Controller, Res, Render } from '@nestjs/common';
-import { Response } from 'express';
-import { AppService } from './app.service';
+```ts filename='app.controller.ts'
+import { Get, Controller, Res, Render } from '@nestjs/common'
+import { Response } from 'express'
+import { AppService } from './app.service'
 
 @Controller()
 export class AppController {
@@ -112,10 +95,7 @@ export class AppController {
 
   @Get()
   root(@Res() res: Response) {
-    return res.render(
-      this.appService.getViewName(),
-      { message: 'Hello world!' },
-    );
+    return res.render(this.appService.getViewName(), { message: 'Hello world!' })
   }
 }
 ```
@@ -134,68 +114,43 @@ $ npm i --save @fastify/static @fastify/view handlebars
 
 接下来的步骤与使用 Express 时几乎一致，只是针对平台有一些细微差别。安装完成后，打开 `main.ts` 文件，并更新其内容如下：
 
-```ts
-@@filename(main)
-import { NestFactory } from '@nestjs/core';
-import { NestFastifyApplication, FastifyAdapter } from '@nestjs/platform-fastify';
-import { AppModule } from './app.module';
-import { join } from 'path';
+```ts filename='main.ts'
+import { NestFactory } from '@nestjs/core'
+import { NestFastifyApplication, FastifyAdapter } from '@nestjs/platform-fastify'
+import { AppModule } from './app.module'
+import { join } from 'path'
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
   app.useStaticAssets({
     root: join(__dirname, '..', 'public'),
     prefix: '/public/',
-  });
+  })
   app.setViewEngine({
     engine: {
       handlebars: require('handlebars'),
     },
     templates: join(__dirname, '..', 'views'),
-  });
-  await app.listen(process.env.PORT ?? 3000);
+  })
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
-@@switch
-import { NestFactory } from '@nestjs/core';
-import { FastifyAdapter } from '@nestjs/platform-fastify';
-import { AppModule } from './app.module';
-import { join } from 'path';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule, new FastifyAdapter());
-  app.useStaticAssets({
-    root: join(__dirname, '..', 'public'),
-    prefix: '/public/',
-  });
-  app.setViewEngine({
-    engine: {
-      handlebars: require('handlebars'),
-    },
-    templates: join(__dirname, '..', 'views'),
-  });
-  await app.listen(process.env.PORT ?? 3000);
-}
-bootstrap();
+bootstrap()
 ```
 
 Fastify API 与其他平台有一些差异，但这些方法调用的最终效果是一样的。需要注意的是，在使用 Fastify 时，传递给 `@Render()` 装饰器的模板名称必须包含文件扩展名。
 
 你可以这样设置：
 
-```ts
-@@filename(app.controller)
-import { Get, Controller, Render } from '@nestjs/common';
+```ts filename='app.controller.ts'
+import { Get, Controller, Render } from '@nestjs/common'
 
 @Controller()
 export class AppController {
   @Get()
   @Render('index.hbs')
   root() {
-    return { message: 'Hello world!' };
+    return { message: 'Hello world!' }
   }
 }
 ```

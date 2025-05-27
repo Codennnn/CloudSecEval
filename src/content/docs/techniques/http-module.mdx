@@ -2,7 +2,10 @@
 
 [Axios](https://github.com/axios/axios) 是一个功能丰富且被广泛使用的 HTTP 客户端库。Nest 对 Axios 进行了封装，并通过内置的 `HttpModule`（HTTP 模块）对外暴露。`HttpModule` 会导出 `HttpService` 类，该类基于 Axios 提供了多种用于发起 HTTP 请求的方法。同时，该库会将 HTTP 响应结果转换为 `Observable`。
 
-> info **提示** 你也可以直接使用任何通用的 Node.js HTTP 客户端库，例如 [got](https://github.com/sindresorhus/got) 或 [undici](https://github.com/nodejs/undici)。
+<CalloutInfo>
+  你也可以直接使用任何通用的 Node.js HTTP 客户端库，例如 [got](https://github.com/sindresorhus/got)
+  或 [undici](https://github.com/nodejs/undici)。
+</CalloutInfo>
 
 ## 安装依赖
 
@@ -26,33 +29,28 @@ export class CatsModule {}
 
 接下来，通过常规的构造函数依赖注入方式注入 `HttpService`。
 
-> info **提示** `HttpModule` 和 `HttpService` 都是从 `@nestjs/axios` 包中导入的。
+<CalloutInfo>
+
+`HttpModule` 和 `HttpService` 都是从 `@nestjs/axios` 包中导入的。
+
+</CalloutInfo>
 
 ```ts
-@@filename()
 @Injectable()
 export class CatsService {
   constructor(private readonly httpService: HttpService) {}
 
   findAll(): Observable<AxiosResponse<Cat[]>> {
-    return this.httpService.get('http://localhost:3000/cats');
-  }
-}
-@@switch
-@Injectable()
-@Dependencies(HttpService)
-export class CatsService {
-  constructor(httpService) {
-    this.httpService = httpService;
-  }
-
-  findAll() {
-    return this.httpService.get('http://localhost:3000/cats');
+    return this.httpService.get('http://localhost:3000/cats')
   }
 }
 ```
 
-> info **提示** `AxiosResponse` 是由 `axios` 包导出的接口（`$ npm i axios`）。
+<CalloutInfo>
+
+`AxiosResponse` 是由 `axios` 包导出的接口（`$ npm i axios`）。
+
+</CalloutInfo>
 
 所有 `HttpService` 的方法都会返回一个被 `Observable` 包裹的 `AxiosResponse` 对象。
 
@@ -186,5 +184,7 @@ export class CatsService {
 }
 ```
 
-> info **提示**
-> 访问 RxJS 官方文档，了解 [`firstValueFrom`](https://rxjs.dev/api/index/function/firstValueFrom) 和 [`lastValueFrom`](https://rxjs.dev/api/index/function/lastValueFrom) 之间的区别。
+<CalloutInfo>
+  访问 RxJS 官方文档，了解 [`firstValueFrom`](https://rxjs.dev/api/index/function/firstValueFrom) 和
+  [`lastValueFrom`](https://rxjs.dev/api/index/function/lastValueFrom) 之间的区别。
+</CalloutInfo>

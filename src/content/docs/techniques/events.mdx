@@ -14,15 +14,12 @@ $ npm i --save @nestjs/event-emitter
 
 安装完成后，将 `EventEmitterModule` 导入到根模块 `AppModule`，并按照如下方式调用其静态方法 `forRoot()`：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 
 @Module({
-  imports: [
-    EventEmitterModule.forRoot()
-  ],
+  imports: [EventEmitterModule.forRoot()],
 })
 export class AppModule {}
 ```
@@ -58,7 +55,11 @@ EventEmitterModule.forRoot({
 constructor(private eventEmitter: EventEmitter2) {}
 ```
 
-> info **提示** 需要从 `@nestjs/event-emitter` 包中导入 `EventEmitter2`。
+<CalloutInfo>
+
+需要从 `@nestjs/event-emitter` 包中导入 `EventEmitter2`。
+
+</CalloutInfo>
 
 然后可以在类中如下使用：
 
@@ -83,7 +84,9 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) {
 }
 ```
 
-> warning **警告** 事件订阅者（Event subscribers）不能为请求作用域（request-scoped）。
+<CalloutInfo type="warning">
+  事件订阅者（Event subscribers）不能为请求作用域（request-scoped）。
+</CalloutInfo>
 
 第一个参数可以是简单事件发射器（event emitter）中的 `string` 或 `symbol`，也可以在使用通配符发射器（wildcard emitter）时为 `string | symbol | Array<string | symbol>`。
 
@@ -109,7 +112,10 @@ export type OnEventOptions = OnOptions & {
 }
 ```
 
-> info **提示** 关于 `OnOptions` 选项对象的更多信息，请参阅 [`eventemitter2` 文档](https://github.com/EventEmitter2/EventEmitter2#emitteronevent-listener-options-objectboolean)。
+<CalloutInfo>
+  关于 `OnOptions` 选项对象的更多信息，请参阅 [`eventemitter2`
+  文档](https://github.com/EventEmitter2/EventEmitter2#emitteronevent-listener-options-objectboolean)。
+</CalloutInfo>
 
 ```ts
 @OnEvent('order.created', { async: true })
@@ -138,7 +144,10 @@ handleEverything(payload: any) {
 }
 ```
 
-> info **提示** `EventEmitter2` 类还提供了许多用于事件交互的实用方法，如 `waitFor` 和 `onAny`。详细内容可参考 [官方文档](https://github.com/EventEmitter2/EventEmitter2)。
+<CalloutInfo>
+  `EventEmitter2` 类还提供了许多用于事件交互的实用方法，如 `waitFor` 和 `onAny`。详细内容可参考
+  [官方文档](https://github.com/EventEmitter2/EventEmitter2)。
+</CalloutInfo>
 
 ## 避免事件丢失
 
@@ -151,7 +160,9 @@ await this.eventEmitterReadinessWatcher.waitUntilReady()
 await this.eventEmitter.emit('order.created', new OrderCreatedEvent({ orderId: 1, payload: {} }))
 ```
 
-> info **注意** 仅当在 `onApplicationBootstrap` 生命周期钩子完成之前触发事件时，才需要这样处理。
+<CalloutInfo>
+  仅当在 `onApplicationBootstrap` 生命周期钩子完成之前触发事件时，才需要这样处理。
+</CalloutInfo>
 
 ## 示例
 

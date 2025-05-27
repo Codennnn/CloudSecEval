@@ -25,9 +25,13 @@ export function AppSidebarMenuButton(
   { children, item, ...restProps }: React.PropsWithChildren<AppSidebarMenuButtonProps>,
 ) {
   const pathname = usePathname()
+  const isActive = pathname === `${RoutePath.Docs}${item.url}`
 
   return (
-    <SidebarMenuButton {...restProps} isActive={pathname === `${RoutePath.Docs}${item.url}`}>
+    <SidebarMenuButton
+      {...restProps}
+      isActive={isActive}
+    >
       {children}
     </SidebarMenuButton>
   )
@@ -37,9 +41,13 @@ export function AppSidebarMenuSubButton(
   { children, item }: React.PropsWithChildren<{ item: SidebarMenuItemType }>,
 ) {
   const pathname = usePathname()
+  const isActive = pathname === `${RoutePath.Docs}${item.url}`
 
   return (
-    <SidebarMenuSubButton asChild isActive={pathname === `${RoutePath.Docs}${item.url}`}>
+    <SidebarMenuSubButton
+      asChild
+      isActive={isActive}
+    >
       {children}
     </SidebarMenuSubButton>
   )

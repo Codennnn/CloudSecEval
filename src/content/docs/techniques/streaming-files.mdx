@@ -1,6 +1,8 @@
 # 文件流式传输
 
-> info **注意** 本章节介绍如何在 **HTTP 应用程序** 中实现文件流式传输。以下示例不适用于 GraphQL 或微服务应用。
+<CalloutInfo>
+  本章节介绍如何在 **HTTP 应用程序** 中实现文件流式传输。以下示例不适用于 GraphQL 或微服务应用。
+</CalloutInfo>
 
 有时候，你可能希望通过 RESTful 接口将文件返回给客户端。在 Nest 中，通常可以这样实现：
 
@@ -21,7 +23,11 @@ export class FileController {
 
 `StreamableFile` 是一个用于持有待返回流的类。你可以通过向 `StreamableFile` 构造函数传入 `Buffer` 或 `Stream` 来创建新的实例。
 
-> info **提示** `StreamableFile` 类可从 `@nestjs/common` 包中导入。
+<CalloutInfo>
+
+`StreamableFile` 类可从 `@nestjs/common` 包中导入。
+
+</CalloutInfo>
 
 ## 跨平台支持
 

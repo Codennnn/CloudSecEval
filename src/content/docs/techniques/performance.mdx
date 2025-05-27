@@ -2,7 +2,9 @@
 
 默认情况下，Nest 使用 [Express](https://expressjs.com/) 框架。如前文所述，Nest 也支持与其他库兼容，例如 [Fastify](https://github.com/fastify/fastify)。Nest 通过实现一个框架适配器（framework adapter），实现了对框架的无关性。适配器的主要作用是将中间件和处理器代理到对应库的实现。
 
-> info **提示** 请注意，要实现一个框架适配器，目标库必须提供类似于 Express 的请求/响应管道处理机制。
+<CalloutInfo>
+  请注意，要实现一个框架适配器，目标库必须提供类似于 Express 的请求/响应管道处理机制。
+</CalloutInfo>
 
 [Fastify](https://github.com/fastify/fastify) 是 Nest 的一个优秀替代框架，因为它在设计上与 Express 类似地解决了许多问题。然而，Fastify 的性能比 Express 更快，基准测试结果几乎是 Express 的两倍。那为什么 Nest 默认使用 Express 作为 HTTP 服务器呢？原因在于 Express 被广泛使用、知名度高，并且拥有大量可用的中间件，这些中间件可以直接被 Nest 用户使用。
 
@@ -20,23 +22,17 @@ $ npm i --save @nestjs/platform-fastify
 
 安装 Fastify 平台后，我们就可以使用 `FastifyAdapter` 了。
 
-```ts
-@@filename(main)
-import { NestFactory } from '@nestjs/core';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import { AppModule } from './app.module';
+```ts filename='main.ts'
+import { NestFactory } from '@nestjs/core'
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter()
-  );
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
+  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap();
+
+bootstrap()
 ```
 
 默认情况下，Fastify 只监听 `localhost 127.0.0.1` 接口（[详细说明](https://www.fastify.io/docs/latest/Guides/Getting-Started/#your-first-server)）。如果你希望在其他主机上接受连接，需要在 `listen()` 方法中指定 `'0.0.0.0'`：
@@ -75,8 +71,7 @@ new FastifyAdapter({ logger: true })
 
 中间件函数会获取原始的 `req` 和 `res` 对象，而不是 Fastify 的封装对象。这是因为底层使用了 `middie` 包以及 `fastify` 的机制。详细信息可参考 [Fastify 官方文档](https://www.fastify.io/docs/latest/Reference/Middleware/)。
 
-```ts
-@@filename(logger.middleware)
+```ts filename='logger.middleware.ts'
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 
@@ -87,15 +82,6 @@ export class LoggerMiddleware implements NestMiddleware {
     next();
   }
 }
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class LoggerMiddleware {
-  use(req, res, next) {
-    console.log('Request...');
-    next();
-  }
 }
 ```
 
@@ -122,7 +108,9 @@ newFeature() {
 }
 ```
 
-> info **提示** `@RouteConfig()` 和 `@RouteConstraints` 需从 `@nestjs/platform-fastify` 导入。
+<CalloutInfo>
+  `@RouteConfig()` 和 `@RouteConstraints` 需从 `@nestjs/platform-fastify` 导入。
+</CalloutInfo>
 
 ## 示例
 

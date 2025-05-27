@@ -2,7 +2,10 @@
 
 为了处理文件上传，Nest 提供了一个基于 [multer](https://github.com/expressjs/multer) 中间件包（Express 框架专用）的内置模块。Multer 用于处理 `multipart/form-data` 格式的数据，这种格式主要用于通过 HTTP `POST` 请求上传文件。该模块支持高度自定义，您可以根据应用需求灵活调整其行为。
 
-> warning **警告** Multer 无法处理非 multipart 格式（`multipart/form-data`）的数据。此外，请注意该包与 `FastifyAdapter` 不兼容。
+<CalloutInfo type="warning">
+  Multer 无法处理非 multipart 格式（`multipart/form-data`）的数据。此外，请注意该包与
+  `FastifyAdapter` 不兼容。
+</CalloutInfo>
 
 为了获得更好的类型安全，我们建议安装 Multer 的类型定义包：
 
@@ -17,29 +20,26 @@ $ npm i -D @types/multer
 要上传单个文件，只需在路由处理器上使用 `FileInterceptor()` 拦截器，并通过 `@UploadedFile()` 装饰器从请求中提取 `file`。
 
 ```ts
-@@filename()
 @Post('upload')
 @UseInterceptors(FileInterceptor('file'))
 uploadFile(@UploadedFile() file: Express.Multer.File) {
   console.log(file);
 }
-@@switch
-@Post('upload')
-@UseInterceptors(FileInterceptor('file'))
-@Bind(UploadedFile())
-uploadFile(file) {
-  console.log(file);
-}
 ```
 
-> info **提示** `FileInterceptor()` 装饰器由 `@nestjs/platform-express` 包导出，`@UploadedFile()` 装饰器由 `@nestjs/common` 包导出。
+<CalloutInfo>
+  `FileInterceptor()` 装饰器由 `@nestjs/platform-express` 包导出，`@UploadedFile()` 装饰器由
+  `@nestjs/common` 包导出。
+</CalloutInfo>
 
 `FileInterceptor()` 装饰器接收两个参数：
 
 - `fieldName`：字符串，指定 HTML 表单中用于存放文件的字段名
 - `options`：可选对象，类型为 `MulterOptions`。该对象与 multer 构造函数使用的参数一致（详细信息见 [此处](https://github.com/expressjs/multer#multeropts)）。
 
-> warning **警告** `FileInterceptor()` 可能与 Google Firebase 等第三方云服务提供商不兼容。
+<CalloutInfo type="warning">
+  `FileInterceptor()` 可能与 Google Firebase 等第三方云服务提供商不兼容。
+</CalloutInfo>
 
 ## 文件校验
 
@@ -133,7 +133,10 @@ export abstract class FileValidator<TValidationOptions = Record<string, any>> {
 }
 ```
 
-> info **提示** > `FileValidator` 接口的 `isValid` 方法支持异步验证。如果你使用 express（默认）作为驱动，可以将 `file` 参数类型指定为 `Express.Multer.File`，以获得更好的类型安全。
+<CalloutInfo>
+  `FileValidator` 接口的 `isValid` 方法支持异步验证。如果你使用 express（默认）作为驱动，可以将
+  `file` 参数类型指定为 `Express.Multer.File`，以获得更好的类型安全。
+</CalloutInfo>
 
 `FileValidator` 是一个常规类，可以访问文件对象，并根据客户端提供的选项对其进行校验。Nest 内置了两种 `FileValidator`（文件校验器）实现，你可以在项目中直接使用：
 
@@ -154,7 +157,10 @@ export abstract class FileValidator<TValidationOptions = Record<string, any>> {
 file: Express.Multer.File,
 ```
 
-> info **提示** 如果校验器数量较多，或者它们的选项让文件变得杂乱，你可以将这个数组定义在单独的文件中，并以命名常量（如 `fileValidators`）的方式导入。
+<CalloutInfo>
+  如果校验器数量较多，或者它们的选项让文件变得杂乱，你可以将这个数组定义在单独的文件中，并以命名常量（如
+  `fileValidators`）的方式导入。
+</CalloutInfo>
 
 最后，你还可以使用特殊的 `ParseFilePipeBuilder`（文件解析管道构建器）类来组合和构建校验器。通过如下方式使用它，可以避免手动实例化每个校验器，只需直接传递它们的选项即可：
 
@@ -174,7 +180,10 @@ file: Express.Multer.File,
 file: Express.Multer.File,
 ```
 
-> info **提示** 默认情况下，文件是必需的。如果你希望文件变为可选，可以在 `build` 函数的选项中添加 `fileIsRequired: false` 参数（与 `errorHttpStatusCode` 同级）。
+<CalloutInfo>
+  默认情况下，文件是必需的。如果你希望文件变为可选，可以在 `build` 函数的选项中添加 `fileIsRequired:
+  false` 参数（与 `errorHttpStatusCode` 同级）。
+</CalloutInfo>
 
 ## 文件数组上传
 
@@ -187,22 +196,17 @@ file: Express.Multer.File,
 使用 `FilesInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求对象中提取文件数组。
 
 ```ts
-@@filename()
 @Post('upload')
 @UseInterceptors(FilesInterceptor('files'))
 uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
   console.log(files);
 }
-@@switch
-@Post('upload')
-@UseInterceptors(FilesInterceptor('files'))
-@Bind(UploadedFiles())
-uploadFile(files) {
-  console.log(files);
-}
 ```
 
-> info **提示** `FilesInterceptor()` 装饰器由 `@nestjs/platform-express` 包导出，`@UploadedFiles()` 装饰器由 `@nestjs/common` 包导出。
+<CalloutInfo>
+  `FilesInterceptor()` 装饰器由 `@nestjs/platform-express` 包导出，`@UploadedFiles()` 装饰器由
+  `@nestjs/common` 包导出。
+</CalloutInfo>
 
 ## 多文件上传
 
@@ -214,23 +218,12 @@ uploadFile(files) {
 使用 `FileFieldsInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求中提取文件。
 
 ```ts
-@@filename()
 @Post('upload')
 @UseInterceptors(FileFieldsInterceptor([
   { name: 'avatar', maxCount: 1 },
   { name: 'background', maxCount: 1 },
 ]))
 uploadFile(@UploadedFiles() files: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] }) {
-  console.log(files);
-}
-@@switch
-@Post('upload')
-@Bind(UploadedFiles())
-@UseInterceptors(FileFieldsInterceptor([
-  { name: 'avatar', maxCount: 1 },
-  { name: 'background', maxCount: 1 },
-]))
-uploadFile(files) {
   console.log(files);
 }
 ```
@@ -242,17 +235,9 @@ uploadFile(files) {
 使用 `AnyFilesInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求中提取文件。
 
 ```ts
-@@filename()
 @Post('upload')
 @UseInterceptors(AnyFilesInterceptor())
 uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-  console.log(files);
-}
-@@switch
-@Post('upload')
-@Bind(UploadedFiles())
-@UseInterceptors(AnyFilesInterceptor())
-uploadFile(files) {
   console.log(files);
 }
 ```
@@ -279,7 +264,11 @@ MulterModule.register({
 })
 ```
 
-> info **提示** `MulterModule` 类由 `@nestjs/platform-express` 包导出。
+<CalloutInfo>
+
+`MulterModule` 类由 `@nestjs/platform-express` 包导出。
+
+</CalloutInfo>
 
 ## 异步配置
 

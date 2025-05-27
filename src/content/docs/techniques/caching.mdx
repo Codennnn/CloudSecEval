@@ -38,7 +38,10 @@ export class AppModule {}
 constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 ```
 
-> info **提示** `Cache` 类需从 `cache-manager` 包导入，而 `CACHE_MANAGER` 注入令牌则来自 `@nestjs/cache-manager` 包。
+<CalloutInfo>
+  `Cache` 类需从 `cache-manager` 包导入，而 `CACHE_MANAGER` 注入令牌则来自 `@nestjs/cache-manager`
+  包。
+</CalloutInfo>
 
 `Cache` 实例（来自 `cache-manager` 包）上的 `get` 方法用于从缓存中获取数据。如果缓存中不存在该项，则会返回 `null`。
 
@@ -52,7 +55,11 @@ const value = await this.cacheManager.get('key')
 await this.cacheManager.set('key', 'value')
 ```
 
-> warning **注意** 内存缓存存储仅支持 [结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types) 支持的数据类型。
+<CalloutInfo type="warning">
+  内存缓存存储仅支持
+  [结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types)
+  支持的数据类型。
+</CalloutInfo>
 
 你可以为某个特定键手动指定 TTL（过期时间，单位为毫秒），示例如下：
 
@@ -82,7 +89,10 @@ await this.cacheManager.clear()
 
 ## 自动缓存响应
 
-> warning **警告** 在 [GraphQL](/graphql/quick-start) 应用中，拦截器会针对每个字段解析器单独执行。因此，`CacheModule`（其通过拦截器缓存响应）在此场景下无法正常工作。
+<CalloutInfo type="warning">
+  在 [GraphQL](/graphql/quick-start)
+  应用中，拦截器会针对每个字段解析器单独执行。因此，`CacheModule`（其通过拦截器缓存响应）在此场景下无法正常工作。
+</CalloutInfo>
 
 要启用自动缓存响应，只需在需要缓存数据的地方绑定 `CacheInterceptor` 拦截器。
 
@@ -97,9 +107,10 @@ export class AppController {
 }
 ```
 
-> warning **警告** 仅 `GET` 类型的接口会被缓存。此外，注入原生响应对象（`@Res()`）的 HTTP 服务器路由无法使用缓存拦截器。详见
->
-> <a href="https://docs.nestjs.com/interceptors#response-mapping">响应映射</a> 获取更多信息。
+<CalloutInfo type="warning">
+  仅 `GET` 类型的接口会被缓存。此外，注入原生响应对象（`@Res()`）的 HTTP
+  服务器路由无法使用缓存拦截器。详见 [响应映射](/interceptors#response-mapping) 获取更多信息。
+</CalloutInfo>
 
 为减少样板代码，你也可以将 `CacheInterceptor` 全局绑定到所有接口：
 
@@ -160,7 +171,9 @@ export class AppController {
 }
 ```
 
-> info **提示** `@CacheKey()` 和 `@CacheTTL()` 装饰器需从 `@nestjs/cache-manager` 包中导入。
+<CalloutInfo>
+  `@CacheKey()` 和 `@CacheTTL()` 装饰器需从 `@nestjs/cache-manager` 包中导入。
+</CalloutInfo>
 
 `@CacheKey()` 装饰器可以单独使用，也可以与 `@CacheTTL()` 搭配使用，反之亦然。你可以只重写 `@CacheKey()` 或只重写 `@CacheTTL()`。未被装饰器重写的设置将使用全局注册时的默认值（参见[自定义缓存](https://docs.nestjs.com/techniques/caching#customize-caching)）。
 
@@ -169,18 +182,10 @@ export class AppController {
 你也可以将 `CacheInterceptor` 应用于 WebSocket 订阅者以及微服务（Microservices）的消息模式（无论使用哪种传输方式）。
 
 ```ts
-@@filename()
 @CacheKey('events')
 @UseInterceptors(CacheInterceptor)
 @SubscribeMessage('events')
 handleEvent(client: Client, data: string[]): Observable<string[]> {
-  return [];
-}
-@@switch
-@CacheKey('events')
-@UseInterceptors(CacheInterceptor)
-@SubscribeMessage('events')
-handleEvent(client, data) {
   return [];
 }
 ```
@@ -190,23 +195,19 @@ handleEvent(client, data) {
 此外，你可以通过 `@CacheTTL()` 装饰器指定缓存的过期时间（TTL），该值会覆盖全局默认 TTL。
 
 ```ts
-@@filename()
 @CacheTTL(10)
 @UseInterceptors(CacheInterceptor)
 @SubscribeMessage('events')
 handleEvent(client: Client, data: string[]): Observable<string[]> {
   return [];
 }
-@@switch
-@CacheTTL(10)
-@UseInterceptors(CacheInterceptor)
-@SubscribeMessage('events')
-handleEvent(client, data) {
-  return [];
-}
 ```
 
-> info **提示** `@CacheTTL()` 装饰器可以单独使用，也可以与 `@CacheKey()` 搭配使用。
+<CalloutInfo>
+
+`@CacheTTL()` 装饰器可以单独使用，也可以与 `@CacheKey()` 搭配使用。
+
+</CalloutInfo>
 
 ## 调整追踪方式
 
@@ -323,7 +324,10 @@ CacheModule.registerAsync({
 
 这种方式与 `useClass` 类似，但有一个关键区别 —— `CacheModule` 会在已导入的模块中查找并复用已创建的 `ConfigService`，而不是自行实例化。
 
-> info **提示** `CacheModule#register`、`CacheModule#registerAsync` 以及 `CacheOptionsFactory` 都支持可选的泛型（类型参数），用于限定特定存储（store）的配置选项，从而提升类型安全性。
+<CalloutInfo>
+  `CacheModule#register`、`CacheModule#registerAsync` 以及 `CacheOptionsFactory`
+  都支持可选的泛型（类型参数），用于限定特定存储（store）的配置选项，从而提升类型安全性。
+</CalloutInfo>
 
 你还可以通过 `registerAsync()` 方法传递所谓的 `extraProviders`。这些提供者（Provider）会与模块（Module）内的其他提供者合并。
 

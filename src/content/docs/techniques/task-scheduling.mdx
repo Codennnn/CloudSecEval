@@ -12,15 +12,12 @@ $ npm install --save @nestjs/schedule
 
 要启用任务调度功能，需要在根模块（AppModule）中导入 `ScheduleModule`，并按照如下方式调用其静态方法 `forRoot()`：
 
-```ts
-@@filename(app.module)
-import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
+```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
-  imports: [
-    ScheduleModule.forRoot()
-  ],
+  imports: [ScheduleModule.forRoot()],
 })
 export class AppModule {}
 ```
@@ -127,7 +124,10 @@ export class TasksService {
 
 另外，你也可以为 `@Cron()` 装饰器传入一个 JavaScript 的 `Date` 对象。这样，任务会在指定的日期和时间仅执行一次。
 
-> info **提示** 你可以利用 JavaScript 的日期运算来实现相对当前时间的定时任务。例如，`@Cron(new Date(Date.now() + 10 * 1000))` 可以让任务在应用启动后 10 秒执行一次。
+<CalloutInfo>
+  你可以利用 JavaScript 的日期运算来实现相对当前时间的定时任务。例如，`@Cron(new Date(Date.now() +
+  10 * 1000))` 可以让任务在应用启动后 10 秒执行一次。
+</CalloutInfo>
 
 你还可以为 `@Cron()` 装饰器提供第二个参数，用于传递额外的选项。
 
@@ -201,7 +201,10 @@ handleInterval() {
 }
 ```
 
-> info **提示** 该机制底层使用了 JavaScript 的 `setInterval()` 函数。你也可以使用 cron 任务（cron job）来调度周期性任务。
+<CalloutInfo>
+  该机制底层使用了 JavaScript 的 `setInterval()` 函数。你也可以使用 cron 任务（cron
+  job）来调度周期性任务。
+</CalloutInfo>
 
 如果你希望通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API（Dynamic API）</a> 在声明类外部控制声明式定时任务，可以通过如下方式为定时任务指定名称：
 
@@ -229,7 +232,11 @@ handleTimeout() {
 }
 ```
 
-> info **提示** 该机制底层使用了 JavaScript 的 `setTimeout()` 函数。
+<CalloutInfo>
+
+该机制底层使用了 JavaScript 的 `setTimeout()` 函数。
+
+</CalloutInfo>
 
 如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Timeout()` 装饰器的方法都会被自动包裹在 `try-catch` 代码块中。
 
@@ -256,7 +263,11 @@ timeouts），即在运行时定义超时任务的属性，并且可以**列出�
 constructor(private schedulerRegistry: SchedulerRegistry) {}
 ```
 
-> info **提示** 请从 `@nestjs/schedule` 包中导入 `SchedulerRegistry`。
+<CalloutInfo>
+
+请从 `@nestjs/schedule` 包中导入 `SchedulerRegistry`。
+
+</CalloutInfo>
 
 然后在类中这样使用。假设你已经通过如下方式声明了一个定时任务：
 
@@ -285,7 +296,9 @@ console.log(job.lastDate())
 - `nextDate()` - 返回该任务下一次计划执行的日期（`DateTime` 类型）。
 - `nextDates(count: number)` - 返回一个数组（长度为 `count`），包含该任务接下来将被触发的日期（`DateTime` 类型）。`count` 默认为 0，此时返回空数组。
 
-> info **提示** 可以对 `DateTime` 对象调用 `toJSDate()` 方法，将其转换为 JavaScript 的 `Date` 类型。
+<CalloutInfo>
+  可以对 `DateTime` 对象调用 `toJSDate()` 方法，将其转换为 JavaScript 的 `Date` 类型。
+</CalloutInfo>
 
 **动态创建** 新的定时任务，可以使用 `SchedulerRegistry#addCronJob` 方法，如下所示：
 
@@ -306,7 +319,9 @@ addCronJob(name: string, seconds: string) {
 
 在上述代码中，我们使用 `cron` 包中的 `CronJob` 对象来创建定时任务。`CronJob` 构造函数的第一个参数是 cron 表达式（与 `@Cron()` <a href="techniques/task-scheduling#declarative-cron-jobs">装饰器（Decorator）</a>用法一致），第二个参数是定时器触发时要执行的回调函数。`SchedulerRegistry#addCronJob` 方法接收两个参数：任务名称和 `CronJob` 实例。
 
-> warning **警告** 在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需从 `cron` 包中导入。
+<CalloutInfo type="warning">
+  在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需从 `cron` 包中导入。
+</CalloutInfo>
 
 **删除** 指定名称的定时任务，可以使用 `SchedulerRegistry#deleteCronJob` 方法，如下所示：
 

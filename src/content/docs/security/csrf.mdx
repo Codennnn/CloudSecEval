@@ -10,7 +10,11 @@
 $ npm i csrf-csrf
 ```
 
-> warning **警告** 如 [csrf-csrf 官方文档](https://github.com/Psifi-Solutions/csrf-csrf?tab=readme-ov-file#getting-started) 所述，此中间件（Middleware）需要先初始化 session 中间件或 `cookie-parser`。请参考官方文档获取更多细节。
+<CalloutInfo type="warning">
+  如 [csrf-csrf
+  官方文档](https://github.com/Psifi-Solutions/csrf-csrf?tab=readme-ov-file#getting-started)
+  所述，此中间件需要先初始化 session 中间件或 `cookie-parser`。请参考官方文档获取更多细节。
+</CalloutInfo>
 
 安装完成后，将 `csrf-csrf` 中间件注册为全局中间件：
 
@@ -44,4 +48,7 @@ import fastifyCsrf from '@fastify/csrf-protection'
 await app.register(fastifyCsrf)
 ```
 
-> warning **警告** 如 `@fastify/csrf-protection` 官方文档 [说明](https://github.com/fastify/csrf-protection#usage)，此插件需要先注册存储插件。请参阅官方文档获取详细说明。
+<CalloutInfo type="warning" q>
+  如 `@fastify/csrf-protection` 官方文档
+  [说明](https://github.com/fastify/csrf-protection#usage)，此插件需要先注册存储插件。请参阅官方文档获取详细说明。
+</CalloutInfo>

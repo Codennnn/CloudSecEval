@@ -36,6 +36,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
 
   // 检查当前路径是否与该导航项或其子项匹配
   const isActiveItem = item.url && pathname === `${RoutePath.Docs}${item.url}`
+
   const hasActiveChild = item.items?.some((subItem) => subItem.url && pathname === `${RoutePath.Docs}${subItem.url}`)
 
   // 当路径变化时，自动展开包含当前页面的菜单

@@ -25,12 +25,11 @@ $ nest g service users
 
 将这些自动生成文件的默认内容替换为如下所示。在本示例应用中，`UsersService` 仅维护一个硬编码的内存用户列表，并提供一个根据用户名查找用户的方法。在实际项目中，这里通常会构建用户模型和持久化层，可以选择 TypeORM、Sequelize、Mongoose 等库来实现。
 
-```ts
-@@filename(users/users.service)
-import { Injectable } from '@nestjs/common';
+```ts filename='users/users.service.ts'
+import { Injectable } from '@nestjs/common'
 
 // 这里应该是一个真正的用户实体类或接口
-export type User = any;
+export type User = any
 
 @Injectable()
 export class UsersService {
@@ -45,53 +44,19 @@ export class UsersService {
       username: 'maria',
       password: 'guess',
     },
-  ];
+  ]
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-export class UsersService {
-  constructor() {
-    this.users = [
-      {
-        userId: 1,
-        username: 'john',
-        password: 'changeme',
-      },
-      {
-        userId: 2,
-        username: 'maria',
-        password: 'guess',
-      },
-    ];
-  }
-
-  async findOne(username) {
-    return this.users.find(user => user.username === username);
+    return this.users.find((user) => user.username === username)
   }
 }
 ```
 
 在 `UsersModule` 中，唯一需要调整的是将 `UsersService` 添加到 `@Module` 装饰器的 `exports` 数组中，这样它才能被其他模块（比如稍后会用到的 `AuthService`）访问。
 
-```ts
-@@filename(users/users.module)
-import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-
-@Module({
-  providers: [UsersService],
-  exports: [UsersService],
-})
-export class UsersModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
+```ts filename='users/users.module.ts'
+import { Module } from '@nestjs/common'
+import { UsersService } from './users.service'
 
 @Module({
   providers: [UsersService],
@@ -104,72 +69,40 @@ export class UsersModule {}
 
 我们的 `AuthService`（认证服务）负责检索用户并验证密码。为此，我们创建了一个 `signIn()` 方法。在下面的代码中，我们使用了便捷的 ES6 展开运算符（spread operator），在返回用户对象前去除 password 属性。这是返回用户对象时的常见做法，因为你不希望暴露诸如密码或其他安全密钥等敏感字段。
 
-```ts
-@@filename(auth/auth.service)
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+```ts filename='auth/auth.service.ts'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { UsersService } from '../users/users.service'
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
   async signIn(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOne(username)
     if (user?.password !== pass) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
-    const { password, ...result } = user;
+    const { password, ...result } = user
     // TODO: 这里应生成 JWT 并返回
     // 而不是直接返回用户对象
-    return result;
-  }
-}
-@@switch
-import { Injectable, Dependencies, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-
-@Injectable()
-@Dependencies(UsersService)
-export class AuthService {
-  constructor(usersService) {
-    this.usersService = usersService;
-  }
-
-  async signIn(username: string, pass: string) {
-    const user = await this.usersService.findOne(username);
-    if (user?.password !== pass) {
-      throw new UnauthorizedException();
-    }
-    const { password, ...result } = user;
-    // TODO: 这里应生成 JWT 并返回
-    // 而不是直接返回用户对象
-    return result;
+    return result
   }
 }
 ```
 
-> Warning **警告** 当然，在真实应用中，你绝不能以明文形式存储密码。你应该使用如 [bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme) 这样的库，采用加盐的单向哈希算法。这样，你只会存储哈希后的密码，并将存储的密码与**传入**密码的哈希值进行比较，从而永远不会以明文存储或暴露用户密码。为了让示例应用更简单，这里我们违反了这一绝对原则，直接使用明文密码。**请不要在你的真实应用中这样做！**
+<CalloutInfo type="warning">
+  当然，在真实应用中，你绝不能以明文形式存储密码。你应该使用如
+  [bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
+  这样的库，采用加盐的单向哈希算法。这样，你只会存储哈希后的密码，并将存储的密码与**传入**密码的哈希值进行比较，从而永远不会以明文存储或暴露用户密码。为了让示例应用更简单，这里我们违反了这一绝对原则，直接使用明文密码。**请不要在你的真实应用中这样做！**
+</CalloutInfo>
 
 现在，我们需要更新 `AuthModule`（认证模块），导入 `UsersModule`（用户模块）。
 
-```ts
-@@filename(auth/auth.module)
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UsersModule } from '../users/users.module';
-
-@Module({
-  imports: [UsersModule],
-  providers: [AuthService],
-  controllers: [AuthController],
-})
-export class AuthModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UsersModule } from '../users/users.module';
+```ts filename='auth/auth.module.ts'
+import { Module } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { AuthController } from './auth.controller'
+import { UsersModule } from '../users/users.module'
 
 @Module({
   imports: [UsersModule],
@@ -181,10 +114,9 @@ export class AuthModule {}
 
 完成上述操作后，我们来打开 `AuthController`（认证控制器），并为其添加 `signIn()` 方法。该方法会被客户端调用，用于用户身份验证。它会从请求体中接收用户名和密码，如果用户认证通过，则返回 JWT（JSON Web Token）令牌。
 
-```ts
-@@filename(auth/auth.controller)
-import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
+```ts filename='auth/auth.controller.ts'
+import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common'
+import { AuthService } from './auth.service'
 
 @Controller('auth')
 export class AuthController {
@@ -193,14 +125,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+    return this.authService.signIn(signInDto.username, signInDto.password)
   }
 }
 ```
 
-> info **提示** 理想情况下，我们应该使用 DTO（数据传输对象，Data Transfer Object）类来定义请求体的结构，而不是直接使用 `Record<string, any>` 类型。更多信息请参见 [验证](/techniques/validation) 章节。
-
-<app-banner-courses-auth></app-banner-courses-auth>
+<CalloutInfo>
+理想情况下，我们应该使用 DTO（数据传输对象，Data Transfer Object）类来定义请求体的结构，而不是直接使用 `Record<string, any>` 类型。更多信息请参见 [验证](/techniques/validation) 章节。
+</CalloutInfo>
 
 ## JWT 令牌（JWT token）
 
@@ -215,15 +147,17 @@ export class AuthController {
 $ npm install --save @nestjs/jwt
 ```
 
-> info **提示** `@nestjs/jwt` 包（详见 [这里](https://github.com/nestjs/jwt)）是一个用于操作 JWT 的工具包，包括生成和验证 JWT 令牌。
+<CalloutInfo>
+  `@nestjs/jwt` 包（详见 [这里](https://github.com/nestjs/jwt)）是一个用于操作 JWT
+  的工具包，包括生成和验证 JWT 令牌。
+</CalloutInfo>
 
 为了让服务保持良好的模块化，我们将在 `authService` 中处理 JWT 的生成。请打开 `auth` 文件夹下的 `auth.service.ts` 文件，注入 `JwtService`，并按照如下方式更新 `signIn` 方法以生成 JWT 令牌：
 
-```ts
-@@filename(auth/auth.service)
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
+```ts filename='auth/auth.service.ts'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { UsersService } from '../users/users.service'
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
@@ -232,42 +166,15 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signIn(
-    username: string,
-    pass: string,
-  ): Promise<{ access_token: string }> {
-    const user = await this.usersService.findOne(username);
+  async signIn(username: string, pass: string): Promise<{ access_token: string }> {
+    const user = await this.usersService.findOne(username)
     if (user?.password !== pass) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
-    const payload = { sub: user.userId, username: user.username };
+    const payload = { sub: user.userId, username: user.username }
     return {
       access_token: await this.jwtService.signAsync(payload),
-    };
-  }
-}
-@@switch
-import { Injectable, Dependencies, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
-
-@Dependencies(UsersService, JwtService)
-@Injectable()
-export class AuthService {
-  constructor(usersService, jwtService) {
-    this.usersService = usersService;
-    this.jwtService = jwtService;
-  }
-
-  async signIn(username, pass) {
-    const user = await this.usersService.findOne(username);
-    if (user?.password !== pass) {
-      throw new UnauthorizedException();
     }
-    const payload = { username: user.username, sub: user.userId };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
   }
 }
 ```
@@ -278,53 +185,28 @@ export class AuthService {
 
 首先，在 `auth` 文件夹下创建 `constants.ts` 文件，并添加如下代码：
 
-```ts
-@@filename(auth/constants)
+```ts filename='auth/constants.ts'
 export const jwtConstants = {
-  secret: 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
-};
-@@switch
-export const jwtConstants = {
-  secret: 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
-};
+  secret:
+    'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
+}
 ```
 
 我们将用它在 JWT 签发和验证过程中共享密钥。
 
-> Warning **警告** **切勿公开暴露此密钥**。此处仅为演示代码结构而明文展示，实际生产环境中**必须通过机密管理、环境变量或配置服务等方式妥善保护此密钥**。
+<CalloutInfo>
+  **切勿公开暴露此密钥**。此处仅为演示代码结构而明文展示，实际生产环境中**必须通过机密管理、环境变量或配置服务等方式妥善保护此密钥**。
+</CalloutInfo>
 
 现在，打开 `auth` 文件夹下的 `auth.module.ts`，并更新为如下内容：
 
-```ts
-@@filename(auth/auth.module)
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './auth.controller';
-import { jwtConstants } from './constants';
-
-@Module({
-  imports: [
-    UsersModule,
-    JwtModule.register({
-      global: true,
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
-    }),
-  ],
-  providers: [AuthService],
-  controllers: [AuthController],
-  exports: [AuthService],
-})
-export class AuthModule {}
-@@switch
-import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './auth.controller';
-import { jwtConstants } from './constants';
+```ts filename='auth/auth.module.ts'
+import { Module } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { UsersModule } from '../users/users.module'
+import { JwtModule } from '@nestjs/jwt'
+import { AuthController } from './auth.controller'
+import { jwtConstants } from './constants'
 
 @Module({
   imports: [
@@ -342,7 +224,9 @@ import { jwtConstants } from './constants';
 export class AuthModule {}
 ```
 
-> info **提示** 这里我们将 `JwtModule` 注册为全局模块，方便后续使用，无需在其他地方重复导入。
+<CalloutInfo>
+  这里我们将 `JwtModule` 注册为全局模块，方便后续使用，无需在其他地方重复导入。
+</CalloutInfo>
 
 我们通过 `register()` 方法配置 `JwtModule`，传入配置对象。更多关于 Nest `JwtModule` 的信息见[这里](https://github.com/nestjs/jwt/blob/master/README.md)，关于配置项详见 [这里](https://github.com/auth0/node-jsonwebtoken#usage)。
 
@@ -359,47 +243,38 @@ $ # 注意：上方 JWT 已截断
 
 现在我们可以解决最后一个需求：通过要求请求中必须携带有效的 JWT（JSON Web Token）来保护接口。我们将通过创建一个 `AuthGuard`（身份验证守卫）来实现路由保护。
 
-```ts
-@@filename(auth/auth.guard)
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
-import { Request } from 'express';
+```ts filename='auth/auth.guard.ts'
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { jwtConstants } from './constants'
+import { Request } from 'express'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const request = context.switchToHttp().getRequest()
+    const token = this.extractTokenFromHeader(request)
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
     try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        {
-          secret: jwtConstants.secret
-        }
-      );
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret,
+      })
       // 💡 这里我们将 payload（载荷）赋值到 request 对象上
       // 这样就可以在路由处理器中访问到用户信息
-      request['user'] = payload;
+      request['user'] = payload
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException()
     }
-    return true;
+    return true
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    const [type, token] = request.headers.authorization?.split(' ') ?? []
+    return type === 'Bearer' ? token : undefined
   }
 }
 ```
@@ -408,8 +283,7 @@ export class AuthGuard implements CanActivate {
 
 打开 `auth.controller.ts` 文件，按如下方式更新：
 
-```ts
-@@filename(auth.controller)
+```ts filename='auth.controller.ts'
 import {
   Body,
   Controller,
@@ -418,10 +292,10 @@ import {
   HttpStatus,
   Post,
   Request,
-  UseGuards
-} from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
-import { AuthService } from './auth.service';
+  UseGuards,
+} from '@nestjs/common'
+import { AuthGuard } from './auth.guard'
+import { AuthService } from './auth.service'
 
 @Controller('auth')
 export class AuthController {
@@ -430,13 +304,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+    return this.authService.signIn(signInDto.username, signInDto.password)
   }
 
   @UseGuards(AuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
+    return req.user
   }
 }
 ```

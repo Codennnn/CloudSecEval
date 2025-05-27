@@ -8,11 +8,10 @@ $ npm i --save @nestjs/throttler
 
 安装完成后，可以像配置其他 Nest 包一样，使用 `forRoot` 或 `forRootAsync` 方法配置 `ThrottlerModule`（限流模块）。
 
-```ts
-@@filename(app.module)
+```ts filename='app.module.ts'
 @Module({
   imports: [
-     ThrottlerModule.forRoot({
+    ThrottlerModule.forRoot({
       throttlers: [
         {
           ttl: 60000,
@@ -40,8 +39,7 @@ export class AppModule {}
 
 有时您可能希望设置多组限流规则，例如：每秒不超过 3 次、10 秒内不超过 20 次、1 分钟内不超过 100 次。为此，您可以在数组中设置带有名称的限流选项，后续可通过 `@SkipThrottle()` 和 `@Throttle()` 装饰器引用这些选项，灵活切换限流策略。
 
-```ts
-@@filename(app.module)
+```ts filename='app.module.ts'
 @Module({
   imports: [
     ThrottlerModule.forRoot([
@@ -53,13 +51,13 @@ export class AppModule {}
       {
         name: 'medium',
         ttl: 10000,
-        limit: 20
+        limit: 20,
       },
       {
         name: 'long',
         ttl: 60000,
-        limit: 100
-      }
+        limit: 100,
+      },
     ]),
   ],
 })
@@ -111,49 +109,39 @@ findAll() {
 
 以下示例演示了如何为 Express 适配器启用 `trust proxy`：
 
-```ts
-@@filename(main)
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { NestExpressApplication } from '@nestjs/platform-express';
+```ts filename='main.ts'
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
+import { NestExpressApplication } from '@nestjs/platform-express'
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.set('trust proxy', 'loopback'); // 信任来自 loopback 地址的请求
-  await app.listen(3000);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
+  app.set('trust proxy', 'loopback') // 信任来自 loopback 地址的请求
+  await app.listen(3000)
 }
 
-bootstrap();
-@@switch
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { NestExpressApplication } from '@nestjs/platform-express';
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.set('trust proxy', 'loopback'); // 信任来自 loopback 地址的请求
-  await app.listen(3000);
-}
-
-bootstrap();
+bootstrap()
 ```
 
 启用 `trust proxy` 后，你可以通过 `X-Forwarded-For` 请求头（Header）获取原始 IP 地址。你还可以通过重写 `getTracker()` 方法，自定义应用程序的行为，从该请求头中提取 IP 地址，而不是依赖 `req.ip`。下面的示例展示了如何在 Express 和 Fastify 中实现这一点：
 
-```ts
-@@filename(throttler-behind-proxy.guard)
-import { ThrottlerGuard } from '@nestjs/throttler';
-import { Injectable } from '@nestjs/common';
+```ts filename='throttler-behind-proxy.guard.ts'
+import { ThrottlerGuard } from '@nestjs/throttler'
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class ThrottlerBehindProxyGuard extends ThrottlerGuard {
   protected async getTracker(req: Record<string, any>): Promise<string> {
-    return req.ips.length ? req.ips[0] : req.ip; // 可根据实际需求自定义 IP 提取逻辑
+    return req.ips.length ? req.ips[0] : req.ip // 可根据实际需求自定义 IP 提取逻辑
   }
 }
 ```
 
-> info **提示** 你可以在 express 的 [官方文档](https://expressjs.com/en/api.html#req.ips) 和 fastify 的 [官方文档](https://www.fastify.io/docs/latest/Reference/Request/) 中查阅 `req` 请求对象（Request Object）的 API。
+<CalloutInfo>
+  你可以在 express 的 [官方文档](https://expressjs.com/en/api.html#req.ips) 和 fastify 的
+  [官方文档](https://www.fastify.io/docs/latest/Reference/Request/) 中查阅 `req` 请求对象（Request
+  Object）的 API。
+</CalloutInfo>
 
 ## WebSocket 通信
 
@@ -192,14 +180,20 @@ export class WsThrottlerGuard extends ThrottlerGuard {
 }
 ```
 
-> info **提示** 如果你使用的是 ws，需要将 `_socket` 替换为 `conn`
+<CalloutInfo>
+
+如果你使用的是 ws，需要将 `_socket` 替换为 `conn`。
+
+</CalloutInfo>
 
 在使用 WebSocket 通信时，有几点需要注意：
 
 - 守卫（Guard）不能通过 `APP_GUARD` 或 `app.useGlobalGuards()` 注册
 - 当达到限流阈值时，Nest 会触发一个 `exception` 事件（异常事件），因此请确保有相应的事件监听器进行处理
 
-> info **提示** 如果你使用的是 `@nestjs/platform-ws` 包，可以直接使用 `client._socket.remoteAddress`。
+<CalloutInfo>
+  如果你使用的是 `@nestjs/platform-ws` 包，可以直接使用 `client._socket.remoteAddress`。
+</CalloutInfo>
 
 ## GraphQL 查询
 
@@ -223,44 +217,30 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>name</code>
-      </td>
-      <td>
-        用于内部追踪当前限流器集合的名称。如果未传递，则默认为 <code>default</code>
-      </td>
+      <td>`name`</td>
+      <td>用于内部追踪当前限流器集合的名称。如果未传递，则默认为 `default`</td>
     </tr>
     <tr>
-      <td>
-        <code>ttl</code>
-      </td>
+      <td>`ttl`</td>
       <td>每个请求在存储中持续的毫秒数</td>
     </tr>
     <tr>
-      <td>
-        <code>limit</code>
-      </td>
+      <td>`limit`</td>
       <td>在 TTL 限制内允许的最大请求次数</td>
     </tr>
     <tr>
-      <td>
-        <code>blockDuration</code>
-      </td>
+      <td>`blockDuration`</td>
       <td>请求被阻止的持续时间（毫秒）</td>
     </tr>
     <tr>
-      <td>
-        <code>ignoreUserAgents</code>
-      </td>
+      <td>`ignoreUserAgents`</td>
       <td>一个包含需要忽略限流的 User-Agent（用户代理）正则表达式的数组</td>
     </tr>
     <tr>
+      <td>`skipIf`</td>
       <td>
-        <code>skipIf</code>
-      </td>
-      <td>
-        一个函数，接收 <code>执行上下文（ExecutionContext）</code> 并返回 <code>boolean</code>
-        ，用于短路限流逻辑。类似于 <code>@SkipThrottler()</code>，但可基于请求自定义跳过条件
+        一个函数，接收 `执行上下文（ExecutionContext）` 并返回 `boolean` ，用于短路限流逻辑。类似于
+        `@SkipThrottler()`，但可基于请求自定义跳过条件
       </td>
     </tr>
   </tbody>
@@ -271,61 +251,42 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>storage</code>
-      </td>
-      <td>
-        自定义存储服务，用于记录限流信息。<a href="/security/rate-limiting#storages">详见此处。</a>
-      </td>
+      <td>`storage`</td>
+      <td>自定义存储服务，用于记录限流信息。[详见此处](#storages)。</td>
     </tr>
     <tr>
-      <td>
-        <code>ignoreUserAgents</code>
-      </td>
+      <td>`ignoreUserAgents`</td>
       <td>一个包含需要忽略限流的 User-Agent 正则表达式的数组</td>
     </tr>
     <tr>
+      <td>`skipIf`</td>
       <td>
-        <code>skipIf</code>
-      </td>
-      <td>
-        一个函数，接收 <code>执行上下文（ExecutionContext）</code> 并返回 <code>boolean</code>
-        ，用于短路限流逻辑。类似于 <code>@SkipThrottler()</code>，但可基于请求自定义跳过条件
+        一个函数，接收 `执行上下文（ExecutionContext）` 并返回 `boolean` ，用于短路限流逻辑。类似于
+        `@SkipThrottler()`，但可基于请求自定义跳过条件
       </td>
     </tr>
     <tr>
-      <td>
-        <code>throttlers</code>
-      </td>
+      <td>`throttlers`</td>
       <td>限流器集合的数组，定义方式见上表</td>
     </tr>
     <tr>
+      <td>`errorMessage`</td>
       <td>
-        <code>errorMessage</code>
-      </td>
-      <td>
-        一个 <code>string</code> 或函数，接收 <code>执行上下文（ExecutionContext）</code> 和{' '}
-        <code>ThrottlerLimitDetail</code>，返回 <code>string</code>
-        ，用于自定义限流错误消息，覆盖默认提示
+        一个 `string` 或函数，接收 `执行上下文（ExecutionContext）` 和 `ThrottlerLimitDetail`，返回
+        `string` ，用于自定义限流错误消息，覆盖默认提示
       </td>
     </tr>
     <tr>
+      <td>`getTracker`</td>
       <td>
-        <code>getTracker</code>
-      </td>
-      <td>
-        一个函数，接收 <code>请求对象（Request）</code> 并返回 <code>string</code>，用于覆盖{' '}
-        <code>getTracker</code> 方法的默认逻辑
+        一个函数，接收 `请求对象（Request）` 并返回 `string`，用于覆盖 `getTracker` 方法的默认逻辑
       </td>
     </tr>
     <tr>
+      <td>`generateKey`</td>
       <td>
-        <code>generateKey</code>
-      </td>
-      <td>
-        一个函数，接收 <code>执行上下文（ExecutionContext）</code>、追踪字符串 <code>string</code>{' '}
-        以及限流器名称 <code>string</code>，返回 <code>string</code>，用于覆盖{' '}
-        <code>generateKey</code> 方法的默认逻辑，决定最终用于存储限流值的键
+        一个函数，接收 `执行上下文（ExecutionContext）`、追踪字符串 `string` 以及限流器名称
+        `string`，返回 `string`，用于覆盖 `generateKey` 方法的默认逻辑，决定最终用于存储限流值的键
       </td>
     </tr>
   </tbody>
@@ -377,7 +338,11 @@ export class AppModule {}
 
 对于分布式服务器场景，你可以使用社区提供的 [Redis 存储适配器](https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis)，实现统一的数据源。
 
-> info **注意** `ThrottlerStorage` 可从 `@nestjs/throttler` 导入。
+<CalloutInfo>
+
+`ThrottlerStorage` 可从 `@nestjs/throttler` 导入。
+
+</CalloutInfo>
 
 ## 时间辅助方法
 
@@ -393,6 +358,9 @@ export class AppModule {}
 
 同样，任何 `@Throttle()` 装饰器现在也应接收一个以字符串为键的对象，这些字符串对应限流器上下文的名称（同样，如果没有名称则为 `'default'`），值为包含 `limit` 和 `ttl` 键的对象。
 
-> 警告 **重要** 现在 `ttl` 单位为 **毫秒**。如果你希望为了可读性仍以秒为单位设置 `ttl`，可以使用本包提供的 `seconds` 辅助函数。该函数会将 `ttl` 乘以 1000，从而转换为毫秒。
+<CalloutInfo>
+  现在 `ttl` 单位为 **毫秒**。如果你希望为了可读性仍以秒为单位设置 `ttl`，可以使用本包提供的
+  `seconds` 辅助函数。该函数会将 `ttl` 乘以 1000，从而转换为毫秒。
+</CalloutInfo>
 
 更多信息请参见 [更新日志](https://github.com/nestjs/throttler/blob/master/CHANGELOG.md#500)

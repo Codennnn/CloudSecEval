@@ -6,7 +6,9 @@
 
 Nest 提供了内置能力，帮助你以简单直观的方式完成这些操作。`ClassSerializerInterceptor` 拦截器（Interceptor）利用强大的 [class-transformer](https://github.com/typestack/class-transformer) 包，提供了一种声明式、可扩展的对象转换方式。其基本操作是获取方法处理器返回的值，并应用 [class-transformer](https://github.com/typestack/class-transformer) 的 `instanceToPlain()` 函数。在此过程中，可以根据实体类或数据传输对象（Data Transfer Object，DTO）类上通过 class-transformer 装饰器（Decorator）声明的规则进行转换，具体如下所述。
 
-> info **提示** 序列化不会应用于 [StreamableFile](https://docs.nestjs.com/techniques/streaming-files#streamable-file-class) 响应。
+<CalloutInfo>
+  序列化不会应用于 [StreamableFile](/techniques/streaming-files#streamable-file-class) 响应。
+</CalloutInfo>
 
 ## 排除属性
 
@@ -32,6 +34,8 @@ export class UserEntity {
 现在来看一个控制器（Controller）方法处理器返回该类实例的例子：
 
 ```ts
+import { ClassSerializerInterceptor } from '@nestjs/common'
+
 @UseInterceptors(ClassSerializerInterceptor)
 @Get()
 findOne(): UserEntity {
@@ -44,9 +48,9 @@ findOne(): UserEntity {
 }
 ```
 
-> **警告** 请注意，必须返回类的实例。如果你返回一个普通的 JavaScript 对象，例如 `{{ '{' }} user: new UserEntity() {{ '}' }}`，该对象将无法被正确序列化。
-
-> info **提示** `ClassSerializerInterceptor` 需从 `@nestjs/common` 导入。
+<CalloutInfo type="warning">
+请注意，必须返回类的实例。如果你返回一个普通的 JavaScript 对象，例如 `{{ '{' }} user: new UserEntity() {{ '}' }}`，该对象将无法被正确序列化。
+</CalloutInfo>
 
 当该端点被请求时，客户端会收到如下响应：
 
@@ -85,6 +89,8 @@ role: RoleEntity;
 你可能希望修改转换函数的默认行为。要覆盖默认设置，可以通过 `@SerializeOptions()` 装饰器传递一个 `options` 对象。
 
 ```ts
+import { SerializeOptions } from '@nestjs/common'
+
 @SerializeOptions({
   excludePrefixes: ['_'],
 })
@@ -93,8 +99,6 @@ findOne(): UserEntity {
   return new UserEntity();
 }
 ```
-
-> info **提示** `@SerializeOptions()` 装饰器需从 `@nestjs/common` 导入。
 
 通过 `@SerializeOptions()` 传递的选项会作为底层 `instanceToPlain()` 函数的第二个参数。在本例中，我们会自动排除所有以 `_` 前缀开头的属性。
 
@@ -127,7 +131,11 @@ findOne(@Query() { id }: { id: number }): UserEntity {
 }
 ```
 
-> info **提示** 通过为控制器指定预期的返回类型，你可以利用 TypeScript 的类型检查能力，确保返回的普通对象符合数据传输对象（DTO）或实体的结构。而 `plainToInstance` 函数则无法提供这种类型提示，如果普通对象与预期结构不符，可能会导致潜在的 bug。
+<CalloutInfo>
+  通过为控制器指定预期的返回类型，你可以利用 TypeScript
+  的类型检查能力，确保返回的普通对象符合数据传输对象（DTO）或实体的结构。而 `plainToInstance`
+  函数则无法提供这种类型提示，如果普通对象与预期结构不符，可能会导致潜在的 bug。
+</CalloutInfo>
 
 ## 示例
 

@@ -482,7 +482,43 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex items-center gap-2 data-[active=true]:bg-sidebar-accent data-[state=open]:hover:bg-sidebar-accent hover:bg-sidebar-accent active:bg-sidebar-accent aria-disabled:opacity-50 disabled:opacity-50 p-2 group-data-[collapsible=icon]:p-2! group-has-data-[sidebar=menu-action]/menu-item:pr-8 rounded-md outline-hidden ring-sidebar-ring focus-visible:ring-2 w-full [&>svg]:size-4 group-data-[collapsible=icon]:size-8! overflow-hidden data-[active=true]:font-medium text-sm text-left [&>span:last-child]:truncate transition-[width,height,padding] data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:text-sidebar-accent-foreground hover:text-sidebar-accent-foreground active:text-sidebar-accent-foreground aria-disabled:pointer-events-none disabled:pointer-events-none [&>svg]:shrink-0',
+  cn(
+    // 基础布局和定位
+    'peer/menu-button flex items-center gap-2 w-full overflow-hidden',
+    'p-2 group-data-[collapsible=icon]:p-2! group-data-[collapsible=icon]:size-8!',
+    'group-has-data-[sidebar=menu-action]/menu-item:pr-8',
+
+    // 基础外观样式
+    'rounded-md outline-hidden text-sm text-left',
+    'ring-sidebar-ring focus-visible:ring-2',
+
+    // 菜单激活状态样式
+    'data-[active=true]:bg-sidebar-accent',
+    'data-[active=true]:text-sidebar-accent-foreground',
+
+    // hover 悬停状态样式
+    'hover:bg-sidebar-accent',
+    'hover:text-sidebar-accent-foreground',
+
+    // active 点击状态样式
+    'active:bg-sidebar-accent',
+    'active:text-sidebar-accent-foreground',
+
+    // data-[state=open] 展开状态样式
+    'data-[state=open]:hover:bg-sidebar-accent',
+    'data-[state=open]:hover:text-sidebar-accent-foreground',
+
+    // aria-disabled 和 disabled 禁用状态样式
+    'aria-disabled:opacity-50 disabled:opacity-50',
+    'aria-disabled:pointer-events-none disabled:pointer-events-none',
+
+    // 图标和文本样式
+    '[&>svg]:size-4 [&>svg]:shrink-0',
+    '[&>span:last-child]:truncate',
+
+    // 动画过渡
+    'transition-[width,height,padding]',
+  ),
   {
     variants: {
       variant: {
@@ -690,11 +726,42 @@ function SidebarMenuSubButton({
   return (
     <Comp
       className={cn(
-        'text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
-        'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
+        // 基础布局和定位
+        'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden',
+        'px-2',
+
+        // 基础外观样式
+        'rounded-md outline-hidden',
+        'ring-sidebar-ring focus-visible:ring-2',
+        'text-sidebar-foreground',
+
+        // 菜单激活状态样式
+        'data-[active=true]:bg-sidebar-accent',
+        'data-[active=true]:text-sidebar-accent-foreground',
+
+        // hover 悬停状态样式
+        'hover:bg-sidebar-accent',
+        'hover:text-sidebar-accent-foreground',
+
+        // active 点击状态样式
+        'active:bg-sidebar-accent',
+        'active:text-sidebar-accent-foreground',
+
+        // disabled 和 aria-disabled 禁用状态样式
+        'disabled:pointer-events-none disabled:opacity-50',
+        'aria-disabled:pointer-events-none aria-disabled:opacity-50',
+
+        // 图标和文本样式
+        '[&>svg]:size-4 [&>svg]:shrink-0',
+        '[&>svg]:text-sidebar-accent-foreground',
+        '[&>span:last-child]:truncate',
+
+        // 响应式和组件状态
+        'group-data-[collapsible=icon]:hidden',
+
+        // 尺寸相关样式
         size === 'sm' && 'text-xs',
         size === 'md' && 'text-sm',
-        'group-data-[collapsible=icon]:hidden',
         className,
       )}
       data-active={isActive}

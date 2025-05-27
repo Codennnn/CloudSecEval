@@ -1,6 +1,6 @@
 # 日志记录器（Logger）
 
-Nest 内置了一个基于文本的日志记录器（Logger），用于应用引导过程（bootstrapping）以及多种场景下的系统日志输出（如捕获异常时的日志展示）。该功能由 `@nestjs/common` 包中的 `Logger` 类提供。你可以完全控制日志系统的行为，包括以下方面：
+Nest 内置了一个基于文本的日志记录器，用于应用启动过程以及多种场景下的系统日志输出（如捕获异常时的日志展示）。该功能由 `@nestjs/common` 包中的 `Logger` 类提供。你可以完全控制日志系统的行为，包括以下方面：
 
 - 完全禁用日志输出
 - 指定日志详细级别（如仅显示错误、警告、调试信息等）
@@ -8,7 +8,7 @@ Nest 内置了一个基于文本的日志记录器（Logger），用于应用引
 - 覆盖默认日志记录器中的时间戳（如使用 ISO8601 标准作为日期格式）
 - 完全替换默认日志记录器
 - 通过继承自定义默认日志记录器
-- 利用依赖注入（Dependency Injection）简化应用的组装与测试
+- 利用依赖注入简化应用的组装与测试
 
 你还可以直接使用内置日志记录器，或实现自定义日志记录器，用于记录应用层的事件和消息。
 
@@ -16,7 +16,7 @@ Nest 内置了一个基于文本的日志记录器（Logger），用于应用引
 
 ## 基础自定义
 
-要禁用日志记录（Logger），请在传递给 `NestFactory.create()` 方法的（可选）Nest 应用程序选项对象中，将 `logger` 属性设置为 `false`，如下所示：
+要禁用日志记录，请在传递给 `NestFactory.create()` 方法的（可选）Nest 应用程序选项对象中，将 `logger` 属性设置为 `false`，如下所示：
 
 ```ts
 const app = await NestFactory.create(AppModule, {
@@ -224,7 +224,7 @@ const app = await NestFactory.create(AppModule, {
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-这种方式虽然简单，但并没有利用依赖注入（Dependency Injection）机制来管理 `MyLogger` 类。这在测试时可能带来一些挑战，并且会限制 `MyLogger` 的复用性。更优的方案请参考下方 <a href="techniques/logger#dependency-injection">依赖注入</a> 部分。
+这种方式虽然简单，但并没有利用依赖注入（Dependency Injection）机制来管理 `MyLogger` 类。这在测试时可能带来一些挑战，并且会限制 `MyLogger` 的复用性。更优的方案请参考下方 [依赖注入](/techniques/logger#dependency-injection) 部分。
 
 ## 扩展内置日志记录器
 
@@ -277,11 +277,16 @@ app.useLogger(app.get(MyLogger))
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-> info **注意** 在上述示例中，我们将 `bufferLogs` 设置为 `true`，以确保在自定义日志记录器（此处为 `MyLogger`）被挂载之前，所有日志都会被缓冲，直到应用初始化过程完成或失败。如果初始化失败，Nest 会回退到原始的 `ConsoleLogger`，以输出任何错误信息。此外，你还可以将 `autoFlushLogs` 设置为 `false`（默认值为 `true`），以便手动刷新日志（通过调用 `Logger.flush()` 方法）。
+<CalloutInfo>
+  在上述示例中，我们将 `bufferLogs` 设置为 `true`，以确保在自定义日志记录器（此处为
+  `MyLogger`）被挂载之前，所有日志都会被缓冲，直到应用初始化过程完成或失败。如果初始化失败，Nest
+  会回退到原始的 `ConsoleLogger`，以输出任何错误信息。此外，你还可以将 `autoFlushLogs` 设置为
+  `false`（默认值为 `true`），以便手动刷新日志（通过调用 `Logger.flush()` 方法）。
+</CalloutInfo>
 
 在这里，我们通过 `NestApplication` 实例的 `get()` 方法获取 `MyLogger` 的单例实例。这种做法本质上是一种为 Nest "注入" 日志记录器实例的方式。`app.get()` 调用会检索 `MyLogger` 的单例实例，并依赖于该实例已在其他模块中被注入，如上文所述。
 
-你还可以在功能类中注入该 `MyLogger` 提供者，从而确保 Nest 系统日志和应用日志都能保持一致的日志行为。更多信息请参见<a href="techniques/logger#using-the-logger-for-application-logging">应用日志记录的用法</a>和<a href="techniques/logger#injecting-a-custom-logger">自定义日志记录器的注入</a>。
+你还可以在功能类中注入该 `MyLogger` 提供者，从而确保 Nest 系统日志和应用日志都能保持一致的日志行为。更多信息请参见[应用日志记录的用法](/techniques/logger#using-the-logger-for-application-logging)和[自定义日志记录器的注入](/techniques/logger#injecting-a-custom-logger)。
 
 ## 注入自定义日志记录器
 
@@ -347,8 +352,14 @@ app.useLogger(new MyLogger())
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-> info **提示** 另外，你也可以选择不设置 `bufferLogs: true`，而是通过 `logger: false` 临时禁用日志记录器。需要注意的是，如果你在 `NestFactory.create` 时传入 `logger: false`，那么在调用 `useLogger` 之前，所有日志都不会被记录，这可能导致你错过一些重要的初始化错误。如果你不介意部分初始化信息仍然由默认日志记录器输出，也可以省略 `logger: false` 选项。
+<CalloutInfo>
+  另外，你也可以选择不设置 `bufferLogs: true`，而是通过 `logger: false`
+  临时禁用日志记录器。需要注意的是，如果你在 `NestFactory.create` 时传入 `logger: false`，那么在调用
+  `useLogger`
+  之前，所有日志都不会被记录，这可能导致你错过一些重要的初始化错误。如果你不介意部分初始化信息仍然由默认日志记录器输出，也可以省略
+  `logger: false` 选项。
+</CalloutInfo>
 
 ## 使用外部日志记录器
 
-在生产环境下，应用通常有更为复杂的日志需求，比如高级过滤、格式化以及集中式日志管理。Nest 内置的日志记录器（Logger）主要用于监控 Nest 系统行为，同时在开发阶段也可以为功能模块提供基础的格式化文本日志。但在生产环境中，通常会采用专用的日志记录模块，例如 [Winston](https://github.com/winstonjs/winston)。与任何标准 Node.js 应用一样，你可以在 Nest 中充分利用这些日志模块的强大功能。
+在生产环境下，应用通常有更为复杂的日志需求，比如高级过滤、格式化以及集中式日志管理。Nest 内置的日志记录器主要用于监控 Nest 系统行为，同时在开发阶段也可以为功能模块提供基础的格式化文本日志。但在生产环境中，通常会采用专用的日志记录模块，例如 [Winston](https://github.com/winstonjs/winston)。与任何标准 Node.js 应用一样，你可以在 Nest 中充分利用这些日志模块的强大功能。
