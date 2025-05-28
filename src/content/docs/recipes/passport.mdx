@@ -172,7 +172,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 我们还实现了 `validate()` 方法。对于每种策略，Passport 都会调用验证函数（在 `@nestjs/passport` 中通过 `validate()` 方法实现），并传递相应的参数。对于本地策略，Passport 期望 `validate()` 方法的签名为：`validate(username: string, password: string): any`。
 
-大部分验证逻辑都在我们的 `AuthService`（借助 `UsersService`）中完成，因此该方法实现较为简洁。**任何** Passport 策略的 `validate()` 方法实现模式都类似，仅在凭证的具体表现形式上有所不同。如果用户存在且凭证有效，则返回该用户，Passport 会继续后续流程（如在 `请求对象（Request Object）` 上创建 `user` 属性），请求处理流程也将继续。如果未找到用户，则抛出异常，由我们的 <a href="exception-filters">异常过滤器（exceptions layer）</a> 处理。
+大部分验证逻辑都在我们的 `AuthService`（借助 `UsersService`）中完成，因此该方法实现较为简洁。**任何** Passport 策略的 `validate()` 方法实现模式都类似，仅在凭证的具体表现形式上有所不同。如果用户存在且凭证有效，则返回该用户，Passport 会继续后续流程（如在 `请求对象（Request Object）` 上创建 `user` 属性），请求处理流程也将继续。如果未找到用户，则抛出异常，由我们的[异常过滤器（exceptions layer）](/exception-filters) 处理。
 
 通常，不同策略的 `validate()` 方法主要区别在于**如何**判断用户是否存在且有效。例如，在 JWT 策略中，可能需要根据解码后的 token 中的 `userId` 是否存在于用户数据库，或是否在已吊销 token 列表中进行判断。因此，这种通过继承并实现特定策略验证逻辑的模式，既统一又易于扩展。
 
@@ -194,7 +194,7 @@ export class AuthModule {}
 
 ## 内置 Passport 守卫
 
-<a href="guards">守卫</a> 章节介绍了守卫的主要功能：决定某个请求是否会被路由处理器（Route
+[守卫](/guards) 章节介绍了守卫的主要功能：决定某个请求是否会被路由处理器（Route
 Handler）处理。这个结论依然成立，我们很快会用到这种标准能力。不过，在使用 `@nestjs/passport`
 模块时，还会引入一个新的小变化，初学者可能会感到困惑，所以我们现在先来讨论一下。可以这样理解，从身份验证（Authentication）的角度看，你的应用可以有两种状态：
 

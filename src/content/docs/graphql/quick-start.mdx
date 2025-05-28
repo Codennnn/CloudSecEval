@@ -21,7 +21,11 @@ $ npm i @nestjs/graphql @nestjs/apollo @apollo/server graphql
 # npm i @nestjs/graphql @nestjs/mercurius graphql mercurius
 ```
 
-> warning **警告** `@nestjs/graphql@>=9` 和 `@nestjs/apollo^10` 这两个包与 **Apollo v3** 兼容（更多细节请参考 Apollo Server 3 [迁移指南](https://www.apollographql.com/docs/apollo-server/migration/)），而 `@nestjs/graphql@^8` 仅支持 **Apollo v2**（例如 `apollo-server-express@2.x.x` 包）。
+<CalloutInfo type="warning">
+  `@nestjs/graphql@>=9` 和 `@nestjs/apollo^10` 这两个包与 **Apollo v3** 兼容（更多细节请参考 Apollo
+  Server 3 [迁移指南](https://www.apollographql.com/docs/apollo-server/migration/)），而
+  `@nestjs/graphql@^8` 仅支持 **Apollo v2**（例如 `apollo-server-express@2.x.x` 包）。
+</CalloutInfo>
 
 ## 概述
 
@@ -31,20 +35,19 @@ Nest 提供了两种构建 GraphQL 应用的方式，分别是 **代码优先（
 
 在 **模式优先** 方式中，真相的唯一来源是 GraphQL SDL 文件。SDL 是一种与语言无关的方式，可以在不同平台间共享模式文件。Nest 会自动根据 GraphQL 模式生成 TypeScript 类型定义（可以是类或接口），从而减少重复编写模板代码的工作量。
 
-<app-banner-courses-graphql-cf></app-banner-courses-graphql-cf>
-
 ## 使用 GraphQL 和 TypeScript 快速上手
 
-> info **提示**  
-> 在接下来的章节中，我们将集成 `@nestjs/apollo` 包。如果你希望使用 `mercurius` 包，请前往[本节](/graphql/quick-start#mercurius-integration)查看相关内容。
+<CalloutInfo>
+  在接下来的章节中，我们将集成 `@nestjs/apollo` 包。如果你希望使用 `mercurius`
+  包，请前往[本节](/graphql/quick-start#mercurius-integration)查看相关内容。
+</CalloutInfo>
 
 安装好相关包后，我们可以导入 `GraphQLModule`，并通过其静态方法 `forRoot()` 进行配置。
 
 ```ts
-@@filename()
-import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 
 @Module({
   imports: [
@@ -56,17 +59,18 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 export class AppModule {}
 ```
 
-> info **提示**  
-> 如果你需要集成 `mercurius`，应当使用 `MercuriusDriver` 和 `MercuriusDriverConfig`，这两个均由 `@nestjs/mercurius` 包导出。
+<CalloutInfo>
+  如果你需要集成 `mercurius`，应当使用 `MercuriusDriver` 和 `MercuriusDriverConfig`，这两个均由
+  `@nestjs/mercurius` 包导出。
+</CalloutInfo>
 
 `forRoot()` 方法接收一个配置对象作为参数。该对象中的选项会被传递给底层的驱动实例（可在这里查看更多可用设置：[Apollo](https://www.apollographql.com/docs/apollo-server/api/apollo-server) 和 [Mercurius](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)）。  
 例如，如果你想禁用 `playground`（交互式调试工具）并关闭 `debug` 模式（针对 Apollo），可以传入如下配置：
 
 ```ts
-@@filename()
-import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 
 @Module({
   imports: [
@@ -87,22 +91,29 @@ Playground 是一个图形化、交互式的浏览器内 GraphQL IDE，默认情
 
 完成上述准备，并确保应用在后台运行后，您只需在浏览器中访问 `http://localhost:3000/graphql`（主机和端口可能因您的配置而异），即可看到 GraphQL Playground，效果如下图所示。
 
-<figure>
-  <img src="/assets/playground.png" alt="" />
-</figure>
+<DocImage src="/assets/playground.png" alt="GraphQL Playground" />
 
-> info **注意** `@nestjs/mercurius` 集成并未内置 GraphQL Playground。您可以使用 [GraphiQL](https://github.com/graphql/graphiql)（设置 `graphiql: true`）。
+<CalloutInfo>
+  `@nestjs/mercurius` 集成并未内置 GraphQL Playground。您可以使用
+  [GraphiQL](https://github.com/graphql/graphiql)（设置 `graphiql: true`）。
+</CalloutInfo>
 
-> warning **警告** 更新（2025/04/14）：默认的 Apollo Playground 已被弃用，并将在下一个主版本中移除。建议改用 [GraphiQL](https://github.com/graphql/graphiql)，只需在 `GraphQLModule` 配置中设置 `graphiql: true`，示例如下：
->
-> ```ts
-> GraphQLModule.forRoot<ApolloDriverConfig>({
->   driver: ApolloDriver,
->   graphiql: true,
-> }),
-> ```
->
-> 如果您的应用使用了[订阅功能](/graphql/subscriptions)，请确保使用 `graphql-ws`，因为 GraphiQL 不支持 `subscriptions-transport-ws`。
+<CalloutInfo type="warning">
+  <p className='mb-0'>
+  更新（2025/04/14）：默认的 Apollo Playground 已被弃用，并将在下一个主版本中移除。建议改用 [GraphiQL](https://github.com/graphql/graphiql)，只需在 `GraphQLModule` 配置中设置 `graphiql: true`，示例如下：
+  </p>
+
+```ts
+GraphQLModule.forRoot<ApolloDriverConfig>({
+  driver: ApolloDriver,
+  graphiql: true,
+}),
+```
+
+如果您的应用使用了[订阅功能](/graphql/subscriptions)，请确保使用 `graphql-ws`，因为 GraphiQL
+不支持 `subscriptions-transport-ws`。
+
+</CalloutInfo>
 
 ## 代码优先（Code first）
 
@@ -196,7 +207,11 @@ definitionsFactory.generate({
 $ ts-node generate-typings
 ```
 
-> info **提示** 你也可以先编译该脚本（例如使用 `tsc`），然后用 `node` 执行。
+<CalloutInfo>
+
+你也可以先编译该脚本（例如使用 `tsc`），然后用 `node` 执行。
+
+</CalloutInfo>
 
 如果希望为该脚本启用监听模式（即在任意 `.graphql` 文件发生变化时自动生成类型），只需为 `generate()` 方法传递 `watch` 选项：
 
@@ -272,7 +287,10 @@ export class AppModule {}
 const { schema } = app.get(GraphQLSchemaHost)
 ```
 
-> info **提示** 你必须在应用初始化完成后（即在 `onModuleInit` 生命周期钩子被 `app.listen()` 或 `app.init()` 方法触发后），再调用 `GraphQLSchemaHost#schema` 的 getter。
+<CalloutInfo>
+  你必须在应用初始化完成后（即在 `onModuleInit` 生命周期钩子被 `app.listen()` 或 `app.init()`
+  方法触发后），再调用 `GraphQLSchemaHost#schema` 的 getter。
+</CalloutInfo>
 
 ## 异步配置（Async configuration）
 
@@ -289,7 +307,7 @@ const { schema } = app.get(GraphQLSchemaHost)
 }),
 ```
 
-与其他工厂提供者类似，我们的工厂函数也可以是 <a href="https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory">异步的</a>，并且可以通过 `inject` 注入依赖。
+与其他工厂提供者类似，我们的工厂函数也可以是 [异步的](/fundamentals/custom-providers#factory-providers-usefactory)，并且可以通过 `inject` 注入依赖。
 
 ```ts
 GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -338,10 +356,9 @@ GraphQLModule.forRootAsync<ApolloDriverConfig>({
 对于 Fastify 用户（详细内容请参阅[此处](/techniques/performance)），除了使用 Apollo 外，还可以选择使用 `@nestjs/mercurius` 驱动。
 
 ```ts
-@@filename()
-import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { MercuriusDriver, MercuriusDriverConfig } from '@nestjs/mercurius';
+import { Module } from '@nestjs/common'
+import { GraphQLModule } from '@nestjs/graphql'
+import { MercuriusDriver, MercuriusDriverConfig } from '@nestjs/mercurius'
 
 @Module({
   imports: [
@@ -354,7 +371,10 @@ import { MercuriusDriver, MercuriusDriverConfig } from '@nestjs/mercurius';
 export class AppModule {}
 ```
 
-> info **提示** 应用启动后，在浏览器中访问 `http://localhost:3000/graphiql`，你将看到 [GraphQL IDE](https://github.com/graphql/graphiql)。
+<CalloutInfo>
+  应用启动后，在浏览器中访问 `http://localhost:3000/graphiql`，你将看到 [GraphQL
+  IDE](https://github.com/graphql/graphiql)。
+</CalloutInfo>
 
 `forRoot()` 方法接收一个选项对象作为参数。这些选项会传递给底层驱动实例。关于可用设置的更多信息，请参阅[这里](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)。
 
@@ -368,7 +388,10 @@ GraphQLModule.forRoot({
 }),
 ```
 
-> warning **警告** 如果你在单个应用中结合 `@apollo/server` 与 `@as-integrations/fastify` 包使用多个 GraphQL 端点，请务必在 `GraphQLModule` 配置中启用 `disableHealthCheck` 设置。
+<CalloutInfo type="warning">
+  如果你在单个应用中结合 `@apollo/server` 与 `@as-integrations/fastify` 包使用多个 GraphQL
+  端点，请务必在 `GraphQLModule` 配置中启用 `disableHealthCheck` 设置。
+</CalloutInfo>
 
 ## 第三方集成
 

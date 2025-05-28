@@ -37,7 +37,10 @@ export const ResultUnion = createUnionType({
 })
 ```
 
-> warning **警告** 通过 `createUnionType` 函数的 `types` 属性返回的数组应加上 const 断言。如果没有加 const 断言，编译时会生成错误的声明文件，并且在其他项目中使用时会报错。
+<CalloutInfo type="warning">
+  通过 `createUnionType` 函数的 `types` 属性返回的数组应加上 const 断言。如果没有加 const
+  断言，编译时会生成错误的声明文件，并且在其他项目中使用时会报错。
+</CalloutInfo>
 
 现在，我们可以在查询中引用 `ResultUnion`：
 
@@ -134,7 +137,11 @@ export class ResultUnionResolver {
 }
 ```
 
-> info **提示** 所有装饰器均从 `@nestjs/graphql` 包中导出。
+<CalloutInfo>
+
+所有装饰器均从 `@nestjs/graphql` 包中导出。
+
+</CalloutInfo>
 
 # 枚举类型（Enums）
 
@@ -252,7 +259,11 @@ export const allowedColorResolver: Record<keyof typeof AllowedColor, any> = {
 }
 ```
 
-> info **提示** 所有装饰器均从 `@nestjs/graphql` 包中导出。
+<CalloutInfo>
+
+所有装饰器均从 `@nestjs/graphql` 包中导出。
+
+</CalloutInfo>
 
 然后，将该解析器对象与 `GraphQLModule#forRoot()` 方法的 `resolvers` 属性一起使用，如下所示：
 

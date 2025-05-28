@@ -14,185 +14,113 @@ $ npm i --save amqplib amqp-connection-manager
 
 要使用 RabbitMQ 作为传输层（Transport Layer），请将如下 options 对象传递给 `createMicroservice()` 方法：
 
-```ts
-@@filename(main)
+```ts filename='main.ts'
+import { Transport } from '@nestjs/microservices'
+
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.RMQ,
   options: {
     urls: ['amqp://localhost:5672'],
     queue: 'cats_queue',
     queueOptions: {
-      durable: false
+      durable: false,
     },
   },
-});
-@@switch
-const app = await NestFactory.createMicroservice(AppModule, {
-  transport: Transport.RMQ,
-  options: {
-    urls: ['amqp://localhost:5672'],
-    queue: 'cats_queue',
-    queueOptions: {
-      durable: false
-    },
-  },
-});
+})
 ```
-
-> info **提示** `Transport` 枚举类型需从 `@nestjs/microservices` 包中导入。
 
 ## 选项
 
-`options` 属性是针对所选传输器特有的配置。<strong>RabbitMQ</strong> 传输器支持以下属性：
+`options` 属性是针对所选传输器特有的配置。**RabbitMQ** 传输器支持以下属性：
 
 <table>
   <tr>
-    <td>
-      <code>urls</code>
-    </td>
+    <td>`urls`</td>
     <td>一个包含多个连接 URL 的数组，按顺序依次尝试连接</td>
   </tr>
   <tr>
-    <td>
-      <code>queue</code>
-    </td>
+    <td>`queue`</td>
     <td>服务器监听的队列名称</td>
   </tr>
   <tr>
-    <td>
-      <code>prefetchCount</code>
-    </td>
+    <td>`prefetchCount`</td>
     <td>设置通道的预取（prefetch）消息数量</td>
   </tr>
   <tr>
-    <td>
-      <code>isGlobalPrefetchCount</code>
-    </td>
+    <td>`isGlobalPrefetchCount`</td>
     <td>启用每个通道的全局预取设置</td>
   </tr>
   <tr>
-    <td>
-      <code>noAck</code>
-    </td>
-    <td>
-      如果为 <code>false</code>，则启用手动确认（acknowledgment）模式
-    </td>
+    <td>`noAck`</td>
+    <td>如果为 `false`，则启用手动确认（acknowledgment）模式</td>
   </tr>
   <tr>
-    <td>
-      <code>consumerTag</code>
-    </td>
+    <td>`consumerTag`</td>
     <td>
       服务器用于区分消费者消息投递的名称；该名称在通道上不能重复。通常建议省略此项，由服务器自动生成随机名称并在响应中返回。消费者标签标识符（Consumer
-      Tag Identifier），
-      <a
-        href="https://amqp-node.github.io/amqplib/channel_api.html#channel_consume"
-        rel="nofollow"
-        target="_blank"
-      >
-        详细说明
-      </a>
+      Tag
+      Identifier），[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#channel_consume)
     </td>
   </tr>
   <tr>
+    <td>`queueOptions`</td>
     <td>
-      <code>queueOptions</code>
-    </td>
-    <td>
-      队列的其他配置选项，
-      <a
-        href="https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue"
-        rel="nofollow"
-        target="_blank"
-      >
-        详细说明
-      </a>
+      队列的其他配置选项，[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue)
     </td>
   </tr>
   <tr>
+    <td>`socketOptions`</td>
     <td>
-      <code>socketOptions</code>
-    </td>
-    <td>
-      连接的其他 socket 配置选项，
-      <a
-        href="https://amqp-node.github.io/amqplib/channel_api.html#connect"
-        rel="nofollow"
-        target="_blank"
-      >
-        详细说明
-      </a>
+      连接的其他 socket
+      配置选项，[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#connect)
     </td>
   </tr>
   <tr>
-    <td>
-      <code>headers</code>
-    </td>
+    <td>`headers`</td>
     <td>每条消息都携带的自定义头部（headers）</td>
   </tr>
   <tr>
-    <td>
-      <code>replyQueue</code>
-    </td>
-    <td>
-      生产者使用的回复队列，默认为 <code>amq.rabbitmq.reply-to</code>
-    </td>
+    <td>`replyQueue`</td>
+    <td>生产者使用的回复队列，默认为 `amq.rabbitmq.reply-to`</td>
   </tr>
   <tr>
-    <td>
-      <code>persistent</code>
-    </td>
+    <td>`persistent`</td>
     <td>如果为真（truthy），消息将在代理（broker）重启后依然保留，前提是队列本身也支持持久化</td>
   </tr>
   <tr>
-    <td>
-      <code>noAssert</code>
-    </td>
+    <td>`noAssert`</td>
     <td>为 false 时，消费前不会断言（assert）队列</td>
   </tr>
   <tr>
-    <td>
-      <code>wildcards</code>
-    </td>
+    <td>`wildcards`</td>
     <td>
       仅当你希望使用主题交换机（Topic Exchange）将消息路由到队列时设置为
       true。启用后，可以在消息和事件模式中使用通配符（*，#）
     </td>
   </tr>
   <tr>
-    <td>
-      <code>exchange</code>
-    </td>
+    <td>`exchange`</td>
     <td>交换机（exchange）名称。当 "wildcards" 设置为 true 时，默认为队列名称</td>
   </tr>
   <tr>
-    <td>
-      <code>exchangeType</code>
-    </td>
-    <td>
-      交换机类型，默认为 <code>topic</code>。可选值包括 <code>direct</code>、<code>fanout</code>、
-      <code>topic</code> 和 <code>headers</code>
-    </td>
+    <td>`exchangeType`</td>
+    <td>交换机类型，默认为 `topic`。可选值包括 `direct`、`fanout`、`topic` 和 `headers`</td>
   </tr>
   <tr>
-    <td>
-      <code>routingKey</code>
-    </td>
+    <td>`routingKey`</td>
     <td>主题交换机的附加路由键（routing key）</td>
   </tr>
   <tr>
-    <td>
-      <code>maxConnectionAttempts</code>
-    </td>
+    <td>`maxConnectionAttempts`</td>
     <td>最大连接尝试次数，仅适用于消费者配置。-1 表示无限重试</td>
   </tr>
 </table>
 
 ## 客户端（Client）
 
-与其他微服务传输器类似，您有<a href="https://docs.nestjs.com/microservices/basics#client">多种方式</a>可以创建 RabbitMQ 客户端代理（ClientProxy）实例。
+与其他微服务传输器类似，您有[多种方式](/microservices/basics#client)可以创建 RabbitMQ 客户端代理（ClientProxy）实例。
 
-其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入一个选项对象。该对象的属性与上文 `createMicroservice()` 方法中展示的属性一致，并且还需要包含一个 `name` 属性作为注入令牌（Injection Token）。您可以在<a href="https://docs.nestjs.com/microservices/basics#client">这里</a>查看更多关于 `ClientsModule` 的内容。
+其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入一个选项对象。该对象的属性与上文 `createMicroservice()` 方法中展示的属性一致，并且还需要包含一个 `name` 属性作为注入令牌（Injection Token）。您可以在[这里](/microservices/basics#client)查看更多关于 `ClientsModule` 的内容。
 
 ```ts
 @Module({
@@ -215,40 +143,26 @@ const app = await NestFactory.createMicroservice(AppModule, {
 })
 ```
 
-除此之外，您还可以选择其他方式来创建客户端，例如 `ClientProxyFactory` 或 `@Client()` 装饰器。相关内容可<a href="https://docs.nestjs.com/microservices/basics#client">在此查阅</a>。
+除此之外，您还可以选择其他方式来创建客户端，例如 `ClientProxyFactory` 或 `@Client()` 装饰器。相关内容可[在此查阅](/microservices/basics#client)。
 
 ## 上下文
 
 在更复杂的场景中，你可能需要访问有关传入请求的更多信息。当使用 RabbitMQ 传输层时，可以访问 `RmqContext` 对象。
 
 ```ts
-@@filename()
+import { RmqContext, Payload, Ctx } from '@nestjs/microservices'
+
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  console.log(`Pattern: ${context.getPattern()}`);
-}
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('notifications')
-getNotifications(data, context) {
   console.log(`Pattern: ${context.getPattern()}`);
 }
 ```
 
-> info **提示** `@Payload()`、`@Ctx()` 和 `RmqContext` 都是从 `@nestjs/microservices` 包中导入的。
-
 要访问原始的 RabbitMQ 消息（包含 `properties`、`fields` 和 `content`），可以使用 `RmqContext` 对象的 `getMessage()` 方法，如下所示：
 
 ```ts
-@@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  console.log(context.getMessage());
-}
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('notifications')
-getNotifications(data, context) {
   console.log(context.getMessage());
 }
 ```
@@ -256,15 +170,8 @@ getNotifications(data, context) {
 如果需要获取 RabbitMQ [通道（channel）](https://www.rabbitmq.com/channels.html) 的引用，可以使用 `RmqContext` 对象的 `getChannelRef` 方法，如下所示：
 
 ```ts
-@@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  console.log(context.getChannelRef());
-}
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('notifications')
-getNotifications(data, context) {
   console.log(context.getChannelRef());
 }
 ```
@@ -289,18 +196,8 @@ options: {
 当开启手动消费者确认后，必须由工作进程（worker）主动发送确认，告知任务已完成。
 
 ```ts
-@@filename()
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  const channel = context.getChannelRef();
-  const originalMsg = context.getMessage();
-
-  channel.ack(originalMsg);
-}
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('notifications')
-getNotifications(data, context) {
   const channel = context.getChannelRef();
   const originalMsg = context.getMessage();
 
@@ -313,6 +210,8 @@ getNotifications(data, context) {
 如需配置消息选项，可以使用 `RmqRecordBuilder` 类（注意：事件驱动流程同样适用）。例如，要设置 `headers` 和 `priority` 属性，可以使用 `setOptions` 方法，如下所示：
 
 ```ts
+import { RmqRecordBuilder } from '@nestjs/microservices'
+
 const message = ':cat:';
 const record = new RmqRecordBuilder(message)
   .setOptions({
@@ -326,21 +225,11 @@ const record = new RmqRecordBuilder(message)
 this.client.send('replace-emoji', record).subscribe(...);
 ```
 
-> info **提示** `RmqRecordBuilder` 类由 `@nestjs/microservices` 包导出。
-
 你也可以在服务端通过访问 `RmqContext` 读取这些值，示例如下：
 
 ```ts
-@@filename()
 @MessagePattern('replace-emoji')
 replaceEmoji(@Payload() data: string, @Ctx() context: RmqContext): string {
-  const { properties: { headers } } = context.getMessage();
-  return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
-}
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('replace-emoji')
-replaceEmoji(data, context) {
   const { properties: { headers } } = context.getMessage();
   return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
 }
@@ -351,12 +240,12 @@ replaceEmoji(data, context) {
 要实时获取连接状态以及底层驱动实例的状态更新，可以订阅 `status` 流。该流会根据所选驱动提供特定的状态更新。以 RMQ 驱动为例，`status` 流会发出 `connected`（已连接）和 `disconnected`（已断开）事件。
 
 ```ts
+import { RmqStatus } from '@nestjs/microservices'
+
 this.client.status.subscribe((status: RmqStatus) => {
   console.log(status)
 })
 ```
-
-> info **提示** `RmqStatus` 类型需从 `@nestjs/microservices` 包中导入。
 
 同样地，你也可以订阅服务端的 `status` 流，以便接收服务端状态的通知。
 
@@ -380,12 +269,12 @@ this.client.on('error', (err) => {
 同样地，也可以监听服务端的内部事件：
 
 ```ts
+import type { RmqEvents } from '@nestjs/microservices'
+
 server.on<RmqEvents>('error', (err) => {
   console.error(err)
 })
 ```
-
-> info **提示** `RmqEvents` 类型需从 `@nestjs/microservices` 包中导入。
 
 ## 底层驱动访问
 

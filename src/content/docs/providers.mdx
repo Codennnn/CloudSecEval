@@ -2,9 +2,7 @@
 
 提供者（Provider）是 Nest 的核心概念之一。许多基础的 Nest 类，比如服务（Service）、仓库（Repository）、工厂（Factory）和辅助类（Helper），都可以被视为提供者。提供者的关键思想在于它可以作为**依赖项被注入**，从而让对象之间能够建立多种关系。而这些对象的"组装"工作，大多由 Nest 的运行时系统自动完成。
 
-<figure>
-  <img class="illustrative-image" src="/assets/Components_1.png" />
-</figure>
+<DocImage src="/assets/Components_1.png" alt="Components" />
 
 在上一章中，我们创建了一个简单的 `CatsController`。控制器（Controller）应当负责处理 HTTP 请求，并将更复杂的任务委托给**提供者**。提供者其实就是在 NestJS 模块中通过 `providers` 声明的普通 JavaScript 类。更多细节可参考"模块（Modules）"章节。
 

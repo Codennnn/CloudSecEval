@@ -1,6 +1,6 @@
 # NATS
 
-[NATS](https://nats.io) 是一个简单、安全且高性能的开源消息系统，适用于云原生应用、物联网（IoT）消息传递以及微服务（Microservices）架构。NATS 服务器由 Go 编程语言编写，但与服务器交互的客户端库已覆盖数十种主流编程语言。NATS 支持 **最多一次（At Most Once）** 和 **至少一次（At Least Once）** 的消息投递。它可以运行在各种环境中，包括大型服务器、云实例、边缘网关，甚至物联网设备。
+[NATS](https://nats.io) 是一个简单、安全且高性能的开源消息系统，适用于云原生应用、物联网（IoT）消息传递以及微服务架构。NATS 服务器由 Go 编程语言编写，但与服务器交互的客户端库已覆盖数十种主流编程语言。NATS 支持 **最多一次（At Most Once）** 和 **至少一次（At Least Once）** 的消息投递。它可以运行在各种环境中，包括大型服务器、云实例、边缘网关，甚至物联网设备。
 
 ## 安装
 
@@ -14,63 +14,47 @@ $ npm i --save nats
 
 要使用 NATS 作为传输层（Transport Layer），请将如下 options 对象传递给 `createMicroservice()` 方法：
 
-```ts
-@@filename(main)
+```ts filename='main.ts'
+import { Transport } from '@nestjs/microservices'
+
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.NATS,
   options: {
     servers: ['nats://localhost:4222'],
   },
-});
-@@switch
-const app = await NestFactory.createMicroservice(AppModule, {
-  transport: Transport.NATS,
-  options: {
-    servers: ['nats://localhost:4222'],
-  },
-});
+})
 ```
-
-> info **提示** `Transport` 枚举类型需从 `@nestjs/microservices` 包中导入。
 
 ## 选项
 
-`options` 对象是针对所选传输层特定的配置。<strong>NATS</strong> 传输层支持 [此处](https://github.com/nats-io/node-nats#connection-options) 描述的属性，以及下列额外属性：
+`options` 对象是针对所选传输层特定的配置。**NATS** 传输层支持 [此处](https://github.com/nats-io/node-nats#connection-options) 描述的属性，以及下列额外属性：
 
 <table>
   <tr>
+    <td>`queue`</td>
     <td>
-      <code>queue</code>
-    </td>
-    <td>
-      服务器应订阅的队列（如设置为 <code>undefined</code> 则忽略此配置）。关于 NATS 队列组（queue
-      groups），可阅读<a href="https://docs.nestjs.com/microservices/nats#queue-groups">下文</a>。
+      服务器应订阅的队列（如设置为 `undefined` 则忽略此配置）。关于 NATS 队列组（queue
+      groups），可阅读[下文](/microservices/nats#queue-groups)。
     </td>
   </tr>
   <tr>
-    <td>
-      <code>gracefulShutdown</code>
-    </td>
+    <td>`gracefulShutdown`</td>
     <td>
       是否启用优雅关闭（graceful
-      shutdown）。启用后，服务器会在关闭连接前先取消所有频道的订阅。默认值为 <code>false</code>。
+      shutdown）。启用后，服务器会在关闭连接前先取消所有频道的订阅。默认值为 `false`。
     </td>
   </tr>
   <tr>
-    <td>
-      <code>gracePeriod</code>
-    </td>
-    <td>
-      在取消所有频道订阅后，服务器等待的时间（毫秒）。默认值为 <code>10000</code> 毫秒。
-    </td>
+    <td>`gracePeriod`</td>
+    <td>在取消所有频道订阅后，服务器等待的时间（毫秒）。默认值为 `10000` 毫秒。</td>
   </tr>
 </table>
 
 ## 客户端
 
-与其他微服务传输层类似，你有<a href="https://docs.nestjs.com/microservices/basics#client">多种方式</a>来创建 NATS `ClientProxy` 实例。
+与其他微服务传输层类似，你有[多种方式](/microservices/basics#client)来创建 NATS `ClientProxy` 实例。
 
-其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入包含上述与 `createMicroservice()` 方法相同属性的配置对象，同时还需指定一个 `name` 属性作为注入令牌（injection token）。关于 `ClientsModule` 的更多内容可<a href="https://docs.nestjs.com/microservices/basics#client">参考这里</a>。
+其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入包含上述与 `createMicroservice()` 方法相同属性的配置对象，同时还需指定一个 `name
 
 ```ts
 @Module({
@@ -89,7 +73,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 })
 ```
 
-你也可以选择其他方式来创建客户端（如 `ClientProxyFactory` 或 `@Client()` 装饰器）。相关内容可<a href="https://docs.nestjs.com/microservices/basics#client">在此查阅</a>。
+你也可以选择其他方式来创建客户端（如 `ClientProxyFactory` 或 `@Client()` 装饰器）。相关内容可[在此查阅](/microservices/basics#client)。
 
 ## 请求-响应
 
@@ -103,15 +87,14 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 NATS 提供了一种内置的负载均衡功能，称为 [分布式队列（distributed queues）](https://docs.nats.io/nats-concepts/queue)。要创建队列订阅，可以如下使用 `queue` 属性：
 
-```ts
-@@filename(main)
+```ts filename='main.ts'
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   transport: Transport.NATS,
   options: {
     servers: ['nats://localhost:4222'],
     queue: 'cats_queue',
   },
-});
+})
 ```
 
 ## 上下文
@@ -119,36 +102,21 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 在更复杂的场景中，你可能需要访问有关传入请求的更多信息。使用 NATS 传输器时，可以访问 `NatsContext` 对象。
 
 ```ts
-@@filename()
+import { NatsContext, Payload, Ctx } from '@nestjs/microservices'
+
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: NatsContext) {
   console.log(`Subject: ${context.getSubject()}`);
 }
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('notifications')
-getNotifications(data, context) {
-  console.log(`Subject: ${context.getSubject()}`);
-}
 ```
-
-> info **提示** `@Payload()`、`@Ctx()` 和 `NatsContext` 都从 `@nestjs/microservices` 包中导入。
 
 ## 通配符（Wildcards）
 
 订阅可以是一个明确的主题（subject），也可以包含通配符。
 
 ```ts
-@@filename()
 @MessagePattern('time.us.*')
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
-  console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
-  return new Date().toLocaleTimeString(...);
-}
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('time.us.*')
-getDate(data, context) {
   console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
   return new Date().toLocaleTimeString(...);
 }
@@ -159,7 +127,8 @@ getDate(data, context) {
 要配置消息选项，可以使用 `NatsRecordBuilder` 类（注意：事件驱动流程同样适用）。例如，若要添加 `x-version` 请求头（Header），可以使用 `setHeaders` 方法，如下所示：
 
 ```ts
-import * as nats from 'nats';
+import { NatsRecordBuilder } from '@nestjs/microservices'
+import * as nats from 'nats'
 
 // 代码中的某处
 const headers = nats.headers();
@@ -169,21 +138,11 @@ const record = new NatsRecordBuilder(':cat:').setHeaders(headers).build();
 this.client.send('replace-emoji', record).subscribe(...);
 ```
 
-> info **提示** `NatsRecordBuilder` 类由 `@nestjs/microservices` 包导出。
-
 你也可以在服务端通过访问 `NatsContext` 读取这些请求头，如下所示：
 
 ```ts
-@@filename()
 @MessagePattern('replace-emoji')
 replaceEmoji(@Payload() data: string, @Ctx() context: NatsContext): string {
-  const headers = context.getHeaders();
-  return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
-}
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('replace-emoji')
-replaceEmoji(data, context) {
   const headers = context.getHeaders();
   return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
 }
@@ -218,12 +177,12 @@ export class ApiModule {}
 要实时获取连接状态以及底层驱动实例的状态更新，可以订阅 `status` 流。该流会根据所选驱动提供特定的状态更新。以 NATS 驱动为例，`status` 流会发出 `connected`、`disconnected` 和 `reconnecting` 等事件。
 
 ```ts
+import { NatsStatus } from '@nestjs/microservices'
+
 this.client.status.subscribe((status: NatsStatus) => {
   console.log(status)
 })
 ```
-
-> info **提示** `NatsStatus` 类型需从 `@nestjs/microservices` 包中导入。
 
 同样地，你也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
@@ -247,12 +206,12 @@ this.client.on('error', (err) => {
 同样地，也可以监听服务器的内部事件：
 
 ```ts
+import { NatsEvents } from '@nestjs/microservices'
+
 server.on<NatsEvents>('error', (err) => {
   console.error(err)
 })
 ```
-
-> info **提示** `NatsEvents` 类型需从 `@nestjs/microservices` 包中导入。
 
 ## 访问底层驱动实例
 

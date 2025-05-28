@@ -126,28 +126,18 @@ export class AppModule {}
 下面我们创建一个 `TransformInterceptor（转换拦截器）`，它会用 RxJS 的 `map()` 操作符将每个响应包裹到一个新对象的 `data` 属性中，并将该新对象返回给客户端。
 
 ```ts filename='transform.interceptor.ts'
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
 
 export interface Response<T> {
-  data: T;
+  data: T
 }
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
-    return next.handle().pipe(map(data => ({ data })));
-  }
-}
-@@switch
-import { Injectable } from '@nestjs/common';
-import { map } from 'rxjs/operators';
-
-@Injectable()
-export class TransformInterceptor {
-  intercept(context, next) {
-    return next.handle().pipe(map(data => ({ data })));
+    return next.handle().pipe(map((data) => ({ data })))
   }
 }
 ```

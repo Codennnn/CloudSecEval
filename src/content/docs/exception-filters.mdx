@@ -169,44 +169,22 @@ throw new BadRequestException('Something bad happened', {
 下面我们实现一个异常过滤器，用于捕获 `HttpException` 类型的异常，并自定义响应逻辑。为此，我们需要访问底层平台的 `Request` 和 `Response` 对象。通过 `Request` 对象可以获取原始 `url`，用于日志记录；通过 `Response` 对象可以直接控制响应内容，使用 `response.json()` 方法返回数据。
 
 ```ts filename='http-exception.filter.ts'
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common'
+import { Request, Response } from 'express'
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
-    const status = exception.getStatus();
+    const ctx = host.switchToHttp()
+    const response = ctx.getResponse<Response>()
+    const request = ctx.getRequest<Request>()
+    const status = exception.getStatus()
 
-    response
-      .status(status)
-      .json({
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
-  }
-}
-@@switch
-import { Catch, HttpException } from '@nestjs/common';
-
-@Catch(HttpException)
-export class HttpExceptionFilter {
-  catch(exception, host) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
-    const status = exception.getStatus();
-
-    response
-      .status(status)
-      .json({
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
+    response.status(status).json({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    })
   }
 }
 ```

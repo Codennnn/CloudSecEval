@@ -438,17 +438,16 @@ export class AppModule {}
 下面是一个简单的 `ParseIntPipe`，用于将字符串解析为整数。（如前所述，Nest 内置的 `ParseIntPipe` 功能更完善，这里仅作为自定义转换管道的简单示例。）
 
 ```ts filename='parse-int.pipe.ts'
-@@filename(parse-int.pipe)
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common'
 
 @Injectable()
 export class ParseIntPipe implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata): number {
-    const val = parseInt(value, 10);
+    const val = parseInt(value, 10)
     if (isNaN(val)) {
-      throw new BadRequestException('Validation failed');
+      throw new BadRequestException('Validation failed')
     }
-    return val;
+    return val
   }
 }
 ```

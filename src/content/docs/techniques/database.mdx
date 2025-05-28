@@ -48,28 +48,16 @@ export class AppModule {}
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>retryAttempts</code>
-      </td>
-      <td>
-        尝试连接数据库的最大次数（默认值：<code>10</code>）
-      </td>
+      <td>`retryAttempts`</td>
+      <td>尝试连接数据库的最大次数（默认值：`10`）</td>
     </tr>
     <tr>
-      <td>
-        <code>retryDelay</code>
-      </td>
-      <td>
-        每次重试连接的间隔时间（毫秒，默认值：<code>3000</code>）
-      </td>
+      <td>`retryDelay`</td>
+      <td>每次重试连接的间隔时间（毫秒，默认值：`3000`）</td>
     </tr>
     <tr>
-      <td>
-        <code>autoLoadEntities</code>
-      </td>
-      <td>
-        若设为 <code>true</code>，则会自动加载实体（默认值：<code>false</code>）
-      </td>
+      <td>`autoLoadEntities`</td>
+      <td>若设为 `true`，则会自动加载实体（默认值：`false`）</td>
     </tr>
   </tbody>
 </table>
@@ -235,30 +223,23 @@ export class UserHttpModule {}
 <table>
   <tbody>
     <tr>
+      <td>`一对一`</td>
       <td>
-        <code>一对一</code>
-      </td>
-      <td>
-        主表中的每一行都与外表中的唯一一行相关联。定义此类关系时，请使用 <code>@OneToOne()</code>{' '}
-        装饰器。
+        主表中的每一行都与外表中的唯一一行相关联。定义此类关系时，请使用 `@OneToOne()` 装饰器。
       </td>
     </tr>
     <tr>
+      <td>`一对多 / 多对一`</td>
       <td>
-        <code>一对多 / 多对一</code>
-      </td>
-      <td>
-        主表中的每一行可以与外表中的一行或多行相关联。定义此类关系时，请使用{' '}
-        <code>@OneToMany()</code> 和 <code>@ManyToOne()</code> 装饰器。
+        主表中的每一行可以与外表中的一行或多行相关联。定义此类关系时，请使用 `@OneToMany()` 和
+        `@ManyToOne()` 装饰器。
       </td>
     </tr>
     <tr>
+      <td>`多对多`</td>
       <td>
-        <code>多对多</code>
-      </td>
-      <td>
-        主表中的每一行可以与外表中的多行相关联，外表中的每一行也可以与主表中的多行相关联。定义此类关系时，请使用{' '}
-        <code>@ManyToMany()</code> 装饰器（Decorator）。
+        主表中的每一行可以与外表中的多行相关联，外表中的每一行也可以与主表中的多行相关联。定义此类关系时，请使用
+        `@ManyToMany()` 装饰器（Decorator）。
       </td>
     </tr>
   </tbody>
@@ -773,44 +754,24 @@ export class AppModule {}
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>retryAttempts</code>
-      </td>
-      <td>
-        尝试连接数据库的最大次数（默认值：<code>10</code>）
-      </td>
+      <td>`retryAttempts`</td>
+      <td>尝试连接数据库的最大次数（默认值：`10`）</td>
     </tr>
     <tr>
-      <td>
-        <code>retryDelay</code>
-      </td>
-      <td>
-        每次重试连接的间隔时间（毫秒），默认值为 <code>3000</code>
-      </td>
+      <td>`retryDelay`</td>
+      <td>每次重试连接的间隔时间（毫秒），默认值为 `3000`</td>
     </tr>
     <tr>
-      <td>
-        <code>autoLoadModels</code>
-      </td>
-      <td>
-        若设为 <code>true</code>，则会自动加载模型（默认值：<code>false</code>）
-      </td>
+      <td>`autoLoadModels`</td>
+      <td>若设为 `true`，则会自动加载模型（默认值：`false`）</td>
     </tr>
     <tr>
-      <td>
-        <code>keepConnectionAlive</code>
-      </td>
-      <td>
-        若设为 <code>true</code>，应用关闭时不会断开数据库连接（默认值：<code>false</code>）
-      </td>
+      <td>`keepConnectionAlive`</td>
+      <td>若设为 `true`，应用关闭时不会断开数据库连接（默认值：`false`）</td>
     </tr>
     <tr>
-      <td>
-        <code>synchronize</code>
-      </td>
-      <td>
-        若设为 <code>true</code>，自动加载的模型会自动同步到数据库（默认值：<code>true</code>）
-      </td>
+      <td>`synchronize`</td>
+      <td>若设为 `true`，自动加载的模型会自动同步到数据库（默认值：`true`）</td>
     </tr>
   </tbody>
 </table>
@@ -971,27 +932,21 @@ export class UserHttpModule {}
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>一对一</code>
-      </td>
+      <td>`一对一`</td>
       <td>主表中的每一行都与外表中的唯一一行相关联</td>
     </tr>
     <tr>
-      <td>
-        <code>一对多 / 多对一</code>
-      </td>
+      <td>`一对多 / 多对一`</td>
       <td>主表中的每一行都与外表中的一行或多行相关联</td>
     </tr>
     <tr>
-      <td>
-        <code>多对多</code>
-      </td>
+      <td>`多对多`</td>
       <td>主表中的每一行都与外表中的多行相关联，同时外表中的每一行也与主表中的多行相关联</td>
     </tr>
   </tbody>
 </table>
 
-在模型中定义关系时，需要使用相应的 **装饰器（Decorator）**。例如，如果要定义每个 `User`（用户）可以拥有多张照片，可以使用 `@HasMany()` 装饰器。
+在模型中定义关系时，需要使用相应的 **装饰器**。例如，如果要定义每个 `User`（用户）可以拥有多张照片，可以使用 `@HasMany()` 装饰器。
 
 ```ts filename='user.model.ts'
 import { Column, Model, Table, HasMany } from 'sequelize-typescript'

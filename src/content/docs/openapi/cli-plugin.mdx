@@ -201,87 +201,48 @@ export interface PluginOptions {
       <th>说明</th>
     </tr>
     <tr>
-      <td>
-        <code>dtoFileNameSuffix</code>
-      </td>
-      <td>
-        <code>['.dto.ts', '.entity.ts']</code>
-      </td>
+      <td>`dtoFileNameSuffix`</td>
+      <td>`['.dto.ts', '.entity.ts']`</td>
       <td>数据传输对象（Data Transfer Object，DTO）文件后缀</td>
     </tr>
     <tr>
-      <td>
-        <code>controllerFileNameSuffix</code>
-      </td>
-      <td>
-        <code>.controller.ts</code>
-      </td>
+      <td>`controllerFileNameSuffix`</td>
+      <td>`.controller.ts`</td>
       <td>控制器（Controller）文件后缀</td>
     </tr>
     <tr>
+      <td>`classValidatorShim`</td>
+      <td>`true`</td>
       <td>
-        <code>classValidatorShim</code>
-      </td>
-      <td>
-        <code>true</code>
-      </td>
-      <td>
-        如果设置为 true，模块会复用 <code>class-validator</code> 的验证装饰器（例如{' '}
-        <code>@Max(10)</code> 会在 schema 定义中添加 <code>max: 10</code>）
+        如果设置为 true，模块会复用 `class-validator` 的验证装饰器（例如 `@Max(10)` 会在 schema
+        定义中添加 `max: 10`）
       </td>
     </tr>
     <tr>
-      <td>
-        <code>dtoKeyOfComment</code>
-      </td>
-      <td>
-        <code>'description'</code>
-      </td>
-      <td>
-        设置 <code>ApiProperty</code> 上注释文本的属性键。
-      </td>
+      <td>`dtoKeyOfComment`</td>
+      <td>`'description'`</td>
+      <td>设置 `ApiProperty` 上注释文本的属性键。</td>
     </tr>
     <tr>
-      <td>
-        <code>controllerKeyOfComment</code>
-      </td>
-      <td>
-        <code>'summary'</code>
-      </td>
-      <td>
-        设置 <code>ApiOperation</code> 上注释文本的属性键。
-      </td>
+      <td>`controllerKeyOfComment`</td>
+      <td>`'summary'`</td>
+      <td>设置 `ApiOperation` 上注释文本的属性键。</td>
     </tr>
     <tr>
-      <td>
-        <code>introspectComments</code>
-      </td>
-      <td>
-        <code>false</code>
-      </td>
+      <td>`introspectComments`</td>
+      <td>`false`</td>
       <td>如果设置为 true，插件会根据注释自动生成属性的描述和示例值</td>
     </tr>
     <tr>
-      <td>
-        <code>skipAutoHttpCode</code>
-      </td>
-      <td>
-        <code>false</code>
-      </td>
-      <td>
-        禁用在控制器中自动添加 <code>@HttpCode()</code>
-      </td>
+      <td>`skipAutoHttpCode`</td>
+      <td>`false`</td>
+      <td>禁用在控制器中自动添加 `@HttpCode()`</td>
     </tr>
     <tr>
+      <td>`esmCompatible`</td>
+      <td>`false`</td>
       <td>
-        <code>esmCompatible</code>
-      </td>
-      <td>
-        <code>false</code>
-      </td>
-      <td>
-        如果设置为 true，可解决使用 ESM（<code>&#123; "type": "module" &#125;</code>
-        ）时遇到的语法错误。
+        如果设置为 true，可解决使用 ESM（`{ "type": "module" }`）时遇到的语法错误。
       </td>
     </tr>
   </tbody>

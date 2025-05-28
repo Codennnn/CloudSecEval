@@ -1,6 +1,10 @@
 # 共享模型（Sharing models）
 
-> warning **警告** 本章节仅适用于代码优先（code first）方式。
+<CalloutInfo type="warning">
+
+本章节仅适用于代码优先（code first）方式。
+
+</CalloutInfo>
 
 使用 TypeScript 作为项目后端的最大优势之一，就是能够通过一个通用的 TypeScript 包，在基于 TypeScript 的前端应用中复用相同的模型。
 
@@ -21,4 +25,7 @@ resolve: { // 参考：https://webpack.js.org/configuration/resolve/
 }
 ```
 
-> info **提示** [TypeORM](/techniques/database) 包也有类似的 shim，可以在[这里](https://github.com/typeorm/typeorm/blob/master/extra/typeorm-model-shim.js)找到。
+<CalloutInfo>
+  [TypeORM](/techniques/database) 包也有类似的
+  shim，可以在[这里](https://github.com/typeorm/typeorm/blob/master/extra/typeorm-model-shim.js)找到。
+</CalloutInfo>

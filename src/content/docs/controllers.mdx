@@ -2,9 +2,7 @@
 
 控制器负责处理传入的 **请求（request）**，并将 **响应（response）** 发送回客户端。
 
-<figure>
-  <img class="illustrative-image" src="/assets/Controllers_1.png" />
-</figure>
+<DocImage src="/assets/Controllers_1.png" alt="控制器" />
 
 控制器的作用是为应用程序处理特定的请求。**路由（routing）** 机制决定了每个请求由哪个控制器处理。通常，一个控制器会包含多个路由，每个路由可以执行不同的操作。
 
@@ -66,9 +64,8 @@ export class CatsController {
         会直接发送该值，而不会尝试序列化。这让响应处理变得非常简单：只需返回值，Nest
         会自动处理剩下的事情。
         <br />
-        此外，响应的<strong>状态码</strong>默认总是 200，POST
-        请求除外（默认为201）。我们可以通过在处理器级别添加 `@HttpCode(...)` 装饰器（详见
-        [状态码](#status-code)）轻松更改这一行为。
+        此外，响应的**状态码**默认总是 200，POST 请求除外（默认为201）。我们可以通过在处理器级别添加
+        `@HttpCode(...)` 装饰器（详见 [状态码](#status-code)）轻松更改这一行为。
       </td>
     </tr>
     <tr>
@@ -330,7 +327,6 @@ findOne(params) {
 `@Param()` 装饰器用于修饰方法参数（如上例中的 `params`），使**路由**参数作为该参数的属性在方法体内可用。你可以通过 `params.id` 访问 `id` 参数。也可以为装饰器传递具体参数名，直接在方法体内引用该参数。
 
 ```ts
-@@filename()
 @Get(':id')
 findOne(@Param('id') id: string): string {
   return `This action returns a #${id} cat`;

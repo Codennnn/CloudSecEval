@@ -4,9 +4,7 @@
 
 在 Nest 中，微服务本质上是指使用不同于 HTTP 的**传输层（Transport Layer）**的应用程序。
 
-<figure>
-  <img class="illustrative-image" src="/assets/Microservices_1.png" />
-</figure>
+<DocImage src="/assets/Microservices_1.png" alt="Microservices" />
 
 Nest 提供了多种内置的传输层实现，称为**传输器**，它们负责在不同微服务实例之间传递消息。大多数传输器原生支持**请求-响应**和**基于事件的通信（Event-based communication）**两种消息模式。Nest 将每种传输器的实现细节抽象在统一的接口之下，无论是请求-响应还是事件驱动消息，都能轻松切换传输层。例如，你可以根据实际需求选择特定传输层以获得更高的可靠性或性能，而无需修改应用代码。
 
@@ -22,134 +20,88 @@ $ npm i --save @nestjs/microservices
 
 要实例化一个微服务，请使用 `NestFactory` 类的 `createMicroservice()` 方法：
 
-```ts
-@@filename(main)
-import { NestFactory } from '@nestjs/core';
-import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { AppModule } from './app.module';
+```ts filename='main.ts'
+import { NestFactory } from '@nestjs/core'
+import { Transport, MicroserviceOptions } from '@nestjs/microservices'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
-    },
-  );
-  await app.listen();
-}
-bootstrap();
-@@switch
-import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
-import { AppModule } from './app.module';
-
-async function bootstrap() {
-  const app = await NestFactory.createMicroservice(AppModule, {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
     transport: Transport.TCP,
-  });
-  await app.listen();
+  })
+  await app.listen()
 }
-bootstrap();
+
+bootstrap()
 ```
 
-> info **提示** 微服务默认使用 **TCP** 传输层。
+<CalloutInfo>
+
+微服务默认使用 **TCP** 传输层。
+
+</CalloutInfo>
 
 `createMicroservice()` 方法的第二个参数是一个 `options` 对象。该对象可以包含两个成员：
 
 <table>
   <tr>
-    <td>
-      <code>transport</code>
-    </td>
-    <td>
-      指定传输器（如 <code>Transport.NATS</code>）
-    </td>
+    <td>`transport`</td>
+    <td>指定传输器（如 `Transport.NATS`）</td>
   </tr>
   <tr>
-    <td>
-      <code>options</code>
-    </td>
+    <td>`options`</td>
     <td>特定于传输器的选项对象，用于决定传输器行为</td>
   </tr>
 </table>
-<p>
-  <code>options</code> 对象是针对所选传输器定制的。<strong>TCP</strong>{' '}
-  传输器提供了如下属性。对于其他传输器（如 Redis、MQTT 等），请参阅相关章节以获取可用选项的说明。
-</p>
+
+`options` 对象是针对所选传输器定制的。**TCP** 传输器提供了如下属性。对于其他传输器（如 Redis、MQTT 等），请参阅相关章节以获取可用选项的说明。
+
 <table>
   <tr>
-    <td>
-      <code>host</code>
-    </td>
+    <td>`host`</td>
     <td>连接主机名</td>
   </tr>
   <tr>
-    <td>
-      <code>port</code>
-    </td>
+    <td>`port`</td>
     <td>连接端口</td>
   </tr>
   <tr>
+    <td>`retryAttempts`</td>
+    <td>消息重试次数（默认值：`0`）</td>
+  </tr>
+  <tr>
+    <td>`retryDelay`</td>
+    <td>消息重试间隔（毫秒），默认值：`0`</td>
+  </tr>
+  <tr>
+    <td>`serializer`</td>
     <td>
-      <code>retryAttempts</code>
-    </td>
-    <td>
-      消息重试次数（默认值：<code>0</code>）
+      用于出站消息的自定义
+      [序列化器（serializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/serializer.interface.ts)
     </td>
   </tr>
   <tr>
+    <td>`deserializer`</td>
     <td>
-      <code>retryDelay</code>
-    </td>
-    <td>
-      消息重试间隔（毫秒），默认值：<code>0</code>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>serializer</code>
-    </td>
-    <td>
-      用于出站消息的自定义{' '}
-      <a
-        href="https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/serializer.interface.ts"
-        target="_blank"
-      >
-        序列化器（serializer）
-      </a>
+      用于入站消息的自定义
+      [反序列化器（deserializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/deserializer.interface.ts)
     </td>
   </tr>
   <tr>
-    <td>
-      <code>deserializer</code>
-    </td>
-    <td>
-      用于入站消息的自定义{' '}
-      <a
-        href="https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/deserializer.interface.ts"
-        target="_blank"
-      >
-        反序列化器（deserializer）
-      </a>
-    </td>
+    <td>`socketClass`</td>
+    <td>继承自 `TcpSocket` 的自定义 Socket（默认值：`JsonSocket`）</td>
   </tr>
   <tr>
-    <td>
-      <code>socketClass</code>
-    </td>
-    <td>
-      继承自 <code>TcpSocket</code> 的自定义 Socket（默认值：<code>JsonSocket</code>）
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <code>tlsOptions</code>
-    </td>
+    <td>`tlsOptions`</td>
     <td>用于配置 TLS 协议的选项</td>
   </tr>
 </table>
 
-> info **提示** 上述属性仅适用于 TCP 传输器。关于其他传输器的可用选项，请参阅相关章节。
+<CalloutInfo>
+
+上述属性仅适用于 TCP 传输器。关于其他传输器的可用选项，请参阅相关章节。
+
+</CalloutInfo>
 
 ## 消息与事件模式
 
@@ -163,27 +115,15 @@ bootstrap();
 
 要基于请求-响应范式创建消息处理器（message handler），请使用 `@MessagePattern()` 装饰器，该装饰器从 `@nestjs/microservices` 包中导入。此装饰器只能用于[控制器](https://docs.nestjs.com/controllers)类中，因为控制器是应用程序的入口点。如果在提供者中使用该装饰器，将不会生效，因为 Nest 运行时会忽略它。
 
-```ts
-@@filename(math.controller)
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+```ts filename='math.controller.ts'
+import { Controller } from '@nestjs/common'
+import { MessagePattern } from '@nestjs/microservices'
 
 @Controller()
 export class MathController {
   @MessagePattern({ cmd: 'sum' })
   accumulate(data: number[]): number {
-    return (data || []).reduce((a, b) => a + b);
-  }
-}
-@@switch
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
-
-@Controller()
-export class MathController {
-  @MessagePattern({ cmd: 'sum' })
-  accumulate(data) {
-    return (data || []).reduce((a, b) => a + b);
+    return (data || []).reduce((a, b) => a + b)
   }
 }
 ```
@@ -195,14 +135,8 @@ export class MathController {
 消息处理器既可以同步响应，也可以**异步**响应，这意味着 `async` 方法是被支持的。
 
 ```ts
-@@filename()
 @MessagePattern({ cmd: 'sum' })
 async accumulate(data: number[]): Promise<number> {
-  return (data || []).reduce((a, b) => a + b);
-}
-@@switch
-@MessagePattern({ cmd: 'sum' })
-async accumulate(data) {
   return (data || []).reduce((a, b) => a + b);
 }
 ```
@@ -210,12 +144,6 @@ async accumulate(data) {
 消息处理器还可以返回一个 `Observable`，此时结果会在流（stream）结束前持续被发送。
 
 ```ts
-@@filename()
-@MessagePattern({ cmd: 'sum' })
-accumulate(data: number[]): Observable<number> {
-  return from([1, 2, 3]);
-}
-@@switch
 @MessagePattern({ cmd: 'sum' })
 accumulate(data: number[]): Observable<number> {
   return from([1, 2, 3]);
@@ -233,19 +161,17 @@ accumulate(data: number[]): Observable<number> {
 要创建事件处理器，可以使用 `@EventPattern()` 装饰器，该装饰器从 `@nestjs/microservices` 包中导入。
 
 ```ts
-@@filename()
 @EventPattern('user_created')
 async handleUserCreated(data: Record<string, unknown>) {
   // 业务逻辑
 }
-@@switch
-@EventPattern('user_created')
-async handleUserCreated(data) {
-  // 业务逻辑
-}
 ```
 
-> info **提示** 你可以为**同一个**事件模式注册多个事件处理器，所有处理器会自动并行触发。
+<CalloutInfo>
+
+你可以为**同一个**事件模式注册多个事件处理器，所有处理器会自动并行触发。
+
+</CalloutInfo>
 
 `handleUserCreated()` **事件处理器**会监听 `'user_created'` 事件。事件处理器接收一个参数，即客户端传递的 `data`（在本例中，是通过网络发送的事件负载）。
 
@@ -254,24 +180,19 @@ async handleUserCreated(data) {
 在更高级的场景中，你可能需要访问关于传入请求的更多详细信息。例如，当使用 NATS 并采用通配符订阅时，你可能希望获取生产者实际发送消息时使用的原始主题（subject）。类似地，在使用 Kafka 时，你可能需要访问消息头（headers）。要实现这些需求，你可以利用内置装饰器，如下所示：
 
 ```ts
-@@filename()
+import { NatsContext, Payload, Ctx } from '@nestjs/microservices'
+
 @MessagePattern('time.us.*')
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
   console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
   return new Date().toLocaleTimeString(...);
 }
-@@switch
-@Bind(Payload(), Ctx())
-@MessagePattern('time.us.*')
-getDate(data, context) {
-  console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
-  return new Date().toLocaleTimeString(...);
-}
 ```
 
-> info **提示** `@Payload()`、`@Ctx()` 和 `NatsContext` 都从 `@nestjs/microservices` 导入。
-
-> info **提示** 你还可以为 `@Payload()` 装饰器传入属性键，以便从传入的 payload 对象中提取特定属性，例如：`@Payload('id')`。
+<CalloutInfo>
+  你还可以为 `@Payload()` 装饰器传入属性键，以便从传入的 payload
+  对象中提取特定属性，例如：`@Payload('id')`。
+</CalloutInfo>
 
 ## 客户端（生产者类）
 
@@ -296,6 +217,8 @@ Nest 客户端应用可以使用 `ClientProxy` 类与 Nest 微服务进行消息
 如果你需要在设置过程中提供配置或执行其他异步操作，也可以使用 `registerAsync()` 方法。
 
 ```ts
+import { ClientsModule } from '@nestjs/microservices'
+
 @Module({
   imports: [
     ClientsModule.registerAsync([
@@ -318,16 +241,18 @@ Nest 客户端应用可以使用 `ClientProxy` 类与 Nest 微服务进行消息
 模块导入后，你可以使用 `@Inject()` 装饰器，基于指定的 `'MATH_SERVICE'` 传输器配置，注入 `ClientProxy` 实例。
 
 ```ts
+import { ClientProxy } from '@nestjs/microservices'
+
 constructor(
   @Inject('MATH_SERVICE') private client: ClientProxy,
 ) {}
 ```
 
-> info **提示** `ClientsModule` 和 `ClientProxy` 类均从 `@nestjs/microservices` 包中导入。
-
 有时，你可能需要从其他服务（如 `ConfigService`）获取传输器配置，而不是在客户端应用中硬编码。此时可以使用 `ClientProxyFactory` 类注册[自定义提供者](/fundamentals/custom-providers)。该类提供静态的 `create()` 方法，接收传输器选项对象并返回自定义的 `ClientProxy` 实例。
 
 ```ts
+import { ClientProxyFactory } from '@nestjs/microservices'
+
 @Module({
   providers: [
     {
@@ -343,23 +268,20 @@ constructor(
 })
 ```
 
-> info **提示** `ClientProxyFactory` 需从 `@nestjs/microservices` 包中导入。
-
 另一种方式是使用 `@Client()` 属性装饰器。
 
 ```ts
+import { Client, Transport } from '@nestjs/microservices'
+
 @Client({ transport: Transport.TCP })
 client: ClientProxy;
 ```
-
-> info **提示** `@Client()` 装饰器需从 `@nestjs/microservices` 包中导入。
 
 不推荐使用 `@Client()` 装饰器，因为这样更难进行测试，也不便于共享客户端实例。
 
 `ClientProxy` 是**懒加载**的。它不会立即建立连接，而是在首次调用微服务时才建立连接，并在后续调用中复用该连接。不过，如果你希望在连接建立后再启动应用，可以在 `OnApplicationBootstrap` 生命周期钩子中，手动调用 `ClientProxy` 对象的 `connect()` 方法来主动建立连接。
 
 ```ts
-@@filename()
 async onApplicationBootstrap() {
   await this.client.connect();
 }
@@ -372,17 +294,10 @@ async onApplicationBootstrap() {
 `ClientProxy` 提供了 `send()` 方法。该方法用于调用微服务，并返回一个包含响应的 **冷 Observable**。因此，我们可以很方便地对其发出的值进行订阅。
 
 ```ts
-@@filename()
 accumulate(): Observable<number> {
   const pattern = { cmd: 'sum' };
   const payload = [1, 2, 3];
   return this.client.send<number>(pattern, payload);
-}
-@@switch
-accumulate() {
-  const pattern = { cmd: 'sum' };
-  const payload = [1, 2, 3];
-  return this.client.send(pattern, payload);
 }
 ```
 
@@ -393,13 +308,8 @@ accumulate() {
 如需发送事件，可以使用 `ClientProxy` 对象的 `emit()` 方法。该方法会将事件发布到消息代理（message broker）。
 
 ```ts
-@@filename()
 async publish() {
   this.client.emit<number>('user_created', new UserCreatedEvent());
-}
-@@switch
-async publish() {
-  this.client.emit('user_created', new UserCreatedEvent());
 }
 ```
 
@@ -439,12 +349,12 @@ export interface RequestContext<T = any> {
 如果你希望实时获取连接和底层驱动实例的状态更新，可以订阅 `status` 流。该流会提供特定于所选驱动的状态更新。例如，如果你使用的是 TCP 传输器（默认选项），`status` 流会发出 `connected` 和 `disconnected` 事件。
 
 ```ts
+import { TcpStatus } from '@nestjs/microservices'
+
 this.client.status.subscribe((status: TcpStatus) => {
   console.log(status)
 })
 ```
-
-> info **提示** `TcpStatus` 类型从 `@nestjs/microservices` 包中导入。
 
 同样，你也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
@@ -468,12 +378,12 @@ this.client.on('error', (err) => {
 同样，你也可以监听服务端的内部事件：
 
 ```ts
+import { TcpEvents } from '@nestjs/microservices'
+
 server.on<TcpEvents>('error', (err) => {
   console.error(err)
 })
 ```
-
-> info **提示** `TcpEvents` 类型从 `@nestjs/microservices` 包中导入。
 
 ## 访问底层驱动实例
 
@@ -500,17 +410,14 @@ const netServer = server.unwrap<Server>()
 要实现这一点，需要使用 [`rxjs`](https://github.com/ReactiveX/rxjs) 包。在管道中直接使用 `timeout` 操作符即可：
 
 ```ts
-@@filename()
-this.client
-  .send<TResult, TInput>(pattern, data)
-  .pipe(timeout(5000));
-@@switch
-this.client
-  .send(pattern, data)
-  .pipe(timeout(5000));
+this.client.send<TResult, TInput>(pattern, data).pipe(timeout(5000))
 ```
 
-> info **提示** `timeout` 操作符从 `rxjs/operators` 包中导入。
+<CalloutInfo>
+
+`timeout` 操作符从 `rxjs/operators` 包中导入。
+
+</CalloutInfo>
 
 如果在 5 秒内微服务没有响应，将会抛出错误。
 

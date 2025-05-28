@@ -9,14 +9,6 @@ import { ModuleRef } from '@nestjs/core'
 export class CatsService {
   constructor(private moduleRef: ModuleRef) {}
 }
-@@switch
-@Injectable()
-@Dependencies(ModuleRef)
-export class CatsService {
-  constructor(moduleRef) {
-    this.moduleRef = moduleRef;
-  }
-}
 ```
 
 ## 获取实例

@@ -1,10 +1,16 @@
 # CLI 插件
 
-> warning **警告** 本章节仅适用于代码优先（code first）方式。
+<CalloutInfo type="warning">
+
+本章节仅适用于代码优先（code first）方式。
+
+</CalloutInfo>
 
 TypeScript 的元数据反射（metadata reflection）系统存在一些限制，例如无法确定一个类包含哪些属性，或者识别某个属性是可选还是必填。不过，其中部分限制可以在编译时解决。Nest 提供了一个插件，用于增强 TypeScript 的编译过程，从而减少模板代码（boilerplate）的编写量。
 
-> info **提示** 该插件为**可选**。如果你愿意，也可以手动声明所有装饰器，或者只在需要的地方声明特定装饰器。
+<CalloutInfo>
+  该插件为**可选**。如果你愿意，也可以手动声明所有装饰器，或者只在需要的地方声明特定装饰器。
+</CalloutInfo>
 
 ## 概述
 
@@ -19,21 +25,20 @@ GraphQL 插件会自动完成以下操作：
 
 按照目前的做法，你需要重复编写大量代码，让包能够识别你的类型应如何在 GraphQL 中声明。例如，你可以这样定义一个简单的 `Author` 类：
 
-```ts
-@@filename(authors/models/author.model)
+```ts filename='authors/models/author.model.ts'
 @ObjectType()
 export class Author {
-  @Field(type => ID)
-  id: number;
+  @Field((type) => ID)
+  id: number
 
   @Field({ nullable: true })
-  firstName?: string;
+  firstName?: string
 
   @Field({ nullable: true })
-  lastName?: string;
+  lastName?: string
 
-  @Field(type => [Post])
-  posts: Post[];
+  @Field((type) => [Post])
+  posts: Post[]
 }
 ```
 
@@ -41,21 +46,22 @@ export class Author {
 
 启用 GraphQL 插件后，上述类定义可以简化为：
 
-```ts
-@@filename(authors/models/author.model)
+```ts filename='authors/models/author.model.ts'
 @ObjectType()
 export class Author {
-  @Field(type => ID)
-  id: number;
-  firstName?: string;
-  lastName?: string;
-  posts: Post[];
+  @Field((type) => ID)
+  id: number
+  firstName?: string
+  lastName?: string
+  posts: Post[]
 }
 ```
 
 该插件会基于**抽象语法树**，在编译时自动添加合适的装饰器。这样，你无需在代码中到处手动添加 `@Field` 装饰器。
 
-> info **提示** 插件会自动生成所有缺失的 GraphQL 属性。如果你需要覆盖默认行为，只需通过 `@Field()` 显式设置即可。
+<CalloutInfo>
+  插件会自动生成所有缺失的 GraphQL 属性。如果你需要覆盖默认行为，只需通过 `@Field()` 显式设置即可。
+</CalloutInfo>
 
 ## 注释自动提取功能
 
@@ -132,21 +138,13 @@ export interface PluginOptions {
     <th>说明</th>
   </tr>
   <tr>
-    <td>
-      <code>typeFileNameSuffix</code>
-    </td>
-    <td>
-      <code>['.input.ts', '.args.ts', '.entity.ts', '.model.ts']</code>
-    </td>
+    <td>`typeFileNameSuffix`</td>
+    <td>`['.input.ts', '.args.ts', '.entity.ts', '.model.ts']`</td>
     <td>GraphQL 类型文件的后缀名</td>
   </tr>
   <tr>
-    <td>
-      <code>introspectComments</code>
-    </td>
-    <td>
-      <code>false</code>
-    </td>
+    <td>`introspectComments`</td>
+    <td>`false`</td>
     <td>如果设置为 true，插件会根据注释为属性生成描述信息</td>
   </tr>
 </table>

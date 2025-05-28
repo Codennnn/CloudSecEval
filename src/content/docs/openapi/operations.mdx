@@ -113,9 +113,7 @@ export class CatsController {
 
 让我们打开浏览器，验证生成的 `Cat` 模型：
 
-<figure>
-  <img src="/assets/swagger-response-type.png" />
-</figure>
+<DocImage src="/assets/swagger-response-type.png" alt="Swagger Response Type" />
 
 如果你不想为每个端点或控制器单独定义响应，也可以通过 `DocumentBuilder` 类为所有端点定义全局响应。这种方式适用于需要为应用中所有端点统一定义响应（例如 `401 Unauthorized` 或 `500 Internal Server Error` 等错误）的场景。
 

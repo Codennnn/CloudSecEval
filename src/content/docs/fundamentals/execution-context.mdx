@@ -1,6 +1,6 @@
 # 执行上下文（Execution Context）
 
-Nest 提供了若干实用类，帮助开发者轻松编写可在多种应用上下文（如基于 Nest 的 HTTP 服务器、微服务（Microservices）以及 WebSocket 应用上下文）下运行的应用程序。这些工具类能够提供当前执行上下文的信息，使我们能够构建通用的 [守卫](/guards)、[异常过滤器](/exception-filters) 和 [拦截器](/interceptors)，让它们可以适配各种控制器、方法和执行环境。
+Nest 提供了若干实用类，帮助开发者轻松编写可在多种应用上下文（如基于 Nest 的 HTTP 服务器、微服务以及 WebSocket 应用上下文）下运行的应用程序。这些工具类能够提供当前执行上下文的信息，使我们能够构建通用的 [守卫](/guards)、[异常过滤器](/exception-filters) 和 [拦截器](/interceptors)，让它们可以适配各种控制器、方法和执行环境。
 
 本章将介绍其中的两个类：`ArgumentsHost` 和 `ExecutionContext`。
 
@@ -235,13 +235,9 @@ async create(@Body() createCatDto: CreateCatDto) {
 如上，我们将 `roles` 元数据（`roles` 为元数据键，`['admin']` 为对应值）附加到了 `create()` 方法上。虽然这样做可以实现功能，但并不推荐直接在路由中使用 `@SetMetadata()`。更好的做法是自定义装饰器，如下所示：
 
 ```ts filename='roles.decorator.ts'
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from '@nestjs/common'
 
-export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
-@@switch
-import { SetMetadata } from '@nestjs/common';
-
-export const Roles = (...roles) => SetMetadata('roles', roles);
+export const Roles = (...roles: string[]) => SetMetadata('roles', roles)
 ```
 
 这种方式更简洁、可读性更高，也更接近 `Reflector#createDecorator` 的用法。不同之处在于，`@SetMetadata` 允许你完全控制元数据的键和值，并且可以创建接收多个参数的装饰器。

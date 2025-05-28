@@ -70,33 +70,23 @@ export class TasksService {
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>* * * * * *</code>
-      </td>
+      <td>`* * * * * *`</td>
       <td>每秒执行一次</td>
     </tr>
     <tr>
-      <td>
-        <code>45 * * * * *</code>
-      </td>
+      <td>`45 * * * * *`</td>
       <td>每分钟的第 45 秒执行</td>
     </tr>
     <tr>
-      <td>
-        <code>0 10 * * * *</code>
-      </td>
+      <td>`0 10 * * * *`</td>
       <td>每小时的第 10 分钟开始时执行</td>
     </tr>
     <tr>
-      <td>
-        <code>0 */30 9-17 * * *</code>
-      </td>
+      <td>`0 */30 9-17 * * *`</td>
       <td>每天 9:00 至 17:00 之间，每隔 30 分钟执行一次</td>
     </tr>
     <tr>
-      <td>
-        <code>0 30 11 * * 1-5</code>
-      </td>
+      <td>`0 30 11 * * 1-5`</td>
       <td>每周一至周五的 11:30 执行</td>
     </tr>
   </tbody>
@@ -134,41 +124,29 @@ export class TasksService {
 <table>
   <tbody>
     <tr>
-      <td>
-        <code>name</code>
-      </td>
+      <td>`name`</td>
       <td>用于在声明后访问和控制定时任务（cron job）。</td>
     </tr>
     <tr>
+      <td>`timeZone`</td>
       <td>
-        <code>timeZone</code>
-      </td>
-      <td>
-        指定任务执行时所用的时区（timezone）。这会根据你的时区调整实际执行时间。如果时区无效，将会抛出错误。你可以在{' '}
-        <a href="http://momentjs.com/timezone/">Moment Timezone</a> 网站上查看所有可用时区。
+        指定任务执行时所用的时区（timezone）。这会根据你的时区调整实际执行时间。如果时区无效，将会抛出错误。你可以在
+        [Moment Timezone](http://momentjs.com/timezone/) 网站上查看所有可用时区。
       </td>
     </tr>
     <tr>
-      <td>
-        <code>utcOffset</code>
-      </td>
-      <td>
-        允许你通过设置偏移量（offset）来指定时区，而不是直接使用 <code>timeZone</code> 参数。
-      </td>
+      <td>`utcOffset`</td>
+      <td>允许你通过设置偏移量（offset）来指定时区，而不是直接使用 `timeZone` 参数。</td>
     </tr>
     <tr>
+      <td>`waitForCompletion`</td>
       <td>
-        <code>waitForCompletion</code>
-      </td>
-      <td>
-        如果设置为 <code>true</code>，则在当前 onTick
+        如果设置为 `true`，则在当前 onTick
         回调函数执行完成前，不会启动新的定时任务实例。当前任务运行期间发生的所有新调度将会被完全跳过。
       </td>
     </tr>
     <tr>
-      <td>
-        <code>disabled</code>
-      </td>
+      <td>`disabled`</td>
       <td>用于指示该任务是否会被执行。</td>
     </tr>
   </tbody>
@@ -188,7 +166,7 @@ export class NotificationService {
 }
 ```
 
-你可以在声明后访问和控制定时任务（cron job），也可以通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API</a> 动态创建定时任务（其 cron 表达式在运行时定义）。要通过 API 访问声明式定时任务，必须通过装饰器（Decorator）第二个参数 options 对象中的 `name` 属性为任务指定名称。
+你可以在声明后访问和控制定时任务（cron job），也可以通过 [动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 动态创建定时任务（其 cron 表达式在运行时定义）。要通过 API 访问声明式定时任务，必须通过装饰器（Decorator）第二个参数 options 对象中的 `name` 属性为任务指定名称。
 
 ## 声明式定时任务
 
@@ -206,7 +184,7 @@ handleInterval() {
   job）来调度周期性任务。
 </CalloutInfo>
 
-如果你希望通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API（Dynamic API）</a> 在声明类外部控制声明式定时任务，可以通过如下方式为定时任务指定名称：
+如果你希望通过 [动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在声明类外部控制声明式定时任务，可以通过如下方式为定时任务指定名称：
 
 ```ts
 @Interval('notifications', 2500)
@@ -215,8 +193,7 @@ handleInterval() {}
 
 如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Interval()` 装饰器的方法都会被自动包裹在 `try-catch` 代码块中。
 
-<a href="techniques/task-scheduling#dynamic-intervals">动态 API</a>
-还支持**创建**动态定时任务（dynamic
+[动态 API](/techniques/task-scheduling#dynamic-intervals)还支持**创建**动态定时任务（dynamic
 intervals），即在运行时定义定时任务的属性，并且可以**列出和删除**这些任务。
 
 ## 声明式超时任务
@@ -238,20 +215,19 @@ handleTimeout() {
 
 如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Timeout()` 装饰器的方法都会被自动包裹在 `try-catch` 代码块中。
 
-如果你希望通过 <a href="/techniques/task-scheduling#dynamic-schedule-module-api">动态 API</a> 在声明类外部控制声明式超时任务，可以通过如下方式为超时任务指定名称：
+如果你希望通过 [动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在声明类外部控制声明式超时任务，可以通过如下方式为超时任务指定名称：
 
 ```ts
 @Timeout('notifications', 2500)
 handleTimeout() {}
 ```
 
-<a href="techniques/task-scheduling#dynamic-timeouts">动态 API</a>
-还支持**创建**动态超时任务（dynamic
+[动态 API](/techniques/task-scheduling#dynamic-timeouts)还支持**创建**动态超时任务（dynamic
 timeouts），即在运行时定义超时任务的属性，并且可以**列出和删除**这些任务。
 
 ## 动态调度模块 API
 
-`@nestjs/schedule` 模块提供了一个动态 API，支持管理声明式的 <a href="techniques/task-scheduling#declarative-cron-jobs">定时任务（cron jobs）</a>、<a href="techniques/task-scheduling#declarative-timeouts">超时（timeouts）</a> 和 <a href="techniques/task-scheduling#declarative-intervals">间隔任务（intervals）</a>。该 API 还支持在运行时动态创建和管理 **动态** 定时任务、超时和间隔任务。
+`@nestjs/schedule` 模块提供了一个动态 API，支持管理声明式的 [定时任务（cron jobs）](/techniques/task-scheduling#declarative-cron-jobs) 、[超时（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和 [间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。该 API 还支持在运行时动态创建和管理 **动态** 定时任务、超时和间隔任务。
 
 ## 动态定时任务（cron jobs）
 
@@ -315,7 +291,7 @@ addCronJob(name: string, seconds: string) {
 }
 ```
 
-在上述代码中，我们使用 `cron` 包中的 `CronJob` 对象来创建定时任务。`CronJob` 构造函数的第一个参数是 cron 表达式（与 `@Cron()` <a href="techniques/task-scheduling#declarative-cron-jobs">装饰器</a>用法一致），第二个参数是定时器触发时要执行的回调函数。`SchedulerRegistry#addCronJob` 方法接收两个参数：任务名称和 `CronJob` 实例。
+在上述代码中，我们使用 `cron` 包中的 `CronJob` 对象来创建定时任务。`CronJob` 构造函数的第一个参数是 cron 表达式（与 `@Cron()` [装饰器](/techniques/task-scheduling#declarative-cron-jobs)用法一致），第二个参数是定时器触发时要执行的回调函数。`SchedulerRegistry#addCronJob` 方法接收两个参数：任务名称和 `CronJob` 实例。
 
 <CalloutInfo type="warning">
   在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需从 `cron` 包中导入。
