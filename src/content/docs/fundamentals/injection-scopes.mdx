@@ -201,7 +201,7 @@ export class AggregateByTenantContextIdStrategy implements ContextIdStrategy {
       tenants.set(tenantId, tenantSubTreeId)
     }
 
-    // If tree is not durable, return the original "contextId" object
+    // 如果依赖树不是持久化的，返回原始的 "contextId" 对象
     return (info: HostComponentInfo) => (info.isTreeDurable ? tenantSubTreeId : contextId)
   }
 }
@@ -222,7 +222,7 @@ export class AggregateByTenantContextIdStrategy implements ContextIdStrategy {
 如果你希望为 durable 子树注册 payload，可以使用如下写法：
 
 ```ts
-// The return of `AggregateByTenantContextIdStrategy#attach` method:
+// `AggregateByTenantContextIdStrategy#attach` 方法的返回值：
 return {
   resolve: (info: HostComponentInfo) => (info.isTreeDurable ? tenantSubTreeId : contextId),
   payload: { tenantId },

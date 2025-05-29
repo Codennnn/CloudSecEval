@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 
+import { cn } from '~/lib/utils'
 import type { PageProps } from '~/types/common'
 
 type MDXContent = React.ComponentType
@@ -15,7 +16,12 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
       const { default: DocContent } = await import(`~/content/docs/${docPath}.mdx`) as { default: MDXContent }
 
       return (
-        <article className="prose max-w-[75ch] text-[15px] dark:prose-invert mx-auto p-6 prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic prose-a:underline-offset-4">
+        <article
+          className={cn(
+            'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic prose-a:underline-offset-4',
+            '@container p-10 @md:p-8 @sm:p-4 max-w-[75ch] mx-auto',
+          )}
+        >
           <DocContent />
         </article>
       )

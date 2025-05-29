@@ -14,8 +14,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
-  SidebarTrigger,
 } from '~/components/ui/sidebar'
 import { navMainData } from '~/lib/data/nav'
 
@@ -59,14 +57,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <div className="flex items-center gap-2 p-2">
-        <SidebarTrigger className="-ml-1" />
-
         <div className="ml-auto">
           <ThemeModeToggle />
         </div>
       </div>
-
-      <SidebarRail />
     </Sidebar>
   )
 }

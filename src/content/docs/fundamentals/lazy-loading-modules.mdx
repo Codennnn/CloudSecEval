@@ -42,7 +42,9 @@ const moduleRef = await this.lazyModuleLoader.load(() => LazyModule)
 ```
 
 <CalloutInfo>
-  “懒加载”模块在首次通过 `LazyModuleLoader#load` 方法加载时会被**缓存**。这意味着，后续每次加载同一个模块都会非常快，并且直接返回缓存实例，而不会重复加载。
+<p className='mb-0'>
+“懒加载”模块在首次通过 `LazyModuleLoader#load` 方法加载时会被**缓存**。这意味着，后续每次加载同一个模块都会非常快，并且直接返回缓存实例，而不会重复加载。
+</p>
 
 ```bash
 第 1 次加载 "LazyModule"
@@ -57,7 +59,7 @@ time: 0.303ms
 
 </CalloutInfo>
 
-`lazy.module.ts` 是一个导出**常规 Nest 模块（Module）**的 TypeScript 文件（无需额外更改）。
+`lazy.module.ts` 是一个导出 **常规 Nest 模块（Module）** 的 TypeScript 文件（无需额外更改）。
 
 `LazyModuleLoader#load` 方法会返回 [模块引用（module reference）](/fundamentals/module-ref)（即 `LazyModule` 的引用），你可以通过它访问内部的提供者列表，并通过注入令牌（Injection Token）获取任意提供者的实例。
 
@@ -72,7 +74,7 @@ export class LazyModule {}
 ```
 
 <CalloutInfo>
-  懒加载模块**不能**注册为**全局模块**，因为它们是按需注册的，在所有静态注册模块实例化后才会被加载。同理，注册为**全局增强器**（如守卫、拦截器等）的功能也**无法正常工作**。
+  懒加载模块不能注册为**全局模块**，因为它们是按需注册的，在所有静态注册模块实例化后才会被加载。同理，注册为**全局增强器**（如守卫、拦截器等）的功能也无法正常工作。
 </CalloutInfo>
 
 这样，我们就可以获取 `LazyService` 提供者的引用：

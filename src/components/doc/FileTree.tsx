@@ -50,7 +50,7 @@ const FileTreeItemComponent = ({ item }: { item: FileTreeItem }) => {
     <SidebarMenuSubItem key={item.name}>
       <SidebarMenuSubButton>
         {item.icon ?? (
-          <span className="size-4 grayscale-100 inline-block">
+          <span className="size-4 inline-block">
             <LanguageIcon lang="ts" />
           </span>
         )}

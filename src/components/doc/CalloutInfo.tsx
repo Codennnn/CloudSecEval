@@ -19,13 +19,13 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   const getColor = () => {
     switch (type) {
       case 'info':
-        return 'text-blue-500 border-blue-500'
+        return 'text-blue-500 border-blue-500 bg-blue-50'
 
       case 'warning':
-        return 'text-amber-500 border-amber-500'
+        return 'text-amber-500 border-amber-500 bg-amber-50'
 
       case 'error':
-        return 'text-red-500 border-red-500'
+        return 'text-red-500 border-red-500 bg-red-50'
     }
   }
 
@@ -83,7 +83,7 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
 
       <AlertTitle>{title ?? getDefaultTitle()}</AlertTitle>
 
-      <AlertDescription>
+      <AlertDescription className="text-foreground">
         {children ?? description}
       </AlertDescription>
     </Alert>
