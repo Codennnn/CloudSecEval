@@ -1,6 +1,6 @@
 import { FolderOpenIcon } from 'lucide-react'
 
-import { IconTypescript } from '~/components/icon/IconTypescript'
+import { LanguageIcon } from '~/components/LanguageIcon'
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -51,7 +51,7 @@ const FileTreeItemComponent = ({ item }: { item: FileTreeItem }) => {
       <SidebarMenuSubButton>
         {item.icon ?? (
           <span className="size-4 grayscale-100 inline-block">
-            <IconTypescript />
+            <LanguageIcon lang="ts" />
           </span>
         )}
         {item.name}
