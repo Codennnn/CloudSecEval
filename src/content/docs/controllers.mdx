@@ -48,7 +48,7 @@ export class CatsController {
 
 `@Get()` HTTP 请求方法装饰器放在 `findAll()` 方法前，告诉 Nest 为该方法创建一个特定的 HTTP 路由处理器。这个端点由 HTTP 请求方法（这里是 GET）和路由路径共同决定。那么，路由路径是什么？路由路径由控制器声明的（可选）前缀和方法装饰器中指定的路径拼接而成。由于我们为控制器设置了 `cats` 前缀，并且方法装饰器没有指定额外路径，所以 Nest 会将 `GET /cats` 请求映射到该处理器。
 
-如上所述，路由路径包括控制器的可选路径前缀 **以及** 方法装饰器中指定的路径字符串。例如，控制器前缀为 `cats`，方法装饰器为 `@Get('breed')`，则最终路由为 `GET /cats/breed`。
+如上所述，路由路径包括控制器的可选路径前缀以及方法装饰器中指定的路径字符串。例如，控制器前缀为 `cats`，方法装饰器为 `@Get('breed')`，则最终路由为 `GET /cats/breed`。
 
 在上面的示例中，当有 GET 请求到达该端点时，Nest 会将请求路由到用户自定义的 `findAll()` 方法。需要注意的是，这里的方法名完全可以自定义。虽然我们必须声明一个方法来绑定路由，但 Nest 并不会对方法名赋予特殊含义。
 
@@ -356,7 +356,7 @@ export class AdminController {
 ```
 
 <CalloutInfo type="warning">
-  由于 **Fastify** 不支持嵌套路由，如果你需要使用子域名路由，建议使用默认的 Express 适配器。
+  由于 Fastify 不支持嵌套路由，如果你需要使用子域名路由，建议使用默认的 Express 适配器。
 </CalloutInfo>
 
 与路由 `path` 类似，`hosts` 选项也可以使用参数标记来捕获主机名中的动态值。如下例所示，这些参数可以通过 `@HostParam()` 装饰器在方法参数中获取。
@@ -445,7 +445,7 @@ async findAll(@Query('age') age: number, @Query('breed') breed: string) {
 
 在本例中，`@Query()` 装饰器用于从查询字符串中提取 `age` 和 `breed` 的值。例如，以下请求：
 
-```plaintext
+```
 GET /cats?age=2&breed=Persian
 ```
 
@@ -453,7 +453,7 @@ GET /cats?age=2&breed=Persian
 
 如果你的应用需要处理更复杂的查询参数（如嵌套对象或数组）：
 
-```plaintext
+```
 ?filter[where][name]=John&filter[where][age]=30
 ?item[]=1&item[]=2
 ```

@@ -70,7 +70,7 @@ forRoutes('{*splat}') // <-- 这在 Express v5 中可用
 
 因此，像下面这样的查询字符串：
 
-```plaintext
+```
 ?filter[where][name]=John&filter[where][age]=30
 ?item[]=1&item[]=2
 ```
@@ -166,20 +166,20 @@ NestJS 11 对 `Reflector` 类进行了多项改进，增强了其功能和元数
 
 假设有如下场景：
 
-```plaintext
+```
 // 其中 A、B、C 为模块（Module），"->" 表示模块依赖关系。
 A -> B -> C
 ```
 
 在这种情况下，`OnModuleInit` 钩子的执行顺序如下：
 
-```plaintext
+```
 C -> B -> A
 ```
 
 而 `OnModuleDestroy` 钩子的执行顺序则与之相反：
 
-```plaintext
+```
 A -> B -> C
 ```
 

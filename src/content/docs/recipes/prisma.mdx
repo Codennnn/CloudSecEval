@@ -1,3 +1,10 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '~/components/ui/accordion'
+
 # Prisma
 
 [Prisma](https://www.prisma.io) 是一个 [开源](https://github.com/prisma/prisma) 的 ORM（Object-Relational Mapping，对象关系映射）工具，适用于 Node.js 和 TypeScript。它作为编写原生 SQL 或使用其他数据库访问工具（如 SQL 查询构建器 [knex.js](https://knexjs.org/) 或其他 ORM，如 [TypeORM](https://typeorm.io/) 和 [Sequelize](https://sequelize.org/)）的**替代方案**。Prisma 目前支持 PostgreSQL、MySQL、SQL Server、SQLite、MongoDB 以及 CockroachDB（[预览版](https://www.prisma.io/docs/reference/database-reference/supported-databases)）。
@@ -5,7 +12,7 @@
 虽然 Prisma 可以与原生 JavaScript 一起使用，但它充分拥抱 TypeScript，并在类型安全（type-safety）方面提供了超越 TypeScript 生态中其他 ORM 的保障。你可以在[这里](https://www.prisma.io/docs/concepts/more/comparisons/prisma-and-typeorm#type-safety)找到 Prisma 与 TypeORM 在类型安全方面的详细对比。
 
 <CalloutInfo>
-  **注意** 如果你想快速了解 Prisma 的工作原理，可以参考
+  如果你想快速了解 Prisma 的工作原理，可以参考
   [快速上手](https://www.prisma.io/docs/getting-started/quickstart) 或阅读
   [文档中的介绍](https://www.prisma.io/docs/understand-prisma/introduction)。在
   [`prisma-examples`](https://github.com/prisma/prisma-examples/) 仓库中也有可直接运行的
@@ -54,9 +61,10 @@ $ npm install prisma --save-dev
 $ npx prisma
 ```
 
-<details>
-<summary>如果你使用 Yarn，请展开</summary>
-
+<Accordion type="single" collapsible>
+  <AccordionItem value="yarn">
+    <AccordionTrigger>如果你使用 Yarn，请展开</AccordionTrigger>
+    <AccordionContent>
 如果你使用 Yarn，可以通过以下方式安装 Prisma CLI：
 
 ```bash
@@ -69,7 +77,10 @@ $ yarn add prisma --dev
 $ yarn prisma
 ```
 
-</details>
+    </AccordionContent>
+
+  </AccordionItem>
+</Accordion>
 
 现在，使用 Prisma CLI 的 `init` 命令创建你的初始 Prisma 配置：
 
@@ -107,9 +118,10 @@ DATABASE_URL="file:./dev.db"
 
 SQLite 数据库本质上是一个简单的文件，无需服务器即可使用。因此，你只需将连接 URL 指向本地文件（本例中为 `dev.db`），而无需像其他数据库那样配置 _host_ 和 _port_。该文件会在下一步中自动创建。
 
-<details>
-<summary>如果你使用的是 PostgreSQL、MySQL、MsSQL 或 Azure SQL，请展开查看</summary>
-
+<Accordion type="single" collapsible>
+  <AccordionItem value="yarn">
+    <AccordionTrigger>如果你使用的是 PostgreSQL、MySQL、MsSQL 或 Azure SQL，请展开查看</AccordionTrigger>
+    <AccordionContent>
 对于 PostgreSQL 和 MySQL，你需要将连接 URL 配置为指向 _数据库服务器_。你可以在[这里](https://www.prisma.io/docs/reference/database-reference/connection-urls)了解所需的连接 URL 格式。
 
 **PostgreSQL**
@@ -193,7 +205,10 @@ generator client {
 DATABASE_URL="sqlserver://HOST:PORT;database=DATABASE;user=USER;password=PASSWORD;encrypt=true"
 ```
 
-</details>
+    </AccordionContent>
+
+  </AccordionItem>
+</Accordion>
 
 ## 使用 Prisma Migrate 创建两张数据库表
 
@@ -237,9 +252,10 @@ prisma
 └── schema.prisma
 ```
 
-<details>
-<summary>展开以查看生成的 SQL 语句</summary>
-
+<Accordion type="single" collapsible>
+  <AccordionItem value="yarn">
+    <AccordionTrigger>展开以查看生成的 SQL 语句</AccordionTrigger>
+    <AccordionContent>
 以下表结构已在你的 SQLite 数据库中创建：
 
 ```sql
@@ -265,7 +281,10 @@ CREATE TABLE "Post" (
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 ```
 
-</details>
+    </AccordionContent>
+
+  </AccordionItem>
+</Accordion>
 
 ## 安装并生成 Prisma 客户端（Prisma Client）
 

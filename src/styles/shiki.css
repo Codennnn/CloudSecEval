@@ -38,18 +38,8 @@
   }
 }
 
-pre[class*='language-'] {
-  @apply relative my-4 overflow-hidden rounded-lg p-4;
-
-  background-color: oklch(97% 0 0deg) !important;
-}
-
-.dark pre[class*='language-'] {
-  background-color: oklch(15% 0 0deg) !important;
-}
-
 pre.shiki {
-  @apply overflow-x-auto px-4 py-3;
+  @apply overflow-x-auto px-4 py-3 !bg-muted;
 
   code {
     @apply text-sm;

@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 
-import { MaterialIconThemeHtml, MaterialIconThemeJavascript, MaterialIconThemeJson, MaterialIconThemePowershell, MaterialIconThemeTypescript, MaterialIconThemeYaml } from '~/components/icon/file-icons'
+import { MaterialIconThemeGraphql, MaterialIconThemeGroovy, MaterialIconThemeHtml, MaterialIconThemeJavascript, MaterialIconThemeJson, MaterialIconThemePowershell, MaterialIconThemeTypescript, MaterialIconThemeYaml } from '~/components/icon/file-icons'
 
 interface LanguageIconProps {
   lang: string
@@ -14,7 +14,7 @@ type SupportedLanguage =
   | 'html'
   | 'json'
   | 'yaml' | 'yml'
-  | 'shell' | 'sh' | 'bash'
+  | 'shell' | 'sh' | 'bash' | 'groovy' | 'graphql'
 
 // 图标组件类型
 type IconComponent = (props: SVGProps<SVGSVGElement>) => React.ReactElement
@@ -25,6 +25,8 @@ const iconMap: Record<SupportedLanguage, IconComponent> = {
   ts: MaterialIconThemeTypescript,
   javascript: MaterialIconThemeJavascript,
   js: MaterialIconThemeJavascript,
+  groovy: MaterialIconThemeGroovy,
+  graphql: MaterialIconThemeGraphql,
 
   // 前端技术
   html: MaterialIconThemeHtml,
