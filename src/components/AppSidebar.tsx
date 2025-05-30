@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { GalleryVerticalEndIcon } from 'lucide-react'
 
 import { CollapsibleNavItem } from '~/components/CollapsibleNavItem'
 import { SearchForm } from '~/components/SearchForm'
