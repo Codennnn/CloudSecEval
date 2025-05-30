@@ -2,6 +2,11 @@
   filter: var(--images-filter);
 }
 
+code {
+  font-family: 'Maple Mono', monospace;
+  font-weight: 500;
+}
+
 :not(pre) > code {
   @apply whitespace-nowrap bg-muted py-0.5 px-1 font-normal rounded border border-border;
 

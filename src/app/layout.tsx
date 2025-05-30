@@ -5,6 +5,8 @@ import { ThemeProvider } from '~/components/ThemeProvider'
 import { cn } from '~/lib/utils'
 import { getPageTitle } from '~/utils/common'
 
+import '@fontsource/maple-mono/400.css'
+import '@fontsource/maple-mono/500.css'
 import '~/styles/global.css'
 
 // const geistSans = Geist({

@@ -52,7 +52,7 @@ pre.shiki {
   @apply overflow-x-auto px-4 py-3;
 
   code {
-    @apply font-mono text-sm;
+    @apply text-sm;
 
     /* counter-increment: step 0;
     counter-reset: step;
