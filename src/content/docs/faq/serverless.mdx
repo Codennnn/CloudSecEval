@@ -340,7 +340,7 @@ export const handler: Handler = async (event: any, context: Context, callback: C
   不会为控制器方法应用增强器（如守卫、拦截器等）。如需此功能，必须使用 `NestFactory.create` 方法。
 </CalloutInfo>
 
-你也可以将 `event` 对象传递给，比如说，`EventsService` 提供者（Provider），让其根据输入值和你的业务逻辑进行处理并返回相应结果。
+你也可以将 `event` 对象传递给，比如说，`EventsService` 提供者，让其根据输入值和你的业务逻辑进行处理并返回相应结果。
 
 ```ts
 export const handler: Handler = async (event: any, context: Context, callback: Callback) => {

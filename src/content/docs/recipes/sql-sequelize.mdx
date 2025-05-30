@@ -63,7 +63,7 @@ import { databaseProviders } from './database.providers'
 export class DatabaseModule {}
 ```
 
-现在，我们可以通过 `@Inject()` 装饰器注入 `Sequelize` 对象。所有依赖于 `Sequelize` 异步提供者（Provider）的类都会在 `Promise` 被解析后再进行实例化。
+现在，我们可以通过 `@Inject()` 装饰器注入 `Sequelize` 对象。所有依赖于 `Sequelize` 异步提供者的类都会在 `Promise` 被解析后再进行实例化。
 
 ## 模型注入（Model injection）
 

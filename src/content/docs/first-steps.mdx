@@ -1,12 +1,12 @@
 # 快速上手
 
-在本系列文章中，你将学习 Nest 的**核心基础知识**。为了帮助你熟悉 Nest 应用的基本构建模块，我们将通过构建一个基础的 CRUD 应用，涵盖入门阶段常见的功能特性。
+本系列文章将带你系统学习 Nest 的**核心基础知识**。为帮助你快速熟悉 Nest 应用的基本构建模块，我们将通过搭建一个基础的 CRUD 应用，覆盖入门阶段常见的功能特性。
 
 ## 语言
 
-我们热爱 [TypeScript](https://www.typescriptlang.org/)，但更重要的是 —— 我们热爱 [Node.js](https://nodejs.org/en/)。因此，Nest 兼容 TypeScript 和纯 JavaScript。Nest 充分利用了最新的语言特性，所以如果你想用原生 JavaScript，需要配合 [Babel](https://babeljs.io/) 编译器。
+我们热爱 [TypeScript](https://www.typescriptlang.org/)，同样也热爱 [Node.js](https://nodejs.org/en/)。Nest 兼容 TypeScript 和原生 JavaScript。由于 Nest 充分利用了最新的语言特性，如果你选择使用 JavaScript，建议配合 [Babel](https://babeljs.io/) 编译器。
 
-本教程中的示例主要使用 TypeScript，但你可以随时**切换代码片段**为原生 JavaScript 语法（只需点击每个代码片段右上角的语言切换按钮）。
+本教程示例主要基于 TypeScript，但你可以随时**切换代码片段**为 JavaScript 语法（只需点击每个代码块右上角的语言切换按钮）。
 
 ## 前置条件
 
@@ -14,7 +14,7 @@
 
 ## 项目初始化
 
-使用 [Nest CLI](/cli/overview) 脚手架工具可以非常简单地创建新项目。确保已安装 [npm](https://www.npmjs.com/)，然后在终端中运行以下命令即可创建一个新的 Nest 项目：
+使用 [Nest CLI](/cli/overview) 脚手架工具可以非常便捷地创建新项目。确保已安装 [npm](https://www.npmjs.com/)，然后在终端中运行以下命令，即可创建一个新的 Nest 项目：
 
 ```bash
 $ npm i -g @nestjs/cli
@@ -22,7 +22,7 @@ $ nest new project-name
 ```
 
 <CalloutInfo>
-  若要创建启用了 TypeScript [严格模式](https://www.typescriptlang.org/tsconfig#strict)的项目，可在
+  如果你希望项目启用 TypeScript [严格模式](https://www.typescriptlang.org/tsconfig#strict)，可在
   `nest new` 命令中添加 `--strict` 参数。
 </CalloutInfo>
 
@@ -43,7 +43,7 @@ $ nest new project-name
   ]}
 />
 
-以下是这些核心文件的简要说明：
+这些核心文件的作用如下：
 
 |                          |                                                               |
 | ------------------------ | ------------------------------------------------------------- |
@@ -53,7 +53,7 @@ $ nest new project-name
 | `app.service.ts`         | 基础服务，包含一个方法。                                      |
 | `main.ts`                | 应用入口文件，使用核心函数 `NestFactory` 创建 Nest 应用实例。 |
 
-`main.ts` 文件包含一个异步函数，用于 **引导启动（bootstrap）** 我们的应用：
+`main.ts` 文件包含一个异步函数，用于 **引导启动（bootstrap）** 应用：
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
@@ -67,7 +67,7 @@ async function bootstrap() {
 bootstrap()
 ```
 
-要创建 Nest 应用实例，我们使用核心类 `NestFactory`。`NestFactory` 提供了一些静态方法用于创建应用实例。`create()` 方法会返回一个应用对象，实现了 `INestApplication` 接口。该对象提供了一系列方法，后续章节会详细介绍。在上面的 `main.ts` 示例中，我们仅启动了 HTTP 监听器，让应用能够接收 HTTP 请求。
+我们通过核心类 `NestFactory` 创建 Nest 应用实例。`NestFactory` 提供静态方法用于生成应用对象，`create()` 方法返回实现了 `INestApplication` 接口的应用实例。该对象包含丰富的方法，后续章节会详细介绍。在上述 `main.ts` 示例中，我们仅启动了 HTTP 监听器，使应用能够接收 HTTP 请求。
 
 通过 Nest CLI 脚手架创建的项目，初始结构鼓励开发者将每个模块放在独立目录中，遵循最佳实践。
 
@@ -77,7 +77,7 @@ bootstrap()
 
 ## 平台
 
-Nest 致力于成为平台无关的框架。平台无关性让开发者能够创建可复用的逻辑模块，并在多种类型的应用中复用。从技术上讲，只要有适配器，Nest 就能与任何 Node HTTP 框架协作。目前，Nest 原生支持两种 HTTP 平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io)。你可以根据需求选择最适合的方案。
+Nest 致力于成为平台无关的框架。平台无关性让开发者能够创建可复用的逻辑模块，并在多种类型的应用中复用。从技术上讲，只要有适配器，Nest 就能与任何 Node HTTP 框架协作。目前，Nest 原生支持两种 HTTP 平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io/)。你可以根据实际需求选择最合适的方案。
 
 |                    |                                                                                                                                                                                    |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -94,18 +94,18 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
 ## 运行应用
 
-安装完成后，在终端运行以下命令即可启动应用，监听 HTTP 请求：
+依赖安装完成后，在终端运行以下命令即可启动应用，监听 HTTP 请求：
 
 ```bash
 $ npm run start
 ```
 
 <CalloutInfo>
-  若想加快开发速度（构建速度提升约 20 倍），可通过在 `start` 脚本中添加 `-b swc` 参数，使用 [SWC
+  想要加快开发速度（构建速度提升约 20 倍），可在 `start` 脚本中添加 `-b swc` 参数，使用 [SWC
   构建器](/recipes/swc)：`npm run start -- -b swc`。
 </CalloutInfo>
 
-该命令会启动 HTTP 服务器，监听 `src/main.ts` 文件中定义的端口。应用启动后，在浏览器中访问 `http://localhost:3000/`，你将看到 `Hello World!`。
+该命令会启动 HTTP 服务器，监听 `src/main.ts` 文件中定义的端口。应用启动后，在浏览器访问 `http://localhost:3000/`，你将看到 `Hello World!`。
 
 如需监听文件变更并自动重载服务，可运行：
 
@@ -117,15 +117,15 @@ $ npm run start:dev
 
 ## 代码规范与格式化
 
-[CLI](/cli/overview) 力求为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码 **检查（linter）** 和 **格式化（formatter）** 工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
+[CLI](/cli/overview) 旨在为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码**检查（linter）**和**格式化（formatter）**工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
 
 <CalloutInfo>
   不清楚格式化工具和检查工具的区别？可在[这里](https://prettier.io/docs/en/comparison.html)了解。
 </CalloutInfo>
 
-为了最大程度地确保稳定性和可扩展性，我们使用了基础的 [`eslint`](https://www.npmjs.com/package/eslint) 和 [`prettier`](https://www.npmjs.com/package/prettier) CLI 包，他们从设计上就支持通过官方扩展实现出色的 IDE 集成体验。
+为最大程度确保稳定性和可扩展性，Nest 项目默认集成了基础的 [`eslint`](https://www.npmjs.com/package/eslint) 和 [`prettier`](https://www.npmjs.com/package/prettier) CLI 包，它们天生支持通过官方扩展实现出色的 IDE 集成体验。
 
-对于不依赖 IDE 的无头环境（如持续集成、Git hooks 等），Nest 项目也内置了可直接使用的 `npm` 脚本。
+对于不依赖 IDE 的无头环境（如持续集成、Git hooks 等），Nest 项目也内置了可直接使用的 `npm` 脚本：
 
 ```bash
 # 使用 eslint 检查并自动修复

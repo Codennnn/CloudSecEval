@@ -555,7 +555,7 @@ export class AlbumsService {
 }
 ```
 
-同样，也可以将任意 `DataSource` 注入到提供者（Provider）中：
+同样，也可以将任意 `DataSource` 注入到提供者中：
 
 ```ts
 @Module({
@@ -892,7 +892,7 @@ export class UsersService {
   <p>别忘了将 `UsersModule`导入到根模块 `AppModule`中。</p>
 </CalloutInfo>
 
-如果你希望在导入了 `SequelizeModule.forFeature` 的模块之外使用该模型的仓库（Repository），需要重新导出由其生成的提供者（Provider）。
+如果你希望在导入了 `SequelizeModule.forFeature` 的模块之外使用该模型的仓库（Repository），需要重新导出由其生成的提供者。
 你可以像下面这样导出整个模块：
 
 ```ts filename='users.module.ts'

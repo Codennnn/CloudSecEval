@@ -23,7 +23,7 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-要在控制器（Controller）中访问原始请求体，可以使用便捷接口 `RawBodyRequest`，该接口会在请求对象上暴露一个 `rawBody` 字段。用法如下：
+要在控制器中访问原始请求体，可以使用便捷接口 `RawBodyRequest`，该接口会在请求对象上暴露一个 `rawBody` 字段。用法如下：
 
 ```ts
 import { Controller, Post, RawBodyRequest, Req } from '@nestjs/common'

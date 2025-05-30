@@ -1,6 +1,6 @@
 # 模块引用（Module Reference）
 
-Nest 提供了 `ModuleRef` 类，用于在内部的提供者（Provider）列表中导航，并通过注入令牌（Injection Token）作为查找键获取任意提供者的引用。`ModuleRef` 类还支持动态实例化静态和作用域提供者（Scoped Provider）。你可以像普通依赖注入一样，将 `ModuleRef` 注入到类中：
+Nest 提供了 `ModuleRef` 类，用于在内部的提供者列表中导航，并通过注入令牌（Injection Token）作为查找键获取任意提供者的引用。`ModuleRef` 类还支持动态实例化静态和作用域提供者（Scoped Provider）。你可以像普通依赖注入一样，将 `ModuleRef` 注入到类中：
 
 ```ts filename='cats.service.ts'
 import { ModuleRef } from '@nestjs/core'
@@ -13,7 +13,7 @@ export class CatsService {
 
 ## 获取实例
 
-`ModuleRef` 实例（下文简称"模块引用"）拥有 `get()` 方法。默认情况下，该方法会返回在当前模块中注册并已实例化的提供者、控制器（Controller）或可注入对象（如守卫、拦截器等），查找方式为注入令牌或类名。如果未找到实例，则会抛出异常。
+`ModuleRef` 实例（下文简称"模块引用"）拥有 `get()` 方法。默认情况下，该方法会返回在当前模块中注册并已实例化的提供者、控制器或可注入对象（如守卫、拦截器等），查找方式为注入令牌或类名。如果未找到实例，则会抛出异常。
 
 ```ts filename='cats.service.ts'
 @Injectable()

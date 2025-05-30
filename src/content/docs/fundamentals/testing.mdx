@@ -118,7 +118,7 @@ catsService = await moduleRef.resolve(CatsService)
 
 ## 自动模拟（Auto mocking）
 
-Nest 还允许你定义一个模拟工厂（mock factory），用于为所有缺失的依赖自动生成模拟对象（Mock）。当某个类依赖项较多，手动为每个依赖编写模拟对象既耗时又繁琐时，这一特性尤为有用。要使用该功能，需要在 `createTestingModule()` 方法后链式调用 `useMocker()` 方法，并传入一个用于生成依赖模拟对象的工厂函数。该工厂函数可以接收一个可选的 token（实例令牌，即任何有效的 Nest 提供者（Provider）令牌），并返回一个模拟实现。下面的示例展示了如何结合 [`jest-mock`](https://www.npmjs.com/package/jest-mock) 创建通用模拟器，以及如何使用 `jest.fn()` 为 `CatsService` 创建特定的模拟对象。
+Nest 还允许你定义一个模拟工厂（mock factory），用于为所有缺失的依赖自动生成模拟对象（Mock）。当某个类依赖项较多，手动为每个依赖编写模拟对象既耗时又繁琐时，这一特性尤为有用。要使用该功能，需要在 `createTestingModule()` 方法后链式调用 `useMocker()` 方法，并传入一个用于生成依赖模拟对象的工厂函数。该工厂函数可以接收一个可选的 token（实例令牌，即任何有效的 Nest 提供者令牌），并返回一个模拟实现。下面的示例展示了如何结合 [`jest-mock`](https://www.npmjs.com/package/jest-mock) 创建通用模拟器，以及如何使用 `jest.fn()` 为 `CatsService` 创建特定的模拟对象。
 
 ```ts
 // ...

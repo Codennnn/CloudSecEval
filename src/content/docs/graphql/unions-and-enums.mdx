@@ -119,7 +119,7 @@ export class Book {
 export type ResultUnion = Author | Book
 ```
 
-在 GraphQL 中，联合类型解析时需要在解析器映射（resolver map）中额外实现一个 `__resolveType` 字段，用于确定当前联合类型实际应解析为哪种类型。同时，需要注意，`ResultUnionResolver` 类必须作为提供者（Provider）注册到某个模块（Module）中。下面我们来创建一个 `ResultUnionResolver` 类，并定义 `__resolveType` 方法。
+在 GraphQL 中，联合类型解析时需要在解析器映射（resolver map）中额外实现一个 `__resolveType` 字段，用于确定当前联合类型实际应解析为哪种类型。同时，需要注意，`ResultUnionResolver` 类必须作为提供者注册到某个模块中。下面我们来创建一个 `ResultUnionResolver` 类，并定义 `__resolveType` 方法。
 
 ```ts
 @Resolver('ResultUnion')

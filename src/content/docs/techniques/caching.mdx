@@ -313,7 +313,7 @@ class CacheConfigService implements CacheOptionsFactory {
 }
 ```
 
-如果你希望使用从其他模块（Module）导入的现有配置服务提供者，可以使用 `useExisting` 语法：
+如果你希望使用从其他模块导入的现有配置服务提供者，可以使用 `useExisting` 语法：
 
 ```ts
 CacheModule.registerAsync({
@@ -329,7 +329,7 @@ CacheModule.registerAsync({
   都支持可选的泛型（类型参数），用于限定特定存储（store）的配置选项，从而提升类型安全性。
 </CalloutInfo>
 
-你还可以通过 `registerAsync()` 方法传递所谓的 `extraProviders`。这些提供者（Provider）会与模块（Module）内的其他提供者合并。
+你还可以通过 `registerAsync()` 方法传递所谓的 `extraProviders`。这些提供者会与模块内的其他提供者合并。
 
 ```ts
 CacheModule.registerAsync({

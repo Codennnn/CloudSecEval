@@ -115,7 +115,7 @@ BullModule.registerQueue({
 
 ## 生产者（Producers）
 
-作业生产者负责向队列添加作业。生产者通常是应用服务（Nest 提供者（Provider））。要向队列添加作业，首先需要像下面这样在服务中注入队列：
+作业生产者负责向队列添加作业。生产者通常是应用服务（Nest 提供者）。要向队列添加作业，首先需要像下面这样在服务中注入队列：
 
 ```ts
 import { Injectable } from '@nestjs/common'
@@ -208,7 +208,9 @@ export class AudioConsumer {}
 ```
 
 <CalloutInfo>
-  消费者必须作为 `提供者（Provider）` 注册，这样 `@nestjs/bullmq` 包才能正确识别。
+
+消费者必须作为 `提供者` 注册，这样 `@nestjs/bullmq` 包才能正确识别。
+
 </CalloutInfo>
 
 装饰器的字符串参数（如 `'audio'`）表示要将该类方法关联到的队列名称。
@@ -606,7 +608,7 @@ BullModule.registerQueue({
 
 ## 生产者（Producers）
 
-任务生产者（Job producers）会向队列中添加任务。生产者通常是应用服务（Nest 提供者（Provider））。要向队列添加任务，首先需要像下面这样在服务中注入队列：
+任务生产者（Job producers）会向队列中添加任务。生产者通常是应用服务（Nest 提供者）。要向队列添加任务，首先需要像下面这样在服务中注入队列：
 
 ```ts
 import { Injectable } from '@nestjs/common'
@@ -709,7 +711,9 @@ export class AudioConsumer {}
 ```
 
 <CalloutInfo>
-  消费者必须作为 `提供者（Provider）` 注册，这样 `@nestjs/bull` 包才能正确识别。
+
+消费者必须作为 `提供者` 注册，这样 `@nestjs/bull` 包才能正确识别。
+
 </CalloutInfo>
 
 装饰器中的字符串参数（如 `'audio'`）表示要将该类的方法关联到的队列名称。

@@ -1,19 +1,19 @@
 # 提供者（Provider）
 
-提供者（Provider）是 Nest 的核心概念之一。许多基础的 Nest 类，比如服务（Service）、仓库（Repository）、工厂（Factory）和辅助类（Helper），都可以被视为提供者。提供者的关键思想在于它可以作为**依赖项被注入**，从而让对象之间能够建立多种关系。而这些对象的"组装"工作，大多由 Nest 的运行时系统自动完成。
+提供者是 Nest 的核心概念之一。许多基础的 Nest 类，比如服务（Service）、仓库（Repository）、工厂（Factory）和辅助类（Helper），都可以被视为提供者。其核心思想是：**可以被注入为依赖项**，让对象之间建立多种关系。这些对象的"组装"工作，大多由 Nest 的运行时系统自动完成。
 
 <DocImage src="/assets/Components_1.png" alt="Components" />
 
-在上一章中，我们创建了一个简单的 `CatsController`。控制器（Controller）应当负责处理 HTTP 请求，并将更复杂的任务委托给**提供者**。提供者其实就是在 NestJS 模块中通过 `providers` 声明的普通 JavaScript 类。更多细节可参考"模块（Modules）"章节。
+在上一章中，我们创建了一个简单的 `CatsController`。控制器负责处理 HTTP 请求，并将更复杂的任务委托给**提供者**。所谓提供者，其实就是在 NestJS 模块中通过 `providers` 声明的普通 JavaScript 类。更多细节可参考「模块（Modules）」章节。
 
 <CalloutInfo>
-  由于 Nest 允许你以面向对象的方式设计和组织依赖关系，我们强烈建议遵循 [SOLID
+  由于 Nest 允许你以面向对象的方式设计和组织依赖关系，强烈建议遵循 [SOLID
   原则](https://en.wikipedia.org/wiki/SOLID)。
 </CalloutInfo>
 
 ## 服务（Service）
 
-我们先来创建一个简单的 `CatsService`。该服务将负责数据的存储和检索，并会被 `CatsController` 使用。由于它主要负责应用的业务逻辑，因此非常适合被定义为一个提供者。
+我们先来创建一个简单的 `CatsService`，用于数据的存储和检索，并被 `CatsController` 调用。由于它主要负责应用的业务逻辑，非常适合被定义为一个提供者。
 
 ```ts filename='cats.service.ts'
 import { Injectable } from '@nestjs/common'
@@ -56,7 +56,7 @@ export class CatsService {
   <p>你可以通过 CLI 执行 `$ nest g service cats` 命令来快速创建一个服务。</p>
 </CalloutInfo>
 
-我们的 `CatsService` 是一个带有属性和两个方法的基础类。这里最重要的变化是添加了 `@Injectable()` 装饰器。该装饰器会为类附加元数据，表明 `CatsService` 是一个可以被 Nest [控制反转（IoC，Inversion of Control）](https://en.wikipedia.org/wiki/Inversion_of_control) 容器管理的类。
+`CatsService` 是一个带有属性和两个方法的基础类，最重要的变化是添加了 `@Injectable()` 装饰器。该装饰器为类附加元数据，表明 `CatsService` 可以被 Nest [控制反转（IoC，Inversion of Control）](https://en.wikipedia.org/wiki/Inversion_of_control) 容器管理。
 
 此外，示例中还用到了 `Cat` 接口，其定义大致如下：
 
@@ -116,13 +116,13 @@ export class CatsController {
 }
 ```
 
-`CatsService` 通过类构造函数被**注入**。注意这里使用了 `private` 关键字，这是一种简写方式，可以在同一行中声明并初始化 `catsService` 成员，从而简化了代码。
+`CatsService` 通过类构造函数被注入。注意这里使用了 `private` 关键字，这是一种简写方式，可以在同一行中声明并初始化 `catsService` 成员，从而简化了代码。
 
 ## 依赖注入（Dependency Injection）
 
-Nest 构建于强大的设计模式 —— **依赖注入**之上。我们强烈建议你阅读官方 [Angular 文档](https://angular.dev/guide/di) 中关于该概念的精彩介绍。
+Nest 构建于强大的设计模式 —— **依赖注入** 之上。建议阅读官方 [Angular 文档](https://angular.dev/guide/di) 对该概念的精彩介绍。
 
-在 Nest 中，得益于 TypeScript 的能力，依赖管理变得非常简单，因为依赖会根据类型自动解析。在下面的示例中，Nest 会通过创建并返回 `CatsService` 的实例（如果是单例模式，则会返回已存在的实例）来解析 `catsService`。该依赖随后会被注入到控制器的构造函数中（或赋值给指定的属性）：
+在 Nest 中，得益于 TypeScript，依赖管理变得非常简单，依赖会根据类型自动解析。如下例，Nest 会自动创建并返回 `CatsService` 的实例（单例模式下返回已存在实例），并注入到控制器的构造函数中：
 
 ```ts
 constructor(private catsService: CatsService) {}
@@ -130,17 +130,17 @@ constructor(private catsService: CatsService) {}
 
 ## 作用域（Scope）
 
-提供者通常拥有与应用生命周期一致的存活期（"作用域"）。当应用启动时，每个依赖都必须被解析，也就是说每个提供者都会被实例化。同样地，当应用关闭时，所有提供者都会被销毁。不过，你也可以将提供者设置为**请求作用域（request-scoped）**，即其生命周期与单个请求绑定。你可以在 [注入作用域](/fundamentals/injection-scopes) 章节了解更多相关技术。
+提供者通常拥有与应用生命周期一致的作用域。当应用启动时，每个依赖都必须被解析，也就是每个提供者都会被实例化。应用关闭时，所有提供者都会被销毁。当然，也可以将提供者设置为**请求作用域（request-scoped）**，即生命周期与单个请求绑定。更多内容见 [注入作用域](/fundamentals/injection-scopes) 章节。
 
 ## 自定义提供者（Custom Provider）
 
-Nest 内置了一个控制反转（IoC）容器，用于管理提供者之间的关系。这一特性是依赖注入的基础，但实际上它远比我们目前介绍的更强大。定义提供者有多种方式：你可以使用普通值、类、同步或异步工厂等。更多定义提供者的示例，请参考 [依赖注入](/fundamentals/dependency-injection) 章节。
+Nest 内置了控制反转（IoC）容器，用于管理提供者关系。这是依赖注入的基础，但实际上功能远不止如此。定义提供者有多种方式：可以使用普通值、类、同步或异步工厂等。更多示例见 [依赖注入](/fundamentals/dependency-injection) 章节。
 
 ## 可选提供者（Optional Provider）
 
-有时，你的依赖项并不总是必须被解析。例如，你的类可能依赖于一个**配置对象**，但如果没有提供该对象，则应使用默认值。在这种情况下，该依赖被视为可选项，缺少配置提供者时不应抛出错误。
+有时，依赖项并非必须。例如，类可能依赖于一个**配置对象**，但如果没有提供该对象，则应使用默认值。这种情况下，该依赖被视为可选，缺少配置提供者时不会抛出错误。
 
-要将提供者标记为可选，可以在构造函数参数上使用 `@Optional()` 装饰器。
+要将提供者标记为可选，可以在构造函数参数上使用 `@Optional()` 装饰器：
 
 ```ts
 import { Injectable, Optional, Inject } from '@nestjs/common'
@@ -151,11 +151,11 @@ export class HttpService<T> {
 }
 ```
 
-在上面的示例中，我们使用了自定义提供者，因此需要传入 `HTTP_OPTIONS` 这个自定义**令牌（token）**。前面的示例展示了基于构造函数的注入方式，即通过构造函数参数指定依赖。关于自定义提供者及其令牌的更多信息，请参考 [自定义提供者](/fundamentals/custom-providers) 章节。
+上例中，使用了自定义提供者，因此需要传入 `HTTP_OPTIONS` 这个自定义**令牌（token）**。前面的示例展示了基于构造函数的注入方式。关于自定义提供者及其令牌，详见 [自定义提供者](/fundamentals/custom-providers) 章节。
 
 ## 基于属性的注入（Property-based Injection）
 
-目前为止我们用到的都是基于构造函数的注入方式，即通过构造函数注入提供者。在某些特定场景下，**基于属性的注入**也很有用。例如，如果你的顶层类依赖多个提供者，而这些依赖需要通过 `super()` 一层层传递，可能会变得繁琐。为避免这种情况，可以直接在属性上使用 `@Inject()` 装饰器。
+目前为止我们用到的都是基于构造函数的注入方式。在某些场景下，**基于属性的注入**也很有用。例如，顶层类依赖多个提供者且需通过 `super()` 层层传递时，可能会变得繁琐。此时可直接在属性上使用 `@Inject()` 装饰器：
 
 ```ts
 import { Injectable, Inject } from '@nestjs/common'
@@ -168,13 +168,13 @@ export class HttpService<T> {
 ```
 
 <CalloutInfo type="warning">
-  如果你的类没有继承其他类，通常建议优先使用**基于构造函数**的注入方式。构造函数能清晰地表明所需依赖，有助于提升代码可读性和可维护性，相比于用
+  如果类没有继承其他类，通常建议优先使用**基于构造函数**的注入方式。构造函数能清晰表明所需依赖，有助于提升代码可读性和可维护性，相比用
   `@Inject` 注解的类属性更直观。
 </CalloutInfo>
 
 ## 提供者注册（Provider Registration）
 
-现在我们已经定义了一个提供者（`CatsService`）和一个消费者（`CatsController`），接下来需要将服务注册到 Nest 中，这样它才能被正确注入。只需编辑模块文件（`app.module.ts`），并将服务添加到 `@Module()` 装饰器的 `providers` 数组中即可。
+现在我们已经定义了一个提供者（`CatsService`）和一个消费者（`CatsController`），接下来需要将服务注册到 Nest 中，这样它才能被正确注入。只需编辑模块文件（`app.module.ts`），将服务添加到 `@Module()` 装饰器的 `providers` 数组即可：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -188,7 +188,7 @@ import { CatsService } from './cats/cats.service'
 export class AppModule {}
 ```
 
-这样，Nest 就能解析 `CatsController` 类的依赖了。
+这样，Nest 就能解析 `CatsController` 的依赖了。
 
 此时，我们的目录结构应如下所示：
 
@@ -215,7 +215,7 @@ export class AppModule {}
 
 ## 手动实例化（Manual Instantiation）
 
-到目前为止，我们介绍的都是 Nest 如何自动处理依赖解析的细节。但在某些情况下，你可能需要绕过内置的依赖注入系统，手动获取或实例化提供者。下面简要介绍两种常见方式：
+前文介绍了 Nest 如何自动处理依赖解析。但在某些情况下，你可能需要绕过内置依赖注入系统，手动获取或实例化提供者。常见方式有：
 
-- 若需动态获取现有实例或实例化提供者，可以使用 [模块引用（Module reference）](https://docs.nestjs.com/fundamentals/module-ref)。
-- 若需在 `bootstrap()` 函数中获取提供者（例如用于独立应用或在启动阶段使用配置服务），请参考 [独立应用（Standalone applications）](https://docs.nestjs.com/standalone-applications)。
+- 若需动态获取现有实例或实例化提供者，可使用[模块引用（Module reference）](https://docs.nestjs.com/fundamentals/module-ref)。
+- 若需在 `bootstrap()` 函数中获取提供者（如独立应用或启动阶段用配置服务），请参考[独立应用（Standalone applications）](https://docs.nestjs.com/standalone-applications)。

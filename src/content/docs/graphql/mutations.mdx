@@ -67,7 +67,7 @@ async upvotePost(@Args('postId') postId: number) {
 }
 ```
 
-请注意，上述代码假设业务逻辑已经被移动到 `PostsService`（负责查询帖子并递增其 `votes` 属性）。`PostsService` 类中的逻辑可以根据实际需求简单或复杂。这个示例的重点在于展示解析器（Resolver）如何与其他提供者（Provider）进行交互。
+请注意，上述代码假设业务逻辑已经被移动到 `PostsService`（负责查询帖子并递增其 `votes` 属性）。`PostsService` 类中的逻辑可以根据实际需求简单或复杂。这个示例的重点在于展示解析器（Resolver）如何与其他提供者进行交互。
 
 最后一步是将我们的 mutation 添加到已有的类型定义中。
 

@@ -144,7 +144,7 @@ export interface SwaggerDocumentOptions {
   linkNameFactory?: (controllerKey: string, methodKey: string, fieldKey: string) => string
 
   /*
-   * 是否基于控制器（Controller）名称自动生成标签。
+   * 是否基于控制器名称自动生成标签。
    * 如果为 `false`，你必须使用 `@ApiTags()` 装饰器来定义标签。
    * 否则，将使用去除 `Controller` 后缀的控制器名称作为标签。
    * @default true

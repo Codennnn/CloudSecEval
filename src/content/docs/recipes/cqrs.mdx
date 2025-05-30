@@ -2,7 +2,7 @@
 
 简单 [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete)（创建、读取、更新和删除）应用的流程通常如下：
 
-1. 控制器（Controller）层处理 HTTP 请求，并将任务委托给服务（Service）层。
+1. 控制器层处理 HTTP 请求，并将任务委托给服务（Service）层。
 2. 服务层承载大部分业务逻辑。
 3. 服务通过仓储（Repository）/ 数据访问对象（DAO）来变更或持久化实体（Entity）。
 4. 实体作为值的容器，提供 setter 和 getter 方法。

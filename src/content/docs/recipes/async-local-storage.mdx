@@ -174,7 +174,7 @@ export interface MyClsStore extends ClsStore {
 
 ## 测试
 
-由于 `ClsService` 只是另一个可注入的提供者（Provider），因此在单元测试中可以完全 mock 掉。
+由于 `ClsService` 只是另一个可注入的提供者，因此在单元测试中可以完全 mock 掉。
 
 但在某些集成测试中，可能仍希望使用真实的 `ClsService` 实现。这种情况下，需要用 `ClsService#run` 或 `ClsService#runWith` 包裹上下文相关的代码。
 

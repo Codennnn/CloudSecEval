@@ -227,7 +227,7 @@ async findAll(): Promise<PaginatedDto<CatDto>> {}
 - `getSchemaPath()` 函数用于根据指定模型返回 OpenAPI 规范文件中的 Schema 路径。
 - `allOf` 是 OAS 3（OpenAPI 规范 3）中用于处理继承等多种场景的概念。
 
-最后，由于 `PaginatedDto` 并未被任何控制器（Controller）直接引用，`SwaggerModule` 目前还无法为其生成对应的模型定义。此时，我们需要将其作为[额外模型](/openapi/types-and-parameters#extra-models)添加。例如，可以在控制器层级使用 `@ApiExtraModels()` 装饰器，如下所示：
+最后，由于 `PaginatedDto` 并未被任何控制器直接引用，`SwaggerModule` 目前还无法为其生成对应的模型定义。此时，我们需要将其作为[额外模型](/openapi/types-and-parameters#extra-models)添加。例如，可以在控制器层级使用 `@ApiExtraModels()` 装饰器，如下所示：
 
 ```ts
 @Controller('cats')

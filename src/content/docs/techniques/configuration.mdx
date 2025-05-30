@@ -38,7 +38,7 @@ import { ConfigModule } from '@nestjs/config'
 export class AppModule {}
 ```
 
-上述代码会从默认位置（项目根目录）加载并解析 `.env` 文件，将 `.env` 文件中的键值对与 `process.env` 中已有的环境变量合并，并将结果存储在一个私有结构中，供 `ConfigService` 访问。`forRoot()` 方法会注册 `ConfigService` 提供者（Provider），该服务通过 `get()` 方法读取已解析和合并的配置变量。由于 `@nestjs/config` 依赖 [dotenv](https://github.com/motdotla/dotenv)，因此变量冲突时会遵循 dotenv 的解析规则：如果某个键同时存在于运行时环境变量（如通过 shell 导出 `export DATABASE_USER=test`）和 `.env` 文件中，则以运行时环境变量为准。
+上述代码会从默认位置（项目根目录）加载并解析 `.env` 文件，将 `.env` 文件中的键值对与 `process.env` 中已有的环境变量合并，并将结果存储在一个私有结构中，供 `ConfigService` 访问。`forRoot()` 方法会注册 `ConfigService` 提供者，该服务通过 `get()` 方法读取已解析和合并的配置变量。由于 `@nestjs/config` 依赖 [dotenv](https://github.com/motdotla/dotenv)，因此变量冲突时会遵循 dotenv 的解析规则：如果某个键同时存在于运行时环境变量（如通过 shell 导出 `export DATABASE_USER=test`）和 `.env` 文件中，则以运行时环境变量为准。
 
 一个示例 `.env` 文件如下：
 
@@ -197,7 +197,7 @@ export default () => {
 
 ## 使用 `配置服务（ConfigService）`
 
-要访问 `配置服务（ConfigService）` 中的配置信息，首先需要注入 `ConfigService`。和其他提供者（Provider）一样，需要在使用它的模块中导入其所在的 `配置模块（ConfigModule）`（除非你在 `ConfigModule.forRoot()` 的选项对象中将 `isGlobal` 属性设置为 `true`）。在功能模块中导入方式如下：
+要访问 `配置服务（ConfigService）` 中的配置信息，首先需要注入 `ConfigService`。和其他提供者一样，需要在使用它的模块中导入其所在的 `配置模块（ConfigModule）`（除非你在 `ConfigModule.forRoot()` 的选项对象中将 `isGlobal` 属性设置为 `true`）。在功能模块中导入方式如下：
 
 ```ts filename='feature.module.ts'
 @Module({
@@ -341,7 +341,7 @@ constructor(
 
 ## 在模块中使用命名空间配置
 
-如果你希望将命名空间配置作为其他模块的配置对象，可以使用配置对象的 `.asProvider()` 方法。该方法会将命名空间配置转换为一个提供者（Provider），然后可以将其传递给目标模块的 `forRootAsync()`（或类似方法）。
+如果你希望将命名空间配置作为其他模块的配置对象，可以使用配置对象的 `.asProvider()` 方法。该方法会将命名空间配置转换为一个提供者，然后可以将其传递给目标模块的 `forRootAsync()`（或类似方法）。
 
 示例：
 

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { GalleryVerticalEndIcon } from 'lucide-react'
 
@@ -26,8 +27,13 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton asChild size="lg">
               <Link href="/">
                 <div className="flex items-center gap-2">
-                  <div className="flex justify-center items-center bg-sidebar-primary rounded-lg size-8 aspect-square text-sidebar-primary-foreground">
-                    <GalleryVerticalEndIcon className="size-4" />
+                  <div className="flex justify-center items-center">
+                    <Image
+                      alt="NestJS Logo"
+                      height={30}
+                      src="/logo.png"
+                      width={30}
+                    />
                   </div>
 
                   <div className="flex flex-col gap-0.5 leading-none">
