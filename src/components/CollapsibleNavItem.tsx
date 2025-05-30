@@ -69,7 +69,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
             ? (
                 <AppSidebarMenuButton asChild item={item}>
                   <Link
-                    href={isExternalLink(item.url) ? item.url : `${RoutePath.Docs}/${item.url}`}
+                    href={isExternalLink(item.url) ? item.url : `${RoutePath.Docs}${item.url}`}
                     target={isExternalLink(item.url) ? '_blank' : undefined}
                   >
                     <SidebarMenuButtonContent item={item} />
@@ -103,7 +103,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                           {subItem.url
                             ? (
                                 <Link
-                                  href={isExternalLink(subItem.url) ? subItem.url : `${RoutePath.Docs}/${subItem.url}`}
+                                  href={isExternalLink(subItem.url) ? subItem.url : `${RoutePath.Docs}${subItem.url}`}
                                   target={isExternalLink(subItem.url) ? '_blank' : undefined}
                                 >
                                   {subItem.title}
