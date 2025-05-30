@@ -114,7 +114,7 @@ const app = await NestFactory.createMicroservice(AppModule, {
 
 请确保在创建客户端实例时也传递了 `wildcards` 选项。
 
-启用该选项后，您可以在消息和事件模式中使用通配符。例如，若要订阅所有以 `notifications` 开头的频道，可以使用如下模式：
+启用该选项后，你可以在消息和事件模式中使用通配符。例如，若要订阅所有以 `notifications` 开头的频道，可以使用如下模式：
 
 ```ts
 @EventPattern('notifications.*')
@@ -132,7 +132,7 @@ this.client.status.subscribe((status: RedisStatus) => {
 })
 ```
 
-同样，您也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
+同样，你也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
 ```ts
 const server = app.connectMicroservice<MicroserviceOptions>(...);

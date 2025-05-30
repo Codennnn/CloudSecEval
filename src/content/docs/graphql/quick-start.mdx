@@ -87,14 +87,14 @@ export class AppModule {}
 
 ## GraphQL Playground（图形化交互式 IDE）
 
-Playground 是一个图形化、交互式的浏览器内 GraphQL IDE，默认情况下可通过与 GraphQL 服务器相同的 URL 访问。要使用 Playground，您需要先配置并运行一个基础的 GraphQL 服务器。想要立即体验，可以[安装并构建此处的示例项目](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first)。另外，如果您正在跟随本系列代码示例学习，完成[解析器章节](/graphql/resolvers-map)的步骤后，也可以访问 Playground。
+Playground 是一个图形化、交互式的浏览器内 GraphQL IDE，默认情况下可通过与 GraphQL 服务器相同的 URL 访问。要使用 Playground，你需要先配置并运行一个基础的 GraphQL 服务器。想要立即体验，可以[安装并构建此处的示例项目](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first)。另外，如果你正在跟随本系列代码示例学习，完成[解析器章节](/graphql/resolvers-map)的步骤后，也可以访问 Playground。
 
-完成上述准备，并确保应用在后台运行后，您只需在浏览器中访问 `http://localhost:3000/graphql`（主机和端口可能因您的配置而异），即可看到 GraphQL Playground，效果如下图所示。
+完成上述准备，并确保应用在后台运行后，你只需在浏览器中访问 `http://localhost:3000/graphql`（主机和端口可能因你的配置而异），即可看到 GraphQL Playground，效果如下图所示。
 
 <DocImage src="/assets/playground.png" alt="GraphQL Playground" />
 
 <CalloutInfo>
-  `@nestjs/mercurius` 集成并未内置 GraphQL Playground。您可以使用
+  `@nestjs/mercurius` 集成并未内置 GraphQL Playground。你可以使用
   [GraphiQL](https://github.com/graphql/graphiql)（设置 `graphiql: true`）。
 </CalloutInfo>
 
@@ -110,7 +110,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 }),
 ```
 
-如果您的应用使用了[订阅功能](/graphql/subscriptions)，请确保使用 `graphql-ws`，因为 GraphiQL
+如果你的应用使用了[订阅功能](/graphql/subscriptions)，请确保使用 `graphql-ws`，因为 GraphiQL
 不支持 `subscriptions-transport-ws`。
 
 </CalloutInfo>

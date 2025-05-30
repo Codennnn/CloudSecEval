@@ -1,6 +1,6 @@
 # 请求频率限制（Rate Limiting）
 
-一种常见的防护应用免受暴力破解攻击的技术是**rate-limiting**。要开始使用，您需要安装 `@nestjs/throttler` 包。
+一种常见的防护应用免受暴力破解攻击的技术是**rate-limiting**。要开始使用，你需要安装 `@nestjs/throttler` 包。
 
 ```bash
 $ npm i --save @nestjs/throttler
@@ -26,7 +26,7 @@ export class AppModule {}
 
 上述配置会为被守卫保护的路由设置全局选项：`ttl`（生存时间，单位为毫秒）和 `limit`（在 ttl 时间内允许的最大请求数）。
 
-引入该模块后，您可以选择如何绑定 `ThrottlerGuard`（限流守卫）。如 [守卫](https://docs.nestjs.com/guards) 一节所述，任何绑定方式都可以。如果您希望全局绑定该守卫，可以像下面这样将其作为 provider 添加到任意模块中：
+引入该模块后，你可以选择如何绑定 `ThrottlerGuard`（限流守卫）。如 [守卫](https://docs.nestjs.com/guards) 一节所述，任何绑定方式都可以。如果你希望全局绑定该守卫，可以像下面这样将其作为 provider 添加到任意模块中：
 
 ```ts
 {
@@ -37,7 +37,7 @@ export class AppModule {}
 
 ## 多重限流定义
 
-有时您可能希望设置多组限流规则，例如：每秒不超过 3 次、10 秒内不超过 20 次、1 分钟内不超过 100 次。为此，您可以在数组中设置带有名称的限流选项，后续可通过 `@SkipThrottle()` 和 `@Throttle()` 装饰器引用这些选项，灵活切换限流策略。
+有时你可能希望设置多组限流规则，例如：每秒不超过 3 次、10 秒内不超过 20 次、1 分钟内不超过 100 次。为此，你可以在数组中设置带有名称的限流选项，后续可通过 `@SkipThrottle()` 和 `@Throttle()` 装饰器引用这些选项，灵活切换限流策略。
 
 ```ts filename='app.module.ts'
 @Module({
