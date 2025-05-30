@@ -3,12 +3,11 @@
 }
 
 code {
-  font-family: 'Maple Mono', monospace;
-  font-weight: 500;
+  @apply font-mono font-medium;
 }
 
 :not(pre) > code {
-  @apply whitespace-nowrap bg-muted py-0.5 px-1 font-normal rounded border border-border;
+  @apply whitespace-nowrap bg-muted py-0.5 px-1 rounded border border-border;
 
   &::before,
   &::after {

@@ -10,9 +10,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
       <AppSidebar />
 
       <SidebarInset className="overflow-hidden h-full">
-        <div className="flex-1 overflow-auto">
-          {props.children}
-        </div>
+        {props.children}
       </SidebarInset>
     </SidebarProvider>
   )

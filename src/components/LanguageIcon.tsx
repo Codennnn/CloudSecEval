@@ -1,51 +1,66 @@
-// 按需导入具体图标，支持 tree-shaking
-import { Icon, type IconifyIcon } from '@iconify/react'
-import htmlIcon from '@iconify-icons/vscode-icons/file-type-html'
-import javascriptIcon from '@iconify-icons/vscode-icons/file-type-js'
-import jsonIcon from '@iconify-icons/vscode-icons/file-type-json'
-import shellIcon from '@iconify-icons/vscode-icons/file-type-shell'
-import sqlIcon from '@iconify-icons/vscode-icons/file-type-sql'
-import typescriptIcon from '@iconify-icons/vscode-icons/file-type-typescript'
-import xmlIcon from '@iconify-icons/vscode-icons/file-type-xml'
-import yamlIcon from '@iconify-icons/vscode-icons/file-type-yaml'
+import type { SVGProps } from 'react'
+
+import { MaterialIconThemeHtml, MaterialIconThemeJavascript, MaterialIconThemeJson, MaterialIconThemePowershell, MaterialIconThemeTypescript, MaterialIconThemeYaml } from '~/components/icon/file-icons'
 
 interface LanguageIconProps {
   lang: string
   className?: string
 }
 
-const iconMap: Record<string, IconifyIcon> = {
+// 定义支持的语言类型
+type SupportedLanguage =
+  | 'typescript' | 'ts'
+  | 'javascript' | 'js'
+  | 'html'
+  | 'json'
+  | 'yaml' | 'yml'
+  | 'shell' | 'sh' | 'bash'
+
+// 图标组件类型
+type IconComponent = (props: SVGProps<SVGSVGElement>) => React.ReactElement
+
+const iconMap: Record<SupportedLanguage, IconComponent> = {
   // 编程语言
-  typescript: typescriptIcon,
-  ts: typescriptIcon,
-  javascript: javascriptIcon,
-  js: javascriptIcon,
+  typescript: MaterialIconThemeTypescript,
+  ts: MaterialIconThemeTypescript,
+  javascript: MaterialIconThemeJavascript,
+  js: MaterialIconThemeJavascript,
 
   // 前端技术
-  html: htmlIcon,
+  html: MaterialIconThemeHtml,
 
   // 数据格式
-  json: jsonIcon,
-  yaml: yamlIcon,
-  yml: yamlIcon,
-  xml: xmlIcon,
+  json: MaterialIconThemeJson,
+  yaml: MaterialIconThemeYaml,
+  yml: MaterialIconThemeYaml,
 
   // 文档和工具
-  sql: sqlIcon,
-  shell: shellIcon,
-  sh: shellIcon,
-  bash: shellIcon,
+  shell: MaterialIconThemePowershell,
+  sh: MaterialIconThemePowershell,
+  bash: MaterialIconThemePowershell,
 }
 
+/**
+ * 检查语言是否被支持
+ */
+function isSupportedLanguage(lang: string): lang is SupportedLanguage {
+  return lang.toLowerCase() in iconMap
+}
+
+/**
+ * 语言图标组件
+ * 根据传入的语言类型显示对应的图标
+ */
 export function LanguageIcon(props: LanguageIconProps) {
   const { lang, className = 'size-4' } = props
 
-  const iconData = iconMap[lang.toLowerCase()]
+  const normalizedLang = lang.toLowerCase()
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (iconData) {
-    return <Icon className={className} icon={iconData} />
+  if (!isSupportedLanguage(normalizedLang)) {
+    return null
   }
 
-  return null
+  const IconComponent = iconMap[normalizedLang]
+
+  return <IconComponent className={className} />
 }

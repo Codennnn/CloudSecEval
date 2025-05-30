@@ -1,23 +1,69 @@
 import type { Metadata } from 'next'
+import { Noto_Sans_SC } from 'next/font/google'
+import localFont from 'next/font/local'
 
-// import { Geist, Geist_Mono } from 'next/font/google'
 import { ThemeProvider } from '~/components/ThemeProvider'
 import { cn } from '~/lib/utils'
 import { getPageTitle } from '~/utils/common'
 
-import '@fontsource/maple-mono/400.css'
-import '@fontsource/maple-mono/500.css'
 import '~/styles/global.css'
 
-// const geistSans = Geist({
-//   variable: '--font-geist-sans',
-//   subsets: ['latin'],
-// })
+const notoSansSC = Noto_Sans_SC({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-noto-sans-sc',
+})
 
-// const geistMono = Geist_Mono({
-//   variable: '--font-geist-mono',
-//   subsets: ['latin'],
-// })
+const mapleMono = localFont({
+  src: [
+    {
+      path: './fonts/MapleMonoNormalNL-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/MapleMonoNormalNL-Italic.ttf',
+      weight: '400',
+      style: 'italic',
+    },
+
+    {
+      path: './fonts/MapleMonoNormalNL-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '/fonts/MapleMonoNormalNL-MediumItalic.ttf',
+      weight: '500',
+      style: 'italic',
+    },
+
+    {
+      path: './fonts/MapleMonoNormalNL-SemiBold.ttf',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: './fonts/MapleMonoNormalNL-SemiBoldItalic.ttf',
+      weight: '600',
+      style: 'italic',
+    },
+
+    {
+      path: './fonts/MapleMonoNormalNL-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: './fonts/MapleMonoNormalNL-BoldItalic.ttf',
+      weight: '700',
+      style: 'italic',
+    },
+  ],
+  variable: '--font-maple-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: getPageTitle(),
@@ -31,7 +77,8 @@ export default function RootLayout(props: React.PropsWithChildren) {
       <body
         className={cn([
           'h-full antialiased',
-          // `${geistSans.variable} ${geistMono.variable}`,
+          notoSansSC.className,
+          mapleMono.variable,
         ])}
       >
         <ThemeProvider

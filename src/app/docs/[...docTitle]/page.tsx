@@ -16,14 +16,18 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
       const { default: DocContent } = await import(`~/content/docs/${docPath}.mdx`) as { default: MDXContent }
 
       return (
-        <article
-          className={cn(
-            'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:text-sm prose-blockquote:not-italic prose-a:underline-offset-4',
-            '@container p-10 @md:p-8 @sm:p-4 max-w-[75ch] mx-auto',
-          )}
-        >
-          <DocContent />
-        </article>
+        <div className="@container size-full overflow-auto">
+          <div className="@lg:p-16 @md:p-6 @sm:p-4">
+            <article
+              className={cn(
+                'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:not-italic prose-a:underline-offset-4',
+                'max-w-[80ch] mx-auto',
+              )}
+            >
+              <DocContent />
+            </article>
+          </div>
+        </div>
       )
     }
     catch (error) {

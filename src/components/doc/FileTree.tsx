@@ -68,7 +68,7 @@ export function FileTree(props: FileTreeProps) {
   }
 
   return (
-    <div className="border border-border rounded-lg p-3">
+    <div className="border border-border rounded-lg p-3 font-mono">
       <SidebarMenu className={cn('not-prose font-medium', className)}>
         {data.map((item) => (
           <FileTreeItemComponent key={item.name} item={item} />
