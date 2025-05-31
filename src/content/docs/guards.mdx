@@ -1,20 +1,22 @@
 # 守卫（Guard）
 
-守卫是一个带有 `@Injectable()` 装饰器的类，并实现了 `CanActivate` 接口。
+守卫是一个带有 `@Injectable()` 装饰器并实现 `CanActivate` 接口的类。
 
 <DocImage src="/assets/Guards_1.png" alt="守卫结构图" />
 
-守卫具有**单一职责**：它们根据运行时的特定条件（如权限、角色、访问控制列表等）来决定某个请求是否会被路由处理器（Route Handler）处理。这通常被称为**授权（Authorization）**。授权（以及通常与之协作的**身份验证（Authentication）**）在传统的 Express 应用中，往往由[中间件](/middleware)处理。中间件非常适合做身份验证，因为像令牌校验、为 `请求对象（Request Object）` 附加属性等操作，并不强依赖于具体的路由上下文（及其元数据）。
+守卫的核心职责是根据运行时的特定条件（如权限、角色、访问控制列表等）判断请求是否允许被路由处理器（Route Handler）处理。这一过程通常被称为**授权（Authorization）**。在传统的 Express 应用中，授权（以及常见的身份验证（Authentication））通常由[中间件](/middleware)实现。中间件适合处理身份验证，例如校验令牌、为 `请求对象（Request Object）` 添加属性等，因为这些操作不依赖具体的路由上下文。
 
-但中间件本身是"无脑"的。它并不知道在调用 `next()` 函数后会执行哪个处理器。而**守卫**则可以访问 `执行上下文（ExecutionContext）` 实例，因此能够准确知道接下来会执行什么。它们的设计初衷与异常过滤器、管道、拦截器类似，都是为了让你能在请求/响应周期的恰当时机以声明式方式插入处理逻辑。这有助于让你的代码更加 DRY（Don't Repeat Yourself）且声明式。
+然而，中间件本身是"无状态"的。它并不知道在调用 `next()` 后会执行哪个处理器。而守卫可以访问 `执行上下文（ExecutionContext）` 实例，因此能够准确获知即将执行的处理器。守卫的设计初衷与异常过滤器、管道、拦截器类似，都是为了让你能在请求/响应周期的合适时机以声明式方式插入处理逻辑。这有助于让代码更加 DRY（Don't Repeat Yourself，避免重复）且声明式。
 
 <CalloutInfo>
-  <p>守卫会在所有中间件之后、但在任何拦截器或管道之前执行。</p>
+
+守卫会在所有中间件之后、但在任何拦截器或管道之前执行。
+
 </CalloutInfo>
 
 ## 授权守卫
 
-如前所述，**授权**是守卫的一个典型应用场景，因为某些特定路由只有在调用者（通常是已认证的用户）拥有足够权限时才能访问。我们现在要构建的 `AuthGuard` 假设用户已通过身份验证（即请求头中已携带令牌）。它会提取并校验令牌，并利用提取的信息判断请求是否可以继续。
+如前所述，授权是守卫的典型应用场景。某些特定路由只有在调用者（通常是已认证用户）具备足够权限时才能访问。下面我们将实现一个 `AuthGuard`，假设用户已通过身份验证（即请求头中已携带令牌）。该守卫会提取并校验令牌，并基于提取的信息判断请求是否可以继续。
 
 ```ts filename='auth.guard.ts'
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
@@ -33,22 +35,22 @@ export class AuthGuard implements CanActivate {
   如果你想了解如何在实际项目中实现身份验证机制，请参阅[此章节](/security/authentication)。如需更复杂的授权示例，请查看[此页面](/security/authorization)。
 </CalloutInfo>
 
-`validateRequest()` 函数中的逻辑可以根据需要简单或复杂。这里的重点是展示守卫如何融入请求/响应周期。
+`validateRequest()` 函数的具体实现可以根据需求简单或复杂。这里的重点在于展示守卫如何融入请求/响应周期。
 
-每个守卫都必须实现一个 `canActivate()` 方法。该方法应返回一个布尔值，表示当前请求是否被允许。它既可以同步返回，也可以通过 `Promise` 或 `Observable` 异步返回。Nest 会根据返回值决定下一步操作：
+每个守卫都必须实现 `canActivate()` 方法。该方法应返回一个布尔值，表示当前请求是否被允许。它既可以同步返回，也可以通过 `Promise` 或 `Observable` 异步返回。Nest 会根据返回值决定后续处理：
 
-- 如果返回 `true`，请求将被处理。
-- 如果返回 `false`，Nest 会拒绝该请求。
+- 返回 `true` 时，请求将被处理。
+- 返回 `false` 时，Nest 会拒绝该请求。
 
 ## 执行上下文（ExecutionContext）
 
-`canActivate()` 方法接收一个参数，即 `执行上下文（ExecutionContext）` 实例。`ExecutionContext` 继承自 `ArgumentsHost`。我们在异常过滤器章节已经见过 `ArgumentsHost`。在上面的示例中，我们只是用它来获取 `请求对象（Request Object）` 的引用。你可以回顾[异常过滤器](https://docs.nestjs.com/exception-filters#arguments-host)章节的**Arguments host**部分，了解更多相关内容。
+`canActivate()` 方法接收一个参数，即 `执行上下文（ExecutionContext）` 实例。`ExecutionContext` 继承自 `ArgumentsHost`。我们在异常过滤器章节已经介绍过 `ArgumentsHost`。在上面的示例中，我们只是用它来获取 `请求对象（Request Object）`。你可以回顾[异常过滤器](https://docs.nestjs.com/exception-filters#arguments-host)章节的 Arguments host 部分，了解更多相关内容。
 
-通过扩展 `ArgumentsHost`，`ExecutionContext` 还增加了许多新的辅助方法，能提供当前执行过程的更多细节。这些细节有助于构建更通用的守卫，使其能适用于更广泛的控制器、方法和执行上下文。你可以在[这里](/fundamentals/execution-context)了解更多关于 `ExecutionContext` 的内容。
+通过扩展 `ArgumentsHost`，`ExecutionContext` 增加了许多辅助方法，能够提供当前执行过程的更多细节。这些细节有助于构建更通用的守卫，使其适用于更广泛的控制器、方法和执行上下文。你可以在[这里](/fundamentals/execution-context)了解更多关于 `ExecutionContext` 的内容。
 
 ## 基于角色的身份验证
 
-我们来构建一个更实用的守卫，只允许拥有特定角色的用户访问。我们先用一个基础模板，后续再逐步完善。当前它允许所有请求通过：
+我们来实现一个更实用的守卫，只允许拥有特定角色的用户访问。下面是一个基础模板，当前允许所有请求通过，后续可逐步完善：
 
 ```ts filename='roles.guard.ts'
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
@@ -64,7 +66,7 @@ export class RolesGuard implements CanActivate {
 
 ## 绑定守卫
 
-与管道和异常过滤器类似，守卫可以是**控制器作用域**、**方法作用域**或**全局作用域**。下面我们用 `@UseGuards()` 装饰器设置一个控制器作用域的守卫。该装饰器可以接收一个或多个参数（逗号分隔），让你能方便地为控制器声明需要的守卫。
+与管道和异常过滤器类似，守卫可分为**控制器作用域**、**方法作用域**和**全局作用域**。下面演示如何使用 `@UseGuards()` 装饰器为控制器绑定守卫。该装饰器支持接收一个或多个参数（逗号分隔），便于为控制器声明所需的守卫。
 
 ```ts
 import { UseGuards } from '@nestjs/common'
@@ -74,7 +76,7 @@ import { UseGuards } from '@nestjs/common'
 export class CatsController {}
 ```
 
-如上，我们传入的是 `RolesGuard` 类（而不是其实例），这样框架会负责其实例化，并支持依赖注入。和管道、异常过滤器一样，也可以直接传入实例：
+如上所示，传入的是 `RolesGuard` 类（而非其实例），框架会自动实例化并支持依赖注入。当然，也可以直接传入守卫实例：
 
 ```ts
 @Controller('cats')
@@ -82,9 +84,9 @@ export class CatsController {}
 export class CatsController {}
 ```
 
-上述写法会将守卫应用到该控制器声明的所有处理器。如果只想应用到某个方法，则在**方法级别**使用 `@UseGuards()` 装饰器。
+上述写法会将守卫应用于该控制器下的所有处理器方法。如果只需作用于某个方法，可在**方法级别**使用 `@UseGuards()` 装饰器。
 
-如果要设置全局守卫，可以通过 Nest 应用实例的 `useGlobalGuards()` 方法实现：
+若需设置全局守卫，可通过 Nest 应用实例的 `useGlobalGuards()` 方法实现：
 
 ```ts
 const app = await NestFactory.create(AppModule)
@@ -93,11 +95,11 @@ app.useGlobalGuards(new RolesGuard())
 
 <CalloutInfo type="warning">
   对于混合应用，`useGlobalGuards()`
-  默认不会为网关和微服务设置守卫（详见[混合应用](/faq/hybrid-application)章节）。对于"标准"（非混合）微服务应用，`useGlobalGuards()`
+  默认不会为网关和微服务设置守卫（详见[混合应用](/faq/hybrid-application)章节）。对于“标准”微服务应用，`useGlobalGuards()`
   会全局挂载守卫。
 </CalloutInfo>
 
-全局守卫会应用于整个应用的所有控制器和路由处理器。需要注意的是，通过 `useGlobalGuards()` 在模块外注册的全局守卫无法注入依赖，因为这发生在任何模块上下文之外。为了解决这个问题，可以直接在模块内通过如下方式注册守卫：
+全局守卫会应用于整个应用的所有控制器和路由处理器。需要注意，通过 `useGlobalGuards()` 在模块外注册的全局守卫无法注入依赖，因为注册发生在任何模块上下文之外。为解决此问题，可在模块内如下注册守卫：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -115,18 +117,18 @@ export class AppModule {}
 ```
 
 <CalloutInfo>
-  采用这种方式进行依赖注入时，无论在哪个模块注册，守卫实际上都是全局的。应在守卫（如上例中的
-  `RolesGuard`）定义的模块中进行注册。此外，`useClass`
-  并不是自定义提供者注册的唯一方式，详情可见[这里](/fundamentals/custom-providers)。
+  采用此方式注册的守卫，无论在哪个模块声明，实际上都是全局守卫。建议在守卫（如上例中的
+  `RolesGuard`）定义的模块中注册。此外，`useClass`
+  并非自定义提供者的唯一注册方式，详见[这里](/fundamentals/custom-providers)。
 </CalloutInfo>
 
 ## 为处理器设置角色
 
-我们的 `RolesGuard` 目前还很"笨"，还没有利用守卫最重要的特性 —— [执行上下文](/fundamentals/execution-context)。它还不知道每个处理器允许哪些角色。例如，`CatsController` 的不同路由可能有不同的权限要求，有的只允许管理员访问，有的则对所有人开放。如何灵活、可复用地为路由分配角色？
+当前的 `RolesGuard` 还未利用守卫最核心的特性 —— [执行上下文](/fundamentals/execution-context)。它无法区分每个处理器允许哪些角色。例如，`CatsController` 的不同路由可能有不同的权限要求，有的仅限管理员访问，有的则对所有用户开放。如何灵活、可复用地为路由分配角色？
 
-这就需要用到**自定义元数据（Metadata）**（详见[这里](https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata)）。Nest 提供了两种方式为路由处理器附加自定义元数据：通过 `Reflector.createDecorator` 静态方法创建装饰器，或使用内置的 `@SetMetadata()` 装饰器。
+这时可以借助**自定义元数据（Metadata）**（详见[这里](https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata)）。Nest 提供两种方式为路由处理器附加自定义元数据：通过 `Reflector.createDecorator` 静态方法自定义装饰器，或使用内置的 `@SetMetadata()` 装饰器。
 
-例如，我们可以用 `Reflector.createDecorator` 方法创建一个 `@Roles()` 装饰器，将元数据附加到处理器上。`Reflector` 由框架内置并通过 `@nestjs/core` 包暴露。
+例如，可用 `Reflector.createDecorator` 创建一个 `@Roles()` 装饰器，将元数据附加到处理器上。`Reflector` 由框架内置并通过 `@nestjs/core` 包导出。
 
 ```ts filename='roles.decorator.ts'
 import { Reflector } from '@nestjs/core'
@@ -134,9 +136,9 @@ import { Reflector } from '@nestjs/core'
 export const Roles = Reflector.createDecorator<string[]>()
 ```
 
-这里的 `Roles` 装饰器是一个接收 `string[]` 类型参数的函数。
+`Roles` 装饰器是一个接收 `string[]` 类型参数的函数。
 
-现在，我们只需在处理器上使用该装饰器即可：
+现在，只需在处理器上使用该装饰器即可：
 
 ```ts filename='cats.controller.ts'
 @Post()
@@ -146,13 +148,13 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-如上，我们为 `create()` 方法附加了 `Roles` 装饰器元数据，表示只有拥有 `admin` 角色的用户才能访问该路由。
+如上，我们为 `create()` 方法添加了 `Roles` 装饰器元数据，表示仅 `admin` 角色用户可访问该路由。
 
-另外，也可以用内置的 `@SetMetadata()` 装饰器实现，详见[这里](/fundamentals/execution-context#low-level-approach)。
+此外，也可使用内置的 `@SetMetadata()` 装饰器，详见[这里](/fundamentals/execution-context#low-level-approach)。
 
 ## 综合示例
 
-现在我们回到 `RolesGuard`，将其与上面的内容结合。当前它总是返回 `true`，允许所有请求通过。我们希望根据**当前用户的角色**与**当前路由所需角色（自定义元数据）**进行比对，决定是否放行。为此，我们再次用到 `Reflector` 辅助类：
+现在我们回到 `RolesGuard`，结合前文内容进行说明。当前实现总是返回 `true`，即允许所有请求通过。我们希望根据当前用户的角色与路由所需角色（自定义元数据）进行比对，决定是否放行。为此，我们再次用到 `Reflector` 辅助类：
 
 ```ts filename='roles.guard.ts'
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
@@ -176,16 +178,17 @@ export class RolesGuard implements CanActivate {
 ```
 
 <CalloutInfo>
-  在 Node.js 世界中，通常会将已授权用户附加到 `请求对象（Request Object）`
-  上。因此在上面的示例中，我们假设 `request.user`
-  包含了用户实例及其角色。在你的应用中，通常会在自定义**身份验证守卫**（或中间件）中完成该关联。更多信息请参阅[此章节](/security/authentication)。
+  在 Node.js 应用中，通常会将已认证用户对象附加到 `请求对象（Request Object）`
+  上。因此在上述示例中，我们假设 `request.user`
+  包含了用户实例及其角色信息。实际项目中，通常会在自定义身份验证守卫（或中间件）中完成该关联。更多信息请参阅[身份验证章节](/security/authentication)。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  `matchRoles()` 函数中的逻辑可以根据需要简单或复杂。这里的重点是展示守卫如何融入请求/响应周期。
+  `matchRoles()`
+  函数的具体实现可以根据业务需求简单或复杂。此处重点在于演示守卫如何融入请求/响应周期。
 </CalloutInfo>
 
-更多关于如何在上下文敏感场景下使用 `Reflector`，请参考**执行上下文**章节的[反射与元数据](/fundamentals/execution-context#reflection-and-metadata)部分。
+更多关于在上下文敏感场景下使用 `Reflector` 的内容，请参考执行上下文章节的[反射与元数据](/fundamentals/execution-context#reflection-and-metadata)部分。
 
 当用户权限不足时，Nest 会自动返回如下响应：
 
@@ -197,14 +200,12 @@ export class RolesGuard implements CanActivate {
 }
 ```
 
-需要注意的是，当守卫返回 `false` 时，框架会抛出 `ForbiddenException`。如果你希望返回不同的错误响应，可以自行抛出特定异常。例如：
+需要注意的是，当守卫返回 `false` 时，框架会抛出 `ForbiddenException`。如果你希望返回不同的错误响应，可以主动抛出特定异常。例如：
 
 ```ts
 throw new UnauthorizedException()
 ```
 
-守卫抛出的任何异常都会被[异常层](/exception-filters)（全局异常过滤器及当前上下文应用的异常过滤器）处理。
+守卫抛出的任何异常都会被[异常层](/exception-filters)（包括全局异常过滤器和当前上下文的异常过滤器）处理。
 
-<CalloutInfo>
-  如果你想了解实际项目中的授权实现，请参阅[此章节](/security/authorization)。
-</CalloutInfo>
+<CalloutInfo>如需了解实际项目中的授权实现，请参阅[授权章节](/security/authorization)。</CalloutInfo>
