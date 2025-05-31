@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { ArrowUpRightIcon } from 'lucide-react'
 
 import {
@@ -32,6 +32,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
   const { item, defaultOpen = false, forceOpen = false } = props
 
   const pathname = usePathname()
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   // 检查当前路径是否与该导航项或其子项匹配
@@ -57,6 +58,14 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
     setIsOpen(open)
   }
 
+  // 预加载处理函数
+  const handleMouseEnter = (url: string) => {
+    if (!isExternalLink(url)) {
+      const fullPath = `${RoutePath.Docs}${url}`
+      router.prefetch(fullPath)
+    }
+  }
+
   return (
     <Collapsible
       className="group/collapsible"
@@ -71,6 +80,11 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                   <Link
                     href={isExternalLink(item.url) ? item.url : `${RoutePath.Docs}${item.url}`}
                     target={isExternalLink(item.url) ? '_blank' : undefined}
+                    onMouseEnter={() => {
+                      if (item.url) {
+                        handleMouseEnter(item.url)
+                      }
+                    }}
                   >
                     <SidebarMenuButtonContent item={item} />
 
@@ -105,6 +119,11 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                                 <Link
                                   href={isExternalLink(subItem.url) ? subItem.url : `${RoutePath.Docs}${subItem.url}`}
                                   target={isExternalLink(subItem.url) ? '_blank' : undefined}
+                                  onMouseEnter={() => {
+                                    if (subItem.url) {
+                                      handleMouseEnter(subItem.url)
+                                    }
+                                  }}
                                 >
                                   {subItem.title}
 
