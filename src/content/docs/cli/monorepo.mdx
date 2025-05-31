@@ -152,7 +152,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 在按照上述步骤创建多包仓库结构后，我们的 `nest-cli.json` 文件如下所示：
 
-```js
+```json
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "apps/my-project/src",
@@ -226,7 +226,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 以下示例使用 boolean 值指定所有项目默认禁用 spec 文件生成：
 
-```js
+```json
 {
   "generateOptions": {
     "spec": false
@@ -237,7 +237,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 以下示例使用 boolean 值指定所有项目默认生成扁平结构：
 
-```js
+```json
 {
   "generateOptions": {
     "flat": true
@@ -248,7 +248,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 在下例中，仅为 `service` 原型生成器（如 `nest generate service...`）禁用 spec 文件生成：
 
-```js
+```json
 {
   "generateOptions": {
     "spec": {
@@ -264,7 +264,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
     当 `spec` 以对象形式指定时，生成 schematic 的 key 目前不支持自动别名处理。这意味着如果只指定了 `service: false`，但通过别名 `s` 生成 service，仍会生成 spec 文件。为确保命令名和别名都按预期工作，请同时指定命令名和别名，如下所示：
   </p>
 
-```js
+```json
 {
   "generateOptions": {
     "spec": {
@@ -284,7 +284,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 
 项目专属 generate 选项会覆盖全局 generate 选项。
 
-```js
+```json
 {
   "projects": {
     "cats-project": {
