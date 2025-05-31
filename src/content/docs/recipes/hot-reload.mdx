@@ -1,6 +1,6 @@
 # 热重载（Hot Reload）
 
-对应用程序引导过程（Bootstrapping）影响最大的是 **TypeScript 编译**。幸运的是，借助 [webpack](https://github.com/webpack/webpack) 的 HMR（热模块替换，Hot-Module Replacement），每次发生更改时我们无需重新编译整个项目。这大大减少了实例化应用程序所需的时间，使迭代开发变得更加高效和便捷。
+对应用程序启动过程影响最大的是 **TypeScript 编译**。幸运的是，借助 [webpack](https://github.com/webpack/webpack) 的 HMR（热模块替换，Hot-Module Replacement），每次发生更改时我们无需重新编译整个项目。这大大减少了实例化应用程序所需的时间，使迭代开发变得更加高效和便捷。
 
 <CalloutInfo type="warning">
   请注意，`webpack` 不会自动将你的资源文件（例如 `graphql` 文件）复制到 `dist`

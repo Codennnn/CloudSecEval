@@ -87,7 +87,7 @@ describe('CatsController', () => {
 })
 ```
 
-`Test` 类可以为应用提供一个执行上下文（Execution Context），本质上模拟了完整的 Nest 运行时（Runtime），同时为你提供了便捷的钩子来管理类实例，包括模拟（Mock）和覆盖（Override）。`Test` 类的 `createTestingModule()` 方法接收一个模块元数据对象作为参数（与传递给 `@Module()` 装饰器的对象相同）。该方法会返回一个 `测试模块（TestingModule）` 实例，进而提供若干方法。对于单元测试（Unit Testing）来说，最重要的是 `compile()` 方法。它会引导（Bootstrapping）模块及其依赖（类似于在 `main.ts` 中用 `NestFactory.create()` 启动应用），并返回一个可用于测试的模块。
+`Test` 类可以为应用提供一个执行上下文（Execution Context），本质上模拟了完整的 Nest 运行时（Runtime），同时为你提供了便捷的钩子来管理类实例，包括模拟（Mock）和覆盖（Override）。`Test` 类的 `createTestingModule()` 方法接收一个模块元数据对象作为参数（与传递给 `@Module()` 装饰器的对象相同）。该方法会返回一个 `测试模块（TestingModule）` 实例，进而提供若干方法。对于单元测试（Unit Testing）来说，最重要的是 `compile()` 方法。它会启动模块及其依赖（类似于在 `main.ts` 中用 `NestFactory.create()` 启动应用），并返回一个可用于测试的模块。
 
 <CalloutInfo>
   `compile()` 方法是**异步**的，因此必须使用 `await`。模块编译完成后，你可以通过 `get()`

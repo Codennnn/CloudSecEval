@@ -1,0 +1,37 @@
+## 标准提供者（Standard Provider）
+
+接下来，我们进一步了解 `@Module()` 装饰器的用法。在 `app.module` 文件中，通常这样声明模块：
+
+```ts
+@Module({
+  controllers: [CatsController],
+  providers: [CatsService],
+})
+```
+
+`providers` 属性接收一个提供者数组。到目前为止，我们直接通过类名列表传递这些提供者。实际上，`providers: [CatsService]` 是更完整写法的简化形式：
+
+```ts
+providers: [
+  {
+    provide: CatsService,
+    useClass: CatsService,
+  },
+]
+```
+
+通过这种显式写法，可以更清晰地理解注册过程。这里，我们将 `CatsService` 作为注入令牌，并关联到 `CatsService` 类本身。简写语法仅用于简化最常见的场景，即通过类名直接请求其实例。
+
+## 自定义提供者（Custom Provider）
+
+如果你的需求超出了 _标准提供者_ 的能力怎么办？例如：
+
+- 希望自定义实例，而不是让 Nest 自动实例化（或返回缓存的）类
+- 希望在另一个依赖项中复用已有类
+- 希望在测试时用 mock 替换真实类
+
+Nest 允许你通过自定义提供者来满足这些场景。你可以使用多种方式定义自定义提供者，下面将逐一介绍。
+
+<CalloutInfo>
+  如果遇到依赖解析相关的问题，可以设置 `NEST_DEBUG` 环境变量，在启动时获取更详细的依赖解析日志。
+</CalloutInfo>
