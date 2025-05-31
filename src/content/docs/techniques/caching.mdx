@@ -145,7 +145,7 @@ CacheModule.register({
 
 ## 全局使用模块
 
-当你希望在其他模块中使用 `CacheModule` 时，需要像导入其他 Nest 模块一样进行导入。或者，也可以通过在选项对象中设置 `isGlobal` 属性为 `true`，将其声明为[全局模块](https://docs.nestjs.com/modules#global-modules)。这样一来，只需在根模块（例如 `AppModule`）中加载一次 `CacheModule`，之后在其他模块中无需再次导入。
+当你希望在其他模块中使用 `CacheModule` 时，需要像导入其他 Nest 模块一样进行导入。或者，也可以通过在选项对象中设置 `isGlobal` 属性为 `true`，将其声明为[全局模块](/modules#global-modules)。这样一来，只需在根模块（例如 `AppModule`）中加载一次 `CacheModule`，之后在其他模块中无需再次导入。
 
 ```ts
 CacheModule.register({
@@ -155,7 +155,7 @@ CacheModule.register({
 
 ## 全局缓存重写
 
-启用全局缓存后，缓存项会根据路由路径自动生成的 `CacheKey` 进行存储。你可以在每个方法级别上通过 `@CacheKey()` 和 `@CacheTTL()` 装饰器重写部分缓存设置，从而为单独的控制器方法定制缓存策略。这在使用[不同的缓存存储](https://docs.nestjs.com/techniques/caching#different-stores)时尤其有用。
+启用全局缓存后，缓存项会根据路由路径自动生成的 `CacheKey` 进行存储。你可以在每个方法级别上通过 `@CacheKey()` 和 `@CacheTTL()` 装饰器重写部分缓存设置，从而为单独的控制器方法定制缓存策略。这在使用[不同的缓存存储](/techniques/caching#different-stores)时尤其有用。
 
 你可以在控制器级别应用 `@CacheTTL()` 装饰器，为整个控制器设置缓存的 TTL。当控制器和方法级别都设置了缓存 TTL 时，以方法级别的设置为准。
 
@@ -175,7 +175,7 @@ export class AppController {
   `@CacheKey()` 和 `@CacheTTL()` 装饰器需从 `@nestjs/cache-manager` 包中导入。
 </CalloutInfo>
 
-`@CacheKey()` 装饰器可以单独使用，也可以与 `@CacheTTL()` 搭配使用，反之亦然。你可以只重写 `@CacheKey()` 或只重写 `@CacheTTL()`。未被装饰器重写的设置将使用全局注册时的默认值（参见[自定义缓存](https://docs.nestjs.com/techniques/caching#customize-caching)）。
+`@CacheKey()` 装饰器可以单独使用，也可以与 `@CacheTTL()` 搭配使用，反之亦然。你可以只重写 `@CacheKey()` 或只重写 `@CacheTTL()`。未被装饰器重写的设置将使用全局注册时的默认值（参见[自定义缓存](/techniques/caching#customize-caching)）。
 
 ## WebSocket 和微服务
 

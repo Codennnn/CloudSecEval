@@ -111,11 +111,11 @@ bootstrap()
 
 ## 请求-响应
 
-当你需要在多个外部服务之间**交换**消息时，请求-响应消息风格非常有用。这种范式确保服务确实收到了消息（无需你手动实现确认协议）。然而，请求-响应方式并不总是最佳选择。例如，像 [Kafka](https://docs.confluent.io/3.0.0/streams/) 或 [NATS streaming](https://github.com/nats-io/node-nats-streaming) 这样的流式传输器（streaming transporter），它们采用基于日志的持久化机制，更适合应对另一类挑战，这类挑战更贴合事件消息（event messaging）范式（详见 [基于事件的消息传递](https://docs.nestjs.com/microservices/basics#event-based)）。
+当你需要在多个外部服务之间**交换**消息时，请求-响应消息风格非常有用。这种范式确保服务确实收到了消息（无需你手动实现确认协议）。然而，请求-响应方式并不总是最佳选择。例如，像 [Kafka](https://docs.confluent.io/3.0.0/streams/) 或 [NATS streaming](https://github.com/nats-io/node-nats-streaming) 这样的流式传输器（streaming transporter），它们采用基于日志的持久化机制，更适合应对另一类挑战，这类挑战更贴合事件消息（event messaging）范式（详见 [基于事件的消息传递](/microservices/basics#event-based)）。
 
 为了启用请求-响应消息类型，Nest 会创建两个逻辑通道：一个用于传输数据，另一个用于等待响应的到来。对于某些底层传输层（如 [NATS](https://nats.io/)），这种双通道支持是开箱即用的。而对于其他传输层，Nest 则通过手动创建独立通道来实现。虽然这种方式有效，但也会带来一定的开销。因此，如果你不需要请求-响应消息风格，建议考虑使用事件驱动（event-based）方法。
 
-要基于请求-响应范式创建消息处理器（message handler），请使用 `@MessagePattern()` 装饰器，该装饰器从 `@nestjs/microservices` 包中导入。此装饰器只能用于[控制器](https://docs.nestjs.com/controllers)类中，因为控制器是应用程序的入口点。如果在提供者中使用该装饰器，将不会生效，因为 Nest 运行时会忽略它。
+要基于请求-响应范式创建消息处理器（message handler），请使用 `@MessagePattern()` 装饰器，该装饰器从 `@nestjs/microservices` 包中导入。此装饰器只能用于[控制器](/controllers)类中，因为控制器是应用程序的入口点。如果在提供者中使用该装饰器，将不会生效，因为 Nest 运行时会忽略它。
 
 ```ts filename='math.controller.ts'
 import { Controller } from '@nestjs/common'
@@ -202,7 +202,7 @@ Nest 客户端应用可以使用 `ClientProxy` 类与 Nest 微服务进行消息
 
 一种方式是导入 `ClientsModule`，该模块暴露了静态的 `register()` 方法。此方法接收一个对象数组，每个对象代表一个微服务传输器。每个对象必须包含 `name` 属性，并且可以选择性地包含 `transport` 属性（默认为 `Transport.TCP`），以及可选的 `options` 属性。
 
-`name` 属性作为**注入令牌（Injection Token）**，你可以在需要的地方通过该令牌注入 `ClientProxy` 实例。`name` 的值可以是任意字符串或 JavaScript 符号，具体说明见[此处](https://docs.nestjs.com/fundamentals/custom-providers#non-class-based-provider-tokens)。
+`name` 属性作为**注入令牌（Injection Token）**，你可以在需要的地方通过该令牌注入 `ClientProxy` 实例。`name` 的值可以是任意字符串或 JavaScript 符号，具体说明见[此处](/fundamentals/custom-providers#non-class-based-provider-tokens)。
 
 `options` 属性是一个对象，包含了我们在前文 `createMicroservice()` 方法中见过的相同属性。
 

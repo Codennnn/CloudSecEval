@@ -26,7 +26,7 @@ export class AppModule {}
 
 上述配置会为被守卫保护的路由设置全局选项：`ttl`（生存时间，单位为毫秒）和 `limit`（在 ttl 时间内允许的最大请求数）。
 
-引入该模块后，你可以选择如何绑定 `ThrottlerGuard`（限流守卫）。如 [守卫](https://docs.nestjs.com/guards) 一节所述，任何绑定方式都可以。如果你希望全局绑定该守卫，可以像下面这样将其作为 provider 添加到任意模块中：
+引入该模块后，你可以选择如何绑定 `ThrottlerGuard`（限流守卫）。如 [守卫](/guards) 一节所述，任何绑定方式都可以。如果你希望全局绑定该守卫，可以像下面这样将其作为 provider 添加到任意模块中：
 
 ```ts
 {

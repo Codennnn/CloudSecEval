@@ -43,7 +43,7 @@ uploadFile(@UploadedFile() file: Express.Multer.File) {
 
 ## 文件校验
 
-在处理文件上传时，通常我们需要对传入文件的元数据进行校验，比如文件大小或文件的 MIME 类型。为此，你可以自定义一个[管道](https://docs.nestjs.com/pipes)，并将其绑定到带有 `UploadedFile` 装饰器的参数上。下面的示例演示了如何实现一个基础的文件大小校验管道：
+在处理文件上传时，通常我们需要对传入文件的元数据进行校验，比如文件大小或文件的 MIME 类型。为此，你可以自定义一个[管道](/pipes)，并将其绑定到带有 `UploadedFile` 装饰器的参数上。下面的示例演示了如何实现一个基础的文件大小校验管道：
 
 ```ts
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common'
@@ -277,7 +277,7 @@ MulterModule.registerAsync({
 })
 ```
 
-与其他[工厂提供者（factory providers）](https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory)类似，我们的工厂函数可以是 `async`，并且可以通过 `inject` 注入依赖。
+与其他[工厂提供者（factory providers）](/fundamentals/custom-providers#factory-providers-usefactory)类似，我们的工厂函数可以是 `async`，并且可以通过 `inject` 注入依赖。
 
 ```ts
 MulterModule.registerAsync({

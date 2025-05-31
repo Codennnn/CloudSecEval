@@ -45,7 +45,7 @@ export class AppModule {}
 - `prefix: string` - 所有队列键的前缀。可选。
 - `defaultJobOptions: JobOpts` - 控制新作业默认设置的选项。详见 [JobOpts](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd)。可选。
 - `settings: AdvancedSettings` - 队列高级配置选项。通常无需更改。详见 [AdvancedSettings](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。可选。
-- `extraOptions` - 模块初始化的额外选项。详见 [手动注册](https://docs.nestjs.com/techniques/queues#manual-registration)
+- `extraOptions` - 模块初始化的额外选项。详见 [手动注册](/techniques/queues#manual-registration)
 
 所有选项均为可选，提供了对队列行为的详细控制。这些选项会直接传递给 BullMQ 的 `Queue` 构造函数。关于这些选项及更多内容，详见 [官方文档](https://api.docs.bullmq.io/interfaces/v4.QueueOptions.html)。
 
@@ -413,7 +413,7 @@ BullModule.forRootAsync({
 })
 ```
 
-我们的工厂函数行为与其他[异步提供者](https://docs.nestjs.com/fundamentals/async-providers)类似（例如，它可以是 `async`，并且能够通过 `inject` 注入依赖）。
+我们的工厂函数行为与其他[异步提供者](/fundamentals/async-providers)类似（例如，它可以是 `async`，并且能够通过 `inject` 注入依赖）。
 
 ```ts
 BullModule.forRootAsync({
@@ -972,7 +972,7 @@ BullModule.forRootAsync({
 })
 ```
 
-我们的工厂函数行为与其他[异步提供者](https://docs.nestjs.com/fundamentals/async-providers)类似（例如，它可以是 `async`，并且能够通过 `inject` 注入依赖）。
+我们的工厂函数行为与其他[异步提供者](/fundamentals/async-providers)类似（例如，它可以是 `async`，并且能够通过 `inject` 注入依赖）。
 
 ```ts
 BullModule.forRootAsync({

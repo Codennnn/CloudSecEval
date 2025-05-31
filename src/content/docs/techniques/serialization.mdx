@@ -62,7 +62,7 @@ findOne(): UserEntity {
 }
 ```
 
-需要注意的是，该拦截器可以应用于整个应用（详见[此处](https://docs.nestjs.com/interceptors#binding-interceptors)）。拦截器与实体类声明的结合确保了**任何**返回 `UserEntity` 的方法都会自动移除 `password` 属性，从而实现了业务规则的集中式强制执行。
+需要注意的是，该拦截器可以应用于整个应用（详见[此处](/interceptors#binding-interceptors)）。拦截器与实体类声明的结合确保了**任何**返回 `UserEntity` 的方法都会自动移除 `password` 属性，从而实现了业务规则的集中式强制执行。
 
 ## 暴露属性
 

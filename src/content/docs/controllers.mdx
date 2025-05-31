@@ -11,9 +11,8 @@ import controllerImage from '/public/assets/Controllers_1.png'
 要创建基础控制器，我们需要用到类和 **装饰器（decorator）**。装饰器为类添加必要的元数据，使 Nest 能够建立请求与控制器之间的路由映射。
 
 <CalloutInfo>
-  如果你想快速创建带有内置 [校验（validation）](https://docs.nestjs.com/techniques/validation) 的
-  CRUD 控制器，可以使用 CLI 的 [CRUD
-  生成器](https://docs.nestjs.com/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
+  如果你想快速创建带有内置 [校验（validation）](/techniques/validation) 的 CRUD 控制器，可以使用 CLI
+  的 [CRUD 生成器](/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
 </CalloutInfo>
 
 ## 路由（Routing）
@@ -431,7 +430,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 <CalloutInfo>
   我们的 `ValidationPipe` 可以自动过滤掉不应被方法处理器接收的属性。例如，在 `CreateCatDto`
   示例中，白名单属性为 `name`、`age` 和
-  `breed`，不在白名单内的属性会被自动剔除。详细内容可参考[这里](https://docs.nestjs.com/techniques/validation#stripping-properties)。
+  `breed`，不在白名单内的属性会被自动剔除。详细内容可参考[这里](/techniques/validation#stripping-properties)。
 </CalloutInfo>
 
 ## 查询参数（Query parameters）

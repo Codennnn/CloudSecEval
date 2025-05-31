@@ -46,7 +46,7 @@ export class AuthGuard implements CanActivate {
 
 ## 执行上下文（ExecutionContext）
 
-`canActivate()` 方法接收一个参数，即 `执行上下文（ExecutionContext）` 实例。`ExecutionContext` 继承自 `ArgumentsHost`。我们在异常过滤器章节已经介绍过 `ArgumentsHost`。在上面的示例中，我们只是用它来获取 `请求对象（Request Object）`。你可以回顾[异常过滤器](https://docs.nestjs.com/exception-filters#arguments-host)章节的 Arguments host 部分，了解更多相关内容。
+`canActivate()` 方法接收一个参数，即 `执行上下文（ExecutionContext）` 实例。`ExecutionContext` 继承自 `ArgumentsHost`。我们在异常过滤器章节已经介绍过 `ArgumentsHost`。在上面的示例中，我们只是用它来获取 `请求对象（Request Object）`。你可以回顾[异常过滤器](/exception-filters#arguments-host)章节的 Arguments host 部分，了解更多相关内容。
 
 通过扩展 `ArgumentsHost`，`ExecutionContext` 增加了许多辅助方法，能够提供当前执行过程的更多细节。这些细节有助于构建更通用的守卫，使其适用于更广泛的控制器、方法和执行上下文。你可以在[这里](/fundamentals/execution-context)了解更多关于 `ExecutionContext` 的内容。
 
@@ -128,7 +128,7 @@ export class AppModule {}
 
 当前的 `RolesGuard` 还未利用守卫最核心的特性 —— [执行上下文](/fundamentals/execution-context)。它无法区分每个处理器允许哪些角色。例如，`CatsController` 的不同路由可能有不同的权限要求，有的仅限管理员访问，有的则对所有用户开放。如何灵活、可复用地为路由分配角色？
 
-这时可以借助**自定义元数据（Metadata）**（详见[这里](https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata)）。Nest 提供两种方式为路由处理器附加自定义元数据：通过 `Reflector.createDecorator` 静态方法自定义装饰器，或使用内置的 `@SetMetadata()` 装饰器。
+这时可以借助**自定义元数据（Metadata）**（详见[这里](/fundamentals/execution-context#reflection-and-metadata)）。Nest 提供两种方式为路由处理器附加自定义元数据：通过 `Reflector.createDecorator` 静态方法自定义装饰器，或使用内置的 `@SetMetadata()` 装饰器。
 
 例如，可用 `Reflector.createDecorator` 创建一个 `@Roles()` 装饰器，将元数据附加到处理器上。`Reflector` 由框架内置并通过 `@nestjs/core` 包导出。
 

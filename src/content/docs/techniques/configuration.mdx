@@ -85,7 +85,7 @@ ConfigModule.forRoot({
 
 ## 全局使用配置模块
 
-如果你希望在其他模块中使用 `配置模块（ConfigModule）`，通常需要在每个模块中单独导入。或者，你也可以通过将选项对象的 `isGlobal` 属性设置为 `true`，将其声明为[全局模块](https://docs.nestjs.com/modules#global-modules)。这样一来，只需在根模块（如 `AppModule`）中导入一次，后续其他模块无需再单独导入。
+如果你希望在其他模块中使用 `配置模块（ConfigModule）`，通常需要在每个模块中单独导入。或者，你也可以通过将选项对象的 `isGlobal` 属性设置为 `true`，将其声明为[全局模块](/modules#global-modules)。这样一来，只需在根模块（如 `AppModule`）中导入一次，后续其他模块无需再单独导入。
 
 ```ts
 ConfigModule.forRoot({
