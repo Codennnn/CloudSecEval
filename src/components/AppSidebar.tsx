@@ -61,10 +61,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
 
-      <div className="flex items-center gap-2 p-2">
-        <div className="ml-auto">
-          <ThemeModeToggle />
-        </div>
+      <div className="flex items-center gap-2 p-4 border-t border-border">
+        <ThemeModeToggle />
       </div>
     </Sidebar>
   )
