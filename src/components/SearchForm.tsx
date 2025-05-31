@@ -18,7 +18,7 @@ export function SearchForm({ ...props }: React.ComponentProps<'form'>) {
           <SidebarInput
             className="pl-8"
             id="search"
-            placeholder="Search the docs..."
+            placeholder="搜索文档"
           />
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
         </SidebarGroupContent>
