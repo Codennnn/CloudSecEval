@@ -1,8 +1,10 @@
+import redisImage from '/public/assets/Redis_1.png'
+
 # Redis
 
 [Redis](https://redis.io/) 传输器实现了发布/订阅（publish/subscribe）消息范式，并利用了 Redis 的 [Pub/Sub](https://redis.io/topics/pubsub) 功能。发布的消息会被分类到不同的频道（channel）中，发布者无需关心最终会有哪些订阅者（subscriber）接收消息。每个微服务都可以订阅任意数量的频道，并且可以同时订阅多个频道。通过频道交换的消息属于**即发即弃（fire-and-forget）**，也就是说，如果消息发布时没有任何订阅者感兴趣，该消息会被移除且无法恢复。因此，无法保证每条消息或事件至少会被一个服务处理。单条消息可以被多个订阅者订阅（并接收）。
 
-<DocImage src="/assets/Redis_1.png" alt="Redis 1" />
+<DocImage src={redisImage} alt="Redis 1" />
 
 ## 安装
 

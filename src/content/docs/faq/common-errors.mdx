@@ -1,3 +1,5 @@
+import injectorLogsImage from '/public/assets/injector_logs.png'
+
 # 常见错误
 
 在使用 NestJS 进行开发的过程中，你可能会遇到各种各样的错误，尤其是在学习该框架时。
@@ -90,7 +92,7 @@ Scope [<module_import_chain>]
 
 除了手动检查依赖关系外，从 Nest 8.1.0 开始，你可以设置 `NEST_DEBUG` 环境变量为任意真值字符串，在 Nest 解析依赖时获得额外的日志信息。
 
-<DocImage src="/assets/injector_logs.png" />
+<DocImage src={injectorLogsImage} />
 
 在上图中，黄色字符串表示被注入依赖的宿主类，蓝色字符串表示被注入依赖的名称或注入令牌，紫色字符串表示正在查找依赖的模块。通过这些信息，你通常可以追踪依赖解析过程，定位依赖注入问题的原因。
 

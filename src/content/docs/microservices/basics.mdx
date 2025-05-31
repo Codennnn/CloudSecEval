@@ -1,10 +1,12 @@
+import microservicesImage from '/public/assets/Microservices_1.png'
+
 # 概述
 
 除了传统的（有时称为单体架构）应用架构之外，Nest 还原生支持微服务架构风格的开发。文档其他部分讨论的大多数核心概念，如依赖注入、装饰器、异常过滤器、管道、守卫和拦截器等，同样适用于微服务。Nest 尽可能地对实现细节进行抽象，使得相同的组件能够在基于 HTTP 的平台、WebSocket 通信（WebSockets）以及微服务之间无缝运行。本节将介绍 Nest 针对微服务特性相关的内容。
 
 在 Nest 中，微服务本质上是指使用不同于 HTTP 的**传输层（Transport Layer）**的应用程序。
 
-<DocImage src="/assets/Microservices_1.png" alt="Microservices" />
+<DocImage src={microservicesImage} alt="Microservices" />
 
 Nest 提供了多种内置的传输层实现，称为**传输器**，它们负责在不同微服务实例之间传递消息。大多数传输器原生支持**请求-响应**和**基于事件的通信（Event-based communication）**两种消息模式。Nest 将每种传输器的实现细节抽象在统一的接口之下，无论是请求-响应还是事件驱动消息，都能轻松切换传输层。例如，你可以根据实际需求选择特定传输层以获得更高的可靠性或性能，而无需修改应用代码。
 

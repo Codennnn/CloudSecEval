@@ -1,8 +1,10 @@
+import filterImage from '/public/assets/Filter_1.png'
+
 # 异常过滤器（Exception filter）
 
 Nest 内置了一个**异常层（exceptions layer）**，负责处理应用中所有未被捕获的异常。当你的应用代码未能处理某个异常时，这一层会捕获该异常，并自动返回一个适合用户阅读的响应。
 
-<DocImage src="/assets/Filter_1.png" alt="异常过滤器结构图" />
+<DocImage src={filterImage} alt="异常过滤器结构图" />
 
 默认情况下，这一行为由内置的**全局异常过滤器（global exception filter）**完成。它会处理 `HttpException`（及其子类）类型的异常。当遇到**无法识别**的异常（即既不是 `HttpException` 也不是其子类时），内置异常过滤器会生成如下默认 JSON 响应：
 

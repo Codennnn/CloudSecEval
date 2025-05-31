@@ -1,3 +1,16 @@
+import modulesGraphImage from '/public/assets/devtools/modules-graph.png'
+import classesGraphImage from '/public/assets/devtools/classes-graph.png'
+import nodePopupImage from '/public/assets/devtools/node-popup.png'
+import subtreeViewImage from '/public/assets/devtools/subtree-view.png'
+import dragAndDropImage from '/public/assets/devtools/drag-and-drop.png'
+import partialGraphModulesViewImage from '/public/assets/devtools/partial-graph-modules-view.png'
+import partialGraphClassesViewImage from '/public/assets/devtools/partial-graph-classes-view.png'
+import routesImage from '/public/assets/devtools/routes.png'
+import auditImage from '/public/assets/devtools/audit.png'
+import sandboxImage from '/public/assets/devtools/sandbox.png'
+import sandboxTableImage from '/public/assets/devtools/sandbox-table.png'
+import bootstrapPerformanceImage from '/public/assets/devtools/bootstrap-performance.png'
+
 # 概述
 
 <CalloutInfo>
@@ -49,7 +62,7 @@ export class AppModule {}
 
 当你导入了 `DevtoolsModule` 并启动应用（`npm run start:dev`）后，就可以访问 [Devtools](https://devtools.nestjs.com) 页面，查看自动分析的依赖关系图。
 
-<DocImage src="/assets/devtools/modules-graph.png" alt="Modules graph" />
+<DocImage src={modulesGraphImage} alt="Modules graph" />
 
 <CalloutInfo>
   如上图所示，每个模块都会连接到 `InternalCoreModule`。`InternalCoreModule`
@@ -62,7 +75,7 @@ export class AppModule {}
 
 为了确认一切正常，将图表视图切换为“Classes（类）”。你应该会看到如下界面：
 
-<DocImage src="/assets/devtools/classes-graph.png" alt="Classes graph" />
+<DocImage src={classesGraphImage} alt="Classes graph" />
 
 如果你想聚焦某个节点，可以点击矩形节点，图表会弹出窗口，并显示 **"Focus"** 按钮。你也可以使用侧边栏的搜索栏查找特定节点。
 
@@ -72,7 +85,7 @@ export class AppModule {}
 
 </CalloutInfo>
 
-<DocImage src="/assets/devtools/node-popup.png" alt="Node popup" />
+<DocImage src={nodePopupImage} alt="Node popup" />
 
 <CalloutInfo>
 
@@ -82,7 +95,7 @@ export class AppModule {}
 
 你可以通过左侧侧边栏的表单控件调整边的距离，例如只可视化某个应用子树：
 
-<DocImage src="/assets/devtools/subtree-view.png" alt="Subtree view" />
+<DocImage src={subtreeViewImage} alt="Subtree view" />
 
 当团队中有**新成员**时，这一功能尤其有用，可以帮助他们快速了解应用结构。你还可以用它来可视化某个模块（如 `TasksModule`）及其所有依赖关系，这在将大型应用拆分为更小的模块（比如单独的微服务）时非常实用。
 
@@ -130,17 +143,17 @@ const app = await NestFactory.create(AppModule, {
 
 现在，每当你的应用因为 **“无法解析依赖关系”** 错误而启动失败时，都会在根目录下生成一个 `graph.json` 文件（该文件表示部分依赖关系图）。你可以将此文件拖拽到 Devtools 中（请确保将当前模式从 “Interactive” 切换为 “Preview”）：
 
-<DocImage src="/assets/devtools/drag-and-drop.png" alt="Drag and drop" />
+<DocImage src={dragAndDropImage} alt="Drag and drop" />
 
 上传成功后，你会看到如下依赖图和对话窗口：
 
-<DocImage src="/assets/devtools/partial-graph-modules-view.png" alt="Partial graph modules view" />
+<DocImage src={partialGraphModulesViewImage} alt="Partial graph modules view" />
 
 如图所示，高亮显示的 `TasksModule` 就是我们需要重点排查的模块。同时，在对话窗口中你也可以看到一些修复该问题的建议。
 
 如果我们切换到 “Classes” 视图，则会看到如下内容：
 
-<DocImage src="/assets/devtools/partial-graph-classes-view.png" alt="Partial graph classes view" />
+<DocImage src={partialGraphClassesViewImage} alt="Partial graph classes view" />
 
 该依赖图展示了我们希望注入到 `TasksService` 的 `DiagnosticsService` 并未在 `TasksModule` 的上下文中找到。通常，只需将 `DiagnosticsModule` 导入到 `TasksModule` 即可解决此问题！
 
@@ -148,7 +161,7 @@ const app = await NestFactory.create(AppModule, {
 
 当你导航到 **路由资源浏览器（Routes explorer）** 页面时，你会看到所有已注册的入口点：
 
-<DocImage src="/assets/devtools/routes.png" alt="Routes" />
+<DocImage src={routesImage} alt="Routes" />
 
 <CalloutInfo>
 
@@ -164,7 +177,7 @@ const app = await NestFactory.create(AppModule, {
 
 如果你希望即时执行 JavaScript 代码并实时与应用交互，可以导航到 **沙盒（Sandbox）** 页面：
 
-<DocImage src="/assets/devtools/sandbox.png" alt="Sandbox" />
+<DocImage src={sandboxImage} alt="Sandbox" />
 
 该 Playground 可用于在**实时**环境下测试和调试 API 端点，开发者无需借助 HTTP 客户端等工具，即可快速定位和修复问题。我们还可以绕过身份验证（Authentication）层，因此无需额外登录或专门为测试创建用户账号。对于事件驱动应用，还可以直接在 Playground 中触发事件，观察应用的响应。
 
@@ -172,7 +185,7 @@ const app = await NestFactory.create(AppModule, {
 
 你只需**即时**执行代码，即可立刻看到结果，无需重建应用或重启服务器。
 
-<DocImage src="/assets/devtools/sandbox-table.png" alt="Sandbox table" />
+<DocImage src={sandboxTableImage} alt="Sandbox table" />
 
 <CalloutInfo>
   如果你想以表格形式美观地展示对象数组，可以使用 `console.table()`（或直接用 `table()`）函数。
@@ -196,7 +209,7 @@ const app = await NestFactory.create(AppModule, {
 
 要查看所有类节点（如 控制器、提供者、增强器等）及其对应的实例化耗时，请导航至 **Bootstrap 性能** 页面：
 
-<DocImage src="/assets/devtools/bootstrap-performance.png" alt="Bootstrap performance" />
+<DocImage src={bootstrapPerformanceImage} alt="Bootstrap performance" />
 
 当你希望找出应用程序启动流程中最慢的部分时（例如：你想优化应用的启动时间，这对于无服务器（serverless）环境等场景至关重要），该页面会非常有用。
 
@@ -204,7 +217,7 @@ const app = await NestFactory.create(AppModule, {
 
 要查看自动生成的审计结果（包括错误、警告和提示），请导航至 **审计** 页面：
 
-<DocImage src="/assets/devtools/audit.png" alt="Audit" />
+<DocImage src={auditImage} alt="Audit" />
 
 <CalloutInfo>
 
@@ -231,6 +244,6 @@ fs.writeFileSync('./graph.json', app.get(SerializedGraph).toString())
 
 随后，你可以通过拖拽或上传该文件：
 
-<DocImage src="/assets/devtools/drag-and-drop.png" alt="Drag and drop" />
+<DocImage src={dragAndDropImage} alt="Drag and drop" />
 
 当你需要与他人（如同事）共享依赖关系图，或希望离线分析时，这一功能会非常有用。

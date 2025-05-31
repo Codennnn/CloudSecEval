@@ -1,3 +1,10 @@
+import graphPublishedTerminalImage from '/public/assets/devtools/graph-published-terminal.png'
+import projectImage from '/public/assets/devtools/project.png'
+import reportImage from '/public/assets/devtools/report.png'
+import nodesSelectionImage from '/public/assets/devtools/nodes-selection.png'
+import integrateGithubAppImage from '/public/assets/devtools/integrate-github-app.png'
+import actionsPreviewImage from '/public/assets/devtools/actions-preview.png'
+
 # CI/CD 集成
 
 <CalloutInfo>
@@ -54,11 +61,11 @@ async function bootstrap() {
 
 当依赖关系图成功发布后，你会在工作流视图中看到如下输出：
 
-<DocImage src="/assets/devtools/graph-published-terminal.png" alt="Graph published terminal" />
+<DocImage src={graphPublishedTerminalImage} alt="Graph published terminal" />
 
 每当依赖关系图被发布时，你都可以在项目对应页面看到新的记录：
 
-<DocImage src="/assets/devtools/project.png" alt="Project" />
+<DocImage src={projectImage} alt="Project" />
 
 ## 报告
 
@@ -66,7 +73,7 @@ async function bootstrap() {
 
 要查看报告，请前往项目对应页面（参见 organizations）。
 
-<DocImage src="/assets/devtools/report.png" alt="Report" />
+<DocImage src={reportImage} alt="Report" />
 
 这对于发现代码评审过程中可能被忽略的变更非常有帮助。例如，假设有人更改了某个**深层嵌套的提供者**的作用域（scope）。这种变更可能不会被评审者立即察觉，但借助 Devtools，我们可以轻松发现这些变更，并确保它们是有意为之。又比如，如果我们从某个特定端点移除了守卫，该变更也会在报告中显示为受影响项。如果我们没有为该路由编写集成测试或端到端测试，就可能不会注意到该路由已不再受保护，而等到发现时可能为时已晚。
 
@@ -82,7 +89,7 @@ async function bootstrap() {
 
 请参见下方截图：
 
-<DocImage src="/assets/devtools/nodes-selection.png" alt="Nodes selection" />
+<DocImage src={nodesSelectionImage} alt="Nodes selection" />
 
 这种"时光回溯"能力让你可以通过对比当前依赖关系图与历史版本，排查和定位问题。根据你的设置，每个拉取请求，甚至每次提交（commit），都可以在注册表中拥有对应的快照，因此你可以轻松回溯，查看具体变更。可以把 Devtools 理解为一个具备 Nest 应用依赖关系图可视化能力的 Git，不仅能追踪变更，还能**直观展示**这些变更。
 
@@ -155,11 +162,11 @@ const publishOptions = {
 
 为了获得最佳的开发体验，建议你为项目集成 **GitHub 应用**，只需点击“Integrate GitHub app”按钮（见下方截图）。注意：这不是强制要求。
 
-<DocImage src="/assets/devtools/integrate-github-app.png" alt="Integrate GitHub app" />
+<DocImage src={integrateGithubAppImage} alt="Integrate GitHub app" />
 
 通过该集成，你可以在拉取请求页面直接查看预览/报告生成流程的状态：
 
-<DocImage src="/assets/devtools/actions-preview.png" alt="Actions preview" />
+s<DocImage src={actionsPreviewImage} alt="Actions preview" />
 
 ## 集成：Gitlab Pipelines
 

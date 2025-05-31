@@ -1,3 +1,6 @@
+import terminusErrorLogPrettyImage from '/public/assets/Terminus_Error_Log_Pretty.png'
+import terminusErrorLogJsonImage from '/public/assets/Terminus_Error_Log_Json.png'
+
 # 健康检查（Healthcheck / Terminus）
 
 Terminus 集成为你提供了 **就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查至关重要。简而言之，Web 开发中的健康检查通常指的是一个特殊的地址，例如：`https://my-website.com/health/readiness`。
@@ -444,10 +447,10 @@ export class HealthModule {}
 
 Terminus 允许你配置健康检查错误在日志中的展示方式。
 
-| 错误日志样式   | 描述                                                                    | 示例图                                                                                   |
-| :------------- | :---------------------------------------------------------------------- | :--------------------------------------------------------------------------------------- |
-| `json`（默认） | 当发生错误时，以 JSON 对象的形式输出健康检查结果摘要                    | <DocImage src="/assets/Terminus_Error_Log_Json.png" alt="Terminus Error Log Json" />     |
-| `pretty`       | 当发生错误时，以格式化框体输出健康检查结果摘要，并高亮显示成功/失败结果 | <DocImage src="/assets/Terminus_Error_Log_Pretty.png" alt="Terminus Error Log Pretty" /> |
+| 错误日志样式   | 描述                                                                    | 示例图                                                                         |
+| :------------- | :---------------------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| `json`（默认） | 当发生错误时，以 JSON 对象的形式输出健康检查结果摘要                    | <DocImage src={terminusErrorLogJsonImage} alt="Terminus Error Log Json" />     |
+| `pretty`       | 当发生错误时，以格式化框体输出健康检查结果摘要，并高亮显示成功/失败结果 | <DocImage src={terminusErrorLogPrettyImage} alt="Terminus Error Log Pretty" /> |
 
 你可以通过如下配置项 `errorLogStyle` 来切换日志样式：
 
@@ -481,4 +484,4 @@ export class HealthModule {}
 
 ## 更多示例
 
-更多可用的示例请参见 [这里](https://github.com/nestjs/terminus/tree/master/sample)。
+更多可用的示例请参见[这里](https://github.com/nestjs/terminus/tree/master/sample)。

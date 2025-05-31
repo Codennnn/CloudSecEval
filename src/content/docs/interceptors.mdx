@@ -1,8 +1,10 @@
+import interceptorImage from '/public/assets/Interceptors_1.png'
+
 # 拦截器（Interceptor）
 
 拦截器是一个通过 `@Injectable()` 装饰器注解，并实现了 `NestInterceptor` 接口的类。
 
-<DocImage src="/assets/Interceptors_1.png" alt="拦截器结构图" />
+<DocImage src={interceptorImage} alt="拦截器结构图" />
 
 拦截器受[面向切面编程（Aspect Oriented Programming, AOP）](https://en.wikipedia.org/wiki/Aspect-oriented_programming) 的启发，具备以下能力：
 

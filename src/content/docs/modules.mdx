@@ -1,8 +1,11 @@
+import moduleImage from '/public/assets/Modules_1.png'
+import sharedModuleImage from '/public/assets/Shared_Module_1.png'
+
 # 模块（Module）
 
 模块是一个通过 `@Module()` 装饰器定义的类。该装饰器提供的元数据，帮助 **Nest** 高效地组织和管理应用结构。
 
-<DocImage src="/assets/Modules_1.png" alt="模块结构图" />
+<DocImage src={moduleImage} alt="模块结构图" />
 
 每个 Nest 应用至少包含一个模块，即根模块（root module），它是 Nest 构建**应用图（application graph）**的起点。应用图用于描述模块与提供者之间的关系和依赖。虽然小型应用可能只有根模块，但在实际开发中，通常会有多个模块。模块被**强烈推荐**用于高效组织各类组件。对于大多数应用，你很可能会有多个模块，每个模块都封装了一组紧密相关的功能。
 
@@ -79,7 +82,7 @@ export class AppModule {}
 
 在 Nest 中，模块默认是 **单例（singleton）**，这意味着你可以轻松地在多个模块之间共享同一个提供者实例。
 
-<DocImage src="/assets/Shared_Module_1.png" alt="共享模块结构图" />
+<DocImage src={sharedModuleImage} alt="共享模块结构图" />
 
 每个模块天生就是 **共享模块**，一旦创建，即可被任何其他模块复用。例如，如果我们希望在多个模块之间共享 `CatsService` 的实例，需要先将 `CatsService` 添加到模块的 `exports` 数组中进行导出，如下所示：
 

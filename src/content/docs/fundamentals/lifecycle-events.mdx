@@ -1,3 +1,5 @@
+import lifecycleEventsImage from '/public/assets/lifecycle-events.png'
+
 # 生命周期事件（Lifecycle Events）
 
 Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。Nest 提供了**生命周期钩子（Lifecycle Hook）**，让你能够感知关键的生命周期事件，并在这些事件发生时执行相应操作（如在模块、提供者或控制器上运行已注册的代码）。
@@ -6,7 +8,7 @@ Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。
 
 下图展示了应用程序从启动（bootstrapping）到 Node 进程退出期间，关键生命周期事件的顺序。整个生命周期可分为三个阶段：**初始化（initializing）**、**运行中（running）** 和 **终止中（terminating）**。通过理解这一生命周期，你可以合理规划模块和服务的初始化、管理活跃连接，并在收到终止信号时优雅地关闭应用。
 
-<DocImage src="/assets/lifecycle-events.png" alt="生命周期事件流程图" />
+<DocImage src={lifecycleEventsImage} alt="生命周期事件流程图" />
 
 ## 生命周期事件
 

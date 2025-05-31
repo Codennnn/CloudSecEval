@@ -1,3 +1,5 @@
+import swagger1Image from '/public/assets/swagger1.png'
+
 # 简介
 
 [OpenAPI](https://swagger.io/specification/) 规范是一种与语言无关的定义格式，用于描述 RESTful API。Nest 提供了专用的 [模块](https://github.com/nestjs/swagger)，通过装饰器机制帮助我们自动生成此类规范文档。
@@ -61,7 +63,7 @@ $ npm run start
 
 应用运行后，在浏览器中访问 `http://localhost:3000/api`，你将看到 Swagger UI。
 
-<DocImage src="/assets/swagger1.png" />
+<DocImage src={swagger1Image} />
 
 如你所见，`SwaggerModule` 会自动反映你所有的端点。
 

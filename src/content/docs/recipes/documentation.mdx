@@ -1,3 +1,6 @@
+import documentationCompodoc1Image from '/public/assets/documentation-compodoc-1.jpg'
+import documentationCompodoc2Image from '/public/assets/documentation-compodoc-2.jpg'
+
 # 文档生成工具
 
 **Compodoc** 是一款用于 Angular 应用的文档生成工具。由于 Nest 与 Angular 在项目结构和代码结构上有诸多相似之处，因此 **Compodoc** 同样适用于 Nest 应用。
@@ -20,9 +23,9 @@ $ npx @compodoc/compodoc -p tsconfig.json -s
 
 然后在浏览器中访问 [http://localhost:8080](http://localhost:8080)。你将看到初始的 Nest 命令行工具（Nest CLI）项目文档页面：
 
-<DocImage src="/assets/documentation-compodoc-1.jpg" alt="Compodoc 1" />
+<DocImage src={documentationCompodoc1Image} alt="Compodoc 1" />
 
-<DocImage src="/assets/documentation-compodoc-2.jpg" alt="Compodoc 2" />
+<DocImage src={documentationCompodoc2Image} alt="Compodoc 2" />
 
 ## 参与贡献
 
