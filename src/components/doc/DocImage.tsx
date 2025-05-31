@@ -27,6 +27,7 @@ export function DocImage(props: DocImageProps) {
         alt={alt}
         className="illustrative-image rounded-lg h-auto max-w-full"
         height={imageHeight}
+        placeholder="blur"
         src={src}
         width={imageWidth}
       />

@@ -75,7 +75,6 @@ export const metadata: Metadata = {
   icons: [{ url: '/logo.png', sizes: '32x32', rel: 'icon' }],
   keywords: ['NestJS', 'Node.js', 'TypeScript', '后端框架', '中文文档'],
   authors: [{ name: 'NestJS 中文文档团队' }],
-  viewport: 'width=device-width, initial-scale=1',
 }
 
 export default function RootLayout(props: React.PropsWithChildren) {
