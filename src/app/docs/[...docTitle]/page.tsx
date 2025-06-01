@@ -69,7 +69,7 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
       <div className="@lg:p-16 @md:p-6 @sm:p-4">
         <article
           className={cn(
-            'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:not-italic prose-a:underline-offset-4',
+            'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:not-italic prose-a:underline-offset-4 prose-a:font-normal',
             'max-w-[80ch] mx-auto',
           )}
         >
