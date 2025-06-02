@@ -93,7 +93,7 @@ async upvotePost(
 
 ## 在字段解析器级别执行增强器
 
-在 GraphQL 场景下，Nest 并不会在字段级别运行**增强器**（enhancer，增强器是拦截器、守卫和过滤器的统称），它们只会在顶层的 `@Query()`/`@Mutation()` 方法上运行。[详见此 issue](https://github.com/nestjs/graphql/issues/320#issuecomment-511193229)。你可以通过在 `GqlModuleOptions` 中设置 `fieldResolverEnhancers` 选项，让 Nest 在带有 `@ResolveField()` 注解的方法上执行拦截器、守卫或过滤器。只需传入包含 `'interceptors'`、`'guards'` 和/或 `'filters'` 的数组即可：
+在 GraphQL 场景下，Nest 并不会在字段级别运行**增强器**（enhancer，增强器是拦截器、守卫和过滤器的统称），他们只会在顶层的 `@Query()`/`@Mutation()` 方法上运行。[详见此 issue](https://github.com/nestjs/graphql/issues/320#issuecomment-511193229)。你可以通过在 `GqlModuleOptions` 中设置 `fieldResolverEnhancers` 选项，让 Nest 在带有 `@ResolveField()` 注解的方法上执行拦截器、守卫或过滤器。只需传入包含 `'interceptors'`、`'guards'` 和/或 `'filters'` 的数组即可：
 
 ```ts
 GraphQLModule.forRoot({

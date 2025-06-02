@@ -55,7 +55,7 @@ export class CatsService implements OnModuleInit {
 }
 ```
 
-`resolve()` 方法会返回该提供者在其专属依赖注入子树中的唯一实例。每个子树拥有独立的上下文标识符（context identifier）。因此，多次调用该方法并比较返回的实例时，会发现它们并不相等。
+`resolve()` 方法会返回该提供者在其专属依赖注入子树中的唯一实例。每个子树拥有独立的上下文标识符（context identifier）。因此，多次调用该方法并比较返回的实例时，会发现他们并不相等。
 
 ```ts filename='cats.service.ts'
 @Injectable()
@@ -72,7 +72,7 @@ export class CatsService implements OnModuleInit {
 }
 ```
 
-如果希望多次 `resolve()` 调用返回同一个实例，并确保它们共享同一个依赖注入子树，可以为 `resolve()` 方法传入上下文标识符。可通过 `ContextIdFactory` 的 `create()` 方法生成唯一标识符：
+如果希望多次 `resolve()` 调用返回同一个实例，并确保他们共享同一个依赖注入子树，可以为 `resolve()` 方法传入上下文标识符。可通过 `ContextIdFactory` 的 `create()` 方法生成唯一标识符：
 
 ```ts filename='cats.service.ts'
 import { ContextIdFactory } from '@nestjs/core'
@@ -105,7 +105,7 @@ this.moduleRef.registerRequestByContextId(/* YOUR_REQUEST_OBJECT */, contextId);
 
 ## 获取当前子树
 
-有时，你可能需要在请求上下文中解析请求作用域的提供者实例。假设 `CatsService` 具有请求作用域，并且你希望解析同为请求作用域的 `CatsRepository` 实例。为了让它们共享同一个依赖注入子树，必须获取当前的上下文标识符，而不是像上文那样新建一个。你可以通过注入请求对象（使用 `@Inject()` 装饰器）实现这一目标：
+有时，你可能需要在请求上下文中解析请求作用域的提供者实例。假设 `CatsService` 具有请求作用域，并且你希望解析同为请求作用域的 `CatsRepository` 实例。为了让他们共享同一个依赖注入子树，必须获取当前的上下文标识符，而不是像上文那样新建一个。你可以通过注入请求对象（使用 `@Inject()` 装饰器）实现这一目标：
 
 ```ts filename='cats.service.ts'
 @Injectable()

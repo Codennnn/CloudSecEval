@@ -16,7 +16,7 @@ Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。
 
 下表中，`onModuleInit` 和 `onApplicationBootstrap` 只有在你显式调用 `app.init()` 或 `app.listen()` 时才会触发。
 
-同样，`onModuleDestroy`、`beforeApplicationShutdown` 和 `onApplicationShutdown` 只有在你显式调用 `app.close()`，或进程收到特殊系统信号（如 SIGTERM）且你已在应用引导时正确调用了 `enableShutdownHooks` 时才会触发（详见下文 **应用关闭** 部分）。
+同样，`onModuleDestroy`、`beforeApplicationShutdown` 和 `onApplicationShutdown` 只有在你显式调用 `app.close()`，或进程收到特殊系统信号（如 SIGTERM）且你已在应用启动时正确调用了 `enableShutdownHooks` 时才会触发（详见下文[应用关闭](/fundamentals/lifecycle-events#application-shutdown)部分）。
 
 | 生命周期钩子方法                | 触发钩子方法调用的生命周期事件                                                                                                                                              |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -26,10 +26,10 @@ Nest 应用程序以及每个应用元素，都由 Nest 管理的生命周期。
 | `beforeApplicationShutdown()`\* | 在所有 `onModuleDestroy()` 处理器完成（Promise 已 resolve 或 reject）后调用；<br />一旦完成（Promise 已 resolve 或 reject），所有现有连接将被关闭（调用了 `app.close()`）。 |
 | `onApplicationShutdown()`\*     | 在连接关闭后（`app.close()` resolve 后）调用。                                                                                                                              |
 
-\* 对于这些事件，如果你没有显式调用 `app.close()`，则必须主动开启它们才能响应如 `SIGTERM` 这样的系统信号。详见[应用关闭](fundamentals/lifecycle-events#application-shutdown)。
+\* 对于这些事件，如果你没有显式调用 `app.close()`，则必须主动开启他们才能响应如 `SIGTERM` 这样的系统信号。详见[应用关闭](/fundamentals/lifecycle-events#application-shutdown)。
 
 <CalloutInfo type="warning">
-  上述生命周期钩子不会在**请求作用域（Request-scoped）**类中触发。请求作用域类不受应用生命周期管理，其生命周期不可预测。它们仅为每个请求单独创建，并在响应发送后自动被垃圾回收。
+  上述生命周期钩子不会在**请求作用域（Request-scoped）**类中触发。请求作用域类不受应用生命周期管理，其生命周期不可预测。他们仅为每个请求单独创建，并在响应发送后自动被垃圾回收。
 </CalloutInfo>
 
 <CalloutInfo>

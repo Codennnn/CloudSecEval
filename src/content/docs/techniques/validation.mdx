@@ -157,7 +157,7 @@ create(@Body() createUserDto: CreateUserDto) {
 
 <CalloutInfo>
   由于 TypeScript 不会存储泛型或接口的元数据，当你在数据传输对象（DTO，Data Transfer
-  Object）中使用它们时，验证管道（ValidationPipe）可能无法正确验证传入数据。因此，建议在 DTO
+  Object）中使用他们时，验证管道（ValidationPipe）可能无法正确验证传入数据。因此，建议在 DTO
   中使用具体的类。
 </CalloutInfo>
 
@@ -403,7 +403,7 @@ export class UpdateCatDto extends PartialType(OmitType(CreateCatDto, ['name'] as
 
 ## 解析与验证数组
 
-TypeScript 不会存储关于泛型或接口的元数据，因此当你在数据传输对象（DTO）中使用它们时，验证管道（ValidationPipe）可能无法正确验证传入的数据。例如，在下面的代码中，`createUserDtos` 无法被正确验证：
+TypeScript 不会存储关于泛型或接口的元数据，因此当你在数据传输对象（DTO）中使用他们时，验证管道（ValidationPipe）可能无法正确验证传入的数据。例如，在下面的代码中，`createUserDtos` 无法被正确验证：
 
 ```ts
 @Post()

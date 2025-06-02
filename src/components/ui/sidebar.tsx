@@ -495,6 +495,7 @@ const sidebarMenuButtonVariants = cva(
     // 菜单激活状态样式
     'data-[active=true]:bg-sidebar-accent',
     'data-[active=true]:text-sidebar-accent-foreground',
+    'data-[active=true]:shadow',
 
     // hover 悬停状态样式
     'hover:bg-sidebar-accent',
@@ -738,6 +739,7 @@ function SidebarMenuSubButton({
         // 菜单激活状态样式
         'data-[active=true]:bg-sidebar-accent',
         'data-[active=true]:text-sidebar-accent-foreground',
+        'data-[active=true]:shadow',
 
         // hover 悬停状态样式
         'hover:bg-sidebar-accent',

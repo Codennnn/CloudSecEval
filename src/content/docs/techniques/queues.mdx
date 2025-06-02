@@ -8,7 +8,7 @@
 
 Nest 提供了 `@nestjs/bullmq` 包用于集成 BullMQ，以及 `@nestjs/bull` 包用于集成 Bull。这两个包都是在各自底层库之上开发的抽象/封装，由同一团队维护。Bull 目前处于维护模式，团队主要专注于修复 bug，而 BullMQ 正在积极开发，采用了现代 TypeScript 实现，并具备不同的功能特性。如果 Bull 能满足你的需求，它依然是一个可靠且经过实战考验的选择。Nest 的这两个包让你可以非常方便地将 BullMQ 或 Bull 队列集成到 Nest 应用中。
 
-BullMQ 和 Bull 都使用 [Redis](https://redis.io/) 来持久化作业数据，因此你需要在系统上安装 Redis。由于它们基于 Redis，你的队列架构可以完全分布式且与平台无关。例如，你可以在一个（或多个）节点上运行一些队列[消费者](/techniques/queues#consumers)、[生产者](/techniques/queues#producers)和[监听器](/techniques/queues#event-listeners)，在其他网络节点上的其他 Node.js 平台上运行更多的生产者、消费者和监听器。
+BullMQ 和 Bull 都使用 [Redis](https://redis.io/) 来持久化作业数据，因此你需要在系统上安装 Redis。由于他们基于 Redis，你的队列架构可以完全分布式且与平台无关。例如，你可以在一个（或多个）节点上运行一些队列[消费者](/techniques/queues#consumers)、[生产者](/techniques/queues#producers)和[监听器](/techniques/queues#event-listeners)，在其他网络节点上的其他 Node.js 平台上运行更多的生产者、消费者和监听器。
 
 本章将介绍 `@nestjs/bullmq` 和 `@nestjs/bull` 这两个包。我们也推荐你阅读 [BullMQ](https://docs.bullmq.io/) 和 [Bull](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md) 的官方文档，以获取更多背景信息和具体实现细节。
 
@@ -133,7 +133,7 @@ export class AudioService {
   `'audio'`）来标识队列。
 </CalloutInfo>
 
-接下来，可以通过调用队列的 `add()` 方法并传入自定义的作业对象来添加作业。作业以可序列化的 JavaScript 对象形式表示（因为它们会被存储在 Redis 数据库中）。你可以根据业务语义自定义作业对象的结构。同时，还需要为作业指定一个名称。这样可以创建专门的[消费者](/techniques/queues#consumers)，仅处理具有特定名称的作业。
+接下来，可以通过调用队列的 `add()` 方法并传入自定义的作业对象来添加作业。作业以可序列化的 JavaScript 对象形式表示（因为他们会被存储在 Redis 数据库中）。你可以根据业务语义自定义作业对象的结构。同时，还需要为作业指定一个名称。这样可以创建专门的[消费者](/techniques/queues#consumers)，仅处理具有特定名称的作业。
 
 ```ts
 const job = await this.audioQueue.add('transcode', {
@@ -626,7 +626,7 @@ export class AudioService {
   `'audio'`）来标识队列。
 </CalloutInfo>
 
-接下来，可以通过调用队列的 `add()` 方法并传入自定义的任务对象来添加任务。任务以可序列化的 JavaScript 对象形式表示（因为它们会被存储在 Redis 数据库中）。你可以根据业务语义自定义任务对象的结构。
+接下来，可以通过调用队列的 `add()` 方法并传入自定义的任务对象来添加任务。任务以可序列化的 JavaScript 对象形式表示（因为他们会被存储在 Redis 数据库中）。你可以根据业务语义自定义任务对象的结构。
 
 ```ts
 const job = await this.audioQueue.add({

@@ -103,7 +103,7 @@ node: Node;
 
 ## 泛型与接口
 
-由于 TypeScript 不会存储关于泛型（Generics）或接口（Interfaces）的元数据（Metadata），当你在数据传输对象中使用它们时，`SwaggerModule` 可能无法在运行时正确生成模型定义。例如，下面的代码无法被 Swagger 模块正确识别：
+由于 TypeScript 不会存储关于泛型（Generics）或接口（Interfaces）的元数据（Metadata），当你在数据传输对象中使用他们时，`SwaggerModule` 可能无法在运行时正确生成模型定义。例如，下面的代码无法被 Swagger 模块正确识别：
 
 ```ts
 createBulk(@Body() usersDto: CreateUserDto[])

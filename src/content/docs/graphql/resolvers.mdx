@@ -170,11 +170,11 @@ export class AuthorsResolver {
   所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都由 `@nestjs/graphql` 包导出。
 </CalloutInfo>
 
-你可以定义多个解析器类。Nest 会在运行时将它们合并。关于代码组织的更多内容，请参见下方的 [模块](/graphql/resolvers#module) 部分。
+你可以定义多个解析器类。Nest 会在运行时将他们合并。关于代码组织的更多内容，请参见下方的 [模块](/graphql/resolvers#module) 部分。
 
 <CalloutInfo type="warning">
   `AuthorsService` 和 `PostsService`
-  类中的逻辑可以根据需要非常简单或复杂。此示例的重点在于展示如何构建解析器，以及它们如何与其他提供者进行交互。
+  类中的逻辑可以根据需要非常简单或复杂。此示例的重点在于展示如何构建解析器，以及他们如何与其他提供者进行交互。
 </CalloutInfo>
 
 在上面的示例中，我们创建了 `AuthorsResolver`，它定义了一个查询解析器函数和一个字段解析器函数。要创建解析器，我们需要创建一个包含解析器方法的类，并使用 `@Resolver()` 装饰器对该类进行注解。
@@ -185,7 +185,7 @@ export class AuthorsResolver {
 
 在本例中，由于该类包含了一个**字段解析器**函数（用于 `Author` 对象类型的 `posts` 属性），我们**必须**为 `@Resolver()` 装饰器提供一个值，以指明该类中所有字段解析器的父类型（即对应的 `ObjectType` 类名）。从示例中可以看出，在编写字段解析器函数时，需要访问父对象（即当前正在解析字段所属的对象）。在本例中，我们通过字段解析器为作者填充 `posts` 数组，该解析器会调用服务并以作者的 `id` 作为参数。因此，需要在 `@Resolver()` 装饰器中指定父对象。同时，注意在字段解析器中通过 `@Parent()` 方法参数装饰器获取父对象的引用。
 
-我们可以定义多个 `@Query()` 解析器函数（无论是在本类中还是在其他解析器类中），它们会被聚合到生成的 SDL 中的单一 **Query 类型**定义中，并在解析器映射表中生成相应的条目。这样，你可以将查询定义靠近其所使用的模型和服务，并通过模块进行良好组织。
+我们可以定义多个 `@Query()` 解析器函数（无论是在本类中还是在其他解析器类中），他们会被聚合到生成的 SDL 中的单一 **Query 类型**定义中，并在解析器映射表中生成相应的条目。这样，你可以将查询定义靠近其所使用的模型和服务，并通过模块进行良好组织。
 
 <CalloutInfo>
   Nest 命令行工具（Nest
@@ -559,7 +559,7 @@ export class AuthorsResolver {
 
 <CalloutInfo type="warning">
   `AuthorsService` 和 `PostsService`
-  类中的逻辑可以非常简单，也可以非常复杂。这个示例的重点在于展示如何构建解析器（Resolver），以及它们如何与其他提供者进行交互。
+  类中的逻辑可以非常简单，也可以非常复杂。这个示例的重点在于展示如何构建解析器（Resolver），以及他们如何与其他提供者进行交互。
 </CalloutInfo>
 
 `@Resolver()` 装饰器是必需的。它可以接收一个可选的字符串参数，表示类名。只要类中包含 `@ResolveField()` 装饰器，就必须指定该类名，以便 Nest 知道被装饰的方法与哪个父类型（在本例中为 `Author` 类型）相关联。或者，也可以不在类顶部设置 `@Resolver()`，而是在每个方法上单独设置：
@@ -682,7 +682,7 @@ export class CreatePostInput extends Post {
 
 ## GraphQL 参数装饰器
 
-我们可以通过专用装饰器访问标准的 GraphQL 解析器参数。下表对比了 Nest 装饰器与它们所代表的原生 Apollo 参数。
+我们可以通过专用装饰器访问标准的 GraphQL 解析器参数。下表对比了 Nest 装饰器与他们所代表的原生 Apollo 参数。
 
 <table>
   <tbody>

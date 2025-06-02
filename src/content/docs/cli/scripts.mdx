@@ -50,7 +50,7 @@ $ npm run start
 
 这些命令利用 npm 的脚本运行功能，使用**本地安装**的 `nest` 可执行文件来执行 `nest build` 或 `nest start`。通过使用这些内置的包管理脚本，你可以完全管理 Nest 命令行工具（Nest CLI）命令的依赖版本。这意味着，只要遵循这种**推荐**用法，你的团队成员都能确保运行相同版本的命令。
 
-\*这适用于 `build` 和 `start` 命令。`nest new` 和 `nest generate` 命令并不属于构建/执行流程，因此它们的运行环境不同，也不会在 `package.json` 脚本中内置。
+\*这适用于 `build` 和 `start` 命令。`nest new` 和 `nest generate` 命令并不属于构建/执行流程，因此他们的运行环境不同，也不会在 `package.json` 脚本中内置。
 
 对于大多数开发者或团队，推荐使用包管理脚本来构建和运行 Nest 项目。你可以通过选项（如 `--path`、`--webpack`、`--webpackPath`）完全自定义这些脚本的行为，或根据需要自定义 `tsc` 或 webpack 的编译器配置文件（如 `tsconfig.json`）。你也可以自由地运行完全自定义的构建流程来编译 TypeScript（甚至可以直接用 `ts-node` 执行 TypeScript 代码）。
 

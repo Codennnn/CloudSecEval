@@ -155,7 +155,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 ## 模式优先（schema first）
 
-要使用模式优先方式，首先需要在配置对象中添加 `typePaths` 属性。`typePaths` 属性用于指示 `GraphQLModule` 应该在哪里查找你编写的 GraphQL SDL 模式定义文件。这些文件会在内存中合并，这样你就可以将模式拆分到多个文件，并将它们放在靠近各自解析器的位置。
+要使用模式优先方式，首先需要在配置对象中添加 `typePaths` 属性。`typePaths` 属性用于指示 `GraphQLModule` 应该在哪里查找你编写的 GraphQL SDL 模式定义文件。这些文件会在内存中合并，这样你就可以将模式拆分到多个文件，并将他们放在靠近各自解析器的位置。
 
 ```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({

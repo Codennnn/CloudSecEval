@@ -16,7 +16,7 @@
 
 ## 前向引用（forward reference）
 
-前向引用允许 Nest 通过 `forwardRef()` 工具函数引用尚未定义的类。例如，`CatsService` 和 `CommonService` 互相依赖时，双方都可以结合 `@Inject()` 和 `forwardRef()` 解决循环依赖。否则，Nest 无法实例化它们，因为缺少必要的元数据。示例代码如下：
+前向引用允许 Nest 通过 `forwardRef()` 工具函数引用尚未定义的类。例如，`CatsService` 和 `CommonService` 互相依赖时，双方都可以结合 `@Inject()` 和 `forwardRef()` 解决循环依赖。否则，Nest 无法实例化他们，因为缺少必要的元数据。示例代码如下：
 
 ```ts filename='cats.service.ts'
 import { forwardRef } from '@nestjs/common'

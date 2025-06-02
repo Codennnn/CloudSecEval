@@ -95,7 +95,7 @@ export class YourCatchAllExceptionFilter implements ExceptionFilter {
 }
 ```
 
-默认情况下，只有未被错误过滤器捕获的未处理异常才会被上报到 Sentry。`HttpException`（包括[其衍生类](/exception-filters#built-in-http-exceptions)）默认也不会被捕获，因为它们大多作为控制流工具使用。
+默认情况下，只有未被错误过滤器捕获的未处理异常才会被上报到 Sentry。`HttpException`（包括[其衍生类](/exception-filters#built-in-http-exceptions)）默认也不会被捕获，因为他们大多作为控制流工具使用。
 
 如果你没有全局兜底异常过滤器，可以在主模块的 providers 中添加 `SentryGlobalFilter`。该过滤器会将未被其他异常过滤器捕获的所有未处理错误上报到 Sentry。
 

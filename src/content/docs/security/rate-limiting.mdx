@@ -334,7 +334,7 @@ export class AppModule {}
 
 ## 存储方式
 
-内置存储是一种内存缓存（in memory cache），用于记录请求，直到它们超过全局选项中设置的 TTL 为止。你可以通过将自定义存储类传递给 `ThrottlerModule` 的 `storage` 选项，来替换默认存储，只要该类实现了 `ThrottlerStorage` 接口即可。
+内置存储是一种内存缓存（in memory cache），用于记录请求，直到他们超过全局选项中设置的 TTL 为止。你可以通过将自定义存储类传递给 `ThrottlerModule` 的 `storage` 选项，来替换默认存储，只要该类实现了 `ThrottlerStorage` 接口即可。
 
 对于分布式服务器场景，你可以使用社区提供的 [Redis 存储适配器](https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis)，实现统一的数据源。
 
