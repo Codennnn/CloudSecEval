@@ -1,22 +1,22 @@
 # 循环依赖（Circular Dependency）
 
-当两个类相互依赖时，就会出现循环依赖。例如，A 类需要依赖 B 类，而 B 类同样需要依赖 A 类。在 Nest 中，循环依赖可能发生在模块之间，也可能发生在提供者之间。
+当两个类互相依赖时，就会出现循环依赖。例如，A 类依赖 B 类，同时 B 类也依赖 A 类。在 Nest 中，循环依赖既可能发生在模块之间，也可能出现在提供者之间。
 
-虽然在开发中应尽量避免循环依赖，但有时难以完全规避。针对这种情况，Nest 提供了两种解决提供者之间循环依赖的方法。本章将分别介绍：**前向引用（forward referencing）** 技术，以及通过 **ModuleRef 类** 从依赖注入容器中获取提供者实例的方式。
+虽然开发中应该尽量避免循环依赖，但有时难以完全规避。针对这种情况，Nest 提供了两种解决提供者间循环依赖的方法：一是使用 **前向引用（forward referencing）** 技术，二是通过 **ModuleRef 类** 从依赖注入容器中获取提供者实例。
 
-我们还将介绍如何解决模块之间的循环依赖问题。
+本章将分别介绍这两种方法，并说明如何处理模块之间的循环依赖。
 
 <CalloutInfo type="warning">
-  使用 "barrel files"/index.ts
-  文件进行分组导入时，也可能导致循环依赖。对于模块和提供者类，建议不要使用 barrel
-  文件。例如，在同一目录下，`cats/cats.controller` 不应通过 `cats` 来间接导入 `cats/cats.service`
-  文件。更多细节请参见 [此 GitHub
+  使用 "barrel files"（即 index.ts
+  文件）进行分组导入时，也可能引发循环依赖。对于模块和提供者类，建议不要使用 barrel
+  文件。例如，在同一目录下，`cats/cats.controller` 不应通过 `cats` 间接导入
+  `cats/cats.service`。更多细节请参见 [此 GitHub
   讨论](https://github.com/nestjs/nest/issues/1181#issuecomment-430197191)。
 </CalloutInfo>
 
 ## 前向引用（forward reference）
 
-**前向引用（forward reference）** 允许 Nest 通过 `forwardRef()` 工具函数引用尚未定义的类。例如，如果 `CatsService` 和 `CommonService` 互相依赖，双方都可以通过 `@Inject()` 和 `forwardRef()` 工具来解决循环依赖。否则，Nest 无法实例化它们，因为缺少必要的元数据。示例代码如下：
+前向引用允许 Nest 通过 `forwardRef()` 工具函数引用尚未定义的类。例如，`CatsService` 和 `CommonService` 互相依赖时，双方都可以结合 `@Inject()` 和 `forwardRef()` 解决循环依赖。否则，Nest 无法实例化它们，因为缺少必要的元数据。示例代码如下：
 
 ```ts filename='cats.service.ts'
 import { forwardRef } from '@nestjs/common'
@@ -30,7 +30,7 @@ export class CatsService {
 }
 ```
 
-这就完成了关系中的一方。接下来，对 `CommonService` 也做同样处理：
+这样就完成了其中一方的处理。接下来，对 `CommonService` 也进行同样的配置：
 
 ```ts filename='common.service.ts'
 @Injectable()
@@ -43,18 +43,18 @@ export class CommonService {
 ```
 
 <CalloutInfo type="warning">
-  实例化顺序是不确定的。请确保你的代码不依赖于哪个构造函数先被调用。如果循环依赖涉及 `Scope.REQUEST`
+  实例化顺序是不确定的，请确保你的代码不依赖于哪个构造函数先被调用。如果循环依赖涉及 `Scope.REQUEST`
   的提供者，可能会导致依赖未定义。详细信息可参考
   [这里](https://github.com/nestjs/nest/issues/5778)。
 </CalloutInfo>
 
-## ModuleRef 类替代方案
+## ModuleRef 类的替代用法
 
-除了使用 `forwardRef()`，你还可以重构代码，利用 `ModuleRef` 类在循环依赖关系的一方获取提供者实例。关于 `ModuleRef` 工具类的更多内容，请参见[这里](/fundamentals/module-ref)。
+除了使用 `forwardRef()`，你还可以通过重构代码，利用 `ModuleRef` 类在循环依赖关系的一方动态获取提供者实例。关于 `ModuleRef` 的详细用法，请参见[这里](/fundamentals/module-ref)。
 
-## 模块前向引用（Module forward reference）
+## 模块的前向引用（Module forward reference）
 
-为了解决模块（Module）之间的循环依赖，同样可以在双方的模块关联中使用 `forwardRef()` 工具函数。例如：
+为了解决模块之间的循环依赖问题，也可以在相关模块的 `imports` 中使用 `forwardRef()` 工具函数。例如：
 
 ```ts filename='common.module.ts'
 @Module({
@@ -63,7 +63,7 @@ export class CommonService {
 export class CommonModule {}
 ```
 
-这就完成了关系中的一方。接下来，对 `CatsModule` 也做同样处理：
+这样就完成了一方的配置。接下来，在 `CatsModule` 中同样进行前向引用：
 
 ```ts filename='cats.module.ts'
 @Module({

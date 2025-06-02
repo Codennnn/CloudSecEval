@@ -1,6 +1,6 @@
 # 模块引用（Module Reference）
 
-Nest 提供了 `ModuleRef` 类，用于在内部的提供者列表中导航，并通过注入令牌（Injection Token）作为查找键获取任意提供者的引用。`ModuleRef` 类还支持动态实例化静态和作用域提供者（Scoped Provider）。你可以像普通依赖注入一样，将 `ModuleRef` 注入到类中：
+Nest 提供了 `ModuleRef` 类，允许你在内部提供者列表中导航，并通过注入令牌（Injection Token）作为查找键获取任意提供者的引用。`ModuleRef` 还支持动态实例化静态和作用域提供者（Scoped Provider）。你可以像普通依赖注入一样，将 `ModuleRef` 注入到类中：
 
 ```ts filename='cats.service.ts'
 import { ModuleRef } from '@nestjs/core'
@@ -13,7 +13,7 @@ export class CatsService {
 
 ## 获取实例
 
-`ModuleRef` 实例（下文简称"模块引用"）拥有 `get()` 方法。默认情况下，该方法会返回在当前模块中注册并已实例化的提供者、控制器或可注入对象（如守卫、拦截器等），查找方式为注入令牌或类名。如果未找到实例，则会抛出异常。
+`ModuleRef` 实例（下文简称“模块引用”）提供了 `get()` 方法。默认情况下，该方法会返回当前模块中已注册并实例化的提供者、控制器或可注入对象（如守卫、拦截器等），查找方式为注入令牌或类名。如果未找到实例，则会抛出异常。
 
 ```ts filename='cats.service.ts'
 @Injectable()
@@ -29,10 +29,11 @@ export class CatsService implements OnModuleInit {
 
 <CalloutInfo type="warning">
   你无法通过 `get()` 方法获取作用域提供者（如瞬态或请求作用域）。请参考下文
-  [解析作用域提供者](#resolving-scoped-providers)部分。关于作用域控制，详见[此处](/fundamentals/injection-scopes)。
+  [解析作用域提供者](#resolving-scoped-providers) 部分。关于作用域控制，详见
+  [此处](/fundamentals/injection-scopes)。
 </CalloutInfo>
 
-如果需要从全局上下文获取提供者（例如该提供者在其他模块中被注入），可在 `get()` 方法的第二个参数中传入 `{{ '{' }} strict: false {{ '}' }}` 选项：
+如果需要从全局上下文获取提供者（例如该提供者在其他模块中被注入），可以在 `get()` 方法的第二个参数中传入 `{{ '{' }} strict: false {{ '}' }}` 选项：
 
 ```ts
 this.moduleRef.get(Service, { strict: false })
@@ -54,7 +55,7 @@ export class CatsService implements OnModuleInit {
 }
 ```
 
-`resolve()` 方法会返回该提供者在其专属依赖注入子树中的唯一实例。每个子树拥有唯一的上下文标识符（context identifier）。因此，如果多次调用该方法并比较返回的实例引用，会发现它们并不相等。
+`resolve()` 方法会返回该提供者在其专属依赖注入子树中的唯一实例。每个子树拥有独立的上下文标识符（context identifier）。因此，多次调用该方法并比较返回的实例时，会发现它们并不相等。
 
 ```ts filename='cats.service.ts'
 @Injectable()
@@ -71,7 +72,7 @@ export class CatsService implements OnModuleInit {
 }
 ```
 
-如果希望多次 `resolve()` 调用返回同一个实例，并确保它们共享同一个依赖注入子树，可以为 `resolve()` 方法传入上下文标识符。可通过 `ContextIdFactory` 类的 `create()` 方法生成唯一标识符：
+如果希望多次 `resolve()` 调用返回同一个实例，并确保它们共享同一个依赖注入子树，可以为 `resolve()` 方法传入上下文标识符。可通过 `ContextIdFactory` 的 `create()` 方法生成唯一标识符：
 
 ```ts filename='cats.service.ts'
 import { ContextIdFactory } from '@nestjs/core'
@@ -93,9 +94,9 @@ export class CatsService implements OnModuleInit {
 
 ## 注册 `REQUEST` 提供者
 
-手动生成的上下文标识符（通过 `ContextIdFactory.create()`）代表的依赖注入子树中，`REQUEST` 提供者为 `undefined`，因为它们并非由 Nest 依赖注入系统自动实例化和管理。
+手动生成的上下文标识符（通过 `ContextIdFactory.create()`）所代表的依赖注入子树中，`REQUEST` 提供者默认为 `undefined`，因为这些子树并非由 Nest 的依赖注入系统自动实例化和管理。
 
-如需为手动创建的依赖注入子树注册自定义 `REQUEST` 对象，可使用 `ModuleRef#registerRequestByContextId()` 方法：
+如需为手动创建的依赖注入子树注册自定义的 `REQUEST` 对象，可使用 `ModuleRef#registerRequestByContextId()` 方法：
 
 ```ts
 const contextId = ContextIdFactory.create();
@@ -104,7 +105,7 @@ this.moduleRef.registerRequestByContextId(/* YOUR_REQUEST_OBJECT */, contextId);
 
 ## 获取当前子树
 
-有时你可能希望在**请求上下文**中解析请求作用域的提供者实例。假设 `CatsService` 是请求作用域，并且你希望解析同样为请求作用域的 `CatsRepository` 实例。为了让它们共享同一个依赖注入子树，必须获取当前的上下文标识符，而不是像上文那样新建一个。你可以通过注入请求对象（使用 `@Inject()` 装饰器）来实现：
+有时，你可能需要在请求上下文中解析请求作用域的提供者实例。假设 `CatsService` 具有请求作用域，并且你希望解析同为请求作用域的 `CatsRepository` 实例。为了让它们共享同一个依赖注入子树，必须获取当前的上下文标识符，而不是像上文那样新建一个。你可以通过注入请求对象（使用 `@Inject()` 装饰器）实现这一目标：
 
 ```ts filename='cats.service.ts'
 @Injectable()
@@ -114,10 +115,11 @@ export class CatsService {
 ```
 
 <CalloutInfo>
-  关于请求提供者（Request Provider）可参考[这里](/fundamentals/injection-scopes#request-provider)。
+  关于请求提供者（Request
+  Provider），可参考[这里](/fundamentals/injection-scopes#request-provider)。
 </CalloutInfo>
 
-此时，可通过 `ContextIdFactory` 类的 `getByRequest()` 方法，基于请求对象生成上下文标识符，并传递给 `resolve()` 方法：
+此时，可以通过 `ContextIdFactory` 类的 `getByRequest()` 方法，基于请求对象生成上下文标识符，并将其传递给 `resolve()` 方法：
 
 ```ts
 const contextId = ContextIdFactory.getByRequest(this.request)
@@ -126,7 +128,7 @@ const catsRepository = await this.moduleRef.resolve(CatsRepository, contextId)
 
 ## 动态实例化自定义类
 
-如需动态实例化**未被注册为提供者**的类，可使用模块引用的 `create()` 方法：
+如需动态实例化未注册为提供者的类，可使用模块引用的 `create()` 方法：
 
 ```ts filename='cats.service.ts'
 @Injectable()
@@ -140,4 +142,4 @@ export class CatsService implements OnModuleInit {
 }
 ```
 
-这种方式可以让你在框架容器之外按需实例化不同的类。
+这种方式允许你在框架容器之外按需实例化不同的类。
