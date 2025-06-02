@@ -1,19 +1,19 @@
 # 测试（Testing）
 
-自动化测试被认为是现代软件开发不可或缺的重要环节。自动化让开发过程中能够快速、便捷地重复执行单个测试或测试套件，有助于确保发布版本达到质量和性能目标。自动化测试不仅提升了测试覆盖率，还为开发者提供了更快的反馈循环。它既提升了开发者个人的生产力，也确保在关键的开发生命周期节点（如源代码提交、功能集成和版本发布）能够及时运行测试。
+自动化测试是现代软件开发中不可或缺的重要环节。通过自动化，开发者可以在开发过程中快速、便捷地重复执行单个测试或测试套件，从而确保发布版本能够达到既定的质量和性能目标。自动化测试不仅提升了测试覆盖率，还为开发者带来了更快的反馈循环。这不仅有助于提升个人生产力，也能确保在关键开发节点（如源代码提交、功能集成和版本发布）及时运行测试。
 
-这些测试通常涵盖多种类型，包括单元测试（Unit Testing）、端到端测试（End-to-End Testing，e2e）、集成测试（Integration Testing）等。虽然自动化测试的好处毋庸置疑，但搭建测试环境有时会比较繁琐。Nest 致力于推广开发最佳实践，包括高效的测试，因此内置了如下特性，帮助开发者和团队构建并自动化测试。Nest：
+常见的自动化测试类型包括单元测试（Unit Testing）、端到端测试（End-to-End Testing，e2e）、集成测试（Integration Testing）等。虽然自动化测试的优势显而易见，但搭建测试环境有时会让人觉得繁琐。Nest 致力于推广开发最佳实践，尤其重视高效测试，因此内置了多项特性，帮助开发者和团队轻松构建并自动化测试。Nest 具备以下能力：
 
-- 自动为组件生成默认的单元测试和为应用生成端到端测试脚手架
+- 自动为组件生成默认的单元测试，以及为应用生成端到端测试脚手架
 - 提供默认工具（如可构建隔离模块/应用加载器的测试运行器（Test Runner））
 - 开箱即用地集成了 [Jest](https://github.com/facebook/jest) 和 [Supertest](https://github.com/visionmedia/supertest)，同时对测试工具保持无关性
-- 使 Nest 的依赖注入（Dependency Injection）系统在测试环境中可用，便于模拟（Mock）组件
+- 让 Nest 的依赖注入系统在测试环境中同样可用，便于模拟（Mock）组件
 
-如前所述，你可以使用任何你喜欢的**测试框架（Testing Framework）**，Nest 并不会强制指定特定工具。只需替换所需的部分（如测试运行器），即可继续享受 Nest 提供的现成测试能力。
+如前所述，你可以选择任何你喜欢的测试框架（Testing Framework），Nest 并不会强制指定特定工具。只需替换所需部分（如测试运行器），即可继续享受 Nest 提供的现成测试能力。
 
 ## 安装
 
-首先，安装所需的包：
+首先，安装所需依赖包：
 
 ```bash
 $ npm i --save-dev @nestjs/testing
@@ -21,7 +21,7 @@ $ npm i --save-dev @nestjs/testing
 
 ## 单元测试（Unit Testing）
 
-在下方示例中，我们将测试两个类：`CatsController` 和 `CatsService`。如前所述，[Jest](https://github.com/facebook/jest) 是默认的测试框架。它既作为测试运行器，也提供断言函数和测试替身（Test Double）工具，便于模拟（Mock）、监视（Spy）等。在下面的基础测试中，我们手动实例化这些类，并确保控制器和服务能够满足其 API 合同。
+下面的示例将演示如何测试两个类：`CatsController` 和 `CatsService`。如前所述，[Jest](https://github.com/facebook/jest) 是默认的测试框架。它既作为测试运行器，也提供断言函数和测试替身（Test Double）工具，便于模拟（Mock）、监视（Spy）等。在基础测试中，我们手动实例化这些类，并确保控制器和服务能够满足其 API 合同。
 
 ```ts filename='cats.controller.spec.ts'
 import { CatsController } from './cats.controller'
@@ -51,11 +51,11 @@ describe('CatsController', () => {
   <p>建议将测试文件放在被测试类附近。测试文件应以 `.spec` 或 `.test` 结尾。</p>
 </CalloutInfo>
 
-由于上述示例较为简单，实际上并未测试任何 Nest 特有的内容。事实上，我们甚至没有使用依赖注入，而是直接将 `CatsService` 的实例传递给 `catsController`。这种测试方式 —— 即手动实例化被测类 ——通 常被称为**隔离测试（Isolated Testing）**，它与框架无关。接下来我们将介绍一些更高级的能力，帮助你测试更充分利用 Nest 特性的应用。
+由于上述示例较为基础，实际上并未涉及任何 Nest 特有的内容。事实上，我们甚至没有用到依赖注入，而是直接将 `CatsService` 的实例传递给 `catsController`。这种测试方式 —— 即手动实例化被测类 —— 通常被称为**隔离测试（Isolated Testing）**，它与具体框架无关。接下来，我们将介绍一些更高级的能力，帮助你测试更充分利用 Nest 特性的应用。
 
 ## 测试工具（Testing utilities）
 
-`@nestjs/testing` 包提供了一套实用工具，帮助你实现更健壮的测试流程。我们来用内置的 `Test` 类重写前面的示例：
+`@nestjs/testing` 包为你提供了一套实用工具，帮助实现更健壮的测试流程。下面我们用内置的 `Test` 类重写前面的示例：
 
 ```ts filename='cats.controller.spec.ts'
 import { Test } from '@nestjs/testing'
@@ -87,14 +87,14 @@ describe('CatsController', () => {
 })
 ```
 
-`Test` 类可以为应用提供一个执行上下文（Execution Context），本质上模拟了完整的 Nest 运行时（Runtime），同时为你提供了便捷的钩子来管理类实例，包括模拟（Mock）和覆盖（Override）。`Test` 类的 `createTestingModule()` 方法接收一个模块元数据对象作为参数（与传递给 `@Module()` 装饰器的对象相同）。该方法会返回一个 `测试模块（TestingModule）` 实例，进而提供若干方法。对于单元测试（Unit Testing）来说，最重要的是 `compile()` 方法。它会启动模块及其依赖（类似于在 `main.ts` 中用 `NestFactory.create()` 启动应用），并返回一个可用于测试的模块。
+`Test` 类可以为应用提供一个执行上下文（Execution Context），本质上模拟了完整的 Nest 运行时（Runtime），同时为你提供便捷的钩子来管理类实例，包括模拟（Mock）和覆盖（Override）。`Test` 类的 `createTestingModule()` 方法接收一个模块元数据对象作为参数（与传递给 `@Module()` 装饰器的对象相同）。该方法会返回一个 `测试模块（TestingModule）` 实例，进而提供若干方法。对于单元测试（Unit Testing）来说，最重要的是 `compile()` 方法。它会启动模块及其依赖（类似于在 `main.ts` 中用 `NestFactory.create()` 启动应用），并返回一个可用于测试的模块。
 
 <CalloutInfo>
-  `compile()` 方法是**异步**的，因此必须使用 `await`。模块编译完成后，你可以通过 `get()`
-  方法获取其声明的任何**静态**实例（控制器和提供者）。
+  `compile()` 方法是异步的，因此必须使用 `await`。模块编译完成后，你可以通过 `get()`
+  方法获取其声明的任何静态实例（控制器和提供者）。
 </CalloutInfo>
 
-`测试模块（TestingModule）` 继承自[模块引用](/fundamentals/module-ref)类，因此也具备动态解析作用域提供者（如瞬态或请求作用域）的能力。可以通过 `resolve()` 方法实现（`get()` 方法只能获取静态实例）。
+`测试模块（TestingModule）` 继承自 [模块引用](/fundamentals/module-ref) 类，因此也具备动态解析作用域提供者（如瞬态或请求作用域）的能力。可以通过 `resolve()` 方法实现（`get()` 方法只能获取静态实例）。
 
 ```ts
 const moduleRef = await Test.createTestingModule({
@@ -106,19 +106,19 @@ catsService = await moduleRef.resolve(CatsService)
 ```
 
 <CalloutInfo type="warning">
-  `resolve()`
-  方法会返回该提供者在其**依赖注入容器子树**中的唯一实例。每个子树都有唯一的上下文标识符。因此，如果多次调用该方法并比较实例引用，会发现他们并不相等。
+  `resolve()` 方法会返回该提供者在其 **依赖注入容器子树**
+  中的唯一实例。每个子树都有唯一的上下文标识符。因此，如果多次调用该方法并比较实例引用，会发现它们并不相等。
 </CalloutInfo>
 
 <CalloutInfo>
   <p>你可以在[这里](/fundamentals/module-ref)了解更多模块引用相关特性。</p>
 </CalloutInfo>
 
-除了使用生产环境的提供者外，你还可以为测试目的覆盖（Override）为[自定义提供者（Custom Provider）](/fundamentals/custom-providers)。例如，你可以模拟数据库服务，而不是连接真实数据库。我们将在下一节详细介绍覆盖，但在单元测试中同样适用。
+除了可以直接使用生产环境的提供者外，你还可以为测试目的覆盖（Override）为[自定义提供者（Custom Provider）](/fundamentals/custom-providers)。例如，你可以模拟数据库服务，而不是连接真实数据库。我们将在下一节详细介绍覆盖的用法，但在单元测试中同样适用。
 
 ## 自动模拟（Auto mocking）
 
-Nest 还允许你定义一个模拟工厂（mock factory），用于为所有缺失的依赖自动生成模拟对象（Mock）。当某个类依赖项较多，手动为每个依赖编写模拟对象既耗时又繁琐时，这一特性尤为有用。要使用该功能，需要在 `createTestingModule()` 方法后链式调用 `useMocker()` 方法，并传入一个用于生成依赖模拟对象的工厂函数。该工厂函数可以接收一个可选的 token（实例令牌，即任何有效的 Nest 提供者令牌），并返回一个模拟实现。下面的示例展示了如何结合 [`jest-mock`](https://www.npmjs.com/package/jest-mock) 创建通用模拟器，以及如何使用 `jest.fn()` 为 `CatsService` 创建特定的模拟对象。
+Nest 还允许你定义一个模拟工厂（mock factory），为所有缺失的依赖自动生成模拟对象（Mock）。当某个类依赖项较多，手动为每个依赖编写模拟对象既耗时又繁琐时，这一特性尤为实用。要启用该功能，可以在 `createTestingModule()` 方法后链式调用 `useMocker()`，并传入一个用于生成依赖模拟对象的工厂函数。该工厂函数可接收一个可选的 token（实例令牌，即任何有效的 Nest 提供者令牌），并返回一个模拟实现。下面示例展示了如何结合 [`jest-mock`](https://www.npmjs.com/package/jest-mock) 创建通用模拟器，以及如何使用 `jest.fn()` 为 `CatsService` 创建特定的模拟对象。
 
 ```ts
 // ...
@@ -151,12 +151,11 @@ describe('CatsController', () => {
 })
 ```
 
-你也可以像获取自定义提供者（Custom Provider）一样，从测试容器中获取这些模拟对象，例如 `moduleRef.get(CatsService)`。
+你还可以像获取自定义提供者（Custom Provider）一样，从测试容器中获取这些模拟对象，例如 `moduleRef.get(CatsService)`。
 
 <CalloutInfo>
-  你也可以直接传入通用模拟工厂，例如
-  [`@golevelup/ts-jest`](https://github.com/golevelup/nestjs/tree/master/packages/testing) 提供的
-  `createMock` 方法。
+  你也可以直接传入通用模拟工厂。例如，[`@golevelup/ts-jest`](https://github.com/golevelup/nestjs/tree/master/packages/testing)
+  提供了 `createMock` 方法。
 </CalloutInfo>
 
 <CalloutInfo>
@@ -167,7 +166,7 @@ describe('CatsController', () => {
 
 ## 端到端测试（End-to-End Testing）
 
-与关注单个模块（Module）和类的单元测试（Unit Testing）不同，端到端测试（End-to-End Testing，e2e）关注的是类和模块之间更高层次的交互——更接近最终用户实际与生产系统交互的方式。随着应用规模的增长，手动测试每个 API 端点的端到端行为变得愈发困难。自动化的端到端测试有助于我们确保系统整体行为的正确性，并满足项目需求。进行端到端测试时，我们会采用与前文**单元测试**类似的配置。此外，Nest 还让你可以轻松集成 [Supertest](https://github.com/visionmedia/supertest) 库来模拟 HTTP 请求。
+与只关注单个模块或类的单元测试（Unit Testing）不同，端到端测试（End-to-End Testing，e2e）关注的是模块与类之间更高层次的交互——这更贴近最终用户实际与生产系统的交互方式。随着应用规模扩大，手动测试每个 API 端点的端到端行为会变得愈发困难。自动化的端到端测试有助于我们确保系统整体行为的正确性，并满足项目需求。进行端到端测试时，通常会采用与前文**单元测试**类似的配置。此外，Nest 还支持轻松集成 [Supertest](https://github.com/visionmedia/supertest) 库，用于模拟 HTTP 请求。
 
 ```ts filename='cats.e2e-spec.ts'
 import * as request from 'supertest'
@@ -240,13 +239,13 @@ afterAll(async () => {
 
 在本例中，我们基于前文介绍的一些概念进行了扩展。除了前面用到的 `compile()` 方法外，这里还使用了 `createNestApplication()` 方法来实例化一个完整的 Nest 运行时环境（Runtime）。
 
-有一点需要注意：当你的应用通过 `compile()` 方法编译时，此时 `HttpAdapterHost#httpAdapter` 仍然是未定义的。原因是在编译阶段还没有创建 HTTP 适配器或服务器。如果你的测试依赖于 `httpAdapter`，应当使用 `createNestApplication()` 方法来创建应用实例，或者在初始化依赖关系图时重构项目以避免这种依赖。
+需要注意的是：当你的应用通过 `compile()` 方法编译时，此时 `HttpAdapterHost#httpAdapter` 仍然是未定义的。原因是在编译阶段还没有创建 HTTP 适配器或服务器。如果你的测试依赖于 `httpAdapter`，应当使用 `createNestApplication()` 方法来创建应用实例，或者在初始化依赖关系图时重构项目以避免这种依赖。
 
-下面我们来详细拆解这个示例：
+下面我们详细拆解这个示例：
 
-我们将正在运行的应用引用保存在 `app` 变量中，以便后续用于模拟 HTTP 请求。
+我们将正在运行的应用实例保存在 `app` 变量中，便于后续模拟 HTTP 请求。
 
-我们通过 Supertest 的 `request()` 函数来模拟 HTTP 测试。为了让这些 HTTP 请求路由到正在运行的 Nest 应用，我们将 Nest 底层的 HTTP 监听器（通常由 Express 平台提供）传递给 `request()`。因此有了 `request(app.getHttpServer())` 这样的写法。调用 `request()` 后会返回一个包装过的 HTTP 服务器（HTTP Server），它已连接到 Nest 应用，并暴露出用于模拟真实 HTTP 请求的方法。例如，`request(...).get('/cats')` 会向 Nest 应用发起一个与实际网络请求 `get '/cats'` 完全一致的请求。
+通过 Supertest 的 `request()` 函数可以模拟 HTTP 测试。为了让这些 HTTP 请求路由到正在运行的 Nest 应用，我们将 Nest 底层的 HTTP 监听器（通常由 Express 平台提供）传递给 `request()`。因此有了 `request(app.getHttpServer())` 这样的写法。调用 `request()` 后会返回一个包装过的 HTTP 服务器（HTTP Server），它已连接到 Nest 应用，并暴露出用于模拟真实 HTTP 请求的方法。例如，`request(...).get('/cats')` 会向 Nest 应用发起一个与实际网络请求 `get '/cats'` 完全一致的请求。
 
 在本例中，我们还为 `CatsService` 提供了一个替代（测试替身，test-double）实现，该实现仅返回一个硬编码的值，便于我们进行断言。可以通过 `overrideProvider()` 方法来提供这种替代实现。同理，Nest 还提供了 `overrideModule()`、`overrideGuard()`、`overrideInterceptor()`、`overrideFilter()` 和 `overridePipe()` 等方法，分别用于覆盖模块、守卫、拦截器、过滤器和管道。
 
@@ -316,7 +315,7 @@ const moduleRef = await Test.createTestingModule({
 
 ## 全局注册增强器的覆盖（Overriding globally registered enhancers）
 
-如果你有全局注册的守卫、管道、拦截器（Interceptor）或过滤器，想要在测试中覆盖他们，需要额外做一些配置。回顾一下，原始注册方式如下：
+当你在项目中全局注册了守卫、管道、拦截器或过滤器，如果希望在测试环境下对它们进行覆盖，需要进行一些额外配置。通常，原始的注册方式如下：
 
 ```ts
 providers: [
@@ -327,7 +326,7 @@ providers: [
 ],
 ```
 
-这里通过 `APP_*` 令牌将守卫注册为"多重"提供者（multi-provider）。要想在测试中替换 `JwtAuthGuard`，需要将注册方式改为使用已存在的提供者：
+这里通过 `APP_*` 令牌将守卫等注册为"多重"提供者（multi-provider）。如果想在测试中替换 `JwtAuthGuard`，需要将注册方式调整为使用已存在的提供者：
 
 ```ts
 providers: [
@@ -359,7 +358,7 @@ const moduleRef = await Test.createTestingModule({
 
 ## 测试请求作用域实例（Testing request-scoped instances）
 
-[请求作用域（Request-scoped）](/fundamentals/injection-scopes) 提供者会为每个传入的**请求**单独创建实例。请求处理完成后，这些实例会被垃圾回收。这带来一个问题：我们无法直接访问为某次测试请求生成的依赖注入子树。
+[请求作用域（Request-scoped）](/fundamentals/injection-scopes) 提供者会为每个传入请单独创建实例。请求处理完成后，这些实例会被垃圾回收。这带来一个问题：我们无法直接访问为某次测试请求生成的依赖注入子树。
 
 如前文所述，可以通过 `resolve()` 方法获取动态实例。同时，正如[这里](/fundamentals/module-ref#resolving-scoped-providers)所述，我们可以传递唯一的上下文标识符（context identifier），以控制依赖注入容器子树的生命周期。那么在测试场景下，如何利用这一点？
 

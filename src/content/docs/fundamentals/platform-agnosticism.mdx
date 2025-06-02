@@ -1,13 +1,13 @@
 # 跨平台无关性
 
-Nest 是一个与平台无关（platform-agnostic）的框架，这意味着你可以开发**可复用的逻辑模块**，这些模块可以在不同类型的应用中复用。例如，大多数组件无需修改即可在不同底层 HTTP 服务器框架（如 Express 和 Fastify）之间复用，甚至可以在不同类型的应用之间复用（如基于 HTTP 的服务、使用不同传输层的微服务，以及 WebSocket 应用）。
+Nest 是一个与平台无关（platform-agnostic）的框架。你可以开发 **可复用的逻辑模块**，并在不同类型的应用中灵活复用。例如，大多数组件无需修改，就能在不同底层 HTTP 服务器框架（如 Express、Fastify）之间切换，甚至可以在多种应用类型间通用（如基于 HTTP 的服务、采用不同传输层的微服务，以及 WebSocket 应用等）。
 
 ## 一次构建，处处可用
 
-本指南的 **概览** 部分主要展示了基于 HTTP 服务器框架的编码技巧（例如，提供 RESTful API 或 MVC 风格的服务端渲染应用）。然而，所有这些构建模块都可以在不同的传输层之上使用（如 [微服务](/microservices/basics) 或 [WebSocket 网关](/websockets/gateways)）。
+本指南的概览部分主要介绍了基于 HTTP 服务器框架的开发方式，例如如何提供 RESTful API 或实现 MVC 风格的服务端渲染应用。不过，所有这些构建模块都可以在不同的传输层之上复用（如 [微服务](/microservices/basics) 或 [WebSocket 网关](/websockets/gateways)）。
 
-此外，Nest 提供了专用的 [GraphQL](/graphql/quick-start) 模块。你可以将 GraphQL 作为 API 层，与 RESTful API 灵活切换。
+此外，Nest 还提供了专用的 [GraphQL](/graphql/quick-start) 模块。你可以将 GraphQL 作为 API 层，与 RESTful API 灵活切换。
 
-另外，[应用上下文](/application-context)（ApplicationContext）功能可以帮助你基于 Nest 创建各种类型的 Node.js 应用 —— 包括 CRON 定时任务和 CLI 应用等。
+同时，[应用上下文](/application-context)（ApplicationContext）功能可以帮助你基于 Nest 创建各种类型的 Node.js 应用，包括 CRON 定时任务、CLI 工具等。
 
 Nest 致力于成为 Node.js 应用的全方位平台，为你的应用带来更高层次的模块化和可复用性。一次构建，处处可用！

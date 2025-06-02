@@ -22,7 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule'
 export class AppModule {}
 ```
 
-调用 `.forRoot()` 方法会初始化调度器，并注册应用中所有声明式的 [定时任务（cron jobs）](techniques/task-scheduling#declarative-cron-jobs)、[超时任务（timeouts）](techniques/task-scheduling#declarative-timeouts) 和 [间隔任务（intervals）](techniques/task-scheduling#declarative-intervals)。这些任务会在 `onApplicationBootstrap` 生命周期钩子（lifecycle hook）触发时注册，确保所有模块都已加载并声明了各自的调度任务。
+调用 `.forRoot()` 方法会初始化调度器，并注册应用中所有声明式的 [定时任务（cron jobs）](/techniques/task-scheduling#declarative-cron-jobs)、[超时任务（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和 [间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。这些任务会在 `onApplicationBootstrap` 生命周期钩子（lifecycle hook）触发时注册，确保所有模块都已加载并声明了各自的调度任务。
 
 ## 声明式定时任务（cron jobs）
 

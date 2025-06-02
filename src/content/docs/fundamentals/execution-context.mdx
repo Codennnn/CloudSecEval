@@ -30,20 +30,20 @@ if (host.getType() === 'http') {
 
 ## 处理器参数获取
 
-要获取传递给处理器的参数数组，可以使用 host 对象的 `getArgs()` 方法：
+要获取传递给处理器的参数数组，可以通过 host 对象的 `getArgs()` 方法：
 
 ```ts
 const [req, res, next] = host.getArgs()
 ```
 
-你也可以通过 `getArgByIndex()` 方法按索引获取特定参数：
+你也可以使用 `getArgByIndex()` 方法按索引获取特定参数：
 
 ```ts
 const request = host.getArgByIndex(0)
 const response = host.getArgByIndex(1)
 ```
 
-上述示例中，我们通过索引获取了请求和响应对象，但这种方式通常不推荐，因为它会让应用与特定的执行上下文耦合。更推荐的做法是，使用 host 对象的上下文切换工具方法，切换到适合当前应用的上下文。常用的上下文切换方法如下：
+上述示例展示了如何通过索引获取请求和响应对象。但这种方式通常不推荐，因为会导致应用与特定执行上下文强耦合。更推荐的做法是，利用 host 对象的上下文切换方法，切换到适合当前场景的上下文。常用的上下文切换方法如下：
 
 ```ts
 /**
@@ -60,7 +60,7 @@ switchToHttp(): HttpArgumentsHost;
 switchToWs(): WsArgumentsHost;
 ```
 
-我们可以用 `switchToHttp()` 方法重写前面的示例。`host.switchToHttp()` 会返回一个适用于 HTTP 应用上下文的 `HttpArgumentsHost` 对象。该对象提供了两个常用方法，方便我们提取所需对象。此处还可以结合 Express 类型断言，获取原生的 Express 类型对象：
+我们可以用 `switchToHttp()` 方法重写前面的示例。`host.switchToHttp()` 会返回一个适用于 HTTP 场景的 `HttpArgumentsHost` 对象。该对象提供了便捷方法，帮助我们提取所需对象。结合 Express 类型断言，还可以获取原生 Express 类型对象：
 
 ```ts
 const ctx = host.switchToHttp()
@@ -68,7 +68,7 @@ const request = ctx.getRequest<Request>()
 const response = ctx.getResponse<Response>()
 ```
 
-同理，`WsArgumentsHost` 和 `RpcArgumentsHost` 也分别提供了获取微服务和 WebSocket 上下文对象的方法。以下是 `WsArgumentsHost` 的方法：
+同理，`WsArgumentsHost` 和 `RpcArgumentsHost` 也分别提供了获取 WebSocket 和微服务上下文对象的方法。以下是 `WsArgumentsHost` 的方法：
 
 ```ts
 export interface WsArgumentsHost {
@@ -101,7 +101,7 @@ export interface RpcArgumentsHost {
 
 ## ExecutionContext 类
 
-`ExecutionContext` 继承自 `ArgumentsHost`，并在此基础上提供了更多关于当前执行流程的详细信息。与 `ArgumentsHost` 类似，Nest 会在你需要的地方自动提供 `ExecutionContext` 实例，比如 [守卫](/guards#execution-context) 的 `canActivate()` 方法和 [拦截器](/interceptors#execution-context) 的 `intercept()` 方法。它提供了如下方法：
+`ExecutionContext` 继承自 `ArgumentsHost`，并在此基础上提供了更多关于当前执行流程的详细信息。与 `ArgumentsHost` 类似，Nest 会在需要的地方自动注入 `ExecutionContext` 实例，比如 [守卫](/guards#execution-context) 的 `canActivate()` 方法和 [拦截器](/interceptors#execution-context) 的 `intercept()` 方法。它提供了如下方法：
 
 ```ts
 export interface ExecutionContext extends ArgumentsHost {
@@ -116,18 +116,18 @@ export interface ExecutionContext extends ArgumentsHost {
 }
 ```
 
-`getHandler()` 方法返回即将被调用的处理器方法的引用。`getClass()` 方法返回该处理器所属的 `控制器` 类的类型。例如，在 HTTP 上下文中，如果当前处理的是一个绑定到 `CatsController` 的 `create()` 方法的 `POST` 请求，`getHandler()` 会返回 `create()` 方法的引用，`getClass()` 会返回 `CatsController` **类**（注意是类而不是实例）。
+`getHandler()` 方法返回即将被调用的处理器方法引用。`getClass()` 方法返回该处理器所属的控制器类类型。例如，在 HTTP 场景下，如果当前处理的是绑定到 `CatsController` 的 `create()` 方法的 `POST` 请求，`getHandler()` 会返回 `create()` 方法的引用，`getClass()` 会返回 `CatsController` 类（注意是类而非实例）。
 
 ```ts
 const methodKey = ctx.getHandler().name // "create"
 const className = ctx.getClass().name // "CatsController"
 ```
 
-能够同时访问当前类和处理器方法的引用极大提升了灵活性。最重要的是，这让我们可以在守卫或拦截器中访问通过 `Reflector#createDecorator` 或内置 `@SetMetadata()` 装饰器设置的元数据。我们将在下文介绍相关用法。
+能够同时访问当前类和处理器方法的引用极大提升了灵活性。更重要的是，这让我们可以在守卫或拦截器中访问通过 `Reflector#createDecorator` 或内置 `@SetMetadata()` 装饰器设置的元数据。相关用法将在下文介绍。
 
 ## 反射与元数据（Reflection and metadata）
 
-Nest 支持通过 `Reflector#createDecorator` 方法自定义装饰器，或通过内置的 `@SetMetadata()` 装饰器，为路由处理器附加**自定义元数据（Metadata）**。本节将对比这两种方式，并演示如何在守卫或拦截器中访问这些元数据。
+Nest 支持通过 `Reflector#createDecorator` 方法自定义装饰器，或使用内置的 `@SetMetadata()` 装饰器，为路由处理器附加自定义元数据（Metadata）。本节将对比这两种方式，并演示如何在守卫或拦截器中访问这些元数据。
 
 要使用 `Reflector#createDecorator` 创建强类型装饰器，需要指定类型参数。例如，下面创建了一个接收字符串数组参数的 `Roles` 装饰器：
 
@@ -137,7 +137,7 @@ import { Reflector } from '@nestjs/core'
 export const Roles = Reflector.createDecorator<string[]>()
 ```
 
-这里的 `Roles` 装饰器是一个接收 `string[]` 类型参数的函数。
+此时，`Roles` 装饰器是一个接收 `string[]` 类型参数的函数。
 
 现在，我们可以直接在处理器上使用该装饰器：
 
@@ -151,7 +151,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 
 如上，我们将 `Roles` 装饰器的元数据附加到了 `create()` 方法上，表示只有拥有 `admin` 角色的用户才能访问该路由。
 
-要访问路由的角色（自定义元数据），我们再次使用 `Reflector` 辅助类。`Reflector` 可以像普通服务一样注入到类中：
+要访问路由的角色（自定义元数据），可以通过 `Reflector` 辅助类实现。`Reflector` 可像普通服务一样注入到类中：
 
 ```ts filename='roles.guard.ts'
 import { Reflector } from '@nestjs/core'
@@ -162,15 +162,15 @@ export class RolesGuard {
 }
 ```
 
-现在，可以通过 `get()` 方法读取处理器上的元数据：
+接下来，可以通过 `get()` 方法读取处理器上的元数据：
 
 ```ts
 const roles = this.reflector.get(Roles, context.getHandler())
 ```
 
-`Reflector#get` 方法允许我们通过传入两个参数（装饰器引用和上下文对象）来获取元数据。在本例中，第一个参数是 `Roles` 装饰器（见上文 `roles.decorator.ts`），第二个参数是 `context.getHandler()`，即当前处理的路由处理器函数引用。
+`Reflector#get` 方法允许我们通过传入两个参数（装饰器引用和上下文对象）来获取元数据。在本例中，第一个参数是 `Roles` 装饰器（见上文 `roles.decorator.ts`），第二个参数是 `context.getHandler()`，即当前处理的路由处理器函数。
 
-另外，我们也可以在控制器类上应用元数据，使其作用于该控制器下的所有路由：
+此外，也可以在控制器类上应用元数据，使其作用于该控制器下的所有路由：
 
 ```ts filename='cats.controller.ts'
 @Roles(['admin'])
@@ -178,7 +178,7 @@ const roles = this.reflector.get(Roles, context.getHandler())
 export class CatsController {}
 ```
 
-在这种情况下，如果要提取控制器上的元数据，只需将 `context.getClass()` 作为第二个参数传递（即以控制器类作为元数据提取的上下文），而不是 `context.getHandler()`：
+此时，如需提取控制器上的元数据，只需将 `context.getClass()` 作为第二个参数传递（即以控制器类作为元数据提取的上下文），而不是 `context.getHandler()`：
 
 ```ts filename='roles.guard.ts'
 const roles = this.reflector.get(Roles, context.getClass())
@@ -252,7 +252,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-要访问路由的角色（自定义元数据），我们依然使用 `Reflector` 辅助类：
+要访问路由的角色（自定义元数据），依然可以使用 `Reflector` 辅助类：
 
 ```ts filename='roles.guard.ts'
 import { Reflector } from '@nestjs/core'
@@ -269,4 +269,4 @@ export class RolesGuard {
 const roles = this.reflector.get<string[]>('roles', context.getHandler())
 ```
 
-这里我们传入元数据**键**（本例为 `'roles'`）作为第一个参数，其他用法与 `Reflector#createDecorator` 示例一致。
+这里我们传入元数据键（本例为 `'roles'`）作为第一个参数，其他用法与 `Reflector#createDecorator` 示例一致。
