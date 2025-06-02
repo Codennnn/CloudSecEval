@@ -166,7 +166,7 @@ describe('CatsController', () => {
 
 ## 端到端测试（End-to-End Testing）
 
-与只关注单个模块或类的单元测试（Unit Testing）不同，端到端测试（End-to-End Testing，e2e）关注的是模块与类之间更高层次的交互——这更贴近最终用户实际与生产系统的交互方式。随着应用规模扩大，手动测试每个 API 端点的端到端行为会变得愈发困难。自动化的端到端测试有助于我们确保系统整体行为的正确性，并满足项目需求。进行端到端测试时，通常会采用与前文**单元测试**类似的配置。此外，Nest 还支持轻松集成 [Supertest](https://github.com/visionmedia/supertest) 库，用于模拟 HTTP 请求。
+与只关注单个模块或类的单元测试不同，端到端测试（End-to-End Testing，e2e）关注的是模块与类之间更高层次的交互——这更贴近最终用户实际与生产系统的交互方式。随着应用规模扩大，手动测试每个 API 端点的端到端行为会变得愈发困难。自动化的端到端测试有助于我们确保系统整体行为的正确性，并满足项目需求。进行端到端测试时，通常会采用与前文单元测试类似的配置。此外，Nest 还支持轻松集成 [Supertest](https://github.com/visionmedia/supertest) 库，用于模拟 HTTP 请求。
 
 ```ts filename='cats.e2e-spec.ts'
 import * as request from 'supertest'
