@@ -6,7 +6,7 @@ Nest 内置了一个**异常层（exceptions layer）**，负责处理应用中�
 
 <DocImage src={filterImage} alt="异常过滤器结构图" />
 
-默认情况下，这一行为由内置的**全局异常过滤器（global exception filter）**完成。它会处理 `HttpException`（及其子类）类型的异常。当遇到**无法识别**的异常（即既不是 `HttpException` 也不是其子类时），内置异常过滤器会生成如下默认 JSON 响应：
+默认情况下，这一行为由内置的**全局异常过滤器（global exception filter）**完成。它会处理 `HttpException`（及其子类）类型的异常。当遇到无法识别的异常（即既不是 `HttpException` 也不是其子类时），内置异常过滤器会生成如下默认 JSON 响应：
 
 ```json
 {
@@ -206,7 +206,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
 我们来看看 `catch()` 方法的参数。`exception` 是当前正在处理的异常对象，`host` 是一个 `ArgumentsHost` 对象。`ArgumentsHost` 是一个强大的工具对象，后续会在[执行上下文章节](/fundamentals/execution-context)详细介绍。在本例中，我们用它获取传递给原始请求处理器（即异常发生的控制器方法）的 `Request` 和 `Response` 对象。通过 `ArgumentsHost` 的辅助方法可以方便地获取所需对象。更多关于 `ArgumentsHost` 的内容见[这里](/fundamentals/execution-context)。
 
-\*之所以采用这种抽象，是因为 `ArgumentsHost` 能适用于所有上下文（如当前的 HTTP 服务器上下文、微服务、WebSocket 等）。在执行上下文章节中，我们会看到如何利用 `ArgumentsHost` 及其辅助方法访问**任意**上下文下的底层参数，从而编写可跨多种上下文通用的异常过滤器。
+\*之所以采用这种抽象，是因为 `ArgumentsHost` 能适用于所有上下文（如当前的 HTTP 服务器上下文、微服务、WebSocket 等）。在执行上下文章节中，我们会看到如何利用 `ArgumentsHost` 及其辅助方法访问**任意上下文**下的底层参数，从而编写可跨多种上下文通用的异常过滤器。
 
 ## 绑定过滤器
 
@@ -290,7 +290,7 @@ export class AppModule {}
 
 ## 捕获所有异常
 
-如需捕获**所有**未处理异常（无论异常类型），只需让 `@Catch()` 装饰器参数列表为空，例如 `@Catch()`。
+如需捕获所有未处理异常（无论异常类型），只需让 `@Catch()` 装饰器参数列表为空，例如 `@Catch()`。
 
 如下例，代码具备平台无关性，因为它使用了 [HTTP 适配器](./faq/http-adapter) 返回响应，而未直接使用平台相关对象（如 `Request` 和 `Response`）：
 

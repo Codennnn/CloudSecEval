@@ -65,20 +65,16 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
   const docPath = docTitle.join('/')
 
   return (
-    <div className="@container size-full overflow-auto">
-      <div className="@lg:p-16 @md:p-6 @sm:p-4">
-        <article
-          className={cn(
-            'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:not-italic prose-a:underline-offset-4',
-            'prose-a:font-normal prose-a:decoration-dotted prose-a:hover:decoration-solid',
-            'max-w-[80ch] mx-auto',
-          )}
-        >
-          <Suspense fallback={<LoadingSpinner />}>
-            <DocContent docPath={docPath} />
-          </Suspense>
-        </article>
-      </div>
-    </div>
+    <article
+      className={cn(
+        'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:not-italic prose-a:underline-offset-4',
+        'prose-a:font-normal prose-a:decoration-dotted prose-a:hover:decoration-solid',
+        'max-w-[80ch] mx-auto',
+      )}
+    >
+      <Suspense fallback={<LoadingSpinner />}>
+        <DocContent docPath={docPath} />
+      </Suspense>
+    </article>
   )
 }

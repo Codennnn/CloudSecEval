@@ -8,14 +8,14 @@ import { getPageTitle } from '~/utils/common'
 
 import '~/styles/global.css'
 
-// const notoSansSC = Noto_Sans_SC({
-//   weight: ['400', '500', '600', '700'],
-//   subsets: ['latin'],
-//   display: 'swap',
-//   preload: true,
-//   variable: '--font-noto-sans-sc',
-//   adjustFontFallback: false,
-// })
+const notoSansSC = Noto_Sans_SC({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-noto-sans-sc',
+  adjustFontFallback: false,
+})
 
 const mapleMono = localFont({
   src: [
@@ -83,7 +83,7 @@ export default function RootLayout(props: React.PropsWithChildren) {
       <body
         className={cn([
           'h-full antialiased font-sans',
-          // notoSansSC.variable,
+          notoSansSC.variable,
           mapleMono.variable,
         ])}
       >

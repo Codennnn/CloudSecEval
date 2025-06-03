@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '~/components/ui/table'
 import { cn } from '~/lib/utils'
-import { getDocLinkHref, isExternalLink, isHashLink, isInternalLink } from '~/utils/link'
+import { getDocLinkHref, isExternalLink, isHashLink } from '~/utils/link'
 
 interface PreProps {
   children: React.ReactElement<{ className: string, children: React.ReactElement }>
@@ -90,22 +90,24 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       const { href, children } = props
 
       const isExternal = isExternalLink(href)
-      const isInternal = isInternalLink(href)
       const isHash = isHashLink(href)
 
       return (
         <Link
-          className="inline-flex items-center gap-0.5"
+          className="inline-flex items-center gap-1 px-0.5"
           href={getDocLinkHref(href)}
           rel={isExternal ? 'noopener noreferrer' : undefined}
           target={isExternal ? '_blank' : undefined}
         >
           {children}
-          {isExternal
-            ? <ExternalLinkIcon className="size-[1em]" />
-            : isHash
-              ? <HashIcon className="size-[1em]" />
-              : <BookOpenTextIcon className="size-[1em]" />}
+
+          <span className="shrink-0 pr-0.5">
+            {isExternal
+              ? <ExternalLinkIcon className="size-[1em]" />
+              : isHash
+                ? <HashIcon className="size-[1em]" />
+                : <BookOpenTextIcon className="size-[1em]" />}
+          </span>
         </Link>
       )
     },

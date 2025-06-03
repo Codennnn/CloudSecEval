@@ -94,7 +94,7 @@ const app = await NestFactory.create(AppModule)
 app.useGlobalInterceptors(new LoggingInterceptor())
 ```
 
-全局拦截器会作用于应用内所有控制器和路由处理器。需要注意，通过 `useGlobalInterceptors()` 在模块外注册的全局拦截器**无法注入依赖**，因为此时已脱离模块上下文。为解决该问题，可在模块中注册拦截器，示例如下：
+全局拦截器会作用于应用内所有控制器和路由处理器。需要注意，通过 `useGlobalInterceptors()` 在模块外注册的全局拦截器无法注入依赖，因为此时已脱离模块上下文。为解决该问题，可在模块中注册拦截器，示例如下：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
