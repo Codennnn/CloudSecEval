@@ -96,6 +96,9 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
 
   const getDefaultTitle = () => {
     switch (type) {
+      case 'warning':
+        // fall through
+
       case 'error':
         return '警告'
 
