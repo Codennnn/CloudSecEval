@@ -103,10 +103,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
           <span className="shrink-0 pr-0.5">
             {isExternal
-              ? <ExternalLinkIcon className="size-[1em]" />
+              ? <ExternalLinkIcon className="size-[0.9em]" />
               : isHash
-                ? <HashIcon className="size-[1em]" />
-                : <BookOpenTextIcon className="size-[1em]" />}
+                ? <HashIcon className="size-[0.9em]" />
+                : <BookOpenTextIcon className="size-[0.9em]" />}
           </span>
         </Link>
       )
