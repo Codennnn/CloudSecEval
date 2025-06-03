@@ -120,8 +120,11 @@ $ npm run start
 
 要在 Explorer（探索器）栏的下拉菜单中支持多个规范，你需要在 `SwaggerCustomOptions` 中设置 `explorer: true`，并配置 `swaggerOptions.urls`。
 
-> info **提示**
-> 请确保 `swaggerOptions.urls` 指向你的 Swagger 文档的 JSON 格式！如需指定 JSON 文档，请在 `SwaggerCustomOptions` 中使用 `jsonDocumentUrl`。更多设置选项请参见[这里](/openapi/introduction#setup-options)。
+<CalloutInfo>
+  请确保 `swaggerOptions.urls` 指向你的 Swagger 文档的 JSON 格式！如需指定 JSON 文档，请在
+  `SwaggerCustomOptions` 中使用
+  `jsonDocumentUrl`。更多设置选项请参见[这里](/openapi/introduction#setup-options)。
+</CalloutInfo>
 
 以下是如何在 Explorer 栏的下拉菜单中设置多个规范的示例：
 

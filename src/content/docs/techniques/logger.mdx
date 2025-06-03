@@ -86,14 +86,18 @@ const app = await NestFactory.create(AppModule, {
 })
 ```
 
-此配置会以结构化的 JSON 格式输出日志，便于与日志聚合器、云平台等外部系统集成。例如，**AWS ECS**（Elastic Container Service，弹性容器服务）等平台原生支持 JSON 日志，可以实现如下高级功能：
+此配置会以结构化的 JSON 格式输出日志，便于与日志聚合器、云平台等外部系统集成。例如，AWS ECS（Elastic Container Service，弹性容器服务）等平台原生支持 JSON 日志，可以实现如下高级功能：
 
 - **日志过滤**：可根据日志级别、时间戳或自定义元数据等字段轻松筛选日志。
 - **搜索与分析**：利用查询工具分析日志，追踪应用行为趋势。
 
 此外，如果你在使用 [NestJS Mau](https://mau.nestjs.com) 时，JSON 日志记录可以让你更方便地以结构化、清晰的方式查看日志，这对于调试和性能监控尤为有用。
 
-> info **注意** 当 `json` 设置为 `true` 时，`ConsoleLogger` 会自动将 `colors` 属性设置为 `false`，从而禁用文本着色，确保输出为有效的 JSON，不含格式化字符。但在开发环境下，你可以显式将 `colors` 设置为 `true`，这样日志输出会带有颜色，便于本地调试时阅读。
+<CalloutInfo>
+  当 `json` 设置为 `true` 时，`ConsoleLogger` 会自动将 `colors` 属性设置为
+  `false`，从而禁用文本着色，确保输出为有效的 JSON，不含格式化字符。但在开发环境下，你可以显式将
+  `colors` 设置为 `true`，这样日志输出会带有颜色，便于本地调试时阅读。
+</CalloutInfo>
 
 启用 JSON 日志记录后，日志输出将如下所示（单行展示）：
 

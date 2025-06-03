@@ -2,7 +2,7 @@ import controllerImage from '/public/assets/Controllers_1.png'
 
 # 控制器（Controller）
 
-控制器负责处理传入的 **请求（request）**，并将 **响应（response）** 返回给客户端。
+控制器负责处理传入的请求（request），并将响应（response）返回给客户端。
 
 <DocImage src={controllerImage} alt="控制器" />
 
@@ -55,14 +55,14 @@ export class CatsController {
 
 在上面的示例中，当有 GET 请求到达该端点时，Nest 会将请求路由到用户自定义的 `findAll()` 方法。需要注意的是，这里的方法名完全可以自定义。虽然我们必须声明一个方法来绑定路由，但 Nest 并不会对方法名赋予特殊含义。
 
-该方法会返回 200 状态码以及相应的响应内容（这里是字符串）。为什么会这样？为了解释这一点，我们需要先介绍 Nest 提供的两种**不同**响应处理方式：
+该方法会返回 200 状态码以及相应的响应内容（这里是字符串）。为什么会这样？为了解释这一点，我们需要先介绍 Nest 提供的两种不同响应处理方式：
 
 <table>
   <tbody>
     <tr>
       <td className="whitespace-nowrap">标准方式（推荐）</td>
       <td>
-        使用这种内置方式时，当请求处理器返回 JavaScript 对象或数组时，Nest 会**自动**将其序列化为
+        使用这种内置方式时，当请求处理器返回 JavaScript 对象或数组时，Nest 会自动将其序列化为
         JSON。当返回 JavaScript 原始类型（如 `string`、`number`、 `boolean`）时，Nest
         会直接发送该值，而不会尝试序列化。这样，响应处理变得非常简单：只需返回值，Nest
         会自动处理剩下的事情。
@@ -180,7 +180,9 @@ export class CatsController {
 或 `res.send(...)`），否则 HTTP 服务会挂起。
 
 <CalloutInfo>
-  <p>如需了解如何自定义装饰器，请参见[自定义装饰器章节](/custom-decorators)。</p>
+
+如需了解如何自定义装饰器，请参见[自定义装饰器章节](/custom-decorators)。
+
 </CalloutInfo>
 
 ## 资源（Resource）

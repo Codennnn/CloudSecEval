@@ -547,7 +547,7 @@ export class AppModule {}
 - `limiter: RateLimiter` - 控制队列任务处理速率的选项。详见 [RateLimiter](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。可选。
 - `redis: RedisOpts` - 配置 Redis 连接的选项。详见 [RedisOpts](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。可选。
 - `prefix: string` - 所有队列键的前缀。可选。
-- `defaultJobOptions: JobOpts` - 控制新任务默认设置的选项。详见 [JobOpts](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd)。可选。**注意：如果你通过 FlowProducer 调度任务，这些设置不会生效。详见 [bullmq#1034](https://github.com/taskforcesh/bullmq/issues/1034) 说明。**
+- `defaultJobOptions: JobOpts` - 控制新任务默认设置的选项。详见 [JobOpts](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd)。可选。注意：如果你通过 FlowProducer 调度任务，这些设置不会生效。详见 [bullmq#1034](https://github.com/taskforcesh/bullmq/issues/1034) 说明。
 - `settings: AdvancedSettings` - 队列高级配置选项。通常无需更改。详见 [AdvancedSettings](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。可选。
 
 所有选项均为可选项，提供了对队列行为的详细控制。这些选项会直接传递给 Bull 的 `Queue` 构造函数。更多选项说明请参考 [这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。
