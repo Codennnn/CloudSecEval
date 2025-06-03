@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { BookOpenTextIcon, ExternalLinkIcon, HashIcon } from 'lucide-react'
 import type { MDXComponents } from 'mdx/types'
 import type { BundledLanguage } from 'shiki'
 
@@ -6,8 +7,16 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
 import { FileTree } from '~/components/doc/FileTree'
-import { RoutePath } from '~/constants'
-import { isExternalLink, isHashLink, isInternalLink } from '~/utils/common'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '~/components/ui/table'
+import { cn } from '~/lib/utils'
+import { getDocLinkHref, isExternalLink, isHashLink, isInternalLink } from '~/utils/link'
 
 interface PreProps {
   children: React.ReactElement<{ className: string, children: React.ReactElement }>
@@ -19,6 +28,52 @@ interface PreProps {
 interface AnchorProps {
   href: string
   children: React.ReactElement
+}
+
+interface HeadingProps {
+  id?: string
+  children: React.ReactNode
+}
+
+/**
+ * 创建自定义标题组件，带有锚点链接功能
+ */
+const createHeadingComponent = (Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') => {
+  return function HeadingComponent(
+    props: React.PropsWithChildren<HeadingProps> & React.ComponentProps<typeof Tag>,
+  ) {
+    const { id, children, ...restProps } = props
+
+    if (!id) {
+      return <Tag {...restProps}>{children}</Tag>
+    }
+
+    return (
+      <Tag id={id} {...restProps}>
+        <span className="group relative">
+          {children}
+
+          <span
+            className={
+              cn(
+                'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full',
+                'opacity-0 group-hover:opacity-100 transition-opacity duration-200 no-underline',
+                'px-1.5 inline-flex items-center justify-center',
+              )
+            }
+          >
+            <a
+              aria-label={`链接到 ${typeof children === 'string' ? children : '此标题'}`}
+              className="rounded-md hover:bg-muted p-1 opacity-60 hover:opacity-100 transition-all duration-200"
+              href={`#${id}`}
+            >
+              <HashIcon className="size-[0.7em]" />
+            </a>
+          </span>
+        </span>
+      </Tag>
+    )
+  }
 }
 
 /**
@@ -34,17 +89,23 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     a: (props: AnchorProps) => {
       const { href, children } = props
 
-      if (isExternalLink(href)) {
-        return (
-          <a href={href} rel="noopener noreferrer" target="_blank">
-            {children}
-          </a>
-        )
-      }
+      const isExternal = isExternalLink(href)
+      const isInternal = isInternalLink(href)
+      const isHash = isHashLink(href)
 
       return (
-        <Link href={isInternalLink(href) ? isHashLink(href) ? href : `${RoutePath.Docs}${href}` : `${RoutePath.Docs}/${href}`}>
+        <Link
+          className="inline-flex items-center gap-0.5"
+          href={getDocLinkHref(href)}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
+          target={isExternal ? '_blank' : undefined}
+        >
           {children}
+          {isExternal
+            ? <ExternalLinkIcon className="size-[1em]" />
+            : isHash
+              ? <HashIcon className="size-[1em]" />
+              : <BookOpenTextIcon className="size-[1em]" />}
         </Link>
       )
     },
@@ -81,6 +142,62 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
       return <pre {...restProps}>{children}</pre>
     },
+
+    table: (props: React.ComponentProps<'table'>) => {
+      return (
+        <Table>
+          {props.children}
+        </Table>
+      )
+    },
+
+    thead: (props: React.ComponentProps<'thead'>) => {
+      return (
+        <TableHeader>
+          {props.children}
+        </TableHeader>
+      )
+    },
+
+    tbody: (props: React.ComponentProps<'tbody'>) => {
+      return (
+        <TableBody>
+          {props.children}
+        </TableBody>
+      )
+    },
+
+    tr: (props: React.ComponentProps<'tr'>) => {
+      return (
+        <TableRow>
+          {props.children}
+        </TableRow>
+      )
+    },
+
+    th: (props: React.ComponentProps<'th'>) => {
+      return (
+        <TableHead>
+          {props.children}
+        </TableHead>
+      )
+    },
+
+    td: (props: React.ComponentProps<'td'>) => {
+      return (
+        <TableCell>
+          {props.children}
+        </TableCell>
+      )
+    },
+
+    // 自定义标题组件，带有锚点链接功能
+    h1: createHeadingComponent('h1'),
+    h2: createHeadingComponent('h2'),
+    h3: createHeadingComponent('h3'),
+    h4: createHeadingComponent('h4'),
+    h5: createHeadingComponent('h5'),
+    h6: createHeadingComponent('h6'),
 
     FileTree,
     CalloutInfo,

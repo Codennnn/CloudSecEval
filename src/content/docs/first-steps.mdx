@@ -1,12 +1,12 @@
 # 快速上手
 
-本系列文章将带你系统学习 Nest 的**核心基础知识**。为帮助你快速熟悉 Nest 应用的基本构建模块，我们将通过搭建一个基础的 CRUD 应用，覆盖入门阶段常见的功能特性。
+本系列文章将带你系统学习 Nest 的核心基础知识。为帮助你快速熟悉 Nest 应用的基本构建模块，我们将通过搭建一个基础的 CRUD 应用，覆盖入门阶段常见的功能特性。
 
 ## 语言
 
-我们热爱 [TypeScript](https://www.typescriptlang.org/)，同样也热爱 [Node.js](https://nodejs.org/en/)。Nest 兼容 TypeScript 和原生 JavaScript。由于 Nest 充分利用了最新的语言特性，如果你选择使用 JavaScript，建议配合 [Babel](https://babeljs.io/) 编译器。
+我们热爱 TypeScript，同样也热爱 Node.js。Nest 兼容 TypeScript 和原生 JavaScript。由于 Nest 充分利用了最新的语言特性，如果你选择使用 JavaScript，建议配合 [Babel](https://babeljs.io/) 编译器。
 
-本教程示例主要基于 TypeScript，但你可以随时**切换代码片段**为 JavaScript 语法（只需点击每个代码块右上角的语言切换按钮）。
+本教程示例主要基于 TypeScript，但你可以随时切换代码片段为 JavaScript 语法（只需点击每个代码块右上角的语言切换按钮）。
 
 ## 前置条件
 
@@ -45,7 +45,7 @@ $ nest new project-name
 
 这些核心文件的作用如下：
 
-|                          |                                                               |
+| 文件                     | 描述                                                          |
 | ------------------------ | ------------------------------------------------------------- |
 | `app.controller.ts`      | 基础控制器，包含一个路由。                                    |
 | `app.controller.spec.ts` | 控制器的单元测试文件。                                        |
@@ -79,14 +79,14 @@ bootstrap()
 
 Nest 致力于成为平台无关的框架。平台无关性让开发者能够创建可复用的逻辑模块，并在多种类型的应用中复用。从技术上讲，只要有适配器，Nest 就能与任何 Node HTTP 框架协作。目前，Nest 原生支持两种 HTTP 平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io/)。你可以根据实际需求选择最合适的方案。
 
-|                    |                                                                                                                                                                                    |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `platform-express` | [Express](https://expressjs.com/) 是知名的极简 Web 框架，经过大量生产环境验证，社区资源丰富。`@nestjs/platform-express` 包为默认选项。大多数用户无需额外配置即可直接使用 Express。 |
-| `platform-fastify` | [Fastify](https://www.fastify.io/) 是高性能、低开销的框架，专注于极致效率和速度。如何使用可参考[这里](/techniques/performance)。                                                   |
+| 平台               | 描述                                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `platform-express` | Express 是知名的极简 Web 框架，经过大量生产环境验证，社区资源丰富。`@nestjs/platform-express` 包为默认选项。大多数用户无需额外配置即可直接使用 Express。 |
+| `platform-fastify` | Fastify 是高性能、低开销的框架，专注于极致效率和速度。如何使用可参考[这里](/techniques/performance)。                                                    |
 
 无论选择哪种平台，都会暴露各自的应用接口，分别为 `NestExpressApplication` 和 `NestFastifyApplication`。
 
-当你在 `NestFactory.create()` 方法中传入类型参数时，如下例所示，`app` 对象会拥有该平台专属的方法。但除非你需要访问底层平台 API，否则**无需**指定类型。
+当你在 `NestFactory.create()` 方法中传入类型参数时，如下例所示，`app` 对象会拥有该平台专属的方法。但除非你需要访问底层平台 API，否则无需指定类型。
 
 ```ts
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -117,13 +117,13 @@ $ npm run start:dev
 
 ## 代码规范与格式化
 
-[CLI](/cli/overview) 旨在为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码**检查（linter）**和**格式化（formatter）**工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
+[CLI](/cli/overview) 旨在为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码检查（linter）和格式化（formatter）工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
 
 <CalloutInfo>
   不清楚格式化工具和检查工具的区别？可在[这里](https://prettier.io/docs/en/comparison.html)了解。
 </CalloutInfo>
 
-为最大程度确保稳定性和可扩展性，Nest 项目默认集成了基础的 [`eslint`](https://www.npmjs.com/package/eslint) 和 [`prettier`](https://www.npmjs.com/package/prettier) CLI 包，他们天生支持通过官方扩展实现出色的 IDE 集成体验。
+为最大程度确保稳定性和可扩展性，Nest 项目默认集成了基础的 eslint 和 prettier CLI 包，他们天生支持通过官方扩展实现出色的 IDE 集成体验。
 
 对于不依赖 IDE 的无头环境（如持续集成、Git hooks 等），Nest 项目也内置了可直接使用的 `npm` 脚本：
 

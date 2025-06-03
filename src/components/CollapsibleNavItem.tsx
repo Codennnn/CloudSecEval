@@ -18,7 +18,7 @@ import {
 } from '~/components/ui/sidebar'
 import { RoutePath } from '~/constants'
 import { NavMenuItem } from '~/types/nav'
-import { isExternalLink } from '~/utils/common'
+import { getDocLinkHref, isExternalLink } from '~/utils/link'
 
 import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from './AppSidebarMenuButton'
 
@@ -78,7 +78,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
             ? (
                 <AppSidebarMenuButton asChild item={item}>
                   <Link
-                    href={isExternalLink(item.url) ? item.url : `${RoutePath.Docs}${item.url}`}
+                    href={getDocLinkHref(item.url)}
                     target={isExternalLink(item.url) ? '_blank' : undefined}
                     onMouseEnter={() => {
                       if (item.url) {
@@ -117,7 +117,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                           {subItem.url
                             ? (
                                 <Link
-                                  href={isExternalLink(subItem.url) ? subItem.url : `${RoutePath.Docs}${subItem.url}`}
+                                  href={getDocLinkHref(subItem.url)}
                                   target={isExternalLink(subItem.url) ? '_blank' : undefined}
                                   onMouseEnter={() => {
                                     if (subItem.url) {

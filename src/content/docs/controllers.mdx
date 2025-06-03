@@ -90,7 +90,7 @@ export class CatsController {
 
 ## 请求对象（Request object）
 
-在实际开发中，处理器通常需要获取客户端的 **请求** 详情。Nest 提供了访问底层平台（默认是 Express）[请求对象](https://expressjs.com/en/api.html#req) 的方式。你只需在处理器参数中使用 `@Req()` 装饰器，Nest 就会自动注入该对象。
+在实际开发中，处理器通常需要获取客户端的请求详情。Nest 提供了访问底层平台（默认是 Express）[请求对象](https://expressjs.com/en/api.html#req) 的方式。你只需在处理器参数中使用 `@Req()` 装饰器，Nest 就会自动注入该对象。
 
 ```ts filename='cats.controller.ts'
 import { Controller, Get, Req } from '@nestjs/common'
@@ -123,7 +123,7 @@ export class CatsController {
   `@types/express` 包。
 </CalloutInfo>
 
-请求对象代表一次 HTTP 请求，包含查询字符串、参数、HTTP 头、请求体等属性（详见 [官方文档](https://expressjs.com/en/api.html#req)）。在大多数场景下，你无需手动访问这些属性，而是可以直接使用如 `@Body()`、`@Query()` 等专用装饰器。下表列出了常用装饰器及其对应的平台对象：
+请求对象代表一次 HTTP 请求，包含查询字符串、参数、HTTP 头、请求体等属性（详见[官方文档](https://expressjs.com/en/api.html#req)）。在大多数场景下，你无需手动访问这些属性，而是可以直接使用如 `@Body()`、`@Query()` 等专用装饰器。下表列出了常用装饰器及其对应的平台对象：
 
 <table>
   <tbody>
@@ -300,7 +300,7 @@ getDocs(@Query('version') version) {
 
 ## 路由参数（Route parameters）
 
-静态路径的路由无法满足需要在请求中携带 **动态数据** 的场景，例如 `GET /cats/1` 用于获取 id 为 1 的猫。要定义带参数的路由，可以在路由路径中添加参数 **标记**，以捕获 URL 中的动态值。如下所示，这些参数可以通过 `@Param()` 装饰器在方法参数中获取。
+静态路径的路由无法满足需要在请求中携带**动态数据**的场景，例如 `GET /cats/1` 用于获取 id 为 1 的猫。要定义带参数的路由，可以在路由路径中添加参数标记，以捕获 URL 中的动态值。如下所示，这些参数可以通过 `@Param()` 装饰器在方法参数中获取。
 
 <CalloutInfo>
   带参数的路由应声明在所有静态路径之后，以避免参数化路径拦截原本属于静态路径的流量。
