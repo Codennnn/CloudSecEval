@@ -2,6 +2,7 @@ import { transformerNotationHighlight } from '@shikijs/transformers'
 // import { transformerTwoslash } from '@shikijs/twoslash'
 import { type BundledLanguage, type CodeToHastOptions, codeToHtml } from 'shiki'
 
+import { CopyButton } from '~/components/CopyButton'
 import { LanguageIcon } from '~/components/LanguageIcon'
 
 interface CodeBlockProps {
@@ -33,14 +34,20 @@ export async function CodeBlock(props: CodeBlockProps) {
   })
 
   return (
-    <div className="not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden max-w-full w-full">
+    <div className="not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block">
       <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
-        <LanguageIcon
-          className="size-5.5"
-          lang={lang}
-        />
+        <div className="flex items-center gap-2">
+          <LanguageIcon
+            className="size-5.5"
+            lang={lang}
+          />
 
-        {filename && <span className="font-medium">{filename}</span>}
+          {filename && <span className="font-medium">{filename}</span>}
+        </div>
+
+        <div className="ml-auto">
+          <CopyButton text={code} />
+        </div>
       </div>
 
       <div
