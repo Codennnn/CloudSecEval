@@ -1,28 +1,43 @@
-import { SearchIcon } from 'lucide-react'
+'use client'
 
-import { Label } from '~/components/ui/label'
+import { useEffect, useState } from 'react'
+
+import { SearchDialog, SearchTrigger } from '~/components/search/SearchDialog'
 import {
   SidebarGroup,
   SidebarGroupContent,
-  SidebarInput,
 } from '~/components/ui/sidebar'
 
-export function SearchForm({ ...props }: React.ComponentProps<'form'>) {
+export function SearchForm() {
+  const [searchOpen, setSearchOpen] = useState(false)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   return (
-    <form {...props}>
+    <div>
       <SidebarGroup className="py-0">
         <SidebarGroupContent className="relative">
-          <Label className="sr-only" htmlFor="search">
-            Search
-          </Label>
-          <SidebarInput
-            className="pl-8"
-            id="search"
-            placeholder="搜索文档"
-          />
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
+          <SearchTrigger onClick={() => { setSearchOpen(true) }} />
         </SidebarGroupContent>
       </SidebarGroup>
-    </form>
+
+      <SearchDialog
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+      />
+    </div>
   )
 }
