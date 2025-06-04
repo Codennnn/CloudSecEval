@@ -3,12 +3,10 @@
 import { OramaCloud, useSearch } from '@oramacloud/react-client'
 
 function SearchComponent() {
-  const { results, error } = useSearch({
+  const { results } = useSearch({
     term: '介绍',
     limit: 5,
   })
-
-  console.log(results)
 
   return (
     <ul>

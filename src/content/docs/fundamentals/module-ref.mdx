@@ -28,9 +28,9 @@ export class CatsService implements OnModuleInit {
 ```
 
 <CalloutInfo type="warning">
-  你无法通过 `get()` 方法获取作用域提供者（如瞬态或请求作用域）。请参考下文
-  [解析作用域提供者](#resolving-scoped-providers) 部分。关于作用域控制，详见
-  [此处](/fundamentals/injection-scopes)。
+  你无法通过 `get()`
+  方法获取作用域提供者（如瞬态或请求作用域）。请参考下文[解析作用域提供者](#resolving-scoped-providers)
+  部分。关于作用域控制，详见[此处](/fundamentals/injection-scopes)。
 </CalloutInfo>
 
 如果需要从全局上下文获取提供者（例如该提供者在其他模块中被注入），可以在 `get()` 方法的第二个参数中传入 `{{ '{' }} strict: false {{ '}' }}` 选项：

@@ -131,7 +131,7 @@ const config = new DocumentBuilder()
 
 ## 文件上传
 
-你可以通过结合使用 `@ApiBody` 装饰器和 `@ApiConsumes()`，为特定方法启用文件上传功能。以下是一个完整示例，演示如何使用 [文件上传](/techniques/file-upload) 技巧：
+你可以通过结合使用 `@ApiBody` 装饰器和 `@ApiConsumes()`，为特定方法启用文件上传功能。以下是一个完整示例，演示如何使用[文件上传](/techniques/file-upload)技巧：
 
 ```ts
 @UseInterceptors(FileInterceptor('file'))
@@ -171,7 +171,7 @@ class FilesUploadDto {
 
 ## 进阶：通用 `ApiResponse`
 
-通过提供 [原始定义](/openapi/types-and-parameters#raw-definitions)，我们可以为 Swagger UI 定义通用（泛型）模式。假设我们有如下的数据传输对象：
+通过提供[原始定义](/openapi/types-and-parameters#raw-definitions)，我们可以为 Swagger UI 定义通用（泛型）模式。假设我们有如下的数据传输对象：
 
 ```ts
 export class PaginatedDto<TData> {

@@ -87,7 +87,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
 ## 路由配置（Route Config）
 
-你可以结合 Fastify 的 [路由配置](https://fastify.dev/docs/latest/Reference/Routes/#config) 功能，配合 `@RouteConfig()` 装饰器来使用。
+你可以结合 Fastify 的[路由配置](https://fastify.dev/docs/latest/Reference/Routes/#config) 功能，配合 `@RouteConfig()` 装饰器来使用。
 
 ```ts
 @RouteConfig({ output: 'hello world' })
@@ -99,7 +99,7 @@ index(@Req() req) {
 
 ## 路由约束（Route Constraints）
 
-自 v10.3.0 起，`@nestjs/platform-fastify` 支持 Fastify 的 [路由约束](https://fastify.dev/docs/latest/Reference/Routes/#constraints) 功能，可以通过 `@RouteConstraints` 装饰器实现。
+自 v10.3.0 起，`@nestjs/platform-fastify` 支持 Fastify 的[路由约束](https://fastify.dev/docs/latest/Reference/Routes/#constraints) 功能，可以通过 `@RouteConstraints` 装饰器实现。
 
 ```ts
 @RouteConstraints({ version: '1.2.x' })
@@ -114,4 +114,4 @@ newFeature() {
 
 ## 示例
 
-你可以在 [这里](https://github.com/nestjs/nest/tree/master/sample/10-fastify) 查看完整示例。
+你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/10-fastify) 查看完整示例。

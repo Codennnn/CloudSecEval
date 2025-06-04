@@ -47,7 +47,7 @@ DATABASE_USER=test
 DATABASE_PASSWORD=test
 ```
 
-如果你需要在 `ConfigModule` 加载和 Nest 应用启动之前就能访问某些环境变量（例如，需要将微服务配置传递给 `NestFactory#createMicroservice` 方法），可以使用 Nest CLI 的 `--env-file` 选项。该选项允许你在应用启动前指定要加载的 `.env` 文件路径。`--env-file` 标志在 Node v20 中引入，详见 [官方文档](https://nodejs.org/dist/v20.18.1/docs/api/cli.html#--env-fileconfig)。
+如果你需要在 `ConfigModule` 加载和 Nest 应用启动之前就能访问某些环境变量（例如，需要将微服务配置传递给 `NestFactory#createMicroservice` 方法），可以使用 Nest CLI 的 `--env-file` 选项。该选项允许你在应用启动前指定要加载的 `.env` 文件路径。`--env-file` 标志在 Node v20 中引入，详见[官方文档](https://nodejs.org/dist/v20.18.1/docs/api/cli.html#--env-fileconfig)。
 
 ```bash
 $ nest start --env-file .env
@@ -223,7 +223,7 @@ const dbUser = this.configService.get<string>('DATABASE_USER')
 const dbHost = this.configService.get<string>('database.host')
 ```
 
-如上所示，调用 `configService.get()` 并传入变量名即可获取环境变量。你还可以通过传递类型参数（如 `get<string>(...)`）获得 TypeScript 类型提示。对于通过 [自定义配置文件](/techniques/configuration#custom-configuration-files) 创建的嵌套配置对象，也可以使用点号语法访问其属性。
+如上所示，调用 `configService.get()` 并传入变量名即可获取环境变量。你还可以通过传递类型参数（如 `get<string>(...)`）获得 TypeScript 类型提示。对于通过[自定义配置文件](/techniques/configuration#custom-configuration-files) 创建的嵌套配置对象，也可以使用点号语法访问其属性。
 
 此外，还可以通过接口类型提示，一次性获取整个嵌套的自定义配置对象：
 
@@ -293,7 +293,7 @@ constructor(private configService: ConfigService<{ PORT: number }, true>) {
 
 ## 配置命名空间（Configuration namespaces）
 
-`配置模块（ConfigModule）` 支持像 [自定义配置文件](/techniques/configuration#custom-configuration-files) 那样，定义并加载多个自定义配置文件。对于复杂的配置层级结构，你可以通过嵌套配置对象进行管理。此外，还可以使用 `registerAs()` 函数，返回一个"命名空间配置对象（namespaced configuration object）"。示例代码如下：
+`配置模块（ConfigModule）` 支持像[自定义配置文件](/techniques/configuration#custom-configuration-files)那样，定义并加载多个自定义配置文件。对于复杂的配置层级结构，你可以通过嵌套配置对象进行管理。此外，还可以使用 `registerAs()` 函数，返回一个"命名空间配置对象（namespaced configuration object）"。示例代码如下：
 
 ```ts filename='config/database.config.ts'
 import { registerAs } from '@nestjs/config'
@@ -304,7 +304,7 @@ export default registerAs('database', () => ({
 }))
 ```
 
-与自定义配置文件类似，在 `registerAs()` 工厂函数内部，`process.env` 对象会包含所有已解析的环境变量。这些变量包括 `.env` 文件中的内容以及外部定义的环境变量，具体的合并方式可参考 [上文](/techniques/configuration#getting-started)。
+与自定义配置文件类似，在 `registerAs()` 工厂函数内部，`process.env` 对象会包含所有已解析的环境变量。这些变量包括 `.env` 文件中的内容以及外部定义的环境变量，具体的合并方式可参考[上文](/techniques/configuration#getting-started)。
 
 要加载命名空间配置，只需像加载自定义配置文件一样，将其传递给 `forRoot()` 方法选项对象的 `load` 属性：
 

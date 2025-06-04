@@ -127,7 +127,7 @@ Hello world!
 
 这说明我们的消息处理器已被正确执行。
 
-当你在 [拦截器（Interceptors）](/interceptors) 中使用 `CustomTransportStrategy（自定义传输策略）` 时，处理器会被包装为 RxJS 流。这意味着你需要订阅（subscribe）他们，才能执行流的底层逻辑（例如在拦截器执行后继续进入控制器逻辑）。
+当你在拦截器中使用 `CustomTransportStrategy（自定义传输策略）` 时，处理器会被包装为 RxJS 流。这意味着你需要订阅（subscribe）他们，才能执行流的底层逻辑（例如在拦截器执行后继续进入控制器逻辑）。
 
 下面是一个示例：
 

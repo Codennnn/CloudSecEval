@@ -63,7 +63,7 @@ export class AppModule {}
 </table>
 
 <CalloutInfo>
-  你可以在 [这里](https://typeorm.io/data-source-options) 查看更多数据源配置项。
+  你可以在[这里](https://typeorm.io/data-source-options)查看更多数据源配置项。
 </CalloutInfo>
 
 完成上述配置后，TypeORM 的 `DataSource` 和 `EntityManager` 对象即可在整个项目中被注入使用，无需额外导入其他模块。例如：
@@ -302,7 +302,7 @@ export class AppModule {}
 
 ### 分离实体定义
 
-你可以直接在模型中使用装饰器（Decorator）定义实体（Entity）及其列（Column）。不过，也有开发者更喜欢将实体及其列单独放在一个文件中。你可以通过 [“实体模式（entity schemas）”](https://typeorm.io/#/separating-entity-definition) 实现这种做法。
+你可以直接在模型中使用装饰器（Decorator）定义实体（Entity）及其列（Column）。不过，也有开发者更喜欢将实体及其列单独放在一个文件中。你可以通过[“实体模式（entity schemas）”](https://typeorm.io/#/separating-entity-definition)实现这种做法。
 
 ```ts
 import { EntitySchema } from 'typeorm'
@@ -422,7 +422,7 @@ async createMany(users: User[]) {
 
 ### 订阅者（Subscribers）
 
-通过 TypeORM 的 [订阅者（subscribers）](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber) ，你可以监听特定实体的相关事件。
+通过 TypeORM 的[订阅者（subscribers）](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber) ，你可以监听特定实体的相关事件。
 
 ```ts
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm'
@@ -474,7 +474,7 @@ export class UsersModule {}
 
 ### 数据库迁移（Migrations）
 
-[数据库迁移（Migrations）](https://typeorm.io/#/migrations) 提供了一种机制，能够逐步更新数据库结构，使其与应用中的数据模型保持同步，并且不会丢失已有数据。TypeORM 提供了专用的 [命令行工具（CLI）](https://typeorm.io/#/migrations/creating-a-new-migration)，用于生成、执行和回滚迁移。
+[数据库迁移（Migrations）](https://typeorm.io/#/migrations) 提供了一种机制，能够逐步更新数据库结构，使其与应用中的数据模型保持同步，并且不会丢失已有数据。TypeORM 提供了专用的[命令行工具（CLI）](https://typeorm.io/#/migrations/creating-a-new-migration)，用于生成、执行和回滚迁移。
 
 迁移类与 Nest 应用的源代码是分离的，其生命周期由 TypeORM 的命令行工具（CLI）管理。因此，在迁移中无法使用依赖注入等 Nest 特有的功能。想要了解更多迁移相关内容，请参考 [TypeORM 官方文档](https://typeorm.io/#/migrations/creating-a-new-migration)。
 
@@ -530,7 +530,7 @@ TypeOrmModule.forRootAsync({
 }),
 ```
 
-<p>详情可参考 [这个 issue](https://github.com/nestjs/typeorm/issues/86)。</p>
+<p>详情可参考[这个 issue](https://github.com/nestjs/typeorm/issues/86)。</p>
 </CalloutInfo>
 
 此时，你已经将 `User` 和 `Album` 实体分别注册到了各自的数据源。在这种配置下，调用 `TypeOrmModule.forFeature()` 方法和使用 `@InjectRepository()` 装饰器时，需要指定对应的数据源名称。如果不传递数据源名称，则默认使用 `default` 数据源。
@@ -720,7 +720,7 @@ TypeOrmModule.forRootAsync({
 
 ### 示例
 
-一个可用的示例项目可在 [此处](https://github.com/nestjs/nest/tree/master/sample/05-sql-typeorm) 查看。
+一个可用的示例项目可在[此处](https://github.com/nestjs/nest/tree/master/sample/05-sql-typeorm)查看。
 
 ## 集成 Sequelize
 
@@ -815,8 +815,7 @@ export class User extends Model {
 ```
 
 <CalloutInfo>
-  你可以在 [这里](https://github.com/RobinBuschmann/sequelize-typescript#column)
-  了解更多可用的装饰器（Decorator）信息。
+  你可以在[这里](https://github.com/RobinBuschmann/sequelize-typescript#column)了解更多可用的装饰器（Decorator）信息。
 </CalloutInfo>
 
 `User` 模型文件位于 `users` 目录。该目录包含所有与 `UsersModule`（用户模块）相关的文件。你可以自行决定模型文件的存放位置，但推荐将其放在靠近其所属领域的模块目录下。
@@ -1057,7 +1056,7 @@ async createMany() {
 
 ### 迁移
 
-[迁移（Migrations）](https://sequelize.org/docs/v6/other-topics/migrations/) 提供了一种逐步更新数据库结构的方式，能够让数据库结构与应用中的数据模型保持同步，同时保留已有数据。为了生成、执行和回滚迁移，Sequelize 提供了专用的 [命令行工具（CLI）](https://sequelize.org/docs/v6/other-topics/migrations/#installing-the-cli)。
+[迁移（Migrations）](https://sequelize.org/docs/v6/other-topics/migrations/) 提供了一种逐步更新数据库结构的方式，能够让数据库结构与应用中的数据模型保持同步，同时保留已有数据。为了生成、执行和回滚迁移，Sequelize 提供了专用的[命令行工具（CLI）](https://sequelize.org/docs/v6/other-topics/migrations/#installing-the-cli)。
 
 迁移类与 Nest 应用的源代码是分离的，其生命周期由 Sequelize 命令行工具（CLI）管理。因此，在迁移中无法使用依赖注入及其他 Nest 特有功能。如果想了解更多关于迁移的内容，请参考 [Sequelize 官方文档](https://sequelize.org/docs/v6/other-topics/migrations/#installing-the-cli) 中的相关指南。
 
@@ -1182,7 +1181,7 @@ SequelizeModule.forRootAsync({
 })
 ```
 
-工厂函数的用法与其他 [异步提供者](/fundamentals/async-providers) 类似。例如，你可以将其声明为 `async`，并通过 `inject` 注入依赖：
+工厂函数的用法与其他[异步提供者](/fundamentals/async-providers)类似。例如，你可以将其声明为 `async`，并通过 `inject` 注入依赖：
 
 ```ts
 SequelizeModule.forRootAsync({

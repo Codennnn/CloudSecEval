@@ -34,8 +34,7 @@ WebSocket 模块本身与平台无关，因此你可以通过实现 `WebSocketAd
 <CalloutInfo type="warning">
   如果你希望在多个负载均衡实例中使用 socket.io，必须在客户端 socket.io 配置中通过设置 `transports:
   ['websocket']` 禁用轮询，或者在负载均衡器中启用基于 Cookie 的路由。仅使用 Redis
-  并不足够。详情请参见
-  [这里](https://socket.io/docs/v4/using-multiple-nodes/#enabling-sticky-session)。
+  并不足够。详情请参见[这里](https://socket.io/docs/v4/using-multiple-nodes/#enabling-sticky-session)。
 </CalloutInfo>
 
 ```bash

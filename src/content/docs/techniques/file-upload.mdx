@@ -35,7 +35,7 @@ uploadFile(@UploadedFile() file: Express.Multer.File) {
 `FileInterceptor()` 装饰器接收两个参数：
 
 - `fieldName`：字符串，指定 HTML 表单中用于存放文件的字段名
-- `options`：可选对象，类型为 `MulterOptions`。该对象与 multer 构造函数使用的参数一致（详细信息见 [此处](https://github.com/expressjs/multer#multeropts)）。
+- `options`：可选对象，类型为 `MulterOptions`。该对象与 multer 构造函数使用的参数一致（详细信息见[此处](https://github.com/expressjs/multer#multeropts)）。
 
 <CalloutInfo type="warning">
   `FileInterceptor()` 可能与 Google Firebase 等第三方云服务提供商不兼容。
@@ -249,7 +249,7 @@ handleMultiPartData(@Body() body) {
 
 ## 默认选项
 
-你可以像上文所述，在文件拦截器中指定 multer 选项。若要设置全局默认选项，可以在导入 `MulterModule`（Multer 模块）时调用其静态方法 `register()`，并传入支持的选项。所有可用选项请参考 [这里](https://github.com/expressjs/multer#multeropts)。
+你可以像上文所述，在文件拦截器中指定 multer 选项。若要设置全局默认选项，可以在导入 `MulterModule`（Multer 模块）时调用其静态方法 `register()`，并传入支持的选项。所有可用选项请参考[这里](https://github.com/expressjs/multer#multeropts)。
 
 ```ts
 MulterModule.register({

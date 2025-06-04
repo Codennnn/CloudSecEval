@@ -78,15 +78,13 @@ bootstrap()
   <tr>
     <td>`serializer`</td>
     <td>
-      用于出站消息的自定义
-      [序列化器（serializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/serializer.interface.ts)
+      用于出站消息的自定义[序列化器（serializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/serializer.interface.ts)
     </td>
   </tr>
   <tr>
     <td>`deserializer`</td>
     <td>
-      用于入站消息的自定义
-      [反序列化器（deserializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/deserializer.interface.ts)
+      用于入站消息的自定义[反序列化器（deserializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/deserializer.interface.ts)
     </td>
   </tr>
   <tr>
@@ -111,7 +109,7 @@ bootstrap()
 
 ## 请求-响应
 
-当你需要在多个外部服务之间**交换**消息时，请求-响应消息风格非常有用。这种范式确保服务确实收到了消息（无需你手动实现确认协议）。然而，请求-响应方式并不总是最佳选择。例如，像 [Kafka](https://docs.confluent.io/3.0.0/streams/) 或 [NATS streaming](https://github.com/nats-io/node-nats-streaming) 这样的流式传输器（streaming transporter），他们采用基于日志的持久化机制，更适合应对另一类挑战，这类挑战更贴合事件消息（event messaging）范式（详见 [基于事件的消息传递](/microservices/basics#event-based)）。
+当你需要在多个外部服务之间**交换**消息时，请求-响应消息风格非常有用。这种范式确保服务确实收到了消息（无需你手动实现确认协议）。然而，请求-响应方式并不总是最佳选择。例如，像 [Kafka](https://docs.confluent.io/3.0.0/streams/) 或 [NATS streaming](https://github.com/nats-io/node-nats-streaming) 这样的流式传输器（streaming transporter），他们采用基于日志的持久化机制，更适合应对另一类挑战，这类挑战更贴合事件消息（event messaging）范式（详见[基于事件的消息传递](/microservices/basics#event-based)）。
 
 为了启用请求-响应消息类型，Nest 会创建两个逻辑通道：一个用于传输数据，另一个用于等待响应的到来。对于某些底层传输层（如 [NATS](https://nats.io/)），这种双通道支持是开箱即用的。而对于其他传输层，Nest 则通过手动创建独立通道来实现。虽然这种方式有效，但也会带来一定的开销。因此，如果你不需要请求-响应消息风格，建议考虑使用事件驱动（event-based）方法。
 

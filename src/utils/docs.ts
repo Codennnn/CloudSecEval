@@ -1,6 +1,9 @@
 import { readdir, stat } from 'fs/promises'
 import { join } from 'path'
 
+import { navMainData } from '~/lib/data/nav'
+import type { NavMenuItem } from '~/types/nav'
+
 /**
  * 递归获取所有 MDX 文件路径
  */
@@ -63,4 +66,50 @@ export async function getAllDocPaths(): Promise<string[]> {
       'modules',
     ]
   }
+}
+
+/**
+ * 扁平化导航数据，获取所有文档的有序列表
+ */
+function flattenNavItems(items: NavMenuItem[]): { title: string, url: string }[] {
+  const result: { title: string, url: string }[] = []
+
+  for (const item of items) {
+    if (item.url) {
+      result.push({
+        title: item.title ?? '',
+        url: item.url,
+      })
+    }
+
+    if (item.items) {
+      result.push(...flattenNavItems(item.items))
+    }
+  }
+
+  return result
+}
+
+/**
+ * 获取文档导航信息（上一篇和下一篇）
+ */
+export function getDocNavigation(currentPath: string): {
+  prev: { title: string, url: string } | null
+  next: { title: string, url: string } | null
+} {
+  const allDocs = flattenNavItems(navMainData)
+
+  // 确保路径以 / 开头
+  const normalizedPath = currentPath.startsWith('/') ? currentPath : `/${currentPath}`
+
+  const currentIndex = allDocs.findIndex((doc) => doc.url === normalizedPath)
+
+  if (currentIndex === -1) {
+    return { prev: null, next: null }
+  }
+
+  const prev = currentIndex > 0 ? allDocs[currentIndex - 1] : null
+  const next = currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : null
+
+  return { prev, next }
 }

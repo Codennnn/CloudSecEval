@@ -12,7 +12,7 @@
 
 ## 概述
 
-在 [管道](/pipes) 章节中，我们已经介绍了如何构建简单的管道，并将其绑定到控制器、方法或全局应用，以演示其工作原理。建议先回顾该章节，以便更好地理解本章内容。本章将聚焦于 `验证管道` 的各种**实际应用场景**，并展示如何使用其高级自定义功能。
+在[管道](/pipes)章节中，我们已经介绍了如何构建简单的管道，并将其绑定到控制器、方法或全局应用，以演示其工作原理。建议先回顾该章节，以便更好地理解本章内容。本章将聚焦于 `验证管道` 的各种实际应用场景，并展示如何使用其高级自定义功能。
 
 ## 使用内置的验证管道（ValidationPipe）
 
@@ -130,7 +130,7 @@ export interface ValidationPipeOptions extends ValidatorOptions {
 </table>
 
 <CalloutInfo>
-  更多关于 `class-validator` 包的信息，请参阅 [这里](https://github.com/typestack/class-validator)。
+  更多关于 `class-validator` 包的信息，请参阅[这里](https://github.com/typestack/class-validator)。
 </CalloutInfo>
 
 ## 自动验证（Auto-validation）
@@ -167,7 +167,7 @@ create(@Body() createUserDto: CreateUserDto) {
   type {CreateUserDto}`。
 </CalloutInfo>
 
-现在我们可以在 `CreateUserDto` 中添加一些验证规则。这些规则是通过 `class-validator` 包提供的装饰器来实现的，详细说明可参考 [这里](https://github.com/typestack/class-validator#validation-decorators)。通过这种方式，任何使用 `CreateUserDto` 的路由都会自动强制执行这些验证规则。
+现在我们可以在 `CreateUserDto` 中添加一些验证规则。这些规则是通过 `class-validator` 包提供的装饰器来实现的，详细说明可参考[这里](https://github.com/typestack/class-validator#validation-decorators)。通过这种方式，任何使用 `CreateUserDto` 的路由都会自动强制执行这些验证规则。
 
 ```ts
 import { IsEmail, IsNotEmpty } from 'class-validator'
@@ -448,4 +448,4 @@ GET /?ids=1,2,3
 
 ## 了解更多
 
-想要进一步了解自定义验证器、错误消息以及 `class-validator` 包中可用的装饰器，请查阅 [相关文档](https://github.com/typestack/class-validator)。
+想要进一步了解自定义验证器、错误消息以及 `class-validator` 包中可用的装饰器，请查阅[相关文档](https://github.com/typestack/class-validator)。

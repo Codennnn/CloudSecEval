@@ -13,7 +13,7 @@
 NestJS 本身没有为 `AsyncLocalStorage` 提供内置抽象，因此我们以最简单的 HTTP 场景为例，演示如何自行实现，以便更好地理解这一概念：
 
 <CalloutInfo>
-  **注意** 如需现成的 [专用包](/recipes/async-local-storage#nestjs-cls)，请继续阅读下文。
+  如需现成的[专用包](/recipes/async-local-storage#nestjs-cls)，请继续阅读下文。
 </CalloutInfo>
 
 1. 首先，在某个共享源文件中创建一个新的 `AsyncLocalStorage` 实例。由于我们使用的是 NestJS，建议将其封装为一个模块，并通过自定义提供者（Custom Provider）注册。
@@ -96,7 +96,7 @@ export class CatsService {
 
 [nestjs-cls](https://github.com/Papooch/nestjs-cls) 包为直接使用 `AsyncLocalStorage`（CLS 是 continuation-local storage 的缩写）带来了多项开发体验（DX）提升。它将实现细节封装为 `ClsModule`，为不同传输层（不仅限于 HTTP）提供多种初始化 `store` 的方式，并且支持强类型。
 
-随后，可以通过可注入的 `ClsService` 访问 store，或者通过 [代理提供者（Proxy Providers）](https://www.npmjs.com/package/nestjs-cls#proxy-providers) 完全将其从业务逻辑中抽象出来。
+随后，可以通过可注入的 `ClsService` 访问 store，或者通过[代理提供者（Proxy Providers）](https://www.npmjs.com/package/nestjs-cls#proxy-providers) 完全将其从业务逻辑中抽象出来。
 
 <CalloutInfo>
   `nestjs-cls` 是第三方包，并非由 NestJS

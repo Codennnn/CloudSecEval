@@ -215,8 +215,8 @@ functions:
 ```
 
 <CalloutInfo>
-  想了解更多关于 Serverless 框架的信息，请访问
-  [官方文档](https://www.serverless.com/framework/docs/)。
+  想了解更多关于 Serverless
+  框架的信息，请访问[官方文档](https://www.serverless.com/framework/docs/)。
 </CalloutInfo>
 
 接下来，打开 `main.ts` 文件，按照如下方式更新启动代码，加入所需的模板代码（Boilerplate）：
@@ -249,8 +249,8 @@ export const handler: Handler = async (event: any, context: Context, callback: C
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  如果你使用了 `@nestjs/swagger` 包，在无服务器函数场景下还需额外配置，才能正常工作。详情请参考此
-  [讨论帖](https://github.com/nestjs/swagger/issues/199)。
+  如果你使用了 `@nestjs/swagger`
+  包，在无服务器函数场景下还需额外配置，才能正常工作。详情请参考此[讨论帖](https://github.com/nestjs/swagger/issues/199)。
 </CalloutInfo>
 
 然后，打开 `tsconfig.json` 文件，确保启用了 `esModuleInterop` 选项，以便正确加载 `@codegenie/serverless-express` 包。

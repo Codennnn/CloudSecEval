@@ -11,14 +11,13 @@ import pipeImage from '/public/assets/Pipe_1.png'
 - **转换**：将输入数据转为期望格式（如将字符串转为整数）
 - **校验**：验证输入数据，数据有效则原样传递，无效则抛出异常
 
-在这两种场景下，管道都会对 [控制器路由处理器](/controllers#route-parameters) 正在处理的 `参数` 进行操作。Nest 会在方法调用前执行管道，管道接收即将传递给方法的参数并进行处理。所有转换或校验操作都在此阶段完成，随后路由处理器会收到（可能已被转换的）参数。
+在这两种场景下，管道都会对[控制器路由处理器](/controllers#route-parameters)正在处理的 `参数` 进行操作。Nest 会在方法调用前执行管道，管道接收即将传递给方法的参数并进行处理。所有转换或校验操作都在此阶段完成，随后路由处理器会收到（可能已被转换的）参数。
 
 Nest 提供了多种内置管道可直接使用，也支持自定义管道。本章将介绍内置管道的用法及其绑定方式，并通过自定义管道示例，演示如何从零实现一个管道。
 
 <CalloutInfo>
   管道在异常区域（exceptions
-  zone）内运行。这意味着当管道抛出异常时，会被异常层（全局异常过滤器和当前上下文应用的
-  [异常过滤器](/exception-filters)）捕获处理。因此，管道抛出异常时，控制器方法不会被执行。这为在系统边界校验外部输入数据提供了最佳实践。
+  zone）内运行。这意味着当管道抛出异常时，会被异常层（全局异常过滤器和当前上下文应用的[异常过滤器](/exception-filters)）捕获处理。因此，管道抛出异常时，控制器方法不会被执行。这为在系统边界校验外部输入数据提供了最佳实践。
 </CalloutInfo>
 
 ## 内置管道
@@ -156,8 +155,8 @@ export interface ArgumentMetadata {
     <tr>
       <td>`type`</td>
       <td>
-        指示参数类型：请求体 `@Body()`、查询参数 `@Query()`、路由参数 `@Param()` 或自定义参数（详见
-        [自定义装饰器](/custom-decorators)）。
+        指示参数类型：请求体 `@Body()`、查询参数 `@Query()`、路由参数 `@Param()`
+        或自定义参数（详见[自定义装饰器](/custom-decorators)）。
       </td>
     </tr>
     <tr>
@@ -318,8 +317,8 @@ export class CreateCatDto {
 ```
 
 <CalloutInfo>
-  更多 class-validator 装饰器的用法请参见
-  [官方文档](https://github.com/typestack/class-validator#usage)。
+  更多 class-validator
+  装饰器的用法请参见[官方文档](https://github.com/typestack/class-validator#usage)。
 </CalloutInfo>
 
 接下来，我们可以实现一个基于这些注解的 `验证管道（ValidationPipe）`：

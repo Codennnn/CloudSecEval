@@ -1,6 +1,6 @@
 # 使用 Apollo 的插件
 
-插件（Plugin）可以让你扩展 Apollo Server 的核心功能，在特定事件发生时执行自定义操作。目前，这些事件主要对应于 GraphQL 请求生命周期的各个阶段，以及 Apollo Server 启动时（详细内容可参见 [这里](https://www.apollographql.com/docs/apollo-server/integrations/plugins/)）。例如，一个基础的日志插件可以在每次请求发送到 Apollo Server 时，记录对应的 GraphQL 查询字符串。
+插件（Plugin）可以让你扩展 Apollo Server 的核心功能，在特定事件发生时执行自定义操作。目前，这些事件主要对应于 GraphQL 请求生命周期的各个阶段，以及 Apollo Server 启动时（详细内容可参见[这里](https://www.apollographql.com/docs/apollo-server/integrations/plugins/)）。例如，一个基础的日志插件可以在每次请求发送到 Apollo Server 时，记录对应的 GraphQL 查询字符串。
 
 ## 自定义插件（Custom plugins）
 
@@ -51,7 +51,7 @@ GraphQLModule.forRoot({
 
 ## 与 Mercurius 一起使用插件（Plugins with Mercurius）
 
-部分现有的 mercurius 专用 Fastify 插件，必须在 mercurius 插件之后加载（详细内容可参见 [这里](https://mercurius.dev/#/docs/plugins)）。
+部分现有的 mercurius 专用 Fastify 插件，必须在 mercurius 插件之后加载（详细内容可参见[这里](https://mercurius.dev/#/docs/plugins)）。
 
 <CalloutInfo type="warning">
   [mercurius-upload](https://github.com/mercurius-js/mercurius-upload)

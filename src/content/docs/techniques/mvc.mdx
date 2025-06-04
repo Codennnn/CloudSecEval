@@ -2,14 +2,14 @@
 
 Nest 默认在底层使用了 [Express](https://github.com/expressjs/express) 库。因此，所有适用于 Express 的 MVC（模型-视图-控制器）模式的用法，同样适用于 Nest。
 
-首先，我们可以使用 [命令行工具（CLI）](https://github.com/nestjs/nest-cli) 脚手架快速创建一个简单的 Nest 应用：
+首先，我们可以使用[命令行工具（CLI）](https://github.com/nestjs/nest-cli) 脚手架快速创建一个简单的 Nest 应用：
 
 ```bash
 $ npm i -g @nestjs/cli
 $ nest new project
 ```
 
-为了创建一个 MVC 应用，我们还需要安装一个 [模板引擎（template engine）](https://expressjs.com/en/guide/using-template-engines.html) 来渲染 HTML 视图：
+为了创建一个 MVC 应用，我们还需要安装一个[模板引擎（template engine）](https://expressjs.com/en/guide/using-template-engines.html) 来渲染 HTML 视图：
 
 ```bash
 $ npm install --save hbs
@@ -80,8 +80,8 @@ export class AppController {
 
 <CalloutInfo>
   当 Nest 检测到 `@Res()` 装饰器时，会注入特定库的响应对象（Response
-  Object）。我们可以使用该对象动态渲染模板。详细了解响应对象 API，请参见
-  [这里](https://expressjs.com/en/api.html)。
+  Object）。我们可以使用该对象动态渲染模板。详细了解响应对象
+  API，请参见[这里](https://expressjs.com/en/api.html)。
 </CalloutInfo>
 
 ```ts filename='app.controller.ts'
@@ -102,7 +102,7 @@ export class AppController {
 
 ## 示例
 
-一个可用的示例项目可在 [这里](https://github.com/nestjs/nest/tree/master/sample/15-mvc) 查看。
+一个可用的示例项目可在[这里](https://github.com/nestjs/nest/tree/master/sample/15-mvc) 查看。
 
 ## 在 Fastify 中使用
 
@@ -171,4 +171,4 @@ root(@Res() res: FastifyReply) {
 
 ## 示例
 
-一个可用的示例项目可在 [这里](https://github.com/nestjs/nest/tree/master/sample/17-mvc-fastify) 查看。
+一个可用的示例项目可在[这里](https://github.com/nestjs/nest/tree/master/sample/17-mvc-fastify) 查看。

@@ -2,7 +2,7 @@
 
 Nest 支持两种方式集成 [MongoDB](https://www.mongodb.com/) 数据库。你可以使用内置的 [TypeORM](https://github.com/typeorm/typeorm) 模块（详见[此处](/techniques/database)），该模块内置了 MongoDB 连接器；也可以选择 [Mongoose](https://mongoosejs.com)，这是最流行的 MongoDB 对象建模工具。本章将重点介绍后者，即如何使用专用的 `@nestjs/mongoose` 包。
 
-首先，安装 [所需依赖](https://github.com/Automattic/mongoose)：
+首先，安装[所需依赖](https://github.com/Automattic/mongoose)：
 
 ```bash
 $ npm i @nestjs/mongoose mongoose
@@ -20,7 +20,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 export class AppModule {}
 ```
 
-`forRoot()` 方法接受与 Mongoose 包中的 `mongoose.connect()` 相同的配置对象，具体说明可参考 [此处](https://mongoosejs.com/docs/connections.html)。
+`forRoot()` 方法接受与 Mongoose 包中的 `mongoose.connect()` 相同的配置对象，具体说明可参考[此处](https://mongoosejs.com/docs/connections.html)。
 
 ## 模型注入
 
@@ -56,9 +56,9 @@ export const CatSchema = SchemaFactory.createForClass(Cat)
   `@nestjs/mongoose`）生成原始模式定义。这允许你基于已提供的元数据手动修改生成的模式定义。对于某些难以用装饰器完全表达的边缘场景，这种方式非常有用。
 </CalloutInfo>
 
-`@Schema()` 装饰器用于标记一个类为模式定义。它会将我们的 `Cat` 类映射为同名的 MongoDB 集合，但集合名会自动加上 “s” 结尾 —— 最终的 mongo 集合名为 `cats`。该装饰器可接受一个可选参数，即模式选项对象。你可以将其视为通常传递给 `mongoose.Schema` 构造函数的第二个参数（如 `new mongoose.Schema(_, options)`）。更多可用的模式选项，请参见 [此章节](https://mongoosejs.com/docs/guide.html#options)。
+`@Schema()` 装饰器用于标记一个类为模式定义。它会将我们的 `Cat` 类映射为同名的 MongoDB 集合，但集合名会自动加上 “s” 结尾 —— 最终的 mongo 集合名为 `cats`。该装饰器可接受一个可选参数，即模式选项对象。你可以将其视为通常传递给 `mongoose.Schema` 构造函数的第二个参数（如 `new mongoose.Schema(_, options)`）。更多可用的模式选项，请参见[此章节](https://mongoosejs.com/docs/guide.html#options)。
 
-`@Prop()` 装饰器用于定义文档中的属性。例如，在上面的模式定义中，我们定义了三个属性：`name`、`age` 和 `breed`。这些属性的 [模式类型](https://mongoosejs.com/docs/schematypes.html) 会通过 TypeScript 元数据（和反射机制）自动推断。然而，在更复杂的场景下，如果类型无法被自动推断（如数组或嵌套对象结构），则必须显式指定类型，如下所示：
+`@Prop()` 装饰器用于定义文档中的属性。例如，在上面的模式定义中，我们定义了三个属性：`name`、`age` 和 `breed`。这些属性的[模式类型](https://mongoosejs.com/docs/schematypes.html)会通过 TypeScript 元数据（和反射机制）自动推断。然而，在更复杂的场景下，如果类型无法被自动推断（如数组或嵌套对象结构），则必须显式指定类型，如下所示：
 
 ```ts
 @Prop([String])
@@ -339,7 +339,7 @@ export class AppModule {}
 
 ## 插件（Plugins）
 
-要为指定的 schema 注册 [插件](https://mongoosejs.com/docs/plugins.html)，请使用 `forFeatureAsync()` 方法。
+要为指定的 schema 注册[插件](https://mongoosejs.com/docs/plugins.html)，请使用 `forFeatureAsync()` 方法。
 
 ```ts
 @Module({
@@ -664,4 +664,4 @@ class Person {
 
 ## 示例
 
-可用的完整示例请参见 [这里](https://github.com/nestjs/nest/tree/master/sample/06-mongoose)。
+可用的完整示例请参见[这里](https://github.com/nestjs/nest/tree/master/sample/06-mongoose)。

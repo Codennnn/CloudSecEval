@@ -140,11 +140,11 @@ jobs:
           TARGET_SHA: {{ '${{' }} github.event.pull_request.base.sha {{ '}}' }}
 ```
 
-理想情况下，`DEVTOOLS_API_KEY` 环境变量应通过 GitHub Secrets（加密密钥）进行管理，详细说明可参考 [官方文档](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) 。
+理想情况下，`DEVTOOLS_API_KEY` 环境变量应通过 GitHub Secrets（加密密钥）进行管理，详细说明可参考[官方文档](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) 。
 
 该工作流会在每次针对 `master` 分支的拉取请求（pull request）或直接提交到 `master` 分支时运行。你可以根据项目实际需求调整此配置。这里的关键在于为 `GraphPublisher` 类（用于发布图数据）提供所需的环境变量。
 
-不过，在正式使用此工作流前，有一个变量需要更新——`DEVTOOLS_API_KEY`。你可以在 [此页面](https://devtools.nestjs.com/settings/manage-api-keys) 为你的项目生成专用的 API 密钥。
+不过，在正式使用此工作流前，有一个变量需要更新——`DEVTOOLS_API_KEY`。你可以在[此页面](https://devtools.nestjs.com/settings/manage-api-keys)为你的项目生成专用的 API 密钥。
 
 最后，让我们再次打开 `main.ts` 文件，补全之前留空的 `publishOptions` 对象：
 

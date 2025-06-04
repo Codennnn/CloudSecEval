@@ -2,10 +2,11 @@ import { Suspense } from 'react'
 
 import { notFound } from 'next/navigation'
 
+import { DocNavigation } from '~/components/DocNavigation'
 import { Skeleton } from '~/components/ui/skeleton'
 import { cn } from '~/lib/utils'
 import type { PageProps } from '~/types/common'
-import { getAllDocPaths } from '~/utils/docs'
+import { getAllDocPaths, getDocNavigation } from '~/utils/docs'
 
 type MDXContent = React.ComponentType
 
@@ -64,17 +65,27 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
 
   const docPath = docTitle.join('/')
 
+  // 获取导航信息
+  const navigation = getDocNavigation(`/${docPath}`)
+
   return (
-    <article
-      className={cn(
-        'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:not-italic prose-a:underline-offset-4',
-        'prose-a:font-normal prose-a:decoration-dotted prose-a:hover:decoration-solid',
-        'max-w-[80ch] mx-auto',
-      )}
-    >
-      <Suspense fallback={<LoadingSpinner />}>
-        <DocContent docPath={docPath} />
-      </Suspense>
-    </article>
+    <div className="max-w-[80ch] mx-auto">
+      <article
+        className={cn(
+          'prose dark:prose-invert prose-blockquote:font-normal prose-blockquote:not-italic',
+          'prose-a:font-normal prose-a:decoration-dotted prose-a:hover:decoration-solid prose-a:underline-offset-4',
+          'max-w-none',
+        )}
+      >
+        <Suspense fallback={<LoadingSpinner />}>
+          <DocContent docPath={docPath} />
+        </Suspense>
+      </article>
+
+      <DocNavigation
+        next={navigation.next}
+        prev={navigation.prev}
+      />
+    </div>
   )
 }

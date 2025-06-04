@@ -41,13 +41,13 @@ export class AppModule {}
 
 `forRoot()` 方法用于注册一个 `bullmq` 包的配置对象，该对象将被应用中注册的所有队列（Queue）使用（除非另有指定）。以下是配置对象中的部分属性，供参考：
 
-- `connection: ConnectionOptions` - 用于配置 Redis 连接的选项。详见 [连接配置](https://docs.bullmq.io/guide/connections)。可选。
+- `connection: ConnectionOptions` - 用于配置 Redis 连接的选项。详见[连接配置](https://docs.bullmq.io/guide/connections)。可选。
 - `prefix: string` - 所有队列键的前缀。可选。
 - `defaultJobOptions: JobOpts` - 控制新作业默认设置的选项。详见 [JobOpts](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd)。可选。
 - `settings: AdvancedSettings` - 队列高级配置选项。通常无需更改。详见 [AdvancedSettings](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。可选。
-- `extraOptions` - 模块初始化的额外选项。详见 [手动注册](/techniques/queues#manual-registration)
+- `extraOptions` - 模块初始化的额外选项。详见[手动注册](/techniques/queues#manual-registration)。
 
-所有选项均为可选，提供了对队列行为的详细控制。这些选项会直接传递给 BullMQ 的 `Queue` 构造函数。关于这些选项及更多内容，详见 [官方文档](https://api.docs.bullmq.io/interfaces/v4.QueueOptions.html)。
+所有选项均为可选，提供了对队列行为的详细控制。这些选项会直接传递给 BullMQ 的 `Queue` 构造函数。关于这些选项及更多内容，详见[官方文档](https://api.docs.bullmq.io/interfaces/v4.QueueOptions.html)。
 
 要注册一个队列（Queue），可以如下导入 `BullModule.registerQueue()` 动态模块：
 
@@ -74,7 +74,7 @@ BullModule.registerQueue({
 })
 ```
 
-BullMQ 还支持作业（Job）之间的父子关系。这一功能使你可以创建作业流（Flow），即作业可以组成任意深度的树状结构。详细内容请参见 [官方文档](https://docs.bullmq.io/guide/flows)。
+BullMQ 还支持作业（Job）之间的父子关系。这一功能使你可以创建作业流（Flow），即作业可以组成任意深度的树状结构。详细内容请参见[官方文档](https://docs.bullmq.io/guide/flows)。
 
 要添加作业流，可以这样做：
 
@@ -194,7 +194,7 @@ const job = await this.audioQueue.add(
 )
 ```
 
-完整的选项列表请参考 API 文档：[这里](https://api.docs.bullmq.io/types/v4.JobsOptions.html) 和 [这里](https://api.docs.bullmq.io/interfaces/v4.BaseJobOptions.html)。
+完整的选项列表请参考 API 文档：[这里](https://api.docs.bullmq.io/types/v4.JobsOptions.html) 和[这里](https://api.docs.bullmq.io/interfaces/v4.BaseJobOptions.html)。
 
 ## 消费者（Consumer）
 
@@ -235,7 +235,7 @@ export class AudioConsumer extends WorkerHost {
 
 当 worker 处于空闲状态且队列中有任务需要处理时，`process` 方法会被调用。该处理方法接收 `job` 对象作为唯一参数。处理方法返回的值会被存储在任务对象中，之后可以在监听任务完成事件时访问。
 
-`Job` 对象提供了多种方法用于与其状态进行交互。例如，上述代码中使用了 `progress()` 方法来更新任务的进度。完整的 `Job` 对象 API 参考请见 [这里](https://api.docs.bullmq.io/classes/v4.Job.html)。
+`Job` 对象提供了多种方法用于与其状态进行交互。例如，上述代码中使用了 `progress()` 方法来更新任务的进度。完整的 `Job` 对象 API 参考请见[这里](https://api.docs.bullmq.io/classes/v4.Job.html)。
 
 在旧版本 Bull 中，可以通过为 `@Process()` 装饰器传递特定 `name`，指定某个处理方法**仅处理**特定类型（具有特定 `name`）的任务，如下所示：
 
@@ -352,7 +352,7 @@ export class AudioEventsListener extends QueueEventsHost {
 
 ## 队列管理
 
-队列（Queue）提供了 API，允许你执行诸如暂停、恢复、获取不同状态任务数量等管理操作。完整的队列 API 可参考 [这里](https://api.docs.bullmq.io/classes/v4.Queue.html)。你可以直接在 `Queue` 对象上调用这些方法，下面以暂停和恢复队列为例进行说明。
+队列（Queue）提供了 API，允许你执行诸如暂停、恢复、获取不同状态任务数量等管理操作。完整的队列 API 可参考[这里](https://api.docs.bullmq.io/classes/v4.Queue.html)。你可以直接在 `Queue` 对象上调用这些方法，下面以暂停和恢复队列为例进行说明。
 
 通过调用 `pause()` 方法可以暂停队列。被暂停的队列不会处理新的任务，但当前正在处理的任务会继续执行直到完成。
 
@@ -550,7 +550,7 @@ export class AppModule {}
 - `defaultJobOptions: JobOpts` - 控制新任务默认设置的选项。详见 [JobOpts](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd)。可选。注意：如果你通过 FlowProducer 调度任务，这些设置不会生效。详见 [bullmq#1034](https://github.com/taskforcesh/bullmq/issues/1034) 说明。
 - `settings: AdvancedSettings` - 队列高级配置选项。通常无需更改。详见 [AdvancedSettings](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。可选。
 
-所有选项均为可选项，提供了对队列行为的详细控制。这些选项会直接传递给 Bull 的 `Queue` 构造函数。更多选项说明请参考 [这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。
+所有选项均为可选项，提供了对队列行为的详细控制。这些选项会直接传递给 Bull 的 `Queue` 构造函数。更多选项说明请参考[这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。
 
 要注册队列，可以如下导入 `BullModule.registerQueue()` 动态模块：
 
@@ -741,7 +741,7 @@ export class AudioConsumer {
 
 被装饰的方法（如 `transcode()`）会在 worker 空闲且队列中有待处理任务时被调用。该处理器方法接收 `job` 对象作为唯一参数。处理器方法返回的值会被存储在任务对象中，之后可以在监听任务完成事件时访问。
 
-`Job` 对象提供了多种方法用于与其状态交互。例如，上述代码中使用了 `progress()` 方法来更新任务的进度。完整的 `Job` 对象 API 参考请参见 [这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#job)。
+`Job` 对象提供了多种方法用于与其状态交互。例如，上述代码中使用了 `progress()` 方法来更新任务的进度。完整的 `Job` 对象 API 参考请参见[这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#job)。
 
 你可以通过为 `@Process()` 装饰器传递特定的 `name`，指定某个处理方法**只处理**特定类型（具有特定 `name`）的任务。你可以在同一个消费者类中声明多个 `@Process()` 处理器，分别对应每种任务类型（`name`）。当你使用命名任务时，请确保每个名称都有对应的处理器。
 
@@ -905,7 +905,7 @@ async onGlobalCompleted(jobId: number, result: any) {
 
 ## 队列管理
 
-队列（Queue）提供了 API，允许你执行诸如暂停和恢复、获取不同状态下任务数量等管理操作。完整的队列 API 可参考 [这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。你可以直接在 `Queue` 对象上调用这些方法，下方以暂停/恢复为例进行演示。
+队列（Queue）提供了 API，允许你执行诸如暂停和恢复、获取不同状态下任务数量等管理操作。完整的队列 API 可参考[这里](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。你可以直接在 `Queue` 对象上调用这些方法，下方以暂停/恢复为例进行演示。
 
 通过调用 `pause()` 方法可以暂停队列。被暂停的队列不会处理新的任务，但当前正在处理的任务会继续执行直到完成。
 

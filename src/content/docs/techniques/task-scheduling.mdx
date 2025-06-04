@@ -22,7 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule'
 export class AppModule {}
 ```
 
-调用 `.forRoot()` 方法会初始化调度器，并注册应用中所有声明式的 [定时任务（cron jobs）](/techniques/task-scheduling#declarative-cron-jobs)、[超时任务（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和 [间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。这些任务会在 `onApplicationBootstrap` 生命周期钩子（lifecycle hook）触发时注册，确保所有模块都已加载并声明了各自的调度任务。
+调用 `.forRoot()` 方法会初始化调度器，并注册应用中所有声明式的[定时任务（cron jobs）](/techniques/task-scheduling#declarative-cron-jobs)、[超时任务（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和[间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。这些任务会在 `onApplicationBootstrap` 生命周期钩子（lifecycle hook）触发时注册，确保所有模块都已加载并声明了各自的调度任务。
 
 ## 声明式定时任务（cron jobs）
 
@@ -170,7 +170,7 @@ export class NotificationService {
 }
 ```
 
-你可以在声明后访问和控制定时任务（cron job），也可以通过 [动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 动态创建定时任务（其 cron 表达式在运行时定义）。要通过 API 访问声明式定时任务，必须通过装饰器（Decorator）第二个参数 options 对象中的 `name` 属性为任务指定名称。
+你可以在声明后访问和控制定时任务（cron job），也可以通过[动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 动态创建定时任务（其 cron 表达式在运行时定义）。要通过 API 访问声明式定时任务，必须通过装饰器（Decorator）第二个参数 options 对象中的 `name` 属性为任务指定名称。
 
 ## 声明式定时任务
 
@@ -188,7 +188,7 @@ handleInterval() {
   job）来调度周期性任务。
 </CalloutInfo>
 
-如果你希望通过 [动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在声明类外部控制声明式定时任务，可以通过如下方式为定时任务指定名称：
+如果你希望通过[动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在声明类外部控制声明式定时任务，可以通过如下方式为定时任务指定名称：
 
 ```ts
 @Interval('notifications', 2500)
@@ -219,7 +219,7 @@ handleTimeout() {
 
 如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Timeout()` 装饰器的方法都会被自动包裹在 `try-catch` 代码块中。
 
-如果你希望通过 [动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在声明类外部控制声明式超时任务，可以通过如下方式为超时任务指定名称：
+如果你希望通过[动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在声明类外部控制声明式超时任务，可以通过如下方式为超时任务指定名称：
 
 ```ts
 @Timeout('notifications', 2500)
@@ -231,7 +231,7 @@ timeouts），即在运行时定义超时任务的属性，并且可以列出和
 
 ## 动态调度模块 API
 
-`@nestjs/schedule` 模块提供了一个动态 API，支持管理声明式的 [定时任务（cron jobs）](/techniques/task-scheduling#declarative-cron-jobs) 、[超时（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和 [间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。该 API 还支持在运行时动态创建和管理动态定时任务、超时和间隔任务。
+`@nestjs/schedule` 模块提供了一个动态 API，支持管理声明式的[定时任务（cron jobs）](/techniques/task-scheduling#declarative-cron-jobs) 、[超时（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和[间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。该 API 还支持在运行时动态创建和管理动态定时任务、超时和间隔任务。
 
 ## 动态定时任务（cron jobs）
 
@@ -429,4 +429,4 @@ getTimeouts() {
 
 ## 示例
 
-可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/27-scheduling)。
+可用的完整示例请参考[这里](https://github.com/nestjs/nest/tree/master/sample/27-scheduling)。

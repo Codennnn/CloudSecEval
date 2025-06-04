@@ -94,7 +94,7 @@ describe('CatsController', () => {
   方法获取其声明的任何静态实例（控制器和提供者）。
 </CalloutInfo>
 
-`测试模块（TestingModule）` 继承自 [模块引用](/fundamentals/module-ref) 类，因此也具备动态解析作用域提供者（如瞬态或请求作用域）的能力。可以通过 `resolve()` 方法实现（`get()` 方法只能获取静态实例）。
+`测试模块（TestingModule）` 继承自[模块引用](/fundamentals/module-ref)类，因此也具备动态解析作用域提供者（如瞬态或请求作用域）的能力。可以通过 `resolve()` 方法实现（`get()` 方法只能获取静态实例）。
 
 ```ts
 const moduleRef = await Test.createTestingModule({
@@ -288,15 +288,13 @@ const moduleRef = await Test.createTestingModule({
     <tr>
       <td>`get()`</td>
       <td>
-        获取应用上下文中可用的控制器或提供者（包括守卫、过滤器等）的静态实例。该方法继承自
-        [模块引用](/fundamentals/module-ref) 类。
+        获取应用上下文中可用的控制器或提供者（包括守卫、过滤器等）的静态实例。该方法继承自模块引用类。
       </td>
     </tr>
     <tr>
       <td>`resolve()`</td>
       <td>
-        获取应用上下文中动态创建的作用域实例（如请求作用域或瞬态）的控制器或提供者。该方法同样继承自
-        [模块引用](/fundamentals/module-ref) 类。
+        获取应用上下文中动态创建的作用域实例（如请求作用域或瞬态）的控制器或提供者。该方法同样继承自模块引用类。
       </td>
     </tr>
     <tr>

@@ -132,7 +132,7 @@ client: ClientKafkaProxy;
 
 ## 消息模式（Message pattern）
 
-Kafka 微服务的消息模式（Message pattern）会为请求和响应通道分别使用两个主题（topic）。`ClientKafkaProxy#send()` 方法通过为请求消息关联 [返回地址](https://www.enterpriseintegrationpatterns.com/patterns/messaging/ReturnAddress.html)、[关联 ID](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CorrelationIdentifier.html)、响应主题和响应分区，实现消息的发送。这要求 `ClientKafkaProxy` 实例在发送消息前，必须已订阅响应主题，并且至少分配到一个分区。
+Kafka 微服务的消息模式（Message pattern）会为请求和响应通道分别使用两个主题（topic）。`ClientKafkaProxy#send()` 方法通过为请求消息关联[返回地址](https://www.enterpriseintegrationpatterns.com/patterns/messaging/ReturnAddress.html)、[关联 ID](https://www.enterpriseintegrationpatterns.com/patterns/messaging/CorrelationIdentifier.html)、响应主题和响应分区，实现消息的发送。这要求 `ClientKafkaProxy` 实例在发送消息前，必须已订阅响应主题，并且至少分配到一个分区。
 
 随后，你需要为每个正在运行的 Nest 应用分配至少一个响应主题分区。例如，如果你运行了 4 个 Nest 应用，但响应主题只有 3 个分区，那么其中 1 个 Nest 应用在尝试发送消息时会报错。
 
@@ -145,9 +145,9 @@ Kafka 微服务的消息模式（Message pattern）会为请求和响应通道�
 ## 消息响应订阅（Message response subscription）
 
 <CalloutInfo type="warning">
-  本节内容仅适用于你使用 [请求-响应](/microservices/basics#request-response) 消息风格（即使用
-  `@MessagePattern` 装饰器和 `ClientKafkaProxy#send` 方法）时。对于
-  [基于事件](/microservices/basics#event-based) 通信（`@EventPattern` 装饰器和
+  本节内容仅适用于你使用[请求-响应](/microservices/basics#request-response) 消息风格（即使用
+  `@MessagePattern` 装饰器和 `ClientKafkaProxy#send`
+  方法）时。对于[基于事件](/microservices/basics#event-based) 通信（`@EventPattern` 装饰器和
   `ClientKafkaProxy#emit` 方法），无需订阅响应主题。
 </CalloutInfo>
 
@@ -193,7 +193,7 @@ export class HeroesController {
 }
 ```
 
-发送的消息也可以通过传递包含 `key` 和 `value` 属性的对象来指定消息键。为消息设置键对于满足 [分区协同（co-partitioning）要求](https://docs.confluent.io/current/ksql/docs/developer-guide/partition-data.html#co-partitioning-requirements)非常重要。
+发送的消息也可以通过传递包含 `key` 和 `value` 属性的对象来指定消息键。为消息设置键对于满足[分区协同（co-partitioning）要求](https://docs.confluent.io/current/ksql/docs/developer-guide/partition-data.html#co-partitioning-requirements)非常重要。
 
 ```ts filename='heroes.controller.ts'
 @Controller()
@@ -251,7 +251,7 @@ export class HeroesController {
 
 虽然请求-响应（request-response）方式非常适合服务之间的消息交换，但当你的消息风格是基于事件（event-based）时（例如 Kafka 场景下），这种方式就不太合适了 —— 此时你只需要发布事件**而无需等待响应**。在这种情况下，你不希望为维护两个主题（topic）而引入请求-响应所需的额外开销。
 
-你可以参考以下两个章节，进一步了解相关内容：[概览：基于事件](/microservices/basics#event-based) 以及 [概览：事件发布](/microservices/basics#publishing-events)。
+你可以参考以下两个章节，进一步了解相关内容：[概览：基于事件](/microservices/basics#event-based) 以及[概览：事件发布](/microservices/basics#publishing-events)。
 
 ## 上下文（Context）
 
@@ -480,7 +480,7 @@ export class MyEventHandler {
 
 ## 提交偏移量（Commit offsets）
 
-在使用 Kafka 时，提交偏移量（offset）是非常重要的操作。默认情况下，消息会在特定时间后自动提交。更多信息请参阅 [KafkaJS 文档](https://kafka.js.org/docs/consuming#autocommit)。`KafkaContext` 提供了一种方式，可以访问当前活跃的消费者（consumer），以手动提交偏移量。这里的消费者即 KafkaJS 的 consumer，其行为与 [原生 KafkaJS 实现](https://kafka.js.org/docs/consuming#manual-committing)一致。
+在使用 Kafka 时，提交偏移量（offset）是非常重要的操作。默认情况下，消息会在特定时间后自动提交。更多信息请参阅 [KafkaJS 文档](https://kafka.js.org/docs/consuming#autocommit)。`KafkaContext` 提供了一种方式，可以访问当前活跃的消费者（consumer），以手动提交偏移量。这里的消费者即 KafkaJS 的 consumer，其行为与[原生 KafkaJS 实现](https://kafka.js.org/docs/consuming#manual-committing)一致。
 
 ```ts
 @EventPattern('user.created')

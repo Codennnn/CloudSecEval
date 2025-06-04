@@ -1,6 +1,6 @@
 # 服务端推送事件（Server-Sent Events，SSE）
 
-服务端推送事件（Server-Sent Events，SSE）是一种服务端推送（server push）技术，允许客户端通过 HTTP 连接自动接收来自服务器的实时更新。每条通知都会作为一段以两个换行符结尾的文本块发送（详细介绍可参考 [这里](https://developer.mozilla.org/zh-CN/docs/Web/API/Server-sent_events) ）。
+服务端推送事件（Server-Sent Events，SSE）是一种服务端推送（server push）技术，允许客户端通过 HTTP 连接自动接收来自服务器的实时更新。每条通知都会作为一段以两个换行符结尾的文本块发送（详细介绍可参考[这里](https://developer.mozilla.org/zh-CN/docs/Web/API/Server-sent_events) ）。
 
 ## 用法
 
@@ -41,7 +41,7 @@ export interface MessageEvent {
 
 `EventSource` 实例会与 HTTP 服务器建立持久连接，服务器以 `text/event-stream` 格式发送事件。该连接会一直保持，直到调用 `EventSource.close()` 主动关闭。
 
-连接建立后，来自服务器的消息会以事件的形式传递给你的代码。如果接收到的消息中包含 `event` 字段，则会触发与该字段值同名的事件；如果没有 `event` 字段，则会触发通用的 `message` 事件（详细说明可参考 [来源](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource) ）。
+连接建立后，来自服务器的消息会以事件的形式传递给你的代码。如果接收到的消息中包含 `event` 字段，则会触发与该字段值同名的事件；如果没有 `event` 字段，则会触发通用的 `message` 事件（详细说明可参考[来源](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource) ）。
 
 ```js
 const eventSource = new EventSource('/sse')
@@ -52,4 +52,4 @@ eventSource.onmessage = ({ data }) => {
 
 ## 示例
 
-可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/28-sse)。
+可用的完整示例请参考[这里](https://github.com/nestjs/nest/tree/master/sample/28-sse)。

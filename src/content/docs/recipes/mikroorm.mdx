@@ -1,10 +1,10 @@
 # MikroORM
 
-本教程旨在帮助用户在 Nest 中快速上手使用 MikroORM。MikroORM 是一款基于 Data Mapper、Unit of Work 和 Identity Map 设计模式的 TypeScript ORM（对象关系映射）工具，适用于 Node.js。它是 TypeORM 的优秀替代方案，从 TypeORM 迁移过来也相对容易。完整的 MikroORM 文档可参考 [官方文档](https://mikro-orm.io/docs)。
+本教程旨在帮助用户在 Nest 中快速上手使用 MikroORM。MikroORM 是一款基于 Data Mapper、Unit of Work 和 Identity Map 设计模式的 TypeScript ORM（对象关系映射）工具，适用于 Node.js。它是 TypeORM 的优秀替代方案，从 TypeORM 迁移过来也相对容易。完整的 MikroORM 文档可参考[官方文档](https://mikro-orm.io/docs)。
 
 <CalloutInfo>
-  `@mikro-orm/nestjs` 是第三方包，并非由 NestJS 核心团队维护。如遇到相关问题，请前往
-  [对应仓库](https://github.com/mikro-orm/nestjs) 反馈。
+  `@mikro-orm/nestjs` 是第三方包，并非由 NestJS
+  核心团队维护。如遇到相关问题，请前往[对应仓库](https://github.com/mikro-orm/nestjs) 反馈。
 </CalloutInfo>
 
 ## 安装
@@ -16,7 +16,7 @@
 $ npm i @mikro-orm/core @mikro-orm/nestjs @mikro-orm/sqlite
 ```
 
-MikroORM 同时支持 `postgres`、`sqlite` 和 `mongo` 等多种数据库驱动。所有驱动的详细信息请参见 [官方文档](https://mikro-orm.io/docs/usage-with-sql/)。
+MikroORM 同时支持 `postgres`、`sqlite` 和 `mongo` 等多种数据库驱动。所有驱动的详细信息请参见[官方文档](https://mikro-orm.io/docs/usage-with-sql/)。
 
 安装完成后，我们可以在根模块 `AppModule` 中导入 `MikroOrmModule`。
 
@@ -38,7 +38,7 @@ import { SqliteDriver } from '@mikro-orm/sqlite'
 export class AppModule {}
 ```
 
-`forRoot()` 方法接受与 MikroORM 包中的 `init()` 方法相同的配置对象。完整的配置项说明请参考 [此页面](https://mikro-orm.io/docs/configuration)。
+`forRoot()` 方法接受与 MikroORM 包中的 `init()` 方法相同的配置对象。完整的配置项说明请参考[此页面](https://mikro-orm.io/docs/configuration)。
 
 另外，我们也可以通过创建配置文件 `mikro-orm.config.ts` [配置 CLI 工具](https://mikro-orm.io/docs/installation#setting-up-the-commandline-tool)，然后在 `forRoot()` 中不传递任何参数。
 
@@ -193,7 +193,7 @@ export class AppModule {}
   处理器中直接返回 MikroORM 实体，其所有关系字段都**不会被序列化**。
 </CalloutInfo>
 
-幸运的是，MikroORM 提供了一个 [序列化 API](https://mikro-orm.io/docs/serializing)，可以用来替代 `ClassSerializerInterceptor`。
+幸运的是，MikroORM 提供了一个[序列化 API](https://mikro-orm.io/docs/serializing)，可以用来替代 `ClassSerializerInterceptor`。
 
 ```ts
 @Entity()
@@ -214,7 +214,7 @@ export class Book {
 
 ## 队列中的请求作用域处理器
 
-如 [官方文档](https://mikro-orm.io/docs/identity-map) 所述，我们需要为每个请求创建一个干净的状态。通过中间件注册的 `RequestContext` 辅助工具，可以自动实现这一点。
+如[官方文档](https://mikro-orm.io/docs/identity-map)所述，我们需要为每个请求创建一个干净的状态。通过中间件注册的 `RequestContext` 辅助工具，可以自动实现这一点。
 
 但中间件只会在常规 HTTP 请求处理时执行，如果我们需要在此之外的方法中实现请求作用域怎么办？例如队列处理器或定时任务。
 
@@ -257,4 +257,4 @@ export class PhotoModule {}
 
 ## 示例
 
-可以在 [这里](https://github.com/mikro-orm/nestjs-realworld-example-app) 查看一个基于 NestJS 和 MikroORM 的真实项目示例。
+可以在[这里](https://github.com/mikro-orm/nestjs-realworld-example-app)查看一个基于 NestJS 和 MikroORM 的真实项目示例。

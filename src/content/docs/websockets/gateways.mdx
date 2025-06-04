@@ -22,7 +22,7 @@ $ npm i --save @nestjs/websockets @nestjs/platform-socket.io
 
 ## 概述
 
-通常情况下，每个网关都会监听与 **HTTP 服务器** 相同的端口，除非你的应用不是一个 Web 应用，或者你手动更改了端口。你可以通过为 `@WebSocketGateway(80)` 装饰器传递参数（如 `80`，即你选择的端口号）来修改这一默认行为。你还可以通过如下方式为网关设置一个 [命名空间（namespace）](https://socket.io/docs/v4/namespaces/)：
+通常情况下，每个网关都会监听与 **HTTP 服务器** 相同的端口，除非你的应用不是一个 Web 应用，或者你手动更改了端口。你可以通过为 `@WebSocketGateway(80)` 装饰器传递参数（如 `80`，即你选择的端口号）来修改这一默认行为。你还可以通过如下方式为网关设置一个[命名空间（namespace）](https://socket.io/docs/v4/namespaces/)：
 
 ```ts
 @WebSocketGateway(80, { namespace: 'events' })
@@ -32,7 +32,7 @@ $ npm i --save @nestjs/websockets @nestjs/platform-socket.io
   只有当网关被引用到某个已存在模块（Module）的 providers 数组中时，网关才会被实例化。
 </CalloutInfo>
 
-你可以将任何受支持的 [选项（option）](https://socket.io/docs/v4/server-options/) 作为第二个参数传递给 `@WebSocketGateway()` 装饰器，例如：
+你可以将任何受支持的[选项（option）](https://socket.io/docs/v4/server-options/) 作为第二个参数传递给 `@WebSocketGateway()` 装饰器，例如：
 
 ```ts
 @WebSocketGateway(81, { transports: ['websocket'] })

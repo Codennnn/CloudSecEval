@@ -259,9 +259,7 @@ export class HeroKilledDragonHandler implements IEventHandler<HeroKilledDragonEv
 <p className="mb-0">当你开始使用事件处理器时，需要注意你已经脱离了传统的 HTTP Web 上下文。</p>
 
 <ul className="!m-0">
-  <li>
-    `CommandHandler`（命令处理器）中的错误仍然可以被内置的 [异常过滤器](/exception-filters) 捕获。
-  </li>
+  <li>`CommandHandler`（命令处理器）中的错误仍然可以被内置的异常过滤器捕获。</li>
   <li>
     `EventHandler`（事件处理器）中的错误无法被异常过滤器捕获：你需要手动处理这些错误。可以通过简单的
     `try/catch`，或者使用 [Sagas](/recipes/cqrs#sagas) 触发补偿事件，或采用其他解决方案。
@@ -501,4 +499,4 @@ dragonKilled = (events$: Observable<any>): Observable<ICommand> => {
 
 ## 示例
 
-可用的完整示例请参考 [这里](https://github.com/kamilmysliwiec/nest-cqrs-example)。
+可用的完整示例请参考[这里](https://github.com/kamilmysliwiec/nest-cqrs-example)。

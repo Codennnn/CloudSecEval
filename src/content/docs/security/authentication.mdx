@@ -131,7 +131,7 @@ export class AuthController {
 ```
 
 <CalloutInfo>
-理想情况下，我们应该使用 DTO（数据传输对象，Data Transfer Object）类来定义请求体的结构，而不是直接使用 `Record<string, any>` 类型。更多信息请参见 [验证](/techniques/validation) 章节。
+理想情况下，我们应该使用 DTO（数据传输对象，Data Transfer Object）类来定义请求体的结构，而不是直接使用 `Record<string, any>` 类型。更多信息请参见[验证](/techniques/validation)章节。
 </CalloutInfo>
 
 ## JWT 令牌（JWT token）
@@ -148,7 +148,7 @@ $ npm install --save @nestjs/jwt
 ```
 
 <CalloutInfo>
-  `@nestjs/jwt` 包（详见 [这里](https://github.com/nestjs/jwt)）是一个用于操作 JWT
+  `@nestjs/jwt` 包（详见[这里](https://github.com/nestjs/jwt)）是一个用于操作 JWT
   的工具包，包括生成和验证 JWT 令牌。
 </CalloutInfo>
 
@@ -228,7 +228,7 @@ export class AuthModule {}
   这里我们将 `JwtModule` 注册为全局模块，方便后续使用，无需在其他地方重复导入。
 </CalloutInfo>
 
-我们通过 `register()` 方法配置 `JwtModule`，传入配置对象。更多关于 Nest `JwtModule` 的信息见[这里](https://github.com/nestjs/jwt/blob/master/README.md)，关于配置项详见 [这里](https://github.com/auth0/node-jsonwebtoken#usage)。
+我们通过 `register()` 方法配置 `JwtModule`，传入配置对象。更多关于 Nest `JwtModule` 的信息见[这里](https://github.com/nestjs/jwt/blob/master/README.md)，关于配置项详见[这里](https://github.com/auth0/node-jsonwebtoken#usage)。
 
 现在可以再次使用 cURL 测试接口。你可以用 `UsersService` 中硬编码的任意 `user` 对象进行测试。
 

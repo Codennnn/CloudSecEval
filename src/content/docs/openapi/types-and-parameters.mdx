@@ -41,8 +41,8 @@ export class CreateCatDto {
 ```
 
 <CalloutInfo>
-  如果不想手动为每个属性添加注解，可以考虑使用 Swagger 插件（详见 [插件](/openapi/cli-plugin)
-  部分），该插件会自动为你处理。
+  如果不想手动为每个属性添加注解，可以考虑使用 Swagger
+  插件（详见[插件](/openapi/cli-plugin)部分），该插件会自动为你处理。
 </CalloutInfo>
 
 接下来，我们可以在浏览器中查看生成的 `CreateCatDto` 模型：
@@ -150,7 +150,7 @@ async filterByRole(@Query('role') role: UserRole = UserRole.User) {}
 
 ## 枚举 schema
 
-默认情况下，`enum` 属性会在 `parameter` 上添加一个原始的 [枚举（Enum）](https://swagger.io/docs/specification/data-models/enums/) 定义。
+默认情况下，`enum` 属性会在 `parameter` 上添加一个原始的[枚举（Enum）](https://swagger.io/docs/specification/data-models/enums/) 定义。
 
 ```yaml
 - breed:

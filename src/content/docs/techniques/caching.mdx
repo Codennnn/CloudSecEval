@@ -56,9 +56,7 @@ await this.cacheManager.set('key', 'value')
 ```
 
 <CalloutInfo type="warning">
-  内存缓存存储仅支持
-  [结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types)
-  支持的数据类型。
+  内存缓存存储仅支持[结构化克隆算法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm#javascript_types)支持的数据类型。
 </CalloutInfo>
 
 你可以为某个特定键手动指定 TTL（过期时间，单位为毫秒），示例如下：
@@ -109,7 +107,7 @@ export class AppController {
 
 <CalloutInfo type="warning">
   仅 `GET` 类型的接口会被缓存。此外，注入原生响应对象（`@Res()`）的 HTTP
-  服务器路由无法使用缓存拦截器。详见 [响应映射](/interceptors#response-mapping) 获取更多信息。
+  服务器路由无法使用缓存拦截器。详见[响应映射](/interceptors#response-mapping)获取更多信息。
 </CalloutInfo>
 
 为减少样板代码，你也可以将 `CacheInterceptor` 全局绑定到所有接口：
@@ -343,4 +341,4 @@ CacheModule.registerAsync({
 
 ## 示例
 
-可用的完整示例请参考 [这里](https://github.com/nestjs/nest/tree/master/sample/20-cache)。
+可用的完整示例请参考[这里](https://github.com/nestjs/nest/tree/master/sample/20-cache)。

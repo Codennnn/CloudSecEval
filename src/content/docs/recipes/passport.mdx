@@ -6,13 +6,13 @@
 - 管理已认证状态（例如签发可携带的令牌，如 JWT，或创建 [Express 会话（Session）](https://github.com/expressjs/session)）
 - 将已认证用户的信息附加到 `请求对象（Request Object）` 上，便于后续在路由处理器中使用
 
-Passport 拥有丰富的 [策略（Strategy）](http://www.passportjs.org/) 生态，支持多种不同的身份验证机制。虽然 Passport 的核心思想很简单，但可选的策略种类繁多，灵活性极高。Passport 将这些多样化的步骤抽象为统一的标准模式，而 `@nestjs/passport` 模块则进一步将其封装为 Nest 框架中常见的结构。
+Passport 拥有丰富的[策略（Strategy）](http://www.passportjs.org/) 生态，支持多种不同的身份验证机制。虽然 Passport 的核心思想很简单，但可选的策略种类繁多，灵活性极高。Passport 将这些多样化的步骤抽象为统一的标准模式，而 `@nestjs/passport` 模块则进一步将其封装为 Nest 框架中常见的结构。
 
 在本章节中，我们将基于这些强大且灵活的模块，为 RESTful 接口（RESTful API）服务器实现一套完整的端到端身份验证解决方案。你可以根据本章介绍的思路，选择任意 Passport 策略，定制属于自己的身份验证方案。只需按照本章的步骤，即可构建出完整的示例。
 
 ## 身份验证需求
 
-让我们先明确下需求。在本例中，客户端会先通过用户名和密码进行身份验证。认证通过后，服务器会签发一个 JWT（JSON Web Token），后续请求可将该 JWT 作为 [授权头（Authorization Header）中的 Bearer Token](https://tools.ietf.org/html/rfc6750) 发送，用于证明身份。我们还会创建一个受保护的路由，仅允许携带有效 JWT 的请求访问。
+让我们先明确下需求。在本例中，客户端会先通过用户名和密码进行身份验证。认证通过后，服务器会签发一个 JWT（JSON Web Token），后续请求可将该 JWT 作为[授权头（Authorization Header）中的 Bearer Token](https://tools.ietf.org/html/rfc6750) 发送，用于证明身份。我们还会创建一个受保护的路由，仅允许携带有效 JWT 的请求访问。
 
 我们将从第一个需求出发：用户身份验证。接着扩展为签发 JWT，最后实现一个校验 JWT 的受保护路由。
 
@@ -289,7 +289,7 @@ $ npm install --save @nestjs/jwt passport-jwt
 $ npm install --save-dev @types/passport-jwt
 ```
 
-`@nestjs/jwt` 包（详见 [这里](https://github.com/nestjs/jwt)）是一个用于操作 JWT 的工具包。`passport-jwt` 是实现 JWT 策略的 Passport 包，`@types/passport-jwt` 则为 TypeScript 提供类型定义。
+`@nestjs/jwt` 包（详见[这里](https://github.com/nestjs/jwt)）是一个用于操作 JWT 的工具包。`passport-jwt` 是实现 JWT 策略的 Passport 包，`@types/passport-jwt` 则为 TypeScript 提供类型定义。
 
 下面我们来详细看看 `POST /auth/login` 请求的处理流程。我们为该路由添加了由 passport-local 策略提供的内置 `AuthGuard`（认证守卫）。这意味着：
 
@@ -429,11 +429,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 }
 ```
 
-在 `JwtStrategy` 中，我们遵循了前文介绍的所有 Passport 策略的通用实现方式。该策略需要一些初始化配置，因此我们通过在 `super()` 调用中传递一个选项对象来完成。你可以在 [这里](https://github.com/mikenicholson/passport-jwt#configure-strategy) 阅读所有可用选项的详细说明。本例中，主要配置如下：
+在 `JwtStrategy` 中，我们遵循了前文介绍的所有 Passport 策略的通用实现方式。该策略需要一些初始化配置，因此我们通过在 `super()` 调用中传递一个选项对象来完成。你可以在[这里](https://github.com/mikenicholson/passport-jwt#configure-strategy)阅读所有可用选项的详细说明。本例中，主要配置如下：
 
-- `jwtFromRequest`：指定如何从 `请求对象（Request Object）` 中提取 JWT。我们采用标准做法，即在 API 请求的 Authorization 请求头（Header）中以 Bearer Token 方式传递。更多提取方式可参考 [这里](https://github.com/mikenicholson/passport-jwt#extracting-the-jwt-from-the-request)。
+- `jwtFromRequest`：指定如何从 `请求对象（Request Object）` 中提取 JWT。我们采用标准做法，即在 API 请求的 Authorization 请求头（Header）中以 Bearer Token 方式传递。更多提取方式可参考[这里](https://github.com/mikenicholson/passport-jwt#extracting-the-jwt-from-the-request)。
 - `ignoreExpiration`：为明确起见，这里设置为默认值 `false`，即将 JWT 是否过期的校验责任交由 Passport 模块处理。这意味着如果路由收到已过期的 JWT，请求会被拒绝，并返回 `401 Unauthorized` 响应。Passport 会自动帮我们处理这一流程。
-- `secretOrKey`：我们这里直接传递对称加密密钥用于签名 token。对于生产环境，更推荐使用 PEM 编码的公钥等方式，详见 [这里](https://github.com/mikenicholson/passport-jwt#configure-strategy)。无论如何，**切勿将密钥暴露在公共环境**。
+- `secretOrKey`：我们这里直接传递对称加密密钥用于签名 token。对于生产环境，更推荐使用 PEM 编码的公钥等方式，详见[这里](https://github.com/mikenicholson/passport-jwt#configure-strategy)。无论如何，**切勿将密钥暴露在公共环境**。
 
 `validate()` 方法值得重点说明。对于 jwt-strategy，Passport 首先会校验 JWT 的签名并解码 JSON，然后将解码后的 JSON 作为唯一参数传递给我们的 `validate()` 方法。基于 JWT 的签名机制，**我们可以保证收到的 token 是我们自己签发且属于有效用户的**。
 
@@ -630,7 +630,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
 Passport API 的核心机制是将策略注册到全局实例。因此，策略本身并不是为依赖请求的选项或按请求动态实例化而设计的（详细说明请参见[请求作用域](/fundamentals/injection-scopes)提供者）。当你将策略配置为请求作用域时，Nest 并不会实例化它，因为它并未绑定到具体的路由上。实际上，无法物理区分每个请求应执行哪些"请求作用域"策略。
 
-不过，我们可以通过一些方式，在策略内部动态解析请求作用域的提供者。为此，我们可以利用 [模块引用](/fundamentals/module-ref)功能。
+不过，我们可以通过一些方式，在策略内部动态解析请求作用域的提供者。为此，我们可以利用[模块引用](/fundamentals/module-ref)功能。
 
 首先，打开 `local.strategy.ts` 文件，并以常规方式注入 `ModuleRef`：
 

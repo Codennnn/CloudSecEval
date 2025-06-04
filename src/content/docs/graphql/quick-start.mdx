@@ -151,7 +151,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 ## 示例
 
-一个完整可用的代码优先（code first）示例可在 [这里](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first) 查看。
+一个完整可用的代码优先（code first）示例可在[这里](https://github.com/nestjs/nest/tree/master/sample/23-graphql-code-first)查看。
 
 ## 模式优先（schema first）
 
@@ -277,7 +277,7 @@ export class AppModule {}
 
 ## 示例
 
-一个完整可用的 schema-first（以 schema 为主）示例可在 [此处](https://github.com/nestjs/nest/tree/master/sample/12-graphql-schema-first) 查看。
+一个完整可用的 schema-first（以 schema 为主）示例可在[此处](https://github.com/nestjs/nest/tree/master/sample/12-graphql-schema-first)查看。
 
 ## 获取已生成的 schema（模式）对象
 
@@ -309,7 +309,7 @@ const { schema } = app.get(GraphQLSchemaHost)
 }),
 ```
 
-与其他工厂提供者类似，我们的工厂函数也可以是 [异步的](/fundamentals/custom-providers#factory-providers-usefactory)，并且可以通过 `inject` 注入依赖。
+与其他工厂提供者类似，我们的工厂函数也可以是[异步的](/fundamentals/custom-providers#factory-providers-usefactory)，并且可以通过 `inject` 注入依赖。
 
 ```ts
 GraphQLModule.forRootAsync<ApolloDriverConfig>({

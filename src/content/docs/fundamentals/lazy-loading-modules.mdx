@@ -63,7 +63,7 @@ time: 0.303ms
 
 `lazy.module.ts` 是一个导出 **标准 Nest 模块** 的 TypeScript 文件（无需额外更改）。
 
-`LazyModuleLoader#load` 方法会返回 [模块引用（module reference）](/fundamentals/module-ref)（即 `LazyModule` 的引用），你可以通过它访问内部的提供者列表，并通过注入令牌（Injection Token）获取任意提供者的实例。
+`LazyModuleLoader#load` 方法会返回[模块引用（module reference）](/fundamentals/module-ref)（即 `LazyModule` 的引用），你可以通过它访问内部的提供者列表，并通过注入令牌（Injection Token）获取任意提供者的实例。
 
 例如，假设我们有如下定义的 `LazyModule`：
 
@@ -102,7 +102,7 @@ const lazyService = moduleRef.get(LazyService)
  }
 ```
 
-配置好这些选项后，你就可以利用 [代码分割（code splitting）](https://webpack.js.org/guides/code-splitting/) 功能。
+配置好这些选项后，你就可以利用[代码分割（code splitting）](https://webpack.js.org/guides/code-splitting/) 功能。
 
 </CalloutInfo>
 
@@ -111,7 +111,7 @@ const lazyService = moduleRef.get(LazyService)
 在 Nest 中，控制器或 GraphQL 应用中的解析器（Resolver）用于处理一组路由、路径、主题，或 GraphQL 查询与变更。你无法通过 `LazyModuleLoader` 类对他们进行懒加载。
 
 <CalloutInfo type="warning">
-  在懒加载模块中注册的控制器、[解析器](/graphql/resolvers) 和 [网关](/websockets/gateways)
+  在懒加载模块中注册的控制器、[解析器](/graphql/resolvers) 和[网关](/websockets/gateways)
   都不会按预期工作。同样，无法按需注册中间件函数（即通过实现 `MiddlewareConsumer` 接口的中间件）。
 </CalloutInfo>
 

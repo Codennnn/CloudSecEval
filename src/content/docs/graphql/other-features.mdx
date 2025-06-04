@@ -6,7 +6,7 @@ Nest 通过其跨平台特性（如[守卫](/guards)和[拦截器](/interceptors
 
 ## 概述
 
-你可以像在 RESTful 应用中一样，在 GraphQL 中使用标准的[守卫](/guards)、[拦截器](/interceptors)、[异常过滤器](/exception-filters)和[管道](/pipes)。此外，你还可以通过[自定义装饰器](/custom-decorators)功能，轻松创建自己的装饰器。下面让我们看一个 GraphQL 查询处理器的示例。
+你可以像在 RESTful 应用中一样，在 GraphQL 中使用标准的守卫、拦截器、异常过滤器和管道。此外，你还可以通过[自定义装饰器](/custom-decorators)功能，轻松创建自己的装饰器。下面让我们看一个 GraphQL 查询处理器的示例。
 
 ```ts
 @Query('author')
@@ -47,7 +47,7 @@ export class AuthGuard implements CanActivate {
 
 ## 异常过滤器（Exception filters）
 
-Nest 的标准 [异常过滤器](/exception-filters) 同样适用于 GraphQL 应用程序。与 `执行上下文（ExecutionContext）` 类似，在 GraphQL 应用中应将 `ArgumentsHost` 对象转换为 `GqlArgumentsHost` 对象。
+Nest 的标准[异常过滤器](/exception-filters)同样适用于 GraphQL 应用程序。与 `执行上下文（ExecutionContext）` 类似，在 GraphQL 应用中应将 `ArgumentsHost` 对象转换为 `GqlArgumentsHost` 对象。
 
 ```ts
 @Catch(HttpException)

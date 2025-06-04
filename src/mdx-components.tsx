@@ -7,6 +7,7 @@ import { CodeBlock } from '~/components/code/CodeBlock'
 import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
 import { FileTree } from '~/components/doc/FileTree'
+import { GithubIcon } from '~/components/icon/brand-icons'
 import {
   Table,
   TableBody,
@@ -76,6 +77,20 @@ const createHeadingComponent = (Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') =>
   }
 }
 
+interface LinkIconProps {
+  link: string
+}
+
+function LinkIcon(props: LinkIconProps) {
+  const { link } = props
+
+  if (link.startsWith('https://github.com')) {
+    return <GithubIcon className="size-[1em]" />
+  }
+
+  return <ExternalLinkIcon className="size-[0.9em]" />
+}
+
 /**
  * 自定义 MDX 组件渲染函数
  *
@@ -101,9 +116,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         >
           {children}
 
-          <span className="shrink-0 pr-0.5">
+          <span className="shrink-0 pr-0.5 pt-0.5">
             {isExternal
-              ? <ExternalLinkIcon className="size-[0.9em]" />
+              ? <LinkIcon link={href} />
               : isHash
                 ? <HashIcon className="size-[0.9em]" />
                 : <BookOpenTextIcon className="size-[0.9em]" />}

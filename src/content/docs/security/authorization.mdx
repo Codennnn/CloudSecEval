@@ -8,7 +8,7 @@
 
 ## 基础 RBAC 实现
 
-基于角色的访问控制（Role-based access control，**RBAC**）是一种围绕角色和权限定义的、与策略无关的访问控制机制。本节将演示如何使用 Nest 的 [守卫（Guard）](/guards) 实现一个非常基础的 RBAC 机制。
+基于角色的访问控制（Role-based access control，**RBAC**）是一种围绕角色和权限定义的、与策略无关的访问控制机制。本节将演示如何使用 Nest 的[守卫（Guard）](/guards)实现一个非常基础的 RBAC 机制。
 
 首先，创建一个 `Role` 枚举（enum），用于表示系统中的角色：
 
@@ -76,7 +76,7 @@ export class RolesGuard implements CanActivate {
   本示例被称为“基础”实现，是因为我们只在路由处理器级别检查角色。在实际应用中，某些接口/处理器可能涉及多个操作，每个操作都需要特定的权限。此时，你需要在业务逻辑中自行实现角色检查机制，这样会导致权限与具体操作的关联分散在各处，维护难度增加。
 </CalloutInfo>
 
-本示例假设 `request.user` 包含用户实例及其拥有的角色（`roles` 属性）。在你的应用中，通常会在自定义的 **身份验证守卫（Authentication Guard）** 中完成该关联。更多细节请参见 [身份验证](/security/authentication) 章节。
+本示例假设 `request.user` 包含用户实例及其拥有的角色（`roles` 属性）。在你的应用中，通常会在自定义的 **身份验证守卫（Authentication Guard）** 中完成该关联。更多细节请参见[身份验证](/security/authentication)章节。
 
 为了保证本示例正常工作，你的 `User` 类应如下所示：
 

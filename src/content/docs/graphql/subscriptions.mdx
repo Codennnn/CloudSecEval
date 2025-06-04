@@ -2,7 +2,7 @@
 
 除了通过查询（Query）获取数据和通过变更（Mutation）修改数据之外，GraphQL 规范还支持第三种操作类型，称为 `订阅（subscription）`。GraphQL 订阅是一种允许服务器主动向选择监听实时消息的客户端推送数据的机制。订阅与查询类似，都需要指定要返回给客户端的字段集合，但不同之处在于，订阅会打开一个通道，每当服务器端发生特定事件时，就会向客户端发送结果，而不是立即返回单一结果。
 
-订阅的常见用例是通知客户端某些特定事件的发生，例如新对象的创建、字段的更新等（详细说明可参考 [这里](https://www.apollographql.com/docs/react/data/subscriptions)）。
+订阅的常见用例是通知客户端某些特定事件的发生，例如新对象的创建、字段的更新等（详细说明可参考[这里](https://www.apollographql.com/docs/react/data/subscriptions)）。
 
 ## 使用 Apollo 驱动启用订阅
 
@@ -317,7 +317,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 你可以在 `subscriptions` 选项中指定的 `onConnect` 回调函数内，检查用户是否已通过身份验证。
 
-`onConnect` 的第一个参数是传递给 `SubscriptionClient` 的 `connectionParams`（详细内容请参阅 [这里](https://www.apollographql.com/docs/react/data/subscriptions/#5-authenticate-over-websocket-optional)）。
+`onConnect` 的第一个参数是传递给 `SubscriptionClient` 的 `connectionParams`（详细内容请参阅[这里](https://www.apollographql.com/docs/react/data/subscriptions/#5-authenticate-over-websocket-optional)）。
 
 ```ts
 GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -346,8 +346,8 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 所有使用该连接发起的订阅都会使用相同的 `authToken`，因此用户信息也相同。
 
 <CalloutInfo type="warning">
-  `subscriptions-transport-ws` 存在一个漏洞，允许连接跳过 `onConnect` 阶段（详细内容请参阅
-  [这里](https://github.com/apollographql/subscriptions-transport-ws/issues/349)）。你不能假设用户在开始订阅时一定调用了
+  `subscriptions-transport-ws` 存在一个漏洞，允许连接跳过 `onConnect`
+  阶段（详细内容请参阅[这里](https://github.com/apollographql/subscriptions-transport-ws/issues/349)）。你不能假设用户在开始订阅时一定调用了
   `onConnect`，因此应始终检查 `context` 是否已被正确填充。
 </CalloutInfo>
 
@@ -384,8 +384,8 @@ GraphQLModule.forRoot<MercuriusDriverConfig>({
 ```
 
 <CalloutInfo>
-  你也可以传递 options 对象，以自定义事件发射器、验证连接等。详细内容请参阅
-  [这里](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)（见
+  你也可以传递 options
+  对象，以自定义事件发射器、验证连接等。详细内容请参阅[这里](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)（见
   `subscription` 相关内容）。
 </CalloutInfo>
 
@@ -412,8 +412,7 @@ export class AuthorResolver {
 
 <CalloutInfo type="warning">
   `PubSub` 是一个类，提供了简单的 `publish` 和 `subscribe` API。关于如何注册自定义 `PubSub`
-  类，请参考
-  [本节内容](https://github.com/mercurius-js/mercurius/blob/master/docs/subscriptions.md#subscriptions-with-custom-pubsub)。
+  类，请参考[本节内容](https://github.com/mercurius-js/mercurius/blob/master/docs/subscriptions.md#subscriptions-with-custom-pubsub)。
 </CalloutInfo>
 
 这样会在 GraphQL 的 SDL（Schema Definition Language，模式定义语言）中生成如下部分：

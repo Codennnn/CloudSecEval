@@ -110,7 +110,9 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   return (
     <Alert
       className={cn(
-        'prose-strong:text-inherit prose-strong:font-medium prose-p:first:mt-0 prose-p:last:mb-0',
+        'prose-strong:text-inherit prose-strong:font-medium',
+        'prose-a:text-inherit',
+        'prose-p:first:mt-0 prose-p:last:mb-0',
         'not-first:mt-5 outline -outline-offset-4',
         borderClass,
         titleTextColor,

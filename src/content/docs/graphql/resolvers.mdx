@@ -170,7 +170,7 @@ export class AuthorsResolver {
   所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都由 `@nestjs/graphql` 包导出。
 </CalloutInfo>
 
-你可以定义多个解析器类。Nest 会在运行时将他们合并。关于代码组织的更多内容，请参见下方的 [模块](/graphql/resolvers#module) 部分。
+你可以定义多个解析器类。Nest 会在运行时将他们合并。关于代码组织的更多内容，请参见下方的[模块](/graphql/resolvers#module)部分。
 
 <CalloutInfo type="warning">
   `AuthorsService` 和 `PostsService`
@@ -212,7 +212,7 @@ type Query {
 ```
 
 <CalloutInfo>
-  你可以在 [这里](https://graphql.org/learn/queries/) 了解更多关于 GraphQL 查询的信息。
+  你可以在[这里](https://graphql.org/learn/queries/)了解更多关于 GraphQL 查询的信息。
 </CalloutInfo>
 
 通常情况下，我们更倾向于将这些名称解耦。例如，我们更喜欢将查询处理方法命名为 `getAuthor()`，而查询类型名称仍然使用 `author`。字段解析器同理。我们可以通过将映射名称作为 `@Query()` 和 `@ResolveField()` 装饰器的参数传递，轻松实现这一点，如下所示：
@@ -527,7 +527,7 @@ type Query {
 上面的 schema 暴露了一个查询 —— `author(id: Int!): Author`。
 
 <CalloutInfo>
-  你可以在 [这里](https://graphql.org/learn/queries/) 了解更多关于 GraphQL 查询的信息。
+  你可以在[这里](https://graphql.org/learn/queries/)了解更多关于 GraphQL 查询的信息。
 </CalloutInfo>
 
 现在，让我们创建一个 `AuthorsResolver` 类，用于解析作者相关的查询：

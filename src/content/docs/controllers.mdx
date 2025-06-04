@@ -11,7 +11,7 @@ import controllerImage from '/public/assets/Controllers_1.png'
 要创建基础控制器，我们需要用到类和 **装饰器（decorator）**。装饰器为类添加必要的元数据，使 Nest 能够建立请求与控制器之间的路由映射。
 
 <CalloutInfo>
-  如果你想快速创建带有内置 [校验（validation）](/techniques/validation) 的 CRUD 控制器，可以使用 CLI
+  如果你想快速创建带有内置[校验（validation）](/techniques/validation) 的 CRUD 控制器，可以使用 CLI
   的 [CRUD 生成器](/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
 </CalloutInfo>
 
@@ -68,13 +68,13 @@ export class CatsController {
         会自动处理剩下的事情。
         <br />
         此外，响应的状态码默认总是 200，POST 请求除外（默认为 201）。我们可以通过在处理器级别添加
-        `@HttpCode(...)` 装饰器（详见 [状态码](#status-code)）轻松更改这一行为。
+        `@HttpCode(...)` 装饰器（详见[状态码](#status-code)）轻松更改这一行为。
       </td>
     </tr>
     <tr>
       <td className="whitespace-nowrap">库特定方式</td>
       <td>
-        我们也可以使用特定库（如 Express）的 [响应对象（response
+        我们也可以使用特定库（如 Express）的[响应对象（response
         object）](https://expressjs.com/en/api.html#res)，通过在方法参数中使用 `@Res()`
         装饰器注入（如 `findAll(@Res()
         response)`）。采用这种方式，你可以使用该对象提供的原生响应处理方法。例如，在 Express
@@ -380,7 +380,7 @@ export class AccountController {
 
 对于来自其他编程语言的开发者来说，可能会惊讶于在 Nest 中，几乎所有内容都是在请求间共享的。这包括数据库连接池、带有全局状态的单例服务等。需要理解的是，Node.js 并不采用请求/响应多线程无状态模型（Multi-Threaded Stateless Model），即每个请求由独立线程处理。因此，在 Nest 中使用单例实例是完全 **安全** 的。
 
-当然，在某些特定场景下，可能需要基于请求的控制器生命周期。例如在 GraphQL 应用中实现每请求缓存、请求追踪或多租户。你可以在 [这里](/fundamentals/injection-scopes) 了解如何控制注入作用域。
+当然，在某些特定场景下，可能需要基于请求的控制器生命周期。例如在 GraphQL 应用中实现每请求缓存、请求追踪或多租户。你可以在[这里](/fundamentals/injection-scopes) 了解如何控制注入作用域。
 
 ## 异步处理（Asynchronicity）
 
@@ -531,7 +531,7 @@ export class CatsController {
   提供了生成器（schematic），可以自动创建所有样板代码，无需手动编写，大大提升开发体验。详细内容可参考[这里](/recipes/crud-generator)。
 </CalloutInfo>
 
-## 快速上手（Getting up and running）
+## 快速上手
 
 即使 `CatsController` 已经定义完成，Nest 也不会自动识别并创建其实例。
 
@@ -549,9 +549,9 @@ export class AppModule {}
 
 通过 `@Module()` 装饰器为模块类添加元数据，Nest 就能据此确定需要挂载哪些控制器。
 
-## 库特定方式（Library-specific approach）
+## 库特定方式
 
-前文介绍了标准的 Nest 响应处理方式。另一种方式是使用库特定的 [响应对象](https://expressjs.com/en/api.html#res)。要注入特定响应对象，可以使用 `@Res()` 装饰器。下面通过重写 `CatsController` 展示两种方式的区别：
+前文介绍了标准的 Nest 响应处理方式。另一种方式是使用库特定的[响应对象](https://expressjs.com/en/api.html#res)。要注入特定响应对象，可以使用 `@Res()` 装饰器。下面通过重写 `CatsController` 展示两种方式的区别：
 
 ```ts
 import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common'

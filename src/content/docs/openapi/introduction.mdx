@@ -2,7 +2,7 @@ import swagger1Image from '/public/assets/swagger1.png'
 
 # 简介
 
-[OpenAPI](https://swagger.io/specification/) 规范是一种与语言无关的定义格式，用于描述 RESTful API。Nest 提供了专用的 [模块](https://github.com/nestjs/swagger)，通过装饰器机制帮助我们自动生成此类规范文档。
+[OpenAPI](https://swagger.io/specification/) 规范是一种与语言无关的定义格式，用于描述 RESTful API。Nest 提供了专用的[模块](https://github.com/nestjs/swagger)，通过装饰器机制帮助我们自动生成此类规范文档。
 
 ## 安装
 
@@ -46,14 +46,14 @@ bootstrap()
   提供该文档外，你还可以将其保存为 JSON 或 YAML 文件，并以多种方式使用。
 </CalloutInfo>
 
-`DocumentBuilder` 用于构建符合 OpenAPI 规范的基础文档。它提供了多种方法，可以设置标题、描述、版本等属性。为了生成包含所有 HTTP 路由定义的完整文档，我们使用 `SwaggerModule` 类的 `createDocument()` 方法。该方法接收两个参数：应用实例和 Swagger 配置对象。你也可以传递第三个参数，其类型为 `SwaggerDocumentOptions`。更多内容请参见 [文档选项部分](/openapi/introduction#document-options)。
+`DocumentBuilder` 用于构建符合 OpenAPI 规范的基础文档。它提供了多种方法，可以设置标题、描述、版本等属性。为了生成包含所有 HTTP 路由定义的完整文档，我们使用 `SwaggerModule` 类的 `createDocument()` 方法。该方法接收两个参数：应用实例和 Swagger 配置对象。你也可以传递第三个参数，其类型为 `SwaggerDocumentOptions`。更多内容请参见[文档选项部分](/openapi/introduction#document-options)。
 
 创建文档后，可以调用 `setup()` 方法。该方法接受以下参数：
 
 1. Swagger UI 挂载路径
 2. 应用实例
 3. 上述生成的文档对象
-4. 可选的配置参数（详细内容请参见 [此处](/openapi/introduction#setup-options)）
+4. 可选的配置参数（详细内容请参见[此处](/openapi/introduction#setup-options)）
 
 现在你可以运行以下命令启动 HTTP 服务器：
 
@@ -311,4 +311,4 @@ SwaggerModule.setup('api', app, options)
 
 ## 示例
 
-你可以在 [这里](https://github.com/nestjs/nest/tree/master/sample/11-swagger) 查看一个可用的示例。
+你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/11-swagger)查看一个可用的示例。

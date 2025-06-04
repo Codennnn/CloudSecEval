@@ -38,16 +38,16 @@ export class AppModule {}
 ## 配置说明
 
 [ServeStaticModule](https://github.com/nestjs/serve-static) 支持多种选项，可用于自定义其行为。
-你可以设置静态应用的渲染路径、指定排除路径、启用或禁用 Cache-Control 响应头等。完整的选项列表请参见 [这里](https://github.com/nestjs/serve-static/blob/master/lib/interfaces/serve-static-options.interface.ts)。
+你可以设置静态应用的渲染路径、指定排除路径、启用或禁用 Cache-Control 响应头等。完整的选项列表请参见[这里](https://github.com/nestjs/serve-static/blob/master/lib/interfaces/serve-static-options.interface.ts)。
 
 <CalloutInfo type="warning">
-  **注意** 静态应用的默认 `renderPath` 为 `*`（所有路径），模块会响应发送 "index.html" 文件。
-  这使你能够为 SPA 创建客户端路由。控制器中指定的路径会回退到服务器端。 你可以通过设置
-  `serveRoot`、`renderPath` 并结合其他选项来更改此行为。 此外，在 Fastify 适配器中实现了
-  `serveStaticOptions.fallthrough` 选项，用于模拟 Express 的 fallthrough 行为。需要将其设置为
-  `true`，以便在请求不存在的路由时返回 `index.html`，而不是 404 错误。
+  静态应用的默认 `renderPath` 为 `*`（所有路径），模块会响应发送 "index.html" 文件。 这使你能够为
+  SPA 创建客户端路由。控制器中指定的路径会回退到服务器端。 你可以通过设置 `serveRoot`、`renderPath`
+  并结合其他选项来更改此行为。 此外，在 Fastify 适配器中实现了 `serveStaticOptions.fallthrough`
+  选项，用于模拟 Express 的 fallthrough 行为。需要将其设置为 `true`，以便在请求不存在的路由时返回
+  `index.html`，而不是 404 错误。
 </CalloutInfo>
 
 ## 示例
 
-可用的完整示例见 [这里](https://github.com/nestjs/nest/tree/master/sample/24-serve-static)。
+可用的完整示例见[这里](https://github.com/nestjs/nest/tree/master/sample/24-serve-static)。

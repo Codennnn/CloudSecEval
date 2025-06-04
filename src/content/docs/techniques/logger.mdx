@@ -228,7 +228,7 @@ const app = await NestFactory.create(AppModule, {
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-这种方式虽然简单，但并没有利用依赖注入（Dependency Injection）机制来管理 `MyLogger` 类。这在测试时可能带来一些挑战，并且会限制 `MyLogger` 的复用性。更优的方案请参考下方 [依赖注入](/techniques/logger#dependency-injection) 部分。
+这种方式虽然简单，但并没有利用依赖注入（Dependency Injection）机制来管理 `MyLogger` 类。这在测试时可能带来一些挑战，并且会限制 `MyLogger` 的复用性。更优的方案请参考下方[依赖注入](/techniques/logger#dependency-injection)部分。
 
 ## 扩展内置日志记录器
 
