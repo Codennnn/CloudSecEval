@@ -2,7 +2,7 @@ import { transformerNotationHighlight } from '@shikijs/transformers'
 // import { transformerTwoslash } from '@shikijs/twoslash'
 import { type BundledLanguage, type CodeToHastOptions, codeToHtml } from 'shiki'
 
-import { CopyButton } from '~/components/CopyButton'
+import { CopyButton } from '~/components/code/CopyButton'
 import { LanguageIcon } from '~/components/LanguageIcon'
 
 interface CodeBlockProps {

@@ -3,7 +3,7 @@ import { BookOpenTextIcon, ExternalLinkIcon, HashIcon } from 'lucide-react'
 import type { MDXComponents } from 'mdx/types'
 import type { BundledLanguage } from 'shiki'
 
-import { CodeBlock } from '~/components/CodeBlock'
+import { CodeBlock } from '~/components/code/CodeBlock'
 import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
 import { FileTree } from '~/components/doc/FileTree'

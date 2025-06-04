@@ -6,6 +6,8 @@ import {
 } from '~/components/ui/sidebar'
 import { cn } from '~/lib/utils'
 
+import { DocSearch } from '../../components/search/DocSearch'
+
 export default function DocsLayout(props: React.PropsWithChildren) {
   return (
     <SidebarProvider>
@@ -21,6 +23,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
           }
         >
           <div className="flex-1 p-[var(--content-padding)]">
+            <DocSearch />
             {props.children}
           </div>
 
