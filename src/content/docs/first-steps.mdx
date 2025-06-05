@@ -2,17 +2,15 @@
 
 本系列文章将带你系统学习 Nest 的核心基础知识。为帮助你快速熟悉 Nest 应用的基本构建模块，我们将通过搭建一个基础的 CRUD 应用，覆盖入门阶段常见的功能特性。
 
-## 语言
+## 开发语言
 
 我们热爱 TypeScript，同样也热爱 Node.js。Nest 兼容 TypeScript 和原生 JavaScript。由于 Nest 充分利用了最新的语言特性，如果你选择使用 JavaScript，建议配合 [Babel](https://babeljs.io/) 编译器。
 
-本教程示例主要基于 TypeScript，但你可以随时切换代码片段为 JavaScript 语法（只需点击每个代码块右上角的语言切换按钮）。
-
-## 前置条件
+## 环境准备
 
 请确保你的操作系统已安装 [Node.js](https://nodejs.org)（版本 >= 20）。
 
-## 项目初始化
+## 创建新项目
 
 使用 [Nest CLI](/cli/overview) 脚手架工具可以非常便捷地创建新项目。确保已安装 [npm](https://www.npmjs.com/)，然后在终端中运行以下命令，即可创建一个新的 Nest 项目：
 
@@ -53,7 +51,7 @@ $ nest new project-name
 | `app.service.ts`         | 基础服务，包含一个方法。                                      |
 | `main.ts`                | 应用入口文件，使用核心函数 `NestFactory` 创建 Nest 应用实例。 |
 
-`main.ts` 文件包含一个异步函数，用于 **引导启动（bootstrap）** 应用：
+`main.ts` 文件包含一个异步函数，用于 **启动应用（bootstrap）**：
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
@@ -75,7 +73,7 @@ bootstrap()
   默认情况下，如果应用创建过程中发生错误，程序会以代码 `1` 退出。如果你希望抛出异常而不是直接退出，可以关闭 `abortOnError` 选项（例如：`NestFactory.create(AppModule, { abortOnError: false })`）。
 </CalloutInfo>
 
-## 平台
+## 支持多平台
 
 Nest 致力于成为平台无关的框架。平台无关性让开发者能够创建可复用的逻辑模块，并在多种类型的应用中复用。从技术上讲，只要有适配器，Nest 就能与任何 Node HTTP 框架协作。目前，Nest 原生支持两种 HTTP 平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io/)。你可以根据实际需求选择最合适的方案。
 
@@ -92,7 +90,7 @@ Nest 致力于成为平台无关的框架。平台无关性让开发者能够创
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
 ```
 
-## 运行应用
+## 启动与调试
 
 依赖安装完成后，在终端运行以下命令即可启动应用，监听 HTTP 请求：
 
@@ -115,7 +113,7 @@ $ npm run start:dev
 
 该命令会自动监控文件变更，实时编译并重启服务器。
 
-## 代码规范与格式化
+## 代码规范与格式化工具
 
 [CLI](/cli/overview) 旨在为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码检查（linter）和格式化（formatter）工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
 

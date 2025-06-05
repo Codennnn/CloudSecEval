@@ -15,9 +15,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from '~/components/ui/dialog'
-import { Input } from '~/components/ui/input'
 import { cn } from '~/lib/utils'
 
 interface SearchHistory {
@@ -219,21 +217,19 @@ function SearchResults({
   }
 
   return (
-    <div className="max-h-96 overflow-y-auto">
-      <div className="p-2 space-y-1">
-        {results.hits.map((hit: SearchResult, index: number) => (
-          <SearchResultItem
-            key={hit.id}
-            isSelected={index === selectedIndex}
-            result={hit}
-            onClick={() => {
-              if (hit.document?.url) {
-                onSelectResult(hit.document.url)
-              }
-            }}
-          />
-        ))}
-      </div>
+    <div className="p-4 space-y-4">
+      {results.hits.map((hit: SearchResult, index: number) => (
+        <SearchResultItem
+          key={hit.id}
+          isSelected={index === selectedIndex}
+          result={hit}
+          onClick={() => {
+            if (hit.document?.url) {
+              onSelectResult(hit.document.url)
+            }
+          }}
+        />
+      ))}
     </div>
   )
 }
@@ -377,26 +373,24 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
   }, [onClose, resultCount, searchResults, selectedIndex, handleSelectResult])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       <DialogHeader className="border-b">
-        <DialogTitle className="flex items-center gap-3">
-          <div className="relative flex items-center gap-3">
-            <SearchIcon className="size-4 shrink-0" />
+        <div className="relative flex items-center gap-3 px-3 py-2 text-muted-foreground">
+          <SearchIcon className="size-4 shrink-0" />
 
-            <Input
-              ref={inputRef}
-              className="flex-1 !outline-none !border-none shadow-none focus-visible:!outline-none"
-              placeholder="你想搜索什么？"
-              type="text"
-              value={searchTerm}
-              onChange={(ev) => { handleSearch(ev.target.value) }}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-        </DialogTitle>
+          <input
+            ref={inputRef}
+            className="flex-1 !outline-none text-sm !border-none shadow-none focus-visible:outline-none"
+            placeholder="你想搜索什么？"
+            type="text"
+            value={searchTerm}
+            onChange={(ev) => { handleSearch(ev.target.value) }}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
       </DialogHeader>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         <SearchResults
           searchTerm={searchTerm}
           selectedIndex={selectedIndex}
@@ -446,7 +440,7 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
 export function SearchDialog({ open, onOpenChange }: AdvancedSearchDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl h-[80vh] p-0 gap-0" showCloseButton={false}>
+      <DialogContent className="max-w-3xl h-[80vh] p-0 gap-0 overflow-hidden" showCloseButton={false}>
         <OramaCloud
           apiKey={process.env.NEXT_PUBLIC_ORAMA_API_KEY!}
           endpoint={process.env.NEXT_PUBLIC_ORAMA_ENDPOINT!}

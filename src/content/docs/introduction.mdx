@@ -1,4 +1,4 @@
-# 介绍
+# NestJS 介绍
 
 NestJS 是一个用于构建高效、可扩展的 [Node.js](https://nodejs.org/) 服务端应用程序的框架。它使用现代 JavaScript 技术构建，完全基于 [TypeScript](http://www.typescriptlang.org/) 并对其提供完整支持，同时也允许开发者使用纯 JavaScript 编写代码。
 
@@ -8,7 +8,7 @@ NestJS 巧妙地融合了面向对象编程（OOP）、函数式编程（FP）�
 
 Nest 在这些成熟的 Node.js 框架（Express/Fastify）之上提供了一层抽象封装，同时直接开放了底层框架的 API 接口。这种设计让开发者既能享受 Nest 的架构优势，又能充分利用底层平台丰富的第三方模块生态系统。
 
-## 理念
+## 设计理念
 
 近年来，得益于 Node.js 的普及，JavaScript 已成为前后端开发的通用语言。这一趋势催生了众多优秀项目，如 [Angular](https://angular.dev/)、[React](https://github.com/facebook/react) 和 [Vue](https://github.com/vuejs/vue)，这些框架极大提升了开发效率，让前端应用变得快速、易测试且易扩展。
 
@@ -16,9 +16,9 @@ Nest 在这些成熟的 Node.js 框架（Express/Fastify）之上提供了一层
 
 Nest 正是为了填补这一空白而诞生。它提供开箱即用的应用架构，帮助开发者和团队构建高度可测试、可扩展、低耦合且易于维护的应用程序。Nest 的架构设计深受 Angular 启发，将其成熟的设计理念引入到 Node.js 服务端开发中。
 
-## 安装
+## 快速安装与项目创建
 
-开始使用 NestJS 有两种主要方式：使用 [Nest CLI](/cli/overview) 脚手架工具快速创建项目，或者[克隆现有的起始项目](#alternatives)。两种方式都能帮你快速搭建项目基础。
+开始使用 NestJS 有两种主要方式：使用 [Nest CLI](/cli/overview) 脚手架工具快速创建项目，或者[克隆现有的起始项目](#其他项目初始化方式)，两种方式都能帮你快速搭建项目基础。
 
 使用 Nest CLI 创建新项目（推荐方式）：
 
@@ -33,7 +33,7 @@ $ nest new project-name
   如果希望创建更严格的 TypeScript 项目，可在 `nest new` 命令中添加 `--strict` 参数。
 </CalloutInfo>
 
-## 其他方式
+## 其他项目初始化方式
 
 你也可以通过 Git 克隆 TypeScript 起始项目：
 
