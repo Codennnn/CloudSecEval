@@ -194,7 +194,7 @@ export default () => {
 
 这样，如果端口号超出指定范围，应用会在启动时抛出错误。
 
-## 使用 `配置服务（ConfigService）`
+## 使用 `ConfigService`
 
 若要获取 `配置服务（ConfigService）` 中的配置信息，首先需要将 `ConfigService` 注入到你的类中。与其他提供者类似，使用前需在对应模块中导入 `配置模块（ConfigModule）`。如果你在 `ConfigModule.forRoot()` 的配置中将 `isGlobal` 设为 `true`，则无需重复导入。一般在功能模块中这样导入：
 

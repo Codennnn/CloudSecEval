@@ -14,7 +14,7 @@
   讨论](https://github.com/nestjs/nest/issues/1181#issuecomment-430197191)。
 </CalloutInfo>
 
-## 前向引用（forward reference）
+## 前向引用
 
 前向引用允许 Nest 通过 `forwardRef()` 工具函数引用尚未定义的类。例如，`CatsService` 和 `CommonService` 互相依赖时，双方都可以结合 `@Inject()` 和 `forwardRef()` 解决循环依赖。否则，Nest 无法实例化他们，因为缺少必要的元数据。示例代码如下：
 
@@ -51,7 +51,7 @@ export class CommonService {
 
 除了使用 `forwardRef()`，你还可以通过重构代码，利用 `ModuleRef` 类在循环依赖关系的一方动态获取提供者实例。关于 `ModuleRef` 的详细用法，请参见[这里](/fundamentals/module-ref)。
 
-## 模块的前向引用（Module forward reference）
+## 模块的前向引用
 
 为了解决模块之间的循环依赖问题，也可以在相关模块的 `imports` 中使用 `forwardRef()` 工具函数。例如：
 

@@ -1,4 +1,4 @@
-# 测试（Testing）
+# 测试
 
 自动化测试是现代软件开发中不可或缺的重要环节。通过自动化，开发者可以在开发过程中快速、便捷地重复执行单个测试或测试套件，从而确保发布版本能够达到既定的质量和性能目标。自动化测试不仅提升了测试覆盖率，还为开发者带来了更快的反馈循环。这不仅有助于提升个人生产力，也能确保在关键开发节点（如源代码提交、功能集成和版本发布）及时运行测试。
 
@@ -9,7 +9,7 @@
 - 开箱即用地集成了 [Jest](https://github.com/facebook/jest) 和 [Supertest](https://github.com/visionmedia/supertest)，同时对测试工具保持无关性
 - 让 Nest 的依赖注入系统在测试环境中同样可用，便于模拟（Mock）组件
 
-如前所述，你可以选择任何你喜欢的测试框架（Testing Framework），Nest 并不会强制指定特定工具。只需替换所需部分（如测试运行器），即可继续享受 Nest 提供的现成测试能力。
+如前所述，你可以选择任何你喜欢的测试框架，Nest 并不会强制指定特定工具。只需替换所需部分（如测试运行器），即可继续享受 Nest 提供的现成测试能力。
 
 ## 安装
 
@@ -21,7 +21,7 @@ $ npm i --save-dev @nestjs/testing
 
 ## 单元测试（Unit Testing）
 
-下面的示例将演示如何测试两个类：`CatsController` 和 `CatsService`。如前所述，[Jest](https://github.com/facebook/jest) 是默认的测试框架。它既作为测试运行器，也提供断言函数和测试替身（Test Double）工具，便于模拟（Mock）、监视（Spy）等。在基础测试中，我们手动实例化这些类，并确保控制器和服务能够满足其 API 合同。
+下面的示例将演示如何测试两个类：`CatsController` 和 `CatsService`。如前所述，[Jest](https://github.com/facebook/jest) 是默认的测试框架。它既作为测试运行器，也提供断言函数和测试替身（Test Double）工具，便于模拟、监视等。在基础测试中，我们手动实例化这些类，并确保控制器和服务能够满足其 API 合同。
 
 ```ts filename='cats.controller.spec.ts'
 import { CatsController } from './cats.controller'
@@ -237,7 +237,7 @@ afterAll(async () => {
 
 </CalloutInfo>
 
-在本例中，我们基于前文介绍的一些概念进行了扩展。除了前面用到的 `compile()` 方法外，这里还使用了 `createNestApplication()` 方法来实例化一个完整的 Nest 运行时环境（Runtime）。
+在本例中，我们基于前文介绍的一些概念进行了扩展。除了前面用到的 `compile()` 方法外，这里还使用了 `createNestApplication()` 方法来实例化一个完整的 Nest 运行时环境。
 
 需要注意的是：当你的应用通过 `compile()` 方法编译时，此时 `HttpAdapterHost#httpAdapter` 仍然是未定义的。原因是在编译阶段还没有创建 HTTP 适配器或服务器。如果你的测试依赖于 `httpAdapter`，应当使用 `createNestApplication()` 方法来创建应用实例，或者在初始化依赖关系图时重构项目以避免这种依赖。
 
@@ -354,7 +354,7 @@ const moduleRef = await Test.createTestingModule({
 
 此时，所有测试请求都会使用 `MockAuthGuard`。
 
-## 测试请求作用域实例（Testing request-scoped instances）
+## 测试请求作用域实例
 
 [请求作用域（Request-scoped）](/fundamentals/injection-scopes) 提供者会为每个传入请单独创建实例。请求处理完成后，这些实例会被垃圾回收。这带来一个问题：我们无法直接访问为某次测试请求生成的依赖注入子树。
 

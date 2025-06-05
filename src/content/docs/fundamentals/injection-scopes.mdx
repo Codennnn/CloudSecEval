@@ -4,7 +4,7 @@
 
 但在某些特殊场景下，我们可能需要基于请求的生命周期来管理实例，例如在 GraphQL 应用中实现每请求缓存、请求追踪或多租户（multi-tenancy）等。此时，可以通过依赖注入作用域机制实现所需的提供者生命周期管理。
 
-## 提供者作用域（Provider scope）
+## 提供者作用域
 
 提供者可以拥有以下几种作用域：
 
@@ -69,7 +69,7 @@ export class CatsService {}
   策略](/security/authentication#request-scoped-strategies) 或 Cron 控制器。
 </CalloutInfo>
 
-## 控制器作用域（Controller scope）
+## 控制器作用域
 
 控制器同样支持设置作用域，该作用域会应用于控制器内声明的所有请求处理方法。与提供者作用域类似，控制器的作用域决定其实例的生命周期。对于请求作用域的控制器，每个入站请求都会创建一个新的控制器实例，并在请求处理完成后自动回收。
 
@@ -83,7 +83,7 @@ export class CatsService {}
 export class CatsController {}
 ```
 
-## 作用域层级（Scope hierarchy）
+## 作用域层级
 
 `REQUEST` 作用域会沿着依赖注入链向上传递，依赖于请求作用域提供者的控制器自身也会变为请求作用域。
 
@@ -91,7 +91,7 @@ export class CatsController {}
 
 瞬态（Transient）作用域的依赖不遵循上述模式。例如，若单例作用域的 `DogsService` 注入了一个瞬态的 `LoggerService`，每次注入时都会获得一个全新的 `LoggerService` 实例。但 `DogsService` 本身依然保持单例作用域，无论被注入到何处，都不会生成新的 `DogsService` 实例。如果希望 `DogsService` 也能每次注入时都创建新实例，需要显式将其标记为瞬态作用域。
 
-## 请求对象提供者（Request provider）
+## 请求对象提供者
 
 在基于 HTTP 服务器的应用中（如使用 `@nestjs/platform-express` 或 `@nestjs/platform-fastify`），如果你需要在请求作用域的提供者中访问原始请求对象，可以通过注入 REQUEST 对象实现。
 
@@ -159,7 +159,7 @@ export class AppService {
 
 在上述示例中，当调用 `AppService#getRoot` 方法时，控制台会输出：`AppService: My name is getRoot`。
 
-## 性能（Performance）
+## 性能
 
 使用请求作用域（Request-scoped）提供者会影响应用性能。尽管 Nest 会尽量缓存元数据，但每个请求仍需创建新的类实例，导致平均响应时间增加，整体基准测试表现下降。除非确有必要，强烈建议优先使用默认的单例作用域（Singleton scope）。
 
@@ -167,7 +167,7 @@ export class AppService {
   虽然听起来有些影响，但合理设计的应用，即使大量使用请求作用域提供者，延迟通常也不会超过 5% 左右。
 </CalloutInfo>
 
-## 持久化提供者（Durable providers）
+## 持久化提供者
 
 如前所述，请求作用域提供者可能会增加应用延迟。只要有一个请求作用域的提供者被注入到控制器实例（或更深层依赖链中），该控制器也会变为请求作用域。这意味着每个请求都需重新创建（实例化）控制器及其依赖，并在请求结束后进行垃圾回收。例如，若有 3 万个并发请求，就会同时存在 3 万个临时控制器实例及其依赖。
 

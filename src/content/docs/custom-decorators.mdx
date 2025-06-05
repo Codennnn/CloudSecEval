@@ -81,7 +81,7 @@ async findOne(@User() user: UserEntity) {
 }
 ```
 
-## 传递数据（Passing data）
+## 传递数据
 
 当装饰器的行为依赖于特定条件时，可以通过 `data` 参数向装饰器工厂函数传递数据。常见场景之一是自定义装饰器根据 key 从请求对象中提取属性。例如，假设我们的[认证层](/techniques/authentication#implementing-passport-strategies)会验证请求并将用户实体（user entity）附加到请求对象。一个已认证请求的用户实体示例如下：
 
@@ -123,7 +123,7 @@ async findOne(@User('firstName') firstName: string) {
   对于 TypeScript 用户，`createParamDecorator<T>()` 是泛型方法，可显式指定类型，如 `createParamDecorator<string>((data, ctx) => ...)`。也可以在工厂函数中为参数指定类型，如 `createParamDecorator((data: string, ctx) => ...)`。若两者都省略，`data` 类型为 `any`。
 </CalloutInfo>
 
-## 配合管道（Working with pipes）
+## 配合管道使用
 
 Nest 处理自定义参数装饰器的方式与内置装饰器（如 `@Body()`、`@Param()`、`@Query()`）一致。这意味着自定义装饰器参数同样会执行管道。你还可以直接在自定义装饰器上应用管道：
 
@@ -142,7 +142,7 @@ async findOne(
   默认不会校验自定义装饰器标注的参数。
 </CalloutInfo>
 
-## 装饰器组合（Decorator composition）
+## 组合与复用
 
 Nest 提供了辅助方法，可用于组合多个装饰器。例如，若希望将所有与认证相关的装饰器合并为一个装饰器，可以这样实现：
 

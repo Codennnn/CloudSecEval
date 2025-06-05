@@ -18,7 +18,23 @@ import '~/styles/global.css'
 // })
 
 const harmonySansSC = localFont({
-  src: '../../public/assets/fonts/HarmonyOS_Sans_SC_Regular.woff2',
+  src: [
+    {
+      path: '../../public/assets/fonts/HarmonyOS_Sans_SC_Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../public/assets/fonts/HarmonyOS_Sans_SC_Medium.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../../public/assets/fonts/HarmonyOS_Sans_SC_Bold.woff2',
+      weight: '600',
+      style: 'normal',
+    },
+  ],
   display: 'swap',
   preload: true,
   variable: '--font-harmony-os-sans-sc',

@@ -359,7 +359,7 @@ import { UsersService } from './users.service'
 export class UsersModule {}
 ```
 
-### TypeORM 事务（Transactions）
+### TypeORM 事务
 
 数据库事务（Transaction）是在数据库管理系统中，对数据库执行的一组操作。这组操作被视为一个整体，并且与其他事务相互独立，从而确保数据的一致性和可靠性。事务通常代表数据库中的任意更改（[了解更多](https://en.wikipedia.org/wiki/Database_transaction)）。
 
@@ -420,9 +420,9 @@ async createMany(users: User[]) {
 }
 ```
 
-### 订阅者（Subscribers）
+### 订阅者
 
-通过 TypeORM 的[订阅者（subscribers）](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber) ，你可以监听特定实体的相关事件。
+通过 TypeORM 的[订阅者](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber) ，你可以监听特定实体的相关事件。
 
 ```ts
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm'
@@ -445,8 +445,7 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
 ```
 
 <CalloutInfo type="error">
-  事件订阅者（Event
-  subscribers）不能设置为[请求作用域](/fundamentals/injection-scopes)（request-scoped）。
+  事件订阅者（Event subscribers）不能设置为[请求作用域](/fundamentals/injection-scopes)。
 </CalloutInfo>
 
 接下来，将 `UserSubscriber` 类添加到 `providers`（提供者）数组中：
@@ -472,7 +471,7 @@ export class UsersModule {}
   官方文档](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber)。
 </CalloutInfo>
 
-### 数据库迁移（Migrations）
+### 数据库迁移
 
 [数据库迁移（Migrations）](https://typeorm.io/#/migrations) 提供了一种机制，能够逐步更新数据库结构，使其与应用中的数据模型保持同步，并且不会丢失已有数据。TypeORM 提供了专用的[命令行工具（CLI）](https://typeorm.io/#/migrations/creating-a-new-migration)，用于生成、执行和回滚迁移。
 
@@ -681,7 +680,7 @@ TypeOrmModule.forRootAsync({
   才能正确地在相应的注入令牌下注册数据源。
 </CalloutInfo>
 
-### 自定义数据源工厂（Custom DataSource Factory）
+### 自定义数据源工厂
 
 在结合 `useFactory`、`useClass` 或 `useExisting` 进行异步配置时，你还可以选择性地指定一个 `dataSourceFactory` 函数。通过该函数，你可以自行提供 TypeORM 的数据源（DataSource），而不是让 `TypeOrmModule` 自动创建。
 

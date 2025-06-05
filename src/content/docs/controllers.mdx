@@ -15,7 +15,7 @@ import controllerImage from '/public/assets/Controllers_1.png'
   的 [CRUD 生成器](/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
 </CalloutInfo>
 
-## 路由（Routing）
+## 路由
 
 在下面的示例中，我们使用 `@Controller()` 装饰器。它是定义基础控制器所必需的。我们为其指定了一个可选的路由前缀 `cats`。通过在 `@Controller()` 装饰器中设置路径前缀，可以将相关路由分组，减少重复代码。例如，如果我们希望所有与猫（cat）实体相关的路由都统一在 `/cats` 路径下，只需在 `@Controller()` 装饰器中指定 `cats` 前缀，这样就无需在每个路由中重复该部分路径了。
 
@@ -88,7 +88,7 @@ export class CatsController {
   当处理器使用了 `@Res()` 或 `@Next()` 时，Nest 会检测到你选择了库特定方式。如果两种方式同时使用，标准方式会在该路由下被**自动禁用**，无法正常工作。如果你想同时使用（例如只注入响应对象用于设置 cookie/headers，其余交由框架处理），必须在 `@Res({ passthrough: true })` 装饰器中设置 `passthrough` 选项为 `true`。
 </CalloutInfo>
 
-## 请求对象（Request object）
+## 请求对象
 
 在实际开发中，处理器通常需要获取客户端的请求详情。Nest 提供了访问底层平台（默认是 Express）[请求对象](https://expressjs.com/en/api.html#req) 的方式。你只需在处理器参数中使用 `@Req()` 装饰器，Nest 就会自动注入该对象。
 
@@ -185,7 +185,7 @@ export class CatsController {
 
 </CalloutInfo>
 
-## 资源（Resource）
+## 资源
 
 前文我们已经定义了一个用于获取猫资源的端点（GET 路由）。通常还需要提供一个用于创建新记录的端点。下面是 POST 处理器的示例：
 
@@ -225,7 +225,7 @@ export class CatsController {
 
 可以看到，Nest 为所有标准 HTTP 方法都提供了对应的装饰器：`@Get()`、`@Post()`、`@Put()`、`@Delete()`、`@Patch()`、`@Options()` 和 `@Head()`。此外，`@All()` 装饰器可以定义一个同时处理所有 HTTP 方法的端点。
 
-## 路由通配符（Route wildcards）
+## 路由通配符
 
 NestJS 也支持基于模式的路由匹配。你可以使用星号（`*`）作为通配符，匹配路径末尾的任意字符组合。例如，下面的 `findAll()` 方法会匹配所有以 `abcd/` 开头的路由，无论后面跟着什么内容。
 
@@ -242,7 +242,7 @@ findAll() {
 
 如果你想在**路由中间**使用星号，Express 要求使用命名通配符（如 `ab{{ '{' }}*splat&#125;cd`），而 Fastify 则完全不支持这种用法。
 
-## 状态码（Status code）
+## 状态码
 
 如前所述，响应的默认 **状态码（status code）** 总是 **200**，POST 请求除外（默认为 **201**）。你可以通过在处理器级别使用 `@HttpCode(...)` 装饰器，轻松更改这一行为。
 
@@ -258,7 +258,7 @@ create() {
 
 有时，状态码并不是固定的，而是取决于多种因素。这种情况下，可以通过注入库特定的 **响应对象（response object）**（使用 `@Res()`）来设置状态码，或者在出错时抛出异常。
 
-## 响应头（Response headers）
+## 响应头
 
 要设置自定义响应头（response header），可以使用 `@Header()` 装饰器，或者直接通过库特定响应对象（如 `res.header()`）进行设置。
 
@@ -272,7 +272,7 @@ create() {
 }
 ```
 
-## 重定向（Redirection）
+## 重定向
 
 要将响应重定向到指定 URL，可以使用 `@Redirect()` 装饰器，或者直接通过库特定响应对象（如 `res.redirect()`）实现。
 
@@ -300,7 +300,7 @@ getDocs(@Query('version') version) {
 }
 ```
 
-## 路由参数（Route parameters）
+## 路由参数
 
 静态路径的路由无法满足需要在请求中携带**动态数据**的场景，例如 `GET /cats/1` 用于获取 id 为 1 的猫。要定义带参数的路由，可以在路由路径中添加参数标记，以捕获 URL 中的动态值。如下所示，这些参数可以通过 `@Param()` 装饰器在方法参数中获取。
 
@@ -346,7 +346,7 @@ findOne(id) {
 }
 ```
 
-## 子域名路由（Sub-domain routing）
+## 子域名路由
 
 你可以通过 `@Controller` 装饰器的 `host` 选项，要求传入请求的 HTTP host 必须匹配特定值。
 
@@ -376,13 +376,13 @@ export class AccountController {
 }
 ```
 
-## 状态共享（State sharing）
+## 状态共享
 
 对于来自其他编程语言的开发者来说，可能会惊讶于在 Nest 中，几乎所有内容都是在请求间共享的。这包括数据库连接池、带有全局状态的单例服务等。需要理解的是，Node.js 并不采用请求/响应多线程无状态模型（Multi-Threaded Stateless Model），即每个请求由独立线程处理。因此，在 Nest 中使用单例实例是完全 **安全** 的。
 
 当然，在某些特定场景下，可能需要基于请求的控制器生命周期。例如在 GraphQL 应用中实现每请求缓存、请求追踪或多租户。你可以在[这里](/fundamentals/injection-scopes) 了解如何控制注入作用域。
 
-## 异步处理（Asynchronicity）
+## 异步处理
 
 我们热爱现代 JavaScript，尤其是其对 **异步** 数据处理的强调。因此，Nest 完全支持 `async` 函数。每个 `async` 函数都必须返回一个 `Promise`，这样 Nest 就能自动解析其最终值。如下所示：
 
@@ -404,7 +404,7 @@ findAll(): Observable<any[]> {
 
 这两种方式都可以，你可以根据实际需求选择。
 
-## 请求载荷（Request payloads）
+## 请求载荷
 
 在前面的示例中，POST 路由处理器并未接收任何来自客户端的参数。可以通过添加 `@Body()` 装饰器来实现参数接收。
 
@@ -435,7 +435,7 @@ async create(@Body() createCatDto: CreateCatDto) {
   `breed`，不在白名单内的属性会被自动剔除。详细内容可参考[这里](/techniques/validation#stripping-properties)。
 </CalloutInfo>
 
-## 查询参数（Query parameters）
+## 查询参数
 
 在路由中处理查询参数时，可以使用 `@Query()` 装饰器从请求中提取参数。下面通过实际示例演示：
 
@@ -485,11 +485,11 @@ const app = await NestFactory.create<NestFastifyApplication>(
   `qs` 是一个支持嵌套和数组的查询字符串解析器。可通过 `npm install qs` 安装。
 </CalloutInfo>
 
-## 错误处理（Handling errors）
+## 错误处理
 
 关于错误处理（如异常处理），请参见[专门章节](/exception-filters)。
 
-## 完整资源示例（Full resource sample）
+## 完整资源示例
 
 下面的示例展示了如何使用多种装饰器创建一个基础控制器。该控制器提供了若干方法，用于访问和操作内部数据。
 

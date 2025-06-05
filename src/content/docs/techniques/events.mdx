@@ -85,7 +85,9 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) {
 ```
 
 <CalloutInfo type="warning">
-  事件订阅者（Event subscribers）不能为请求作用域（request-scoped）。
+
+事件订阅者（Event subscribers）不能为请求作用域。
+
 </CalloutInfo>
 
 第一个参数可以是简单事件发射器（event emitter）中的 `string` 或 `symbol`，也可以在使用通配符发射器（wildcard emitter）时为 `string | symbol | Array<string | symbol>`。
