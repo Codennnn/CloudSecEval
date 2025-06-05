@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Noto_Sans_SC } from 'next/font/google'
+// import { Noto_Sans_SC } from 'next/font/google'
 import localFont from 'next/font/local'
 
 import { ThemeProvider } from '~/components/ThemeProvider'
@@ -8,60 +8,48 @@ import { getPageTitle } from '~/utils/common'
 
 import '~/styles/global.css'
 
-const notoSansSC = Noto_Sans_SC({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
+// const notoSansSC = Noto_Sans_SC({
+//   weight: ['400', '500', '600', '700'],
+//   subsets: ['latin'],
+//   display: 'swap',
+//   preload: true,
+//   variable: '--font-noto-sans-sc',
+//   adjustFontFallback: false,
+// })
+
+const harmonySansSC = localFont({
+  src: '../../public/assets/fonts/HarmonyOS_Sans_SC_Regular.woff2',
   display: 'swap',
   preload: true,
-  variable: '--font-noto-sans-sc',
+  variable: '--font-harmony-os-sans-sc',
   adjustFontFallback: false,
 })
 
 const mapleMono = localFont({
   src: [
     {
-      path: './fonts/MapleMonoNormalNL-Regular.ttf',
+      path: '../../public/assets/fonts/MapleMonoNormalNL-Regular.woff2',
       weight: '400',
       style: 'normal',
     },
-    // {
-    //   path: './fonts/MapleMonoNormalNL-Italic.ttf',
-    //   weight: '400',
-    //   style: 'italic',
-    // },
 
     {
-      path: './fonts/MapleMonoNormalNL-Medium.ttf',
+      path: '../../public/assets/fonts/MapleMonoNormalNL-Medium.woff2',
       weight: '500',
       style: 'normal',
     },
-    // {
-    //   path: '/fonts/MapleMonoNormalNL-MediumItalic.ttf',
-    //   weight: '500',
-    //   style: 'italic',
-    // },
 
     {
-      path: './fonts/MapleMonoNormalNL-SemiBold.ttf',
+      path: '../../public/assets/fonts/MapleMonoNormalNL-SemiBold.woff2',
       weight: '600',
       style: 'normal',
     },
-    // {
-    //   path: './fonts/MapleMonoNormalNL-SemiBoldItalic.ttf',
-    //   weight: '600',
-    //   style: 'italic',
-    // },
 
     {
-      path: './fonts/MapleMonoNormalNL-Bold.ttf',
+      path: '../../public/assets/fonts/MapleMonoNormalNL-Bold.woff2',
       weight: '700',
       style: 'normal',
     },
-    // {
-    //   path: './fonts/MapleMonoNormalNL-BoldItalic.ttf',
-    //   weight: '700',
-    //   style: 'italic',
-    // },
   ],
   variable: '--font-maple-mono',
   display: 'swap',
@@ -83,7 +71,7 @@ export default function RootLayout(props: React.PropsWithChildren) {
       <body
         className={cn([
           'h-full antialiased font-sans',
-          notoSansSC.variable,
+          harmonySansSC.variable,
           mapleMono.variable,
         ])}
       >
