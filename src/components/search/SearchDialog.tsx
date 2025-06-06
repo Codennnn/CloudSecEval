@@ -9,12 +9,16 @@ import {
   ChevronRightIcon,
   ClockIcon,
   FileTextIcon,
-  SearchIcon } from 'lucide-react'
+  SearchIcon,
+  XIcon } from 'lucide-react'
 
+import { Button } from '~/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
+  DialogTitle,
 } from '~/components/ui/dialog'
 import { cn } from '~/lib/utils'
 
@@ -26,7 +30,7 @@ interface SearchHistory {
 interface SearchResult {
   id: string
   document?: {
-    url?: string
+    path?: string
     title?: string
     heading?: string
     content?: string
@@ -82,15 +86,15 @@ const useSearchHistory = () => {
   return { history, addToHistory, clearHistory }
 }
 
-function SearchResultItem({
-  result,
-  isSelected,
-  onClick,
-}: {
+interface SearchResultItemProps {
   result: SearchResult
   isSelected: boolean
   onClick: () => void
-}) {
+}
+
+function SearchResultItem(props: SearchResultItemProps) {
+  const { result, isSelected, onClick } = props
+
   const { document } = result
   const ref = useRef<HTMLButtonElement>(null)
 
@@ -136,19 +140,17 @@ function SearchResultItem({
   )
 }
 
-function SearchResults({
-  searchTerm,
-  selectedIndex,
-  onResultsUpdate,
-  onSelectResult,
-  onResultsChange,
-}: {
+interface SearchResultsProps {
   searchTerm: string
   selectedIndex: number
   onResultsUpdate: (count: number) => void
   onSelectResult: (url: string) => void
   onResultsChange: (results: SearchResult[]) => void
-}) {
+}
+
+function SearchResults(props: SearchResultsProps) {
+  const { searchTerm, selectedIndex, onResultsUpdate, onSelectResult, onResultsChange } = props
+
   const { results } = useSearch({
     term: searchTerm,
     limit: 10,
@@ -178,7 +180,7 @@ function SearchResults({
   if (!searchTerm.trim()) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
-        <SearchIcon className="mb-4 size-12 text-muted-foreground/50" />
+        <SearchIcon className="mb-4 size-12 text-muted-foreground" />
         <p className="text-muted-foreground text-lg font-medium">开始搜索 NestJS 文档</p>
         <p className="text-muted-foreground/60 text-sm mt-1">输入关键词查找相关内容</p>
       </div>
@@ -224,8 +226,10 @@ function SearchResults({
           isSelected={index === selectedIndex}
           result={hit}
           onClick={() => {
-            if (hit.document?.url) {
-              onSelectResult(hit.document.url)
+            console.log(hit)
+
+            if (hit.document?.path) {
+              onSelectResult(hit.document.path)
             }
           }}
         />
@@ -282,6 +286,7 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [resultCount, setResultCount] = useState(0)
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [isComposing, setIsComposing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { history, addToHistory, clearHistory } = useSearchHistory()
   const router = useRouter()
@@ -305,22 +310,52 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
     }
   }, [addToHistory])
 
-  const handleSelectResult = useCallback((url: string) => {
-    // 关闭搜索对话框
-    onClose()
+  const handleInputChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
+    const value = ev.target.value
+    setSearchTerm(value)
 
+    // 只有在非输入法组合状态下才触发搜索
+    if (!isComposing) {
+      setSelectedIndex(0)
+
+      if (value.trim()) {
+        addToHistory(value)
+      }
+    }
+  }, [isComposing, addToHistory])
+
+  const handleCompositionStart = useCallback(() => {
+    setIsComposing(true)
+  }, [])
+
+  const handleCompositionEnd = useCallback((ev: React.CompositionEvent<HTMLInputElement>) => {
+    setIsComposing(false)
+    const value = ev.currentTarget.value
+    setSelectedIndex(0)
+
+    if (value.trim()) {
+      addToHistory(value)
+    }
+  }, [addToHistory])
+
+  const handleSelectResult = useCallback((url: string) => {
     // 处理不同类型的 URL
     if (!url) {
       return
     }
 
+    // 清理 URL，移除多余的斜杠
+    const cleanUrl = url.replace(/\/+/g, '/')
+
     try {
-      const urlObj = new URL(url, window.location.origin)
+      // 尝试解析为完整 URL
+      const urlObj = new URL(cleanUrl, window.location.origin)
 
       // 检查是否为外部链接
       if (urlObj.origin !== window.location.origin) {
         // 外部链接在新标签页打开
-        window.open(url, '_blank', 'noopener,noreferrer')
+        window.open(cleanUrl, '_blank', 'noopener,noreferrer')
+        onClose()
 
         return
       }
@@ -328,23 +363,35 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
       // 内部链接使用 Next.js 路由进行无刷新跳转
       const pathname = urlObj.pathname + urlObj.search + urlObj.hash
       router.push(pathname)
+      onClose()
     }
-    catch {
+    catch (error) {
       // 如果 URL 解析失败，尝试作为相对路径处理
-      if (url.startsWith('/')) {
-        router.push(url)
+      if (cleanUrl.startsWith('/docs/')) {
+        // 已经包含 /docs 前缀的路径
+        router.push(cleanUrl)
+        onClose()
       }
-      else if (url.startsWith('#')) {
+      else if (cleanUrl.startsWith('/')) {
+        // 绝对路径但不包含 /docs 前缀
+        router.push(cleanUrl)
+        onClose()
+      }
+      else if (cleanUrl.startsWith('#')) {
         // 页面内锚点跳转
-        const element = document.getElementById(url.slice(1))
+        const element = document.getElementById(cleanUrl.slice(1))
 
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' })
         }
+
+        onClose()
       }
       else {
-        // 其他情况使用传统方式跳转
-        window.location.href = url
+        // 相对路径，添加 /docs 前缀
+        const docsUrl = `/docs/${cleanUrl.replace(/^\/+/, '')}`
+        router.push(docsUrl)
+        onClose()
       }
     }
   }, [onClose, router])
@@ -366,28 +413,57 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
       // 触发选中项的点击事件
       const selectedResult = searchResults[selectedIndex]
 
-      if (selectedResult.document?.url) {
-        handleSelectResult(selectedResult.document.url)
+      if (selectedResult.document?.path) {
+        handleSelectResult(selectedResult.document.path)
       }
     }
   }, [onClose, resultCount, searchResults, selectedIndex, handleSelectResult])
 
+  const handleClearSearch = useCallback(() => {
+    setSearchTerm('')
+    setSelectedIndex(0)
+    setResultCount(0)
+    setSearchResults([])
+
+    inputRef.current?.focus()
+  }, [])
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <DialogHeader className="border-b">
-        <div className="relative flex items-center gap-3 px-3 py-2 text-muted-foreground">
-          <SearchIcon className="size-4 shrink-0" />
+      <DialogHeader className="border-b border-border">
+        <DialogTitle>
+          <div className="relative flex items-center gap-3 px-3 h-12 text-muted-foreground">
+            <SearchIcon className="size-4 shrink-0" />
 
-          <input
-            ref={inputRef}
-            className="flex-1 !outline-none text-sm !border-none shadow-none focus-visible:outline-none"
-            placeholder="你想搜索什么？"
-            type="text"
-            value={searchTerm}
-            onChange={(ev) => { handleSearch(ev.target.value) }}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+            <input
+              ref={inputRef}
+              className="flex-1 !outline-none font-normal text-sm !border-none shadow-none focus-visible:outline-none"
+              placeholder="你想搜索什么？"
+              type="text"
+              value={searchTerm}
+              onChange={handleInputChange}
+              onCompositionEnd={handleCompositionEnd}
+              onCompositionStart={handleCompositionStart}
+              onKeyDown={handleKeyDown}
+            />
+
+            {!!searchTerm && (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  handleClearSearch()
+                }}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            )}
+          </div>
+        </DialogTitle>
+
+        <DialogDescription className="sr-only">
+          搜索 NestJS 中文文档内容，使用上下箭头键导航结果，回车键选择，ESC 键关闭
+        </DialogDescription>
       </DialogHeader>
 
       <div className="flex-1 overflow-y-auto">
@@ -408,7 +484,7 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
-      <div className="border-t px-6 py-3">
+      <div className="border-t border-border px-6 py-3">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
@@ -440,7 +516,10 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
 export function SearchDialog({ open, onOpenChange }: AdvancedSearchDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl h-[80vh] p-0 gap-0 overflow-hidden" showCloseButton={false}>
+      <DialogContent
+        className="max-w-3xl h-[clamp(200px,60vh,800px)] p-0 gap-0 overflow-hidden"
+        showCloseButton={false}
+      >
         <OramaCloud
           apiKey={process.env.NEXT_PUBLIC_ORAMA_API_KEY!}
           endpoint={process.env.NEXT_PUBLIC_ORAMA_ENDPOINT!}
