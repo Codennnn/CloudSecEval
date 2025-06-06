@@ -1,4 +1,4 @@
-# 订阅（Subscription）
+# 订阅
 
 除了通过查询（Query）获取数据和通过变更（Mutation）修改数据之外，GraphQL 规范还支持第三种操作类型，称为 `订阅（subscription）`。GraphQL 订阅是一种允许服务器主动向选择监听实时消息的客户端推送数据的机制。订阅与查询类似，都需要指定要返回给客户端的字段集合，但不同之处在于，订阅会打开一个通道，每当服务器端发生特定事件时，就会向客户端发送结果，而不是立即返回单一结果。
 
@@ -39,7 +39,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 ## 代码优先（Code first）
 
-要使用代码优先方式创建订阅（Subscription），我们需要使用 `@Subscription()` 装饰器（由 `@nestjs/graphql` 包导出）以及 `graphql-subscriptions` 包中的 `PubSub` 类。`PubSub` 提供了一个简单的**发布/订阅 API（publish/subscribe API）**。
+要使用代码优先方式创建订阅，我们需要使用 `@Subscription()` 装饰器（由 `@nestjs/graphql` 包导出）以及 `graphql-subscriptions` 包中的 `PubSub` 类。`PubSub` 提供了一个简单的**发布/订阅 API（publish/subscribe API）**。
 
 下面的订阅处理器通过调用 `PubSub#asyncIterableIterator` 方法来**订阅**某个事件。该方法接收一个参数 `triggerName`，即事件主题名称。
 
@@ -76,7 +76,7 @@ type Subscription {
 }
 ```
 
-需要注意的是，订阅（Subscription）本质上会返回一个对象，该对象仅包含一个顶层属性，其键名为订阅的名称。该名称要么继承自订阅处理器方法的名称（如上例中的 `commentAdded`），要么可以通过将带有 `name` 键的选项作为 `@Subscription()` 装饰器的第二个参数显式指定，如下所示：
+需要注意的是，订阅本质上会返回一个对象，该对象仅包含一个顶层属性，其键名为订阅的名称。该名称要么继承自订阅处理器方法的名称（如上例中的 `commentAdded`），要么可以通过将带有 `name` 键的选项作为 `@Subscription()` 装饰器的第二个参数显式指定，如下所示：
 
 ```ts
 @Subscription(() => Comment, {

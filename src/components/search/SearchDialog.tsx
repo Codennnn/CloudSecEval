@@ -365,7 +365,7 @@ function SearchDialogContent({ onClose }: { onClose: () => void }) {
       router.push(pathname)
       onClose()
     }
-    catch (error) {
+    catch {
       // 如果 URL 解析失败，尝试作为相对路径处理
       if (cleanUrl.startsWith('/docs/')) {
         // 已经包含 /docs 前缀的路径
