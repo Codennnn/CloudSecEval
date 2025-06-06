@@ -2,30 +2,13 @@
 
 WebSocket 模块本身与平台无关，因此你可以通过实现 `WebSocketAdapter` 接口，集成你自己的库（甚至是原生实现）。该接口要求你实现下表中描述的几个方法：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`create`</td>
-      <td>根据传入参数创建一个 socket 实例</td>
-    </tr>
-    <tr>
-      <td>`bindClientConnect`</td>
-      <td>绑定客户端连接事件</td>
-    </tr>
-    <tr>
-      <td>`bindClientDisconnect`</td>
-      <td>绑定客户端断开连接事件（可选）</td>
-    </tr>
-    <tr>
-      <td>`bindMessageHandlers`</td>
-      <td>将收到的消息绑定到对应的消息处理器</td>
-    </tr>
-    <tr>
-      <td>`close`</td>
-      <td>关闭服务器实例</td>
-    </tr>
-  </tbody>
-</table>
+| 方法                   | 说明                               |
+| ---------------------- | ---------------------------------- |
+| `create`               | 根据传入参数创建一个 socket 实例   |
+| `bindClientConnect`    | 绑定客户端连接事件                 |
+| `bindClientDisconnect` | 绑定客户端断开连接事件（可选）     |
+| `bindMessageHandlers`  | 将收到的消息绑定到对应的消息处理器 |
+| `close`                | 关闭服务器实例                     |
 
 ## 扩展 socket.io
 

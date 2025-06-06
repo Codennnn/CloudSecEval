@@ -1,8 +1,8 @@
 import guardImage from '/public/assets/Guards_1.png'
 
-# 守卫（Guard）
+# 守卫
 
-守卫是一个带有 `@Injectable()` 装饰器并实现 `CanActivate` 接口的类。
+守卫（Guard）是一个带有 `@Injectable()` 装饰器并实现 `CanActivate` 接口的类。
 
 <DocImage src={guardImage} alt="守卫结构图" />
 
@@ -44,13 +44,13 @@ export class AuthGuard implements CanActivate {
 - 返回 `true` 时，请求将被处理。
 - 返回 `false` 时，Nest 会拒绝该请求。
 
-## 执行上下文（ExecutionContext）
+## 理解 ExecutionContext 执行上下文
 
 `canActivate()` 方法接收一个参数，即 `执行上下文（ExecutionContext）` 实例。`ExecutionContext` 继承自 `ArgumentsHost`。我们在异常过滤器章节已经介绍过 `ArgumentsHost`。在上面的示例中，我们只是用它来获取 `请求对象（Request Object）`。你可以回顾[异常过滤器](/exception-filters#arguments-host)章节的 Arguments host 部分，了解更多相关内容。
 
 通过扩展 `ArgumentsHost`，`ExecutionContext` 增加了许多辅助方法，能够提供当前执行过程的更多细节。这些细节有助于构建更通用的守卫，使其适用于更广泛的控制器、方法和执行上下文。你可以在[这里](/fundamentals/execution-context)了解更多关于 `ExecutionContext` 的内容。
 
-## 基于角色的身份验证
+## 基于角色的访问控制
 
 我们来实现一个更实用的守卫，只允许拥有特定角色的用户访问。下面是一个基础模板，当前允许所有请求通过，后续可逐步完善：
 
@@ -66,7 +66,7 @@ export class RolesGuard implements CanActivate {
 }
 ```
 
-## 绑定守卫
+## 守卫的绑定方式
 
 与管道和异常过滤器类似，守卫可分为**控制器作用域**、**方法作用域**和**全局作用域**。下面演示如何使用 `@UseGuards()` 装饰器为控制器绑定守卫。该装饰器支持接收一个或多个参数（逗号分隔），便于为控制器声明所需的守卫。
 
@@ -154,7 +154,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 
 此外，也可使用内置的 `@SetMetadata()` 装饰器，详见[这里](/fundamentals/execution-context#low-level-approach)。
 
-## 综合示例
+## 角色守卫完整示例
 
 现在我们回到 `RolesGuard`，结合前文内容进行说明。当前实现总是返回 `true`，即允许所有请求通过。我们希望根据当前用户的角色与路由所需角色（自定义元数据）进行比对，决定是否放行。为此，我们再次用到 `Reflector` 辅助类：
 

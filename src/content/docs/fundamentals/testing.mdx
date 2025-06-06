@@ -272,40 +272,13 @@ const moduleRef = await Test.createTestingModule({
 
 编译后的模块还提供了若干实用方法，具体如下表所示：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`createNestApplication()`</td>
-      <td>
-        基于给定模块创建并返回一个 Nest 应用（`INestApplication` 实例）。注意，你需要手动调用
-        `init()` 方法进行初始化。
-      </td>
-    </tr>
-    <tr>
-      <td>`createNestMicroservice()`</td>
-      <td>基于给定模块创建并返回一个 Nest 微服务（`INestMicroservice` 实例）。</td>
-    </tr>
-    <tr>
-      <td>`get()`</td>
-      <td>
-        获取应用上下文中可用的控制器或提供者（包括守卫、过滤器等）的静态实例。该方法继承自模块引用类。
-      </td>
-    </tr>
-    <tr>
-      <td>`resolve()`</td>
-      <td>
-        获取应用上下文中动态创建的作用域实例（如请求作用域或瞬态）的控制器或提供者。该方法同样继承自模块引用类。
-      </td>
-    </tr>
-    <tr>
-      <td>`select()`</td>
-      <td>
-        在模块依赖图中导航，可用于从选定模块中获取特定实例（结合 `get()` 方法的 strict 模式 `strict:
-        true` 一起使用）。
-      </td>
-    </tr>
-  </tbody>
-</table>
+| 方法                       | 说明                                                                                                            |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `createNestApplication()`  | 基于给定模块创建并返回一个 Nest 应用（`INestApplication` 实例）。注意，你需要手动调用 `init()` 方法进行初始化。 |
+| `createNestMicroservice()` | 基于给定模块创建并返回一个 Nest 微服务（`INestMicroservice` 实例）。                                            |
+| `get()`                    | 获取应用上下文中可用的控制器或提供者（包括守卫、过滤器等）的静态实例。该方法继承自模块引用类。                  |
+| `resolve()`                | 获取应用上下文中动态创建的作用域实例（如请求作用域或瞬态）的控制器或提供者。该方法同样继承自模块引用类。        |
+| `select()`                 | 在模块依赖图中导航，可用于从选定模块中获取特定实例（结合 `get()` 方法的 strict 模式 `strict: true` 一起使用）。 |
 
 <CalloutInfo>
   建议将端到端（e2e）测试文件放在 `test` 目录下，文件名应以 `.e2e-spec` 结尾。

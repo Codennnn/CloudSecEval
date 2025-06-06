@@ -45,22 +45,11 @@ export class AppModule {}
 
 `forRoot()` 方法支持所有由 [TypeORM](https://typeorm.io/data-source-options#common-data-source-options) 包中 `DataSource` 构造函数暴露的配置项。此外，还额外提供了以下配置项：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`retryAttempts`</td>
-      <td>尝试连接数据库的最大次数（默认值：`10`）</td>
-    </tr>
-    <tr>
-      <td>`retryDelay`</td>
-      <td>每次重试连接的间隔时间（单位：毫秒，默认值：`3000`）</td>
-    </tr>
-    <tr>
-      <td>`autoLoadEntities`</td>
-      <td>设为 `true` 时会自动加载实体（默认值：`false`）</td>
-    </tr>
-  </tbody>
-</table>
+| 参数               | 描述                                                 |
+| ------------------ | ---------------------------------------------------- |
+| `retryAttempts`    | 尝试连接数据库的最大次数（默认值：`10`）             |
+| `retryDelay`       | 每次重试连接的间隔时间（单位：毫秒，默认值：`3000`） |
+| `autoLoadEntities` | 设为 `true` 时会自动加载实体（默认值：`false`）      |
 
 <CalloutInfo>
   你可以在[这里](https://typeorm.io/data-source-options)查看更多数据源配置项。
@@ -222,28 +211,11 @@ export class UserHttpModule {}
 
 常见的关系类型有以下三种：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`一对一`</td>
-      <td>主表中的每一行仅关联外表中的唯一一行。定义此类关系时，需使用 `@OneToOne()` 装饰器。</td>
-    </tr>
-    <tr>
-      <td>`一对多 / 多对一`</td>
-      <td>
-        主表中的每一行可以关联外表中的一行或多行。定义此类关系时，需使用 `@OneToMany()` 和
-        `@ManyToOne()` 装饰器。
-      </td>
-    </tr>
-    <tr>
-      <td>`多对多`</td>
-      <td>
-        主表中的每一行可与外表中的多行关联，反之亦然。定义此类关系时，需使用 `@ManyToMany()`
-        装饰器。
-      </td>
-    </tr>
-  </tbody>
-</table>
+| 关系类型          | 描述                                                                                                       |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `一对一`          | 主表中的每一行仅关联外表中的唯一一行。定义此类关系时，需使用 `@OneToOne()` 装饰器。                        |
+| `一对多 / 多对一` | 主表中的每一行可以关联外表中的一行或多行。定义此类关系时，需使用 `@OneToMany()` 和 `@ManyToOne()` 装饰器。 |
+| `多对多`          | 主表中的每一行可与外表中的多行关联，反之亦然。定义此类关系时，需使用 `@ManyToMany()` 装饰器。              |
 
 在实体（Entity）中定义关系时，需要使用相应的装饰器。例如，如果要定义每个 `User`（用户）可以拥有多张照片，可以使用 `@OneToMany()` 装饰器：
 
@@ -756,30 +728,13 @@ export class AppModule {}
 
 `forRoot()` 方法支持 Sequelize 构造函数的所有配置项（[详细配置说明](https://sequelize.org/docs/v6/getting-started/#connecting-to-a-database)）。此外，还支持以下额外配置项：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`retryAttempts`</td>
-      <td>尝试连接数据库的最大次数（默认值：`10`）</td>
-    </tr>
-    <tr>
-      <td>`retryDelay`</td>
-      <td>每次重试连接的间隔时间（单位：毫秒，默认值为 `3000`）</td>
-    </tr>
-    <tr>
-      <td>`autoLoadModels`</td>
-      <td>设为 `true` 时会自动加载模型（默认值：`false`）</td>
-    </tr>
-    <tr>
-      <td>`keepConnectionAlive`</td>
-      <td>设为 `true` 时，应用关闭时不会断开数据库连接（默认值：`false`）</td>
-    </tr>
-    <tr>
-      <td>`synchronize`</td>
-      <td>设为 `true` 时，自动加载的模型会自动同步到数据库（默认值：`true`）</td>
-    </tr>
-  </tbody>
-</table>
+| 参数                  | 描述                                                               |
+| --------------------- | ------------------------------------------------------------------ |
+| `retryAttempts`       | 尝试连接数据库的最大次数（默认值：`10`）                           |
+| `retryDelay`          | 每次重试连接的间隔时间（单位：毫秒，默认值为 `3000`）              |
+| `autoLoadModels`      | 设为 `true` 时会自动加载模型（默认值：`false`）                    |
+| `keepConnectionAlive` | 设为 `true` 时，应用关闭时不会断开数据库连接（默认值：`false`）    |
+| `synchronize`         | 设为 `true` 时，自动加载的模型会自动同步到数据库（默认值：`true`） |
 
 完成上述配置后，`Sequelize` 对象会在整个项目中自动可用，无需额外导入模块。例如：
 
@@ -933,22 +888,11 @@ export class UserHttpModule {}
 
 常见的关联类型有以下三种：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`一对一`</td>
-      <td>主表中的每一行仅对应关联表中的唯一一行</td>
-    </tr>
-    <tr>
-      <td>`一对多 / 多对一`</td>
-      <td>主表中的每一行可以对应关联表中的一行或多行</td>
-    </tr>
-    <tr>
-      <td>`多对多`</td>
-      <td>主表中的每一行可以对应关联表中的多行，同时关联表中的每一行也可以对应主表中的多行</td>
-    </tr>
-  </tbody>
-</table>
+| 关系类型          | 描述                                                                             |
+| ----------------- | -------------------------------------------------------------------------------- |
+| `一对一`          | 主表中的每一行仅对应关联表中的唯一一行                                           |
+| `一对多 / 多对一` | 主表中的每一行可以对应关联表中的一行或多行                                       |
+| `多对多`          | 主表中的每一行可以对应关联表中的多行，同时关联表中的每一行也可以对应主表中的多行 |
 
 在模型中定义关联时，需要使用相应的装饰器。例如，如果要定义每个 `User`（用户）可以拥有多张照片，可以使用 `@HasMany()` 装饰器：
 

@@ -1,4 +1,4 @@
-# 请求频率限制（Rate Limiting）
+# 请求频率限制
 
 一种常见的防护应用免受暴力破解攻击的技术是**rate-limiting**。要开始使用，你需要安装 `@nestjs/throttler` 包。
 
@@ -214,83 +214,26 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 
 以下选项可用于传递给 `ThrottlerModule` 选项数组的对象：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`name`</td>
-      <td>用于内部追踪当前限流器集合的名称。如果未传递，则默认为 `default`</td>
-    </tr>
-    <tr>
-      <td>`ttl`</td>
-      <td>每个请求在存储中持续的毫秒数</td>
-    </tr>
-    <tr>
-      <td>`limit`</td>
-      <td>在 TTL 限制内允许的最大请求次数</td>
-    </tr>
-    <tr>
-      <td>`blockDuration`</td>
-      <td>请求被阻止的持续时间（毫秒）</td>
-    </tr>
-    <tr>
-      <td>`ignoreUserAgents`</td>
-      <td>一个包含需要忽略限流的 User-Agent（用户代理）正则表达式的数组</td>
-    </tr>
-    <tr>
-      <td>`skipIf`</td>
-      <td>
-        一个函数，接收 `执行上下文（ExecutionContext）` 并返回 `boolean` ，用于短路限流逻辑。类似于
-        `@SkipThrottler()`，但可基于请求自定义跳过条件
-      </td>
-    </tr>
-  </tbody>
-</table>
+| 参数               | 描述                                                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`             | 用于内部追踪当前限流器集合的名称。如果未传递，则默认为 `default`                                                                           |
+| `ttl`              | 每个请求在存储中持续的毫秒数                                                                                                               |
+| `limit`            | 在 TTL 限制内允许的最大请求次数                                                                                                            |
+| `blockDuration`    | 请求被阻止的持续时间（毫秒）                                                                                                               |
+| `ignoreUserAgents` | 一个包含需要忽略限流的 User-Agent（用户代理）正则表达式的数组                                                                              |
+| `skipIf`           | 一个函数，接收 `执行上下文（ExecutionContext）` 并返回 `boolean` ，用于短路限流逻辑。类似于 `@SkipThrottler()`，但可基于请求自定义跳过条件 |
 
 如果你需要设置存储（storage），或者希望以更全局的方式应用上述部分选项（即应用于每个限流器集合），可以通过 `throttlers` 选项键传递上述选项，并参考下表：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`storage`</td>
-      <td>自定义存储服务，用于记录限流信息。[详见此处](#storages)。</td>
-    </tr>
-    <tr>
-      <td>`ignoreUserAgents`</td>
-      <td>一个包含需要忽略限流的 User-Agent 正则表达式的数组</td>
-    </tr>
-    <tr>
-      <td>`skipIf`</td>
-      <td>
-        一个函数，接收 `执行上下文（ExecutionContext）` 并返回 `boolean` ，用于短路限流逻辑。类似于
-        `@SkipThrottler()`，但可基于请求自定义跳过条件
-      </td>
-    </tr>
-    <tr>
-      <td>`throttlers`</td>
-      <td>限流器集合的数组，定义方式见上表</td>
-    </tr>
-    <tr>
-      <td>`errorMessage`</td>
-      <td>
-        一个 `string` 或函数，接收 `执行上下文（ExecutionContext）` 和 `ThrottlerLimitDetail`，返回
-        `string` ，用于自定义限流错误消息，覆盖默认提示
-      </td>
-    </tr>
-    <tr>
-      <td>`getTracker`</td>
-      <td>
-        一个函数，接收 `请求对象（Request）` 并返回 `string`，用于覆盖 `getTracker` 方法的默认逻辑
-      </td>
-    </tr>
-    <tr>
-      <td>`generateKey`</td>
-      <td>
-        一个函数，接收 `执行上下文（ExecutionContext）`、追踪字符串 `string` 以及限流器名称
-        `string`，返回 `string`，用于覆盖 `generateKey` 方法的默认逻辑，决定最终用于存储限流值的键
-      </td>
-    </tr>
-  </tbody>
-</table>
+| 参数               | 描述                                                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `storage`          | 自定义存储服务，用于记录限流信息。[详见此处](#storages)。                                                                                                                      |
+| `ignoreUserAgents` | 一个包含需要忽略限流的 User-Agent 正则表达式的数组                                                                                                                             |
+| `skipIf`           | 一个函数，接收 `执行上下文（ExecutionContext）` 并返回 `boolean` ，用于短路限流逻辑。类似于 `@SkipThrottler()`，但可基于请求自定义跳过条件                                     |
+| `throttlers`       | 限流器集合的数组，定义方式见上表                                                                                                                                               |
+| `errorMessage`     | 一个 `string` 或函数，接收 `执行上下文（ExecutionContext）` 和 `ThrottlerLimitDetail`，返回 `string` ，用于自定义限流错误消息，覆盖默认提示                                    |
+| `getTracker`       | 一个函数，接收 `请求对象（Request）` 并返回 `string`，用于覆盖 `getTracker` 方法的默认逻辑                                                                                     |
+| `generateKey`      | 一个函数，接收 `执行上下文（ExecutionContext）`、追踪字符串 `string` 以及限流器名称 `string`，返回 `string`，用于覆盖 `generateKey` 方法的默认逻辑，决定最终用于存储限流值的键 |
 
 ## 异步配置
 

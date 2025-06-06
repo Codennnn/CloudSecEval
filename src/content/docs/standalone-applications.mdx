@@ -1,6 +1,6 @@
-# 独立应用（Standalone applications）
+# 独立应用
 
-在 Nest 中有多种挂载应用的方式。你可以创建一个 Web 应用、一个微服务，或者仅仅是一个纯粹的 Nest **独立应用（Standalone application）**（即没有任何网络监听器）。Nest 独立应用是对 Nest **IoC 容器（IoC container）** 的封装，该容器持有所有已实例化的类。我们可以通过独立应用对象，直接在任何已导入的模块（Module）中获取任何已存在实例的引用。因此，你可以在任何地方利用 Nest 框架的能力，比如脚本化的 **CRON 任务**，甚至可以基于它构建自己的 **命令行工具（CLI）**。
+在 Nest 中有多种挂载应用的方式。你可以创建一个 Web 应用、一个微服务，或者仅仅是一个纯粹的 Nest **独立应用（Standalone application）**（即没有任何网络监听器）。Nest 独立应用是对 Nest **IoC 容器（IoC container）** 的封装，该容器持有所有已实例化的类。我们可以通过独立应用对象，直接在任何已导入的模块（Module）中获取任何已存在实例的引用。因此，你可以在任何地方利用 Nest 框架的能力，比如脚本化的 **CRON 任务**，甚至可以基于它构建自己的命令行工具（CLI）。
 
 ## 快速开始
 
@@ -31,18 +31,10 @@ const tasksService = app.select(TasksModule).get(TasksService, { strict: true })
 
 下面是独立应用对象可用的实例引用获取方法的简要说明：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`get()`</td>
-      <td>获取应用上下文中可用的控制器或提供者（包括守卫、过滤器等）的实例。</td>
-    </tr>
-    <tr>
-      <td>`select()`</td>
-      <td>在模块图中导航，提取选定模块的特定实例（通常与严格模式一起使用，如上所述）。</td>
-    </tr>
-  </tbody>
-</table>
+| 方法       | 描述                                                                         |
+| ---------- | ---------------------------------------------------------------------------- |
+| `get()`    | 获取应用上下文中可用的控制器或提供者（包括守卫、过滤器等）的实例。           |
+| `select()` | 在模块图中导航，提取选定模块的特定实例（通常与严格模式一起使用，如上所述）。 |
 
 <CalloutInfo>
   在非严格模式下，默认会选择根模块。若需选择其他模块，你需要手动逐步遍历模块图。
@@ -52,7 +44,7 @@ const tasksService = app.select(TasksModule).get(TasksService, { strict: true })
 
 例如，即使你在应用中注册了全局拦截器，然后通过 `app.get()` 方法获取了某个控制器的实例，拦截器也不会被执行。
 
-## 从动态模块（Dynamic Module）获取提供者
+## 从动态模块获取提供者
 
 当你在使用[动态模块](/fundamentals/dynamic-modules)时，应该将代表已注册动态模块的对象传递给 `app.select`。例如：
 

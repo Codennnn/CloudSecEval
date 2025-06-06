@@ -1,8 +1,8 @@
 import pipeImage from '/public/assets/Pipe_1.png'
 
-# 管道（Pipe）
+# 管道
 
-管道是一个带有 `@Injectable()` 装饰器并实现 `PipeTransform` 接口的类。
+管道（Pipe）是一个带有 `@Injectable()` 装饰器并实现 `PipeTransform` 接口的类。
 
 <DocImage src={pipeImage} alt="管道结构图" />
 
@@ -39,7 +39,7 @@ Nest 提供了以下内置管道：
 
 下面以 `ParseIntPipe` 为例，演示转换场景。该管道确保方法参数被转换为 JavaScript 整数（转换失败时会抛出异常）。本章后续还会展示一个简单的自定义 `ParseIntPipe` 实现。下述用法同样适用于其他内置转换管道（如 `ParseBoolPipe`、`ParseFloatPipe`、`ParseEnumPipe`、`ParseArrayPipe`、`ParseDatePipe`、`ParseUUIDPipe`，统称为 `Parse*` 管道）。
 
-## 绑定管道
+## 管道绑定方式
 
 要使用管道，需要将管道类实例绑定到合适的上下文。以 `ParseIntPipe` 为例，我们希望将其应用于某个路由处理器方法，并确保在方法调用前执行。可以通过如下方式在方法参数级别绑定管道：
 
@@ -150,28 +150,11 @@ export interface ArgumentMetadata {
 
 这些属性描述了当前处理的参数。
 
-<table>
-  <tbody>
-    <tr>
-      <td>`type`</td>
-      <td>
-        指示参数类型：请求体 `@Body()`、查询参数 `@Query()`、路由参数 `@Param()`
-        或自定义参数（详见[自定义装饰器](/custom-decorators)）。
-      </td>
-    </tr>
-    <tr>
-      <td>`metatype`</td>
-      <td>
-        参数的元类型，例如 `String`。注意：如果方法参数未声明类型，或使用原生 JavaScript，则该值为
-        `undefined`。
-      </td>
-    </tr>
-    <tr>
-      <td>`data`</td>
-      <td>传递给装饰器的字符串，例如 `@Body('string')`。如果装饰器括号为空，则为 `undefined`。</td>
-    </tr>
-  </tbody>
-</table>
+| 属性       | 描述                                                                                                                              |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `type`     | 指示参数类型：请求体 `@Body()`、查询参数 `@Query()`、路由参数 `@Param()` 或自定义参数（详见[自定义装饰器](/custom-decorators)）。 |
+| `metatype` | 参数的元类型，例如 `String`。注意：如果方法参数未声明类型，或使用原生 JavaScript，则该值为 `undefined`。                          |
+| `data`     | 传递给装饰器的字符串，例如 `@Body('string')`。如果装饰器括号为空，则为 `undefined`。                                              |
 
 <CalloutInfo type="warning">
   TypeScript 接口在转译后会被移除。因此，如果方法参数类型声明为接口而非类，`metatype` 的值会是
@@ -209,7 +192,7 @@ export class CreateCatDto {
 
 ## 基于对象模式的校验
 
-实现对象校验有多种优雅方式，其中常见做法是**基于模式（schema-based）**的校验。这里以 [Zod](https://zod.dev/) 库为例，构建一个基于 Zod 的校验管道。
+实现对象校验有多种优雅方式，其中常见做法是基于模式（schema-based）的校验。这里以 [Zod](https://zod.dev/) 库为例，构建一个基于 Zod 的校验管道。
 
 首先安装依赖：
 
@@ -241,7 +224,7 @@ export class ZodValidationPipe implements PipeTransform {
 }
 ```
 
-## 绑定校验管道
+## 校验管道绑定
 
 前文介绍了转换管道（如 `ParseIntPipe`）的绑定方式。
 
@@ -285,7 +268,7 @@ async create(@Body() createCatDto: CreateCatDto) {
   使用 `zod` 库时，需在 `tsconfig.json` 文件中启用 `strictNullChecks` 选项。
 </CalloutInfo>
 
-## 类装饰器校验器（Class validator）
+## 类装饰器校验器
 
 <CalloutInfo type="warning">
   本节内容仅适用于 TypeScript，若你的项目为原生 JavaScript，则无法使用。
@@ -382,7 +365,7 @@ async create(
 
 参数级管道适用于只需校验某个特定参数的场景。
 
-## 全局作用域管道（Global scoped pipes）
+## 全局管道
 
 由于 `ValidationPipe` 是通用管道，我们可以将其设置为全局管道，使其作用于整个应用的所有路由处理器。
 
@@ -430,7 +413,7 @@ export class AppModule {}
 
 需要再次强调，你无需自行实现通用的验证管道（ValidationPipe），因为 Nest 已经内置提供了 `ValidationPipe`。内置的 `ValidationPipe` 提供了比本章示例更多的选项，本章的实现仅用于演示自定义管道的基本机制。完整用法和丰富示例请参见[这里](/techniques/validation)。
 
-## 转换（Transformation）用例
+## 转换用例
 
 自定义管道不仅可用于校验，还可以转换输入数据为期望的格式。这是因为 `transform` 方法的返回值会完全覆盖参数的原始值。
 
@@ -473,7 +456,7 @@ findOne(@Param('id', UserByIdPipe) userEntity: UserEntity) {
 
 该管道的具体实现可作为练习。需要注意，和其他转换管道一样，它接收一个输入值（如 id），返回一个输出值（如 UserEntity 对象）。这样可以将样板代码从处理器中抽离到通用管道中，使代码更加声明式，并遵循 [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) 原则。
 
-## 提供默认值
+## 设置默认值
 
 `Parse*` 管道要求参数值必须已定义。如果收到 `null` 或 `undefined`，会抛出异常。为了让接口能够处理缺失的查询参数值，我们需要在 `Parse*` 管道处理前注入一个默认值。`DefaultValuePipe` 就是为此设计的。只需在 `@Query()` 装饰器中，将 `DefaultValuePipe` 实例放在对应的 `Parse*` 管道之前即可：
 

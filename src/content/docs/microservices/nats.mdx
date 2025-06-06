@@ -27,28 +27,13 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 ## 选项
 
-`options` 对象是针对所选传输层特定的配置。**NATS** 传输层支持[此处](https://github.com/nats-io/node-nats#connection-options) 描述的属性，以及下列额外属性：
+`options` 对象是针对所选传输层特定的配置。NATS 传输层支持[此处](https://github.com/nats-io/node-nats#connection-options) 描述的属性，以及下列额外属性：
 
-<table>
-  <tr>
-    <td>`queue`</td>
-    <td>
-      服务器应订阅的队列（如设置为 `undefined` 则忽略此配置）。关于 NATS 队列组（queue
-      groups），可阅读[下文](/microservices/nats#queue-groups)。
-    </td>
-  </tr>
-  <tr>
-    <td>`gracefulShutdown`</td>
-    <td>
-      是否启用优雅关闭（graceful
-      shutdown）。启用后，服务器会在关闭连接前先取消所有频道的订阅。默认值为 `false`。
-    </td>
-  </tr>
-  <tr>
-    <td>`gracePeriod`</td>
-    <td>在取消所有频道订阅后，服务器等待的时间（毫秒）。默认值为 `10000` 毫秒。</td>
-  </tr>
-</table>
+| 选项               | 说明                                                                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `queue`            | 服务器应订阅的队列（如设置为 `undefined` 则忽略此配置）。关于 NATS 队列组（queue groups），可阅读[下文](/microservices/nats#queue-groups)。 |
+| `gracefulShutdown` | 是否启用优雅关闭（graceful shutdown）。启用后，服务器会在关闭连接前先取消所有频道的订阅。默认值为 `false`。                                 |
+| `gracePeriod`      | 在取消所有频道订阅后，服务器等待的时间（毫秒）。默认值为 `10000` 毫秒。                                                                     |
 
 ## 客户端
 

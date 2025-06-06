@@ -192,60 +192,16 @@ export interface PluginOptions {
 }
 ```
 
-<table>
-  <tbody>
-    <tr>
-      <th>选项</th>
-      <th>默认值</th>
-      <th>说明</th>
-    </tr>
-    <tr>
-      <td>`dtoFileNameSuffix`</td>
-      <td>`['.dto.ts', '.entity.ts']`</td>
-      <td>数据传输对象（Data Transfer Object，DTO）文件后缀</td>
-    </tr>
-    <tr>
-      <td>`controllerFileNameSuffix`</td>
-      <td>`.controller.ts`</td>
-      <td>控制器文件后缀</td>
-    </tr>
-    <tr>
-      <td>`classValidatorShim`</td>
-      <td>`true`</td>
-      <td>
-        如果设置为 true，模块会复用 `class-validator` 的验证装饰器（例如 `@Max(10)` 会在 schema
-        定义中添加 `max: 10`）
-      </td>
-    </tr>
-    <tr>
-      <td>`dtoKeyOfComment`</td>
-      <td>`'description'`</td>
-      <td>设置 `ApiProperty` 上注释文本的属性键。</td>
-    </tr>
-    <tr>
-      <td>`controllerKeyOfComment`</td>
-      <td>`'summary'`</td>
-      <td>设置 `ApiOperation` 上注释文本的属性键。</td>
-    </tr>
-    <tr>
-      <td>`introspectComments`</td>
-      <td>`false`</td>
-      <td>如果设置为 true，插件会根据注释自动生成属性的描述和示例值</td>
-    </tr>
-    <tr>
-      <td>`skipAutoHttpCode`</td>
-      <td>`false`</td>
-      <td>禁用在控制器中自动添加 `@HttpCode()`</td>
-    </tr>
-    <tr>
-      <td>`esmCompatible`</td>
-      <td>`false`</td>
-      <td>
-        如果设置为 true，可解决使用 ESM（`{ "type": "module" }`）时遇到的语法错误。
-      </td>
-    </tr>
-  </tbody>
-</table>
+| 选项                       | 默认值                      | 说明                                                                                                           |
+| -------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `dtoFileNameSuffix`        | `['.dto.ts', '.entity.ts']` | 数据传输对象（Data Transfer Object，DTO）文件后缀                                                              |
+| `controllerFileNameSuffix` | `.controller.ts`            | 控制器文件后缀                                                                                                 |
+| `classValidatorShim`       | `true`                      | 如果设置为 true，模块会复用 `class-validator` 的验证装饰器（例如 `@Max(10)` 会在 schema 定义中添加 `max: 10`） |
+| `dtoKeyOfComment`          | `'description'`             | 设置 `ApiProperty` 上注释文本的属性键。                                                                        |
+| `controllerKeyOfComment`   | `'summary'`                 | 设置 `ApiOperation` 上注释文本的属性键。                                                                       |
+| `introspectComments`       | `false`                     | 如果设置为 true，插件会根据注释自动生成属性的描述和示例值                                                      |
+| `skipAutoHttpCode`         | `false`                     | 禁用在控制器中自动添加 `@HttpCode()`                                                                           |
+| `esmCompatible`            | `false`                     | 如果设置为 true，可解决使用 ESM（`{ "type": "module" }`）时遇到的语法错误。                                    |
 
 每当你更新插件选项时，请务必删除 `/dist` 文件夹并重新构建你的应用。
 如果你没有使用命令行工具，而是采用自定义的 `webpack` 配置，也可以将该插件与 `ts-loader` 结合使用：

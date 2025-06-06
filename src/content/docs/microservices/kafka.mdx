@@ -35,49 +35,18 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 ## 配置项
 
-`options` 属性是针对所选传输层特有的配置项。**Kafka** 传输层支持以下配置属性：
+`options` 属性是针对所选传输层特有的配置项。Kafka 传输层支持以下配置属性：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`client`</td>
-      <td>客户端配置选项（详细说明请参见[这里](https://kafka.js.org/docs/configuration)）</td>
-    </tr>
-    <tr>
-      <td>`consumer`</td>
-      <td>
-        消费者配置选项（详细说明请参见[这里](https://kafka.js.org/docs/consuming#a-name-options-a-options)
-        ）
-      </td>
-    </tr>
-    <tr>
-      <td>`run`</td>
-      <td>运行配置选项（详细说明请参见[这里](https://kafka.js.org/docs/consuming)）</td>
-    </tr>
-    <tr>
-      <td>`subscribe`</td>
-      <td>
-        订阅配置选项（详细说明请参见[这里](https://kafka.js.org/docs/consuming#frombeginning)）
-      </td>
-    </tr>
-    <tr>
-      <td>`producer`</td>
-      <td>生产者配置选项（详细说明请参见[这里](https://kafka.js.org/docs/producing#options)）</td>
-    </tr>
-    <tr>
-      <td>`send`</td>
-      <td>发送配置选项（详细说明请参见[这里](https://kafka.js.org/docs/producing#options)）</td>
-    </tr>
-    <tr>
-      <td>`producerOnlyMode`</td>
-      <td>跳过消费者组注册，仅作为生产者（producer）运行的功能开关（`boolean` 类型）</td>
-    </tr>
-    <tr>
-      <td>`postfixId`</td>
-      <td>修改 clientId 值的后缀（`string` 类型）</td>
-    </tr>
-  </tbody>
-</table>
+| 属性               | 描述                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| `client`           | 客户端配置选项（详细说明请参见[这里](https://kafka.js.org/docs/configuration)）                      |
+| `consumer`         | 消费者配置选项（详细说明请参见[这里](https://kafka.js.org/docs/consuming#a-name-options-a-options)） |
+| `run`              | 运行配置选项（详细说明请参见[这里](https://kafka.js.org/docs/consuming)）                            |
+| `subscribe`        | 订阅配置选项（详细说明请参见[这里](https://kafka.js.org/docs/consuming#frombeginning)）              |
+| `producer`         | 生产者配置选项（详细说明请参见[这里](https://kafka.js.org/docs/producing#options)）                  |
+| `send`             | 发送配置选项（详细说明请参见[这里](https://kafka.js.org/docs/producing#options)）                    |
+| `producerOnlyMode` | 跳过消费者组注册，仅作为生产者（producer）运行的功能开关（`boolean` 类型）                           |
+| `postfixId`        | 修改 clientId 值的后缀（`string` 类型）                                                              |
 
 ## 客户端
 

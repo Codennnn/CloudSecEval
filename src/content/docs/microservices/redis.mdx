@@ -34,30 +34,13 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 `options` 属性是针对所选传输层（transporter）特有的配置项。**Redis** 传输层支持以下属性：
 
-<table>
-  <tr>
-    <td>`host`</td>
-    <td>连接地址</td>
-  </tr>
-  <tr>
-    <td>`port`</td>
-    <td>连接端口</td>
-  </tr>
-  <tr>
-    <td>`retryAttempts`</td>
-    <td>消息重试的次数（默认值：`0`）</td>
-  </tr>
-  <tr>
-    <td>`retryDelay`</td>
-    <td>每次消息重试之间的延迟（毫秒）（默认值：`0`）</td>
-  </tr>
-  <tr>
-    <td>`wildcards`</td>
-    <td>
-      启用 Redis 通配符订阅，指示传输层在底层使用 `psubscribe` / `pmessage`。（默认值：`false`）
-    </td>
-  </tr>
-</table>
+| 选项            | 说明                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| `host`          | 连接地址                                                                                   |
+| `port`          | 连接端口                                                                                   |
+| `retryAttempts` | 消息重试的次数（默认值：`0`）                                                              |
+| `retryDelay`    | 每次消息重试之间的延迟（毫秒）（默认值：`0`）                                              |
+| `wildcards`     | 启用 Redis 通配符订阅，指示传输层在底层使用 `psubscribe` / `pmessage`。（默认值：`false`） |
 
 此外，该传输层还支持官方 [ioredis](https://redis.github.io/ioredis/index.html#RedisOptions) 客户端支持的所有属性。
 

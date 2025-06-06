@@ -4,54 +4,22 @@ Nest 的核心基于一种被称为 **装饰器** 的语言特性。装饰器在
 
 > ES2016 装饰器是一种返回函数的表达式，可接收目标对象、名称和属性描述符作为参数。你可以通过在需要装饰的内容前加上 `@` 符号来应用装饰器。装饰器既可用于类，也可用于方法或属性。
 
-## 参数装饰器（Param decorators）
+## 参数装饰器
 
 Nest 提供了一组非常实用的参数装饰器，可与 HTTP 路由处理器配合使用。下表列出了内置装饰器及其对应的原生 Express 或 Fastify 对象：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`@Request()`，`@Req()`</td>
-      <td>`req`</td>
-    </tr>
-    <tr>
-      <td>`@Response()`，`@Res()`</td>
-      <td>`res`</td>
-    </tr>
-    <tr>
-      <td>`@Next()`</td>
-      <td>`next`</td>
-    </tr>
-    <tr>
-      <td>`@Session()`</td>
-      <td>`req.session`</td>
-    </tr>
-    <tr>
-      <td>`@Param(param?: string)`</td>
-      <td>`req.params` / `req.params[param]`</td>
-    </tr>
-    <tr>
-      <td>`@Body(param?: string)`</td>
-      <td>`req.body` / `req.body[param]`</td>
-    </tr>
-    <tr>
-      <td>`@Query(param?: string)`</td>
-      <td>`req.query` / `req.query[param]`</td>
-    </tr>
-    <tr>
-      <td>`@Headers(param?: string)`</td>
-      <td>`req.headers` / `req.headers[param]`</td>
-    </tr>
-    <tr>
-      <td>`@Ip()`</td>
-      <td>`req.ip`</td>
-    </tr>
-    <tr>
-      <td>`@HostParam()`</td>
-      <td>`req.hosts`</td>
-    </tr>
-  </tbody>
-</table>
+| 装饰器                     | 对应对象                             |
+| :------------------------- | :----------------------------------- |
+| `@Request()`，`@Req()`     | `req`                                |
+| `@Response()`，`@Res()`    | `res`                                |
+| `@Next()`                  | `next`                               |
+| `@Session()`               | `req.session`                        |
+| `@Param(param?: string)`   | `req.params` / `req.params[param]`   |
+| `@Body(param?: string)`    | `req.body` / `req.body[param]`       |
+| `@Query(param?: string)`   | `req.query` / `req.query[param]`     |
+| `@Headers(param?: string)` | `req.headers` / `req.headers[param]` |
+| `@Ip()`                    | `req.ip`                             |
+| `@HostParam()`             | `req.hosts`                          |
 
 此外，你还可以创建自己的 **自定义装饰器**。这有什么用？
 
@@ -81,7 +49,7 @@ async findOne(@User() user: UserEntity) {
 }
 ```
 
-## 传递数据
+## 向装饰器传递参数
 
 当装饰器的行为依赖于特定条件时，可以通过 `data` 参数向装饰器工厂函数传递数据。常见场景之一是自定义装饰器根据 key 从请求对象中提取属性。例如，假设我们的[认证层](/techniques/authentication#implementing-passport-strategies)会验证请求并将用户实体（user entity）附加到请求对象。一个已认证请求的用户实体示例如下：
 
@@ -142,7 +110,7 @@ async findOne(
   默认不会校验自定义装饰器标注的参数。
 </CalloutInfo>
 
-## 组合与复用
+## 装饰器的组合与复用
 
 Nest 提供了辅助方法，可用于组合多个装饰器。例如，若希望将所有与认证相关的装饰器合并为一个装饰器，可以这样实现：
 

@@ -1,8 +1,8 @@
 import gatewaysImage from '/public/assets/Gateways_1.png'
 
-# 网关（Gateway）
+# 网关
 
-本指南其他部分讨论的大多数概念，例如依赖注入、装饰器（Decorator）、异常过滤器（Exception Filter）、管道（Pipe）、守卫（Guard）和拦截器（Interceptor），同样适用于网关。Nest 尽可能地对实现细节进行了抽象，使得相同的组件能够在基于 HTTP 的平台、WebSocket 通信和微服务之间通用。本节将介绍 Nest 针对 WebSocket 通信的专有内容。
+本指南其他部分讨论的大多数概念，例如依赖注入、装饰器、异常过滤器、管道、守卫和拦截器，同样适用于网关（Gateway）。Nest 尽可能地对实现细节进行了抽象，使得相同的组件能够在基于 HTTP 的平台、WebSocket 通信和微服务之间通用。本节将介绍 Nest 针对 WebSocket 通信的专有内容。
 
 在 Nest 中，网关其实就是一个使用 `@WebSocketGateway()` 装饰器标记的类。从技术角度来看，网关是平台无关的，这意味着只要实现了适配器（Adapter），它就可以兼容任何 WebSocket 库。目前，Nest 原生支持两种 WebSocket 平台：[socket.io](https://github.com/socketio/socket.io) 和 [ws](https://github.com/websockets/ws)。你可以根据实际需求选择最适合的方案。当然，你也可以按照[本指南](/websockets/adapter)自定义实现自己的适配器。
 
@@ -167,25 +167,11 @@ onEvent(@MessageBody() data: unknown): Observable<WsResponse<number>> {
 
 NestJS 提供了 3 个非常实用的生命周期钩子。他们都有对应的接口，具体说明如下表：
 
-<table>
-  <tbody>
-    <tr>
-      <td>`OnGatewayInit`</td>
-      <td>
-        要求实现 `afterInit()`
-        方法。该方法会接收特定库的服务器实例作为参数（如有需要，也可接收其他参数）。
-      </td>
-    </tr>
-    <tr>
-      <td>`OnGatewayConnection`</td>
-      <td>要求实现 `handleConnection()` 方法。该方法会接收特定库的客户端 socket 实例作为参数。</td>
-    </tr>
-    <tr>
-      <td>`OnGatewayDisconnect`</td>
-      <td>要求实现 `handleDisconnect()` 方法。该方法会接收特定库的客户端 socket 实例作为参数。</td>
-    </tr>
-  </tbody>
-</table>
+| 接口                  | 说明                                                                                                |
+| --------------------- | --------------------------------------------------------------------------------------------------- |
+| `OnGatewayInit`       | 要求实现 `afterInit()` 方法。该方法会接收特定库的服务器实例作为参数（如有需要，也可接收其他参数）。 |
+| `OnGatewayConnection` | 要求实现 `handleConnection()` 方法。该方法会接收特定库的客户端 socket 实例作为参数。                |
+| `OnGatewayDisconnect` | 要求实现 `handleDisconnect()` 方法。该方法会接收特定库的客户端 socket 实例作为参数。                |
 
 <CalloutInfo>
 

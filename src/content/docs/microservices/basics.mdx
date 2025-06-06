@@ -45,57 +45,23 @@ bootstrap()
 
 `createMicroservice()` 方法的第二个参数是一个 `options` 对象。该对象可以包含两个成员：
 
-<table>
-  <tr>
-    <td>`transport`</td>
-    <td>指定传输器（如 `Transport.NATS`）</td>
-  </tr>
-  <tr>
-    <td>`options`</td>
-    <td>特定于传输器的选项对象，用于决定传输器行为</td>
-  </tr>
-</table>
+| 属性        | 描述                                       |
+| ----------- | ------------------------------------------ |
+| `transport` | 指定传输器（如 `Transport.NATS`）          |
+| `options`   | 特定于传输器的选项对象，用于决定传输器行为 |
 
 `options` 对象是针对所选传输器定制的。**TCP** 传输器提供了如下属性。对于其他传输器（如 Redis、MQTT 等），请参阅相关章节以获取可用选项的说明。
 
-<table>
-  <tr>
-    <td>`host`</td>
-    <td>连接主机名</td>
-  </tr>
-  <tr>
-    <td>`port`</td>
-    <td>连接端口</td>
-  </tr>
-  <tr>
-    <td>`retryAttempts`</td>
-    <td>消息重试次数（默认值：`0`）</td>
-  </tr>
-  <tr>
-    <td>`retryDelay`</td>
-    <td>消息重试间隔（毫秒），默认值：`0`</td>
-  </tr>
-  <tr>
-    <td>`serializer`</td>
-    <td>
-      用于出站消息的自定义[序列化器（serializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/serializer.interface.ts)
-    </td>
-  </tr>
-  <tr>
-    <td>`deserializer`</td>
-    <td>
-      用于入站消息的自定义[反序列化器（deserializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/deserializer.interface.ts)
-    </td>
-  </tr>
-  <tr>
-    <td>`socketClass`</td>
-    <td>继承自 `TcpSocket` 的自定义 Socket（默认值：`JsonSocket`）</td>
-  </tr>
-  <tr>
-    <td>`tlsOptions`</td>
-    <td>用于配置 TLS 协议的选项</td>
-  </tr>
-</table>
+| 属性            | 描述                                                                                                                                                     |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `host`          | 连接主机名                                                                                                                                               |
+| `port`          | 连接端口                                                                                                                                                 |
+| `retryAttempts` | 消息重试次数（默认值：`0`）                                                                                                                              |
+| `retryDelay`    | 消息重试间隔（毫秒），默认值：`0`                                                                                                                        |
+| `serializer`    | 用于出站消息的自定义[序列化器（serializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/serializer.interface.ts)       |
+| `deserializer`  | 用于入站消息的自定义[反序列化器（deserializer）](https://github.com/nestjs/nest/blob/master/packages/microservices/interfaces/deserializer.interface.ts) |
+| `socketClass`   | 继承自 `TcpSocket` 的自定义 Socket（默认值：`JsonSocket`）                                                                                               |
+| `tlsOptions`    | 用于配置 TLS 协议的选项                                                                                                                                  |
 
 <CalloutInfo>
 
@@ -105,11 +71,11 @@ bootstrap()
 
 ## 消息与事件模式
 
-微服务通过**模式（Pattern）**来识别消息和事件。模式是一个普通的值，例如字面量对象或字符串。模式会被自动序列化，并与消息的数据部分一起通过网络发送。通过这种方式，消息发送方和消费者可以协调，确定哪些请求由哪些处理器消费。
+微服务通过模式（Pattern）来识别消息和事件。模式是一个普通的值，例如字面量对象或字符串。模式会被自动序列化，并与消息的数据部分一起通过网络发送。通过这种方式，消息发送方和消费者可以协调，确定哪些请求由哪些处理器消费。
 
 ## 请求-响应
 
-当你需要在多个外部服务之间**交换**消息时，请求-响应消息风格非常有用。这种范式确保服务确实收到了消息（无需你手动实现确认协议）。然而，请求-响应方式并不总是最佳选择。例如，像 [Kafka](https://docs.confluent.io/3.0.0/streams/) 或 [NATS streaming](https://github.com/nats-io/node-nats-streaming) 这样的流式传输器（streaming transporter），他们采用基于日志的持久化机制，更适合应对另一类挑战，这类挑战更贴合事件消息（event messaging）范式（详见[基于事件的消息传递](/microservices/basics#event-based)）。
+当你需要在多个外部服务之间交换消息时，请求-响应消息风格非常有用。这种范式确保服务确实收到了消息（无需你手动实现确认协议）。然而，请求-响应方式并不总是最佳选择。例如，像 [Kafka](https://docs.confluent.io/3.0.0/streams/) 或 [NATS streaming](https://github.com/nats-io/node-nats-streaming) 这样的流式传输器（streaming transporter），他们采用基于日志的持久化机制，更适合应对另一类挑战，这类挑战更贴合事件消息（event messaging）范式（详见[基于事件的消息传递](/microservices/basics#event-based)）。
 
 为了启用请求-响应消息类型，Nest 会创建两个逻辑通道：一个用于传输数据，另一个用于等待响应的到来。对于某些底层传输层（如 [NATS](https://nats.io/)），这种双通道支持是开箱即用的。而对于其他传输层，Nest 则通过手动创建独立通道来实现。虽然这种方式有效，但也会带来一定的开销。因此，如果你不需要请求-响应消息风格，建议考虑使用事件驱动（event-based）方法。
 

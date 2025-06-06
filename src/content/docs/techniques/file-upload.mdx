@@ -95,16 +95,10 @@ uploadFileAndPassValidation(
 
 如你所见，必须指定一个文件验证器（FileValidator）数组，这些验证器会被 `ParseFilePipe` 管道依次执行。我们稍后会介绍验证器的接口，但值得一提的是，这个管道还支持另外两个可选选项：
 
-<table>
-  <tr>
-    <td>`errorHttpStatusCode`</td>
-    <td>当**任意**验证器失败时抛出的 HTTP 状态码。默认值为 `400`（BAD REQUEST，错误请求）。</td>
-  </tr>
-  <tr>
-    <td>`exceptionFactory`</td>
-    <td>一个工厂函数，接收错误信息并返回一个错误对象。</td>
-  </tr>
-</table>
+| 参数                  | 描述                                                                                |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `errorHttpStatusCode` | 当**任意**验证器失败时抛出的 HTTP 状态码。默认值为 `400`（BAD REQUEST，错误请求）。 |
+| `exceptionFactory`    | 一个工厂函数，接收错误信息并返回一个错误对象。                                      |
 
 现在，让我们回到 `FileValidator` 接口。要将验证器集成到该管道中，你可以使用内置实现，也可以自定义 `FileValidator`。请参考以下示例：
 

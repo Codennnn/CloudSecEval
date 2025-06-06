@@ -33,88 +33,25 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 `options` 属性是针对所选传输器特有的配置。**RabbitMQ** 传输器支持以下属性：
 
-<table>
-  <tr>
-    <td>`urls`</td>
-    <td>一个包含多个连接 URL 的数组，按顺序依次尝试连接</td>
-  </tr>
-  <tr>
-    <td>`queue`</td>
-    <td>服务器监听的队列名称</td>
-  </tr>
-  <tr>
-    <td>`prefetchCount`</td>
-    <td>设置通道的预取（prefetch）消息数量</td>
-  </tr>
-  <tr>
-    <td>`isGlobalPrefetchCount`</td>
-    <td>启用每个通道的全局预取设置</td>
-  </tr>
-  <tr>
-    <td>`noAck`</td>
-    <td>如果为 `false`，则启用手动确认（acknowledgment）模式</td>
-  </tr>
-  <tr>
-    <td>`consumerTag`</td>
-    <td>
-      服务器用于区分消费者消息投递的名称；该名称在通道上不能重复。通常建议省略此项，由服务器自动生成随机名称并在响应中返回。消费者标签标识符（Consumer
-      Tag
-      Identifier），[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#channel_consume)
-    </td>
-  </tr>
-  <tr>
-    <td>`queueOptions`</td>
-    <td>
-      队列的其他配置选项，[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue)
-    </td>
-  </tr>
-  <tr>
-    <td>`socketOptions`</td>
-    <td>
-      连接的其他 socket
-      配置选项，[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#connect)
-    </td>
-  </tr>
-  <tr>
-    <td>`headers`</td>
-    <td>每条消息都携带的自定义头部（headers）</td>
-  </tr>
-  <tr>
-    <td>`replyQueue`</td>
-    <td>生产者使用的回复队列，默认为 `amq.rabbitmq.reply-to`</td>
-  </tr>
-  <tr>
-    <td>`persistent`</td>
-    <td>如果为真（truthy），消息将在代理（broker）重启后依然保留，前提是队列本身也支持持久化</td>
-  </tr>
-  <tr>
-    <td>`noAssert`</td>
-    <td>为 false 时，消费前不会断言（assert）队列</td>
-  </tr>
-  <tr>
-    <td>`wildcards`</td>
-    <td>
-      仅当你希望使用主题交换机（Topic Exchange）将消息路由到队列时设置为
-      true。启用后，可以在消息和事件模式中使用通配符（*，#）
-    </td>
-  </tr>
-  <tr>
-    <td>`exchange`</td>
-    <td>交换机（exchange）名称。当 "wildcards" 设置为 true 时，默认为队列名称</td>
-  </tr>
-  <tr>
-    <td>`exchangeType`</td>
-    <td>交换机类型，默认为 `topic`。可选值包括 `direct`、`fanout`、`topic` 和 `headers`</td>
-  </tr>
-  <tr>
-    <td>`routingKey`</td>
-    <td>主题交换机的附加路由键（routing key）</td>
-  </tr>
-  <tr>
-    <td>`maxConnectionAttempts`</td>
-    <td>最大连接尝试次数，仅适用于消费者配置。-1 表示无限重试</td>
-  </tr>
-</table>
+| 选项                    | 说明                                                                                                                                                                                                                                                |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `urls`                  | 一个包含多个连接 URL 的数组，按顺序依次尝试连接                                                                                                                                                                                                     |
+| `queue`                 | 服务器监听的队列名称                                                                                                                                                                                                                                |
+| `prefetchCount`         | 设置通道的预取（prefetch）消息数量                                                                                                                                                                                                                  |
+| `isGlobalPrefetchCount` | 启用每个通道的全局预取设置                                                                                                                                                                                                                          |
+| `noAck`                 | 如果为 `false`，则启用手动确认（acknowledgment）模式                                                                                                                                                                                                |
+| `consumerTag`           | 服务器用于区分消费者消息投递的名称；该名称在通道上不能重复。通常建议省略此项，由服务器自动生成随机名称并在响应中返回。消费者标签标识符（Consumer Tag Identifier），[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#channel_consume) |
+| `queueOptions`          | 队列的其他配置选项，[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#channel_assertQueue)                                                                                                                                            |
+| `socketOptions`         | 连接的其他 socket 配置选项，[详细说明](https://amqp-node.github.io/amqplib/channel_api.html#connect)                                                                                                                                                |
+| `headers`               | 每条消息都携带的自定义头部（headers）                                                                                                                                                                                                               |
+| `replyQueue`            | 生产者使用的回复队列，默认为 `amq.rabbitmq.reply-to`                                                                                                                                                                                                |
+| `persistent`            | 如果为真（truthy），消息将在代理（broker）重启后依然保留，前提是队列本身也支持持久化                                                                                                                                                                |
+| `noAssert`              | 为 false 时，消费前不会断言（assert）队列                                                                                                                                                                                                           |
+| `wildcards`             | 仅当你希望使用主题交换机（Topic Exchange）将消息路由到队列时设置为 true。启用后，可以在消息和事件模式中使用通配符（\*，#）                                                                                                                          |
+| `exchange`              | 交换机（exchange）名称。当 "wildcards" 设置为 true 时，默认为队列名称                                                                                                                                                                               |
+| `exchangeType`          | 交换机类型，默认为 `topic`。可选值包括 `direct`、`fanout`、`topic` 和 `headers`                                                                                                                                                                     |
+| `routingKey`            | 主题交换机的附加路由键（routing key）                                                                                                                                                                                                               |
+| `maxConnectionAttempts` | 最大连接尝试次数，仅适用于消费者配置。-1 表示无限重试                                                                                                                                                                                               |
 
 ## 客户端（Client）
 

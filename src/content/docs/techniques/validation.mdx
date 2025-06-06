@@ -34,100 +34,25 @@ export interface ValidationPipeOptions extends ValidatorOptions {
 
 此外，还可以使用所有 `class-validator` 的选项（继承自 `ValidatorOptions` 接口）：
 
-<table>
-  <tbody>
-    <tr>
-      <th>选项</th>
-      <th>类型</th>
-      <th>说明</th>
-    </tr>
-    <tr>
-      <td>`enableDebugMessages`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，验证器将在出现问题时在控制台输出额外的警告信息。</td>
-    </tr>
-    <tr>
-      <td>`skipUndefinedProperties`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，则验证器会跳过所有在被验证对象中为 undefined 的属性。</td>
-    </tr>
-    <tr>
-      <td>`skipNullProperties`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，则验证器会跳过所有在被验证对象中为 null 的属性。</td>
-    </tr>
-    <tr>
-      <td>`skipMissingProperties`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，则验证器会跳过所有在被验证对象中为 null 或 undefined 的属性。</td>
-    </tr>
-    <tr>
-      <td>`whitelist`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，验证器会移除所有未使用任何验证装饰器的属性。</td>
-    </tr>
-    <tr>
-      <td>`forbidNonWhitelisted`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，验证器不会移除未在白名单中的属性，而是直接抛出异常。</td>
-    </tr>
-    <tr>
-      <td>`forbidUnknownValues`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，尝试验证未知对象时会立即失败。</td>
-    </tr>
-    <tr>
-      <td>`disableErrorMessages`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，验证错误将不会返回给客户端。</td>
-    </tr>
-    <tr>
-      <td>`errorHttpStatusCode`</td>
-      <td>`number`</td>
-      <td>该设置允许你指定在发生错误时使用哪种异常类型。默认情况下会抛 `BadRequestException`。</td>
-    </tr>
-    <tr>
-      <td>`exceptionFactory`</td>
-      <td>`Function`</td>
-      <td>接收一个包含所有验证错误的数组，并返回要抛出的异常对象。</td>
-    </tr>
-    <tr>
-      <td>`groups`</td>
-      <td>`string[]`</td>
-      <td>在验证对象时使用的分组。</td>
-    </tr>
-    <tr>
-      <td>`always`</td>
-      <td>`boolean`</td>
-      <td>设置装饰器 `always` 选项的默认值。该默认值可在装饰器选项中被覆盖。</td>
-    </tr>
-    <tr>
-      <td>`strictGroups`</td>
-      <td>`boolean`</td>
-      <td>如果未提供 `groups` 或其为空，则会忽略所有至少包含一个分组的装饰器。</td>
-    </tr>
-    <tr>
-      <td>`dismissDefaultMessages`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，验证时不会使用默认消息。若未显式设置，错误消息始终为 `undefined`。</td>
-    </tr>
-    <tr>
-      <td>`validationError.target`</td>
-      <td>`boolean`</td>
-      <td>指定是否在 `ValidationError` 中暴露 target。</td>
-    </tr>
-    <tr>
-      <td>`validationError.value`</td>
-      <td>`boolean`</td>
-      <td>指定是否在 `ValidationError` 中暴露被验证的值。</td>
-    </tr>
-    <tr>
-      <td>`stopAtFirstError`</td>
-      <td>`boolean`</td>
-      <td>如果设置为 true，验证某个属性时遇到第一个错误后将停止验证。默认为 false。</td>
-    </tr>
-  </tbody>
-</table>
+| 选项                      | 类型       | 说明                                                                                 |
+| ------------------------- | ---------- | ------------------------------------------------------------------------------------ |
+| `enableDebugMessages`     | `boolean`  | 如果设置为 true，验证器将在出现问题时在控制台输出额外的警告信息。                    |
+| `skipUndefinedProperties` | `boolean`  | 如果设置为 true，则验证器会跳过所有在被验证对象中为 undefined 的属性。               |
+| `skipNullProperties`      | `boolean`  | 如果设置为 true，则验证器会跳过所有在被验证对象中为 null 的属性。                    |
+| `skipMissingProperties`   | `boolean`  | 如果设置为 true，则验证器会跳过所有在被验证对象中为 null 或 undefined 的属性。       |
+| `whitelist`               | `boolean`  | 如果设置为 true，验证器会移除所有未使用任何验证装饰器的属性。                        |
+| `forbidNonWhitelisted`    | `boolean`  | 如果设置为 true，验证器不会移除未在白名单中的属性，而是直接抛出异常。                |
+| `forbidUnknownValues`     | `boolean`  | 如果设置为 true，尝试验证未知对象时会立即失败。                                      |
+| `disableErrorMessages`    | `boolean`  | 如果设置为 true，验证错误将不会返回给客户端。                                        |
+| `errorHttpStatusCode`     | `number`   | 该设置允许你指定在发生错误时使用哪种异常类型。默认情况下会抛 `BadRequestException`。 |
+| `exceptionFactory`        | `Function` | 接收一个包含所有验证错误的数组，并返回要抛出的异常对象。                             |
+| `groups`                  | `string[]` | 在验证对象时使用的分组。                                                             |
+| `always`                  | `boolean`  | 设置装饰器 `always` 选项的默认值。该默认值可在装饰器选项中被覆盖。                   |
+| `strictGroups`            | `boolean`  | 如果未提供 `groups` 或其为空，则会忽略所有至少包含一个分组的装饰器。                 |
+| `dismissDefaultMessages`  | `boolean`  | 如果设置为 true，验证时不会使用默认消息。若未显式设置，错误消息始终为 `undefined`。  |
+| `validationError.target`  | `boolean`  | 指定是否在 `ValidationError` 中暴露 target。                                         |
+| `validationError.value`   | `boolean`  | 指定是否在 `ValidationError` 中暴露被验证的值。                                      |
+| `stopAtFirstError`        | `boolean`  | 如果设置为 true，验证某个属性时遇到第一个错误后将停止验证。默认为 false。            |
 
 <CalloutInfo>
   更多关于 `class-validator` 包的信息，请参阅[这里](https://github.com/typestack/class-validator)。

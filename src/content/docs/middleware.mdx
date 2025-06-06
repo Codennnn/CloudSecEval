@@ -1,8 +1,8 @@
 import middlewareImage from '/public/assets/Middlewares_1.png'
 
-# 中间件（Middleware）
+# 中间件
 
-中间件是一个在路由处理器**之前**执行的函数，它可以访问[请求对象（Request）](https://expressjs.com/en/4x/api.html#req)、[响应对象（Response）](https://expressjs.com/en/4x/api.html#res)，以及应用请求-响应周期中的 `next()` 函数。**下一个**中间件函数通常用变量 `next` 表示。
+中间件（Middleware）是一个在路由处理器**之前**执行的函数，它可以访问[请求对象（Request）](https://expressjs.com/en/4x/api.html#req)、[响应对象（Response）](https://expressjs.com/en/4x/api.html#res)，以及应用请求-响应周期中的 `next()` 函数。**下一个**中间件函数通常用变量 `next` 表示。
 
 <DocImage src={middlewareImage} alt="中间件结构图" />
 
@@ -43,11 +43,11 @@ export class LoggerMiddleware {
 }
 ```
 
-## 依赖注入
+## 中间件的依赖注入
 
 Nest 中间件完全支持依赖注入。与提供者和控制器类似，中间件也可以注入同一模块内可用的依赖。通常通过 `constructor` 实现。
 
-## 应用中间件
+## 中间件配置与应用
 
 中间件**无需**在 `@Module()` 装饰器中声明，而是通过模块类的 `configure()` 方法进行配置。包含中间件的模块需实现 `NestModule` 接口。以下示例展示如何在 `AppModule` 中设置 `LoggerMiddleware`：
 
@@ -123,7 +123,7 @@ export class AppModule {
   创建应用时，将 `bodyParser` 选项设置为 `false`，以禁用全局中间件。
 </CalloutInfo>
 
-## 路由通配符
+## 路由通配符用法
 
 NestJS 支持通过通配符为符合特定路径规则的路由统一应用中间件。例如，命名通配符（`*splat`）可用于匹配路由中的任意字符组合。如下例所示，该中间件会应用于所有以 `abcd/` 开头的路由，无论后续路径为何：
 
@@ -147,7 +147,7 @@ forRoutes({
 })
 ```
 
-## 中间件消费者（MiddlewareConsumer）
+## MiddlewareConsumer 详解
 
 `MiddlewareConsumer` 是一个辅助类，提供多种内置方法用于管理中间件。所有方法均支持**链式调用**（[fluent style](https://en.wikipedia.org/wiki/Fluent_interface)）。`forRoutes()` 方法可接收单个字符串、多个字符串、`RouteInfo` 对象、控制器类，甚至多个控制器类。大多数情况下，你会直接传入一个或多个控制器。以下是仅传递一个控制器的示例：
 
@@ -185,10 +185,10 @@ export class AppModule {
 
 <CalloutInfo>
   `apply()`
-  方法既可以接收单个中间件，也可以用逗号分隔传递多个中间件，详见[多中间件](/middleware#multiple-middleware)。
+  方法既可以接收单个中间件，也可以用逗号分隔传递多个中间件，详见[多中间件组合](/middleware#multiple-middleware)。
 </CalloutInfo>
 
-## 排除路由
+## 路由排除策略
 
 有时我们希望排除某些路由不应用中间件，可以通过 `exclude()` 方法轻松实现。`exclude()` 支持传入单个字符串、多个字符串或 `RouteInfo` 对象来指定要排除的路由。
 
@@ -214,7 +214,7 @@ consumer
 
 这种方式极大提升了中间件的灵活性，可按需应用或排除特定路由。
 
-## 函数式中间件（Functional Middleware）
+## 函数式中间件
 
 前文示例中的 `LoggerMiddleware` 类结构简单，无成员属性、额外方法或依赖。因此，也可以直接使用函数来实现中间件，这类中间件称为 **函数式中间件（Functional Middleware）**。下面演示如何将 logger 中间件由类实现改为函数实现：
 
@@ -239,7 +239,7 @@ consumer.apply(logger).forRoutes(CatsController)
 
 </CalloutInfo>
 
-## 多个中间件
+## 多中间件组合
 
 如需按顺序绑定多个中间件，只需在 `apply()` 方法中以逗号分隔列出：
 

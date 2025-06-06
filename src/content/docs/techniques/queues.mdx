@@ -1,4 +1,4 @@
-# 队列（Queues）
+# 队列
 
 队列（Queues）是一种强大的设计模式，能够帮助你应对常见的应用扩展性和性能挑战。以下是队列可以帮助你解决的一些典型问题：
 
@@ -807,84 +807,20 @@ export class AudioConsumer {
 
 事件处理器会在其对应事件被触发时被调用。处理器的调用签名见下表，能够访问与事件相关的信息。下文将讨论本地事件和全局事件处理器签名的一个关键区别。
 
-<table>
-  <tbody>
-    <tr>
-      <th>本地事件监听器</th>
-      <th>全局事件监听器</th>
-      <th>处理方法签名 / 触发时机</th>
-    </tr>
-    <tr>
-      <td>`@OnQueueError()`</td>
-      <td>`@OnGlobalQueueError()`</td>
-      <td>`handler(error: Error)` - 发生错误时触发。`error` 包含触发的错误信息。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueueWaiting()`</td>
-      <td>`@OnGlobalQueueWaiting()`</td>
-      <td>
-        `handler(jobId: number | string)` - 当有作业（Job）等待被空闲的工作进程处理时触发。 `jobId`
-        为进入此状态的作业 ID。
-      </td>
-    </tr>
-    <tr>
-      <td>`@OnQueueActive()`</td>
-      <td>`@OnGlobalQueueActive()`</td>
-      <td>`handler(job: Job)` - 任务 `job` 已开始处理。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueueStalled()`</td>
-      <td>`@OnGlobalQueueStalled()`</td>
-      <td>
-        `handler(job: Job)` - 任务 `job`
-        被标记为阻塞（stalled）。这对于调试崩溃或事件循环暂停的作业工作进程非常有用。
-      </td>
-    </tr>
-    <tr>
-      <td>`@OnQueueProgress()`</td>
-      <td>`@OnGlobalQueueProgress()`</td>
-      <td>`handler(job: Job, progress: number)` - 任务 `job` 的进度已更新为 `progress`。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueueCompleted()`</td>
-      <td>`@OnGlobalQueueCompleted()`</td>
-      <td>`handler(job: Job, result: any)` 任务 `job` 已成功完成，结果为 `result`。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueueFailed()`</td>
-      <td>`@OnGlobalQueueFailed()`</td>
-      <td>`handler(job: Job, err: Error)` 任务 `job` 失败，原因是 `err`。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueuePaused()`</td>
-      <td>`@OnGlobalQueuePaused()`</td>
-      <td>`handler()` 队列已被暂停。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueueResumed()`</td>
-      <td>`@OnGlobalQueueResumed()`</td>
-      <td>`handler(job: Job)` 队列已恢复。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueueCleaned()`</td>
-      <td>`@OnGlobalQueueCleaned()`</td>
-      <td>
-        `handler(jobs: Job[], type: string)` 旧任务已从队列中清理。`jobs` 是被清理的任务数组，`type`
-        表示被清理的任务类型。
-      </td>
-    </tr>
-    <tr>
-      <td>`@OnQueueDrained()`</td>
-      <td>`@OnGlobalQueueDrained()`</td>
-      <td>`handler()` 当队列已处理完所有等待中的任务时触发（即使仍有一些延迟任务尚未处理）。</td>
-    </tr>
-    <tr>
-      <td>`@OnQueueRemoved()`</td>
-      <td>`@OnGlobalQueueRemoved()`</td>
-      <td>`handler(job: Job)` 任务 `job` 已被成功移除。</td>
-    </tr>
-  </tbody>
-</table>
+| 本地事件监听器        | 全局事件监听器              | 处理方法签名 / 触发时机                                                                                             |
+| --------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `@OnQueueError()`     | `@OnGlobalQueueError()`     | `handler(error: Error)` - 发生错误时触发。`error` 包含触发的错误信息。                                              |
+| `@OnQueueWaiting()`   | `@OnGlobalQueueWaiting()`   | `handler(jobId: number \| string)` - 当有作业（Job）等待被空闲的工作进程处理时触发。`jobId` 为进入此状态的作业 ID。 |
+| `@OnQueueActive()`    | `@OnGlobalQueueActive()`    | `handler(job: Job)` - 任务 `job` 已开始处理。                                                                       |
+| `@OnQueueStalled()`   | `@OnGlobalQueueStalled()`   | `handler(job: Job)` - 任务 `job` 被标记为阻塞（stalled）。这对于调试崩溃或事件循环暂停的作业工作进程非常有用。      |
+| `@OnQueueProgress()`  | `@OnGlobalQueueProgress()`  | `handler(job: Job, progress: number)` - 任务 `job` 的进度已更新为 `progress`。                                      |
+| `@OnQueueCompleted()` | `@OnGlobalQueueCompleted()` | `handler(job: Job, result: any)` 任务 `job` 已成功完成，结果为 `result`。                                           |
+| `@OnQueueFailed()`    | `@OnGlobalQueueFailed()`    | `handler(job: Job, err: Error)` 任务 `job` 失败，原因是 `err`。                                                     |
+| `@OnQueuePaused()`    | `@OnGlobalQueuePaused()`    | `handler()` 队列已被暂停。                                                                                          |
+| `@OnQueueResumed()`   | `@OnGlobalQueueResumed()`   | `handler(job: Job)` 队列已恢复。                                                                                    |
+| `@OnQueueCleaned()`   | `@OnGlobalQueueCleaned()`   | `handler(jobs: Job[], type: string)` 旧任务已从队列中清理。`jobs` 是被清理的任务数组，`type` 表示被清理的任务类型。 |
+| `@OnQueueDrained()`   | `@OnGlobalQueueDrained()`   | `handler()` 当队列已处理完所有等待中的任务时触发（即使仍有一些延迟任务尚未处理）。                                  |
+| `@OnQueueRemoved()`   | `@OnGlobalQueueRemoved()`   | `handler(job: Job)` 任务 `job` 已被成功移除。                                                                       |
 
 当监听全局事件时，方法签名与本地事件监听略有不同。具体来说，任何在本地版本中接收 `job` 对象的方法签名，在全局版本中会接收一个 `jobId`（number 类型）。如果你需要获取实际的 `job` 对象，可以使用 `Queue#getJob` 方法。由于该方法是异步的，因此事件处理函数应声明为 `async`。例如：
 

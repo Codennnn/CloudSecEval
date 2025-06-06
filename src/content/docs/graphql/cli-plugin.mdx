@@ -131,23 +131,10 @@ export interface PluginOptions {
 }
 ```
 
-<table>
-  <tr>
-    <th>选项</th>
-    <th>默认值</th>
-    <th>说明</th>
-  </tr>
-  <tr>
-    <td>`typeFileNameSuffix`</td>
-    <td>`['.input.ts', '.args.ts', '.entity.ts', '.model.ts']`</td>
-    <td>GraphQL 类型文件的后缀名</td>
-  </tr>
-  <tr>
-    <td>`introspectComments`</td>
-    <td>`false`</td>
-    <td>如果设置为 true，插件会根据注释为属性生成描述信息</td>
-  </tr>
-</table>
+| 选项                 | 默认值                                                 | 说明                                              |
+| -------------------- | ------------------------------------------------------ | ------------------------------------------------- |
+| `typeFileNameSuffix` | `['.input.ts', '.args.ts', '.entity.ts', '.model.ts']` | GraphQL 类型文件的后缀名                          |
+| `introspectComments` | `false`                                                | 如果设置为 true，插件会根据注释为属性生成描述信息 |
 
 如果你没有使用命令行工具，而是采用自定义的 `webpack` 配置，也可以将该插件与 `ts-loader` 结合使用：
 

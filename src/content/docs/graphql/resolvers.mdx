@@ -684,26 +684,12 @@ export class CreatePostInput extends Post {
 
 我们可以通过专用装饰器访问标准的 GraphQL 解析器参数。下表对比了 Nest 装饰器与他们所代表的原生 Apollo 参数。
 
-<table>
-  <tbody>
-    <tr>
-      <td>`@Root()` 和 `@Parent()`</td>
-      <td>`root`/`parent`</td>
-    </tr>
-    <tr>
-      <td>`@Context(param?: string)`</td>
-      <td>`context` / `context[param]`</td>
-    </tr>
-    <tr>
-      <td>`@Info(param?: string)`</td>
-      <td>`info` / `info[param]`</td>
-    </tr>
-    <tr>
-      <td>`@Args(param?: string)`</td>
-      <td>`args` / `args[param]`</td>
-    </tr>
-  </tbody>
-</table>
+| Nest 装饰器                | Apollo 参数                  |
+| -------------------------- | ---------------------------- |
+| `@Root()` 和 `@Parent()`   | `root`/`parent`              |
+| `@Context(param?: string)` | `context` / `context[param]` |
+| `@Info(param?: string)`    | `info` / `info[param]`       |
+| `@Args(param?: string)`    | `args` / `args[param]`       |
 
 这些参数的含义如下：
 

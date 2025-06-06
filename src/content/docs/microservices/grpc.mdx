@@ -45,42 +45,16 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 ## 选项
 
-**gRPC** 传输器选项对象包含以下属性。
+gRPC 传输器选项对象包含以下属性。
 
-<table>
-  <tr>
-    <td>`package`</td>
-    <td>Protobuf 包名（需与 `.proto` 文件中的 `package` 设置一致）。**必填**</td>
-  </tr>
-  <tr>
-    <td>`protoPath`</td>
-    <td>`.proto` 文件的绝对路径（或相对于根目录的相对路径）。**必填**</td>
-  </tr>
-  <tr>
-    <td>`url`</td>
-    <td>
-      连接地址。格式为 `ip 地址/dns 名称:端口`（例如 `'0.0.0.0:50051'`，用于 Docker
-      服务器），用于指定传输器建立连接的地址和端口。**可选**，默认值为 `'localhost:5000'`
-    </td>
-  </tr>
-  <tr>
-    <td>`protoLoader`</td>
-    <td>用于加载 `.proto` 文件的 NPM 包名称。**可选**，默认值为 `'@grpc/proto-loader'`</td>
-  </tr>
-  <tr>
-    <td>`loader`</td>
-    <td>
-      `@grpc/proto-loader` 的选项。用于详细控制 `.proto`
-      文件的加载行为。**可选**。详细信息请参见[这里](https://github.com/grpc/grpc-node/blob/master/packages/proto-loader/README.md)
-    </td>
-  </tr>
-  <tr>
-    <td>`credentials`</td>
-    <td>
-      服务器凭证，**可选**。详细说明请见[这里](https://grpc.io/grpc/node/grpc.ServerCredentials.html)
-    </td>
-  </tr>
-</table>
+| 属性          | 描述                                                                                                                                                                         |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package`     | Protobuf 包名（需与 `.proto` 文件中的 `package` 设置一致）。必填                                                                                                             |
+| `protoPath`   | `.proto` 文件的绝对路径（或相对于根目录的相对路径）。必填                                                                                                                    |
+| `url`         | 连接地址。格式为 `ip 地址/dns 名称:端口`（例如 `'0.0.0.0:50051'`，用于 Docker 服务器），用于指定传输器建立连接的地址和端口。可选，默认值为 `'localhost:5000'`                |
+| `protoLoader` | 用于加载 `.proto` 文件的 NPM 包名称。可选，默认值为 `'@grpc/proto-loader'`                                                                                                   |
+| `loader`      | `@grpc/proto-loader` 的选项。用于详细控制 `.proto` 文件的加载行为。可选。详细信息请参见[这里](https://github.com/grpc/grpc-node/blob/master/packages/proto-loader/README.md) |
+| `credentials` | 服务器凭证，可选。详细说明请见[这里](https://grpc.io/grpc/node/grpc.ServerCredentials.html)                                                                                  |
 
 ## gRPC 服务示例
 
