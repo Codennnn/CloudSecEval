@@ -512,7 +512,7 @@ export class AppController {
 }
 ```
 
-在这里，我们再次应用了 `@nestjs/passport` 模块在配置 passport-jwt 模块时自动为我们提供的 `AuthGuard`。该守卫（Guard）通过默认名称 `jwt` 被引用。当我们的 `GET /profile` 路由被访问时，守卫会自动调用我们自定义配置的 passport-jwt 策略，验证 JWT，并将 `user` 属性赋值到 `请求对象` 上。
+在这里，我们再次应用了 `@nestjs/passport` 模块在配置 passport-jwt 模块时自动为我们提供的 `AuthGuard`。该守卫通过默认名称 `jwt` 被引用。当我们的 `GET /profile` 路由被访问时，守卫会自动调用我们自定义配置的 passport-jwt 策略，验证 JWT，并将 `user` 属性赋值到 `请求对象` 上。
 
 请确保应用正在运行，并使用 `cURL` 测试这些路由。
 
