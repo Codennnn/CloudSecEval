@@ -1,19 +1,47 @@
+'use client'
+
+import { useEffect, useMemo } from 'react'
+import { useEvent } from 'react-use-event-hook'
+
 import { CommandIcon, SearchIcon } from 'lucide-react'
 
-import { KeyboardKey } from '../ui/kbd'
+import { KeyboardKey } from '~/components/ui/kbd'
+import { isMacOS } from '~/utils/platform'
 
 interface SearchTriggerProps {
-  onClick: () => void
+  onTriggerOpen?: () => void
 }
 
 export function SearchTrigger(props: SearchTriggerProps) {
-  const { onClick } = props
+  const { onTriggerOpen } = props
+
+  const isMac = useMemo(() => isMacOS(), [])
+
+  const handleTriggerOpen = useEvent(() => {
+    onTriggerOpen?.()
+  })
+
+  useEffect(() => {
+    const handleKeyDown = (ev: KeyboardEvent) => {
+      if ((ev.metaKey || ev.ctrlKey) && ev.key === 'k') {
+        ev.preventDefault()
+
+        handleTriggerOpen()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleTriggerOpen])
 
   return (
     <button
       className="group flex w-full items-center gap-3 rounded-lg border border-input bg-background px-3 py-1 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground"
       onClick={() => {
-        onClick()
+        handleTriggerOpen()
       }}
     >
       <div className="flex items-center shrink-0 justify-center">
@@ -24,7 +52,13 @@ export function SearchTrigger(props: SearchTriggerProps) {
 
       <div className="flex items-center gap-1">
         <KeyboardKey>
-          <CommandIcon className="size-2.5" />
+          {isMac
+            ? (
+                <CommandIcon className="size-2.5" />
+              )
+            : (
+                'Ctrl'
+              )}
         </KeyboardKey>
 
         <KeyboardKey>

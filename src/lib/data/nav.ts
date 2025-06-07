@@ -104,7 +104,7 @@ export const navMainData: NavMenuItem[] = [
     title: 'WebSocket 通信',
     titleEn: 'WebSockets',
     items: [
-      { title: '网关（Gateway）', titleEn: 'Gateways', url: '/websockets/gateways' },
+      { title: '网关', titleEn: 'Gateways', url: '/websockets/gateways' },
       { title: '异常过滤器', titleEn: 'Exception filters', url: '/websockets/exception-filters' },
       { title: '管道', titleEn: 'Pipes', url: '/websockets/pipes' },
       { title: '守卫', titleEn: 'Guards', url: '/websockets/guards' },

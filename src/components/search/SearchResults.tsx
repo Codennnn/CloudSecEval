@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { useSearch } from '@oramacloud/react-client'
 import { FileTextIcon, SearchIcon } from 'lucide-react'
 
+import { Skeleton } from '~/components/ui/skeleton'
+
 import { SearchResultItem } from './SearchResultItem'
 
 export interface SearchResult {
@@ -37,6 +39,7 @@ export function SearchResults(props: SearchResultsProps) {
   useEffect(() => {
     if (searchTerm.trim()) {
       setLoading(true)
+
       const timer = setTimeout(() => {
         setLoading(false)
       }, 300)
@@ -55,26 +58,25 @@ export function SearchResults(props: SearchResultsProps) {
 
   if (!searchTerm.trim()) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <SearchIcon className="mb-4 size-12 text-muted-foreground" />
-        <p className="text-muted-foreground text-lg font-medium">开始搜索 NestJS 文档</p>
-        <p className="text-muted-foreground/60 text-sm mt-1">输入关键词查找相关内容</p>
+      <div className="flex flex-col items-center justify-center h-full p-12 text-center text-muted-foreground">
+        <SearchIcon className="mb-4 size-12" />
+        <p className="text-lg font-medium">开始搜索 NestJS 文档</p>
+        <p className="text-sm mt-1">输入关键词查找相关内容</p>
       </div>
     )
   }
 
   if (loading) {
     return (
-      <div className="space-y-3 p-4">
+      <div className="space-y-6 p-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="flex items-start gap-3">
-              <div className="bg-muted/60 h-4 w-4 rounded mt-1" />
-              <div className="flex-1 space-y-2">
-                <div className="bg-muted/60 h-4 w-3/4 rounded" />
-                <div className="bg-muted/40 h-3 w-full rounded" />
-                <div className="bg-muted/40 h-3 w-2/3 rounded" />
-              </div>
+          <div key={i} className="flex items-start gap-3">
+            <Skeleton className="size-8 shrink-0" />
+
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-5 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-2/3" />
             </div>
           </div>
         ))}
@@ -84,7 +86,7 @@ export function SearchResults(props: SearchResultsProps) {
 
   if (!results?.hits.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+      <div className="flex flex-col items-center justify-center h-full p-12 text-center text-muted-foreground">
         <FileTextIcon className="mb-4 size-12" />
         <p className="text-lg font-medium">未找到相关内容</p>
         <p className="text-sm mt-1">

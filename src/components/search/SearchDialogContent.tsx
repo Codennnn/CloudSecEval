@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 import { useRouter } from 'next/navigation'
 import { ArrowDownIcon, ArrowUpIcon, CornerDownLeftIcon, SearchIcon, XIcon } from 'lucide-react'
@@ -10,9 +11,7 @@ import {
   DialogTitle,
 } from '~/components/ui/dialog'
 import { KeyboardKey } from '~/components/ui/kbd'
-import { useSearchHistory } from '~/hooks/useSearchHistory'
 
-import { SearchHistory } from './SearchHistory'
 import type { SearchResult } from './SearchResults'
 import { SearchResults } from './SearchResults'
 
@@ -26,8 +25,8 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
   const [resultCount, setResultCount] = useState(0)
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [isComposing, setIsComposing] = useState(false)
+
   const inputRef = useRef<HTMLInputElement>(null)
-  const { history, addToHistory, clearHistory } = useSearchHistory()
   const router = useRouter()
 
   useEffect(() => {
@@ -40,44 +39,26 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
     }
   }, [])
 
-  const handleSearch = useCallback((term: string) => {
-    setSearchTerm(term)
-    setSelectedIndex(0)
-
-    if (term.trim()) {
-      addToHistory(term)
-    }
-  }, [addToHistory])
-
-  const handleInputChange = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useEvent((ev: React.ChangeEvent<HTMLInputElement>) => {
     const value = ev.target.value
     setSearchTerm(value)
 
     // 只有在非输入法组合状态下才触发搜索
     if (!isComposing) {
       setSelectedIndex(0)
-
-      if (value.trim()) {
-        addToHistory(value)
-      }
     }
-  }, [isComposing, addToHistory])
+  })
 
-  const handleCompositionStart = useCallback(() => {
+  const handleCompositionStart = useEvent(() => {
     setIsComposing(true)
-  }, [])
+  })
 
-  const handleCompositionEnd = useCallback((ev: React.CompositionEvent<HTMLInputElement>) => {
+  const handleCompositionEnd = useEvent((ev: React.CompositionEvent<HTMLInputElement>) => {
     setIsComposing(false)
-    const value = ev.currentTarget.value
     setSelectedIndex(0)
+  })
 
-    if (value.trim()) {
-      addToHistory(value)
-    }
-  }, [addToHistory])
-
-  const handleSelectResult = useCallback((url: string) => {
+  const handleSelectResult = useEvent((url: string) => {
     // 处理不同类型的 URL
     if (!url) {
       return
@@ -133,9 +114,9 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
         onClose()
       }
     }
-  }, [onClose, router])
+  })
 
-  const handleKeyDown = useCallback((ev: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useEvent((ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key === 'Escape') {
       onClose()
     }
@@ -156,16 +137,16 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
         handleSelectResult(selectedResult.document.path)
       }
     }
-  }, [onClose, resultCount, searchResults, selectedIndex, handleSelectResult])
+  })
 
-  const handleClearSearch = useCallback(() => {
+  const handleClearSearch = useEvent(() => {
     setSearchTerm('')
     setSelectedIndex(0)
     setResultCount(0)
     setSearchResults([])
 
     inputRef.current?.focus()
-  }, [])
+  })
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -214,17 +195,9 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
           onResultsUpdate={setResultCount}
           onSelectResult={handleSelectResult}
         />
-
-        {!searchTerm && (
-          <SearchHistory
-            history={history}
-            onClearHistory={clearHistory}
-            onSelectTerm={handleSearch}
-          />
-        )}
       </div>
 
-      <div className="border-t border-border px-6 py-3">
+      <div className="border-t border-border px-6 py-3 bg-muted/40">
         <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <KeyboardKey>

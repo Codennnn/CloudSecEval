@@ -5,7 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '~/lib/utils'
 
 const keyboardKeyVariants = cva(
-  'pointer-events-none inline-flex select-none items-center gap-1 rounded border bg-muted font-mono font-semibold opacity-100',
+  'pointer-events-none inline-flex select-none items-center gap-1 rounded border bg-muted font-mono font-semibold',
   {
     variants: {
       size: {

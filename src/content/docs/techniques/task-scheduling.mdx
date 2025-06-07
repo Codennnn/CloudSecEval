@@ -288,7 +288,7 @@ getCrons() {
 
 ## 动态定时任务间隔
 
-你可以通过 `SchedulerRegistry#getInterval` 方法获取指定定时任务（interval）的引用。首先，使用标准的构造函数依赖注入（Dependency Injection）方式注入 `SchedulerRegistry`：
+你可以通过 `SchedulerRegistry#getInterval` 方法获取指定定时任务（interval）的引用。首先，使用标准的构造函数依赖注入方式注入 `SchedulerRegistry`：
 
 ```ts
 constructor(private schedulerRegistry: SchedulerRegistry) {}

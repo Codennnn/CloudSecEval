@@ -16,9 +16,12 @@ interface SearchDialogProps {
 
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent
-        className="max-w-3xl h-[clamp(200px,60vh,800px)] p-0 gap-0 overflow-hidden"
+        className="max-w-3xl h-[clamp(200px,50vh,650px)] p-0 gap-0 overflow-hidden"
         showCloseButton={false}
       >
         <OramaCloud

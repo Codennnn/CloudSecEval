@@ -9,7 +9,7 @@ Suites 是一个主张明确且灵活的测试元框架，旨在提升后端系�
 
 ## 简介
 
-控制反转（Inversion of Control，IoC）是 NestJS 框架中的一项基础原则，使其具备模块化和可测试的架构。虽然 NestJS 提供了内置工具用于创建测试模块（Testing Module），但 Suites 提供了一种替代方案，强调对单元或小型单元组的隔离测试。Suites 使用依赖的虚拟容器（virtual container），自动生成模拟对象（Mock），无需在 IoC（或依赖注入，Dependency Injection）容器中手动替换每个提供者。这种方式既可以替代，也可以与 NestJS 的 `Test.createTestingModule` 方法配合使用，根据实际需求为单元测试带来更高的灵活性。
+控制反转（Inversion of Control，IoC）是 NestJS 框架中的一项基础原则，使其具备模块化和可测试的架构。虽然 NestJS 提供了内置工具用于创建测试模块（Testing Module），但 Suites 提供了一种替代方案，强调对单元或小型单元组的隔离测试。Suites 使用依赖的虚拟容器（virtual container），自动生成模拟对象（Mock），无需在 IoC（或依赖注入）容器中手动替换每个提供者。这种方式既可以替代，也可以与 NestJS 的 `Test.createTestingModule` 方法配合使用，根据实际需求为单元测试带来更高的灵活性。
 
 ## 安装
 

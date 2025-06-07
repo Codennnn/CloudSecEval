@@ -1,6 +1,7 @@
 import { ClockIcon, SearchIcon } from 'lucide-react'
 
-import type { SearchHistoryItem } from '../../hooks/useSearchHistory'
+import { Button } from '~/components/ui/button'
+import type { SearchHistoryItem } from '~/hooks/useSearchHistory'
 
 interface SearchHistoryProps {
   history: SearchHistoryItem[]
@@ -24,13 +25,17 @@ export function SearchHistory({
           <ClockIcon className="size-4" />
           最近搜索
         </div>
-        <button
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+
+        <Button
+          className="text-xs"
+          size="sm"
+          variant="ghost"
           onClick={onClearHistory}
         >
           清除
-        </button>
+        </Button>
       </div>
+
       <div className="px-4 pb-2 space-y-1">
         {history.slice(0, 5).map((item, index) => (
           <button

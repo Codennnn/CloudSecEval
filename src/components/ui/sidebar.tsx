@@ -489,13 +489,14 @@ const sidebarMenuButtonVariants = cva(
     'group-has-data-[sidebar=menu-action]/menu-item:pr-8',
 
     // 基础外观样式
-    'rounded-md outline-hidden text-sm text-left',
+    'rounded-[0.5em] text-sm text-left',
     'ring-sidebar-ring focus-visible:ring-2',
 
     // 菜单激活状态样式
     'data-[active=true]:bg-sidebar-accent',
     'data-[active=true]:text-sidebar-accent-foreground',
-    'data-[active=true]:shadow',
+    'data-[active=true]:outline',
+    'data-[active=true]:outline-border',
 
     // hover 悬停状态样式
     'hover:bg-sidebar-accent',
@@ -732,14 +733,15 @@ function SidebarMenuSubButton({
         'px-2',
 
         // 基础外观样式
-        'rounded-md outline-hidden',
+        'rounded-[0.4em]',
         'ring-sidebar-ring focus-visible:ring-2',
         'text-sidebar-foreground',
 
         // 菜单激活状态样式
         'data-[active=true]:bg-sidebar-accent',
         'data-[active=true]:text-sidebar-accent-foreground',
-        'data-[active=true]:shadow',
+        'data-[active=true]:outline',
+        'data-[active=true]:outline-border',
 
         // hover 悬停状态样式
         'hover:bg-sidebar-accent',
