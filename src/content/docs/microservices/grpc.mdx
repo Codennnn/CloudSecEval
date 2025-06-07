@@ -220,7 +220,7 @@ export class AppService implements OnModuleInit {
 }
 ```
 
-最后，对于更复杂的场景，我们可以使用 `ClientProxyFactory` 类注入动态配置的客户端，具体用法见[这里](/microservices/basics#client)。
+最后，对于更复杂的场景，我们可以使用 `ClientProxyFactory` 类注入动态配置的客户端，具体用法见[这里](/microservices/basics)。
 
 无论采用哪种方式，最终我们都能获得 `HeroesService` 代理对象的引用，该对象暴露了 `.proto` 文件中定义的所有方法。现在，当我们访问这个代理对象（即 `heroesService`）时，gRPC 系统会自动序列化请求、转发到远程系统、返回响应并反序列化响应。由于 gRPC 屏蔽了这些网络通信细节，`heroesService` 的使用方式与本地提供者无异。
 

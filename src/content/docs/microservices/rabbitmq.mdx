@@ -55,9 +55,9 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 ## 客户端（Client）
 
-与其他微服务传输器类似，你有[多种方式](/microservices/basics#client)可以创建 RabbitMQ 客户端代理（ClientProxy）实例。
+与其他微服务传输器类似，你有[多种方式](/microservices/basics)可以创建 RabbitMQ 客户端代理（ClientProxy）实例。
 
-其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入一个选项对象。该对象的属性与上文 `createMicroservice()` 方法中展示的属性一致，并且还需要包含一个 `name` 属性作为注入令牌（Injection Token）。你可以在[这里](/microservices/basics#client)查看更多关于 `ClientsModule` 的内容。
+其中一种方式是使用 `ClientsModule`。要通过 `ClientsModule` 创建客户端实例，需要导入该模块，并使用 `register()` 方法传入一个选项对象。该对象的属性与上文 `createMicroservice()` 方法中展示的属性一致，并且还需要包含一个 `name` 属性作为注入令牌（Injection Token）。你可以在[这里](/microservices/basics)查看更多关于 `ClientsModule` 的内容。
 
 ```ts
 @Module({
@@ -80,7 +80,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 })
 ```
 
-除此之外，你还可以选择其他方式来创建客户端，例如 `ClientProxyFactory` 或 `@Client()` 装饰器。相关内容可[在此查阅](/microservices/basics#client)。
+除此之外，你还可以选择其他方式来创建客户端，例如 `ClientProxyFactory` 或 `@Client()` 装饰器。相关内容可[在此查阅](/microservices/basics)。
 
 ## 上下文
 

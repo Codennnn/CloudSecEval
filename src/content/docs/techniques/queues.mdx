@@ -8,7 +8,8 @@
 
 Nest 提供了 `@nestjs/bullmq` 包用于集成 BullMQ，以及 `@nestjs/bull` 包用于集成 Bull。这两个包都是在各自底层库之上开发的抽象/封装，由同一团队维护。Bull 目前处于维护模式，团队主要专注于修复 bug，而 BullMQ 正在积极开发，采用了现代 TypeScript 实现，并具备不同的功能特性。如果 Bull 能满足你的需求，它依然是一个可靠且经过实战考验的选择。Nest 的这两个包让你可以非常方便地将 BullMQ 或 Bull 队列集成到 Nest 应用中。
 
-BullMQ 和 Bull 都使用 [Redis](https://redis.io/) 来持久化作业数据，因此你需要在系统上安装 Redis。由于他们基于 Redis，你的队列架构可以完全分布式且与平台无关。例如，你可以在一个（或多个）节点上运行一些队列[消费者](/techniques/queues#consumers)、[生产者](/techniques/queues#producers)和[监听器](/techniques/queues#event-listeners)，在其他网络节点上的其他 Node.js 平台上运行更多的生产者、消费者和监听器。
+BullMQ 和 Bull 都使用 [Redis](https://redis.io/) 来持久化作业数据，因此你需要在系统上安装 Redis。由于他们基于 Redis，你的队列架构可以完全分布式且与平台无关。例如，你可以在一个（或多个）节点上运行一些队列[消费者（Consumer）](/techniques/queues#消费者)、[生产者（Producers）](/techniques/queues#生产者)和[事件监听器
+](/techniques/queues#事件监听器)，在其他网络节点上的其他 Node.js 平台上运行更多的生产者、消费者和监听器。
 
 本章将介绍 `@nestjs/bullmq` 和 `@nestjs/bull` 这两个包。我们也推荐你阅读 [BullMQ](https://docs.bullmq.io/) 和 [Bull](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md) 的官方文档，以获取更多背景信息和具体实现细节。
 
@@ -45,7 +46,7 @@ export class AppModule {}
 - `prefix: string` - 所有队列键的前缀。可选。
 - `defaultJobOptions: JobOpts` - 控制新作业默认设置的选项。详见 [JobOpts](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd)。可选。
 - `settings: AdvancedSettings` - 队列高级配置选项。通常无需更改。详见 [AdvancedSettings](https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue)。可选。
-- `extraOptions` - 模块初始化的额外选项。详见[手动注册](/techniques/queues#manual-registration)。
+- `extraOptions` - 模块初始化的额外选项。详见[手动注册](/techniques/queues#手动注册)。
 
 所有选项均为可选，提供了对队列行为的详细控制。这些选项会直接传递给 BullMQ 的 `Queue` 构造函数。关于这些选项及更多内容，详见[官方文档](https://api.docs.bullmq.io/interfaces/v4.QueueOptions.html)。
 
@@ -86,7 +87,7 @@ BullModule.registerFlowProducer({
 
 由于作业会持久化在 Redis 中，每当某个特定名称的队列被实例化（例如应用启动或重启时），它会尝试处理之前未完成会话中遗留的旧作业。
 
-每个队列可以有一个或多个生产者、消费者和监听器。消费者会以特定顺序（默认 FIFO，先进先出；也支持 LIFO 或按优先级）从队列中获取作业。如何控制队列处理顺序，请参见[此处](/techniques/queues#consumers)。
+每个队列可以有一个或多个生产者、消费者和监听器。消费者会以特定顺序（默认 FIFO，先进先出；也支持 LIFO 或按优先级）从队列中获取作业。如何控制队列处理顺序，请参见[此处](#消费者)。
 
 ## 命名配置
 
@@ -113,7 +114,7 @@ BullModule.registerQueue({
 })
 ```
 
-## 生产者（Producers）
+## 生产者
 
 作业生产者负责向队列添加作业。生产者通常是应用服务（Nest 提供者）。要向队列添加作业，首先需要像下面这样在服务中注入队列：
 
@@ -133,7 +134,7 @@ export class AudioService {
   `'audio'`）来标识队列。
 </CalloutInfo>
 
-接下来，可以通过调用队列的 `add()` 方法并传入自定义的作业对象来添加作业。作业以可序列化的 JavaScript 对象形式表示（因为他们会被存储在 Redis 数据库中）。你可以根据业务语义自定义作业对象的结构。同时，还需要为作业指定一个名称。这样可以创建专门的[消费者](/techniques/queues#consumers)，仅处理具有特定名称的作业。
+接下来，可以通过调用队列的 `add()` 方法并传入自定义的作业对象来添加作业。作业以可序列化的 JavaScript 对象形式表示（因为他们会被存储在 Redis 数据库中）。你可以根据业务语义自定义作业对象的结构。同时，还需要为作业指定一个名称。这样可以创建专门的[消费者](#消费者)，仅处理具有特定名称的作业。
 
 ```ts
 const job = await this.audioQueue.add('transcode', {
@@ -196,7 +197,7 @@ const job = await this.audioQueue.add(
 
 完整的选项列表请参考 API 文档：[这里](https://api.docs.bullmq.io/types/v4.JobsOptions.html) 和[这里](https://api.docs.bullmq.io/interfaces/v4.BaseJobOptions.html)。
 
-## 消费者（Consumer）
+## 消费者
 
 消费者是一个**类**，用于定义处理添加到队列中的任务（job）的方法，或监听队列上的事件，或两者兼而有之。可以使用 `@Processor()` 装饰器声明一个消费者类，示例如下：
 
@@ -309,7 +310,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 
 当队列或作业状态发生变化时，BullMQ 会生成一系列有用的事件。这些事件可以在 Worker 层通过 `@OnWorkerEvent(event)` 装饰器进行订阅，或在 Queue 层通过专用监听器类和 `@OnQueueEvent(event)` 装饰器进行订阅。
 
-Worker 事件必须在[消费者](/techniques/queues#consumers)类（即带有 `@Processor()` 装饰器的类）中声明。要监听某个事件，可使用 `@OnWorkerEvent(event)` 装饰器并指定需要处理的事件。例如，若要监听 `audio` 队列中作业进入 active 状态时触发的事件，可参考如下写法：
+Worker 事件必须在[消费者](#消费者)类（即带有 `@Processor()` 装饰器的类）中声明。要监听某个事件，可使用 `@OnWorkerEvent(event)` 装饰器并指定需要处理的事件。例如，若要监听 `audio` 队列中作业进入 active 状态时触发的事件，可参考如下写法：
 
 ```ts
 import { Processor, Process, OnWorkerEvent } from '@nestjs/bullmq'
@@ -579,7 +580,7 @@ BullModule.registerQueue({
 
 由于任务会持久化在 Redis 中，每当某个特定名称的队列被实例化（例如应用启动/重启时），它会尝试处理前一次未完成会话中遗留的旧任务。
 
-每个队列可以有一个或多个生产者、消费者和监听器。消费者会以特定顺序（默认 FIFO，也可为 LIFO 或按优先级）从队列中获取任务。如何控制队列处理顺序将在[此处](/techniques/queues#consumers)详细讨论。
+每个队列可以有一个或多个生产者、消费者和监听器。消费者会以特定顺序（默认 FIFO，也可为 LIFO 或按优先级）从队列中获取任务。如何控制队列处理顺序将在[此处](#消费者)详细讨论。
 
 ## 命名配置
 
@@ -636,7 +637,7 @@ const job = await this.audioQueue.add({
 
 ## 命名任务（Named jobs）
 
-任务可以拥有唯一的名称。这允许你创建专门的[消费者](/techniques/queues#consumers)，只处理具有特定名称的任务。
+任务可以拥有唯一的名称。这允许你创建专门的消费者，只处理具有特定名称的任务。
 
 ```ts
 const job = await this.audioQueue.add('transcode', {
@@ -645,7 +646,7 @@ const job = await this.audioQueue.add('transcode', {
 ```
 
 <CalloutInfo type="warning">
-  当你使用命名任务时，必须为队列中添加的每个唯一名称创建对应的处理器，否则队列会提示缺少该任务名称的处理器。更多关于消费命名任务的信息请参见[此处](/techniques/queues#consumers)。
+  当你使用命名任务时，必须为队列中添加的每个唯一名称创建对应的处理器，否则队列会提示缺少该任务名称的处理器。更多关于消费命名任务的信息请参见[此处](#消费者)。
 </CalloutInfo>
 
 ## 任务选项
@@ -783,7 +784,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 
 当队列或任务状态发生变化时，Bull 会生成一系列有用的事件。Nest 提供了一组装饰器，用于订阅这些标准核心事件。这些装饰器由 `@nestjs/bull` 包导出。
 
-事件监听器必须声明在[消费者](/techniques/queues#consumers)类中（即，被 `@Processor()` 装饰器修饰的类）。要监听某个事件，可以使用下表中的装饰器之一，在类中声明对应的事件处理方法。例如，若要监听 `audio` 队列中任务进入 active 状态时触发的事件，可以参考如下写法：
+事件监听器必须声明在消费者类中（即，被 `@Processor()` 装饰器修饰的类）。要监听某个事件，可以使用下表中的装饰器之一，在类中声明对应的事件处理方法。例如，若要监听 `audio` 队列中任务进入 active 状态时触发的事件，可以参考如下写法：
 
 ```ts
 import { Processor, Process, OnQueueActive } from '@nestjs/bull';

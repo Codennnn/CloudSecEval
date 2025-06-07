@@ -6,7 +6,7 @@
 
 </CalloutInfo>
 
-在 HTTP 应用程序（例如 RESTful 接口）中，路由处理器的路径由控制器中 `@Controller` 装饰器声明的（可选）前缀与方法装饰器（如 `@Get('users')`）中指定的路径拼接而成。你可以在[本节](/controllers#routing)了解更多相关内容。此外，你还可以为应用中注册的所有路由定义一个[全局前缀](/faq/global-prefix)，或启用[版本控制](/techniques/versioning)。
+在 HTTP 应用程序（例如 RESTful 接口）中，路由处理器的路径由控制器中 `@Controller` 装饰器声明的（可选）前缀与方法装饰器（如 `@Get('users')`）中指定的路径拼接而成。你可以在[本节](/controllers#路由)了解更多相关内容。此外，你还可以为应用中注册的所有路由定义一个[全局前缀](/faq/global-prefix)，或启用[版本控制](/techniques/versioning)。
 
 有时，在模块级别定义前缀（从而影响该模块内注册的所有控制器）会非常有用。例如，假设你的 REST 应用暴露了多个不同的端点，这些端点被应用中的某个特定部分（如"Dashboard"）使用。在这种情况下，与其在每个控制器中重复 `/dashboard` 前缀，不如使用一个实用的 `RouterModule` 模块，示例如下：
 

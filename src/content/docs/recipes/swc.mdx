@@ -27,7 +27,7 @@ $ nest start -b swc
 ```
 
 <CalloutInfo>
-  如果你的代码仓库是多包仓库结构（Monorepo），请参考[本节](/recipes/swc#monorepo)。
+  如果你的代码仓库是多包仓库结构（Monorepo），请参考[本节](/recipes/swc#多包仓库结构)。
 </CalloutInfo>
 
 除了通过 `-b` 参数指定外，你还可以在 `nest-cli.json` 文件中设置 `compilerOptions.builder` 属性为 "swc"，如下所示：
@@ -105,7 +105,7 @@ SWC 构建器已预先配置，以满足 NestJS 应用的需求。不过，你�
 }
 ```
 
-### 多包仓库结构（Monorepo）
+### 多包仓库结构
 
 如果你的代码仓库是多包仓库结构，那么你需要配置 `webpack` 使用 `swc-loader`，而不是直接使用 `swc` 构建器。
 
