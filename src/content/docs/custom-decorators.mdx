@@ -51,7 +51,7 @@ async findOne(@User() user: UserEntity) {
 
 ## 向装饰器传递参数
 
-当装饰器的行为依赖于特定条件时，可以通过 `data` 参数向装饰器工厂函数传递数据。常见场景之一是自定义装饰器根据 key 从请求对象中提取属性。例如，假设我们的[认证层](/techniques/authentication#implementing-passport-strategies)会验证请求并将用户实体（user entity）附加到请求对象。一个已认证请求的用户实体示例如下：
+当装饰器的行为依赖于特定条件时，可以通过 `data` 参数向装饰器工厂函数传递数据。常见场景之一是自定义装饰器根据 key 从请求对象中提取属性。例如，假设我们的[认证层](/security/authentication)会验证请求并将用户实体（user entity）附加到请求对象。一个已认证请求的用户实体示例如下：
 
 ```json
 {

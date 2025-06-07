@@ -12,7 +12,7 @@ import controllerImage from '/public/assets/Controllers_1.png'
 
 <CalloutInfo>
   如果你想快速创建带有内置[校验（validation）](/techniques/validation) 的 CRUD 控制器，可以使用 CLI
-  的 [CRUD 生成器](/recipes/crud-generator#crud-generator)：`nest g resource [name]`。
+  的 [CRUD 生成器](/recipes/crud-generator)：`nest g resource [name]`。
 </CalloutInfo>
 
 ## 路由
@@ -200,7 +200,7 @@ create() {
 }
 ```
 
-有时，状态码并不是固定的，而是取决于多种因素。这种情况下，可以通过注入库特定的 **响应对象（response object）**（使用 `@Res()`）来设置状态码，或者在出错时抛出异常。
+有时，状态码并不是固定的，而是取决于多种因素。这种情况下，可以通过注入库特定的**响应对象**使用 `@Res()`）来设置状态码，或者在出错时抛出异常。
 
 ## 设置响应头
 
@@ -376,7 +376,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 <CalloutInfo>
   我们的 `ValidationPipe` 可以自动过滤掉不应被方法处理器接收的属性。例如，在 `CreateCatDto`
   示例中，白名单属性为 `name`、`age` 和
-  `breed`，不在白名单内的属性会被自动剔除。详细内容可参考[这里](/techniques/validation#stripping-properties)。
+  `breed`，不在白名单内的属性会被自动剔除。详细内容可参考[这里](/techniques/validation#属性剥离)。
 </CalloutInfo>
 
 ## 查询参数提取

@@ -204,6 +204,8 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
           <div className="flex items-center gap-1">
             <KeyboardKey>
               <ArrowUpIcon className="size-3" />
+            </KeyboardKey>
+            <KeyboardKey>
               <ArrowDownIcon className="size-3" />
             </KeyboardKey>
             <span>导航</span>
