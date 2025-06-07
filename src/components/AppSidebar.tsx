@@ -1,9 +1,8 @@
-'use client'
-
 import Image from 'next/image'
 import Link from 'next/link'
 
 import { CollapsibleNavItem } from '~/components/CollapsibleNavItem'
+import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { SearchForm } from '~/components/SearchForm'
 import { ThemeModeToggle } from '~/components/ThemeModeToggle'
 import {
@@ -48,18 +47,20 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SearchForm />
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu>
-            {navMainData.map((item, idx) => (
-              <CollapsibleNavItem
-                key={`${item.title ?? ''}-${idx}`}
-                item={item}
-              />
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
+      <ScrollGradientContainer gradientFromColor="from-sidebar" gradientHeight="h-12">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarMenu>
+              {navMainData.map((item, idx) => (
+                <CollapsibleNavItem
+                  key={`${item.title ?? ''}-${idx}`}
+                  item={item}
+                />
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </ScrollGradientContainer>
 
       <div className="flex items-center gap-2 p-4 border-t border-border">
         <ThemeModeToggle />

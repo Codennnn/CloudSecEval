@@ -4,6 +4,7 @@ import { useEvent } from 'react-use-event-hook'
 import { useRouter } from 'next/navigation'
 import { ArrowDownIcon, ArrowUpIcon, CornerDownLeftIcon, SearchIcon, XIcon } from 'lucide-react'
 
+import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Button } from '~/components/ui/button'
 import {
   DialogDescription,
@@ -187,7 +188,7 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
         </DialogDescription>
       </DialogHeader>
 
-      <div className="flex-1 overflow-y-auto">
+      <ScrollGradientContainer>
         <SearchResults
           searchTerm={searchTerm}
           selectedIndex={selectedIndex}
@@ -196,9 +197,9 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
           onSelectResult={handleSelectResult}
           onSelectedIndexChange={setSelectedIndex}
         />
-      </div>
+      </ScrollGradientContainer>
 
-      <div className="border-t border-border px-6 py-3 bg-muted/40">
+      <div className="border-t border-border p-3 bg-muted/40">
         <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <KeyboardKey>
