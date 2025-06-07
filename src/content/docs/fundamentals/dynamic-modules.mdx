@@ -69,7 +69,7 @@ export class AuthService {
 
 ## 配置模块示例
 
-本节将使用[配置章节](/techniques/configuration#service)中的基础示例代码。完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)获取。
+本节将使用[配置章节](/techniques/configuration)中的基础示例代码，完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)获取。
 
 我们的需求是让 `ConfigModule` 能接受一个 `options` 对象进行定制。基础示例中 `.env` 文件的位置是写死在项目根目录下。假设我们希望这个位置可配置，比如将所有 `.env` 文件放在项目根目录下的 `config` 文件夹（与 `src` 同级）。这样，在不同项目中使用 `ConfigModule` 时就可以灵活选择不同的文件夹。
 

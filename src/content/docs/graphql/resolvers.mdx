@@ -143,7 +143,7 @@ type Post {
 
 ## 基于代码优先的解析器（Code first resolver）
 
-到目前为止，我们已经定义了数据图中可以存在的对象（类型定义），但客户端还无法与这些对象进行交互。为了解决这个问题，我们需要创建一个解析器类。在代码优先方法中，解析器类既定义了解析器函数（resolver functions），**并且**会生成 **Query 类型**。通过下面的示例，你会更清楚地理解这一点：
+到目前为止，我们已经定义了数据图中可以存在的对象（类型定义），但客户端还无法与这些对象进行交互。为了解决这个问题，我们需要创建一个解析器类。在代码优先方法中，解析器类既定义了解析器函数（resolver functions），并且会生成 **Query 类型**。通过下面的示例，你会更清楚地理解这一点：
 
 ```ts filename='authors/authors.resolver.ts'
 @Resolver(() => Author)
@@ -170,7 +170,7 @@ export class AuthorsResolver {
   所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都由 `@nestjs/graphql` 包导出。
 </CalloutInfo>
 
-你可以定义多个解析器类。Nest 会在运行时将他们合并。关于代码组织的更多内容，请参见下方的[模块](/graphql/resolvers#module)部分。
+你可以定义多个解析器类。Nest 会在运行时将他们合并。关于代码组织的更多内容，请参见下方的[模块](#模块)部分。
 
 <CalloutInfo type="warning">
   `AuthorsService` 和 `PostsService`
@@ -698,7 +698,7 @@ export class CreatePostInput extends Post {
 - `info`：一个对象，包含关于查询执行状态的信息。
 - `args`：一个对象，包含查询字段中传入的参数。
 
-## 模块（Module）
+## 模块
 
 完成上述步骤后，我们就已经声明式地为 `GraphQLModule` 提供了生成解析器映射所需的全部信息。`GraphQLModule` 会利用反射机制（Reflection）检查通过装饰器提供的元数据（Metadata），并自动将类转换为正确的解析器映射。
 

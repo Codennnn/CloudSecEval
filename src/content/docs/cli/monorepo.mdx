@@ -1,4 +1,4 @@
-# 工作空间（Workspaces）
+# 工作空间
 
 Nest 提供了两种代码组织模式：
 
@@ -7,11 +7,11 @@ Nest 提供了两种代码组织模式：
 
 需要注意的是，几乎所有 Nest 的功能都与代码组织模式无关。**唯一**的区别在于项目的组合方式以及构建产物的生成方式。其他所有功能，包括命令行工具（CLI）、核心模块和附加模块，在两种模式下均可正常使用。
 
-此外，你可以随时从 **标准模式** 切换到 **多包仓库结构模式**，因此可以等到明确需要某种模式带来的优势时再做决定。
+此外，你可以随时从**标准模式**切换到**多包仓库结构模式**，因此可以等到明确需要某种模式带来的优势时再做决定。
 
 ## 标准模式（Standard mode）
 
-当你运行 `nest new` 命令时，Nest 命令行工具（Nest CLI）会使用内置原型生成器（schematic）为你创建一个新的 **项目（Project）**。具体操作如下：
+当你运行 `nest new` 命令时，Nest 命令行工具（Nest CLI）会使用内置原型生成器（schematic）为你创建一个新的**项目（Project）**。具体操作如下：
 
 1. 创建一个新文件夹，名称对应你在 `nest new` 命令中提供的 `name` 参数
 2. 在该文件夹中生成一套默认文件，构成最小化的基础 Nest 应用。你可以在 [typescript-starter](https://github.com/nestjs/typescript-starter) 仓库中查看这些文件。
@@ -21,7 +21,7 @@ Nest 提供了两种代码组织模式：
 
 ## Monorepo 模式
 
-要启用 monorepo 模式，首先需要从 _标准模式_ 结构开始，然后添加 **项目（Project）**。一个项目可以是完整的 **应用（Application）**（通过命令 `nest generate app` 添加到工作空间（Workspace）），也可以是 **库（Library）**（通过命令 `nest generate library` 添加到工作空间）。我们将在下文详细介绍这两类项目组件。此处需要注意的关键点是，**向现有标准模式结构中添加项目的行为**，会将其**转换为 monorepo 模式**。下面我们来看一个示例。
+要启用 monorepo 模式，首先需要从 _标准模式_ 结构开始，然后添加**项目（Project）**。一个项目可以是完整的**应用（Application）**（通过命令 `nest generate app` 添加到工作空间（Workspace）），也可以是**库（Library）**（通过命令 `nest generate library` 添加到工作空间）。我们将在下文详细介绍这两类项目组件。此处需要注意的关键点是，**向现有标准模式结构中添加项目的行为**，会将其**转换为 monorepo 模式**。下面我们来看一个示例。
 
 如果我们运行：
 
@@ -210,7 +210,7 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 | `webpackConfigPath` | string        | 指定 webpack 配置文件路径。如果未指定，Nest 会查找 `webpack.config.js` 文件。详情见下文。                                                                                                                                                                         |
 | `deleteOutDir`      | boolean       | 如果为 `true`，每当编译器被调用时，会首先移除编译输出目录（在 `tsconfig.json` 中配置，默认是 `./dist`）。                                                                                                                                                         |
 | `assets`            | array         | 启用后，每当编译步骤开始时会自动分发非 TypeScript 资源（在 `--watch` 增量编译模式下不会分发资源）。详情见下文。                                                                                                                                                   |
-| `watchAssets`       | boolean       | 如果为 `true`，以 watch 模式运行，监视**所有**非 TypeScript 资源。（如需更细粒度的资源监控，请参见下方[资源（Assets）](/cli/monorepo#assets)部分。）                                                                                                              |
+| `watchAssets`       | boolean       | 如果为 `true`，以 watch 模式运行，监视**所有**非 TypeScript 资源。（如需更细粒度的资源监控，请参见下方[资源（Assets）](/cli/monorepo#资源文件)部分。）                                                                                                            |
 | `manualRestart`     | boolean       | 如果为 `true`，启用 `rs` 快捷命令以手动重启服务器。默认值为 `false`。                                                                                                                                                                                             |
 | `builder`           | string/object | 指定 CLI 使用哪种 `builder` 编译项目（`tsc`、`swc` 或 `webpack`）。如需自定义 builder 行为，可传递一个包含 `type`（`tsc`、`swc` 或 `webpack`）和 `options` 两个属性的对象。                                                                                       |
 | `typeCheck`         | boolean       | 如果为 `true`，则为 SWC 驱动的项目启用类型检查（当 `builder` 为 `swc` 时）。默认值为 `false`。                                                                                                                                                                    |
