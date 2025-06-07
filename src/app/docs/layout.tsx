@@ -1,4 +1,5 @@
 import { AppSidebar } from '~/components/AppSidebar'
+import { ScrollToTop } from '~/components/ScrollToTop'
 import { TableOfContents } from '~/components/TableOfContents'
 import {
   SidebarInset,
@@ -12,7 +13,10 @@ export default function DocsLayout(props: React.PropsWithChildren) {
       <AppSidebar />
 
       <SidebarInset>
-        <div className="@container size-full overflow-y-auto">
+        <div
+          className="@container size-full overflow-y-auto"
+          id="docs-scroll-container"
+        >
           <div
             className={
               cn(
@@ -25,8 +29,14 @@ export default function DocsLayout(props: React.PropsWithChildren) {
               {props.children}
             </div>
 
-            <aside className="sticky top-0 w-64 h-screen overflow-y-auto py-[var(--content-padding)] pr-[var(--content-padding)] hidden @4xl:block">
-              <TableOfContents />
+            <aside className="sticky top-0 right-3 w-64 h-screen overflow-y-auto py-[var(--content-padding)] pr-[var(--content-padding)] hidden @4xl:block">
+              <div className="space-y-4">
+                <TableOfContents />
+
+                <hr className="my-4 bg-border/70" />
+
+                <ScrollToTop />
+              </div>
             </aside>
           </div>
         </div>
