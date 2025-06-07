@@ -10,10 +10,11 @@ interface SearchResultItemProps {
   result: SearchResult
   isSelected: boolean
   onClick: () => void
+  onMouseEnter: () => void
 }
 
 export function SearchResultItem(props: SearchResultItemProps) {
-  const { result, isSelected, onClick } = props
+  const { result, isSelected, onClick, onMouseEnter } = props
   const { document } = result
   const ref = useRef<HTMLButtonElement>(null)
 
@@ -31,10 +32,10 @@ export function SearchResultItem(props: SearchResultItemProps) {
       ref={ref}
       className={cn(
         'flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all duration-150',
-        'hover:bg-accent hover:border-accent-foreground/20',
         isSelected && 'bg-accent border-accent-foreground/20 shadow-sm',
       )}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
     >
       <BookOpenIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
 

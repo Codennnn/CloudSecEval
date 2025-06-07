@@ -3,6 +3,8 @@
 import { useTableOfContents } from '~/hooks/useTableOfContents'
 import { cn } from '~/lib/utils'
 
+import { Skeleton } from './ui/skeleton'
+
 interface TableOfContentsProps {
   className?: string
 }
@@ -11,7 +13,17 @@ export function TableOfContents({ className }: TableOfContentsProps) {
   const { tocItems, activeId } = useTableOfContents()
 
   if (tocItems.length === 0) {
-    return null
+    return (
+      <div className="space-y-2">
+        <Skeleton className="h-5 w-1/2" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+      </div>
+    )
   }
 
   return (

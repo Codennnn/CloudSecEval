@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { CommandIcon, SearchIcon } from 'lucide-react'
@@ -15,7 +15,11 @@ interface SearchTriggerProps {
 export function SearchTrigger(props: SearchTriggerProps) {
   const { onTriggerOpen } = props
 
-  const isMac = useMemo(() => isMacOS(), [])
+  const [isMac, setIsMac] = useState(false)
+
+  useEffect(() => {
+    setIsMac(isMacOS())
+  }, [])
 
   const handleTriggerOpen = useEvent(() => {
     onTriggerOpen?.()

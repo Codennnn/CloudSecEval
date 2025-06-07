@@ -24,10 +24,11 @@ interface SearchResultsProps {
   onResultsUpdate: (count: number) => void
   onSelectResult: (url: string) => void
   onResultsChange: (results: SearchResult[]) => void
+  onSelectedIndexChange: (index: number) => void
 }
 
 export function SearchResults(props: SearchResultsProps) {
-  const { searchTerm, selectedIndex, onResultsUpdate, onSelectResult, onResultsChange } = props
+  const { searchTerm, selectedIndex, onResultsUpdate, onSelectResult, onResultsChange, onSelectedIndexChange } = props
 
   const { results } = useSearch({
     term: searchTerm,
@@ -108,6 +109,7 @@ export function SearchResults(props: SearchResultsProps) {
               onSelectResult(hit.document.path)
             }
           }}
+          onMouseEnter={() => { onSelectedIndexChange(index) }}
         />
       ))}
     </div>

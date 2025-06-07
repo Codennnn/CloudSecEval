@@ -11,22 +11,24 @@ export default function DocsLayout(props: React.PropsWithChildren) {
     <SidebarProvider>
       <AppSidebar />
 
-      <SidebarInset className="@container overflow-y-auto">
-        <div
-          className={
-            cn(
-              'flex relative',
-              '@lg:[--content-padding:4rem] @md:[--content-padding:3rem] @sm:[--content-padding:1.5rem]',
-            )
-          }
-        >
-          <div className="flex-1 p-[var(--content-padding)]">
-            {props.children}
-          </div>
+      <SidebarInset>
+        <div className="@container size-full overflow-y-auto">
+          <div
+            className={
+              cn(
+                'flex relative',
+                '@lg:[--content-padding:4rem] @md:[--content-padding:3rem] @sm:[--content-padding:1.5rem]',
+              )
+            }
+          >
+            <div className="flex-1 p-[var(--content-padding)]">
+              {props.children}
+            </div>
 
-          <aside className="sticky top-0 w-64 h-screen overflow-y-auto py-[var(--content-padding)] pr-[var(--content-padding)] hidden @lg:block">
-            <TableOfContents />
-          </aside>
+            <aside className="sticky top-0 w-64 h-screen overflow-y-auto py-[var(--content-padding)] pr-[var(--content-padding)] hidden @4xl:block">
+              <TableOfContents />
+            </aside>
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>

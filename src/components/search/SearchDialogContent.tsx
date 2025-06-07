@@ -53,7 +53,7 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
     setIsComposing(true)
   })
 
-  const handleCompositionEnd = useEvent((ev: React.CompositionEvent<HTMLInputElement>) => {
+  const handleCompositionEnd = useEvent(() => {
     setIsComposing(false)
     setSelectedIndex(0)
   })
@@ -194,6 +194,7 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
           onResultsChange={setSearchResults}
           onResultsUpdate={setResultCount}
           onSelectResult={handleSelectResult}
+          onSelectedIndexChange={setSelectedIndex}
         />
       </div>
 
