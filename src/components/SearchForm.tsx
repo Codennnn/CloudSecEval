@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
-import { SearchDialog, SearchTrigger } from '~/components/search/SearchDialog'
+import { SearchDialog } from '~/components/search/SearchDialog'
+import { SearchTrigger } from '~/components/search/SearchTrigger'
 import {
   SidebarGroup,
   SidebarGroupContent,
