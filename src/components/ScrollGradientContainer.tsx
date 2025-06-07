@@ -31,13 +31,13 @@ export function ScrollGradientContainer(props: ScrollGradientContainerProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!scrollRef.current) { return }
+      if (scrollRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
+        const canScrollUp = scrollTop > 0
+        const canScrollDown = scrollTop < scrollHeight - clientHeight - 1
 
-      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
-      const canScrollUp = scrollTop > 0
-      const canScrollDown = scrollTop < scrollHeight - clientHeight - 1
-
-      setScrollState({ canScrollUp, canScrollDown })
+        setScrollState({ canScrollUp, canScrollDown })
+      }
     }
 
     const scrollElement = scrollRef.current
