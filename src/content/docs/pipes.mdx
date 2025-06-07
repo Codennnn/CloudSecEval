@@ -304,7 +304,7 @@ export class CreateCatDto {
   装饰器的用法请参见[官方文档](https://github.com/typestack/class-validator#usage)。
 </CalloutInfo>
 
-接下来，我们可以实现一个基于这些注解的 `验证管道（ValidationPipe）`：
+接下来，我们可以实现一个基于这些注解的 `ValidationPipe`：
 
 ```ts filename='validation.pipe.ts'
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common'
@@ -411,7 +411,7 @@ export class AppModule {}
 
 ## 内置 ValidationPipe
 
-需要再次强调，你无需自行实现通用的验证管道（ValidationPipe），因为 Nest 已经内置提供了 `ValidationPipe`。内置的 `ValidationPipe` 提供了比本章示例更多的选项，本章的实现仅用于演示自定义管道的基本机制。完整用法和丰富示例请参见[这里](/techniques/validation)。
+需要再次强调，你无需自行实现通用的 `ValidationPipe`，因为 Nest 已经内置提供了 `ValidationPipe`。内置的 `ValidationPipe` 提供了比本章示例更多的选项，本章的实现仅用于演示自定义管道的基本机制。完整用法和丰富示例请参见[这里](/techniques/validation)。
 
 ## 转换用例
 

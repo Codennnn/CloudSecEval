@@ -1,38 +1,38 @@
-# 版本控制（Versioning）
+# 版本控制
 
 <CalloutInfo>
 
-本章仅适用于基于 HTTP 的应用程序。
+本章内容仅适用于基于 HTTP 的应用程序。
 
 </CalloutInfo>
 
-版本控制允许你在同一个应用程序中运行**不同版本**的控制器或单独的路由（Route）。应用程序经常发生变化，出现重大变更（breaking changes）时，你可能需要在支持旧版本的同时引入新版本。
+版本控制（Versioning）让你能够在同一个应用中同时运行**不同版本**的控制器或独立路由（Route）。随着应用不断演进，遇到重大变更（breaking changes）时，通常需要在引入新版本的同时，继续支持旧版本。
 
-Nest 支持 4 种版本控制方式：
+Nest 提供了 4 种版本控制方式：
 
 | 版本控制类型                                       | 说明                                    |
 | -------------------------------------------------- | --------------------------------------- |
-| [URI 版本控制](#uri-versioning-type)               | 版本信息通过请求的 URI 传递（默认方式） |
+| [URI 版本控制](#uri-versioning-type)               | 通过请求的 URI 传递版本信息（默认方式） |
 | [Header 版本控制](#header-versioning-type)         | 通过自定义请求头（Header）指定版本      |
 | [Media Type 版本控制](#media-type-versioning-type) | 通过请求的 `Accept` 头指定版本          |
 
 ## URI 版本控制类型
 
-URI 版本控制通过在请求的 URI 中传递版本号来实现，例如：`https://example.com/v1/route` 和 `https://example.com/v2/route`。
+URI 版本控制通过在请求 URI 中添加版本号来实现。例如：`https://example.com/v1/route` 和 `https://example.com/v2/route`。
 
 <CalloutInfo type="warning">
   使用 URI
-  版本控制时，版本号会自动添加在[全局路径前缀](/faq/global-prefix)（如果存在）之后，并位于控制器或路由路径之前。
+  版本控制时，版本号会自动添加在[全局路径前缀](/faq/global-prefix)（如有设置）之后，并位于控制器或路由路径之前。
 </CalloutInfo>
 
-要为你的应用程序启用 URI 版本控制，请按如下方式操作：
+要在应用中启用 URI 版本控制，请按如下方式操作：
 
 ```ts filename='main.ts'
 import { VersioningType } from '@nestjs/common'
 
 const app = await NestFactory.create(AppModule)
 
-// 或直接调用 "app.enableVersioning()"
+// 也可以直接调用 "app.enableVersioning()"
 app.enableVersioning({
   type: VersioningType.URI,
 })
@@ -41,17 +41,17 @@ await app.listen(process.env.PORT ?? 3000)
 ```
 
 <CalloutInfo type="warning">
-  URI 中的版本号默认会自动加上 `v` 前缀，你可以通过设置 `prefix` 键为你想要的前缀，或者设置为
-  `false` 以禁用前缀。
+  URI 版本号默认会自动加上 `v` 前缀。你可以通过设置 `prefix` 键为自定义前缀，或将其设为 `false`
+  以禁用前缀。
 </CalloutInfo>
 
 ## Header 版本控制类型
 
-Header 版本控制（Header Versioning）使用自定义的、用户指定的请求头来指定版本，头部的值即为本次请求所使用的版本。
+Header 版本控制（Header Versioning）通过自定义请求头，让客户端在请求中指定所需的版本号。你可以根据实际需求，选择任意请求头字段来传递版本信息。
 
-Header 版本控制的 HTTP 请求示例：
+下面是 Header 版本控制的 HTTP 请求示例：
 
-要为你的应用启用 **Header 版本控制**，请按如下方式操作：
+要在应用中启用 **Header 版本控制**，请按照以下步骤操作：
 
 ```ts filename='main.ts'
 import { VersioningType } from '@nestjs/common'
@@ -66,15 +66,15 @@ app.enableVersioning({
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-`header` 属性应设置为包含请求版本号的请求头名称。
+其中，`header` 属性用于指定包含版本号的请求头名称。
 
 ## Media Type 版本控制类型
 
-Media Type 版本控制（Media Type Versioning）使用请求的 `Accept` 头来指定版本。
+Media Type 版本控制（Media Type Versioning）利用 HTTP 请求的 `Accept` 头来传递版本号。
 
-在 `Accept` 头中，版本号与媒体类型之间用分号（`;`）分隔。随后应包含一个键值对，表示本次请求所使用的版本，例如：`Accept: application/json;v=2`。在确定版本时，key 更像是一个前缀，因此需要配置为包含 key 和分隔符。
+在 `Accept` 头中，版本号与媒体类型之间用分号（`;`）分隔，后面紧跟一个键值对，表示本次请求所用的版本。例如：`Accept: application/json;v=2`。此处的 key 更像是前缀，因此需要配置为包含 key 和分隔符。
 
-要为你的应用启用 **Media Type 版本控制**，请按如下方式操作：
+要启用 **Media Type 版本控制**，请参考以下示例：
 
 ```ts filename='main.ts'
 import { VersioningType } from '@nestjs/common'
@@ -89,32 +89,32 @@ app.enableVersioning({
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-`key` 属性应设置为包含版本号的键值对中的 key 和分隔符。以 `Accept: application/json;v=2` 为例，`key` 属性应设置为 `v=`。
+`key` 属性应设置为版本号键值对中的 key 和分隔符。例如，`Accept: application/json;v=2` 中，`key` 应为 `v=`。
 
 ## 自定义版本控制类型
 
-自定义版本控制（Custom Versioning）允许你使用请求中的任意部分来指定版本（或多个版本）。传入的请求会通过一个 `extractor`（提取器）函数进行分析，该函数返回一个字符串或字符串数组。
+自定义版本控制（Custom Versioning）允许你灵活地从请求的任意部分提取版本号（支持单个或多个版本）。你只需实现一个 `extractor`（提取器）函数，该函数返回字符串或字符串数组。
 
-如果请求方提供了多个版本，`extractor` 函数可以返回一个字符串数组，数组中的版本号应按从大到小（从高到低）排序。版本匹配路由时，会按照从高到低的顺序依次匹配。
+如果客户端声明支持多个版本，`extractor` 可以返回一个已排序的字符串数组，数组中的版本号应按从高到低排列。路由匹配时，会优先选择最高可用版本。
 
 如果 `extractor` 返回空字符串或空数组，则不会匹配到任何路由，最终返回 404。
 
-例如，如果传入请求声明支持版本 `1`、`2` 和 `3`，那么 `extractor` 必须返回 `[3, 2, 1]`。这样可以确保优先选择最高可用的路由版本。
+例如，若请求声明支持版本 `1`、`2` 和 `3`，则 `extractor` 应返回 `[3, 2, 1]`，以确保优先匹配最高版本的路由。
 
 如果提取到的版本为 `[3, 2, 1]`，但只存在版本 `2` 和 `1` 的路由，则会选择匹配版本 `2` 的路由（版本 `3` 会被自动忽略）。
 
 <CalloutInfo type="warning">
-  基于 `extractor` 返回的数组选择最高匹配版本的机制，**在 Express
+  基于 `extractor` 返回数组选择最高版本的机制，**在 Express
   适配器中并不总是可靠**，这是由于其设计上的限制导致的。对于
   Express，只要返回单个版本（字符串或只包含一个元素的数组）即可正常工作。Fastify
   则可以正确支持最高版本优先和单一版本的选择。
 </CalloutInfo>
 
-要为你的应用启用**自定义版本控制**，只需创建一个 `extractor` 函数，并将其传递给应用程序，如下所示：
+要启用**自定义版本控制**，只需实现一个 `extractor` 函数，并将其传递给应用程序，示例如下：
 
 ```ts filename='main.ts'
-// 示例 extractor，从自定义请求头中提取版本列表，并将其转换为已排序的数组。
-// 本例使用 Fastify，但 Express 的请求处理方式类似。
+// 示例 extractor：从自定义请求头中提取版本列表，并将其转换为已排序的数组。
+// 本例基于 Fastify，Express 的处理方式类似。
 const extractor = (request: FastifyRequest): string | string[] =>
   [request.headers['custom-versioning-field'] ?? '']
     .flatMap((v) => v.split(','))
@@ -134,18 +134,18 @@ await app.listen(process.env.PORT ?? 3000)
 
 ## 使用方式
 
-版本控制允许你为控制器、单独的路由进行版本管理，并且还为某些资源提供了选择不参与版本控制的方式。无论你的应用采用哪种版本控制类型，使用方式都是一致的。
+版本控制功能允许你为控制器或单独的路由进行版本管理，同时也支持部分资源选择不参与版本控制。无论你的应用采用哪种版本控制策略，具体的使用方式都是一致的。
 
 <CalloutInfo type="warning">
-  如果应用启用了版本控制，但控制器或路由未指定版本，任何对该控制器/路由的请求都会返回 `404`
-  状态码。同样，如果收到的请求包含了没有对应控制器或路由的版本，也会返回 `404` 状态码。
+  如果你的应用启用了版本控制，但控制器或路由未指定版本，针对该控制器或路由的所有请求都会返回 `404`
+  状态码。同样地，如果请求中包含了不存在的版本，也会返回 `404` 状态码。
 </CalloutInfo>
 
 ## 控制器版本
 
-可以为控制器设置版本，从而为该控制器下的所有路由统一指定版本。
+你可以为控制器统一设置版本，这样该控制器下的所有路由都会默认使用该版本。
 
-要为控制器添加版本，请按如下方式操作：
+要为控制器指定版本，请参考以下示例：
 
 ```ts filename='cats.controller.ts'
 @Controller({
@@ -161,9 +161,9 @@ export class CatsControllerV1 {
 
 ## 路由版本
 
-可以为单独的路由（Route）指定版本。此时，该路由的版本会覆盖控制器版本等其他可能影响该路由的版本设置。
+你也可以为单独的路由指定版本。此时，路由上的版本设置会覆盖控制器上的版本等其他相关设置。
 
-要为单个路由添加版本，请按如下方式操作：
+为单个路由指定版本的方法如下：
 
 ```ts filename='cats.controller.ts'
 import { Controller, Get, Version } from '@nestjs/common'
@@ -186,9 +186,9 @@ export class CatsController {
 
 ## 多版本支持
 
-你可以为控制器或路由同时应用多个版本。要实现多版本支持，只需将 version 属性设置为数组。
+你可以为控制器或路由同时指定多个版本，只需将 version 属性设置为数组即可。
 
-添加多个版本的方法如下：
+示例代码如下：
 
 ```ts filename='cats.controller.ts'
 @Controller({
@@ -202,17 +202,17 @@ export class CatsController {
 }
 ```
 
-## 版本 "中立"
+## 版本“中立”
 
-有些控制器或路由可能不关心版本，无论版本如何，其功能都保持一致。为此，你可以将 version 设置为 `VERSION_NEUTRAL` 符号。
+有些控制器或路由无需关心版本，无论请求中是否包含版本信息，其功能始终保持一致。此时，你可以将 version 设置为 `VERSION_NEUTRAL` 符号。
 
-无论请求中是否包含版本，传入的请求都会被映射到 `VERSION_NEUTRAL` 的控制器或路由。
+这样，无论请求是否带有版本号，都会被映射到 `VERSION_NEUTRAL` 的控制器或路由。
 
 <CalloutInfo type="warning">
   对于 URI 版本控制，`VERSION_NEUTRAL` 资源的 URI 中不会包含版本信息。
 </CalloutInfo>
 
-添加版本中立的控制器或路由的方法如下：
+添加版本中立控制器或路由的方法如下：
 
 ```ts filename='cats.controller.ts'
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common'
@@ -230,22 +230,22 @@ export class CatsController {
 
 ## 全局默认版本
 
-如果你不希望为每个控制器或单独的路由都指定版本，或者你希望为所有未指定版本的控制器或路由设置一个特定的默认版本，可以按照如下方式设置 `defaultVersion`：
+如果你不希望为每个控制器或路由单独指定版本，或者希望为所有未指定版本的控制器或路由设置统一的默认版本，可以通过如下方式配置 `defaultVersion`：
 
 ```ts filename='main.ts'
 app.enableVersioning({
   // ...
   defaultVersion: '1'
-  // 或者
+  // 或
   defaultVersion: ['1', '2']
-  // 或者
+  // 或
   defaultVersion: VERSION_NEUTRAL
 });
 ```
 
 ## 中间件版本控制
 
-[中间件](/middleware) 也可以利用版本控制元数据（versioning metadata），为特定路由的某个版本配置中间件。要实现这一点，只需在 `MiddlewareConsumer.forRoutes()` 方法的参数中提供版本号即可：
+[中间件](/middleware) 也支持基于版本的元数据（versioning metadata），可以为特定版本的路由配置中间件。只需在 `MiddlewareConsumer.forRoutes()` 方法参数中指定版本号即可：
 
 ```ts filename='app.module.ts'
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common'
@@ -265,8 +265,8 @@ export class AppModule implements NestModule {
 }
 ```
 
-如上代码所示，`LoggerMiddleware` 只会应用于 `/cats` 路径下版本为 '2' 的端点。
+如上所示，`LoggerMiddleware` 只会应用于 `/cats` 路径下版本为 '2' 的接口。
 
 <CalloutInfo>
-  中间件支持本节介绍的所有版本控制类型：`URI`、`Header`、`Media Type` 或 `Custom`。
+  中间件支持本节介绍的所有版本控制类型：`URI`、`Header`、`Media Type` 和 `Custom`。
 </CalloutInfo>
