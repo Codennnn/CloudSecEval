@@ -226,8 +226,6 @@ function SearchResults(props: SearchResultsProps) {
           isSelected={index === selectedIndex}
           result={hit}
           onClick={() => {
-            console.log(hit)
-
             if (hit.document?.path) {
               onSelectResult(hit.document.path)
             }
