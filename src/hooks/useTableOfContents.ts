@@ -2,17 +2,34 @@ import { useEffect, useState } from 'react'
 
 import { usePathname } from 'next/navigation'
 
-import type { TableOfContentsHook, TocItem } from '~/types/toc'
+import { SCROLL_CONFIG } from '~/lib/scroll-config'
+
+const getHeadings = () => {
+  return document.querySelectorAll(`#${SCROLL_CONFIG.CONTAINER_ID} article :where(h1, h2, h3, h4, h5, h6)`)
+}
+
+interface TocItem {
+  id: string
+  text: string
+  level: number
+}
+
+interface TableOfContentsHook {
+  tocItems: TocItem[]
+  activeId: string
+}
 
 export function useTableOfContents(): TableOfContentsHook {
   const [tocItems, setTocItems] = useState<TocItem[]>([])
   const [activeId, setActiveId] = useState<string>('')
+
   const pathname = usePathname()
 
   // 提取页面中的标题元素
   useEffect(() => {
     const extractHeadings = () => {
-      const headings = document.querySelectorAll('article h1, article h2, article h3, article h4, article h5, article h6')
+      const headings = getHeadings()
+
       const items: TocItem[] = []
 
       headings.forEach((heading) => {
@@ -58,30 +75,66 @@ export function useTableOfContents(): TableOfContentsHook {
       return
     }
 
-    const handleScroll = () => {
-      const headings = document.querySelectorAll('article h1, article h2, article h3, article h4, article h5, article h6')
-      const scrollTop = window.scrollY + 100 // 添加偏移量
+    const scrollContainer = document.getElementById(SCROLL_CONFIG.CONTAINER_ID)
 
-      let currentId = ''
-
-      // 从上到下遍历标题，找到当前可见的标题
-      headings.forEach((heading) => {
-        const rect = heading.getBoundingClientRect()
-        const elementTop = rect.top + window.scrollY
-
-        if (elementTop <= scrollTop) {
-          currentId = heading.id
-        }
-      })
-
-      setActiveId(currentId)
+    if (!scrollContainer) {
+      return
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
+    let ticking = false
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const headings = getHeadings()
+
+          const containerRect = scrollContainer.getBoundingClientRect()
+
+          const scrollTop = scrollContainer.scrollTop
+
+          const offset = 80 // 偏移量，用于提前高亮
+
+          let currentId = ''
+
+          // 从下往上遍历标题，找到第一个在视口上方的标题
+          for (let i = headings.length - 1; i >= 0; i--) {
+            const heading = headings[i] as HTMLElement
+            const rect = heading.getBoundingClientRect()
+
+            // 计算标题相对于滚动容器的位置
+            const elementTop = rect.top - containerRect.top + scrollTop
+
+            // 如果标题在当前滚动位置上方（考虑偏移量）
+            if (elementTop <= scrollTop + offset) {
+              currentId = heading.id
+              break
+            }
+          }
+
+          // 如果没有找到合适的标题（比如在页面顶部），使用第一个标题
+          if (!currentId && headings.length > 0) {
+            const firstHeading = headings[0] as HTMLElement
+
+            if (firstHeading.id) {
+              currentId = firstHeading.id
+            }
+          }
+
+          setActiveId(currentId)
+
+          ticking = false
+        })
+
+        ticking = true
+      }
+    }
+
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
+
     handleScroll() // 初始化时执行一次
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      scrollContainer.removeEventListener('scroll', handleScroll)
     }
   }, [tocItems])
 
