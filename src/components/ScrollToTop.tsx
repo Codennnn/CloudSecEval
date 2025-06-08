@@ -3,28 +3,55 @@
 import { useEffect, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
+import { throttle } from 'lodash-es'
 import { CircleChevronUp } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
+import { SCROLL_CONFIG } from '~/lib/scroll-config'
 
-export function ScrollToTop() {
+interface ScrollToTopProps {
+  /** 滚动容器 ID */
+  containerId: string
+  /**
+   * 滚动多少像素后显示回到顶部按钮
+   * @default SCROLL_CONFIG.SCROLL_THRESHOLD
+   */
+  scrollThreshold?: number
+  /**
+   * 滚动事件节流延迟（毫秒）
+   * @default SCROLL_CONFIG.THROTTLE_DELAY
+   */
+  throttleDelay?: number
+}
+
+export function ScrollToTop(props: ScrollToTopProps) {
+  const {
+    containerId,
+    scrollThreshold = SCROLL_CONFIG.SCROLL_THRESHOLD,
+    throttleDelay = SCROLL_CONFIG.THROTTLE_DELAY,
+  } = props
+
   const [isVisible, setIsVisible] = useState(false)
 
-  useEffect(() => {
-    const toggleVisibility = () => {
-      // 查找滚动容器
-      const scrollContainer = document.getElementById('docs-scroll-container')
+  const getScrollContainer = useEvent(() => {
+    return document.getElementById(containerId)
+  })
 
-      if (scrollContainer && scrollContainer.scrollTop > 300) {
+  useEffect(() => {
+    const toggleVisibility = throttle(() => {
+      // 查找滚动容器
+      const scrollContainer = getScrollContainer()
+
+      if (scrollContainer && scrollContainer.scrollTop > scrollThreshold) {
         setIsVisible(true)
       }
       else {
         setIsVisible(false)
       }
-    }
+    }, throttleDelay)
 
     // 查找滚动容器并添加事件监听
-    const scrollContainer = document.getElementById('docs-scroll-container')
+    const scrollContainer = getScrollContainer()
 
     if (scrollContainer) {
       scrollContainer.addEventListener('scroll', toggleVisibility)
@@ -33,10 +60,10 @@ export function ScrollToTop() {
         scrollContainer.removeEventListener('scroll', toggleVisibility)
       }
     }
-  }, [])
+  }, [getScrollContainer, scrollThreshold, throttleDelay])
 
   const handleScrollToTop = useEvent(() => {
-    const scrollContainer = document.getElementById('docs-scroll-container')
+    const scrollContainer = getScrollContainer()
 
     if (scrollContainer) {
       scrollContainer.scrollTo({
@@ -52,7 +79,7 @@ export function ScrollToTop() {
 
   return (
     <Button
-      className="inline-flex items-center gap-2 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-2 justify-start text-xs text-muted-foreground"
+      className="inline-flex items-center gap-2 h-6 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-2 justify-start text-xs text-muted-foreground"
       size="sm"
       title="回到顶部"
       variant="ghost"

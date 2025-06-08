@@ -5,6 +5,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from '~/components/ui/sidebar'
+import { SCROLL_CONFIG } from '~/lib/scroll-config'
 import { cn } from '~/lib/utils'
 
 export default function DocsLayout(props: React.PropsWithChildren) {
@@ -15,7 +16,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
       <SidebarInset>
         <div
           className="@container size-full overflow-y-auto"
-          id="docs-scroll-container"
+          id={SCROLL_CONFIG.CONTAINER_ID}
         >
           <div
             className={
@@ -35,7 +36,10 @@ export default function DocsLayout(props: React.PropsWithChildren) {
 
                 <hr className="my-4 bg-border/70" />
 
-                <ScrollToTop />
+                <ScrollToTop
+                  containerId={SCROLL_CONFIG.CONTAINER_ID}
+                  scrollThreshold={SCROLL_CONFIG.SCROLL_THRESHOLD}
+                />
               </div>
             </aside>
           </div>

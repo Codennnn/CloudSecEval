@@ -43,7 +43,7 @@ export function SearchTrigger(props: SearchTriggerProps) {
 
   return (
     <button
-      className="group flex w-full items-center gap-3 rounded-lg border border-input bg-background px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground"
+      className="group flex w-full items-center gap-3 rounded-lg border border-input bg-background px-3 py-1.5 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground"
       onClick={() => {
         handleTriggerOpen()
       }}
