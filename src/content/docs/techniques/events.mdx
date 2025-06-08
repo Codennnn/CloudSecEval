@@ -1,18 +1,18 @@
-# 事件（Events）
+# 事件
 
-[Event Emitter](https://www.npmjs.com/package/@nestjs/event-emitter) 包（`@nestjs/event-emitter`）提供了一个简单的观察者（Observer）实现，允许你订阅并监听应用中发生的各种事件。事件是一种极佳的解耦方式，因为同一个事件可以拥有多个互不依赖的监听器。
+[Event Emitter](https://www.npmjs.com/package/@nestjs/event-emitter) 包（`@nestjs/event-emitter`）为 NestJS 提供了简洁的观察者模式实现，让你可以在应用中订阅和监听各种事件（Event）。事件机制是一种优秀的解耦方式，因为同一个事件可以被多个互不依赖的监听器响应。
 
-`EventEmitterModule` 在内部使用了 [eventemitter2](https://github.com/EventEmitter2/EventEmitter2) 包。
+`EventEmitterModule` 底层基于 [eventemitter2](https://github.com/EventEmitter2/EventEmitter2) 实现。
 
 ## 快速开始
 
-首先，安装所需的包：
+首先，安装所需依赖：
 
 ```bash
 $ npm i --save @nestjs/event-emitter
 ```
 
-安装完成后，将 `EventEmitterModule` 导入到根模块 `AppModule`，并按照如下方式调用其静态方法 `forRoot()`：
+安装完成后，将 `EventEmitterModule` 导入到根模块 `AppModule`，并通过其静态方法 `forRoot()` 进行初始化：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -24,32 +24,32 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
 export class AppModule {}
 ```
 
-调用 `.forRoot()` 方法会初始化事件发射器（Event Emitter），并注册应用中已声明的所有事件监听器。注册过程会在 `onApplicationBootstrap` 生命周期钩子（Lifecycle Hook）触发时进行，以确保所有模块都已加载并声明了相关的定时任务。
+调用 `.forRoot()` 方法会初始化事件发射器（Event Emitter），并注册应用中已声明的所有事件监听器。注册过程会在 `onApplicationBootstrap` 生命周期钩子（Lifecycle Hook）中触发，确保所有模块都已加载并声明了相关监听器。
 
-如需配置底层的 `EventEmitter` 实例，可以将配置对象传递给 `.forRoot()` 方法，示例如下：
+如果需要自定义底层 `EventEmitter` 实例的配置，可以为 `.forRoot()` 方法传入配置对象。例如：
 
 ```ts
 EventEmitterModule.forRoot({
-  // 设置为 true 以启用通配符
+  // 启用通配符支持
   wildcard: false,
-  // 用于分隔命名空间的分隔符
+  // 命名空间分隔符
   delimiter: '.',
-  // 设置为 true 时会触发 newListener 事件
+  // 启用时会触发 newListener 事件
   newListener: false,
-  // 设置为 true 时会触发 removeListener 事件
+  // 启用时会触发 removeListener 事件
   removeListener: false,
   // 单个事件允许的最大监听器数量
   maxListeners: 10,
-  // 当监听器数量超过最大值时，在内存泄漏提示中显示事件名
+  // 超出监听器数量限制时，内存泄漏提示中显示事件名
   verboseMemoryLeak: false,
-  // 如果 error 事件没有监听器，禁用抛出 uncaughtException
+  // error 事件无监听器时，禁用抛出 uncaughtException
   ignoreErrors: false,
 })
 ```
 
 ## 事件派发
 
-要派发（即触发）一个事件，首先需要通过标准的构造函数依赖注入方式注入 `EventEmitter2`：
+要派发（即触发）事件，首先需要通过标准的依赖注入方式，将 `EventEmitter2` 注入到构造函数中：
 
 ```ts
 constructor(private eventEmitter: EventEmitter2) {}
@@ -59,7 +59,7 @@ constructor(private eventEmitter: EventEmitter2) {}
   <div>需要从 `@nestjs/event-emitter` 包中导入 `EventEmitter2`。</div>
 </CalloutInfo>
 
-然后可以在类中如下使用：
+随后，你可以在类的方法中这样派发事件：
 
 ```ts
 this.eventEmitter.emit(
@@ -73,7 +73,7 @@ this.eventEmitter.emit(
 
 ## 事件监听
 
-要声明一个事件监听器（event listener），只需在方法定义前使用 `@OnEvent()` 装饰器，如下所示：
+要声明事件监听器（event listener），只需在方法定义前添加 `@OnEvent()` 装饰器。例如：
 
 ```ts
 @OnEvent('order.created')
@@ -84,18 +84,18 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) {
 
 <CalloutInfo type="warning">
 
-事件订阅者（Event subscribers）不能为请求作用域。
+事件订阅者（Event subscribers）不能设置为请求作用域。
 
 </CalloutInfo>
 
-第一个参数可以是简单事件发射器（event emitter）中的 `string` 或 `symbol`，也可以在使用通配符发射器（wildcard emitter）时为 `string | symbol | Array<string | symbol>`。
+`@OnEvent()` 的第一个参数可以是简单事件发射器（event emitter）中的 `string` 或 `symbol`，也可以在使用通配符发射器（wildcard emitter）时为 `string | symbol | Array<string | symbol>`。
 
 第二个参数（可选）是监听器选项对象，定义如下：
 
 ```ts
 export type OnEventOptions = OnOptions & {
   /**
-   * 如果为 true，则将给定监听器插入到监听器数组的开头（而不是末尾）。
+   * 如果为 true，则会将该监听器插入监听器数组的开头（而不是末尾）。
    *
    * @see https://github.com/EventEmitter2/EventEmitter2#emitterprependlistenerevent-listener-options
    *
@@ -113,7 +113,7 @@ export type OnEventOptions = OnOptions & {
 ```
 
 <CalloutInfo>
-  关于 `OnOptions` 选项对象的更多信息，请参阅 [`eventemitter2`
+  关于 `OnOptions` 选项对象的详细信息，请参阅 [`eventemitter2`
   文档](https://github.com/EventEmitter2/EventEmitter2#emitteronevent-listener-options-objectboolean)。
 </CalloutInfo>
 
@@ -124,7 +124,7 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) {
 }
 ```
 
-如需使用命名空间（namespace）或通配符（wildcard），请在 `EventEmitterModule#forRoot()` 方法中传入 `wildcard` 选项。当启用命名空间/通配符后，事件可以是用分隔符（delimiter）分隔的字符串（如 `foo.bar`），也可以是数组（如 `['foo', 'bar']`）。分隔符也可以通过配置属性（`delimiter`）自定义。当启用命名空间功能后，可以使用通配符订阅事件：
+如果你需要使用命名空间或通配符，可以在调用 `EventEmitterModule#forRoot()` 方法时传入 `wildcard` 选项。启用命名空间或通配符后，事件名称可以是用分隔符（delimiter）分隔的字符串（如 `foo.bar`），也可以是数组（如 `['foo', 'bar']`）。分隔符可以通过配置属性（`delimiter`）自定义。启用命名空间功能后，可以使用通配符订阅事件：
 
 ```ts
 @OnEvent('order.*')
@@ -133,9 +133,9 @@ handleOrderEvents(payload: OrderCreatedEvent | OrderRemovedEvent | OrderUpdatedE
 }
 ```
 
-注意，这种通配符只适用于单个区块。例如，参数 `order.*` 可以匹配 `order.created` 和 `order.shipped` 事件，但不能匹配 `order.delayed.out_of_stock`。如需监听此类事件，请使用多级通配符（multilevel wildcard）模式（即 `**`），详见 `EventEmitter2` [官方文档](https://github.com/EventEmitter2/EventEmitter2#multi-level-wildcards)。
+需要注意的是，这种通配符只适用于单个区块。例如，`order.*` 可以匹配 `order.created` 和 `order.shipped` 事件，但无法匹配 `order.delayed.out_of_stock`。如果需要监听这类多级事件，请使用多级通配符（multilevel wildcard）模式（即 `**`），详细用法请参考 `EventEmitter2` [官方文档](https://github.com/EventEmitter2/EventEmitter2#multi-level-wildcards)。
 
-通过该模式，可以创建一个监听所有事件的事件监听器：
+通过该模式，你可以创建一个监听所有事件的事件监听器：
 
 ```ts
 @OnEvent('**')
@@ -145,25 +145,26 @@ handleEverything(payload: any) {
 ```
 
 <CalloutInfo>
-  `EventEmitter2` 类还提供了许多用于事件交互的实用方法，如 `waitFor` 和
-  `onAny`。详细内容可参考[官方文档](https://github.com/EventEmitter2/EventEmitter2)。
+  `EventEmitter2` 类还提供了许多用于事件交互的实用方法，例如 `waitFor` 和
+  `onAny`。更多内容请参考[官方文档](https://github.com/EventEmitter2/EventEmitter2)。
 </CalloutInfo>
 
 ## 避免事件丢失
 
-在 `onApplicationBootstrap` 生命周期钩子之前或期间触发的事件 —— 例如在模块构造函数或 `onModuleInit` 方法中触发的事件 —— 可能会因为 `EventSubscribersLoader` 尚未完成监听器注册而被遗漏。
+如果在 `onApplicationBootstrap` 生命周期钩子之前或期间触发事件（例如在模块构造函数或 `onModuleInit` 方法中），由于 `EventSubscribersLoader` 可能尚未完成事件监听器的注册，这些事件有可能会被遗漏。
 
-为避免此问题，你可以在模块的 `onApplicationBootstrap` 生命周期钩子中调用 `EventEmitterReadinessWatcher` 的 `waitUntilReady` 方法。该方法会返回一个 Promise，当所有监听器都已注册完成后才会 resolve，从而确保所有事件都能被正确捕获。
+为了解决这个问题，你可以在模块的 `onApplicationBootstrap` 生命周期钩子中调用 `EventEmitterReadinessWatcher` 的 `waitUntilReady` 方法。该方法会返回一个 Promise，只有在所有监听器都注册完成后才会 resolve，从而确保后续触发的事件都能被正确捕获。
 
 ```ts
 await this.eventEmitterReadinessWatcher.waitUntilReady()
+// 等待所有事件监听器注册完成后再触发事件
 await this.eventEmitter.emit('order.created', new OrderCreatedEvent({ orderId: 1, payload: {} }))
 ```
 
 <CalloutInfo>
-  仅当在 `onApplicationBootstrap` 生命周期钩子完成之前触发事件时，才需要这样处理。
+  只有在 `onApplicationBootstrap` 生命周期钩子完成之前需要触发事件时，才需要这样处理。
 </CalloutInfo>
 
 ## 示例
 
-可用的完整示例请参见[这里](https://github.com/nestjs/nest/tree/master/sample/30-event-emitter)。
+完整的示例代码请参见[这里](https://github.com/nestjs/nest/tree/master/sample/30-event-emitter)。

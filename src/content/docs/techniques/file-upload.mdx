@@ -1,23 +1,23 @@
 # 文件上传
 
-为了处理文件上传，Nest 提供了一个基于 [multer](https://github.com/expressjs/multer) 中间件包（Express 框架专用）的内置模块。Multer 用于处理 `multipart/form-data` 格式的数据，这种格式主要用于通过 HTTP `POST` 请求上传文件。该模块支持高度自定义，你可以根据应用需求灵活调整其行为。
+Nest 提供了一个内置模块，专门用于处理文件上传，底层基于 [multer](https://github.com/expressjs/multer) 中间件（适用于 Express 框架）。Multer 能处理 `multipart/form-data` 格式的数据，这种格式主要用于通过 HTTP `POST` 请求上传文件。该模块支持高度自定义，你可以根据实际需求灵活调整其行为。
 
 <CalloutInfo type="warning">
-  Multer 无法处理非 multipart 格式（`multipart/form-data`）的数据。此外，请注意该包与
+  Multer 无法处理非 multipart 格式（即 `multipart/form-data`）的数据。此外，请注意该包与
   `FastifyAdapter` 不兼容。
 </CalloutInfo>
 
-为了获得更好的类型安全，我们建议安装 Multer 的类型定义包：
+为了获得更好的类型安全，建议安装 Multer 的类型定义包：
 
 ```bash
 $ npm i -D @types/multer
 ```
 
-安装该包后，我们就可以使用 `Express.Multer.File` 类型（可通过如下方式导入：`import { Express } from 'express'`）。
+安装完成后，你就可以使用 `Express.Multer.File` 类型（通过 `import { Express } from 'express'` 导入）。
 
 ## 基本示例
 
-要上传单个文件，只需在路由处理器上使用 `FileInterceptor()` 拦截器，并通过 `@UploadedFile()` 装饰器从请求中提取 `file`。
+要上传单个文件，只需在路由处理器中使用 `FileInterceptor()` 拦截器，并通过 `@UploadedFile()` 装饰器从请求中提取 `file`：
 
 ```ts
 @Post('upload')
@@ -35,7 +35,7 @@ uploadFile(@UploadedFile() file: Express.Multer.File) {
 `FileInterceptor()` 装饰器接收两个参数：
 
 - `fieldName`：字符串，指定 HTML 表单中用于存放文件的字段名
-- `options`：可选对象，类型为 `MulterOptions`。该对象与 multer 构造函数使用的参数一致（详细信息见[此处](https://github.com/expressjs/multer#multeropts)）。
+- `options`：可选对象，类型为 `MulterOptions`。该对象与 multer 构造函数的参数一致（详细信息见 [此处](https://github.com/expressjs/multer#multeropts)）。
 
 <CalloutInfo type="warning">
   `FileInterceptor()` 可能与 Google Firebase 等第三方云服务提供商不兼容。
@@ -43,7 +43,7 @@ uploadFile(@UploadedFile() file: Express.Multer.File) {
 
 ## 文件校验
 
-在处理文件上传时，通常我们需要对传入文件的元数据进行校验，比如文件大小或文件的 MIME 类型。为此，你可以自定义一个[管道](/pipes)，并将其绑定到带有 `UploadedFile` 装饰器的参数上。下面的示例演示了如何实现一个基础的文件大小校验管道：
+在处理文件上传时，通常需要对文件的元数据进行校验，例如文件大小或 MIME 类型。为此，你可以自定义一个[管道](/pipes)，并将其应用于带有 `UploadedFile` 装饰器的参数。下面的示例演示了如何实现一个基础的文件大小校验管道：
 
 ```ts
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common'
@@ -58,20 +58,22 @@ export class FileSizeValidationPipe implements PipeTransform {
 }
 ```
 
-你可以将其与 `FileInterceptor` 一起使用，示例如下：
+你可以将其与 `FileInterceptor` 结合使用，示例如下：
 
 ```ts
 @Post('file')
 @UseInterceptors(FileInterceptor('file'))
-uploadFileAndValidate(@UploadedFile(
-  new FileSizeValidationPipe(),
-  // 这里还可以添加其他管道
-) file: Express.Multer.File, ) {
+uploadFileAndValidate(
+  @UploadedFile(
+    new FileSizeValidationPipe(),
+    // 这里还可以添加其他管道
+  ) file: Express.Multer.File,
+) {
   return file;
 }
 ```
 
-Nest 提供了一个内置管道，用于处理常见场景，并便于标准化地添加新的校验逻辑。这个管道叫做 `ParseFilePipe`，你可以这样使用：
+Nest 提供了一个内置管道，便于处理常见场景，并以标准方式扩展校验逻辑。该管道名为 `ParseFilePipe`，用法如下：
 
 ```ts
 @Post('file')
@@ -93,14 +95,14 @@ uploadFileAndPassValidation(
 }
 ```
 
-如你所见，必须指定一个文件验证器（FileValidator）数组，这些验证器会被 `ParseFilePipe` 管道依次执行。我们稍后会介绍验证器的接口，但值得一提的是，这个管道还支持另外两个可选选项：
+如上所示，你需要传入一个文件验证器（FileValidator）数组，这些验证器会被 `ParseFilePipe` 依次执行。我们稍后会介绍验证器的接口。值得一提的是，该管道还支持另外两个可选参数：
 
 | 参数                  | 描述                                                                                |
 | --------------------- | ----------------------------------------------------------------------------------- |
 | `errorHttpStatusCode` | 当**任意**验证器失败时抛出的 HTTP 状态码。默认值为 `400`（BAD REQUEST，错误请求）。 |
 | `exceptionFactory`    | 一个工厂函数，接收错误信息并返回一个错误对象。                                      |
 
-现在，让我们回到 `FileValidator` 接口。要将验证器集成到该管道中，你可以使用内置实现，也可以自定义 `FileValidator`。请参考以下示例：
+接下来，让我们了解 `FileValidator` 接口。你既可以使用内置的验证器实现，也可以自定义 `FileValidator`。请参考以下示例：
 
 ```ts
 export abstract class FileValidator<TValidationOptions = Record<string, any>> {
@@ -125,12 +127,12 @@ export abstract class FileValidator<TValidationOptions = Record<string, any>> {
   `file` 参数类型指定为 `Express.Multer.File`，以获得更好的类型安全。
 </CalloutInfo>
 
-`FileValidator` 是一个常规类，可以访问文件对象，并根据客户端提供的选项对其进行校验。Nest 内置了两种 `FileValidator`（文件校验器）实现，你可以在项目中直接使用：
+`FileValidator` 是一个常规类，可以访问文件对象，并根据客户端提供的选项对其进行校验。Nest 内置了两种 `FileValidator`（文件校验器）实现，可直接使用：
 
 - `MaxFileSizeValidator` —— 检查指定文件的大小是否小于给定值（以 `bytes` 字节为单位）
 - `FileTypeValidator` —— 检查指定文件的 mime-type 是否与给定字符串或正则表达式匹配。默认情况下，会通过文件内容的 [magic number](https://www.ibm.com/support/pages/what-magic-number) 进行校验
 
-要了解如何将这些校验器与前文提到的 `FileParsePipe`（文件解析管道）结合使用，我们来看一个基于上例修改的代码片段：
+要了解如何将这些校验器与前文提到的 `ParseFilePipe`（文件解析管道）结合使用，请参考下方基于上例修改的代码片段：
 
 ```ts
 @UploadedFile(
@@ -145,11 +147,10 @@ file: Express.Multer.File,
 ```
 
 <CalloutInfo>
-  如果校验器数量较多，或者他们的选项让文件变得杂乱，你可以将这个数组定义在单独的文件中，并以命名常量（如
-  `fileValidators`）的方式导入。
+  如果校验器较多或配置项较复杂，建议将验证器数组单独定义并以命名常量（如 `fileValidators`）导入。
 </CalloutInfo>
 
-最后，你还可以使用特殊的 `ParseFilePipeBuilder`（文件解析管道构建器）类来组合和构建校验器。通过如下方式使用它，可以避免手动实例化每个校验器，只需直接传递他们的选项即可：
+此外，你还可以使用特殊的 `ParseFilePipeBuilder`（文件解析管道构建器）类来组合和构建校验器。这样可以避免手动实例化每个校验器，只需直接传递选项即可：
 
 ```ts
 @UploadedFile(
@@ -168,19 +169,19 @@ file: Express.Multer.File,
 ```
 
 <CalloutInfo>
-  默认情况下，文件是必需的。如果你希望文件变为可选，可以在 `build` 函数的选项中添加 `fileIsRequired:
-  false` 参数（与 `errorHttpStatusCode` 同级）。
+  默认情况下，文件为必填项。如果希望文件可选，可在 `build` 方法的选项中添加 `fileIsRequired: false`
+  参数（与 `errorHttpStatusCode` 同级）。
 </CalloutInfo>
 
 ## 文件数组上传
 
-要上传一个文件数组（即使用同一个字段名标识的多个文件），可以使用 `FilesInterceptor()` 装饰器（注意装饰器名称中的复数 **Files**）。该装饰器接收三个参数：
+如果你需要上传一个文件数组（即同一个字段名对应多个文件），可以使用 `FilesInterceptor()` 装饰器（注意装饰器名称中的复数 **Files**）。该装饰器包含三个参数：
 
-- `fieldName`：如上所述，用于指定字段名
-- `maxCount`：可选参数，定义可接收的最大文件数量
-- `options`：可选参数，`MulterOptions` 对象，具体说明见上文
+- `fieldName`：指定字段名（如上所述）
+- `maxCount`：可选，设置允许上传的最大文件数量
+- `options`：可选，`MulterOptions` 对象，详细说明见上文
 
-使用 `FilesInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求对象中提取文件数组。
+使用 `FilesInterceptor()` 后，可以通过 `@UploadedFiles()` 装饰器从请求对象中获取文件数组。
 
 ```ts
 @Post('upload')
@@ -191,18 +192,18 @@ uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
 ```
 
 <CalloutInfo>
-  `FilesInterceptor()` 装饰器由 `@nestjs/platform-express` 包导出，`@UploadedFiles()` 装饰器由
-  `@nestjs/common` 包导出。
+  `FilesInterceptor()` 装饰器由 `@nestjs/platform-express` 包提供，`@UploadedFiles()` 装饰器由
+  `@nestjs/common` 包提供。
 </CalloutInfo>
 
-## 多文件上传
+## 多字段多文件上传
 
-如需上传多个文件（每个字段名不同），请使用 `FileFieldsInterceptor()` 装饰器。该装饰器接收两个参数：
+如果需要上传多个字段的文件（即每个字段名不同），可以使用 `FileFieldsInterceptor()` 装饰器。该装饰器接收两个参数：
 
-- `uploadedFields`：一个对象数组，每个对象都必须包含一个 `name` 属性（字符串，指定字段名），还可以包含可选的 `maxCount` 属性（如上所述）
-- `options`：可选的 `MulterOptions` 配置对象（如上所述）
+- `uploadedFields`：对象数组，每个对象必须包含 `name` 属性（字符串，指定字段名），还可以包含可选的 `maxCount` 属性（同上）
+- `options`：可选，`MulterOptions` 配置对象（同上）
 
-使用 `FileFieldsInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求中提取文件。
+使用 `FileFieldsInterceptor()` 后，同样可以通过 `@UploadedFiles()` 装饰器从请求中获取文件。
 
 ```ts
 @Post('upload')
@@ -217,9 +218,9 @@ uploadFile(@UploadedFiles() files: { avatar?: Express.Multer.File[], background?
 
 ## 任意字段文件上传
 
-如需上传所有字段（字段名任意），请使用 `AnyFilesInterceptor()` 装饰器。该装饰器可接收一个可选的 `options` 配置对象（如上所述）。
+如需上传任意字段（字段名不限）的文件，可以使用 `AnyFilesInterceptor()` 装饰器。该装饰器支持传入一个可选的 `options` 配置对象（具体用法见上文）。
 
-使用 `AnyFilesInterceptor()` 时，可以通过 `@UploadedFiles()` 装饰器从请求中提取文件。
+使用 `AnyFilesInterceptor()` 时，可通过 `@UploadedFiles()` 装饰器从请求中提取文件：
 
 ```ts
 @Post('upload')
@@ -231,7 +232,7 @@ uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
 
 ## 不接收文件
 
-如果你希望接收 `multipart/form-data`（多部分表单数据），但**不允许上传任何文件**，可以使用 `NoFilesInterceptor` 拦截器。该拦截器会将 multipart 数据作为属性添加到请求体（request body）中。如果请求中包含文件，将会抛出 `BadRequestException`（错误请求异常）。
+如果你需要接收 `multipart/form-data`（多部分表单数据），但**不允许上传任何文件**，可以使用 `NoFilesInterceptor` 拦截器。该拦截器会将 multipart 数据作为属性添加到请求体中。如果请求中包含文件，将会抛出 `BadRequestException`（错误请求异常）。
 
 ```ts
 @Post('upload')
@@ -243,7 +244,7 @@ handleMultiPartData(@Body() body) {
 
 ## 默认选项
 
-你可以像上文所述，在文件拦截器中指定 multer 选项。若要设置全局默认选项，可以在导入 `MulterModule`（Multer 模块）时调用其静态方法 `register()`，并传入支持的选项。所有可用选项请参考[这里](https://github.com/expressjs/multer#multeropts)。
+你可以像上文所述，在文件拦截器中指定 multer 选项。如果希望设置全局默认选项，可以在导入 `MulterModule`（Multer 模块）时，调用其静态方法 `register()` 并传入支持的选项。所有可用选项请参考[这里](https://github.com/expressjs/multer#multeropts)。
 
 ```ts
 MulterModule.register({
@@ -252,16 +253,14 @@ MulterModule.register({
 ```
 
 <CalloutInfo>
-
-`MulterModule` 类由 `@nestjs/platform-express` 包导出。
-
+  <div>`MulterModule` 类由 `@nestjs/platform-express` 包导出。</div>
 </CalloutInfo>
 
 ## 异步配置
 
-当你需要以异步方式（而非静态方式）设置 `MulterModule` 选项时，可以使用 `registerAsync()` 方法。与大多数动态模块（Dynamic Module）一样，Nest 提供了多种处理异步配置的技术手段。
+如果需要以异步方式（而非静态方式）配置 `MulterModule` 选项，可以使用 `registerAsync()` 方法。与大多数动态模块（Dynamic Module）一样，Nest 提供了多种处理异步配置的方式。
 
-其中一种方式是使用工厂函数：
+其中一种常见方式是使用工厂函数：
 
 ```ts
 MulterModule.registerAsync({
@@ -271,7 +270,7 @@ MulterModule.registerAsync({
 })
 ```
 
-与其他[工厂提供者（factory providers）](/fundamentals/custom-providers#factory-providers-usefactory)类似，我们的工厂函数可以是 `async`，并且可以通过 `inject` 注入依赖。
+与其他[工厂提供者（factory providers）](/fundamentals/custom-providers#factory-providers-usefactory)类似，工厂函数可以是 `async`，并且可以通过 `inject` 注入依赖：
 
 ```ts
 MulterModule.registerAsync({
@@ -283,7 +282,7 @@ MulterModule.registerAsync({
 })
 ```
 
-另外，你也可以通过类而不是工厂函数来配置 `MulterModule`，如下所示：
+此外，也可以通过类而不是工厂函数来配置 `MulterModule`，示例如下：
 
 ```ts
 MulterModule.registerAsync({
@@ -291,7 +290,7 @@ MulterModule.registerAsync({
 })
 ```
 
-上述写法会在 `MulterModule` 内部实例化 `MulterConfigService`，并使用它来创建所需的选项对象。需要注意的是，在这个例子中，`MulterConfigService` 必须实现 `MulterOptionsFactory` 接口，如下所示。`MulterModule` 会在所提供类的实例对象上调用 `createMulterOptions()` 方法。
+上述写法会在 `MulterModule` 内部实例化 `MulterConfigService`，并用它来创建所需的选项对象。需要注意，`MulterConfigService` 必须实现 `MulterOptionsFactory` 接口，如下所示。`MulterModule` 会在该类实例上调用 `createMulterOptions()` 方法：
 
 ```ts
 @Injectable()
@@ -304,7 +303,7 @@ class MulterConfigService implements MulterOptionsFactory {
 }
 ```
 
-如果你希望复用现有的选项提供者（options provider），而不是在 `MulterModule` 内部创建一个私有副本，可以使用 `useExisting` 语法。
+如果你希望复用现有的选项提供者（options provider），而不是在 `MulterModule` 内部创建一个私有副本，可以使用 `useExisting` 语法：
 
 ```ts
 MulterModule.registerAsync({
@@ -313,7 +312,7 @@ MulterModule.registerAsync({
 })
 ```
 
-你还可以通过 `registerAsync()` 方法传递所谓的 `extraProviders`。这些提供者会与模块的提供者合并。
+你还可以通过 `registerAsync()` 方法传递 `extraProviders`，这些提供者会与模块的提供者合并：
 
 ```ts
 MulterModule.registerAsync({
@@ -323,8 +322,8 @@ MulterModule.registerAsync({
 })
 ```
 
-当你希望为工厂函数或类构造函数提供额外依赖时，这种方式非常有用。
+当你需要为工厂函数或类构造函数提供额外依赖时，这种方式非常有用。
 
 ## 示例
 
-你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/29-file-upload)查看一个完整的示例。
+你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/29-file-upload)查看完整示例。

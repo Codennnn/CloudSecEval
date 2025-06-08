@@ -1,21 +1,21 @@
-# 压缩（Compression）
+# 压缩
 
-压缩可以大幅减小响应体的体积，从而提升 Web 应用的响应速度。
+压缩（Compression）能够显著减小响应体体积，从而提升 Web 应用的响应速度。
 
-对于**高并发**的生产环境网站，强烈建议将压缩操作从应用服务器中剥离，通常应交由反向代理（如 Nginx）处理。在这种情况下，不应在应用中使用压缩中间件。
+对于**高并发**的生产环境网站，强烈建议将压缩操作从应用服务器中剥离，交由反向代理（如 Nginx）处理。在这种场景下，不建议在应用中使用压缩中间件。
 
 ## 在 Express（默认）中使用
 
-可以使用 [compression](https://github.com/expressjs/compression) 中间件包来启用 gzip 压缩。
+你可以通过 [compression](https://github.com/expressjs/compression) 中间件包为应用启用 gzip 压缩。
 
-首先安装所需依赖：
+首先安装依赖：
 
 ```bash
 $ npm i --save compression
 $ npm i --save-dev @types/compression
 ```
 
-安装完成后，将 compression 中间件作为全局中间件（Middleware）应用：
+安装完成后，将 compression 作为全局中间件应用到应用实例上：
 
 ```ts
 import * as compression from 'compression'
@@ -25,13 +25,13 @@ app.use(compression())
 
 ## 在 Fastify 中使用
 
-如果你使用的是 `FastifyAdapter`，推荐使用 [fastify-compress](https://github.com/fastify/fastify-compress)：
+如果你使用的是 `FastifyAdapter`，推荐使用 [fastify-compress](https://github.com/fastify/fastify-compress) 包：
 
 ```bash
 $ npm i --save @fastify/compress
 ```
 
-安装完成后，将 `@fastify/compress` 作为全局中间件（Middleware）注册：
+安装后，将 `@fastify/compress` 注册为全局中间件：
 
 ```ts
 import compression from '@fastify/compress'
@@ -39,7 +39,7 @@ import compression from '@fastify/compress'
 await app.register(compression)
 ```
 
-默认情况下，`@fastify/compress` 会在浏览器支持该编码时，优先使用 Brotli 压缩（Brotli，Node >= 11.7.0）。Brotli 在压缩比方面通常非常高效，但压缩速度可能较慢。默认情况下，Brotli 的最大压缩质量为 11，不过你可以通过调整 `BROTLI_PARAM_QUALITY`（取值范围 0~11）来降低压缩时间、提升响应速度。你可以根据实际需求微调该参数，以在空间和时间之间取得最佳平衡。以下是将质量设置为 4 的示例：
+默认情况下，`@fastify/compress` 会在浏览器支持时优先使用 Brotli 压缩（Brotli 需 Node >= 11.7.0）。Brotli 通常具备更高的压缩比，但压缩速度可能较慢。Brotli 的最大压缩质量为 11。你可以通过调整 `BROTLI_PARAM_QUALITY`（取值范围 0 ~ 11）来平衡压缩时间和响应速度。以下示例将质量设置为 4：
 
 ```ts
 import { constants } from 'zlib'
@@ -49,7 +49,7 @@ await app.register(compression, {
 })
 ```
 
-为了简化配置，你也可以让 `fastify-compress` 只使用 deflate 和 gzip 两种方式进行压缩。这样虽然响应体可能会更大，但传输速度会更快。
+如果你希望简化配置，也可以让 `fastify-compress` 仅使用 deflate 和 gzip 两种压缩方式。这样虽然响应体可能更大，但传输速度会更快。
 
 要指定压缩编码格式，可以为 `app.register` 提供第二个参数：
 
@@ -57,4 +57,4 @@ await app.register(compression, {
 await app.register(compression, { encodings: ['gzip', 'deflate'] })
 ```
 
-上述配置会让 `fastify-compress` 仅使用 gzip 和 deflate 编码，并在客户端同时支持时优先选择 gzip。
+上述配置会让 `fastify-compress` 仅使用 gzip 和 deflate，并在客户端同时支持时优先选择 gzip。
