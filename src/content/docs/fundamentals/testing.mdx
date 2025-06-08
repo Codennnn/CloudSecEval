@@ -48,7 +48,7 @@ describe('CatsController', () => {
 ```
 
 <CalloutInfo>
-  <p>建议将测试文件放在被测试类附近。测试文件应以 `.spec` 或 `.test` 结尾。</p>
+  <div>建议将测试文件放在被测试类附近。测试文件应以 `.spec` 或 `.test` 结尾。</div>
 </CalloutInfo>
 
 由于上述示例较为基础，实际上并未涉及任何 Nest 特有的内容。事实上，我们甚至没有用到依赖注入，而是直接将 `CatsService` 的实例传递给 `catsController`。这种测试方式 —— 即手动实例化被测类 —— 通常被称为**隔离测试（Isolated Testing）**，它与具体框架无关。接下来，我们将介绍一些更高级的能力，帮助你测试更充分利用 Nest 特性的应用。
@@ -111,7 +111,7 @@ catsService = await moduleRef.resolve(CatsService)
 </CalloutInfo>
 
 <CalloutInfo>
-  <p>你可以在[这里](/fundamentals/module-ref)了解更多模块引用相关特性。</p>
+  <div>你可以在[这里](/fundamentals/module-ref)了解更多模块引用相关特性。</div>
 </CalloutInfo>
 
 除了可以直接使用生产环境的提供者外，你还可以为测试目的覆盖（Override）为[自定义提供者（Custom Provider）](/fundamentals/custom-providers)。例如，你可以模拟数据库服务，而不是连接真实数据库。我们将在下一节详细介绍覆盖的用法，但在单元测试中同样适用。

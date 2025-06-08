@@ -254,7 +254,7 @@ export class UpdateCatDto extends PartialType(CreateCatDto) {}
 ```
 
 <CalloutInfo>
-  <p>`PartialType()` 函数需从 `@nestjs/mapped-types` 包中导入。</p>
+  <div>`PartialType()` 函数需从 `@nestjs/mapped-types` 包中导入。</div>
 </CalloutInfo>
 
 `PickType()` 函数可以从输入类型中挑选一组属性，构造出一个新的类型（类）。例如，假设我们有如下类型：
@@ -274,7 +274,7 @@ export class UpdateCatAgeDto extends PickType(CreateCatDto, ['age'] as const) {}
 ```
 
 <CalloutInfo>
-  <p>`PickType()` 函数需从 `@nestjs/mapped-types` 包中导入。</p>
+  <div>`PickType()` 函数需从 `@nestjs/mapped-types` 包中导入。</div>
 </CalloutInfo>
 
 `OmitType()` 函数会从输入类型中挑选所有属性，然后移除指定的键，构造出一个新类型。例如，假设我们有如下类型：
@@ -319,7 +319,7 @@ export class UpdateCatDto extends IntersectionType(CreateCatDto, AdditionalCatIn
 ```
 
 <CalloutInfo>
-  <p>`IntersectionType()` 函数需从 `@nestjs/mapped-types` 包中导入。</p>
+  <div>`IntersectionType()` 函数需从 `@nestjs/mapped-types` 包中导入。</div>
 </CalloutInfo>
 
 这些类型映射工具函数可以组合使用。例如，下面的写法会生成一个类型（类），它拥有 `CreateCatDto` 类型中除了 `name` 以外的所有属性，并且这些属性都是可选的：

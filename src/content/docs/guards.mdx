@@ -11,9 +11,7 @@ import guardImage from '/public/assets/Guards_1.png'
 然而，中间件本身是“无状态”的。它并不知道在调用 `next()` 后会执行哪个处理器。而守卫可以访问 `执行上下文（ExecutionContext）` 实例，因此能够准确获知即将执行的处理器。守卫的设计初衷与异常过滤器、管道、拦截器类似，都是为了让你能在请求/响应周期的合适时机以声明式方式插入处理逻辑。这有助于让代码更加 DRY（Don't Repeat Yourself，避免重复）且声明式。
 
 <CalloutInfo>
-
-守卫会在所有中间件之后、但在任何拦截器或管道之前执行。
-
+  <div>守卫会在所有中间件之后、但在任何拦截器或管道之前执行。</div>
 </CalloutInfo>
 
 ## 授权守卫

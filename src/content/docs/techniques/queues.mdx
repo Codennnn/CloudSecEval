@@ -209,9 +209,7 @@ export class AudioConsumer {}
 ```
 
 <CalloutInfo>
-
-消费者必须作为 `提供者` 注册，这样 `@nestjs/bullmq` 包才能正确识别。
-
+  <div>消费者必须作为 `提供者` 注册，这样 `@nestjs/bullmq` 包才能正确识别。</div>
 </CalloutInfo>
 
 装饰器的字符串参数（如 `'audio'`）表示要将该类方法关联到的队列名称。
@@ -301,9 +299,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 ```
 
 <CalloutInfo>
-
-`JOB_REF` 令牌需从 `@nestjs/bullmq` 包中导入。
-
+  <div>`JOB_REF` 令牌需从 `@nestjs/bullmq` 包中导入。</div>
 </CalloutInfo>
 
 ## 事件监听器
@@ -775,9 +771,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 ```
 
 <CalloutInfo>
-
-`JOB_REF` 令牌需从 `@nestjs/bull` 包中导入。
-
+  <div>`JOB_REF` 令牌需从 `@nestjs/bull` 包中导入。</div>
 </CalloutInfo>
 
 ## 事件监听器

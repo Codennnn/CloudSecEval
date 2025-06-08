@@ -26,9 +26,7 @@ export class AppModule {}
 ```
 
 <CalloutInfo>
-
-`RouterModule` 类由 `@nestjs/core` 包导出。
-
+  <div>`RouterModule` 类由 `@nestjs/core` 包导出。</div>
 </CalloutInfo>
 
 此外，你还可以定义层级结构。这意味着每个模块都可以拥有 `children` 子模块。子模块会继承其父模块的前缀。如下例所示，我们将 `AdminModule` 注册为 `DashboardModule` 和 `MetricsModule` 的父模块。
@@ -60,9 +58,7 @@ export class AppModule {}
 ```
 
 <CalloutInfo>
-
-请谨慎使用此特性，过度使用可能导致代码后期难以维护。
-
+  <div>请谨慎使用此特性，过度使用可能导致代码后期难以维护。</div>
 </CalloutInfo>
 
 在上述示例中，注册在 `DashboardModule` 内的任何控制器都会额外获得 `/admin/dashboard` 前缀（因为模块会自顶向下递归拼接路径，即父到子）。同理，`MetricsModule` 内定义的每个控制器也会拥有额外的模块级前缀 `/admin/metrics`。

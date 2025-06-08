@@ -80,17 +80,13 @@ export class AppModule {}
 如果你想聚焦某个节点，可以点击矩形节点，图表会弹出窗口，并显示 **"Focus"** 按钮。你也可以使用侧边栏的搜索栏查找特定节点。
 
 <CalloutInfo>
-
-如果点击 **Inspect** 按钮，应用会跳转到 `/debug` 页面，并自动选中该节点。
-
+  <div>如果点击 **Inspect** 按钮，应用会跳转到 `/debug` 页面，并自动选中该节点。</div>
 </CalloutInfo>
 
 <DocImage src={nodePopupImage} alt="Node popup" />
 
 <CalloutInfo>
-
-若要将图表导出为图片，请点击图表右上角的 **Export as PNG** 按钮。
-
+  <div>若要将图表导出为图片，请点击图表右上角的 **Export as PNG** 按钮。</div>
 </CalloutInfo>
 
 你可以通过左侧侧边栏的表单控件调整边的距离，例如只可视化某个应用子树：
@@ -237,9 +233,7 @@ fs.writeFileSync('./graph.json', app.get(SerializedGraph).toString())
 ```
 
 <CalloutInfo>
-
-`SerializedGraph` 由 `@nestjs/core` 包导出。
-
+  <div>`SerializedGraph` 由 `@nestjs/core` 包导出。</div>
 </CalloutInfo>
 
 随后，你可以通过拖拽或上传该文件：

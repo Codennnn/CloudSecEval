@@ -97,9 +97,7 @@ handleEvent(
 ```
 
 <CalloutInfo>
-
-`@ConnectedSocket()` 装饰器需从 `@nestjs/websockets` 包中导入。
-
+  <div>`@ConnectedSocket()` 装饰器需从 `@nestjs/websockets` 包中导入。</div>
 </CalloutInfo>
 
 但需要注意，这种情况下你将无法使用拦截器。如果你不需要响应用户，可以省略 `return` 语句（或显式返回 `undefined` 等“假值”）。
@@ -129,9 +127,7 @@ handleEvent(@MessageBody() data: unknown): WsResponse<unknown> {
 ```
 
 <CalloutInfo>
-
-`WsResponse` 接口从 `@nestjs/websockets` 包中导入。
-
+  <div>`WsResponse` 接口从 `@nestjs/websockets` 包中导入。</div>
 </CalloutInfo>
 
 <CalloutInfo type="warning">
@@ -174,9 +170,7 @@ NestJS 提供了 3 个非常实用的生命周期钩子。他们都有对应的�
 | `OnGatewayDisconnect` | 要求实现 `handleDisconnect()` 方法。该方法会接收特定库的客户端 socket 实例作为参数。                |
 
 <CalloutInfo>
-
-每个生命周期接口都由 `@nestjs/websockets` 包导出。
-
+  <div>每个生命周期接口都由 `@nestjs/websockets` 包导出。</div>
 </CalloutInfo>
 
 ## 服务器与命名空间
@@ -196,9 +190,7 @@ namespace: Namespace;
 ```
 
 <CalloutInfo>
-
-`@WebSocketServer()` 装饰器需从 `@nestjs/websockets` 包中导入。
-
+  <div>`@WebSocketServer()` 装饰器需从 `@nestjs/websockets` 包中导入。</div>
 </CalloutInfo>
 
 Nest 会在服务器实例准备就绪后，自动将其实例赋值到该属性。

@@ -121,9 +121,7 @@ export class SomeController {
 ```
 
 <CalloutInfo>
-
-对于模型（model），同样的逻辑适用，但用于 `ApiProperty` 装饰器。
-
+  <div>对于模型（model），同样的逻辑适用，但用于 `ApiProperty` 装饰器。</div>
 </CalloutInfo>
 
 对于控制器，你不仅可以提供摘要（summary），还可以添加描述（备注 remarks）、标签（如 `@deprecated`）以及响应示例。例如：
@@ -214,7 +212,7 @@ getCustomTransformers: (program: any) => ({
 
 ## SWC 构建器
 
-对于标准项目结构（非多包仓库结构 Monorepo），如需在 SWC 构建器中使用 CLI 插件，需要启用类型检查，具体操作请参考[此处](/recipes/swc#type-checking)。
+对于标准项目结构（非 Monorepo），如需在 SWC 构建器中使用 CLI 插件，需要启用类型检查，具体操作请参考[此处](/recipes/swc#type-checking)。
 
 ```bash
 $ nest start -b swc --type-check

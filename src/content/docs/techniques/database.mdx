@@ -489,9 +489,9 @@ export class AppModule {}
 </CalloutInfo>
 
 <CalloutInfo type='warning'>
-<p>
+<div>
 如果你使用 `TypeOrmModule.forRootAsync`，同样必须在 `useFactory` 之外设置数据源名称。例如：
-</p>
+</div>
 
 ```ts
 TypeOrmModule.forRootAsync({
@@ -501,7 +501,7 @@ TypeOrmModule.forRootAsync({
 }),
 ```
 
-<p>详情可参考[这个 issue](https://github.com/nestjs/typeorm/issues/86)。</p>
+<div className="mt-5">详情可参考[这个 issue](https://github.com/nestjs/typeorm/issues/86)。</div>
 </CalloutInfo>
 
 此时，你已经将 `User` 和 `Album` 实体分别注册到了各自的数据源。在这种配置下，调用 `TypeOrmModule.forFeature()` 方法和使用 `@InjectRepository()` 装饰器时，需要指定对应的数据源名称。如果不传递数据源名称，则默认使用 `default` 数据源。
@@ -848,7 +848,7 @@ export class UsersService {
 ```
 
 <CalloutInfo>
-  <p>别忘了将 `UsersModule` 导入到根模块 `AppModule` 中。</p>
+  <div>别忘了将 `UsersModule` 导入到根模块 `AppModule` 中。</div>
 </CalloutInfo>
 
 如果你希望在导入了 `SequelizeModule.forFeature` 的模块之外使用该模型，需要重新导出由其生成的提供者。
@@ -964,7 +964,7 @@ export class UsersService {
 ```
 
 <CalloutInfo>
-  <p>`Sequelize` 类需从 `sequelize-typescript` 包中导入。</p>
+  <div>`Sequelize` 类需从 `sequelize-typescript` 包中导入。</div>
 </CalloutInfo>
 
 接下来，可以使用该对象来创建事务：

@@ -39,7 +39,7 @@ export class CatsModule {}
 ```
 
 <CalloutInfo>
-  <p>你可以通过 CLI 执行 `$ nest g module cats` 命令来创建模块。</p>
+  <div>你可以通过 CLI 执行 `$ nest g module cats` 命令来创建模块。</div>
 </CalloutInfo>
 
 如上，我们在 `cats.module.ts` 文件中定义了 `CatsModule`，并将与该模块相关的所有内容移至 `cats` 目录。最后一步是将该模块导入根模块（即 `app.module.ts` 文件中定义的 `AppModule`）。
@@ -249,9 +249,9 @@ export class DatabaseModule {
 ```
 
 <CalloutInfo type="warning">
-  <p>
+  <div>
     如前所述，不建议将所有内容都设为全局模块。虽然全局模块可以减少样板代码，但更推荐按需导入，保持结构清晰、可维护，避免不必要的耦合。
-  </p>
+  </div>
 </CalloutInfo>
 
 你可以像下面这样导入和配置 `DatabaseModule`：

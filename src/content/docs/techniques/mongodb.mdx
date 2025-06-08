@@ -241,7 +241,7 @@ export class AppModule {}
 ```
 
 <CalloutInfo type="warning">
-  <p>请务必不要存在未命名或同名的多个连接，否则他们会被覆盖。</p>
+  <div>请务必不要存在未命名或同名的多个连接，否则他们会被覆盖。</div>
 </CalloutInfo>
 
 在这种配置下，你需要通过 `MongooseModule.forFeature()` 方法指定要使用的连接名称。
@@ -657,7 +657,7 @@ class Person {
 ```
 
 <CalloutInfo>
-  <p>`@Virtual()` 装饰器需从 `@nestjs/mongoose` 包中导入。</p>
+  <div>`@Virtual()` 装饰器需从 `@nestjs/mongoose` 包中导入。</div>
 </CalloutInfo>
 
 在上述示例中，`fullName` 虚拟属性是根据 `firstName` 和 `lastName` 计算得出的。虽然访问时表现得像普通属性，但它实际上并不会被保存到 MongoDB 文档中。

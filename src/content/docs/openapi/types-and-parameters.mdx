@@ -5,7 +5,7 @@ import enumQueryArrayImage from '/public/assets/enum_query_array.gif'
 
 # 类型与参数
 
-`SwaggerModule` 会在路由处理器（Route Handler）中查找所有的 `@Body()`、`@Query()` 和 `@Param()` 装饰器，以生成 API 文档（API Documentation）。同时，它还会利用反射机制（Reflection）自动创建相应的模型定义。请参考以下代码示例：
+`SwaggerModule` 会在路由处理器（Route Handler）中查找所有的 `@Body()`、`@Query()` 和 `@Param()` 装饰器，以生成 API 文档。同时，它还会利用反射机制（Reflection）自动创建相应的模型定义。请参考以下代码示例：
 
 ```ts
 @Post()
@@ -142,11 +142,11 @@ export enum UserRole {
 async filterByRole(@Query('role') role: UserRole = UserRole.User) {}
 ```
 
-<DocImage src={enumQueryImage} alt="Enum Query" />
+<DocImage src={enumQueryImage} alt="Enum Query" placeholder={undefined} />
 
 当 `isArray` 设置为 **true** 时，枚举可以作为**多选**项：
 
-<DocImage src={enumQueryArrayImage} alt="Enum Query Array" />
+<DocImage src={enumQueryArrayImage} alt="Enum Query Array" placeholder={undefined} />
 
 ## 枚举 schema
 
@@ -219,9 +219,7 @@ CatBreed:
 ```
 
 <CalloutInfo>
-
-任何带有 `enum` 属性的**装饰器**，同样支持 `enumName` 属性。
-
+  <div>任何带有 `enum` 属性的装饰器，同样支持 `enumName` 属性。</div>
 </CalloutInfo>
 
 ## 属性值示例
@@ -367,9 +365,7 @@ pets: Pet[];
 ```
 
 <CalloutInfo>
-
-`getSchemaPath()` 函数需从 `@nestjs/swagger` 导入。
-
+  <div>`getSchemaPath()` 函数需从 `@nestjs/swagger` 导入。</div>
 </CalloutInfo>
 
 `Cat` 和 `Dog` 都必须通过 `@ApiExtraModels()` 装饰器（应用于类级别）声明为额外模型。

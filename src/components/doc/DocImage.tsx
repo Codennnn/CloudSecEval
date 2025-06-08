@@ -1,10 +1,9 @@
-import Image, { type StaticImageData } from 'next/image'
+import Image, { ImageProps, type StaticImageData } from 'next/image'
 
 import { cn } from '~/lib/utils'
 
-interface DocImageProps {
+interface DocImageProps extends Omit<ImageProps, 'src'> {
   src: string | StaticImageData
-  alt?: string
   caption?: string
   className?: string
   width?: number
@@ -12,7 +11,7 @@ interface DocImageProps {
 }
 
 export function DocImage(props: DocImageProps) {
-  const { src, alt = '', caption, className, width, height } = props
+  const { src, alt = '', caption, className, width, height, placeholder, ...restProps } = props
 
   // 判断 src 是否为导入的静态图片资源
   const isStaticImage = typeof src === 'object' && 'src' in src
@@ -24,10 +23,11 @@ export function DocImage(props: DocImageProps) {
   return (
     <figure className={cn('flex flex-col items-center', className)}>
       <Image
+        {...restProps}
         alt={alt}
         className="illustrative-image rounded-lg h-auto max-w-full"
         height={imageHeight}
-        placeholder="blur"
+        placeholder={placeholder}
         src={src}
         width={imageWidth}
       />

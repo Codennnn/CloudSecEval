@@ -78,9 +78,7 @@ export class KillDragonCommand extends Command<{
 如你所见，`KillDragonCommand` 类继承自 `Command` 类。`Command` 是从 `@nestjs/cqrs` 包中导出的一个简单工具类，用于定义命令的返回类型。在本例中，返回类型是一个包含 `actionId` 属性的对象。现在，每当分发 `KillDragonCommand` 命令时，`CommandBus#execute()` 方法的返回类型会被推断为 `Promise<{ actionId: string }>`。当你希望从命令处理器返回一些数据时，这种方式非常有用。
 
 <CalloutInfo>
-
-继承 `Command` 类是可选的。只有在你需要定义命令的返回类型时才有必要。
-
+  <div>继承 `Command` 类是可选的。只有在你需要定义命令的返回类型时才有必要。</div>
 </CalloutInfo>
 
 `CommandBus` 代表命令的**流**。它负责将命令分发给合适的处理器。`execute()` 方法返回一个 Promise，该 Promise 会解析为处理器返回的值。
@@ -236,9 +234,7 @@ this.eventBus.publish(new HeroKilledDragonEvent())
 ```
 
 <CalloutInfo>
-
-`EventBus` 是一个可注入的类。
-
+  <div>`EventBus` 是一个可注入的类。</div>
 </CalloutInfo>
 
 每个事件都可以拥有多个**事件处理器**。
@@ -301,9 +297,7 @@ export class HeroesGameSagas {
 ```
 
 <CalloutInfo>
-
-`ofType` 操作符和 `@Saga()` 装饰器均由 `@nestjs/cqrs` 包导出。
-
+  <div>`ofType` 操作符和 `@Saga()` 装饰器均由 `@nestjs/cqrs` 包导出。</div>
 </CalloutInfo>
 
 `@Saga()` 装饰器用于将方法标记为 Saga。`events$` 参数是包含所有事件的 Observable 流。`ofType` 操作符会根据指定的事件类型过滤事件流。`map` 操作符则将事件映射为新的命令实例。

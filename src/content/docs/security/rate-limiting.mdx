@@ -181,9 +181,7 @@ export class WsThrottlerGuard extends ThrottlerGuard {
 ```
 
 <CalloutInfo>
-
-如果你使用的是 ws，需要将 `_socket` 替换为 `conn`。
-
+  <div>如果你使用的是 ws，需要将 `_socket` 替换为 `conn`。</div>
 </CalloutInfo>
 
 在使用 WebSocket 通信时，有几点需要注意：
@@ -282,9 +280,7 @@ export class AppModule {}
 对于分布式服务器场景，你可以使用社区提供的 [Redis 存储适配器](https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis)，实现统一的数据源。
 
 <CalloutInfo>
-
-`ThrottlerStorage` 可从 `@nestjs/throttler` 导入。
-
+  <div>`ThrottlerStorage` 可从 `@nestjs/throttler` 导入。</div>
 </CalloutInfo>
 
 ## 时间辅助方法

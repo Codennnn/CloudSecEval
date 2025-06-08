@@ -21,7 +21,7 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   const borderClass = useMemo(() => {
     switch (type) {
       case 'secondary':
-        return 'bg-[var(--color-secondary)] outline-[var(--color-background)]'
+        return 'bg-[var(--color-secondary)] outline-[var(--color-background)] [&_code]:outline [&_code]:outline-background'
 
       case 'info':
         return 'border-blue-500 bg-blue-500/10 outline-blue-500/30'

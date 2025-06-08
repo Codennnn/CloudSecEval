@@ -44,9 +44,7 @@ export class CatsController {
 ```
 
 <CalloutInfo>
-
-你可以通过 CLI 执行 `$ nest g controller [name]` 命令来创建控制器。
-
+  <div>你可以通过 CLI 执行 `$ nest g controller [name]` 命令来创建控制器。</div>
 </CalloutInfo>
 
 `@Get()` 是 HTTP 请求方法装饰器，放在 `findAll()` 方法前，告诉 Nest 需要为该方法创建一个特定的 HTTP 路由处理器。这个端点由 HTTP 请求方法（这里是 GET）和路由路径共同决定。那么，路由路径是什么？它由控制器声明的（可选）前缀和方法装饰器中指定的路径拼接而成。由于我们为控制器设置了 `cats` 前缀，并且方法装饰器没有指定额外路径，所以 Nest 会将 `GET /cats` 请求映射到该处理器。

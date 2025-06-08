@@ -1,8 +1,8 @@
 import replImage from '/public/assets/repl.gif'
 
-# 交互式命令行（Read-Eval-Print-Loop，REPL）
+# REPL（交互式命令行）
 
-REPL 是一个简单的交互式环境，可以接收用户的单条输入，执行后将结果返回给用户。
+REPL（Read-Eval-Print-Loop）是一个简单的交互式环境，可以接收用户的单条输入，执行后将结果返回给用户。
 REPL 功能允许你直接在终端中检查依赖关系图，并调用你的提供者和控制器的方法。
 
 ## 使用方法
@@ -77,7 +77,7 @@ AppModule:
 
 快速演示：
 
-<DocImage src={replImage} alt="REPL 示例" />
+<DocImage src={replImage} alt="REPL 示例" placeholder={undefined} />
 
 你可以在下方章节中找到更多关于内置原生方法的信息。
 
@@ -100,13 +100,13 @@ NestJS REPL 内置了一些原生函数，在启动 REPL 时会全局可用。�
   编写。
 </CalloutInfo>
 
-| 函数         | 描述                                                       | 签名                                                                  |
-| ------------ | ---------------------------------------------------------- | --------------------------------------------------------------------- |
-| `debug`      | 以列表形式打印所有已注册模块及其控制器和提供者。           | `debug(moduleCls?: ClassRef \| string) => void`                       |
-| `get` 或 `$` | 检索一个可注入类或控制器的实例，否则抛出异常。             | `get(token: InjectionToken) => any`                                   |
-| `methods`    | 显示某个提供者或控制器的所有公开方法。                     | `methods(token: ClassRef \| string) => void`                          |
-| `resolve`    | 解析可注入类或控制器的瞬态或请求作用域实例，否则抛出异常。 | `resolve(token: InjectionToken, contextId: any) => Promise<any>`      |
-| `select`     | 允许在模块树中导航，例如从选定模块中获取特定实例。         | `select(token: DynamicModule \| ClassRef) => INestApplicationContext` |
+| 函数                                                  | 描述                                                       | 签名                                                                  |
+| ----------------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------- |
+| `debug`                                               | 以列表形式打印所有已注册模块及其控制器和提供者。           | `debug(moduleCls?: ClassRef \| string) => void`                       |
+| <div className='whitespace-nowrap'>`get` 或 `$`</div> | 检索一个可注入类或控制器的实例，否则抛出异常。             | `get(token: InjectionToken) => any`                                   |
+| `methods`                                             | 显示某个提供者或控制器的所有公开方法。                     | `methods(token: ClassRef \| string) => void`                          |
+| `resolve`                                             | 解析可注入类或控制器的瞬态或请求作用域实例，否则抛出异常。 | `resolve(token: InjectionToken, contextId: any) => Promise<any>`      |
+| `select`                                              | 允许在模块树中导航，例如从选定模块中获取特定实例。         | `select(token: DynamicModule \| ClassRef) => INestApplicationContext` |
 
 ## 热重载（Watch 模式）
 
