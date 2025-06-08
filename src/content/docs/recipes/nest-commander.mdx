@@ -1,6 +1,6 @@
 # Nest 命令行工具
 
-在[独立应用](/standalone-applications) 文档的基础上，`nest-commander` 包为你提供了一种类似于常规 Nest 应用结构的命令行应用开发方式。详细介绍可参考 [nest-commander 官方文档](https://jmcdo29.github.io/nest-commander)。
+在[独立应用](/standalone-applications)文档的基础上，`nest-commander` 包为你提供了一种类似于常规 Nest 应用结构的命令行应用开发方式。详细介绍可参考 [nest-commander 官方文档](https://jmcdo29.github.io/nest-commander)。
 
 <CalloutInfo>
   `nest-commander` 是第三方包，并非由 NestJS
@@ -18,7 +18,7 @@ $ npm i nest-commander
 
 ## 命令文件
 
-`nest-commander` 让你可以通过[装饰器](https://www.typescriptlang.org/docs/handbook/decorators.html) 轻松编写命令行应用。你可以为类添加 `@Command()` 装饰器，为类的方法添加 `@Option()` 装饰器。每个命令文件都应实现 `CommandRunner` 抽象类，并使用 `@Command()` 装饰器进行修饰。
+`nest-commander` 让你可以通过[装饰器](https://www.typescriptlang.org/docs/handbook/decorators.html)轻松编写命令行应用。你可以为类添加 `@Command()` 装饰器，为类的方法添加 `@Option()` 装饰器。每个命令文件都应实现 `CommandRunner` 抽象类，并使用 `@Command()` 装饰器进行修饰。
 
 每个命令都会被 Nest 视为 `@Injectable()`，因此你可以像平常一样使用依赖注入。需要注意的是，每个命令都应实现 `CommandRunner` 抽象类。该抽象类确保所有命令都拥有一个 `run` 方法，该方法返回 `Promise<void>`，并接收 `string[], Record<string, any>` 两个参数。`run` 方法是你编写主要逻辑的地方，未被选项标志匹配的参数会以数组形式传入，方便你处理多个参数。至于选项参数 `Record<string, any>`，其属性名与 `@Option()` 装饰器中定义的 `name` 属性一致，属性值则为选项处理器的返回值。如果你希望有更好的类型安全性，也可以为选项自定义接口。
 

@@ -27,7 +27,7 @@ type Mutation {
 }
 ```
 
-`upvotePost()` 方法接收 `postId`（Int 类型）作为参数，并返回更新后的 `Post` 实体。出于在[解析器](/graphql/resolvers) 一节中解释的原因，我们需要显式设置返回类型。
+`upvotePost()` 方法接收 `postId`（Int 类型）作为参数，并返回更新后的 `Post` 实体。出于在[解析器](/graphql/resolvers)一节中解释的原因，我们需要显式设置返回类型。
 
 如果变更需要接收一个对象作为参数，我们可以创建一个 **输入类型（input type）**。输入类型是一种特殊的对象类型，可以作为参数传递（详细内容可参见[这里](https://graphql.org/learn/schema/#input-types)）。要声明输入类型，请使用 `@InputType()` 装饰器。
 

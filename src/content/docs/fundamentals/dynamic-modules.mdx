@@ -367,8 +367,8 @@ export class AppModule {}
 
 - `useFactory`：用于返回配置对象的工厂函数，可以是同步或异步函数。如果需要在工厂函数中注入依赖，请使用 `inject` 属性。上面的示例中就采用了这种方式。
 - `inject`：用于指定注入到工厂函数中的依赖项数组。依赖项的顺序必须与工厂函数参数的顺序一致。
-- `useClass`：指定一个类作为提供者，Nest 会实例化该类。该类必须实现相应的接口，通常需要提供一个 `create()` 方法用于返回配置对象。详细说明可参考下方[自定义方法名](/fundamentals/dynamic-modules#custom-method-key) 小节。
-- `useExisting`：`useClass` 的变体，允许你复用已注册的现有提供者，而不是让 Nest 新建一个类实例。当你希望使用模块中已存在的提供者时非常有用。需要注意，该类必须实现与 `useClass` 相同的接口（即需要提供 `create()` 方法，除非你自定义了方法名，详见下方[自定义方法名](/fundamentals/dynamic-modules#custom-method-key) 小节）。
+- `useClass`：指定一个类作为提供者，Nest 会实例化该类。该类必须实现相应的接口，通常需要提供一个 `create()` 方法用于返回配置对象。详细说明可参考下方[自定义方法名](/fundamentals/dynamic-modules#custom-method-key)小节。
+- `useExisting`：`useClass` 的变体，允许你复用已注册的现有提供者，而不是让 Nest 新建一个类实例。当你希望使用模块中已存在的提供者时非常有用。需要注意，该类必须实现与 `useClass` 相同的接口（即需要提供 `create()` 方法，除非你自定义了方法名，详见下方[自定义方法名](/fundamentals/dynamic-modules#custom-method-key)小节）。
 
 以上三种方式（`useFactory`、`useClass`、`useExisting`）互斥，请根据实际需求选择其中一种即可。
 

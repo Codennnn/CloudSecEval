@@ -106,7 +106,7 @@ XX:XX:XX AM - File change detected. Starting incremental compilation...
 XX:XX:XX AM - Found 0 errors. Watching for file changes.
 ```
 
-使用 NestJS 命令行工具（Nest CLI）以 watch 模式启动应用时，底层会调用 `tsc --watch`。自 TypeScript 4.9 起，[文件变更检测策略](https://devblogs.microsoft.com/typescript/announcing-typescript-4-9/#file-watching-now-uses-file-system-events) 发生了变化，这很可能是导致该问题的原因。
+使用 NestJS 命令行工具（Nest CLI）以 watch 模式启动应用时，底层会调用 `tsc --watch`。自 TypeScript 4.9 起，[文件变更检测策略](https://devblogs.microsoft.com/typescript/announcing-typescript-4-9/#file-watching-now-uses-file-system-events)发生了变化，这很可能是导致该问题的原因。
 
 为了解决该问题，需要在 tsconfig.json 文件中，在 `"compilerOptions"` 之后添加如下设置：
 

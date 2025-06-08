@@ -228,7 +228,7 @@ const app = await NestFactory.create(AppModule, {
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-这种方式虽然简单，但没有利用依赖注入机制来管理 `MyLogger` 类。在测试场景下可能会带来一定挑战，也会影响 `MyLogger` 的复用性。更推荐的做法请参考下方[依赖注入](/techniques/logger#dependency-injection) 部分。
+这种方式虽然简单，但没有利用依赖注入机制来管理 `MyLogger` 类。在测试场景下可能会带来一定挑战，也会影响 `MyLogger` 的复用性。更推荐的做法请参考下方[依赖注入](/techniques/logger#dependency-injection)部分。
 
 ## 扩展内置日志记录器
 
@@ -245,9 +245,9 @@ export class MyLogger extends ConsoleLogger {
 }
 ```
 
-你可以参考下方[应用日志记录](/techniques/logger#using-the-logger-for-application-logging) 一节，在功能模块中使用这种扩展后的日志记录器。
+你可以参考下方[应用日志记录](/techniques/logger#using-the-logger-for-application-logging)一节，在功能模块中使用这种扩展后的日志记录器。
 
-此外，也可以像[自定义实现](/techniques/logger#custom-logger-implementation) 一节所示，在应用选项对象的 `logger` 属性中传入该扩展日志记录器的实例，或采用下方[依赖注入](/techniques/logger#dependency-injection) 的方式，让 Nest 使用你的扩展日志记录器进行系统日志记录。需要注意的是，务必像上方示例代码那样调用 `super`，将具体日志方法委托给父类（内置类），以确保 Nest 能依赖其预期的内置特性。
+此外，也可以像[自定义实现](/techniques/logger#custom-logger-implementation)一节所示，在应用选项对象的 `logger` 属性中传入该扩展日志记录器的实例，或采用下方[依赖注入](/techniques/logger#dependency-injection)的方式，让 Nest 使用你的扩展日志记录器进行系统日志记录。需要注意的是，务必像上方示例代码那样调用 `super`，将具体日志方法委托给父类（内置类），以确保 Nest 能依赖其预期的内置特性。
 
 ## 依赖注入
 

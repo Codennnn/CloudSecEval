@@ -111,7 +111,7 @@ const lazyService = moduleRef.get(LazyService)
 在 Nest 中，控制器或 GraphQL 应用中的解析器（Resolver）用于处理一组路由、路径、主题，或 GraphQL 查询与变更。你无法通过 `LazyModuleLoader` 类对他们进行懒加载。
 
 <CalloutInfo type="warning">
-  在懒加载模块中注册的控制器、[解析器](/graphql/resolvers) 和[网关](/websockets/gateways)
+  在懒加载模块中注册的控制器、[解析器](/graphql/resolvers)和[网关](/websockets/gateways)
   都不会按预期工作。同样，无法按需注册中间件函数（即通过实现 `MiddlewareConsumer` 接口的中间件）。
 </CalloutInfo>
 

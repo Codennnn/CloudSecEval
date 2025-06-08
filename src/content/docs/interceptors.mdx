@@ -16,7 +16,7 @@ import interceptorImage from '/public/assets/Interceptors_1.png'
 
 ## 基础用法
 
-每个拦截器都需要实现 `intercept()` 方法。该方法接收两个参数：第一个是 `ExecutionContext` 实例（与[守卫](/guards) 中相同），它继承自 `ArgumentsHost`。在异常过滤器章节我们已介绍过 `ArgumentsHost`，它封装了传递给处理器的参数，并根据应用类型提供不同的参数数组。你可以参考[异常过滤器](/exception-filters#arguments-host) 章节了解更多。
+每个拦截器都需要实现 `intercept()` 方法。该方法接收两个参数：第一个是 `ExecutionContext` 实例（与守卫中相同），它继承自 `ArgumentsHost`。在异常过滤器章节我们已介绍过 `ArgumentsHost`，它封装了传递给处理器的参数，并根据应用类型提供不同的参数数组。你可以参考[异常过滤器](/exception-filters#arguments-host)章节了解更多。
 
 ## 执行上下文
 

@@ -249,7 +249,7 @@ export enum AllowedColor {
 }
 ```
 
-有时，后端内部枚举值与 API 公共接口中的值不同。例如，API 中为 `RED`，但在解析器中实际使用 `#f00`（详细说明见 [这里](https://www.apollographql.com/docs/apollo-server/schema/scalars-enums/#internal-values)）。要实现这一点，可以为 `AllowedColor` 枚举声明一个解析器对象：
+有时，后端内部枚举值与 API 公共接口中的值不同。例如，API 中为 `RED`，但在解析器中实际使用 `#f00`（详细说明见[这里](https://www.apollographql.com/docs/apollo-server/schema/scalars-enums/#internal-values)）。要实现这一点，可以为 `AllowedColor` 枚举声明一个解析器对象：
 
 ```ts
 export const allowedColorResolver: Record<keyof typeof AllowedColor, any> = {

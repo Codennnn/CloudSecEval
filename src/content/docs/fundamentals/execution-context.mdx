@@ -1,12 +1,12 @@
 # 执行上下文（Execution Context）
 
-Nest 提供了一系列实用类，帮助开发者轻松编写可在多种应用上下文（如基于 Nest 的 HTTP 服务器、微服务和 WebSocket）下运行的应用程序。这些工具类能够提供当前执行环境的信息，使我们能够构建通用的[守卫](/guards)、[异常过滤器](/exception-filters) 和[拦截器](/interceptors)，让他们适配不同的控制器、方法和执行环境。
+Nest 提供了一系列实用类，帮助开发者轻松编写可在多种应用上下文（如基于 Nest 的 HTTP 服务器、微服务和 WebSocket）下运行的应用程序。这些工具类能够提供当前执行环境的信息，使我们能够构建通用的[守卫](/guards)、[异常过滤器](/exception-filters)和[拦截器](/interceptors)，让他们适配不同的控制器、方法和执行环境。
 
 本章将重点介绍两个核心类：`ArgumentsHost` 和 `ExecutionContext`。
 
 ## ArgumentsHost 类
 
-`ArgumentsHost` 提供了一组方法，用于获取传递给处理器（handler）的参数。它允许我们根据不同的上下文（如 HTTP、RPC（微服务）或 WebSocket）获取对应的参数。框架会在需要访问参数的场景下自动注入 `ArgumentsHost` 实例，通常以 `host` 作为参数名。例如，在[异常过滤器](/exception-filters#arguments-host) 的 `catch()` 方法中会接收到一个 `ArgumentsHost` 实例。
+`ArgumentsHost` 提供了一组方法，用于获取传递给处理器（handler）的参数。它允许我们根据不同的上下文（如 HTTP、RPC（微服务）或 WebSocket）获取对应的参数。框架会在需要访问参数的场景下自动注入 `ArgumentsHost` 实例，通常以 `host` 作为参数名。例如，在[异常过滤器](/exception-filters#arguments-host)的 `catch()` 方法中会接收到一个 `ArgumentsHost` 实例。
 
 `ArgumentsHost` 本质上是对处理器参数的抽象。在 HTTP 服务器应用（如使用 `@nestjs/platform-express` 时），`host` 对象封装了 Express 的 `[request, response, next]` 数组，其中 `request` 是请求对象，`response` 是响应对象，`next` 用于控制请求-响应流程。而在 [GraphQL](/graphql/quick-start) 应用中，`host` 对象则包含 `[root, args, context, info]` 数组。
 

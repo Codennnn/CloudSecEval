@@ -15,7 +15,7 @@ await app.listen(process.env.PORT ?? 3000)
 `enableCors()` 方法可以接收一个可选的配置对象参数。该对象的可用属性请参考官方 [CORS 配置文档](https://github.com/expressjs/cors#configuration-options)。另外，你还可以传入一个[回调函数](https://github.com/expressjs/cors#configuring-cors-asynchronously)，根据每个请求动态（异步）生成配置对象。
 
 另外，也可以通过 `create()` 方法的 options 对象启用 CORS。将 `cors` 属性设置为 `true`，即可使用默认配置开启跨源资源共享。
-或者，将 [CORS 配置对象](https://github.com/expressjs/cors#configuration-options) 或[回调函数](https://github.com/expressjs/cors#configuring-cors-asynchronously) 作为 `cors` 属性的值传入，以自定义其行为。
+或者，将 [CORS 配置对象](https://github.com/expressjs/cors#configuration-options) 或[回调函数](https://github.com/expressjs/cors#configuring-cors-asynchronously)作为 `cors` 属性的值传入，以自定义其行为。
 
 ```ts
 const app = await NestFactory.create(AppModule, { cors: true })

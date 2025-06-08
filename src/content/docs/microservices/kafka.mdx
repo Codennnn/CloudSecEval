@@ -114,9 +114,9 @@ Kafka 微服务的消息模式（Message pattern）会为请求和响应通道�
 ## 消息响应订阅（Message response subscription）
 
 <CalloutInfo type="warning">
-  本节内容仅适用于你使用[请求-响应](/microservices/basics#request-response) 消息风格（即使用
+  本节内容仅适用于你使用[请求-响应](/microservices/basics#request-response)消息风格（即使用
   `@MessagePattern` 装饰器和 `ClientKafkaProxy#send`
-  方法）时。对于[基于事件](/microservices/basics#event-based) 通信（`@EventPattern` 装饰器和
+  方法）时。对于[基于事件](/microservices/basics#event-based)通信（`@EventPattern` 装饰器和
   `ClientKafkaProxy#emit` 方法），无需订阅响应主题。
 </CalloutInfo>
 
@@ -220,7 +220,7 @@ export class HeroesController {
 
 虽然请求-响应（request-response）方式非常适合服务之间的消息交换，但当你的消息风格是基于事件（event-based）时（例如 Kafka 场景下），这种方式就不太合适了 —— 此时你只需要发布事件**而无需等待响应**。在这种情况下，你不希望为维护两个主题（topic）而引入请求-响应所需的额外开销。
 
-你可以参考以下两个章节，进一步了解相关内容：[概览：基于事件](/microservices/basics#event-based) 以及[概览：事件发布](/microservices/basics#publishing-events)。
+你可以参考以下两个章节，进一步了解相关内容：[概览：基于事件](/microservices/basics#event-based)以及[概览：事件发布](/microservices/basics#publishing-events)。
 
 ## 上下文（Context）
 

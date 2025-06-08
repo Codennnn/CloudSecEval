@@ -223,7 +223,7 @@ const dbUser = this.configService.get<string>('DATABASE_USER')
 const dbHost = this.configService.get<string>('database.host')
 ```
 
-如上所示，调用 `configService.get()` 并传入变量名即可获取环境变量。你还可以通过传递类型参数（如 `get<string>(...)`）获得 TypeScript 类型提示。对于通过[自定义配置文件](/techniques/configuration#custom-configuration-files) 创建的嵌套配置对象，也可以使用点号语法访问其属性。
+如上所示，调用 `configService.get()` 并传入变量名即可获取环境变量。你还可以通过传递类型参数（如 `get<string>(...)`）获得 TypeScript 类型提示。对于通过[自定义配置文件](/techniques/configuration#custom-configuration-files)创建的嵌套配置对象，也可以使用点号语法访问其属性。
 
 此外，还可以通过接口类型提示，一次性获取整个嵌套的自定义配置对象：
 
