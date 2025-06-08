@@ -1,6 +1,6 @@
 # 异常过滤器（Exception filters）
 
-HTTP [异常过滤器](/exception-filters) 层与对应的 WebSocket 层唯一的区别在于，这里不再抛出 `HttpException`，而是应该使用 `WsException`。
+HTTP [异常过滤器](/exception-filters)层与对应的 WebSocket 层唯一的区别在于，这里不再抛出 `HttpException`，而是应该使用 `WsException`。
 
 ```ts
 throw new WsException('Invalid credentials.')

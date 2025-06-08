@@ -508,7 +508,7 @@ export class AudioService implements OnModuleInit {
 
 ## 安装 Bull
 
-<CalloutInfo type='warning'>
+<CalloutInfo type="warning">
 
 如果你决定使用 BullMQ，请跳过本节及后续相关章节。
 
@@ -747,7 +747,7 @@ export class AudioConsumer {
 async transcode(job: Job<unknown>) { ... }
 ```
 
-<CalloutInfo type='warning'>
+<CalloutInfo type="warning">
   当为同一个队列定义多个消费者时，`@Process({ concurrency: 1 })` 中的 `concurrency`（并发数）选项不会生效。最小的并发数会等于定义的消费者数量。即使 `@Process()` 处理器使用不同的 `name` 处理命名任务，这一规则同样适用。
 </CalloutInfo>
 

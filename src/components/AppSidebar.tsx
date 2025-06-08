@@ -28,13 +28,13 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   <div className="flex justify-center items-center">
                     <Image
                       alt="NestJS Logo"
-                      height={30}
+                      height={32}
                       src="/logo.png"
-                      width={30}
+                      width={32}
                     />
                   </div>
 
-                  <div className="flex flex-col gap-0.5 leading-none">
+                  <div className="flex flex-col gap-0.5">
                     <div className="font-semibold">NestJS 中文文档</div>
                     <div className="text-xs text-muted-foreground font-medium">v10.0.0</div>
                   </div>

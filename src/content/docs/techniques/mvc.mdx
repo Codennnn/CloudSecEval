@@ -1,21 +1,21 @@
 # MVC 模式
 
-Nest 默认在底层使用了 [Express](https://github.com/expressjs/express) 库。因此，所有适用于 Express 的 MVC（模型-视图-控制器）模式的用法，同样适用于 Nest。
+Nest 默认底层集成了 [Express](https://github.com/expressjs/express) 框架。因此，所有适用于 Express 的 MVC（模型-视图-控制器）模式的用法，同样适用于 Nest。
 
-首先，我们可以使用[命令行工具（CLI）](https://github.com/nestjs/nest-cli) 脚手架快速创建一个简单的 Nest 应用：
+通常，我们可以借助 [命令行工具（CLI）](https://github.com/nestjs/nest-cli) 脚手架，快速创建一个简单的 Nest 应用：
 
 ```bash
 $ npm i -g @nestjs/cli
 $ nest new project
 ```
 
-为了创建一个 MVC 应用，我们还需要安装一个[模板引擎（template engine）](https://expressjs.com/en/guide/using-template-engines.html) 来渲染 HTML 视图：
+如果你希望构建一个 MVC 应用，还需要安装一个[模板引擎（template engine）](https://expressjs.com/en/guide/using-template-engines.html) 来渲染 HTML 视图。例如，这里我们选择了 `hbs`（[Handlebars](https://github.com/pillarjs/hbs#readme)）模板引擎：
 
 ```bash
 $ npm install --save hbs
 ```
 
-这里我们使用了 `hbs`（[Handlebars](https://github.com/pillarjs/hbs#readme)）模板引擎，你也可以根据实际需求选择其他模板引擎。安装完成后，需要通过以下代码配置 Express 实例：
+你也可以根据实际需求选择其他模板引擎。安装完成后，需要通过如下代码配置 Express 实例：
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
@@ -26,8 +26,11 @@ import { AppModule } from './app.module'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
+  // 配置静态资源目录
   app.useStaticAssets(join(__dirname, '..', 'public'))
+  // 配置视图模板目录
   app.setBaseViewsDir(join(__dirname, '..', 'views'))
+  // 设置模板引擎为 hbs
   app.setViewEngine('hbs')
 
   await app.listen(process.env.PORT ?? 3000)
@@ -36,11 +39,11 @@ async function bootstrap() {
 bootstrap()
 ```
 
-在上述代码中，我们告知 [Express](https://github.com/expressjs/express)：`public` 目录用于存放静态资源，`views` 目录用于存放视图模板，渲染 HTML 输出时使用 `hbs` 模板引擎。
+在上述代码中，我们指定 `public` 目录用于存放静态资源，`views` 目录用于存放视图模板，并将 `hbs` 作为渲染 HTML 的模板引擎。
 
 ## 模板渲染
 
-现在，让我们创建一个 `views` 目录，并在其中添加一个 `index.hbs` 模板。在该模板中，我们将输出从控制器传递过来的 `message` ：
+接下来，我们来创建一个 `views` 目录，并在其中添加一个名为 `index.hbs` 的模板文件。在这个模板中，我们将展示从控制器传递过来的 `message` ：
 
 ```html
 <!DOCTYPE html>
@@ -55,7 +58,7 @@ bootstrap()
 </html>
 ```
 
-接下来，打开 `app.controller` 文件，并将 `root()` 方法替换为以下代码：
+然后，打开 `app.controller` 文件，将 `root()` 方法替换为以下内容：
 
 ```ts filename='app.controller.ts'
 import { Get, Controller, Render } from '@nestjs/common'
@@ -70,22 +73,22 @@ export class AppController {
 }
 ```
 
-在上述代码中，我们通过 `@Render()` 装饰器指定了要使用的模板，并且路由处理器方法的返回值会传递给模板进行渲染。请注意，返回值是一个包含 `message` 属性的对象，这与我们在模板中创建的 `message` 占位符相对应。
+在上面的代码中，我们通过 `@Render()` 装饰器指定了要渲染的模板。路由处理器方法的返回值会作为数据传递给模板进行渲染。请注意，这里返回的是一个包含 `message` 属性的对象，这与我们在模板中定义的 `message` 占位符相对应。
 
-当应用正在运行时，打开浏览器并访问 `http://localhost:3000`，你应该可以看到 `Hello world!` 消息。
+当应用运行后，打开浏览器访问 `http://localhost:3000`，你就可以看到页面上显示的 `Hello world!` 消息了。
 
 ## 动态模板渲染
 
-如果应用程序逻辑需要动态决定渲染哪个模板，则应使用 `@Res()` 装饰器，并在路由处理器中传递视图名称，而不是在 `@Render()` 装饰器中指定：
+当你的应用需要根据业务逻辑动态选择渲染的模板时，推荐使用 `@Res()` 装饰器，并在路由处理器中传递视图名称，而不是直接在 `@Render()` 装饰器中指定：
 
 <CalloutInfo>
-  当 Nest 检测到 `@Res()` 装饰器时，会注入特定库的响应对象（Response
-  Object）。我们可以使用该对象动态渲染模板。详细了解响应对象
-  API，请参见[这里](https://expressjs.com/en/api.html)。
+  当 Nest 检测到 `@Res()` 装饰器时，会自动注入对应库的响应对象（Response
+  Object）。你可以通过该对象灵活地动态渲染模板。想要了解响应对象的详细 API，请参见
+  [这里](https://expressjs.com/en/api.html)。
 </CalloutInfo>
 
 ```ts filename='app.controller.ts'
-import { Get, Controller, Res, Render } from '@nestjs/common'
+import { Get, Controller, Res } from '@nestjs/common'
 import { Response } from 'express'
 import { AppService } from './app.service'
 
@@ -95,6 +98,7 @@ export class AppController {
 
   @Get()
   root(@Res() res: Response) {
+    // 动态渲染模板，模板名称由服务层方法返回
     return res.render(this.appService.getViewName(), { message: 'Hello world!' })
   }
 }
@@ -102,17 +106,17 @@ export class AppController {
 
 ## 示例
 
-一个可用的示例项目可在[这里](https://github.com/nestjs/nest/tree/master/sample/15-mvc) 查看。
+你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/15-mvc)查看一个可用的示例项目。
 
 ## 在 Fastify 中使用
 
-如本[章节](/techniques/performance)所述，我们可以将任何兼容的 HTTP 提供者（HTTP provider）与 Nest 一起使用。其中一个常用库就是 [Fastify](https://github.com/fastify/fastify)。要使用 Fastify 创建 MVC 应用，需要安装以下依赖包：
+如本[章节](/techniques/performance)所述，Nest 支持与任何兼容的 HTTP 提供者协同工作。其中，常用的库之一就是 [Fastify](https://github.com/fastify/fastify)。如果你想用 Fastify 创建 MVC 应用，需要先安装以下依赖：
 
 ```bash
 $ npm i --save @fastify/static @fastify/view handlebars
 ```
 
-接下来的步骤与使用 Express 时几乎一致，只是针对平台有一些细微差别。安装完成后，打开 `main.ts` 文件，并更新其内容如下：
+后续步骤与使用 Express 时基本一致，仅在平台细节上略有不同。安装完成后，打开 `main.ts` 文件，并将内容更新为：
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
@@ -138,7 +142,7 @@ async function bootstrap() {
 bootstrap()
 ```
 
-Fastify API 与其他平台有一些差异，但这些方法调用的最终效果是一样的。需要注意的是，在使用 Fastify 时，传递给 `@Render()` 装饰器的模板名称必须包含文件扩展名。
+Fastify 的 API 与其他平台略有差异，但最终实现的效果是一致的。需要注意的是，使用 Fastify 时，传递给 `@Render()` 装饰器的模板名称必须包含文件扩展名。
 
 你可以这样设置：
 
@@ -155,7 +159,7 @@ export class AppController {
 }
 ```
 
-另外，你也可以使用 `@Res()` 装饰器，直接注入响应对象，并指定要渲染的视图，如下所示：
+此外，你也可以通过 `@Res()` 装饰器直接注入响应对象，并指定要渲染的视图，例如：
 
 ```ts
 import { Res } from '@nestjs/common';
@@ -167,8 +171,8 @@ root(@Res() res: FastifyReply) {
 }
 ```
 
-当应用正在运行时，打开浏览器并访问 `http://localhost:3000`，你应该可以看到 `Hello world!` 的消息。
+当应用启动后，打开浏览器访问 `http://localhost:3000`，你应该可以看到 `Hello world!` 的消息。
 
 ## 示例
 
-一个可用的示例项目可在[这里](https://github.com/nestjs/nest/tree/master/sample/17-mvc-fastify) 查看。
+你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/17-mvc-fastify)查看一个可用的示例项目。

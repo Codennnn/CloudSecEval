@@ -169,7 +169,7 @@ export default () => {
 }
 ```
 
-<CalloutInfo type='warning'>
+<CalloutInfo type="warning">
 Nest CLI 在构建过程中不会自动将你的“资源文件”（非 TS 文件）移动到 `dist` 目录。为了确保 YAML 文件被正确复制，需要在 `nest-cli.json` 的 `compilerOptions#assets` 字段中进行配置。例如，如果 `config` 文件夹与 `src` 文件夹同级，可以这样设置：`"assets": [{{ '{' }}"include": "../config/*.yaml", "outDir": "./dist/config"{{ '}' }}]`。详细说明可参考[官方文档](/cli/monorepo#资源文件)。
 </CalloutInfo>
 

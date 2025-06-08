@@ -69,7 +69,7 @@ import helmet from '@fastify/helmet'
 await app.register(helmet)
 ```
 
-<CalloutInfo type='warning'>
+<CalloutInfo type="warning">
 <div>
 当你同时使用 `apollo-server-fastify` 和 `@fastify/helmet` 时，GraphQL playground 可能会因为 [CSP](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 配置导致无法访问。为了解决该冲突，请按照如下方式配置 CSP：
 </div>

@@ -89,7 +89,7 @@ const { LazyService } = await import('./lazy.service')
 const lazyService = moduleRef.get(LazyService)
 ```
 
-<CalloutInfo type='warning'>
+<CalloutInfo type="warning">
   如果你使用 Webpack，请确保在 `tsconfig.json` 文件中设置 `compilerOptions.module` 为 `"esnext"`，并添加 `compilerOptions.moduleResolution` 属性，值为 `"node"`：
 
 ```json

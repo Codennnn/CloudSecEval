@@ -48,7 +48,7 @@ findOne(): UserEntity {
 }
 ```
 
-<CalloutInfo type='warning'>
+<CalloutInfo type="warning">
 请注意，必须返回类的实例。如果你返回的是普通的 JavaScript 对象，例如 `{{ '{' }} user: new UserEntity() {{ '}' }}`，则无法被正确序列化。
 </CalloutInfo>
 

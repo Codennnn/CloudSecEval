@@ -1,18 +1,18 @@
 # 性能优化（Fastify）
 
-默认情况下，Nest 使用 [Express](https://expressjs.com/) 框架。如前文所述，Nest 也支持与其他库兼容，例如 [Fastify](https://github.com/fastify/fastify)。Nest 通过实现一个框架适配器（framework adapter），实现了对框架的无关性。适配器的主要作用是将中间件和处理器代理到对应库的实现。
+在默认情况下，Nest 使用 [Express](https://expressjs.com/) 框架。不过，正如前文所述，Nest 也支持与其他库集成，例如 [Fastify](https://github.com/fastify/fastify)。Nest 通过实现框架适配器（framework adapter），实现了对底层框架的无关性。适配器的核心作用，是将中间件和处理器代理到对应库的实现上。
 
 <CalloutInfo>
-  请注意，要实现一个框架适配器，目标库必须提供类似于 Express 的请求/响应管道处理机制。
+  请注意，若要实现框架适配器，目标库必须具备类似 Express 的请求/响应管道处理机制。
 </CalloutInfo>
 
-[Fastify](https://github.com/fastify/fastify) 是 Nest 的一个优秀替代框架，因为它在设计上与 Express 类似地解决了许多问题。然而，Fastify 的性能比 Express 更快，基准测试结果几乎是 Express 的两倍。那为什么 Nest 默认使用 Express 作为 HTTP 服务器呢？原因在于 Express 被广泛使用、知名度高，并且拥有大量可用的中间件，这些中间件可以直接被 Nest 用户使用。
+[Fastify](https://github.com/fastify/fastify) 是 Nest 的一个优秀替代方案。它在设计上与 Express 一样，能够解决许多类似的问题，但在性能方面表现更佳。基准测试显示，Fastify 的速度几乎是 Express 的两倍。那么，为什么 Nest 默认选择 Express 作为 HTTP 服务器？主要原因在于 Express 拥有广泛的用户基础和极高的知名度，同时还提供了大量可直接用于 Nest 的中间件资源。
 
-但由于 Nest 实现了框架无关性，你可以轻松地在他们之间切换。当你非常重视高性能时，Fastify 可能是更好的选择。要使用 Fastify，只需像本章所示选择内置的 `FastifyAdapter` 即可。
+得益于 Nest 的框架无关性，你可以轻松地在不同框架之间切换。如果你对性能有更高的要求，Fastify 可能会是更优的选择。要启用 Fastify，只需按照本章所示，选择内置的 `FastifyAdapter` 即可。
 
 ## 安装
 
-首先，我们需要安装所需的包：
+首先，需要安装相关依赖包：
 
 ```bash
 $ npm i --save @nestjs/platform-fastify
@@ -20,7 +20,7 @@ $ npm i --save @nestjs/platform-fastify
 
 ## 适配器
 
-安装 Fastify 平台后，我们就可以使用 `FastifyAdapter` 了。
+安装 Fastify 平台后，你就可以直接使用 `FastifyAdapter` 了。
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
@@ -35,7 +35,7 @@ async function bootstrap() {
 bootstrap()
 ```
 
-默认情况下，Fastify 只监听 `localhost 127.0.0.1` 接口（[详细说明](https://www.fastify.io/docs/latest/Guides/Getting-Started/#your-first-server)）。如果你希望在其他主机上接受连接，需要在 `listen()` 方法中指定 `'0.0.0.0'`：
+默认情况下，Fastify 只会监听 `localhost 127.0.0.1`（[详细说明](https://www.fastify.io/docs/latest/Guides/Getting-Started/#your-first-server)）。如果你希望让应用能够被其他主机访问，需要在 `listen()` 方法中显式指定 `'0.0.0.0'`：
 
 ```ts
 async function bootstrap() {
@@ -46,22 +46,22 @@ async function bootstrap() {
 
 ## 平台专用包
 
-请注意，当你使用 `FastifyAdapter` 时，Nest 会将 Fastify 作为 **HTTP 服务器**。这意味着所有依赖于 Express 的用法在 Fastify 下可能无法正常工作。你应该使用 Fastify 的等效包来实现相同功能。
+需要注意的是，当你使用 `FastifyAdapter` 时，Nest 会将 Fastify 作为 **HTTP 服务器**。这意味着所有依赖 Express 的用法，在 Fastify 下可能无法直接使用。你应当选择 Fastify 的等效包来实现相同功能。
 
 ## 重定向响应
 
-Fastify 处理重定向响应的方式与 Express 略有不同。要在 Fastify 中实现正确的重定向，需要同时返回状态码和 URL，示例如下：
+Fastify 处理重定向响应的方式与 Express 略有不同。要在 Fastify 中实现重定向，需要同时返回状态码和目标 URL，示例如下：
 
 ```ts
 @Get()
 index(@Res() res) {
-  res.status(302).redirect('/login');
+  res.status(302).redirect('/login')
 }
 ```
 
 ## Fastify 配置项
 
-你可以通过 `FastifyAdapter` 构造函数向 Fastify 构造函数传递配置项。例如：
+你可以通过 `FastifyAdapter` 构造函数，将配置项直接传递给 Fastify 实例。例如：
 
 ```ts
 new FastifyAdapter({ logger: true })
@@ -69,25 +69,24 @@ new FastifyAdapter({ logger: true })
 
 ## 中间件
 
-中间件函数会获取原始的 `req` 和 `res` 对象，而不是 Fastify 的封装对象。这是因为底层使用了 `middie` 包以及 `fastify` 的机制。详细信息可参考 [Fastify 官方文档](https://www.fastify.io/docs/latest/Reference/Middleware/)。
+中间件函数接收到的是原始的 `req` 和 `res` 对象，而不是 Fastify 封装后的对象。这是因为底层集成了 `middie` 包，并结合了 Fastify 的相关机制。更多信息请参考 [Fastify 官方文档 - Middleware](https://www.fastify.io/docs/latest/Reference/Middleware/)。
 
 ```ts filename='logger.middleware.ts'
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { Injectable, NestMiddleware } from '@nestjs/common'
+import { FastifyRequest, FastifyReply } from 'fastify'
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: FastifyRequest['raw'], res: FastifyReply['raw'], next: () => void) {
-    console.log('Request...');
-    next();
+    console.log('Request...')
+    next()
   }
-}
 }
 ```
 
-## 路由配置（Route Config）
+## 路由配置
 
-你可以结合 Fastify 的[路由配置](https://fastify.dev/docs/latest/Reference/Routes/#config) 功能，配合 `@RouteConfig()` 装饰器来使用。
+你可以结合 Fastify 的[路由配置（Route Config）](https://fastify.dev/docs/latest/Reference/Routes/#config)功能，并配合 `@RouteConfig()` 装饰器一起使用，实现更灵活的路由行为。
 
 ```ts
 @RouteConfig({ output: 'hello world' })
@@ -99,19 +98,19 @@ index(@Req() req) {
 
 ## 路由约束（Route Constraints）
 
-自 v10.3.0 起，`@nestjs/platform-fastify` 支持 Fastify 的[路由约束](https://fastify.dev/docs/latest/Reference/Routes/#constraints) 功能，可以通过 `@RouteConstraints` 装饰器实现。
+自 v10.3.0 起，`@nestjs/platform-fastify` 已支持 Fastify 的[路由约束](https://fastify.dev/docs/latest/Reference/Routes/#constraints)功能。你可以通过 `@RouteConstraints` 装饰器，为路由添加约束条件。
 
 ```ts
 @RouteConstraints({ version: '1.2.x' })
 newFeature() {
-  return '此功能仅适用于版本 >= 1.2.x';
+  return '此功能仅适用于版本 >= 1.2.x'
 }
 ```
 
 <CalloutInfo>
-  `@RouteConfig()` 和 `@RouteConstraints` 需从 `@nestjs/platform-fastify` 导入。
+  `@RouteConfig()` 和 `@RouteConstraints` 需要从 `@nestjs/platform-fastify` 导入。
 </CalloutInfo>
 
 ## 示例
 
-你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/10-fastify) 查看完整示例。
+你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/10-fastify)查看完整示例。

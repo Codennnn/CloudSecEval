@@ -60,7 +60,7 @@ export class CatsController {
 | <div className='whitespace-nowrap'>标准方式（推荐）</div> | 使用这种内置方式时，当请求处理器返回 JavaScript 对象或数组时，Nest 会自动将其序列化为 JSON。当返回 JavaScript 原始类型（如 `string`、`number`、 `boolean`）时，Nest 会直接发送该值，而不会尝试序列化。这样，响应处理变得非常简单：只需返回值，Nest 会自动处理剩下的事情。<br />此外，响应的状态码默认总是 200，POST 请求除外（默认为 201）。我们可以通过在处理器级别添加 `@HttpCode(...)` 装饰器（详见[自定义状态码](#自定义状态码)）轻松更改这一行为。 |
 | <div className='whitespace-nowrap'>库特定方式</div>       | 我们也可以使用特定库（如 Express）的[响应对象（response object）](https://expressjs.com/en/api.html#res)，通过在方法参数中使用 `@Res()` 装饰器注入（如 `findAll(@Res() response)`）。采用这种方式，你可以使用该对象提供的原生响应处理方法。例如，在 Express 中，可以通过 `response.status(200).send()` 构造响应。                                                                                                                                       |
 
-<CalloutInfo type='warning'>
+<CalloutInfo type="warning">
   当处理器使用了 `@Res()` 或 `@Next()` 时，Nest 会检测到你选择了库特定方式。如果两种方式同时使用，标准方式会在该路由下被**自动禁用**，无法正常工作。如果你想同时使用（例如只注入响应对象用于设置 cookie/headers，其余交由框架处理），必须在 `@Res({ passthrough: true })` 装饰器中设置 `passthrough` 选项为 `true`。
 </CalloutInfo>
 
