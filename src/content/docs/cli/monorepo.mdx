@@ -260,9 +260,9 @@ Nest 会将组织、构建和部署标准项目及多包仓库结构的元数据
 ```
 
 <CalloutInfo type="warning">
-  <p className='mb-0'>
+  <div>
     当 `spec` 以对象形式指定时，生成 schematic 的 key 目前不支持自动别名处理。这意味着如果只指定了 `service: false`，但通过别名 `s` 生成 service，仍会生成 spec 文件。为确保命令名和别名都按预期工作，请同时指定命令名和别名，如下所示：
-  </p>
+  </div>
 
 ```json
 {

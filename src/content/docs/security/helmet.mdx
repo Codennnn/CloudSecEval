@@ -28,12 +28,12 @@ app.use(helmet())
 ```
 
 <CalloutInfo>
-  <p className='mb-0'>
+  <div>
   当你同时使用 `helmet`、`@apollo/server`（4.x）以及 [Apollo
   Sandbox](/graphql/quick-start#apollo-sandbox) 时，Apollo Sandbox 可能会因为
   [CSP（内容安全策略）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP)
   配置导致无法正常访问。为了解决该问题，请按照如下方式配置 CSP：
-  </p>
+  </div>
 
 ```ts
 app.use(
@@ -70,9 +70,9 @@ await app.register(helmet)
 ```
 
 <CalloutInfo type='warning'>
-<p className='mb-0'>
+<div>
 当你同时使用 `apollo-server-fastify` 和 `@fastify/helmet` 时，GraphQL playground 可能会因为 [CSP](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 配置导致无法访问。为了解决该冲突，请按照如下方式配置 CSP：
-</p>
+</div>
 
 ```ts
 await app.register(fastifyHelmet, {

@@ -1,4 +1,4 @@
-# 懒加载模块（Lazy loading modules）
+# 懒加载模块
 
 默认情况下，Nest 应用会**急切加载**（eagerly loaded）所有模块，也就是说，应用启动时，无论是否立即需要，所有模块都会被加载。对于大多数场景，这种方式并无问题，但在无服务器环境（serverless environment）或 worker 场景下，启动延迟（“冷启动”）尤为关键，此时急切加载可能成为瓶颈。
 
@@ -42,9 +42,9 @@ const moduleRef = await this.lazyModuleLoader.load(() => LazyModule)
 ```
 
 <CalloutInfo>
-<p className='mb-0'>
+<div>
 “懒加载”模块在首次通过 `LazyModuleLoader#load` 方法加载时会被缓存。这意味着，后续每次加载同一个模块都会非常快，并且直接返回缓存实例，而不会重复加载。
-</p>
+</div>
 
 ```bash
 第 1 次加载 "LazyModule"
