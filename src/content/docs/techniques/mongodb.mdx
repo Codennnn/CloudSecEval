@@ -402,7 +402,7 @@ export const EventSchema = SchemaFactory.createForClass(Event)
 ```
 
 <CalloutInfo>
-Mongoose 区分不同判别器模型的方式是通过"判别器键（discriminator key）"，默认值为 `__t`。Mongoose 会在你的模式中添加一个名为 `__t` 的字符串路径，用于标记该文档属于哪个判别器模型。
+Mongoose 区分不同判别器模型的方式是通过“判别器键（discriminator key）”，默认值为 `__t`。Mongoose 会在你的模式中添加一个名为 `__t` 的字符串路径，用于标记该文档属于哪个判别器模型。
 
 你也可以通过 `discriminatorKey` 选项自定义判别路径。
 

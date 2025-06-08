@@ -293,7 +293,7 @@ constructor(private configService: ConfigService<{ PORT: number }, true>) {
 
 ## 配置命名空间（Configuration namespaces）
 
-`配置模块（ConfigModule）` 支持像[自定义配置文件](/techniques/configuration#custom-configuration-files)那样，定义并加载多个自定义配置文件。对于复杂的配置层级结构，你可以通过嵌套配置对象进行管理。此外，还可以使用 `registerAs()` 函数，返回一个"命名空间配置对象（namespaced configuration object）"。示例代码如下：
+`配置模块（ConfigModule）` 支持像[自定义配置文件](/techniques/configuration#custom-configuration-files)那样，定义并加载多个自定义配置文件。对于复杂的配置层级结构，你可以通过嵌套配置对象进行管理。此外，还可以使用 `registerAs()` 函数，返回一个“命名空间配置对象（namespaced configuration object）”。示例代码如下：
 
 ```ts filename='config/database.config.ts'
 import { registerAs } from '@nestjs/config'

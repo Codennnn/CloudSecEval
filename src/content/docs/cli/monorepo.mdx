@@ -136,15 +136,15 @@ $ nest start my-app
 
 ## 应用（Application）
 
-应用类型项目，或我们通常所说的"应用"，是可以运行和部署的完整 Nest 应用。你可以通过 `nest generate app` 命令生成一个应用类型项目。
+应用类型项目，或我们通常所说的“应用”，是可以运行和部署的完整 Nest 应用。你可以通过 `nest generate app` 命令生成一个应用类型项目。
 
 该命令会自动生成项目骨架，包括 [typescript starter](https://github.com/nestjs/typescript-starter) 中的标准 `src` 和 `test` 文件夹。与标准模式不同的是，多包仓库结构下的应用项目不会包含任何包依赖（`package.json`）或其他项目配置文件（如 `.prettierrc` 和 `eslint.config.mjs`）。相反，依赖和配置文件在整个多包仓库范围内统一管理。
 
 不过，原型生成器（schematic）会在项目根目录下生成一个项目专用的 `tsconfig.app.json` 文件。该配置文件会自动设置合适的构建选项，包括正确设置编译输出目录。该文件会继承顶层（多包仓库）`tsconfig.json` 文件，因此你可以在全局范围内管理设置，也可以在项目级别进行覆盖。
 
-## 库（Library）
+## 库
 
-如前所述，库类型项目，简称"库"，是需要被组合进应用后才能运行的 Nest 组件包。你可以通过 `nest generate library` 命令生成库类型项目。至于哪些内容适合放入库中，这是一个架构设计决策。我们会在[libraries](/cli/libraries)章节中详细讨论库的相关内容。
+如前所述，库类型项目，简称“库（Library）”，是需要被组合进应用后才能运行的 Nest 组件包。你可以通过 `nest generate library` 命令生成库类型项目。至于哪些内容适合放入库中，这是一个架构设计决策。我们会在[libraries](/cli/libraries)章节中详细讨论库的相关内容。
 
 ## CLI 属性
 

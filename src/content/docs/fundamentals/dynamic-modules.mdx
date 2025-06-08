@@ -285,7 +285,7 @@ export const CONFIG_OPTIONS = 'CONFIG_OPTIONS'
 
 ## 可配置模块构建器（ConfigurableModuleBuilder）
 
-手动实现高度可配置、支持异步方法（如 `registerAsync`、`forRootAsync` 等）的动态模块，对新手来说较为复杂。为此，Nest 提供了 `ConfigurableModuleBuilder`，可帮助你用极少代码快速构建模块"蓝图"。
+手动实现高度可配置、支持异步方法（如 `registerAsync`、`forRootAsync` 等）的动态模块，对新手来说较为复杂。为此，Nest 提供了 `ConfigurableModuleBuilder`，可帮助你用极少代码快速构建模块“蓝图”。
 
 以 `ConfigModule` 为例，使用 `ConfigurableModuleBuilder` 重写：首先，定义一个接口，描述 `ConfigModule` 所需的选项：
 
@@ -431,7 +431,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
     .build()
 ```
 
-上述示例中，`setExtras` 方法的第一个参数用于指定"额外"属性的默认值。第二个参数是一个函数，接收自动生成的模块定义（包含 `provider`、`exports` 等）和 `extras` 对象（代表额外属性，可能由使用者指定或采用默认值），并返回修改后的模块定义。在本例中，我们将 `extras.isGlobal` 赋值给模块定义的 `global` 属性（该属性决定模块是否为全局模块，详见[此处](/modules#dynamic-modules)）。
+上述示例中，`setExtras` 方法的第一个参数用于指定“额外”属性的默认值。第二个参数是一个函数，接收自动生成的模块定义（包含 `provider`、`exports` 等）和 `extras` 对象（代表额外属性，可能由使用者指定或采用默认值），并返回修改后的模块定义。在本例中，我们将 `extras.isGlobal` 赋值给模块定义的 `global` 属性（该属性决定模块是否为全局模块，详见[此处](/modules#dynamic-modules)）。
 
 在使用该模块时，可以如下方式传递额外的 `isGlobal` 标志：
 
@@ -447,7 +447,7 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 export class AppModule {}
 ```
 
-需要注意的是，由于 `isGlobal` 被声明为"额外"属性，它不会出现在 `MODULE_OPTIONS_TOKEN` 提供者中：
+需要注意的是，由于 `isGlobal` 被声明为“额外”属性，它不会出现在 `MODULE_OPTIONS_TOKEN` 提供者中：
 
 ```ts
 @Injectable()

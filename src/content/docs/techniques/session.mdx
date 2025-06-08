@@ -33,7 +33,7 @@ app.use(
 
 启用 `resave` 选项会强制每次请求都将会话保存到会话存储，即使会话内容没有发生变化。默认值为 `true`，但该默认值已被弃用，未来版本中默认值可能会更改。
 
-同样，启用 `saveUninitialized` 选项会强制将"未初始化"的会话保存到存储中。所谓"未初始化"是指新建但尚未被修改的会话。选择 `false` 对于实现登录会话、减少服务器存储消耗或遵守需要用户同意后才能设置 Cookie 的法律非常有用。选择 `false` 还可以避免客户端在没有会话的情况下并发发起多个请求时出现竞态条件（[参考来源](https://github.com/expressjs/session#saveuninitialized)）。
+同样，启用 `saveUninitialized` 选项会强制将“未初始化”的会话保存到存储中。所谓“未初始化”是指新建但尚未被修改的会话。选择 `false` 对于实现登录会话、减少服务器存储消耗或遵守需要用户同意后才能设置 Cookie 的法律非常有用。选择 `false` 还可以避免客户端在没有会话的情况下并发发起多个请求时出现竞态条件（[参考来源](https://github.com/expressjs/session#saveuninitialized)）。
 
 你还可以为 `session` 中间件传递更多选项，详见 [API 文档](https://github.com/expressjs/session#options)。
 

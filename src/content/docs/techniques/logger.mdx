@@ -288,7 +288,7 @@ await app.listen(process.env.PORT ?? 3000)
   `false`（默认值为 `true`），以便手动刷新日志（通过调用 `Logger.flush()` 方法）。
 </CalloutInfo>
 
-在这里，我们通过 `NestApplication` 实例的 `get()` 方法获取 `MyLogger` 的单例实例。这种做法本质上是一种为 Nest "注入" 日志记录器实例的方式。`app.get()` 调用会检索 `MyLogger` 的单例实例，并依赖于该实例已在其他模块中被注入，如上文所述。
+在这里，我们通过 `NestApplication` 实例的 `get()` 方法获取 `MyLogger` 的单例实例。这种做法本质上是一种为 Nest “注入”日志记录器实例的方式。`app.get()` 调用会检索 `MyLogger` 的单例实例，并依赖于该实例已在其他模块中被注入，如上文所述。
 
 你还可以在功能类中注入该 `MyLogger` 提供者，从而确保 Nest 系统日志和应用日志都能保持一致的日志行为。更多信息请参见[应用日志记录的用法](/techniques/logger#using-the-logger-for-application-logging)和[自定义日志记录器的注入](/techniques/logger#injecting-a-custom-logger)。
 

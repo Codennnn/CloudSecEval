@@ -12,7 +12,7 @@
 
 ## 使用模型 shim（model shim）
 
-为了解决这个问题，NestJS 提供了一个"shim（垫片）"，允许你通过 `webpack`（或类似工具）的配置，将原有装饰器替换为无效代码。
+为了解决这个问题，NestJS 提供了一个“shim（垫片）”，允许你通过 `webpack`（或类似工具）的配置，将原有装饰器替换为无效代码。
 要使用这个 shim，只需在 `@nestjs/graphql` 包和 shim 之间配置一个别名（alias）。
 
 例如，在 webpack 中可以这样配置：

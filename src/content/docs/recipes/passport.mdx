@@ -2,7 +2,7 @@
 
 [Passport](https://github.com/jaredhanson) 是目前社区中最流行的 Node.js 身份验证库，已经在众多生产环境应用中被广泛使用。通过 `@nestjs/passport` 模块，可以非常方便地将该库集成到 **Nest** 应用中。从整体上看，Passport 会执行以下几个主要步骤：
 
-- 通过验证用户的"凭证"（如用户名/密码、JSON Web Token、或来自身份提供方的身份令牌）来进行身份验证
+- 通过验证用户的“凭证”（如用户名/密码、JSON Web Token、或来自身份提供方的身份令牌）来进行身份验证
 - 管理已认证状态（例如签发可携带的令牌，如 JWT，或创建 [Express 会话（Session）](https://github.com/expressjs/session)）
 - 将已认证用户的信息附加到 `请求对象（Request Object）` 上，便于后续在路由处理器中使用
 
@@ -37,7 +37,7 @@ $ npm install --save-dev @types/passport-local
 在原生 Passport 中，配置一个策略需要提供两样东西：
 
 1. 一组特定于该策略的选项。例如，在 JWT 策略中，你可能需要提供用于签名令牌的密钥。
-2. 一个"验证回调"（verify callback），用于告诉 Passport 如何与用户存储（即你管理用户账户的地方）交互。在这里，你需要验证用户是否存在（或在需要时创建新用户），以及其凭证是否有效。Passport 期望该回调在验证成功时返回完整的用户对象，验证失败时返回 null（失败的定义包括用户未找到，或在 passport-local 策略下密码不匹配）。
+2. 一个“验证回调”（verify callback），用于告诉 Passport 如何与用户存储（即你管理用户账户的地方）交互。在这里，你需要验证用户是否存在（或在需要时创建新用户），以及其凭证是否有效。Passport 期望该回调在验证成功时返回完整的用户对象，验证失败时返回 null（失败的定义包括用户未找到，或在 passport-local 策略下密码不匹配）。
 
 使用 `@nestjs/passport` 时，你可以通过继承 `PassportStrategy` 类来配置 Passport 策略。你可以在子类的 `super()` 方法中传递策略选项（即上面第 1 项），可选地传入一个选项对象。你还需要通过实现子类的 `validate()` 方法来提供验证回调（即上面第 2 项）。
 
@@ -441,7 +441,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 此外，你也可以返回一个数组，第一个值用于创建 `user` 对象，第二个值用于创建 `authInfo` 对象。
 
-值得一提的是，这种实现方式为我们后续扩展业务逻辑预留了"钩子"。例如，我们可以在 `validate()` 方法中查询数据库，获取更多用户信息，从而让 `user` 对象更加丰富；也可以在这里做进一步的 token 校验，比如将 `userId` 与已吊销 token 列表比对，实现 token 撤销机制。本示例采用的是快速的"无状态 JWT"模型，每次 API 调用都基于 JWT 的有效性即时授权，并在 `请求对象（Request Object）` 管道中提供一小部分用户信息（如 `userId` 和 `username`）。
+值得一提的是，这种实现方式为我们后续扩展业务逻辑预留了“钩子”。例如，我们可以在 `validate()` 方法中查询数据库，获取更多用户信息，从而让 `user` 对象更加丰富；也可以在这里做进一步的 token 校验，比如将 `userId` 与已吊销 token 列表比对，实现 token 撤销机制。本示例采用的是快速的“无状态 JWT”模型，每次 API 调用都基于 JWT 的有效性即时授权，并在 `请求对象（Request Object）` 管道中提供一小部分用户信息（如 `userId` 和 `username`）。
 
 将新的 `JwtStrategy` 作为 provider 添加到 `AuthModule` 中：
 
@@ -628,7 +628,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
 ## 请求作用域策略
 
-Passport API 的核心机制是将策略注册到全局实例。因此，策略本身并不是为依赖请求的选项或按请求动态实例化而设计的（详细说明请参见[请求作用域](/fundamentals/injection-scopes)提供者）。当你将策略配置为请求作用域时，Nest 并不会实例化它，因为它并未绑定到具体的路由上。实际上，无法物理区分每个请求应执行哪些"请求作用域"策略。
+Passport API 的核心机制是将策略注册到全局实例。因此，策略本身并不是为依赖请求的选项或按请求动态实例化而设计的（详细说明请参见[请求作用域](/fundamentals/injection-scopes)提供者）。当你将策略配置为请求作用域时，Nest 并不会实例化它，因为它并未绑定到具体的路由上。实际上，无法物理区分每个请求应执行哪些“请求作用域”策略。
 
 不过，我们可以通过一些方式，在策略内部动态解析请求作用域的提供者。为此，我们可以利用[模块引用](/fundamentals/module-ref)功能。
 
