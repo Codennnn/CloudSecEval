@@ -1,6 +1,6 @@
-# 循环依赖（Circular Dependency）
+# 循环依赖
 
-当两个类互相依赖时，就会出现循环依赖。例如，A 类依赖 B 类，同时 B 类也依赖 A 类。在 Nest 中，循环依赖既可能发生在模块之间，也可能出现在提供者之间。
+当两个类互相依赖时，就会出现循环依赖（Circular Dependency）。例如，A 类依赖 B 类，同时 B 类也依赖 A 类。在 Nest 中，循环依赖既可能发生在模块之间，也可能出现在提供者之间。
 
 虽然开发中应该尽量避免循环依赖，但有时难以完全规避。针对这种情况，Nest 提供了两种解决提供者间循环依赖的方法：一是使用 **前向引用（forward referencing）** 技术，二是通过 **ModuleRef 类** 从依赖注入容器中获取提供者实例。
 
@@ -10,7 +10,7 @@
   使用 "barrel files"（即 index.ts
   文件）进行分组导入时，也可能引发循环依赖。对于模块和提供者类，建议不要使用 barrel
   文件。例如，在同一目录下，`cats/cats.controller` 不应通过 `cats` 间接导入
-  `cats/cats.service`。更多细节请参见 [此 GitHub
+  `cats/cats.service`。更多细节请参见[此 GitHub
   讨论](https://github.com/nestjs/nest/issues/1181#issuecomment-430197191)。
 </CalloutInfo>
 

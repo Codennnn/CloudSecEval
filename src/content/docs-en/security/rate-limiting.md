@@ -94,7 +94,7 @@ export class UsersController {
 }
 ```
 
-There is also the `@Throttle()` decorator which can be used to override the `limit` and `ttl` set in the global module, to give tighter or looser security options. This decorator can be used on a class or a function as well. With version 5 and onwards, the decorator takes in an object with the string relating to the name of the throttler set, and an object with the limit and ttl keys and integer values, similar to the options passed to the root module. If you do not have a name set in your original options, use the string `default` You have to configure it like this:
+There is also the `@Throttle()` decorator which can be used to override the `limit` and `ttl` set in the global module, to give tighter or looser security options. This decorator can be used on a class or a function as well. With version 5 and onwards, the decorator takes in an object with the string relating to the name of the throttler set, and an object with the limit and ttl keys and integer values, similar to the options passed to the root module. If you do not have a name set in your original options, use the string `default`. You have to configure it like this:
 
 ```typescript
 // Override default configuration for Rate limiting and duration.
@@ -238,7 +238,7 @@ The following options are valid for the object passed to the array of the `Throt
 <table>
   <tr>
     <td><code>name</code></td>
-    <td>the name for internal tracking of which throttler set is being used. Defaults to `default` if not passed</td>
+    <td>the name for internal tracking of which throttler set is being used. Defaults to <code>default</code> if not passed</td>
   </tr>
   <tr>
     <td><code>ttl</code></td>

@@ -265,7 +265,7 @@ async login(@Request() req) {
 
 ## 注销路由
 
-要实现注销功能，我们可以创建一个额外的路由，调用 `res.logout()` 来清除用户的会话（Session）。这种方式是基于会话认证（session-based authentication）中常见的做法，但并不适用于 JWT。
+要实现注销功能，我们可以创建一个额外的路由，调用 `req.logout()` 来清除用户的会话（Session）。这种方式是基于会话认证（session-based authentication）中常见的做法，但并不适用于 JWT。
 
 ```ts
 @UseGuards(LocalAuthGuard)
