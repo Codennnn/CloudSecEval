@@ -72,7 +72,7 @@ export const navMainData: NavMenuItem[] = [
       { title: '授权', titleEn: 'Authorization', url: '/security/authorization' },
       { title: '加密与哈希', titleEn: 'Encryption and Hashing', url: '/security/encryption-and-hashing' },
       { title: 'Helmet', titleEn: 'Helmet', url: '/security/helmet' },
-      { title: '跨源资源共享（CORS）', titleEn: 'CORS', url: '/security/cors' },
+      { title: '跨源资源共享', titleEn: 'CORS', url: '/security/cors' },
       { title: 'CSRF 防护', titleEn: 'CSRF Protection', url: '/security/csrf' },
       { title: '请求频率限制', titleEn: 'Rate limiting', url: '/security/rate-limiting' },
     ],

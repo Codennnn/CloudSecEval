@@ -1,10 +1,12 @@
-# 跨源资源共享（CORS）
+# 跨源资源共享
 
-跨源资源共享（CORS，Cross-origin resource sharing）是一种允许从其他域请求资源的机制。在底层，Nest 会根据所用平台自动使用 Express 的 [cors](https://github.com/expressjs/cors) 或 Fastify 的 [@fastify/cors](https://github.com/fastify/fastify-cors) 包。这些包提供了多种可自定义的选项，你可以根据实际需求进行配置。
+跨源资源共享 (Cross-Origin Resource Sharing, CORS) 是一种基于 HTTP 标头的机制，它允许服务器指示浏览器允许来自指定源的 Web 应用访问服务器上的资源。
+
+Nest 在底层通过 Express 的 [cors](https://github.com/expressjs/cors) 包或 Fastify 的 [@fastify/cors](https://github.com/fastify/fastify-cors) 包来处理 CORS 请求，具体使用哪个包取决于你选择的 HTTP 平台。这两个库都提供了丰富的配置选项，让你能根据具体需求进行灵活的定制。
 
 ## 快速上手
 
-要启用跨源资源共享，只需在 Nest 应用对象上调用 `enableCors()` 方法。
+要启用 CORS，只需在 Nest 应用实例上调用 `enableCors()` 方法。
 
 ```ts
 const app = await NestFactory.create(AppModule)
@@ -12,10 +14,9 @@ app.enableCors()
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-`enableCors()` 方法可以接收一个可选的配置对象参数。该对象的可用属性请参考官方 [CORS 配置文档](https://github.com/expressjs/cors#configuration-options)。另外，你还可以传入一个[回调函数](https://github.com/expressjs/cors#configuring-cors-asynchronously)，根据每个请求动态（异步）生成配置对象。
+`enableCors()` 方法可以接受一个可选的配置对象作为参数。要了解所有可用的选项，请查阅官方的 [CORS 配置文档](https://github.com/expressjs/cors#configuration-options)。此外，你还可以传入一个[回调函数](https://github.com/expressjs/cors#configuring-cors-asynchronously)，以便根据请求动态地（异步）提供 CORS 配置。
 
-另外，也可以通过 `create()` 方法的 options 对象启用 CORS。将 `cors` 属性设置为 `true`，即可使用默认配置开启跨源资源共享。
-或者，将 [CORS 配置对象](https://github.com/expressjs/cors#configuration-options) 或[回调函数](https://github.com/expressjs/cors#configuring-cors-asynchronously)作为 `cors` 属性的值传入，以自定义其行为。
+此外，你也可以在调用 `NestFactory.create()` 时通过其 `options` 对象来启用 CORS。将 `cors` 属性设为 `true`，即可便捷地使用默认配置。若需自定义，则可将一个 [CORS 配置对象](https://github.com/expressjs/cors#configuration-options) 或[回调函数](https://github.com/expressjs/cors#configuring-cors-asynchronously)作为 `cors` 属性的值传入。
 
 ```ts
 const app = await NestFactory.create(AppModule, { cors: true })
