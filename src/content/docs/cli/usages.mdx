@@ -2,7 +2,7 @@
 
 ## nest new
 
-创建一个新的（标准模式）Nest 项目。
+创建一个新的标准模式 Nest 项目。
 
 ```bash
 $ nest new <name> [options]
@@ -11,34 +11,34 @@ $ nest n <name> [options]
 
 ### 描述
 
-创建并初始化一个新的 Nest 项目，并提示选择包管理器。
+创建并初始化一个新的 Nest 项目。该命令会提示选择一个包管理器，并执行以下操作：
 
-- 使用给定的 `<name>` 创建一个文件夹
-- 在该文件夹中生成配置文件
-- 创建用于源代码（`/src`）和端到端测试（`/test`）的子文件夹
-- 在子文件夹中填充应用组件和测试的默认文件
+- 使用指定的 `<name>` 创建项目目录。
+- 在项目目录中生成初始配置文件。
+- 创建源代码 (`/src`) 和端到端测试 (`/test`) 目录。
+- 在上述目录中生成应用核心组件和测试的样板文件。
 
 ### 参数
 
-| 参数     | 描述         |
-| -------- | ------------ |
-| `<name>` | 新项目的名称 |
+| 参数     | 描述           |
+| -------- | -------------- |
+| `<name>` | 新项目的名称。 |
 
 ### 选项
 
-| 选项                                  | 描述                                                                                                                                                                 |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--dry-run`                           | 仅报告将要进行的更改，但不会实际修改文件系统。<br/>别名：`-d`                                                                                                        |
-| `--skip-git`                          | 跳过 git 仓库初始化。<br/>别名：`-g`                                                                                                                                 |
-| `--skip-install`                      | 跳过依赖包安装。<br/>别名：`-s`                                                                                                                                      |
-| `--package-manager [package-manager]` | 指定包管理器。可选 `npm`、`yarn` 或 `pnpm`。包管理器需已全局安装。<br/>别名：`-p`                                                                                    |
-| `--language [language]`               | 指定编程语言（`TS` 或 `JS`）。<br/>别名：`-l`                                                                                                                        |
-| `--collection [collectionName]`       | 指定原型生成器（Schematics）集合。使用已安装 npm 包的包名。<br/>别名：`-c`                                                                                           |
-| `--strict`                            | 启用以下 TypeScript 编译器严格模式选项：`strictNullChecks`、`noImplicitAny`、`strictBindCallApply`、`forceConsistentCasingInFileNames`、`noFallthroughCasesInSwitch` |
+| 选项                                  | 描述                                                                                                                                                                         |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--dry-run`                           | 模拟运行，报告将要发生的变更，但不会实际修改文件系统。<br/>别名：`-d`                                                                                                        |
+| `--skip-git`                          | 跳过 `git` 仓库的初始化。<br/>别名：`-g`                                                                                                                                     |
+| `--skip-install`                      | 跳过依赖包安装环节。<br/>别名：`-s`                                                                                                                                          |
+| `--package-manager [package-manager]` | 指定包管理器，可选值为 `npm`、`yarn` 或 `pnpm`。请确保所选的包管理器已全局安装。<br/>别名：`-p`                                                                              |
+| `--language [language]`               | 指定项目语言，可选值为 `TS` 或 `JS`。<br/>别名：`-l`                                                                                                                         |
+| `--collection [collectionName]`       | 指定 Schematics 集合。值为一个已安装的 npm 包名。<br/>别名：`-c`                                                                                                             |
+| `--strict`                            | 启用 TypeScript 严格模式相关的系列编译选项：`strictNullChecks`、`noImplicitAny`、`strictBindCallApply`、`forceConsistentCasingInFileNames` 和 `noFallthroughCasesInSwitch`。 |
 
 ## nest generate
 
-基于原型生成器（Schematics）生成和/或修改文件。
+根据 Schematics 模板生成或修改文件。
 
 ```bash
 $ nest generate <schematic> <name> [options]
@@ -54,46 +54,46 @@ $ nest g <schematic> <name> [options]
 
 ### 可用原型（Schematics）
 
-| 名称          | 别名 | 描述                                                                                    |
-| ------------- | ---- | --------------------------------------------------------------------------------------- |
-| `app`         |      | 在多包仓库结构中生成新应用（会自动转换为多包仓库结构）。                                |
-| `library`     | lib  | 在多包仓库结构中生成新库（会自动转换为多包仓库结构）。                                  |
-| `class`       | cl   | 生成新类。                                                                              |
-| `controller`  | co   | 生成控制器声明。                                                                        |
-| `decorator`   | d    | 生成自定义装饰器（Decorator）。                                                         |
-| `filter`      | f    | 生成异常过滤器声明。                                                                    |
-| `gateway`     | ga   | 生成网关声明。                                                                          |
-| `guard`       | gu   | 生成守卫声明。                                                                          |
-| `interface`   | itf  | 生成接口。                                                                              |
-| `interceptor` | itc  | 生成拦截器声明。                                                                        |
-| `middleware`  | mi   | 生成中间件声明。                                                                        |
-| `module`      | mo   | 生成模块声明。                                                                          |
-| `pipe`        | pi   | 生成管道声明。                                                                          |
-| `provider`    | pr   | 生成提供者声明。                                                                        |
-| `resolver`    | r    | 生成解析器声明。                                                                        |
-| `resource`    | res  | 生成新的 CRUD 资源。详情见 [CRUD（资源）生成器](/recipes/crud-generator)（仅支持 TS）。 |
-| `service`     | s    | 生成服务声明。                                                                          |
+| 名称          | 别名 | 描述                                                                                     |
+| ------------- | ---- | ---------------------------------------------------------------------------------------- |
+| `app`         |      | 在项目中生成一个新应用。如果当前不是 Monorepo 模式，此命令会自动转换。                   |
+| `library`     | lib  | 在项目中生成一个新库。如果当前不是 Monorepo 模式，此命令会自动转换。                     |
+| `class`       | cl   | 生成一个新的通用类。                                                                     |
+| `controller`  | co   | 生成一个新的控制器。                                                                     |
+| `decorator`   | d    | 生成一个自定义装饰器。                                                                   |
+| `filter`      | f    | 生成一个新的异常过滤器。                                                                 |
+| `gateway`     | ga   | 生成一个新的网关。                                                                       |
+| `guard`       | gu   | 生成一个新的守卫。                                                                       |
+| `interface`   | itf  | 生成一个新接口。                                                                         |
+| `interceptor` | itc  | 生成一个新的拦截器。                                                                     |
+| `middleware`  | mi   | 生成一个新的中间件。                                                                     |
+| `module`      | mo   | 生成一个新的模块。                                                                       |
+| `pipe`        | pi   | 生成一个新的管道。                                                                       |
+| `provider`    | pr   | 生成一个新的提供者。                                                                     |
+| `resolver`    | r    | 生成一个新的 GraphQL 解析器。                                                            |
+| `resource`    | res  | 生成一个新的 CRUD 资源。详情请参阅 [CRUD 生成器](/recipes/crud-generator)（仅支持 TS）。 |
+| `service`     | s    | 生成一个新的服务。                                                                       |
 
 ### 选项
 
-| 选项                            | 描述                                                                       |
-| ------------------------------- | -------------------------------------------------------------------------- |
-| `--dry-run`                     | 仅报告将要进行的更改，但不会实际修改文件系统。<br/>别名：`-d`              |
-| `--project [project]`           | 元素应添加到的项目。<br/>别名：`-p`                                        |
-| `--flat`                        | 不为元素生成文件夹。                                                       |
-| `--collection [collectionName]` | 指定原型生成器（Schematics）集合。使用已安装 npm 包的包名。<br/>别名：`-c` |
-| `--spec`                        | 强制生成测试（spec）文件（默认开启）。                                     |
-| `--no-spec`                     | 禁用测试（spec）文件生成。                                                 |
+| 选项                            | 描述                                                                  |
+| ------------------------------- | --------------------------------------------------------------------- |
+| `--dry-run`                     | 模拟运行，报告将要发生的变更，但不会实际修改文件系统。<br/>别名：`-d` |
+| `--project [project]`           | 指定要将文件生成在哪个项目中。<br/>别名：`-p`                         |
+| `--flat`                        | 在当前目录生成文件，不创建新目录。                                    |
+| `--collection [collectionName]` | 指定 Schematics 集合。值为一个已安装的 npm 包名。<br/>别名：`-c`      |
+| `--spec`                        | 为生成的文件创建测试文件 (`spec`)。此为默认行为。                     |
+| `--no-spec`                     | 禁止为生成的文件创建测试文件 (`spec`)。                               |
 
 ## nest build
 
-将应用或工作空间编译到输出文件夹中。
+将应用或工作空间编译到输出目录。
 
 此外，`build` 命令还负责：
 
-- 通过 `tsconfig-paths` 映射路径（如果使用路径别名）
-- 如果启用 `@nestjs/swagger` CLI 插件，则为数据传输对象添加 OpenAPI 装饰器注解
-- 如果启用 `@nestjs/graphql` CLI 插件，则为数据传输对象添加 GraphQL 装饰器注解
+- 当使用了路径别名时，通过 `tsconfig-paths` 映射模块路径。
+- 当 `@nestjs/swagger` CLI 插件启用时，自动为 DTO 添加 OpenAPI 装饰器。
+- 当 `@nestjs/graphql` CLI 插件启用时，自动为 DTO 添加 GraphQL 装饰器。
 
 ```bash
 $ nest build <name> [options]
@@ -101,25 +101,25 @@ $ nest build <name> [options]
 
 ### 参数
 
-| 参数     | 描述                        |
-| -------- | --------------------------- |
-| `<name>` | 要构建的项目（Project）名称 |
+| 参数     | 描述               |
+| -------- | ------------------ |
+| `<name>` | 要构建的项目名称。 |
 
 ### 选项
 
-| 选项                    | 描述                                                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `--path [path]`         | `tsconfig` 文件路径。<br/>别名：`-p`                                                                                           |
-| `--config [path]`       | `nest-cli` 配置文件路径。<br/>别名：`-c`                                                                                       |
-| `--watch`               | 以监听模式（live-reload）运行。<br/>如果使用 `tsc` 编译，可输入 `rs` 重启应用（需设置 `manualRestart: true`）。<br/>别名：`-w` |
-| `--builder [name]`      | 指定用于编译的构建器（可选 `tsc`、`swc` 或 `webpack`）。<br/>别名：`-b`                                                        |
-| `--webpack`             | 使用 webpack 进行编译（已弃用：请改用 `--builder webpack`）。                                                                  |
-| `--webpackPath`         | webpack 配置文件路径。                                                                                                         |
-| `--tsc`                 | 强制使用 `tsc` 进行编译。                                                                                                      |
-| `--watchAssets`         | 监听非 TS 文件（如 `.graphql` 等资源文件）。详见[资源文件](/cli/monorepo#资源文件)。                                           |
-| `--type-check`          | 启用类型检查（SWC 编译时可用）。                                                                                               |
-| `--all`                 | 构建多包仓库结构（Monorepo）中的所有项目。                                                                                     |
-| `--preserveWatchOutput` | 在监听模式下保留旧的控制台输出，不清屏（仅适用于 `tsc` 监听模式）。                                                            |
+| 选项                    | 描述                                                                                                                                                              |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--path [path]`         | 指定 `tsconfig.json` 文件路径。<br/>别名：`-p`                                                                                                                    |
+| `--config [path]`       | 指定 `nest-cli.json` 配置文件路径。<br/>别名：`-c`                                                                                                                |
+| `--watch`               | 以监听模式（live-reload）运行。<br/>当使用 `tsc` 作为编译器时，可在终端输入 `rs` 来重启应用（需在 `nest-cli.json` 中设置 `manualRestart: true`）。<br/>别名：`-w` |
+| `--builder [name]`      | 指定编译器，可选值为 `tsc`、`swc` 或 `webpack`。<br/>别名：`-b`                                                                                                   |
+| `--webpack`             | 使用 `webpack` 进行编译（已废弃，请使用 `--builder webpack` 代替）。                                                                                              |
+| `--webpackPath`         | `webpack` 配置文件路径。                                                                                                                                          |
+| `--tsc`                 | 强制使用 `tsc` 进行编译。                                                                                                                                         |
+| `--watchAssets`         | 在监听模式下，同时监听非 TypeScript 的资源文件（如 `.graphql` 文件）。详情请参阅[多包仓库下的资源文件管理](/cli/monorepo#资产和-watching)。                       |
+| `--type-check`          | 在 `swc` 编译时启用类型检查。                                                                                                                                     |
+| `--all`                 | 构建多包仓库（Monorepo）中的所有项目。                                                                                                                            |
+| `--preserveWatchOutput` | 在 `tsc` 的监听模式下，保留上一次编译的控制台输出（即不清屏）。                                                                                                   |
 
 ## nest start
 
@@ -131,32 +131,32 @@ $ nest start <name> [options]
 
 ### 参数
 
-| 参数     | 描述                        |
-| -------- | --------------------------- |
-| `<name>` | 要运行的项目（Project）名称 |
+| 参数     | 描述               |
+| -------- | ------------------ |
+| `<name>` | 要运行的项目名称。 |
 
 ### 选项
 
-| 选项                    | 描述                                                                                   |
-| ----------------------- | -------------------------------------------------------------------------------------- |
-| `--path [path]`         | `tsconfig` 文件路径。<br/>别名：`-p`                                                   |
-| `--config [path]`       | `nest-cli` 配置文件路径。<br/>别名：`-c`                                               |
-| `--watch`               | 以监听模式（live-reload）运行。<br/>别名：`-w`                                         |
-| `--builder [name]`      | 指定用于编译的构建器（可选 `tsc`、`swc` 或 `webpack`）。<br/>别名：`-b`                |
-| `--preserveWatchOutput` | 在监听模式下保留旧的控制台输出，不清屏（仅适用于 `tsc` 监听模式）。                    |
-| `--watchAssets`         | 以监听模式运行，监听非 TS 文件（如资源文件）。详见[资源文件](/cli/monorepo#资源文件)。 |
-| `--debug [hostport]`    | 以调试模式运行（等同于 --inspect 标志）。<br/>别名：`-d`                               |
-| `--webpack`             | 使用 webpack 进行编译（已弃用：请改用 `--builder webpack`）。                          |
-| `--webpackPath`         | webpack 配置文件路径。                                                                 |
-| `--tsc`                 | 强制使用 `tsc` 进行编译。                                                              |
-| `--exec [binary]`       | 指定运行的二进制文件（默认：`node`）。<br/>别名：`-e`                                  |
-| `--no-shell`            | 不在 shell 中生成子进程（详见 Node 的 `child_process.spawn()` 方法文档）。             |
-| `--env-file`            | 从当前目录下的文件加载环境变量，使其可通过 `process.env` 获取。                        |
-| `-- [key=value]`        | 可通过 `process.argv` 引用的命令行参数。                                               |
+| 选项                    | 描述                                                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `--path [path]`         | 指定 `tsconfig.json` 文件路径。<br/>别名：`-p`                                                                        |
+| `--config [path]`       | 指定 `nest-cli.json` 配置文件路径。<br/>别名：`-c`                                                                    |
+| `--watch`               | 以监听模式（live-reload）运行。<br/>别名：`-w`                                                                        |
+| `--builder [name]`      | 指定编译器，可选值为 `tsc`、`swc` 或 `webpack`。<br/>别名：`-b`                                                       |
+| `--preserveWatchOutput` | 在 `tsc` 的监听模式下，保留上一次编译的控制台输出（即不清屏）。                                                       |
+| `--watchAssets`         | 在监听模式下，同时监听非 TypeScript 的资源文件。详情请参阅[多包仓库下的资源文件管理](/cli/monorepo#资产和-watching)。 |
+| `--debug [hostport]`    | 以调试模式运行（等同于 Node.js 的 `--inspect` 标志）。<br/>别名：`-d`                                                 |
+| `--webpack`             | 使用 `webpack` 进行编译（已废弃，请使用 `--builder webpack` 代替）。                                                  |
+| `--webpackPath`         | `webpack` 配置文件路径。                                                                                              |
+| `--tsc`                 | 强制使用 `tsc` 进行编译。                                                                                             |
+| `--exec [binary]`       | 指定执行产物的二进制程序（默认为 `node`）。<br/>别名：`-e`                                                            |
+| `--no-shell`            | 在没有 shell 的情况下创建子进程。详情请参阅 Node.js `child_process.spawn()` 方法的文档。                              |
+| `--env-file`            | 从指定文件加载环境变量，并通过 `process.env` 使其在应用中可用。                                                       |
+| `-- [key=value]`        | 传递给应用的命令行参数，可在应用内通过 `process.argv` 访问。                                                          |
 
 ## nest add
 
-导入已打包为 **Nest 库（nest library）** 的库，并运行其安装原型（schematic）。
+添加一个已打包为 **Nest 库 (library)** 的包，并执行其安装原型 (schematic)。
 
 ```bash
 $ nest add <name> [options]
@@ -164,13 +164,13 @@ $ nest add <name> [options]
 
 ### 参数
 
-| 参数     | 描述           |
-| -------- | -------------- |
-| `<name>` | 要导入的库名称 |
+| 参数     | 描述                    |
+| -------- | ----------------------- |
+| `<name>` | 要添加的库的 npm 包名。 |
 
 ## nest info
 
-显示已安装的 nest 包及其他有用的系统信息。例如：
+显示 Nest 项目相关的环境信息，如已安装的 Nest 包版本、Node.js 版本等。例如：
 
 ```bash
 $ nest info

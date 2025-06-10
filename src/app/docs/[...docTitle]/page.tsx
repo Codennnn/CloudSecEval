@@ -77,6 +77,7 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
           'prose-a:font-normal prose-a:decoration-dotted prose-a:hover:decoration-solid prose-a:underline-offset-4',
           'prose-figure:my-5',
           'text-current prose-headings:text-current prose-strong:text-current prose-a:text-current',
+          'prose-table:my-1',
           'max-w-none',
         )}
       >
