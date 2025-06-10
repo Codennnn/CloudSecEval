@@ -31,11 +31,11 @@ $ npm i @nestjs/graphql @nestjs/apollo @apollo/server graphql
 
 ## 概述
 
-Nest 提供了两种构建 GraphQL 应用的方式，分别是 **代码优先（code first）** 和 **模式优先（schema first）**。你可以根据实际需求选择最适合自己的方式。本章节的大部分内容也会分为两部分：采用 **代码优先** 的读者请参考一部分，采用 **模式优先** 的读者请参考另一部分。
+Nest 提供了两种构建 GraphQL 应用的方式，分别是**代码优先（code first）**和**模式优先（schema first）**。你可以根据实际需求选择最适合自己的方式。本章节的大部分内容也会分为两部分：采用代码优先的读者请参考一部分，采用模式优先的读者请参考另一部分。
 
-在 **代码优先** 方式中，你可以通过装饰器和 TypeScript 类来生成对应的 GraphQL Schema。如果你更喜欢完全使用 TypeScript 并避免在不同语言语法间切换，这种方式会非常适合。
+在代码优先方式中，你可以通过装饰器和 TypeScript 类来生成对应的 GraphQL Schema。如果你更喜欢完全使用 TypeScript 并避免在不同语言语法间切换，这种方式会非常适合。
 
-在 **模式优先** 方式中，真相的唯一来源是 GraphQL SDL 文件。SDL 是一种与语言无关的方式，可以在不同平台间共享模式文件。Nest 会自动根据 GraphQL 模式生成 TypeScript 类型定义（可以是类或接口），从而减少重复编写模板代码的工作量。
+在模式优先方式中，真相的唯一来源是 GraphQL SDL 文件。SDL 是一种与语言无关的方式，可以在不同平台间共享模式文件。Nest 会自动根据 GraphQL 模式生成 TypeScript 类型定义（可以是类或接口），从而减少重复编写模板代码的工作量。
 
 ## 使用 GraphQL 和 TypeScript 快速上手
 
@@ -119,7 +119,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 ## 代码优先（Code first）
 
-在 **代码优先** 方式中，你可以通过装饰器和 TypeScript 类来生成对应的 GraphQL 模式（schema）。
+在**代码优先**方式中，你可以通过装饰器和 TypeScript 类来生成对应的 GraphQL 模式（schema）。
 
 要使用代码优先方式，首先需要在配置对象中添加 `autoSchemaFile` 属性：
 

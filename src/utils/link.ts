@@ -12,8 +12,8 @@ export function isExternalLink(href: string): boolean {
     return false
   }
 
-  // 以 http:// 或 https:// 开头的链接视为外部链接
-  return href.startsWith('http://') || href.startsWith('https://')
+  // 判断是否包含协议标识符（如mailto:, tel:, http:等）
+  return /^[a-z][a-z0-9+.-]*:/i.test(href)
 }
 
 /**
@@ -23,6 +23,12 @@ export function isExternalLink(href: string): boolean {
  * @returns 是否为内部链接
  */
 export function isInternalLink(href: string): boolean {
+  // 如果链接包含协议标识符（如mailto:, tel:, http:等），则不是内部链接
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href)) {
+    return false
+  }
+
+  // 以 / 或 # 或 . 开头的链接是内部链接
   return href.startsWith('/') || href.startsWith('#') || href.startsWith('.')
 }
 

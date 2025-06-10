@@ -1,15 +1,15 @@
-# 原始请求体（Raw body）
+# 原始请求体
 
-在实际开发中，最常见的原始请求体使用场景之一，就是进行 Webhook 签名校验。通常，进行 Webhook 签名验证时，需要使用未被序列化的请求体来计算 HMAC 哈希值。
+在某些场景下，你需要直接访问未经解析的原始请求体（raw body）。一个典型的例子就是校验 Webhook 签名，这通常需要使用原始请求体来计算 HMAC 哈希值。
 
 <CalloutInfo type="warning">
-  只有在启用了内置全局 body parser 中间件时，才能使用此功能。也就是说，创建应用时不能传递
-  `bodyParser: false`。
+  只有当内置的全局 `body-parser` 中间件启用时，此功能才可用。这意味着在创建应用实例时，不能将
+  `bodyParser` 选项设置为 `false`。
 </CalloutInfo>
 
 ## 在 Express 中使用
 
-首先，在创建 Nest Express 应用时启用该选项：
+要在 Nest Express 应用中启用此功能，请在创建应用实例时进行如下配置：
 
 ```ts
 import { NestFactory } from '@nestjs/core'
@@ -23,7 +23,7 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-要在控制器中访问原始请求体，可以使用便捷接口 `RawBodyRequest`，该接口会在请求对象上暴露一个 `rawBody` 字段。用法如下：
+要在控制器中访问原始请求体，可以使用便捷接口 `RawBodyRequest`，该接口会在请求对象上暴露 `rawBody` 字段。用法如下：
 
 ```ts
 import { Controller, Post, RawBodyRequest, Req } from '@nestjs/common'
@@ -33,39 +33,39 @@ import { Request } from 'express'
 class CatsController {
   @Post()
   create(@Req() req: RawBodyRequest<Request>) {
-    const raw = req.rawBody // 返回一个缓冲区（Buffer）。
+    const raw = req.rawBody // 返回一个 Buffer。
   }
 }
 ```
 
 ## 注册其他解析器
 
-默认情况下，仅注册了 `json` 和 `urlencoded` 解析器。如果你需要临时注册其他解析器，需要显式调用相关方法。
+默认情况下，Nest 只注册了 `json` 和 `urlencoded` 两种解析器。如果你需要处理其他类型的请求体，可以动态注册相应的解析器。
 
-例如，注册 `text` 解析器，可以这样写：
+例如，要注册 `text` 解析器，可以这样写：
 
 ```ts
 app.useBodyParser('text')
 ```
 
 <CalloutInfo type="warning">
-  请确保在调用 `NestFactory.create` 时传递了正确的应用类型。对于 Express 应用，类型应为
-  `NestExpressApplication`，否则 `.useBodyParser` 方法将无法使用。
+  请确保在调用 `NestFactory.create` 时传入了正确的应用类型。对于 Express 应用，该类型应为
+  `NestExpressApplication`，否则 `useBodyParser()` 方法将不可用。
 </CalloutInfo>
 
 ## 请求体大小限制
 
-如果你的应用需要解析超过 Express 默认 `100kb` 的请求体，可以这样设置：
+Express 的默认请求体大小限制为 `100kb`。如果需要处理更大的请求体，可以按如下方式调整：
 
 ```ts
 app.useBodyParser('json', { limit: '10mb' })
 ```
 
-`.useBodyParser` 方法会遵循应用选项中传递的 `rawBody` 配置。
+调用 `useBodyParser()` 方法时，应用选项中设置的 `rawBody` 配置依然有效。
 
 ## 在 Fastify（高性能 Node.js 框架）中使用
 
-首先，在创建 Nest Fastify 应用时启用该选项：
+要在 Nest Fastify 应用中启用此功能，请在创建应用实例时进行如下配置：
 
 ```ts
 import { NestFactory } from '@nestjs/core'
@@ -79,7 +79,7 @@ const app = await NestFactory.create<NestFastifyApplication>(AppModule, new Fast
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-要在控制器中访问原始请求体，同样可以使用 `RawBodyRequest` 接口，在请求对象上暴露 `rawBody` 字段。用法如下：
+要在控制器中访问原始请求体，同样可以使用 `RawBodyRequest` 接口，该接口会在请求对象上暴露 `rawBody` 字段。用法如下：
 
 ```ts
 import { Controller, Post, RawBodyRequest, Req } from '@nestjs/common'
@@ -89,33 +89,33 @@ import { FastifyRequest } from 'fastify'
 class CatsController {
   @Post()
   create(@Req() req: RawBodyRequest<FastifyRequest>) {
-    const raw = req.rawBody // 返回一个缓冲区（Buffer）。
+    const raw = req.rawBody // 返回一个 Buffer。
   }
 }
 ```
 
 ## 注册其他解析器
 
-默认情况下，仅注册了 `application/json` 和 `application/x-www-form-urlencoded` 解析器。如果你需要临时注册其他解析器，需要显式调用相关方法。
+默认情况下，Nest 只注册了 `application/json` 和 `application/x-www-form-urlencoded` 两种解析器。如果你需要处理其他类型的请求体，可以动态注册相应的解析器。
 
-例如，注册 `text/plain` 解析器，可以这样写：
+例如，要注册 `text/plain` 解析器，可以这样写：
 
 ```ts
 app.useBodyParser('text/plain')
 ```
 
 <CalloutInfo type="warning">
-  请确保在调用 `NestFactory.create` 时传递了正确的应用类型。对于 Fastify 应用，类型应为
-  `NestFastifyApplication`，否则 `.useBodyParser` 方法将无法使用。
+  请确保在调用 `NestFactory.create` 时传入了正确的应用类型。对于 Fastify 应用，该类型应为
+  `NestFastifyApplication`，否则 `useBodyParser()` 方法将不可用。
 </CalloutInfo>
 
 ## 请求体大小限制
 
-如果你的应用需要解析超过 Fastify 默认 1MiB 的请求体，可以这样设置：
+Fastify 的默认请求体大小限制为 `1MiB`，如果需要处理更大的请求体，可以按如下方式调整：
 
 ```ts
 const bodyLimit = 10_485_760 // 10MiB
 app.useBodyParser('application/json', { bodyLimit })
 ```
 
-`.useBodyParser` 方法会遵循应用选项中传递的 `rawBody` 配置。
+调用 `useBodyParser()` 方法时，应用选项中设置的 `rawBody` 配置依然有效。

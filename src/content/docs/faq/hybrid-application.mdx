@@ -1,6 +1,6 @@
-# 混合应用（Hybrid application）
+# 混合应用
 
-混合应用指的是同时监听来自两个或更多不同来源请求的应用。这通常意味着将 HTTP 服务器与微服务监听器结合，或者仅仅是多个不同的微服务监听器。默认的 `createMicroservice` 方法不支持同时创建多个服务器，因此在这种情况下，每个微服务都需要手动创建并启动。为此，可以通过 `connectMicroservice()` 方法，将 `INestApplication` 实例与一个或多个 `INestMicroservice` 实例连接起来。
+混合应用（Hybrid application）是指一个能同时监听来自两个或多个不同来源请求的应用。它通常由一个 HTTP 服务器和一个微服务监听器构成，也可以由多个不同类型的微服务监听器组成。由于 Nest 提供的 `createMicroservice()` 方法不支持一次性创建多个微服务，因此你需要为每个微服务单独创建实例并启动。要实现这一点，你可以通过 `connectMicroservice()` 方法，将一个 `INestApplication` 实例与一个或多个 `INestMicroservice` 实例连接起来。
 
 ```ts
 const app = await NestFactory.create(AppModule)
@@ -13,8 +13,8 @@ await app.listen(3001)
 ```
 
 <CalloutInfo>
-  `app.listen(port)` 方法会在指定地址启动一个 HTTP 服务器。如果你的应用不需要处理 HTTP
-  请求，则应使用 `app.init()` 方法。
+  `app.listen(port)` 方法用于在指定端口启动 HTTP 服务器。如果你的应用无需处理 HTTP 请求，可以使用
+  `app.init()` 方法来代替。
 </CalloutInfo>
 
 如果需要连接多个微服务实例，只需为每个微服务调用一次 `connectMicroservice()`：
@@ -41,7 +41,7 @@ await app.startAllMicroservices()
 await app.listen(3001)
 ```
 
-如果你希望在混合应用中，将 `@MessagePattern()` 仅绑定到某一种传输策略（例如 MQTT），可以传递第二个参数 `Transport`，它是一个包含所有内置传输策略的枚举类型。
+在混合应用中，如果你希望 `@MessagePattern()` 装饰器仅对特定的传输策略（例如 MQTT）生效，可以在装饰器中传递第二个参数 `Transport`。这是一个包含了所有内置传输策略的枚举。
 
 ```ts
 @MessagePattern('time.us.*', Transport.NATS)
@@ -61,8 +61,7 @@ getTCPDate(@Payload() data: number[]) {
 
 ## 共享配置（Sharing configuration）
 
-默认情况下，混合应用不会继承为主应用（基于 HTTP 的应用）配置的全局管道、拦截器、守卫和过滤器。
-如果希望让微服务继承主应用的这些配置属性，可以在 `connectMicroservice()` 的第二个参数（可选配置对象）中设置 `inheritAppConfig` 属性，如下所示：
+默认情况下，混合应用不会继承主应用（即基于 HTTP 的应用）所配置的全局管道、拦截器、守卫和过滤器。如果你希望微服务也能应用这些全局配置，可以在 `connectMicroservice()` 方法的第二个参数（一个可选的配置对象）中将 `inheritAppConfig` 属性设为 `true`，如下所示：
 
 ```ts
 const microservice = app.connectMicroservice<MicroserviceOptions>(

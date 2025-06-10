@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
 import rehypeMdxCodeProps from 'rehype-mdx-code-props'
+import rehypeMermaid from 'rehype-mermaid'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 
@@ -16,6 +17,7 @@ const withMDX = createMDX({
     rehypePlugins: [
       rehypeMdxCodeProps,
       rehypeSlug,
+      rehypeMermaid,
     ],
   },
 })

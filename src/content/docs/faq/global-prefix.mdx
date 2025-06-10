@@ -1,13 +1,13 @@
 # 全局前缀
 
-要为 HTTP 应用程序中注册的**每一个路由**设置统一的前缀，可以使用 `INestApplication` 实例的 `setGlobalPrefix()` 方法。
+若要为应用中的**所有路由**统一设置前缀，可以调用 `INestApplication` 实例的 `setGlobalPrefix()` 方法。
 
 ```ts
 const app = await NestFactory.create(AppModule)
 app.setGlobalPrefix('v1')
 ```
 
-你可以通过如下方式将部分路由从全局前缀中排除：
+你也可以从全局前缀中排除特定路由：
 
 ```ts
 app.setGlobalPrefix('v1', {
@@ -15,13 +15,15 @@ app.setGlobalPrefix('v1', {
 })
 ```
 
-另外，你也可以直接以字符串形式指定路由（此时会应用于所有请求方法）：
+此外，你还可以直接以字符串形式指定要排除的路由路径，这会应用于该路径下的**所有**请求方法：
 
 ```ts
 app.setGlobalPrefix('v1', { exclude: ['cats'] })
 ```
 
 <CalloutInfo>
-  `path` 属性支持使用 [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters)
-  包的通配参数。注意：这里不支持通配星号 `*`，必须使用参数（`:param`）或命名通配符（`*splat`）。
+  `exclude` 选项中的 `path` 属性支持
+  [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters)
+  包提供的通配符参数。注意：该配置不支持使用通配符星号 (`*`)，而必须使用路径参数（例如
+  `:id`）或命名通配符（`*splat`）。
 </CalloutInfo>
