@@ -14,11 +14,11 @@ import bootstrapPerformanceImage from '/public/assets/devtools/bootstrap-perform
 # 概述
 
 <CalloutInfo>
-  本章节介绍了 Nest Devtools 与 Nest 框架的集成。如果你想了解 Devtools 应用本身，请访问
+  本章介绍了 Nest Devtools 与 Nest 框架的集成。如果你想了解 Devtools 应用本身，请访问
   [Devtools](https://devtools.nestjs.com) 官网。
 </CalloutInfo>
 
-要开始调试你的本地应用，请打开 `main.ts` 文件，并确保在应用选项对象中将 `snapshot` 属性设置为 `true`，如下所示：
+要开始调试本地应用，请打开 `main.ts` 文件，并确保在应用选项对象中将 `snapshot` 属性设置为 `true`，如下所示：
 
 ```ts
 async function bootstrap() {
@@ -29,19 +29,20 @@ async function bootstrap() {
 }
 ```
 
-这样设置后，框架会收集必要的元数据，以便 Nest Devtools 可视化你的应用依赖关系图。
+这样设置后，框架会收集必要的元数据，以便 Nest Devtools 可视化应用的依赖关系图。
 
-接下来，安装所需依赖包：
+接下来，请安装所需依赖包：
 
 ```bash
 $ npm i @nestjs/devtools-integration
 ```
 
 <CalloutInfo type="warning">
-  如果你的应用中使用了 `@nestjs/graphql` 包，请确保安装最新版本（`npm i @nestjs/graphql@11`）。
+  如果你的应用中使用了 `@nestjs/graphql` 包，请确保其版本为 `v11` 或更高（`npm i
+  @nestjs/graphql@11`）。
 </CalloutInfo>
 
-依赖安装完成后，打开 `app.module.ts` 文件，导入刚刚安装的 `DevtoolsModule`：
+依赖安装完成后，打开 `app.module.ts` 文件，并导入 `DevtoolsModule`：
 
 ```ts
 @Module({
@@ -57,23 +58,23 @@ export class AppModule {}
 ```
 
 <CalloutInfo type="warning">
-  这里检查 `NODE_ENV` 环境变量的原因是：**绝不能**在生产环境中使用此模块！
+  请注意：检查 `NODE_ENV` 是为了确保**绝不**在生产环境中使用该模块！
 </CalloutInfo>
 
-当你导入了 `DevtoolsModule` 并启动应用（`npm run start:dev`）后，就可以访问 [Devtools](https://devtools.nestjs.com) 页面，查看自动分析的依赖关系图。
+导入 `DevtoolsModule` 并启动应用（`npm run start:dev`）后，你就可以访问 [Devtools](https://devtools.nestjs.com) 页面，查看 Devtools 自动分析出的依赖关系图。
 
 <DocImage src={modulesGraphImage} alt="Modules graph" />
 
 <CalloutInfo>
   如上图所示，每个模块都会连接到 `InternalCoreModule`。`InternalCoreModule`
-  是一个全局模块，始终被导入到根模块中。由于它被注册为全局节点，Nest 会自动在所有模块与
-  `InternalCoreModule` 节点之间创建连接。如果你想在图中隐藏全局模块，可以勾选侧边栏中的"**Hide
-  global modules**"复选框。
+  是一个全局模块，它始终会导入到根模块中。由于它被注册为全局节点，Nest 会自动在所有模块与
+  `InternalCoreModule` 节点之间创建连接。如需在图中隐藏全局模块，可以勾选侧边栏中的"**Hide global
+  modules**"复选框。
 </CalloutInfo>
 
-如上所述，`DevtoolsModule` 会让你的应用额外暴露一个 HTTP 服务器（端口为 8000），Devtools 应用会通过该端口分析你的应用。
+如上所述，`DevtoolsModule` 会为你的应用额外启动一个 HTTP 服务器（端口为 8000），Devtools 应用将通过该端口分析你的应用。
 
-为了确认一切正常，将图表视图切换为“Classes（类）”。你应该会看到如下界面：
+为了确认一切正常，将图表视图切换为"Classes（类）"。你会看到如下界面：
 
 <DocImage src={classesGraphImage} alt="Classes graph" />
 
@@ -86,14 +87,14 @@ export class AppModule {}
 <DocImage src={nodePopupImage} alt="Node popup" />
 
 <CalloutInfo>
-  <div>若要将图表导出为图片，请点击图表右上角的 **Export as PNG** 按钮。</div>
+  <div>如需将图表导出为图片，请点击图表右上角的 **Export as PNG** 按钮。</div>
 </CalloutInfo>
 
-你可以通过左侧侧边栏的表单控件调整边的距离，例如只可视化某个应用子树：
+你还可以通过侧边栏的控件来调整依赖追溯的深度，从而只可视化应用的一部分，例如某个子树：
 
 <DocImage src={subtreeViewImage} alt="Subtree view" />
 
-当团队中有**新成员**时，这一功能尤其有用，可以帮助他们快速了解应用结构。你还可以用它来可视化某个模块（如 `TasksModule`）及其所有依赖关系，这在将大型应用拆分为更小的模块（比如单独的微服务）时非常实用。
+此功能在团队有**新成员**加入时尤其有用，能帮助他们快速了解应用结构。你还可以用它来可视化特定模块（如 `TasksModule`）及其所有依赖，这在将大型单体应用拆分为多个微服务等场景中非常实用。
 
 你可以观看下方视频，了解 **Graph Explorer** 功能的实际效果：
 
@@ -109,15 +110,15 @@ export class AppModule {}
   ></iframe>
 </figure>
 
-## 排查 “无法解析依赖关系” 错误
+## 排查"无法解析依赖关系"错误
 
 <CalloutInfo>
 
-此功能仅在 `@nestjs/core` >= `v9.3.10` 版本中受支持。
+此功能需要 `@nestjs/core` `v9.3.10` 或更高版本。
 
 </CalloutInfo>
 
-你可能经常遇到的一个错误信息，就是 Nest 无法解析某个提供者的依赖关系。借助 Nest Devtools，你可以轻松定位问题，并了解如何解决。
+“无法解析提供者的依赖关系”是一个常见错误。借助 Nest Devtools，你可以轻松定位问题并找到解决方案。
 
 首先，打开 `main.ts` 文件，并按如下方式更新 `bootstrap()` 调用：
 
@@ -137,7 +138,7 @@ const app = await NestFactory.create(AppModule, {
 })
 ```
 
-现在，每当你的应用因为 **“无法解析依赖关系”** 错误而启动失败时，都会在根目录下生成一个 `graph.json` 文件（该文件表示部分依赖关系图）。你可以将此文件拖拽到 Devtools 中（请确保将当前模式从 “Interactive” 切换为 “Preview”）：
+现在，当应用因**“无法解析依赖关系”**错误而启动失败时，会在根目录下生成一个 `graph.json` 文件（该文件表示部分依赖关系图）。你可以将此文件拖拽到 Devtools 中（请确保将当前模式从“Interactive”切换为“Preview”）：
 
 <DocImage src={dragAndDropImage} alt="Drag and drop" />
 
@@ -145,17 +146,17 @@ const app = await NestFactory.create(AppModule, {
 
 <DocImage src={partialGraphModulesViewImage} alt="Partial graph modules view" />
 
-如图所示，高亮显示的 `TasksModule` 就是我们需要重点排查的模块。同时，在对话窗口中你也可以看到一些修复该问题的建议。
+如图所示，高亮显示的 `TasksModule` 就是问题所在的模块。同时，对话窗口中也会提供一些修复建议。
 
-如果我们切换到 “Classes” 视图，则会看到如下内容：
+如果我们切换到"Classes"视图，则会看到如下内容：
 
 <DocImage src={partialGraphClassesViewImage} alt="Partial graph classes view" />
 
-该依赖图展示了我们希望注入到 `TasksService` 的 `DiagnosticsService` 并未在 `TasksModule` 的上下文中找到。通常，只需将 `DiagnosticsModule` 导入到 `TasksModule` 即可解决此问题！
+该依赖图显示，试图注入 `TasksService` 的 `DiagnosticsService` 并未在 `TasksModule` 的上下文中注册。通常，只需将 `DiagnosticsModule` 导入 `TasksModule` 即可解决此问题！
 
-## 路由资源浏览器（Routes explorer）
+## 路由资源浏览器
 
-当你导航到 **路由资源浏览器（Routes explorer）** 页面时，你会看到所有已注册的入口点：
+当你导航到**路由资源浏览器（Routes Explorer）**页面时，你会看到所有已注册的入口点：
 
 <DocImage src={routesImage} alt="Routes" />
 
@@ -165,26 +166,26 @@ const app = await NestFactory.create(AppModule, {
 
 </CalloutInfo>
 
-所有入口点会按照其所属的主控制器进行分组。你还可以使用搜索栏来查找特定的入口点。
+所有入口点会按照其所属控制器进行分组。你还可以使用搜索栏来查找特定的入口点。
 
-如果你点击某个具体的入口点，会显示**流程图（flow graph）**。该图展示了该入口点的执行流程（例如绑定到该路由的守卫、拦截器、管道。当你想要了解某个路由的请求/响应周期，或者排查某个守卫、拦截器或管道未被执行的原因时，这个功能非常有用。
+点击任一入口点，都会显示其**流程图（flow graph）**。该图清晰地展示了此入口点的执行流程（例如绑定到此路由的守卫、拦截器和管道）。在需要了解路由的请求/响应周期，或排查守卫、拦截器、管道未按预期执行等问题时，此功能会非常有用。
 
 ## 沙盒（Sandbox）
 
-如果你希望即时执行 JavaScript 代码并实时与应用交互，可以导航到 **沙盒（Sandbox）** 页面：
+如果你希望即时执行 JavaScript 代码并实时与应用交互，可以导航到**沙盒（Sandbox）**页面：
 
 <DocImage src={sandboxImage} alt="Sandbox" />
 
-该 Playground 可用于在**实时**环境下测试和调试 API 端点，开发者无需借助 HTTP 客户端等工具，即可快速定位和修复问题。我们还可以绕过身份验证（Authentication）层，因此无需额外登录或专门为测试创建用户账号。对于事件驱动应用，还可以直接在 Playground 中触发事件，观察应用的响应。
+借助该 Playground，你可以在**实时环境**下测试和调试 API 端点，而无需使用 HTTP 客户端等外部工具，从而快速定位并修复问题。它还能绕过身份验证（Authentication）层，因此无需额外登录或创建专门的测试账号。对于事件驱动型应用，你还可以直接在 Playground 中触发事件，并观察应用的响应。
 
-所有日志输出都会被汇总到 Playground 的控制台，方便我们随时查看应用的运行情况。
+所有日志输出都会汇总到 Playground 的控制台，方便随时查看应用的运行情况。
 
 你只需**即时**执行代码，即可立刻看到结果，无需重建应用或重启服务器。
 
 <DocImage src={sandboxTableImage} alt="Sandbox table" />
 
 <CalloutInfo>
-  如果你想以表格形式美观地展示对象数组，可以使用 `console.table()`（或直接用 `table()`）函数。
+  如需以表格形式美观地展示对象数组，可以使用 `console.table()`（或直接用 `table()`）函数。
 </CalloutInfo>
 
 你可以观看下方视频，了解 **交互式 Playground** 功能的实际效果：
@@ -195,23 +196,22 @@ const app = await NestFactory.create(AppModule, {
     height="565"
     src="https://www.youtube.com/embed/liSxEN_VXKM"
     title="YouTube video player"
-    frameBorder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowFullScreen
   ></iframe>
 </figure>
 
-## 启动性能分析器
+## Bootstrap 性能
 
-要查看所有类节点（如 控制器、提供者、增强器等）及其对应的实例化耗时，请导航至 **Bootstrap 性能** 页面：
+要查看所有类节点（如控制器、提供者、增强器等）及其对应的实例化耗时，可以导航到 **Bootstrap 性能**页面：
 
 <DocImage src={bootstrapPerformanceImage} alt="Bootstrap performance" />
 
-当你希望找出应用程序启动流程中最慢的部分时（例如：你想优化应用的启动时间，这对于无服务器（serverless）环境等场景至关重要），该页面会非常有用。
+当希望找出应用启动流程中的性能瓶颈时，此页面会非常有用。例如，在优化无服务器（serverless）环境下的应用启动时间等场景中，这一点至关重要。
 
 ## 审计
 
-要查看自动生成的审计结果（包括错误、警告和提示），请导航至 **审计** 页面：
+要查看自动生成的审计结果（包括错误、警告和提示），请导航至**审计**页面：
 
 <DocImage src={auditImage} alt="Audit" />
 
@@ -221,7 +221,7 @@ const app = await NestFactory.create(AppModule, {
 
 </CalloutInfo>
 
-该页面有助于你发现应用中潜在的问题。
+此页面有助于你发现应用中潜在的问题。
 
 ## 预览静态文件
 
@@ -233,11 +233,11 @@ fs.writeFileSync('./graph.json', app.get(SerializedGraph).toString())
 ```
 
 <CalloutInfo>
-  <div>`SerializedGraph` 由 `@nestjs/core` 包导出。</div>
+  <div>`SerializedGraph` 可从 `@nestjs/core` 包中导入。</div>
 </CalloutInfo>
 
 随后，你可以通过拖拽或上传该文件：
 
 <DocImage src={dragAndDropImage} alt="Drag and drop" />
 
-当你需要与他人（如同事）共享依赖关系图，或希望离线分析时，这一功能会非常有用。
+当你需要与他人（如同事）共享依赖关系图，或希望离线分析时，此功能会非常有用。

@@ -1,13 +1,16 @@
-# 保持连接（Keep-Alive Connections）
+# HTTP 长连接（Keep-Alive Connections）
 
-默认情况下，NestJS 的 HTTP 适配器会在响应结束后才关闭应用程序。但有时，这种行为并不符合预期，或者并非你所期望。某些请求可能会使用 `Connection: Keep-Alive` 请求头，这会导致连接长时间保持活动状态。
+默认情况下，HTTP `Connection: Keep-Alive` 响应头会使客户端与服务器之间的连接在一段时间内保持活动状态，以便复用。虽然这能提升性能，但在某些场景下，这些未关闭的“长连接”可能会阻止 NestJS 应用程序在收到关闭信号后正常退出。
 
-针对这些场景，如果你希望应用程序无需等待所有请求结束就直接退出，可以在创建 NestJS 应用程序时启用 `forceCloseConnections` 选项。
+这个问题在你启用了 `enableShutdownHooks()` 以实现应用的优雅停机时尤为突出，因为应用需要等待所有连接关闭后才能完全终止，而长连接的存在会延长甚至阻塞这一过程。
+
+为应对此种情况，NestJS 提供了 `forceCloseConnections` 选项。启用它后，应用在关闭时会强制断开所有活动的 HTTP 连接，从而确保进程可以迅速退出。
 
 <CalloutInfo type="warning">
-  绝大多数用户无需启用此选项。只有在你发现应用程序未能按预期退出时，才可能需要用到它。通常，这种情况会出现在你启用了
-  `app.enableShutdownHooks()`，并且注意到应用程序无法正常重启或退出时。最常见的场景是在开发过程中使用
-  `--watch` 运行 NestJS 应用程序时。
+绝大多数用户无需启用此选项，仅当你发现应用在调用 `app.close()` 或接收到 `SIGTERM` 等系统信号后无法正常退出时，才应考虑使用它。
+
+一个典型的场景是，在开发模式下通过 `--watch` 标志运行 NestJS 应用，并启用了 `enableShutdownHooks()` 时，可能会遇到应用无法自动重启的问题。
+
 </CalloutInfo>
 
 ## 用法

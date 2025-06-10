@@ -1,26 +1,26 @@
 # Serverless（无服务器架构）
 
-无服务器计算（Serverless computing）是一种云计算执行模型。在该模型下，云服务提供商会根据实际需求分配计算资源，并为客户管理服务器。当应用未被使用时，不会为其分配任何计算资源。计费方式基于应用实际消耗的资源量（[来源](https://en.wikipedia.org/wiki/Serverless_computing)）。
+无服务器计算（Serverless computing）是一种云计算执行模型，云服务商会根据需求动态分配计算资源并管理服务器。当你的应用没有流量时，就不会占用任何计算资源，而你只需为应用实际消耗的资源付费。（[来源](https://en.wikipedia.org/wiki/Serverless_computing)）。
 
-采用 **无服务器架构（serverless architecture）** 时，开发者只需专注于应用代码中的各个独立函数。像 AWS Lambda、Google Cloud Functions 和 Microsoft Azure Functions 这样的服务，会负责所有物理硬件、虚拟机操作系统以及 Web 服务器软件的管理工作。
+采用**无服务器架构（Serverless Architecture）**，开发者可以专注于编写独立的函数，而无需关心底层。AWS Lambda、Google Cloud Functions 和 Microsoft Azure Functions 等服务会为你处理好所有物理硬件、虚拟机操作系统和 Web 服务器软件的管理工作。
 
 <CalloutInfo>
-  <div>本章节不讨论无服务器函数的优缺点，也不会深入介绍任何云服务商的具体实现。</div>
+  <div>本章不讨论无服务器函数的优缺点，也不会深入探讨特定云厂商的实现细节。</div>
 </CalloutInfo>
 
-## 冷启动（Cold start）
+## 冷启动
 
-冷启动（cold start）指的是代码在一段时间未被执行后首次运行。根据所使用的云服务商不同，冷启动可能涉及多个操作，例如下载代码、启动运行时（bootstrapping the runtime），最终执行你的代码。
+冷启动（Cold Start）指的是你的代码在闲置一段时间后首次被调用执行。根据云厂商的不同，冷启动过程可能包括下载代码、启动运行时（Bootstrap）等多个步骤，最终才会执行你的代码。
 
-这个过程会因多种因素（如编程语言、应用所需依赖包数量等）而带来显著的延迟。
+这个过程会因编程语言、依赖包数量等多种因素而产生明显的延迟。
 
-冷启动问题非常重要。虽然有些因素我们无法控制，但我们仍可以通过自身的优化，尽量缩短冷启动时间。
+冷启动问题不容忽视。尽管有些因素我们无法控制，但仍然可以通过一些优化手段来尽可能缩短冷启动时间。
 
-虽然你可以将 Nest 视为一个为复杂企业级应用设计的完整框架，但它同样适用于更“简单”的应用（或脚本）。例如，借助[独立应用](/standalone-applications)特性，你可以在简单的 worker、定时任务（CRON jobs）、命令行工具（CLI）或无服务器函数中，充分利用 Nest 的依赖注入机制。
+虽然 Nest 通常被看作是为复杂企业级应用设计的全功能框架，但它同样适用于更轻量的应用场景，例如 worker、定时任务（CRON job）、命令行工具（CLI）甚至是无服务器函数。借助[独立应用](/standalone-applications)特性，你在这些场景下依然可以充分利用 Nest 强大的依赖注入系统。
 
 ## 基准测试
 
-为了更好地理解在无服务器函数（Serverless Function）场景下，使用 Nest 或其他知名库（如 `express`）的性能开销，我们对比了 Node 运行时执行以下脚本所需的时间：
+为了更好地理解在无服务器函数（Serverless Function）场景下，使用 Nest 和其他流行库（如 `express`）的性能开销，我们测试了 Node 运行时启动以下不同脚本所需的时间：
 
 ```ts
 // #1 Express
@@ -76,7 +76,7 @@ bootstrap()
   机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
 </CalloutInfo>
 
-接下来，我们将所有基准测试重复一遍，但这次使用 `webpack` 进行打包（如果你已安装 [Nest 命令行工具（Nest CLI）](/cli/overview)，可以通过 `nest build --webpack` 命令将应用打包为单一可执行 JavaScript 文件）。不过，我们不会使用 Nest CLI 默认的 `webpack` 配置，而是确保将所有依赖（`node_modules`）一并打包，配置如下：
+接下来，我们使用 `webpack` 将所有脚本打包后再进行一次基准测试。（如果你安装了 [Nest CLI](/cli/overview)，可以通过 `nest build --webpack` 命令将应用打包成一个独立的 JavaScript 文件）。我们没有使用 Nest CLI 的默认 `webpack` 配置，而是通过以下配置确保所有依赖项（`node_modules`）都被打包到最终文件中：
 
 ```js
 module.exports = (options, webpack) => {
@@ -126,22 +126,22 @@ module.exports = (options, webpack) => {
 
 <CalloutInfo>你还可以通过进一步的代码压缩和优化（如使用 `webpack` 插件等）来提升性能。</CalloutInfo>
 
-可以看到，编译方式（以及是否打包代码）对整体启动时间有着至关重要的影响。通过 `webpack` 打包后，独立 Nest 应用（包含一个模块、一个控制器和一个服务）的启动时间平均可降至约 32 毫秒，基于 Express 的常规 NestJS 应用约为 81.5 毫秒。
+可以看到，编译和打包方式对应用的整体启动时间有显著影响。通过 `webpack` 打包后，一个独立的 Nest 应用（包含一个模块、一个控制器和一个服务）的平均启动时间可以降至约 32 毫秒，而一个标准的、基于 Express 的 NestJS 应用约为 81.5 毫秒。
 
-对于更复杂的 Nest 应用，例如包含 10 个资源（通过 `$ nest g resource` 原型生成器生成，即 10 个模块、10 个控制器、10 个服务、20 个数据传输对象（DTO）类、50 个 HTTP 端点以及 `AppModule`），在 MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD 上的整体启动时间约为 0.1298 秒（129.8 毫秒）。将单体应用作为无服务器函数运行通常并不合理，因此请将本基准测试视为应用规模增长时启动时间可能增加的参考示例。
+对于一个更复杂的 Nest 应用——例如包含 10 个资源（通过 `$ nest g resource` 命令生成，即 10 个模块、10 个控制器、10 个服务、20 个 DTO 类、50 个 HTTP 端点以及 `AppModule`）——在相同的测试环境下，其总启动时间约为 0.1298 秒（129.8 毫秒）。当然，将一个庞大的单体应用作为单个无服务器函数运行通常是不切实际的，所以你可以将这个基准测试看作一个参考，了解应用规模增长对启动时间的影响。
 
 ## 运行时优化
 
-到目前为止，我们介绍了编译时优化。这些优化与你在应用中如何定义提供者和加载 Nest 模块无关，而这些方式在应用规模变大时起着至关重要的作用。
+以上我们讨论了编译时优化。这些优化与你如何定义提供者、加载模块无关。然而，当应用规模增长时，后者（即运行时机制）对启动性能的影响将变得至关重要。
 
 举个例子，假设你有一个数据库连接被定义为[异步提供者](/fundamentals/async-providers)。异步提供者旨在延迟应用启动，直到一个或多个异步任务完成。
-这意味着，如果你的无服务器函数（serverless function）在引导（bootstrap）时平均需要 2 秒才能连接到数据库，那么你的端点至少需要多等待两秒（因为它必须等到连接建立后才能响应），才能返回响应（当发生冷启动且应用尚未运行时）。
+这意味着，如果你的无服务器函数在启动时平均需要 2 秒来建立数据库连接，那么在发生冷启动时，你的函数需要额外等待 2 秒才能响应请求。这是因为应用必须等待数据库连接就绪。
 
-正如你所见，在**无服务器环境**下，提供者的结构方式与普通环境有所不同，因为引导时间非常重要。
-另一个例子是，如果你只在某些场景下使用 Redis 进行缓存，那么在这种情况下，你不应该将 Redis 连接定义为异步提供者（Async Provider），因为这会拖慢引导时间，即使本次函数调用并不需要缓存。
+如你所见，在**无服务器环境**下，组织提供者的方式与常规应用有所不同，因为启动时间至关重要。
+举个例子，如果你只在某些场景下才需要使用 Redis 缓存，就不应该将 Redis 连接设置为异步提供者。因为即使当前函数调用并不需要缓存，它也会拖慢整个应用的启动速度。
 
-此外，有时你可以使用 `LazyModuleLoader` 类（如[本章](/fundamentals/lazy-loading-modules)所述）来懒加载（Lazy Loading）整个模块。缓存就是一个很好的例子。
-假设你的应用有一个 `CacheModule`，它内部连接到 Redis，并且导出 `CacheService` 以与 Redis 存储交互。如果并非所有函数调用都需要缓存，你可以按需、懒加载该模块。这样，对于不需要缓存的所有冷启动调用，启动速度都会更快。
+此外，你还可以使用 `LazyModuleLoader` 类（详情见[此章](/fundamentals/lazy-loading-modules)）来懒加载模块。缓存就是一个很好的应用场景。
+假设你的应用有一个 `CacheModule`，它负责连接 Redis 并导出了一个用于操作缓存的 `CacheService`。如果并非所有函数调用都需要缓存功能，你就可以按需懒加载这个模块。这样一来，在那些不需要缓存的冷启动场景下，启动速度就会更快。
 
 ```ts
 if (request.method === RequestMethod[RequestMethod.GET]) {
@@ -155,8 +155,8 @@ if (request.method === RequestMethod[RequestMethod.GET]) {
 }
 ```
 
-另一个典型场景是 webhook 或 worker，根据某些特定条件（例如输入参数），可能会执行不同的操作。
-在这种情况下，你可以在路由处理器中指定条件，按需懒加载适合本次函数调用的模块（Module），其余模块也都采用懒加载方式。
+另一个适合懒加载的典型场景是 Webhook 或 Worker。它们通常会根据输入参数等特定条件执行不同的逻辑。
+在这种情况下，你可以在请求处理函数中加入判断逻辑，只在需要时才加载相应的模块，从而避免加载非必需模块带来的开销。
 
 ```ts
 if (workerType === WorkerType.A) {
@@ -172,9 +172,9 @@ if (workerType === WorkerType.A) {
 
 ## 集成示例
 
-应用程序的入口文件（通常为 `main.ts` 文件）应如何编写，**取决于多个因素**，因此**没有一个通用模板**可以适用于所有场景。例如，针对不同云服务商（如 AWS、Azure、GCP 等）部署无服务器函数时，初始化文件的写法会有所不同。此外，取决于你是要运行一个包含多个路由/端点的典型 HTTP 应用，还是只提供单一路由（或仅执行特定代码片段），应用的代码结构也会不同（例如，采用"每个端点一个函数"模式时，你可以使用 `NestFactory.createApplicationContext`，而不是启动 HTTP 服务器、设置中间件等）。
+入口文件（通常是 `main.ts`）的写法取决于多个因素，因此**没有一个万能模板**。例如，为不同云厂商（如 AWS、Azure、GCP）部署函数时，入口文件的写法就会不同。此外，你的应用结构也会受到目标功能的影响：你是要运行一个包含多个路由的完整 HTTP 应用，还是只想执行一个独立的函数？（例如，在"一个函数一个端点"的模式下，你可能会使用 `NestFactory.createApplicationContext`，而不是启动一个完整的 HTTP 服务器）。
 
-这里仅作演示，我们将 Nest（使用 `@nestjs/platform-express`，即启动完整的 HTTP 路由功能）与 [Serverless](https://www.serverless.com/) 框架集成（本例以 AWS Lambda 为目标）。如前所述，具体代码会因所选云服务商及其他因素而异。
+为了演示，下面我们将 Nest（使用 `@nestjs/platform-express`，它会启动完整的 HTTP 路由功能）与 [Serverless Framework](https://www.serverless.com/) 进行集成（目标平台为 AWS Lambda）。再次强调，你的具体实现会因云厂商和其他因素而异。
 
 首先，安装所需依赖包：
 
@@ -184,8 +184,8 @@ $ npm i -D @types/aws-lambda serverless-offline
 ```
 
 <CalloutInfo>
-  为了加快开发迭代速度，我们安装了 `serverless-offline` 插件，它可以模拟 AWS Lambda 和 API Gateway
-  的本地环境。
+  我们安装了 `serverless-offline` 插件来模拟本地的 AWS Lambda 和 API Gateway
+  环境，这可以大大加快开发和调试速度。
 </CalloutInfo>
 
 安装完成后，创建 `serverless.yml` 文件，用于配置 Serverless 框架：
@@ -217,7 +217,7 @@ functions:
   框架的信息，请访问[官方文档](https://www.serverless.com/framework/docs/)。
 </CalloutInfo>
 
-接下来，打开 `main.ts` 文件，按照如下方式更新启动代码，加入所需的模板代码（Boilerplate）：
+接下来，打开 `main.ts`，用以下代码更新你的应用启动逻辑：
 
 ```ts
 import { NestFactory } from '@nestjs/core'
@@ -242,8 +242,8 @@ export const handler: Handler = async (event: any, context: Context, callback: C
 ```
 
 <CalloutInfo>
-  如果你需要创建多个无服务器函数，并在他们之间共享通用模块，建议使用 [CLI
-  多包仓库结构（Monorepo）模式](/cli/monorepo#monorepo-mode)。
+  如果你需要创建多个无服务器函数并希望它们共享模块，建议采用 [CLI 的 Monorepo
+  模式](/cli/monorepo#monorepo-mode)。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
@@ -271,7 +271,7 @@ $ npx serverless offline
 
 应用启动后，打开浏览器访问 `http://localhost:3000/dev/[ANY_ROUTE]`（其中 `[ANY_ROUTE]` 为应用中注册的任意端点）。
 
-在上文中我们提到，使用 `webpack` 对应用进行打包会显著影响整体启动时间。不过，为了让本例正常运行，还需在 `webpack.config.js` 文件中做一些额外配置。通常，为确保 `handler` 函数能被正确识别，需要将 `output.libraryTarget` 属性设置为 `commonjs2`。
+我们之前提到，使用 `webpack` 打包应用会显著改善启动时间。然而，为了让这个例子正常工作，你需要在 `webpack.config.js` 中添加一些额外配置。通常需要将 `output.libraryTarget` 属性设为 `commonjs2`，以确保 `handler` 函数能被正确导出。
 
 ```js
 return {
@@ -287,7 +287,7 @@ return {
 
 完成上述配置后，可以使用 `$ nest build --webpack` 编译函数代码（然后用 `$ npx serverless offline` 进行本地测试）。
 
-此外，推荐（但**非必需**，因为会降低构建速度）安装 `terser-webpack-plugin` 包，并重写其配置，在生产环境压缩代码时保留类名。否则在应用中使用 `class-validator` 时，可能会出现异常行为。
+此外，我们还**推荐**（但非必需，因为它会拖慢构建速度）安装 `terser-webpack-plugin` 包并覆盖其默认配置，以便在生产环境压缩代码时保留类名。否则，如果你在应用中使用了 `class-validator`，可能会遇到意外行为。
 
 ```js
 const TerserPlugin = require('terser-webpack-plugin')
@@ -314,7 +314,7 @@ return {
 
 ## 使用独立应用功能
 
-另外，如果你希望让你的函数保持非常轻量，并且不需要任何 HTTP 相关功能（如路由、守卫、拦截器、管道等），你可以像前文所述，直接使用 `NestFactory.createApplicationContext`，而不是运行整个 HTTP 服务器（底层为 `express`），示例如下：
+另外，如果你希望函数保持极其轻量，并且不需要任何 HTTP 相关的功能（如路由、守卫、拦截器、管道等），你可以直接使用 `NestFactory.createApplicationContext`，而不是启动一个完整的 HTTP 服务器（底层为 `express`），示例如下：
 
 ```ts filename='main.ts'
 import { HttpStatus } from '@nestjs/common'
@@ -339,7 +339,7 @@ export const handler: Handler = async (event: any, context: Context, callback: C
   不会为控制器方法应用增强器（如守卫、拦截器等）。如需此功能，必须使用 `NestFactory.create` 方法。
 </CalloutInfo>
 
-你也可以将 `event` 对象传递给，比如说，`EventsService` 提供者，让其根据输入值和你的业务逻辑进行处理并返回相应结果。
+你也可以将 `event` 对象传递给某个服务（例如 `EventsService`），让它根据你的业务逻辑处理输入并返回结果。
 
 ```ts
 export const handler: Handler = async (event: any, context: Context, callback: Callback) => {
