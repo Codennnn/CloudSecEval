@@ -7,6 +7,7 @@ import { CodeBlock } from '~/components/code/CodeBlock'
 import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
 import { FileTree } from '~/components/doc/FileTree'
+import { MermaidWrapper } from '~/components/doc/MermaidWrapper'
 import { GithubIcon } from '~/components/icon/brand-icons'
 import {
   Table,
@@ -20,7 +21,7 @@ import { cn } from '~/lib/utils'
 import { getDocLinkHref, isExternalLink, isHashLink } from '~/utils/link'
 
 interface PreProps {
-  children: React.ReactElement<{ className: string, children: React.ReactElement }>
+  children: React.ReactElement<{ className: string, children: React.ReactElement | string }>
   filename?: string
   showLineNumbers?: boolean
   hideInDoc?: boolean
@@ -146,6 +147,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         const lang = (className.replace(/language-/, '') || 'text') as BundledLanguage
 
         if (typeof codeContent === 'string') {
+          if (lang === 'mermaid') {
+            return <MermaidWrapper chart={codeContent} />
+          }
+
           return (
             <CodeBlock
               code={codeContent}
