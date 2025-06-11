@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { ExternalLinkIcon, LanguagesIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { RoutePath } from '~/constants'
 
 /**
@@ -21,29 +22,30 @@ export function getEnglishDocPath(chinesePath: string): string {
   return url.toString()
 }
 
-interface EnglishDocLinkProps {
-  className?: string
-}
-
-export function EnglishDocLink({ className }: EnglishDocLinkProps) {
+export function EnglishDocLink() {
   const pathname = usePathname()
 
   const englishDocPath = getEnglishDocPath(pathname)
 
   return (
-    <div className={className}>
-      <Link href={englishDocPath} rel="noopener noreferrer" target="_blank">
-        <Button
-          className="inline-flex items-center gap-2 h-6 transition-all justify-start text-xs text-muted-foreground hover:text-foreground"
-          size="sm"
-          title="查看英文原版文档"
-          variant="ghost"
-        >
-          <LanguagesIcon className="size-3.5" />
-          英文原版
-          <ExternalLinkIcon className="size-3" />
-        </Button>
-      </Link>
-    </div>
+    <Tooltip delayDuration={300}>
+      <TooltipTrigger asChild>
+        <Link href={englishDocPath} rel="noopener noreferrer" target="_blank">
+          <Button
+            className="inline-flex items-center gap-2 h-6 transition-all justify-start text-xs text-muted-foreground hover:text-foreground"
+            size="sm"
+            variant="ghost"
+          >
+            <LanguagesIcon className="size-3.5" />
+            英文原版
+            <ExternalLinkIcon className="size-3" />
+          </Button>
+        </Link>
+      </TooltipTrigger>
+
+      <TooltipContent>
+        查看英文原版文档
+      </TooltipContent>
+    </Tooltip>
   )
 }

@@ -36,7 +36,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
 
               <hr className="my-4 bg-border/70" />
 
-              <div className="space-y-1">
+              <div className="inline-flex flex-col gap-1">
                 <EnglishDocLink />
 
                 <ScrollToTop

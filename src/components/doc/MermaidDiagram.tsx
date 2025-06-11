@@ -320,7 +320,7 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
   return (
     <div className={cn('relative', className)}>
       <div
-        className="size-full p-1 rounded-md border border-border bg-muted/50"
+        className="size-full p-1 rounded-md border border-border bg-muted/80"
       >
         <div className="relative bg-background size-full flex items-center justify-center rounded-[0.3rem] overflow-hidden p-1">
           <MermaidChart
