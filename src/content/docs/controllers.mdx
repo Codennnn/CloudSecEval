@@ -1,10 +1,27 @@
-import controllerImage from '/public/assets/Controllers_1.png'
-
 # 控制器
 
 控制器（Controller）负责处理传入的请求（request），并将响应（response）返回给客户端。
 
-<DocImage src={controllerImage} alt="控制器" />
+```mermaid
+flowchart TD
+    A[客户端] -- "发起 HTTP 请求<br/>(GET /cats/1)" --> B{NestJS 路由}
+
+    subgraph "控制器 (CatsController)"
+        C["@Get()<br>findAll"]
+        D["@Get(':id')<br>findOne(id)"]
+        E["@Post()<br>create(dto)"]
+    end
+
+    B -- "匹配路由" --> D
+
+    subgraph "服务 (业务逻辑层)"
+        F[CatsService]
+    end
+
+    D -- "(1) 调用服务方法" --> F
+    F -- "(2) 返回处理结果" --> D
+    D -- "(3) 生成并返回响应" --> A
+```
 
 控制器的核心作用，是为应用程序处理特定的请求。**路由（routing）** 机制决定了每个请求由哪个控制器负责。通常，一个控制器会包含多个路由，每个路由可执行不同的操作。
 

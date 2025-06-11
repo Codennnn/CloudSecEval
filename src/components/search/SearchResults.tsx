@@ -28,7 +28,14 @@ interface SearchResultsProps {
 }
 
 export function SearchResults(props: SearchResultsProps) {
-  const { searchTerm, selectedIndex, onResultsUpdate, onSelectResult, onResultsChange, onSelectedIndexChange } = props
+  const {
+    searchTerm,
+    selectedIndex,
+    onResultsUpdate,
+    onSelectResult,
+    onResultsChange,
+    onSelectedIndexChange,
+  } = props
 
   const { results } = useSearch({
     term: searchTerm,

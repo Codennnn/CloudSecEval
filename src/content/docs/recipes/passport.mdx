@@ -1,6 +1,6 @@
 # Passport（认证）
 
-[Passport](https://github.com/jaredhanson) 是目前社区中最流行的 Node.js 身份验证库，已经在众多生产环境应用中被广泛使用。通过 `@nestjs/passport` 模块，可以非常方便地将该库集成到 **Nest** 应用中。从整体上看，Passport 会执行以下几个主要步骤：
+[Passport](https://github.com/jaredhanson) 是目前社区中最流行的 Node.js 身份验证库，已经在众多生产环境应用中被广泛使用。通过 `@nestjs/passport` 模块，可以非常方便地将该库集成到 Nest 应用中。从整体上看，Passport 会执行以下几个主要步骤：
 
 - 通过验证用户的“凭证”（如用户名/密码、JSON Web Token、或来自身份提供方的身份令牌）来进行身份验证
 - 管理已认证状态（例如签发可携带的令牌，如 JWT，或创建 [Express 会话（Session）](https://github.com/expressjs/session)）
@@ -60,7 +60,7 @@ $ nest g service users
 ```ts filename='users/users.service.ts'
 import { Injectable } from '@nestjs/common'
 
-// 这里应该是一个真正代表用户实体的类或接口
+// 在实际应用中，这里应该是一个代表用户实体的类或接口
 export type User = any
 
 @Injectable()
@@ -400,7 +400,7 @@ export class AppController {
 $ # 向 /auth/login 发送 POST 请求
 $ curl -X POST http://localhost:3000/auth/login -d '{"username": "john", "password": "changeme"}' -H "Content-Type: application/json"
 $ # 返回结果 -> {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
-$ # 注意：上方 JWT 已截断
+$ # 注意：上方的 JWT 已被截断
 ```
 
 ## 实现 Passport JWT

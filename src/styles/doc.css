@@ -1,4 +1,6 @@
-.illustrative-image {
+/* 图片、Mermaid 图表、流程图等 */
+.illustrative-image,
+svg[role*='document'] {
   filter: var(--images-filter);
 }
 
