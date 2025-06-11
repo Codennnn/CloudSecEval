@@ -28,6 +28,7 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
   const [isComposing, setIsComposing] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
+
   const router = useRouter()
 
   useEffect(() => {
@@ -76,15 +77,16 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
       if (urlObj.origin !== window.location.origin) {
         // 外部链接在新标签页打开
         window.open(cleanUrl, '_blank', 'noopener,noreferrer')
+
         onClose()
-
-        return
       }
+      else {
+        // 内部链接使用 Next.js 路由进行无刷新跳转
+        const pathname = urlObj.pathname + urlObj.search + urlObj.hash
+        router.push(pathname)
 
-      // 内部链接使用 Next.js 路由进行无刷新跳转
-      const pathname = urlObj.pathname + urlObj.search + urlObj.hash
-      router.push(pathname)
-      onClose()
+        onClose()
+      }
     }
     catch {
       // 如果 URL 解析失败，尝试作为相对路径处理
@@ -158,7 +160,7 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
 
             <input
               ref={inputRef}
-              className="flex-1 !outline-none font-normal text-sm !border-none shadow-none focus-visible:outline-none placeholder:text-muted-foreground"
+              className="flex-1 h-full !outline-none font-normal text-sm !border-none shadow-none focus-visible:outline-none placeholder:text-muted-foreground"
               placeholder="你想搜索什么？"
               type="text"
               value={searchTerm}

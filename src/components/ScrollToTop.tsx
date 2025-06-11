@@ -87,8 +87,8 @@ export function ScrollToTop(props: ScrollToTopProps) {
         handleScrollToTop()
       }}
     >
-      回到顶部
       <CircleChevronUp className="size-3.5" />
+      回到顶部
     </Button>
   )
 }

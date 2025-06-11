@@ -21,7 +21,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       onOpenChange={onOpenChange}
     >
       <DialogContent
-        className="max-w-3xl h-[clamp(200px,50vh,650px)] p-0 gap-0 overflow-hidden"
+        className="max-w-3xl h-[clamp(200px,50vh,650px)] p-0 gap-0 overflow-hidden outline-background/60 outline-4"
         showCloseButton={false}
       >
         <OramaCloud

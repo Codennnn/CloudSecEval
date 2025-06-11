@@ -24,13 +24,13 @@ function NavigationLink(props: NavigationLinkProps) {
       href={getDocLinkHref(url)}
     >
       <div className="flex items-center gap-1.5 w-full text-muted-foreground group-hover:text-foreground transition-colors">
-        {isPrev && <ArrowLeftIcon className="size-3.5 shrink-0" />}
+        {isPrev && <ArrowLeftIcon className="size-3.5 shrink-0" strokeWidth={2.8} />}
 
         <div className="font-medium truncate leading-none">
           {title}
         </div>
 
-        {!isPrev && <ArrowRightIcon className="size-3.5 shrink-0" />}
+        {!isPrev && <ArrowRightIcon className="size-3.5 shrink-0" strokeWidth={2.8} />}
       </div>
     </Link>
   )

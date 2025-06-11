@@ -191,10 +191,8 @@ function MermaidChart(props: MermaidChartProps) {
 
     if (chartElement) {
       chartElement.addEventListener('wheel', handleWheel, { passive: false })
-    }
 
-    return () => {
-      if (chartElement) {
+      return () => {
         chartElement.removeEventListener('wheel', handleWheel)
       }
     }
@@ -296,19 +294,17 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
 
     // 确保初始化完成后再渲染图表
     const renderChart = async () => {
-      if (!chart) {
-        return
-      }
+      if (chart.trim() !== '') {
+        try {
+          const { svg } = await mermaid.render(`mermaid-${Date.now()}`, chart)
+          setRendered(svg)
+        }
+        catch (err) {
+          console.error('渲染 Mermaid 图表时出错:', err)
 
-      try {
-        const { svg } = await mermaid.render(`mermaid-${Date.now()}`, chart)
-        setRendered(svg)
-      }
-      catch (err) {
-        console.error('渲染 Mermaid 图表时出错:', err)
-
-        if (err instanceof Error) {
-          setRendered(`<pre>${err.message}</pre>`)
+          if (err instanceof Error) {
+            setRendered(`<pre>${err.message}</pre>`)
+          }
         }
       }
     }

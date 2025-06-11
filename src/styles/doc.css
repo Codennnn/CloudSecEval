@@ -17,6 +17,12 @@ code {
   }
 }
 
+.dark {
+  :not(pre) > code {
+    @apply outline -outline-offset-2 outline-background;
+  }
+}
+
 [data-component='callout-info'] {
   :not(pre) > code {
     @apply bg-muted/70;

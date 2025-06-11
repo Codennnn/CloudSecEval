@@ -1,4 +1,5 @@
 import { AppSidebar } from '~/components/AppSidebar'
+import { EnglishDocLink } from '~/components/EnglishDocLink'
 import { ScrollToTop } from '~/components/ScrollToTop'
 import { TableOfContents } from '~/components/TableOfContents'
 import {
@@ -31,10 +32,12 @@ export default function DocsLayout(props: React.PropsWithChildren) {
             </div>
 
             <aside className="sticky top-0 right-3 w-64 h-screen overflow-y-auto py-[var(--content-padding)] pr-[var(--content-padding)] hidden @4xl:block">
-              <div className="space-y-4">
-                <TableOfContents />
+              <TableOfContents />
 
-                <hr className="my-4 bg-border/70" />
+              <hr className="my-4 bg-border/70" />
+
+              <div className="space-y-1">
+                <EnglishDocLink />
 
                 <ScrollToTop
                   containerId={SCROLL_CONFIG.CONTAINER_ID}

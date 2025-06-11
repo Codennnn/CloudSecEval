@@ -34,7 +34,7 @@ export function CopyButton({ text, className }: CopyButtonProps) {
   const shouldOpen = copied ? true : undefined
 
   return (
-    <Tooltip open={shouldOpen}>
+    <Tooltip delayDuration={250} open={shouldOpen}>
       <TooltipTrigger asChild>
         <Button
           className={cn(
