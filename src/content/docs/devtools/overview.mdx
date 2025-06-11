@@ -20,7 +20,7 @@ import bootstrapPerformanceImage from '/public/assets/devtools/bootstrap-perform
 
 要开始调试本地应用，请打开 `main.ts` 文件，并确保在应用选项对象中将 `snapshot` 属性设置为 `true`，如下所示：
 
-```ts
+```ts filename='main.ts'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
@@ -44,7 +44,7 @@ $ npm i @nestjs/devtools-integration
 
 依赖安装完成后，打开 `app.module.ts` 文件，并导入 `DevtoolsModule`：
 
-```ts
+```ts filename='app.module.ts'
 @Module({
   imports: [
     DevtoolsModule.register({
@@ -100,14 +100,13 @@ export class AppModule {}
 
 <figure>
   <iframe
-    width="1000"
-    height="565"
+    width="100%"
+    height="400"
     src="https://www.youtube.com/embed/bW8V-ssfnvM"
     title="YouTube video player"
-    frameBorder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowFullScreen
-  ></iframe>
+  />
 </figure>
 
 ## 排查"无法解析依赖关系"错误
@@ -122,7 +121,7 @@ export class AppModule {}
 
 首先，打开 `main.ts` 文件，并按如下方式更新 `bootstrap()` 调用：
 
-```ts
+```ts filename='main.ts'
 bootstrap().catch((err) => {
   fs.writeFileSync('graph.json', PartialGraphHost.toString() ?? '')
   process.exit(1)
@@ -131,7 +130,7 @@ bootstrap().catch((err) => {
 
 同时，确保将 `abortOnError` 设置为 `false`：
 
-```ts
+```ts filename='main.ts'
 const app = await NestFactory.create(AppModule, {
   snapshot: true,
   abortOnError: false, // <--- 这里
@@ -192,13 +191,13 @@ const app = await NestFactory.create(AppModule, {
 
 <figure>
   <iframe
-    width="1000"
-    height="565"
+    width="100%"
+    height="400"
     src="https://www.youtube.com/embed/liSxEN_VXKM"
     title="YouTube video player"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowFullScreen
-  ></iframe>
+  />
 </figure>
 
 ## Bootstrap 性能
@@ -227,7 +226,7 @@ const app = await NestFactory.create(AppModule, {
 
 如需将序列化后的依赖关系图保存为文件，可使用如下代码：
 
-```ts
+```ts filename='main.ts'
 await app.listen(process.env.PORT ?? 3000) // 或 await app.init()
 fs.writeFileSync('./graph.json', app.get(SerializedGraph).toString())
 ```

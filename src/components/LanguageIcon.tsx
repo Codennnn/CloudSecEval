@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 
-import { MaterialIconThemeDocker, MaterialIconThemeGraphql, MaterialIconThemeGroovy, MaterialIconThemeHtml, MaterialIconThemeJavascript, MaterialIconThemeJson, MaterialIconThemePowershell, MaterialIconThemeTypescript, MaterialIconThemeYaml } from '~/components/icon/file-icons'
+import { MaterialIconThemeDocker, MaterialIconThemeDocument, MaterialIconThemeGraphql, MaterialIconThemeGroovy, MaterialIconThemeHtml, MaterialIconThemeJavascript, MaterialIconThemeJson, MaterialIconThemePowershell, MaterialIconThemeTypescript, MaterialIconThemeYaml } from '~/components/icon/file-icons'
 
 interface LanguageIconProps {
   lang: string
@@ -62,7 +62,7 @@ export function LanguageIcon(props: LanguageIconProps) {
   const normalizedLang = lang.toLowerCase()
 
   if (!isSupportedLanguage(normalizedLang)) {
-    return null
+    return <MaterialIconThemeDocument className={className} />
   }
 
   const IconComponent = iconMap[normalizedLang]

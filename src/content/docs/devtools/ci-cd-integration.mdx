@@ -18,21 +18,20 @@ CI/CD 集成功能仅对[企业版](https://enterprise.nestjs.com/)用户开放�
 
 <figure>
   <iframe
-    width="1000"
-    height="565"
+    width="100%"
+    height="400"
     src="https://www.youtube.com/embed/r5RXcBrnEQ8"
     title="YouTube 视频播放器"
-    frameBorder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowFullScreen
-  ></iframe>
+  />
 </figure>
 
 ## 发布依赖关系图
 
 首先，你需要在应用的引导文件（`main.ts`）中配置 `GraphPublisher` 类（从 `@nestjs/devtools-integration` 导入，详见上一章）。示例如下：
 
-```ts
+```ts filename='main.ts'
 async function bootstrap() {
   const shouldPublishGraph = process.env.PUBLISH_GRAPH === "true";
 
@@ -97,7 +96,7 @@ async function bootstrap() {
 
 首先，在项目的 `.github/workflows` 目录下创建一个新的 GitHub 工作流文件，例如 `publish-graph.yml`，内容如下：
 
-```yaml
+```yaml filename='publish-graph.yml'
 name: Devtools
 
 on:
@@ -148,7 +147,7 @@ jobs:
 
 最后，再次打开 `main.ts` 文件，补全之前留空的 `publishOptions` 对象：
 
-```ts
+```ts filename='main.ts'
 const publishOptions = {
   apiKey: process.env.DEVTOOLS_API_KEY,
   repository: process.env.REPOSITORY_NAME,
@@ -172,7 +171,7 @@ const publishOptions = {
 
 首先，在项目根目录创建 `.gitlab-ci.yml` 文件，内容如下：
 
-```yaml
+```yaml filename='.gitlab-ci.yml'
 image: node:16
 
 stages:
@@ -218,7 +217,7 @@ publish_graph:
 
 最后，更新 `main.ts` 文件中的 `publishOptions` 对象，以使用 GitLab 提供的环境变量：
 
-```ts
+```ts filename='main.ts'
 const publishOptions = {
   apiKey: process.env.DEVTOOLS_API_KEY,
   repository: process.env.CI_PROJECT_NAME,

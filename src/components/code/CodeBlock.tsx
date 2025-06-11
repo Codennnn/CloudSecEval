@@ -38,7 +38,7 @@ export async function CodeBlock(props: CodeBlockProps) {
       <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
         <div className="flex items-center gap-2">
           <LanguageIcon
-            className="size-5.5"
+            className="size-5.5 grayscale-100"
             lang={lang}
           />
 

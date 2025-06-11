@@ -86,7 +86,7 @@ Nest 致力于成为平台无关的框架。平台无关性让开发者能够创
 
 当你在 `NestFactory.create()` 方法中传入类型参数时，如下例所示，`app` 对象会拥有该平台专属的方法。但除非你需要访问底层平台 API，否则无需指定类型。
 
-```ts
+```ts filename='main.ts'
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
 ```
 
