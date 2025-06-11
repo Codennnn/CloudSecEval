@@ -1,10 +1,44 @@
-import interceptorImage from '/public/assets/Interceptors_1.png'
-
 # 拦截器
 
 拦截器（Interceptor）是一个通过 `@Injectable()` 装饰器注解，并实现了 `NestInterceptor` 接口的类。
 
-<DocImage src={interceptorImage} alt="拦截器结构图" />
+```mermaid
+graph LR
+    subgraph "请求处理流程"
+        A["客户端请求<br/>发起 HTTP 请求"] --> B["拦截器入口<br/>开始拦截处理"]
+        B --> C["执行前逻辑<br/>• 记录日志<br/>• 参数验证<br/>• 权限检查"]
+        C --> D["调用处理器<br/>handle() 方法"]
+        D --> E["路由处理器<br/>执行控制器方法"]
+        E --> F["方法响应<br/>获取处理结果"]
+        F --> G["响应流处理<br/>RxJS Observable"]
+        G --> H["执行后逻辑<br/>• 数据转换<br/>• 异常处理<br/>• 缓存操作"]
+        H --> I["最终响应<br/>处理完成"]
+        I --> J["客户端响应<br/>返回结果"]
+    end
+
+    subgraph "拦截器上下文"
+        K["执行上下文<br/>• 请求信息<br/>• 处理器元数据<br/>• 参数数组"]
+        L["调用处理器接口<br/>• handle() 方法<br/>• 返回 Observable"]
+    end
+
+    subgraph "RxJS 操作符"
+        M["流操作符<br/>• map() 数据转换<br/>• tap() 副作用<br/>• catchError() 异常<br/>• timeout() 超时"]
+    end
+
+    subgraph "拦截器级别"
+        N["全局级别<br/>useGlobalInterceptors()"]
+        O["控制器级别<br/>@UseInterceptors()"]
+        P["方法级别<br/>@UseInterceptors()"]
+    end
+
+    K -.-> C
+    K -.-> H
+    L -.-> D
+    M -.-> G
+    N -.-> B
+    O -.-> B
+    P -.-> B
+```
 
 拦截器受[面向切面编程（Aspect Oriented Programming, AOP）](https://en.wikipedia.org/wiki/Aspect-oriented_programming) 的启发，具备以下能力：
 

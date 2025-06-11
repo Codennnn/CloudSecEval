@@ -1,5 +1,3 @@
-import lifecycleEventsImage from '/public/assets/lifecycle-events.png'
-
 # 生命周期事件
 
 Nest 应用程序及其各个组成部分都受 Nest 生命周期管理。Nest 提供了**生命周期钩子（Lifecycle Hook）**，允许你在关键生命周期节点感知并执行相应操作（如在模块、提供者或控制器中运行注册代码）。
@@ -8,7 +6,42 @@ Nest 应用程序及其各个组成部分都受 Nest 生命周期管理。Nest �
 
 下图展示了应用程序从启动到 Node 进程退出期间，关键生命周期事件的顺序。整个生命周期分为三个阶段：**初始化（initializing）**、**运行中（running）** 和 **终止中（terminating）**。理解生命周期有助于合理安排模块和服务的初始化、活跃连接管理，以及在收到终止信号时优雅关闭应用。
 
-<DocImage src={lifecycleEventsImage} alt="生命周期事件流程图" />
+```mermaid
+flowchart TD
+    Start([启动应用]) --> Deps[依赖注入容器<br/>解析模块依赖]
+    Deps --> ModInit[onModuleInit<br/>各模块逐一初始化<br/>执行初始化逻辑]
+    ModInit --> AppBoot[onApplicationBootstrap<br/>所有模块初始化完成<br/>应用引导阶段完成]
+    AppBoot --> Listen[启动服务监听器<br/>HTTP服务器 / WebSocket服务器<br/>开始接受连接]
+    Listen --> Running{应用运行中<br/>处理用户请求<br/>执行业务逻辑}
+
+    Running -->|正常运行| Running
+    Running -->|收到终止信号| Signal[接收终止信号<br/>SIGTERM / SIGINT<br/>开始优雅关闭流程]
+
+    Signal --> ModDest[onModuleDestroy<br/>通知各模块准备销毁<br/>清理模块级资源]
+    ModDest --> BeforeShut[beforeApplicationShutdown<br/>所有模块销毁完成<br/>准备关闭应用连接]
+    BeforeShut --> StopListen[停止监听器<br/>拒绝新连接<br/>等待现有请求完成]
+    StopListen --> AppShut[onApplicationShutdown<br/>所有连接已关闭<br/>执行最终清理工作]
+    AppShut --> Exit([进程退出])
+
+    subgraph init [初始化阶段]
+        Deps
+        ModInit
+        AppBoot
+        Listen
+    end
+
+    subgraph run [运行阶段]
+        Running
+    end
+
+    subgraph term [终止阶段]
+        Signal
+        ModDest
+        BeforeShut
+        StopListen
+        AppShut
+    end
+```
 
 ## 生命周期事件
 

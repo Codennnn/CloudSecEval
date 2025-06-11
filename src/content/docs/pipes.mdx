@@ -1,10 +1,45 @@
-import pipeImage from '/public/assets/Pipe_1.png'
-
 # 管道
 
 管道（Pipe）是一个带有 `@Injectable()` 装饰器并实现 `PipeTransform` 接口的类。
 
-<DocImage src={pipeImage} alt="管道结构图" />
+```mermaid
+graph TD
+    A["客户端请求"] --> B["路由匹配"]
+    B --> C["管道执行"]
+
+    C --> D{{"管道类型"}}
+
+    D -->|转换| E["ParseIntPipe<br/>ParseBoolPipe<br/>ParseUUIDPipe<br/>等"]
+    D -->|校验| F["ValidationPipe<br/>自定义校验管道"]
+
+    E --> G["数据转换<br/>字符串 → 数字<br/>字符串 → 布尔值<br/>字符串 → UUID"]
+    F --> H["数据校验<br/>格式验证<br/>业务规则检查<br/>必填字段检查"]
+
+    G --> I{{"转换结果"}}
+    H --> J{{"校验结果"}}
+
+    I -->|成功| K["传递转换后的数据"]
+    I -->|失败| L["抛出 BadRequestException"]
+
+    J -->|通过| M["传递原始数据"]
+    J -->|失败| N["抛出 ValidationException"]
+
+    K --> O["控制器方法执行"]
+    M --> O
+
+    L --> P["异常过滤器处理"]
+    N --> P
+
+    P --> Q["返回错误响应"]
+    O --> R["返回成功响应"]
+
+    style A fill:#e1f5fe
+    style C fill:#fff3e0
+    style O fill:#e8f5e8
+    style P fill:#ffebee
+    style Q fill:#ffcdd2
+    style R fill:#c8e6c9
+```
 
 管道主要有两大典型用途：
 

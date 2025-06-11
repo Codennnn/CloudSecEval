@@ -1,10 +1,58 @@
-import guardImage from '/public/assets/Guards_1.png'
-
 # 守卫
 
 守卫（Guard）是一个带有 `@Injectable()` 装饰器并实现 `CanActivate` 接口的类。
 
-<DocImage src={guardImage} alt="守卫结构图" />
+```mermaid
+graph TD
+    subgraph "请求流程"
+        A["客户端<br/>Client Side"] -->|"HTTP 请求<br/>携带 Token"| B["中间件层<br/>Middleware Layer"]
+        B -->|"预处理<br/>身份验证"| C["守卫层<br/>Guard Layer"]
+    end
+
+    subgraph "守卫核心逻辑"
+        C --> D["AuthGuard<br/>身份验证守卫<br/>@Injectable()"]
+        C --> E["RolesGuard<br/>角色权限守卫<br/>implements CanActivate"]
+        D --> F{{"canActivate()<br/>权限验证方法"}}
+        E --> F
+    end
+
+    subgraph "上下文与元数据"
+        G["ExecutionContext<br/>执行上下文<br/>获取请求详情"] -.->|"context.switchToHttp()<br/>.getRequest()"| F
+        H["Reflector<br/>反射器<br/>读取装饰器元数据"] -.->|"reflector.get(Roles,<br/>context.getHandler())"| F
+        I["自定义装饰器<br/>@Roles(['admin', 'user'])<br/>@SetMetadata()"] -.-> H
+    end
+
+    F -->|"返回 true<br/>权限验证通过"| J["继续请求流程"]
+    F -->|"返回 false<br/>权限不足"| K["抛出异常<br/>ForbiddenException<br/>HTTP 403"]
+
+    subgraph "后续处理流程"
+        J --> L["拦截器<br/>Interceptor"]
+        L --> M["管道<br/>Pipe<br/>数据验证转换"]
+        M --> N["路由处理器<br/>Route Handler<br/>@Get() @Post()"]
+        N --> O["控制器方法<br/>Controller Method"]
+        O --> P["业务服务<br/>Service Layer"]
+        P --> Q["数据库操作<br/>Repository/Entity"]
+        Q --> R["响应数据<br/>Response"]
+    end
+
+    subgraph "异常处理"
+        K --> S["异常过滤器<br/>Exception Filter"]
+        S --> T["错误响应<br/>Error Response<br/>statusCode: 403"]
+    end
+
+    R --> U["客户端接收<br/>Client Response"]
+    T --> U
+
+    subgraph "守卫作用域"
+        V["全局守卫<br/>useGlobalGuards()<br/>APP_GUARD"]
+        W["控制器守卫<br/>@UseGuards(AuthGuard)<br/>Controller Level"]
+        X["方法守卫<br/>@UseGuards(RolesGuard)<br/>Method Level"]
+    end
+
+    V -.-> C
+    W -.-> C
+    X -.-> C
+```
 
 守卫的核心职责是根据运行时的特定条件（如权限、角色、访问控制列表等）判断请求是否允许被路由处理器（Route Handler）处理。这一过程通常被称为**授权（Authorization）**。在传统的 Express 应用中，授权（以及常见的身份验证通常由[中间件](/middleware)实现。中间件适合处理身份验证，例如校验令牌、为 `请求对象（Request Object）` 添加属性等，因为这些操作不依赖具体的路由上下文。
 

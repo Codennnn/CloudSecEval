@@ -132,8 +132,11 @@ function MermaidChart(props: MermaidChartProps) {
    * 这意味着浏览器会立即开始滚动而不等待 JavaScript 执行完毕。
    * 这种机制可以提高页面滚动性能，但会导致 preventDefault() 无效。
    *
-   * 当用户使用 Ctrl/Meta + 滚轮操作时，我们需要阻止页面默认的滚动行为，
-   * 仅执行图表的缩放功能。这就需要在添加事件监听器时显式设置 { passive: false }。
+   * 缩放逻辑：
+   * - 在全屏模式下：直接使用滚轮进行缩放，无需按修饰键
+   * - 在普通模式下：需要按住 Ctrl/Meta + 滚轮才能缩放
+   *
+   * 这就需要在添加事件监听器时显式设置 { passive: false }。
    *
    * 如果直接使用 React 的 onWheel 属性，会遇到以下错误：
    * "Unable to preventDefault inside passive event listener invocation."
@@ -141,7 +144,8 @@ function MermaidChart(props: MermaidChartProps) {
   const handleWheel = useEvent((ev: WheelEvent) => {
     const metaKey = ev.metaKey || ev.ctrlKey
 
-    if (metaKey) {
+    // 在全屏模式下直接缩放，或者在普通模式下按住修饰键时缩放
+    if (isFullScreen || metaKey) {
       ev.preventDefault()
       ev.stopPropagation()
 
@@ -194,7 +198,7 @@ function MermaidChart(props: MermaidChartProps) {
         chartElement.removeEventListener('wheel', handleWheel)
       }
     }
-  }, [handleWheel])
+  }, [handleWheel, isFullScreen])
 
   // 重置位置和缩放
   const resetView = () => {
@@ -206,7 +210,7 @@ function MermaidChart(props: MermaidChartProps) {
     <div
       ref={chartContainerRef}
       aria-label="可拖动的图表区域"
-      className={cn('size-full min-h-[200px] flex items-center justify-center', className)}
+      className={cn('size-full group/mermaid-chart', className)}
       role="button"
       tabIndex={0}
       onMouseDown={handleDragStart}
@@ -227,7 +231,8 @@ function MermaidChart(props: MermaidChartProps) {
         <div
           className={cn(
             'absolute top-1 right-1',
-            'flex gap-1 z-10 rounded-sm p-0.5 border border-border bg-background/50 backdrop-blur-sm',
+            'flex gap-1 z-10 rounded-sm p-0.5 border border-border bg-background/50 backdrop-blur-sm shadow-xs',
+            !isFullScreen && 'group-hover/mermaid-chart:opacity-100 opacity-0 transition-opacity',
             controlsClassName,
           )}
         >
@@ -286,6 +291,7 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
       startOnLoad: false,
       theme: 'neutral',
       securityLevel: 'loose',
+      fontFamily: 'var(--font-maple-mono)',
     })
 
     // 确保初始化完成后再渲染图表
@@ -322,23 +328,26 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
       >
         <div className="relative bg-background size-full flex items-center justify-center rounded-[0.3rem] overflow-hidden p-1">
           <MermaidChart
+            className="min-h-[200px] max-h-[500px]"
             isFullScreen={isFullScreen}
             rendered={rendered}
+            toggleFullScreen={toggleFullScreen}
           />
         </div>
       </div>
 
       <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
-        <DialogTitle className="sr-only">
-          .
-        </DialogTitle>
+        <DialogContent fullScreen className="overflow-hidden" showCloseButton={false}>
+          <DialogTitle className="sr-only">
+            .
+          </DialogTitle>
 
-        <DialogDescription className="sr-only">
-          .
-        </DialogDescription>
+          <DialogDescription className="sr-only">
+            .
+          </DialogDescription>
 
-        <DialogContent className="p-0 overflow-hidden" showCloseButton={false}>
           <MermaidChart
+            className="p-5"
             isFullScreen={isFullScreen}
             rendered={rendered}
             toggleFullScreen={toggleFullScreen}

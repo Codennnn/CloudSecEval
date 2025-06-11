@@ -1,10 +1,74 @@
-import redisImage from '/public/assets/Redis_1.png'
-
 # Redis
 
 [Redis](https://redis.io/) 传输器实现了发布/订阅（publish/subscribe）消息范式，并利用了 Redis 的 [Pub/Sub](https://redis.io/topics/pubsub) 功能。发布的消息会被分类到不同的频道（channel）中，发布者无需关心最终会有哪些订阅者（subscriber）接收消息。每个微服务都可以订阅任意数量的频道，并且可以同时订阅多个频道。通过频道交换的消息属于**即发即弃（fire-and-forget）**，也就是说，如果消息发布时没有任何订阅者感兴趣，该消息会被移除且无法恢复。因此，无法保证每条消息或事件至少会被一个服务处理。单条消息可以被多个订阅者订阅（并接收）。
 
-<DocImage src={redisImage} alt="Redis 1" />
+```mermaid
+graph TB
+    subgraph "应用层"
+        WebApp["Web 应用"]
+        MobileApp["移动应用"]
+        API["API 网关"]
+    end
+
+    subgraph "NestJS 微服务集群"
+        subgraph "业务服务"
+            UserService["用户服务<br/>@MessagePattern('user.*')<br/>@EventPattern('user.created')"]
+            OrderService["订单服务<br/>@MessagePattern('order.*')<br/>@EventPattern('order.placed')"]
+            PaymentService["支付服务<br/>@MessagePattern('payment.*')<br/>@EventPattern('payment.completed')"]
+        end
+
+        subgraph "通知服务"
+            NotificationService["通知服务<br/>@EventPattern('*.events')<br/>通配符订阅"]
+            EmailService["邮件服务<br/>@EventPattern('email.*')"]
+        end
+    end
+
+    subgraph "Redis 消息传输层"
+        RedisServer["Redis Server<br/>发布/订阅模式"]
+
+        subgraph "消息频道"
+            UserChannel["user.events<br/>用户相关事件"]
+            OrderChannel["order.events<br/>订单相关事件"]
+            PaymentChannel["payment.events<br/>支付相关事件"]
+            EmailChannel["email.events<br/>邮件通知事件"]
+        end
+
+        subgraph "消息特性"
+            FireForget["即发即弃<br/>Fire-and-Forget"]
+            MultiSub["多订阅者<br/>Multiple Subscribers"]
+            Wildcards["通配符支持<br/>Pattern Matching"]
+        end
+    end
+
+    WebApp --> API
+    MobileApp --> API
+    API --> UserService
+    API --> OrderService
+    API --> PaymentService
+
+    UserService -->|"PUBLISH<br/>用户创建事件"| UserChannel
+    OrderService -->|"PUBLISH<br/>订单创建事件"| OrderChannel
+    PaymentService -->|"PUBLISH<br/>支付完成事件"| PaymentChannel
+
+    UserChannel -->|"SUBSCRIBE<br/>监听用户事件"| NotificationService
+    OrderChannel -->|"SUBSCRIBE<br/>监听订单事件"| NotificationService
+    PaymentChannel -->|"SUBSCRIBE<br/>监听支付事件"| NotificationService
+
+    NotificationService -->|"PUBLISH<br/>发送邮件事件"| EmailChannel
+    EmailChannel -->|"SUBSCRIBE<br/>处理邮件发送"| EmailService
+
+    UserChannel -.->|"多服务订阅"| OrderService
+    OrderChannel -.->|"跨服务通信"| PaymentService
+
+    RedisServer -.->|"管理频道"| UserChannel
+    RedisServer -.->|"管理频道"| OrderChannel
+    RedisServer -.->|"管理频道"| PaymentChannel
+    RedisServer -.->|"管理频道"| EmailChannel
+
+    RedisServer -.-> FireForget
+    RedisServer -.-> MultiSub
+    RedisServer -.-> Wildcards
+```
 
 ## 安装
 
