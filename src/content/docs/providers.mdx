@@ -1,10 +1,79 @@
-import providerImage from '/public/assets/Components_1.png'
-
 # 提供者
 
 提供者（Provider）是 Nest 的核心概念之一。许多基础的 Nest 类，比如服务（Service）、仓库（Repository）、工厂（Factory）和辅助类（Helper），都可以被视为提供者。其核心思想是：**可以被注入为依赖项**，让对象之间建立多种关系。这些对象的“组装”工作，大多由 Nest 的运行时系统自动完成。
 
-<DocImage src={providerImage} alt="Provider 结构图" />
+```mermaid
+graph TB
+    subgraph "NestJS Provider 架构详解"
+
+        subgraph "模块注册"
+            AppModule["AppModule<br/>@Module({<br/>  controllers: [CatsController],<br/>  providers: [CatsService]<br/>})"]
+        end
+
+        subgraph "控制器层"
+            CatsController["CatsController<br/>@Controller('cats')<br/><br/>constructor(<br/>  private catsService: CatsService<br/>)<br/><br/>@Get() findAll()<br/>@Post() create()"]
+        end
+
+        subgraph "服务提供者层"
+            CatsService["CatsService<br/>@Injectable()<br/><br/>private cats: Cat[] = []<br/><br/>create(cat: Cat)<br/>findAll(): Cat[]"]
+        end
+
+        subgraph "IoC 容器机制"
+            subgraph "依赖解析过程"
+                Step1["1️⃣ 扫描 @Injectable()"]
+                Step2["2️⃣ 创建依赖图"]
+                Step3["3️⃣ 实例化顺序"]
+                Step4["4️⃣ 注入到构造函数"]
+            end
+        end
+
+        subgraph "💡 注入方式对比"
+            Constructor2["构造函数注入<br/>constructor(private service: Service)<br/>• 推荐方式<br/>• 依赖明确<br/>• 必需依赖"]
+            Property2["⚡ 属性注入<br/>@Inject('TOKEN')<br/>private service: Service<br/>• 特殊场景<br/>• 避免super()传递"]
+            Optional2["❓ 可选依赖<br/>@Optional() @Inject('TOKEN')<br/>private config?: Config<br/>• 非必需依赖<br/>• 有默认值"]
+        end
+
+        subgraph "生命周期管理"
+            Singleton["单例模式<br/>（默认）<br/>应用级别共享"]
+            Request["请求作用域<br/>REQUEST<br/>每个请求独立"]
+            Transient["瞬时作用域<br/>TRANSIENT<br/>每次注入新实例"]
+        end
+
+        subgraph "Provider 类型"
+            TypeService["Service<br/>业务逻辑处理"]
+            TypeRepo["Repository<br/>数据持久化"]
+            TypeFactory["Factory<br/>复杂对象创建"]
+            TypeHelper["Helper<br/>工具函数集合"]
+        end
+    end
+
+    %% 主要流程
+    AppModule -->|"注册到 providers[]"| CatsService
+    AppModule -->|"注册到 controllers[]"| CatsController
+    CatsService -->|"通过构造函数注入"| CatsController
+
+    %% IoC 容器处理流程
+    Step1 --> Step2
+    Step2 --> Step3
+    Step3 --> Step4
+    Step4 -->|"完成注入"| CatsController
+
+    %% 注入方式说明
+    CatsController -.->|"主要使用"| Constructor2
+    CatsController -.->|"特殊情况"| Property2
+    CatsController -.->|"可选场景"| Optional2
+
+    %% 生命周期
+    CatsService -.->|"默认"| Singleton
+    CatsService -.->|"可配置"| Request
+    CatsService -.->|"可配置"| Transient
+
+        %% Provider 分类
+    CatsService -.->|"属于"| TypeService
+    TypeService -.-> TypeRepo
+    TypeRepo -.-> TypeFactory
+    TypeFactory -.-> TypeHelper
+```
 
 在上一章中，我们创建了一个简单的 `CatsController`。控制器负责处理 HTTP 请求，并将更复杂的任务委托给提供者。所谓提供者，其实就是在 NestJS 模块中通过 `providers` 声明的普通 JavaScript 类。更多细节可参考「模块」章节。
 

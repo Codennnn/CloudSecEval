@@ -2,9 +2,14 @@
 
 import dynamic from 'next/dynamic'
 
+import { Skeleton } from '~/components/ui/skeleton'
+
 const MermaidDiagram = dynamic(
   () => import('./MermaidDiagram').then((mod) => mod.MermaidDiagram),
-  { ssr: false },
+  {
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-64 rounded-lg" />,
+  },
 )
 
 interface MermaidWrapperProps {

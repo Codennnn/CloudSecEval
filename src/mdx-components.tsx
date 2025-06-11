@@ -28,13 +28,13 @@ interface PreProps {
 }
 
 interface AnchorProps {
-  href: string
   children: React.ReactElement
+  href: string
 }
 
 interface HeadingProps {
-  id?: string
   children: React.ReactNode
+  id?: string
 }
 
 /**

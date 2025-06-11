@@ -3,110 +3,81 @@
 import { useEffect, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
-import { useTheme } from 'next-themes'
-import { MaximizeIcon, MinimizeIcon, MoveIcon, ZoomInIcon, ZoomOutIcon } from 'lucide-react'
+import { MaximizeIcon, MinimizeIcon, RotateCcwIcon, ZoomInIcon, ZoomOutIcon } from 'lucide-react'
 import mermaid from 'mermaid'
 
-interface MermaidDiagramProps {
-  chart: string
-  className?: string
+import { Button } from '~/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '~/components/ui/dialog'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import { cn } from '~/lib/utils'
+
+interface ControlButtonProps extends React.ComponentProps<typeof Button> {
+  icon: React.ReactNode
+  label: string
 }
 
-export function MermaidDiagram(props: MermaidDiagramProps) {
-  const { chart, className = '' } = props
+function ControlButton(props: ControlButtonProps) {
+  const { icon, label, onClick } = props
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [rendered, setRendered] = useState<string>('')
+  return (
+    <Tooltip delayDuration={350}>
+      <TooltipTrigger asChild>
+        <Button
+          aria-label={label}
+          className="size-6 rounded-[0.2rem]"
+          size="icon"
+          variant="ghost"
+          onClick={onClick}
+        >
+          {icon}
+        </Button>
+      </TooltipTrigger>
+
+      <TooltipContent
+        align="center"
+        side="top"
+      >
+        {label}
+      </TooltipContent>
+    </Tooltip>
+
+  )
+}
+
+interface MermaidChartProps {
+  rendered: string
+  className?: string
+  showControls?: boolean
+  controlsClassName?: string
+  toggleFullScreen?: () => void
+  isFullScreen?: boolean
+}
+
+function MermaidChart(props: MermaidChartProps) {
+  const {
+    rendered,
+    className = '',
+    showControls = true,
+    controlsClassName,
+    toggleFullScreen,
+    isFullScreen,
+  } = props
+
+  const chartContainerRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
   const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-  const [isFullScreen, setIsFullScreen] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
-  const { resolvedTheme } = useTheme()
-
-  // 初始化 mermaid 并根据主题设置不同的配置
-  useEffect(() => {
-    const isDark = resolvedTheme === 'dark'
-
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: 'base',
-      securityLevel: 'loose',
-      themeVariables: isDark
-        ? {
-            // 暗色主题配置
-            primaryColor: '#2D3748',
-            primaryTextColor: '#E2E8F0',
-            primaryBorderColor: '#4A5568',
-            background: '#1A202C',
-            lineColor: '#A0AEC0',
-            textColor: '#E2E8F0',
-            mainBkg: '#2D3748',
-            secondaryColor: '#4A5568',
-            tertiaryColor: '#718096',
-            edgeLabelBackground: '#2D3748',
-            clusterBkg: '#2D3748',
-            clusterBorder: '#4A5568',
-            titleColor: '#E2E8F0',
-            nodeBorder: '#4A5568',
-            arrowheadColor: '#A0AEC0',
-          }
-        : {
-            // 亮色主题配置
-            primaryColor: '#FFFFFF',
-            primaryTextColor: '#252525',
-            primaryBorderColor: '#EBEBEB',
-            background: '#FFFFFF',
-            lineColor: '#8E8E8E',
-            textColor: '#252525',
-            mainBkg: '#F7FAFC',
-            secondaryColor: '#EDF2F7',
-            tertiaryColor: '#E2E8F0',
-            edgeLabelBackground: '#FFFFFF',
-            clusterBkg: '#F7FAFC',
-            clusterBorder: '#E2E8F0',
-            titleColor: '#252525',
-            nodeBorder: '#EBEBEB',
-            arrowheadColor: '#8E8E8E',
-          },
-    })
-  }, [resolvedTheme]) // 当主题变化时重新初始化
-
-  // 渲染图表 - 当主题变化或图表内容变化时重新渲染
-  useEffect(() => {
-    const renderChart = async () => {
-      if (!chart) {
-        return
-      }
-
-      try {
-        const { svg } = await mermaid.render(`mermaid-${Date.now()}`, chart)
-        setRendered(svg)
-      }
-      catch (error) {
-        console.error('渲染 Mermaid 图表时出错:', error)
-
-        if (error instanceof Error) {
-          setRendered(`<pre>${error.message}</pre>`)
-        }
-      }
-    }
-
-    void renderChart()
-  }, [chart, resolvedTheme]) // 添加 theme 作为依赖，确保主题变化时重新渲染
-
-  // 处理缩放
-  const handleZoom = (delta: number) => {
+  const handleZoom = useEvent((delta: number) => {
     setScale((prevScale) => {
       const newScale = prevScale + delta
 
       return newScale < 0.5 ? 0.5 : newScale > 3 ? 3 : newScale
     })
-  }
+  })
 
-  // 处理拖拽开始
-  const handleDragStart = (ev: React.MouseEvent | React.TouchEvent) => {
+  const handleDragStart = useEvent((ev: React.MouseEvent | React.TouchEvent) => {
     ev.preventDefault()
     setIsDragging(true)
 
@@ -124,9 +95,8 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
         y: ev.clientY - position.y,
       })
     }
-  }
+  })
 
-  // 处理拖拽中
   const handleDrag = useEvent((ev: MouseEvent | TouchEvent) => {
     if (!isDragging) {
       return
@@ -151,9 +121,34 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
     })
   })
 
-  // 处理拖拽结束
   const handleDragEnd = useEvent(() => {
     setIsDragging(false)
+  })
+
+  /**
+   * 处理滚轮缩放功能
+   *
+   * 注意：在现代浏览器中，wheel 事件默认以 passive: true 模式监听，
+   * 这意味着浏览器会立即开始滚动而不等待 JavaScript 执行完毕。
+   * 这种机制可以提高页面滚动性能，但会导致 preventDefault() 无效。
+   *
+   * 当用户使用 Ctrl/Meta + 滚轮操作时，我们需要阻止页面默认的滚动行为，
+   * 仅执行图表的缩放功能。这就需要在添加事件监听器时显式设置 { passive: false }。
+   *
+   * 如果直接使用 React 的 onWheel 属性，会遇到以下错误：
+   * "Unable to preventDefault inside passive event listener invocation."
+   */
+  const handleWheel = useEvent((ev: WheelEvent) => {
+    const metaKey = ev.metaKey || ev.ctrlKey
+
+    if (metaKey) {
+      ev.preventDefault()
+      ev.stopPropagation()
+
+      // 根据滚轮方向决定缩放方向
+      const delta = ev.deltaY < 0 ? 0.1 : -0.1
+      handleZoom(delta)
+    }
   })
 
   // 添加和移除全局事件监听器
@@ -173,16 +168,33 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
     }
   }, [isDragging, dragStart, handleDrag, handleDragEnd])
 
-  // 处理全屏切换
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen)
+  /**
+   * 使用原生 DOM API 添加滚轮事件监听器
+   *
+   * 为什么不直接使用 React 的 onWheel 属性：
+   * 1. React 使用浏览器默认设置添加事件监听器，wheel 事件默认是 passive: true
+   * 2. 在被动监听器中调用 preventDefault() 会导致错误
+   *
+   * 解决方案：
+   * 1. 使用 useRef 获取图表容器 DOM 元素
+   * 2. 通过原生 addEventListener 添加 wheel 事件监听器
+   * 3. 显式指定 { passive: false } 选项，告知浏览器我们会调用 preventDefault()
+   *
+   * 这样在用户按住 Ctrl/Meta 键滚动时，可以正确阻止页面滚动并实现图表缩放
+   */
+  useEffect(() => {
+    const chartElement = chartContainerRef.current
 
-    // 重置位置和缩放
-    if (!isFullScreen) {
-      setPosition({ x: 0, y: 0 })
-      setScale(1)
+    if (chartElement) {
+      chartElement.addEventListener('wheel', handleWheel, { passive: false })
     }
-  }
+
+    return () => {
+      if (chartElement) {
+        chartElement.removeEventListener('wheel', handleWheel)
+      }
+    }
+  }, [handleWheel])
 
   // 重置位置和缩放
   const resetView = () => {
@@ -190,121 +202,149 @@ export function MermaidDiagram(props: MermaidDiagramProps) {
     setScale(1)
   }
 
-  // 添加处理滚轮事件的事件监听器
+  return (
+    <div
+      ref={chartContainerRef}
+      aria-label="可拖动的图表区域"
+      className={cn('size-full min-h-[200px] flex items-center justify-center', className)}
+      role="button"
+      tabIndex={0}
+      onMouseDown={handleDragStart}
+      onTouchStart={handleDragStart}
+    >
+      <div
+        dangerouslySetInnerHTML={{ __html: rendered }}
+        style={{
+          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+          transformOrigin: 'center',
+          transition: isDragging ? 'none' : 'transform 0.1s ease',
+          cursor: isDragging ? 'grabbing' : 'grab',
+        }}
+      />
+
+      {/* 控制按钮 */}
+      {showControls && (
+        <div
+          className={cn(
+            'absolute top-1 right-1',
+            'flex gap-1 z-10 rounded-sm p-0.5 border border-border bg-background/50 backdrop-blur-sm',
+            controlsClassName,
+          )}
+        >
+          <ControlButton
+            icon={<ZoomInIcon className="size-[1em]" />}
+            label="放大"
+            onClick={() => { handleZoom(0.1) }}
+          />
+
+          <ControlButton
+            icon={<ZoomOutIcon className="size-[1em]" />}
+            label="缩小"
+            onClick={() => { handleZoom(-0.1) }}
+          />
+
+          <ControlButton
+            icon={<RotateCcwIcon className="size-[1em]" />}
+            label="重置视图"
+            onClick={() => { resetView() }}
+          />
+
+          {toggleFullScreen && (
+            <ControlButton
+              icon={
+                isFullScreen
+                  ? <MinimizeIcon className="size-[1em]" />
+                  : <MaximizeIcon className="size-[1em]" />
+              }
+              label={isFullScreen ? '退出全屏' : '切换全屏'}
+              onClick={() => { toggleFullScreen() }}
+            />
+          )}
+        </div>
+      )}
+
+      {/* 渲染区域 */}
+
+    </div>
+  )
+}
+
+interface MermaidDiagramProps {
+  chart: string
+  className?: string
+}
+
+export function MermaidDiagram(props: MermaidDiagramProps) {
+  const { chart, className } = props
+
+  const [rendered, setRendered] = useState<string>('')
+  const [isFullScreen, setIsFullScreen] = useState(false)
+
+  // 处理 mermaid 初始化和图表渲染
   useEffect(() => {
-    const container = containerRef.current
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'neutral',
+      securityLevel: 'loose',
+    })
 
-    if (!container) {
-      return
-    }
+    // 确保初始化完成后再渲染图表
+    const renderChart = async () => {
+      if (!chart) {
+        return
+      }
 
-    // 使用原生事件监听器，并添加 { passive: true }
-    const wheelHandler = (e: WheelEvent) => {
-      if (e.ctrlKey || isFullScreen) {
-        // 仅在按下Ctrl键或全屏模式下处理缩放
-        e.stopPropagation()
-        const delta = e.deltaY < 0 ? 0.1 : -0.1
-        handleZoom(delta)
+      try {
+        const { svg } = await mermaid.render(`mermaid-${Date.now()}`, chart)
+        setRendered(svg)
+      }
+      catch (err) {
+        console.error('渲染 Mermaid 图表时出错:', err)
+
+        if (err instanceof Error) {
+          setRendered(`<pre>${err.message}</pre>`)
+        }
       }
     }
 
-    container.addEventListener('wheel', wheelHandler, { passive: true })
+    void renderChart()
+  }, [chart]) // 当主题或图表内容变化时重新初始化和渲染
 
-    return () => {
-      container.removeEventListener('wheel', wheelHandler)
-    }
-  }, [isFullScreen])
+  // 处理全屏切换
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen)
+  }
 
   return (
-    <div
-      ref={containerRef}
-      className={`relative ${className} ${isFullScreen ? 'fixed inset-0 z-50 bg-background' : 'w-full'}`}
-    >
-      {/* 控制按钮 */}
-      <div className="absolute top-2 right-2 flex space-x-2 z-10 p-1 rounded-md">
-        <button
-          aria-label="放大"
-          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-          onClick={() => { handleZoom(0.1) }}
-        >
-          <ZoomInIcon className="w-5 h-5" />
-        </button>
-        <button
-          aria-label="缩小"
-          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-          onClick={() => { handleZoom(-0.1) }}
-        >
-          <ZoomOutIcon className="w-5 h-5" />
-        </button>
-        <button
-          aria-label="重置视图"
-          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-          onClick={resetView}
-        >
-          <MoveIcon className="w-5 h-5" />
-        </button>
-        <button
-          aria-label={isFullScreen ? '退出全屏' : '全屏'}
-          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-          onClick={toggleFullScreen}
-        >
-          {isFullScreen ? <MinimizeIcon className="w-5 h-5" /> : <MaximizeIcon className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* 当前缩放比例显示 */}
-      <div className="absolute top-2 left-2 text-xs px-2 py-1 rounded">
-        {Math.round(scale * 100)}%
-      </div>
-
-      {/* 渲染区域 */}
+    <div className={cn('relative', className)}>
       <div
-        aria-label="可拖动的图表区域"
-        className="overflow-hidden w-full h-full min-h-[200px] rounded-md flex items-center justify-center"
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            // 按下回车或空格也可以开始拖动
-            e.preventDefault()
-            // 模拟鼠标点击中心位置
-            const rect = e.currentTarget.getBoundingClientRect()
-            const centerX = rect.left + rect.width / 2
-            const centerY = rect.top + rect.height / 2
-            handleDragStart({
-              preventDefault: () => {
-                //
-              },
-              clientX: centerX,
-              clientY: centerY,
-            } as React.MouseEvent)
-          }
-        }}
-        onMouseDown={handleDragStart}
-        onTouchStart={handleDragStart}
+        className="size-full p-1 rounded-md border border-border bg-muted/50"
       >
-        <div
-          dangerouslySetInnerHTML={{ __html: rendered }}
-          className="inline-block"
-          style={{
-            transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-            transformOrigin: 'center',
-            transition: isDragging ? 'none' : 'transform 0.1s ease',
-            cursor: isDragging ? 'grabbing' : 'grab',
-          }}
-        />
+        <div className="relative bg-background size-full flex items-center justify-center rounded-[0.3rem] overflow-hidden p-1">
+          <MermaidChart
+            isFullScreen={isFullScreen}
+            rendered={rendered}
+          />
+        </div>
       </div>
 
-      {/* 全屏模式下的关闭按钮 */}
-      {isFullScreen && (
-        <button
-          aria-label="关闭全屏"
-          className="absolute top-4 left-4 p-2 rounded-full"
-          onClick={toggleFullScreen}
-        >
-          &times;
-        </button>
-      )}
+      <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
+        <DialogTitle className="sr-only">
+          .
+        </DialogTitle>
+
+        <DialogDescription className="sr-only">
+          .
+        </DialogDescription>
+
+        <DialogContent className="p-0 overflow-hidden" showCloseButton={false}>
+          <MermaidChart
+            isFullScreen={isFullScreen}
+            rendered={rendered}
+            toggleFullScreen={toggleFullScreen}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

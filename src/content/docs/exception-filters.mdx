@@ -1,12 +1,64 @@
-import filterImage from '/public/assets/Filter_1.png'
-
 # 异常过滤器
 
 Nest 内置了一个**异常层（exceptions layer）**，负责处理应用中所有未被捕获的异常。当你的应用代码未能处理某个异常时，这一层会捕获该异常，并自动返回一个适合用户阅读的响应。
 
-<DocImage src={filterImage} alt="异常过滤器结构图" />
+```mermaid
+flowchart TD
+    Client["客户端请求"] --> Router["路由器"]
+    Router --> Guards["守卫层"]
+    Guards --> Interceptors1["拦截器 (前置)"]
+    Interceptors1 --> Pipes["管道验证"]
+    Pipes --> Controller["控制器方法"]
 
-默认情况下，这一行为由内置的**全局异常过滤器（global exception filter）**完成。它会处理 `HttpException`（及其子类）类型的异常。当遇到无法识别的异常（即既不是 `HttpException` 也不是其子类时），内置异常过滤器会生成如下默认 JSON 响应：
+    Controller --> |"正常响应"| Interceptors2["拦截器 (后置)"]
+    Interceptors2 --> Response["HTTP 响应"]
+
+    Controller --> |"抛出异常"| ExceptionLayer["异常处理层"]
+    Guards --> |"守卫异常"| ExceptionLayer
+    Pipes --> |"验证异常"| ExceptionLayer
+    Interceptors1 --> |"拦截器异常"| ExceptionLayer
+
+    ExceptionLayer --> FilterLevel{"异常过滤器层级"}
+
+    FilterLevel --> |"方法级过滤器"| MethodFilter["@UseFilters() 方法装饰器"]
+    FilterLevel --> |"控制器级过滤器"| ControllerFilter["@UseFilters() 控制器装饰器"]
+    FilterLevel --> |"全局过滤器"| GlobalFilter["app.useGlobalFilters() 或 APP_FILTER"]
+
+    MethodFilter --> ExceptionType{"异常类型判断"}
+    ControllerFilter --> ExceptionType
+    GlobalFilter --> ExceptionType
+
+    ExceptionType --> |"HttpException"| HttpExceptionHandler["HTTP异常处理器"]
+    ExceptionType --> |"自定义异常"| CustomExceptionHandler["自定义异常处理器"]
+    ExceptionType --> |"未知异常"| UnknownExceptionHandler["通用异常处理器 @Catch()"]
+
+    HttpExceptionHandler --> ResponseBuilder["响应构建器"]
+    CustomExceptionHandler --> ResponseBuilder
+    UnknownExceptionHandler --> ResponseBuilder
+
+    ResponseBuilder --> |"状态码 + 消息"| JsonResponse["JSON 响应格式"]
+    JsonResponse --> Client
+
+    subgraph ExceptionTypes ["内置异常类型"]
+        BadRequest["BadRequestException (400)"]
+        Unauthorized["UnauthorizedException (401)"]
+        Forbidden["ForbiddenException (403)"]
+        NotFound["NotFoundException (404)"]
+        InternalError["InternalServerErrorException (500)"]
+    end
+
+    subgraph FilterScopes ["过滤器作用域"]
+        Method["方法级: 单个路由处理器"]
+        ControllerScope["控制器级: 整个控制器"]
+        Global["全局级: 整个应用"]
+    end
+
+    subgraph ResponseFormat ["响应格式示例"]
+        StandardResponse["{<br/>  statusCode: number,<br/>  message: string,<br/>  timestamp?: string,<br/>  path?: string<br/>}"]
+    end
+```
+
+默认情况下，这一行为由内置的**全局异常过滤器（global exception filter）** 完成。它会处理 `HttpException`（及其子类）类型的异常。当遇到无法识别的异常（即既不是 `HttpException` 也不是其子类时），内置异常过滤器会生成如下默认 JSON 响应：
 
 ```json
 {

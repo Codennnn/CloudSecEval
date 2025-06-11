@@ -1,10 +1,40 @@
-import middlewareImage from '/public/assets/Middlewares_1.png'
-
 # 中间件
 
 中间件（Middleware）是一个在路由处理器**之前**执行的函数，它可以访问[请求对象（Request）](https://expressjs.com/en/4x/api.html#req)、[响应对象（Response）](https://expressjs.com/en/4x/api.html#res)，以及应用请求-响应周期中的 `next()` 函数。**下一个**中间件函数通常用变量 `next` 表示。
 
-<DocImage src={middlewareImage} alt="中间件结构图" />
+```mermaid
+graph LR
+    A["客户端<br/>Client"] -->|"HTTP 请求<br/>Request"| B["认证中间件<br/>Auth Middleware"]
+    B -->|"验证通过<br/>next()"| C["日志中间件<br/>Logger Middleware"]
+    C -->|"记录请求<br/>next()"| D["CORS 中间件<br/>CORS Middleware"]
+    D -->|"设置响应头<br/>next()"| E["路由处理器<br/>Route Handler<br/>@RequestMapping"]
+
+    E -->|"处理业务逻辑"| F["服务层<br/>Service Layer"]
+    F -->|"数据处理"| G["数据库<br/>Database"]
+    G -->|"返回数据"| F
+    F -->|"返回结果"| E
+
+    E -->|"HTTP 响应<br/>Response"| H["响应中间件<br/>Response Middleware"]
+    H -->|"修改响应<br/>next()"| I["压缩中间件<br/>Compression Middleware"]
+    I -->|"响应压缩<br/>next()"| A
+
+    B -.->|"认证失败<br/>401 Unauthorized"| A
+    C -.->|"请求记录<br/>Request Log"| J["日志文件<br/>Log Files"]
+
+    subgraph "中间件管道 Middleware Pipeline"
+        B
+        C
+        D
+        H
+        I
+    end
+
+    subgraph "应用核心 Application Core"
+        E
+        F
+        G
+    end
+```
 
 Nest 中的中间件默认与 [Express](https://expressjs.com/en/guide/using-middleware.html) 的中间件行为一致。以下是官方 Express 文档对中间件功能的描述：
 
