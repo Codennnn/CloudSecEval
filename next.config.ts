@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 
   // 添加安全头和缓存策略
+  // eslint-disable-next-line @typescript-eslint/require-await
   async headers() {
     return [
       {

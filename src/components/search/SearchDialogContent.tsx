@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '~/components/ui/dialog'
 import { KeyboardKey } from '~/components/ui/kbd'
+import { useSearchHistory } from '~/hooks/useSearchHistory'
 
 import type { SearchResult } from './SearchResults'
 import { SearchResults } from './SearchResults'
@@ -32,6 +33,8 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const router = useRouter()
+
+  const { addToHistory, markAsClicked } = useSearchHistory()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -68,6 +71,11 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
       return
     }
 
+    // 标记搜索词为已点击
+    if (searchTerm.trim()) {
+      markAsClicked(searchTerm.trim())
+    }
+
     let urlObj: URL | null = null
 
     try {
@@ -80,15 +88,23 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
 
     if (urlObj) {
       if (urlObj.origin !== window.location.origin) {
-        window.open(urlObj.toString(), '_blank', 'noopener,noreferrer')
-
         onClose()
+        window.open(urlObj.toString(), '_blank', 'noopener,noreferrer')
       }
       else {
-        router.push(urlObj.toString())
-
         onClose()
+        router.push(urlObj.toString())
       }
+    }
+  })
+
+  // 处理搜索结果变化，更新历史记录
+  const handleResultsChange = useEvent((results: SearchResult[]) => {
+    setSearchResults(results)
+
+    // 当有搜索词且有结果时，添加到历史记录
+    if (searchTerm.trim() && results.length > 0) {
+      addToHistory(searchTerm.trim(), results.length)
     }
   })
 
@@ -133,7 +149,7 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
             <input
               ref={inputRef}
               className="flex-1 h-full !outline-none font-normal text-sm !border-none shadow-none focus-visible:outline-none placeholder:text-muted-foreground"
-              placeholder="你想搜索什么？"
+              placeholder="搜索 NestJS 文档..."
               type="text"
               value={searchTerm}
               onChange={handleInputChange}
@@ -164,9 +180,10 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
 
       <ScrollGradientContainer>
         <SearchResults
+          isComposing={isComposing}
           searchTerm={searchTerm}
           selectedIndex={selectedIndex}
-          onResultsChange={setSearchResults}
+          onResultsChange={handleResultsChange}
           onSelectResult={handleSelectResult}
           onSelectedIndexChange={setSelectedIndex}
         />

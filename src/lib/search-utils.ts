@@ -1,0 +1,166 @@
+import type { SearchResult } from '~/components/search/SearchResults'
+
+// 缓存值接口定义
+export interface CacheValue {
+  results: SearchResult[]
+  timestamp: number
+  query: string
+}
+
+// 搜索结果缓存管理
+export class SearchCache {
+  private cache = new Map<string, CacheValue>()
+  private maxSize: number
+
+  constructor(maxSize = 50) {
+    this.maxSize = maxSize
+  }
+
+  get(key: string): CacheValue | undefined {
+    return this.cache.get(key)
+  }
+
+  set(key: string, value: CacheValue): void {
+    // 如果缓存超过最大限制，删除最旧的条目
+    if (this.cache.size >= this.maxSize) {
+      const firstKey = this.cache.keys().next().value
+
+      if (firstKey) {
+        this.cache.delete(firstKey)
+      }
+    }
+
+    this.cache.set(key, value)
+  }
+
+  has(key: string): boolean {
+    return this.cache.has(key)
+  }
+
+  clear(): void {
+    this.cache.clear()
+  }
+
+  size(): number {
+    return this.cache.size
+  }
+}
+
+// 高亮搜索关键词
+export function highlightSearchTerm(text: string, searchTerm: string): string {
+  if (!searchTerm.trim() || !text) {
+    return text
+  }
+
+  // 转义正则表达式特殊字符
+  const escapedTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  // 支持多个关键词（空格分隔）
+  const terms = escapedTerm.split(/\s+/).filter(Boolean)
+
+  let highlightedText = text
+
+  terms.forEach((term) => {
+    const regex = new RegExp(`(${term})`, 'gi')
+    highlightedText = highlightedText.replace(
+      regex,
+      '<mark class="bg-accent rounded-xs text-current">$1</mark>',
+    )
+  })
+
+  return highlightedText
+}
+
+// 生成缓存键
+export function generateCacheKey(term: string): string {
+  return term.trim().toLowerCase()
+}
+
+// 格式化文档路径
+export function formatDocumentPath(path: string): string {
+  if (!path) {
+    return ''
+  }
+
+  return path.replace(/^\//, '').replace(/\.mdx?$/, '')
+}
+
+// 截取文本并保持完整性
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) {
+    return text
+  }
+
+  // 在单词边界处截断
+  const truncated = text.substring(0, maxLength)
+  const lastSpaceIndex = truncated.lastIndexOf(' ')
+
+  if (lastSpaceIndex > maxLength * 0.8) {
+    return truncated.substring(0, lastSpaceIndex) + '...'
+  }
+
+  return truncated + '...'
+}
+
+// 计算搜索相关性得分（如果 API 不提供）
+export function calculateRelevanceScore(result: SearchResult, searchTerm: string): number {
+  if (result.score !== undefined) {
+    return result.score
+  }
+
+  const { document } = result
+
+  if (!document) {
+    return 0
+  }
+
+  let score = 0
+  const term = searchTerm.toLowerCase()
+
+  // 标题匹配权重最高
+  if (document.title?.toLowerCase().includes(term)) {
+    score += 0.4
+  }
+
+  // 标题完全匹配
+  if (document.title?.toLowerCase() === term) {
+    score += 0.3
+  }
+
+  // 子标题匹配
+  if (document.heading?.toLowerCase().includes(term)) {
+    score += 0.2
+  }
+
+  // 内容匹配
+  if (document.content?.toLowerCase().includes(term)) {
+    score += 0.1
+  }
+
+  return Math.min(score, 1.0)
+}
+
+// 搜索建议生成
+export function generateSearchSuggestions(term: string): string[] {
+  const suggestions: string[] = []
+
+  // 常见的 NestJS 相关术语
+  const nestjsTerms: readonly string[] = [
+    'controller', 'service', 'module', 'provider', 'guard', 'interceptor',
+    'pipe', 'decorator', 'middleware', 'filter', 'dto', 'entity',
+    'repository', 'database', 'typeorm', 'prisma', 'graphql', 'testing',
+    'authentication', 'authorization', 'jwt', 'passport', 'swagger',
+    'websocket', 'microservice', 'deployment', 'configuration',
+  ] as const
+
+  const lowerTerm = term.toLowerCase()
+
+  // 查找相似的术语
+  nestjsTerms.forEach((nestjsTerm) => {
+    if (nestjsTerm.includes(lowerTerm) && nestjsTerm !== lowerTerm) {
+      suggestions.push(nestjsTerm)
+    }
+  })
+
+  return suggestions.slice(0, 5) // 返回最多5个建议
+}

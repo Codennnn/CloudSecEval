@@ -1,51 +1,86 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 
 import { useSearch } from '@oramacloud/react-client'
 import { FileTextIcon, SearchIcon } from 'lucide-react'
 
 import { Skeleton } from '~/components/ui/skeleton'
+import {
+  calculateRelevanceScore,
+  generateCacheKey,
+  highlightSearchTerm,
+  SearchCache } from '~/lib/search-utils'
 
 import { SearchResultItem } from './SearchResultItem'
 
+export interface SearchDocument {
+  path?: string
+  title?: string
+  heading?: string
+  content?: string
+  section?: string
+}
+
 export interface SearchResult {
   id: string
-  document?: {
-    path?: string
-    title?: string
-    heading?: string
-    content?: string
-    section?: string
-  }
+  document?: SearchDocument
+  score?: number
 }
 
 interface SearchResultsProps {
   searchTerm: string
   selectedIndex: number
+  isComposing: boolean
 
   onSelectResult: (url: string) => void
   onResultsChange: (results: SearchResult[]) => void
   onSelectedIndexChange: (index: number) => void
 }
 
+// 创建全局搜索缓存实例
+const searchCache = new SearchCache(50)
+
 export function SearchResults(props: SearchResultsProps) {
   const {
     searchTerm,
     selectedIndex,
+    isComposing,
     onSelectResult,
     onResultsChange,
     onSelectedIndexChange,
   } = props
 
-  const { results } = useSearch({
-    term: searchTerm,
-    limit: 10,
-  })
+  // 使用 useDeferredValue 优化搜索体验，避免频繁请求
+  const deferredSearchTerm = useDeferredValue(searchTerm)
+
+  // 在组合输入状态下不触发搜索，避免内容抖动
+  const effectiveSearchTerm = isComposing ? '' : deferredSearchTerm
 
   const [loading, setLoading] = useState(false)
+  const [cachedResults, setCachedResults] = useState<SearchResult[]>([])
 
+  // 优化后的搜索配置
+  const { results } = useSearch({
+    term: effectiveSearchTerm,
+    limit: 20, // 增加结果数量
+  })
+
+  // 处理搜索加载状态和缓存
   useEffect(() => {
-    if (searchTerm.trim()) {
+    if (effectiveSearchTerm.trim()) {
+      const cacheKey = generateCacheKey(effectiveSearchTerm)
+
+      // 检查缓存
+      if (searchCache.has(cacheKey)) {
+        const cached = searchCache.get(cacheKey)!
+        setCachedResults(cached.results)
+        onResultsChange(cached.results)
+        setLoading(false)
+
+        return
+      }
+
       setLoading(true)
+      setCachedResults([])
 
       const timer = setTimeout(() => {
         setLoading(false)
@@ -55,22 +90,67 @@ export function SearchResults(props: SearchResultsProps) {
         clearTimeout(timer)
       }
     }
-  }, [searchTerm])
+    else {
+      setLoading(false)
+      setCachedResults([])
+      onResultsChange([])
+    }
+  }, [effectiveSearchTerm, onResultsChange])
 
+  // 处理搜索结果
   const hits = useMemo<SearchResult[]>(() => {
-    return results?.hits ?? []
-  }, [results])
+    if (!effectiveSearchTerm.trim()) {
+      return []
+    }
 
+    const cacheKey = generateCacheKey(effectiveSearchTerm)
+
+    // 如果有缓存，使用缓存
+    if (cachedResults.length > 0) {
+      return cachedResults
+    }
+
+    // 处理新的搜索结果
+    const processedResults = (results?.hits ?? []).map((hit) => {
+      const enhancedHit = {
+        ...hit,
+        score: hit.score || calculateRelevanceScore(hit, effectiveSearchTerm),
+      } as SearchResult
+
+      return enhancedHit
+    })
+
+    // 按相关性得分排序
+    processedResults.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+
+    // 缓存结果
+    if (processedResults.length > 0) {
+      searchCache.set(cacheKey, {
+        results: processedResults,
+        timestamp: Date.now(),
+        query: effectiveSearchTerm,
+      })
+    }
+
+    return processedResults
+  }, [results, effectiveSearchTerm, cachedResults])
+
+  // 更新父组件的结果
   useEffect(() => {
     onResultsChange(hits)
   }, [hits, onResultsChange])
+
+  // 高亮关键词的工具函数
+  const highlightText = useCallback((text: string, searchTerm: string) => {
+    return highlightSearchTerm(text, searchTerm)
+  }, [])
 
   if (!searchTerm.trim()) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-12 text-center text-muted-foreground">
         <SearchIcon className="mb-4 size-12" />
-        <p className="text-lg font-medium">开始搜索 NestJS 文档</p>
-        <p className="text-sm mt-1">输入关键词查找相关内容</p>
+        <div className="text-lg font-medium">开始搜索 NestJS 文档</div>
+        <div className="text-sm mt-1">输入关键词查找相关内容</div>
       </div>
     )
   }
@@ -97,10 +177,10 @@ export function SearchResults(props: SearchResultsProps) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-12 text-center text-muted-foreground">
         <FileTextIcon className="mb-4 size-12" />
-        <p className="text-lg font-medium">未找到相关内容</p>
-        <p className="text-sm mt-1">
+        <div className="text-lg font-medium">未找到相关内容</div>
+        <div className="text-sm mt-1">
           尝试使用不同的关键词或检查拼写
-        </p>
+        </div>
       </div>
     )
   }
@@ -110,8 +190,10 @@ export function SearchResults(props: SearchResultsProps) {
       {hits.map((hit, idx) => (
         <SearchResultItem
           key={hit.id}
+          highlightText={highlightText}
           isSelected={idx === selectedIndex}
           result={hit}
+          searchTerm={effectiveSearchTerm}
           onClick={() => {
             if (hit.document?.path) {
               onSelectResult(hit.document.path)
