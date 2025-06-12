@@ -233,7 +233,7 @@ console.log(job.lastDate())
   你可以对 `DateTime` 对象调用 `toJSDate()` 方法，将其转换为 JavaScript 的 `Date` 类型。
 </CalloutInfo>
 
-**动态创建** 新定时任务时，可以使用 `SchedulerRegistry#addCronJob` 方法，示例如下：
+**动态创建**新定时任务时，可以使用 `SchedulerRegistry#addCronJob` 方法，示例如下：
 
 ```ts
 addCronJob(name: string, seconds: string) {
@@ -256,7 +256,7 @@ addCronJob(name: string, seconds: string) {
   在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需要从 `cron` 包中导入。
 </CalloutInfo>
 
-**删除** 指定名称的定时任务，可以使用 `SchedulerRegistry#deleteCronJob` 方法，示例如下：
+**删除**指定名称的定时任务，可以使用 `SchedulerRegistry#deleteCronJob` 方法，示例如下：
 
 ```ts
 deleteCron(name: string) {
@@ -265,7 +265,7 @@ deleteCron(name: string) {
 }
 ```
 
-**列出** 所有定时任务，可以使用 `SchedulerRegistry#getCronJobs` 方法，示例如下：
+**列出**所有定时任务，可以使用 `SchedulerRegistry#getCronJobs` 方法，示例如下：
 
 ```ts
 getCrons() {

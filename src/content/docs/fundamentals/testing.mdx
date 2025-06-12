@@ -106,7 +106,7 @@ catsService = await moduleRef.resolve(CatsService)
 ```
 
 <CalloutInfo type="warning">
-  `resolve()` 方法会返回该提供者在其 **依赖注入容器子树**
+  `resolve()` 方法会返回该提供者在其**依赖注入容器子树**
   中的唯一实例。每个子树都有唯一的上下文标识符。因此，如果多次调用该方法并比较实例引用，会发现它们并不相等。
 </CalloutInfo>
 

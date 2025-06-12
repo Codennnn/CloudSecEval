@@ -162,7 +162,7 @@ export class AppService {
 
 这正是**持久化提供者（durable provider）** 发挥作用的场景。
 
-在将提供者标记为持久化前，需先注册一个 **策略**，告知 Nest 哪些是“通用请求属性”，并提供分组逻辑，将请求与对应的依赖注入子树关联。
+在将提供者标记为持久化前，需先注册一个**策略**，告知 Nest 哪些是“通用请求属性”，并提供分组逻辑，将请求与对应的依赖注入子树关联。
 
 ```ts
 import { HostComponentInfo, ContextId, ContextIdFactory, ContextIdStrategy } from '@nestjs/core'

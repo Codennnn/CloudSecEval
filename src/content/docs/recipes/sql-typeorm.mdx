@@ -98,7 +98,7 @@ export class Photo {
 }
 ```
 
-`Photo` 实体位于 `photo` 目录下。该目录代表 `PhotoModule`。接下来，我们来创建一个 **仓储提供者（Repository Provider）**：
+`Photo` 实体位于 `photo` 目录下。该目录代表 `PhotoModule`。接下来，我们来创建一个**仓储提供者（Repository Provider）**：
 
 ```ts filename='photo.providers.ts'
 import { DataSource } from 'typeorm'
@@ -114,7 +114,7 @@ export const photoProviders = [
 ```
 
 <CalloutInfo type="warning">
-  在实际项目中应避免使用 **魔法字符串**。`PHOTO_REPOSITORY` 和 `DATA_SOURCE` 都应单独存放在
+  在实际项目中应避免使用**魔法字符串**。`PHOTO_REPOSITORY` 和 `DATA_SOURCE` 都应单独存放在
   `constants.ts` 文件中。
 </CalloutInfo>
 

@@ -361,7 +361,7 @@ export interface UnhandledExceptionInfo<Cause = IEvent | ICommand, Exception = a
 
 ## 订阅所有事件
 
-`CommandBus`、`QueryBus` 和 `EventBus` 都是 **可观察对象**。这意味着我们可以订阅整个事件流，例如处理所有事件。比如，我们可以将所有事件记录到控制台，或者保存到事件存储中。
+`CommandBus`、`QueryBus` 和 `EventBus` 都是**可观察对象**。这意味着我们可以订阅整个事件流，例如处理所有事件。比如，我们可以将所有事件记录到控制台，或者保存到事件存储中。
 
 ```ts
 private destroy$ = new Subject<void>();

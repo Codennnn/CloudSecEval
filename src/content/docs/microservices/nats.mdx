@@ -1,6 +1,6 @@
 # NATS
 
-[NATS](https://nats.io) 是一个简单、安全且高性能的开源消息系统，适用于云原生应用、物联网（IoT）消息传递以及微服务架构。NATS 服务器由 Go 编程语言编写，但与服务器交互的客户端库已覆盖数十种主流编程语言。NATS 支持 **最多一次（At Most Once）** 和 **至少一次（At Least Once）** 的消息投递。它可以运行在各种环境中，包括大型服务器、云实例、边缘网关，甚至物联网设备。
+[NATS](https://nats.io) 是一个简单、安全且高性能的开源消息系统，适用于云原生应用、物联网（IoT）消息传递以及微服务架构。NATS 服务器由 Go 编程语言编写，但与服务器交互的客户端库已覆盖数十种主流编程语言。NATS 支持**最多一次（At Most Once）** 和**至少一次（At Least Once）** 的消息投递。它可以运行在各种环境中，包括大型服务器、云实例、边缘网关，甚至物联网设备。
 
 ## 安装
 
@@ -62,11 +62,11 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 
 ## 请求-响应
 
-对于**请求-响应（request-response）** 消息风格（[详细说明](/microservices/basics#请求-响应)），NATS 传输器（NATS transporter）并未使用 NATS 内置的[请求-回复（Request-Reply）](https://docs.nats.io/nats-concepts/reqreply) 机制。相反，“请求”会通过 `publish()` 方法在指定主题（subject）上发布，并带有唯一的回复主题名称，响应方会监听该主题并将响应发送到该回复主题。无论请求方和响应方位于何处，回复主题都会动态地指向请求方。
+对于**请求-响应（request-response）**消息风格（[详细说明](/microservices/basics#请求-响应)），NATS 传输器（NATS transporter）并未使用 NATS 内置的[请求-回复（Request-Reply）](https://docs.nats.io/nats-concepts/reqreply) 机制。相反，“请求”会通过 `publish()` 方法在指定主题（subject）上发布，并带有唯一的回复主题名称，响应方会监听该主题并将响应发送到该回复主题。无论请求方和响应方位于何处，回复主题都会动态地指向请求方。
 
 ## 事件驱动
 
-对于**事件驱动（event-based）** 消息风格（[详细说明](/microservices/basics#event-based)），NATS 传输器会使用 NATS 内置的[发布-订阅（Publish-Subscribe）](https://docs.nats.io/nats-concepts/pubsub)机制。发布者会在某个主题上发送消息，任何正在监听该主题的活跃订阅者都会收到该消息。订阅者还可以注册通配符主题（wildcard subjects），其工作方式类似于正则表达式。这种一对多的模式有时也被称为“扇出（fan-out）”。
+对于**事件驱动（event-based）**消息风格（[详细说明](/microservices/basics#event-based)），NATS 传输器会使用 NATS 内置的[发布-订阅（Publish-Subscribe）](https://docs.nats.io/nats-concepts/pubsub)机制。发布者会在某个主题上发送消息，任何正在监听该主题的活跃订阅者都会收到该消息。订阅者还可以注册通配符主题（wildcard subjects），其工作方式类似于正则表达式。这种一对多的模式有时也被称为“扇出（fan-out）”。
 
 ## 队列组
 

@@ -103,7 +103,7 @@ export class AppModule {}
 
 ## 共享模块与服务复用
 
-在 Nest 中，模块默认是 **单例（singleton）**，这意味着你可以轻松地在多个模块之间共享同一个提供者实例。
+在 Nest 中，模块默认是**单例（singleton）**，这意味着你可以轻松地在多个模块之间共享同一个提供者实例。
 
 ```mermaid
 graph TD
@@ -156,7 +156,7 @@ graph TD
     end
 ```
 
-每个模块天生就是 **共享模块**，一旦创建，即可被任何其他模块复用。例如，如果我们希望在多个模块之间共享 `CatsService` 的实例，需要先将 `CatsService` 添加到模块的 `exports` 数组中进行导出，如下所示：
+每个模块天生就是**共享模块**，一旦创建，即可被任何其他模块复用。例如，如果我们希望在多个模块之间共享 `CatsService` 的实例，需要先将 `CatsService` 添加到模块的 `exports` 数组中进行导出，如下所示：
 
 ```ts filename='cats.module.ts'
 import { Module } from '@nestjs/common'

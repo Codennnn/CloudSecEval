@@ -637,7 +637,7 @@ export type PersonDocument = HydratedDocument<Person, PersonDocumentOverride>
 
 ## 虚拟属性（Virtuals）
 
-在 Mongoose 中，**虚拟属性** 是指存在于文档对象上但不会被持久化到 MongoDB 的属性。也就是说，这类属性不会存储在数据库中，而是在每次访问时动态计算得出。虚拟属性通常用于派生值或计算值，例如将多个字段组合（如通过拼接 `firstName` 和 `lastName` 创建 `fullName` 属性），或者用于依赖文档中现有数据生成的新属性。
+在 Mongoose 中，**虚拟属性**是指存在于文档对象上但不会被持久化到 MongoDB 的属性。也就是说，这类属性不会存储在数据库中，而是在每次访问时动态计算得出。虚拟属性通常用于派生值或计算值，例如将多个字段组合（如通过拼接 `firstName` 和 `lastName` 创建 `fullName` 属性），或者用于依赖文档中现有数据生成的新属性。
 
 ```ts
 class Person {

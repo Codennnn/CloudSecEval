@@ -35,3 +35,7 @@ blockquote > p {
     @apply content-[''];
   }
 }
+
+strong {
+  @apply px-0.5;
+}

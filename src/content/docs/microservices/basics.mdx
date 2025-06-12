@@ -213,6 +213,8 @@ getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
 }
 ```
 
+f
+
 <CalloutInfo>
   你还可以为 `@Payload()` 装饰器传入属性键，以便从传入的 payload
   对象中提取特定属性，例如：`@Payload('id')`。
@@ -315,7 +317,7 @@ async onApplicationBootstrap() {
 
 ## 发送消息
 
-`ClientProxy` 提供了 `send()` 方法。该方法用于调用微服务，并返回一个包含响应的 **冷 Observable**。因此，我们可以很方便地对其发出的值进行订阅。
+`ClientProxy` 提供了 `send()` 方法。该方法用于调用微服务，并返回一个包含响应的**冷 Observable**。因此，我们可以很方便地对其发出的值进行订阅。
 
 ```ts
 accumulate(): Observable<number> {

@@ -3,7 +3,7 @@ import terminusErrorLogJsonImage from '/public/assets/Terminus_Error_Log_Json.pn
 
 # 健康检查（Healthcheck / Terminus）
 
-Terminus 集成为你提供了 **就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查至关重要。简而言之，Web 开发中的健康检查通常指的是一个特殊的地址，例如：`https://my-website.com/health/readiness`。
+Terminus 集成为你提供了**就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查至关重要。简而言之，Web 开发中的健康检查通常指的是一个特殊的地址，例如：`https://my-website.com/health/readiness`。
 你的基础设施中的某个服务或组件（例如 [Kubernetes](https://kubernetes.io/)）会持续检查这个地址。根据对该地址发起 `GET` 请求后返回的 HTTP 状态码，服务会在收到“不健康”响应时采取相应措施。
 由于“健康”或“不健康”的定义会根据你提供的服务类型而有所不同，**Terminus** 集成为你提供了一组 **健康指示器（Health Indicator）**。
 

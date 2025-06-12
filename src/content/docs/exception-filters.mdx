@@ -58,7 +58,7 @@ flowchart TD
     end
 ```
 
-默认情况下，这一行为由内置的**全局异常过滤器（global exception filter）** 完成。它会处理 `HttpException`（及其子类）类型的异常。当遇到无法识别的异常（即既不是 `HttpException` 也不是其子类时），内置异常过滤器会生成如下默认 JSON 响应：
+默认情况下，这一行为由内置的**全局异常过滤器（global exception filter）**完成。它会处理 `HttpException`（及其子类）类型的异常。当遇到无法识别的异常（即既不是 `HttpException` 也不是其子类时），内置异常过滤器会生成如下默认 JSON 响应：
 
 ```json
 {

@@ -108,7 +108,7 @@ $ node dist/main.js # 请根据你的入口文件实际路径进行调整
 
 ## 应用扩展
 
-有效地扩展 NestJS 应用，是应对流量增长和保障应用性能的关键。扩展策略主要分为两种：**垂直扩展** (vertical scaling) 和 **水平扩展** (horizontal scaling)。理解这两种方式的差异，有助于为应用设计合理的扩展方案以应对高负载。
+有效地扩展 NestJS 应用，是应对流量增长和保障应用性能的关键。扩展策略主要分为两种：**垂直扩展**（vertical scaling） 和**水平扩展**（horizontal scaling）。理解这两种方式的差异，有助于为应用设计合理的扩展方案以应对高负载。
 
 垂直扩展，也称“向上扩展” (Scale-up)，指通过为单台服务器增加更多资源（如 CPU、内存、存储）来提升其处理能力。其主要特点如下：
 
@@ -145,7 +145,7 @@ $ node dist/main.js # 请根据你的入口文件实际路径进行调整
 
 ## 构建 Docker 镜像
 
-[Docker](https://www.docker.com/) 是一个利用容器化 (containerization) 技术的平台，它允许开发者将应用及其依赖打包成一个标准化的单元，即**容器** (container)。容器具有轻量、可移植、隔离性强等特点，非常适合在从开发、测试到生产的整个流程中部署应用。
+[Docker](https://www.docker.com/) 是一个利用容器化 (containerization) 技术的平台，它允许开发者将应用及其依赖打包成一个标准化的单元，即**容器**（container）。容器具有轻量、可移植、隔离性强等特点，非常适合在从开发、测试到生产的整个流程中部署应用。
 
 将 NestJS 应用容器化的优势：
 
@@ -158,7 +158,7 @@ $ node dist/main.js # 请根据你的入口文件实际路径进行调整
 
 `Dockerfile` 是一个文本文件，包含了 Docker 构建容器镜像所需的全部指令。
 
-为了优化镜像大小并加快构建速度，推荐使用**多阶段构建** (multi-stage build)。下面是一个更优化的 `Dockerfile` 示例：
+为了优化镜像大小并加快构建速度，推荐使用**多阶段构建**（multi-stage build）。下面是一个更优化的 `Dockerfile` 示例：
 
 ```dockerfile
 # ---- Base Stage ----
