@@ -16,8 +16,7 @@ import { RoutePath } from '~/constants'
 export function getEnglishDocPath(chinesePath: string): string {
   const docPath = chinesePath.replace(RoutePath.Docs, '')
 
-  const url = new URL('https://docs.nestjs.com')
-  url.pathname = docPath
+  const url = new URL(docPath, 'https://docs.nestjs.com')
 
   return url.toString()
 }

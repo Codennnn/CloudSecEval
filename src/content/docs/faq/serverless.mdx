@@ -124,7 +124,9 @@ module.exports = (options, webpack) => {
   机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
 </CalloutInfo>
 
-<CalloutInfo>你还可以通过进一步的代码压缩和优化（如使用 `webpack` 插件等）来提升性能。</CalloutInfo>
+<CalloutInfo>
+  <div>你还可以通过进一步的代码压缩和优化（如使用 `webpack` 插件等）来提升性能。</div>
+</CalloutInfo>
 
 可以看到，编译和打包方式对应用的整体启动时间有显著影响。通过 `webpack` 打包后，一个独立的 Nest 应用（包含一个模块、一个控制器和一个服务）的平均启动时间可以降至约 32 毫秒，而一个标准的、基于 Express 的 NestJS 应用约为 81.5 毫秒。
 

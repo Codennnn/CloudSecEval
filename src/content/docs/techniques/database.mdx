@@ -68,7 +68,7 @@ export class AppModule {
 }
 ```
 
-### 仓库模式（Repository pattern）
+### 仓储模式
 
 [TypeORM](https://github.com/typeorm/typeorm) 支持**仓库设计模式（repository design pattern）**，因此每个实体（Entity）都拥有自己的仓库（Repository）。这些仓库可以通过数据库数据源（data source）获取。
 
@@ -449,7 +449,7 @@ export class UsersModule {}
 
 迁移类与 Nest 应用的源代码是分离的，其生命周期由 TypeORM 的命令行工具（CLI）管理。因此，在迁移中无法使用依赖注入等 Nest 特有的功能。想要了解更多迁移相关内容，请参考 [TypeORM 官方文档](https://typeorm.io/#/migrations/creating-a-new-migration)。
 
-### 多数据源（Multiple databases）
+### 多数据库
 
 在某些项目中，可能需要同时连接多个数据库。通过本模块也可以实现这一需求。要使用多个连接，需要分别为每个数据库创建连接。在这种场景下，数据源的命名就变得非常重要。
 

@@ -1,30 +1,30 @@
 # CQRS（命令查询职责分离）
 
-简单 [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete)（创建、读取、更新和删除）应用的流程通常如下：
+一个典型的 [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete)（创建、读取、更新和删除）应用，其数据流转过程通常如下：
 
-1. 控制器层处理 HTTP 请求，并将任务委托给服务（Service）层。
-2. 服务层承载大部分业务逻辑。
-3. 服务通过仓储（Repository）/ 数据访问对象（DAO）来变更或持久化实体（Entity）。
-4. 实体作为值的容器，提供 setter 和 getter 方法。
+1. **控制器层**处理 HTTP 请求，并将任务委托给**服务层**（Service）。
+2. **服务层**负责处理大部分业务逻辑。
+3. **服务层**通过仓储（Repository）或数据访问对象来变更或持久化实体。
+4. **实体**是承载数据的对象，通常包含 getter 和 setter 方法。
 
-虽然这种模式对于中小型应用通常已经足够，但对于更大、更复杂的应用来说，可能并不是最佳选择。在这类场景下，**CQRS（命令查询职责分离，Command and Query Responsibility Segregation）** 模型可能更合适且更具可扩展性（具体取决于应用需求）。该模型的优势包括：
+虽然这种模式对中小型应用来说通常已经足够，但对于更大型、更复杂的项目，它可能不是最佳选择。在这些场景下，**CQRS（Command and Query Responsibility Segregation，命令查询职责分离）** 模型可能是一种更合适、更具可扩展性的方案。其核心优势包括：
 
-- **关注点分离**。该模型将读操作和写操作分离为不同的模型。
-- **可扩展性**。读写操作可以独立扩展。
-- **灵活性**。该模型允许为读写操作分别使用不同的数据存储。
-- **性能优化**。可以针对读写操作分别采用最优的数据存储方案。
+- **关注点分离**：将应用的读取（查询）和写入（命令）操作分离到不同的模型中。
+- **独立扩展**：可以根据负载情况，独立地对读取和写入两端进行扩展。
+- **存储灵活性**：允许为读取和写入操作选择不同类型的、最适合其场景的数据存储方案。
+- **性能优化**：可以针对读取和写入操作分别进行性能调优。
 
-为支持该模型，Nest 提供了一个轻量级的 [CQRS 模块](https://github.com/nestjs/cqrs)。本章节将介绍如何使用该模块。
+为支持该模型，Nest 提供了一个轻量级的 [CQRS 模块](https://github.com/nestjs/cqrs)。本章将介绍如何使用该模块。
 
 ## 安装
 
-首先安装所需的依赖包：
+首先，安装所需依赖包：
 
 ```bash
 $ npm install --save @nestjs/cqrs
 ```
 
-安装完成后，进入应用的根模块（通常为 `AppModule`），并导入 `CqrsModule.forRoot()`：
+安装完成后，在应用的根模块（通常是 `AppModule`）中导入 `CqrsModule.forRoot()`：
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -36,20 +36,20 @@ import { CqrsModule } from '@nestjs/cqrs'
 export class AppModule {}
 ```
 
-该模块支持可选的配置对象。可用的配置项如下表所示：
+`CqrsModule` 支持一个可选的配置对象，其可用属性如下表所示：
 
-| 属性                          | 说明                                                                      | 默认值                            |
-| ----------------------------- | ------------------------------------------------------------------------- | --------------------------------- |
-| `commandPublisher`            | 负责将命令（Command）分发到系统的发布器。                                 | `DefaultCommandPubSub`            |
-| `eventPublisher`              | 用于发布事件（Event）的发布器，支持事件广播或处理。                       | `DefaultPubSub`                   |
-| `queryPublisher`              | 用于发布查询（Query）的发布器，可触发数据检索操作。                       | `DefaultQueryPubSub`              |
-| `unhandledExceptionPublisher` | 负责处理未捕获异常（Unhandled Exception）的发布器，确保异常被追踪和上报。 | `DefaultUnhandledExceptionPubSub` |
-| `eventIdProvider`             | 提供唯一事件 ID 的服务，通过生成或从事件实例中获取。                      | `DefaultEventIdProvider`          |
-| `rethrowUnhandled`            | 是否在处理未捕获异常后重新抛出异常，便于调试和错误管理。                  | `false`                           |
+| 属性                          | 说明                                                                        | 默认值                            |
+| ----------------------------- | --------------------------------------------------------------------------- | --------------------------------- |
+| `commandPublisher`            | 负责将命令（Command）分发给相应处理器的发布器。                             | `DefaultCommandPubSub`            |
+| `eventPublisher`              | 用于发布事件（Event）的发布器，支持事件广播或后续处理。                     | `DefaultPubSub`                   |
+| `queryPublisher`              | 用于发布查询（Query）并触发数据检索操作的发布器。                           | `DefaultQueryPubSub`              |
+| `unhandledExceptionPublisher` | 负责处理未捕获异常（Unhandled Exception）的发布器，以确保异常被追踪或记录。 | `DefaultUnhandledExceptionPubSub` |
+| `eventIdProvider`             | 提供唯一事件 ID 的服务，可通过生成或从事件实例中提取 ID。                   | `DefaultEventIdProvider`          |
+| `rethrowUnhandled`            | 控制在处理未捕获异常后是否重新抛出该异常，便于调试和错误管理。              | `false`                           |
 
 ## 命令（Commands）
 
-命令用于更改应用程序状态。命令应以任务为导向，而非以数据为中心。当命令被分发时，会由对应的 **命令处理器（Command Handler）** 进行处理。处理器负责更新应用程序状态。
+命令用于改变应用的状态。与数据驱动的操作不同，命令应以任务为中心。当一个命令被分发时，它会由对应的**命令处理器（Command Handler）** 来处理，该处理器负责更新应用状态。
 
 ```ts filename='heroes-game.service.ts'
 @Injectable()
@@ -62,7 +62,7 @@ export class HeroesGameService {
 }
 ```
 
-在上面的代码片段中，我们实例化了 `KillDragonCommand` 类，并将其实例传递给 `CommandBus` 的 `execute()` 方法。下面是演示用的命令类：
+在上述代码中，我们实例化了 `KillDragonCommand` 类，并将其传递给 `CommandBus` 的 `execute()` 方法。该命令类的定义如下：
 
 ```ts filename='kill-dragon.command.ts'
 export class KillDragonCommand extends Command<{
@@ -75,15 +75,15 @@ export class KillDragonCommand extends Command<{
 }
 ```
 
-如你所见，`KillDragonCommand` 类继承自 `Command` 类。`Command` 是从 `@nestjs/cqrs` 包中导出的一个简单工具类，用于定义命令的返回类型。在本例中，返回类型是一个包含 `actionId` 属性的对象。现在，每当分发 `KillDragonCommand` 命令时，`CommandBus#execute()` 方法的返回类型会被推断为 `Promise<{ actionId: string }>`。当你希望从命令处理器返回一些数据时，这种方式非常有用。
+可以看到，`KillDragonCommand` 继承了 `Command` 类。`Command` 是从 `@nestjs/cqrs` 包导出的一个辅助类，用于约束命令的返回类型。在本例中，我们指定返回类型为一个包含 `actionId` 属性的对象。这样，当分发 `KillDragonCommand` 时，`CommandBus#execute()` 方法的返回类型就会被 TypeScript 推断为 `Promise<{ actionId: string }>`。当你希望命令处理器能返回一个值时，这种方式非常有用。
 
 <CalloutInfo>
-  <div>继承 `Command` 类是可选的。只有在你需要定义命令的返回类型时才有必要。</div>
+  <div>继承 `Command` 类是可选的，仅在需要为命令定义返回类型时才需要这样做。</div>
 </CalloutInfo>
 
-`CommandBus` 代表命令的**流**。它负责将命令分发给合适的处理器。`execute()` 方法返回一个 Promise，该 Promise 会解析为处理器返回的值。
+`CommandBus` 是一个命令**流**，负责将命令分发到对应的处理器。它的 `execute()` 方法会返回一个 Promise，该 Promise 的解析值即为处理器返回的结果。
 
-接下来，我们为 `KillDragonCommand` 命令创建一个处理器。
+接下来，我们为 `KillDragonCommand` 创建一个对应的命令处理器。
 
 ```ts filename='kill-dragon.handler.ts'
 @CommandHandler(KillDragonCommand)
@@ -105,11 +105,11 @@ export class KillDragonHandler implements ICommandHandler<KillDragonCommand> {
 }
 ```
 
-该处理器会从仓库中获取 `Hero` 实体，调用其 `killEnemy()` 方法，并持久化更改。`KillDragonHandler` 类实现了 `ICommandHandler` 接口，该接口要求实现 `execute()` 方法。`execute()` 方法会接收命令对象作为参数。
+该处理器从仓储中获取 `Hero` 实体，调用其 `killEnemy()` 方法，然后持久化变更。`KillDragonHandler` 类实现了 `ICommandHandler` 接口，该接口要求实现一个 `execute()` 方法，此方法接收命令实例作为其参数。
 
-请注意，`ICommandHandler<KillDragonCommand>` 会强制你返回与命令返回类型一致的值。在本例中，返回类型是一个包含 `actionId` 属性的对象。只有当命令继承自 `Command` 类时才会有此要求，否则你可以返回任意内容。
+值得注意的是，泛型 `ICommandHandler<KillDragonCommand>` 会强制 `execute` 方法的返回值与 `KillDragonCommand` 的返回类型保持一致。在本例中，返回类型是包含 `actionId` 属性的对象。这一类型约束仅在命令继承 `Command` 类时生效，否则你可以从 `execute` 方法中返回任何内容。
 
-最后，确保在模块中将 `KillDragonHandler` 注册为提供者：
+最后，将 `KillDragonHandler` 添加到模块的 `providers` 数组中：
 
 ```ts
 providers: [KillDragonHandler]

@@ -1,18 +1,20 @@
 import terminusErrorLogPrettyImage from '/public/assets/Terminus_Error_Log_Pretty.png'
 import terminusErrorLogJsonImage from '/public/assets/Terminus_Error_Log_Json.png'
 
-# 健康检查（Healthcheck / Terminus）
+# 健康检查
 
-Terminus 集成为你提供了**就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查至关重要。简而言之，Web 开发中的健康检查通常指的是一个特殊的地址，例如：`https://my-website.com/health/readiness`。
-你的基础设施中的某个服务或组件（例如 [Kubernetes](https://kubernetes.io/)）会持续检查这个地址。根据对该地址发起 `GET` 请求后返回的 HTTP 状态码，服务会在收到“不健康”响应时采取相应措施。
-由于“健康”或“不健康”的定义会根据你提供的服务类型而有所不同，**Terminus** 集成为你提供了一组 **健康指示器（Health Indicator）**。
+Terminus 集成可以为你提供**就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查是不可或缺的一环。简单来说，Web 开发中的健康检查通常指一个特殊的端点（Endpoint），例如 `https://my-website.com/health/readiness`。
 
-举个例子，如果你的 Web 服务器使用 MongoDB 存储数据，那么 MongoDB 是否仍在运行就是非常重要的信息。
-在这种情况下，你可以使用 `MongooseHealthIndicator`。如果配置正确（后文会详细介绍），你的健康检查地址会根据 MongoDB 是否运行返回健康或不健康的 HTTP 状态码。
+你的基础设施中的某个服务或组件（例如 [Kubernetes](https://kubernetes.io/)）会持续轮询此端点，当向此端点发起的 `GET` 请求返回“不健康”的 HTTP 状态码时，该服务就会采取相应的纠正措施。
+
+“健康”或“不健康”的定义因服务类型而异，因此，**Terminus** 提供了一套 **健康指示器（Health Indicator）**，让你可以根据具体场景自定义健康评估逻辑。
+
+例如，假设你的 Web 服务器使用 MongoDB 存储数据，那么确认 MongoDB 服务是否正常运行就至关重要。
+此时，便可以使用 `MongooseHealthIndicator`。正确配置后（下文将详细说明），你的健康检查端点就会根据 MongoDB 的运行状态返回“健康”或“不健康”的 HTTP 状态码。
 
 ## 快速开始
 
-要开始使用 `@nestjs/terminus`，我们需要安装所需的依赖包。
+要开始使用 `@nestjs/terminus`，首先需要安装相应的依赖包。
 
 ```bash
 $ npm install --save @nestjs/terminus
@@ -20,7 +22,8 @@ $ npm install --save @nestjs/terminus
 
 ## 配置健康检查
 
-健康检查是由多个**健康指示器**组成的汇总。健康指示器会检查某个服务是否处于健康或不健康状态。如果所有分配的健康指示器都正常运行，则健康检查为通过。由于许多应用都需要类似的健康指示器，[`@nestjs/terminus`](https://github.com/nestjs/terminus) 提供了一组预定义的指示器，例如：
+健康检查是多个**健康指示器**的集合。每个健康指示器负责检查特定服务是否处于健康状态。只有当所有健康指示器都报告正常时，整个健康检查才算通过。
+由于许多应用程序都有相似的健康检查需求，[`@nestjs/terminus`](https://github.com/nestjs/terminus) 提供了一套预定义的指示器，例如：
 
 - `HttpHealthIndicator`
 - `TypeOrmHealthIndicator`
@@ -33,13 +36,11 @@ $ npm install --save @nestjs/terminus
 - `MemoryHealthIndicator`
 - `DiskHealthIndicator`
 
-接下来，让我们创建 `HealthModule`，并在其 imports 数组中引入 `TerminusModule`。
+接下来，我们来创建一个 `HealthModule`，并在其 `imports` 数组中导入 `TerminusModule`。
 
 <CalloutInfo>
-  <div>
-    你可以通过 [Nest 命令行工具（Nest CLI）](/cli/overview) 快速创建模块，只需执行 `$ nest g module
-    health` 命令。
-  </div>
+  你可以通过 [Nest 命令行工具（Nest CLI）](/cli/overview) 快速创建模块，只需执行 `$ nest g module
+  health` 命令。
 </CalloutInfo>
 
 ```ts filename='health.module.ts'
@@ -52,29 +53,29 @@ import { TerminusModule } from '@nestjs/terminus'
 export class HealthModule {}
 ```
 
-我们的健康检查可以通过[控制器](/controllers)来执行，你可以使用 [Nest 命令行工具（Nest CLI）](/cli/overview) 轻松创建控制器。
+接下来，我们需要通过[控制器](/controllers)来暴露健康检查端点。同样，你可以使用 Nest CLI 轻松创建控制器：
 
 ```bash
 $ nest g controller health
 ```
 
 <CalloutInfo>
-  强烈建议在你的应用中启用关闭钩子（Shutdown Hook）。Terminus
-  集成在启用后会利用此生命周期事件（Lifecycle
-  Event）。你可以在[这里](/fundamentals/lifecycle-events#application-shutdown)阅读更多关于关闭钩子的内容。
+  强烈建议为你的应用启用[关闭钩子（Shutdown
+  Hooks）](/fundamentals/lifecycle-events#application-shutdown)。启用后，Terminus
+  集成将利用此生命周期事件，以确保服务能够平稳关闭。
 </CalloutInfo>
 
 ## HTTP 健康检查
 
-当我们已经安装了 `@nestjs/terminus`，导入了 `TerminusModule` 并创建了新的控制器后，就可以开始编写健康检查了。
+在安装 `@nestjs/terminus`、导入 `TerminusModule` 并创建控制器后，你就可以着手实现健康检查了。
 
-`HTTPHealthIndicator` 依赖 `@nestjs/axios` 包，因此请确保已安装：
+`HTTPHealthIndicator` 依赖 `@nestjs/axios` 包，因此你需要先安装它：
 
 ```bash
 $ npm i --save @nestjs/axios axios
 ```
 
-现在我们可以设置 `HealthController`：
+接下来，我们来设置 `HealthController`：
 
 ```ts filename='health.controller.ts'
 import { Controller, Get } from '@nestjs/common'
@@ -108,7 +109,7 @@ import { HealthController } from './health.controller'
 export class HealthModule {}
 ```
 
-现在，健康检查会向 `https://docs.nestjs.com` 地址发送一次 _GET_ 请求。如果该地址返回健康响应，则我们在 `http://localhost:3000/health` 路由下会收到如下对象，并返回 200 状态码：
+上述代码配置了一个健康检查端点，它会向 `https://docs.nestjs.com` 发送 `GET` 请求。如果请求成功，访问 `http://localhost:3000/health` 将返回 `200` 状态码和如下内容的 JSON 对象：
 
 ```json
 {
@@ -127,20 +128,20 @@ export class HealthModule {}
 }
 ```
 
-该响应对象的接口定义可通过 `@nestjs/terminus` 包中的 `HealthCheckResult` 接口获取。
+该响应对象的结构遵循 `@nestjs/terminus` 包中定义的 `HealthCheckResult` 接口。
 
-| 属性      | 描述                                                                                                                           | 类型                                 |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
-| `status`  | 如果有任何健康指示器失败，则状态为 `'error'`。如果 NestJS 应用正在关闭但仍接受 HTTP 请求，则健康检查状态为 `'shutting_down'`。 | `'error' \| 'ok' \| 'shutting_down'` |
-| `info`    | 包含所有健康（'up'）健康指示器信息的对象。                                                                                     | `object`                             |
-| `error`   | 包含所有不健康（'down'）健康指示器信息的对象。                                                                                 | `object`                             |
-| `details` | 包含所有健康指示器详细信息的对象。                                                                                             | `object`                             |
+| 属性      | 描述                                                                                                           | 类型                                 |
+| :-------- | :------------------------------------------------------------------------------------------------------------- | :----------------------------------- |
+| `status`  | 当任一健康指示器失败时，状态为 `'error'`。若 NestJS 应用正在关闭但仍接受 HTTP 请求，状态为 `'shutting_down'`。 | `'error' \| 'ok' \| 'shutting_down'` |
+| `info`    | 包含所有状态为 `'up'` 的健康指示器信息的对象。                                                                 | `object`                             |
+| `error`   | 包含所有状态为 `'down'` 的健康指示器信息的对象。                                                               | `object`                             |
+| `details` | 包含所有健康指示器（无论状态如何）的详细信息的对象。                                                           | `object`                             |
 
-# 检查特定 HTTP 响应码
+## 检查特定的 HTTP 响应码
 
-在某些情况下，你可能希望检查特定条件并验证响应。例如，假设 `https://my-external-service.com` 返回响应码 `204`。通过 `HttpHealthIndicator.responseCheck`，你可以专门检查该响应码，并将其他所有响应码视为不健康。
+在某些场景下，你可能需要检查特定条件来验证响应。例如，假设 `https://my-external-service.com` 会返回 `204` 响应码。你可以使用 `HttpHealthIndicator.responseCheck` 方法来专门检查此响应码，同时将所有其他响应码都视为不健康状态。
 
-如果返回的不是 `204` 响应码，则下方示例会判定为不健康。第三个参数需要你提供一个函数（同步或异步），用于判断响应是否健康（`true` 表示健康，`false` 表示不健康）。
+在下面的示例中，如果返回的响应码不是 `204`，则健康检查会被视为不通过。该方法的第三个参数是一个函数（同步或异步均可），用于自定义判断响应是否健康的逻辑。该函数应返回布尔值，`true` 表示健康，`false` 表示不健康。
 
 ```ts filename='health.controller.ts'
 // 在 `HealthController` 类中
@@ -159,14 +160,14 @@ check() {
 }
 ```
 
-## TypeOrm 健康检查指示器
+## TypeORM 健康检查指示器
 
-Terminus 提供了为健康检查添加数据库检查的能力。要开始使用该健康检查指示器，请先阅读[数据库章节](/techniques/sql)，并确保你的应用中数据库连接已成功建立。
+Terminus 提供了将数据库检查集成到健康检查中的功能。在使用此健康检查指示器之前，请先阅读[数据库](/techniques/database)章节，并确保你的应用已成功建立数据库连接。
 
 <CalloutInfo>
-  其实在底层，`TypeOrmHealthIndicator` 只是简单地执行了一条 `SELECT 1` SQL
-  命令，这通常用于验证数据库是否仍然存活。如果你使用的是 Oracle 数据库，则会执行 `SELECT 1 FROM
-  DUAL`。
+  在底层，`TypeOrmHealthIndicator` 实际上执行的是一条 `SELECT 1` SQL
+  命令，这是一种验证数据库是否仍然可用的常用方法。如果你使用的是 Oracle 数据库，则会执行 `SELECT 1
+  FROM DUAL`。
 </CalloutInfo>
 
 ```ts filename='health.controller.ts'
@@ -185,7 +186,7 @@ export class HealthController {
 }
 ```
 
-如果数据库可用，当你通过 `GET` 请求访问 `http://localhost:3000/health` 时，将会看到如下 JSON 结果：
+如果数据库可用，向 `http://localhost:3000/health` 发送 `GET` 请求后，你将看到如下 JSON 响应：
 
 ```json
 {
@@ -204,7 +205,7 @@ export class HealthController {
 }
 ```
 
-如果你的应用使用了[多数据库](/techniques/database#multiple-databases)，你需要将每个连接都注入到 `HealthController` 中。然后，只需将连接引用传递给 `TypeOrmHealthIndicator` 即可。
+如果你的应用使用了[多个数据库](/techniques/database#多数据库)，则需要将每个数据库连接都注入到 `HealthController` 中。然后，只需将相应的连接实例传递给 `TypeOrmHealthIndicator` 即可。
 
 ```ts filename='health.controller.ts'
 @Controller('health')
@@ -231,7 +232,7 @@ export class HealthController {
 
 ## 磁盘健康指示器
 
-使用 `DiskHealthIndicator`，我们可以检查磁盘的存储使用情况。首先，请确保在你的 `HealthController`（健康检查控制器）中注入 `DiskHealthIndicator`。下面的示例会检查路径 `/`（在 Windows 系统中可以使用 `C:\`）的存储使用情况。如果已用存储空间超过总空间的 50%，则会返回不健康的健康检查结果。
+`DiskHealthIndicator` 用于检查磁盘的存储空间使用情况。首先，你需要在 `HealthController`（健康检查控制器）中注入 `DiskHealthIndicator`。以下示例将检查 `/` 路径（在 Windows 上为 `C:\`）的存储使用情况。当已用空间超过总磁盘空间的 50% 时，健康检查将返回不健康状态。
 
 ```ts filename='health.controller.ts'
 @Controller('health')
@@ -251,17 +252,23 @@ export class HealthController {
 }
 ```
 
-通过 `DiskHealthIndicator.checkStorage` 方法，你还可以检查是否超过了固定的存储空间阈值。下面的示例会检查路径 `/my-app/`，如果其占用空间超过 250 GB，则健康检查会被判定为不健康。
+`DiskHealthIndicator.checkStorage` 方法也允许你根据一个固定的字节数阈值进行检查。在下面的示例中，如果 `/my-app/` 路径占用的空间超过 250GB，健康检查会返回不健康状态。
 
 ```ts filename='health.controller.ts'
-// 在 `HealthController` 类中
+@Controller('health')
+export class HealthController {
+  constructor(
+    private readonly health: HealthCheckService,
+    private readonly disk: DiskHealthIndicator
+  ) {}
 
-@Get()
-@HealthCheck()
-check() {
-  return this.health.check([
-    () => this.disk.checkStorage('storage', {  path: '/', threshold: 250 * 1024 * 1024 * 1024, })
-  ]);
+  @Get()
+  @HealthCheck()
+  check() {
+    return this.health.check([
+      () => this.disk.checkStorage('storage', { path: '/', threshold: 250 * 1024 * 1024 * 1024 }),
+    ])
+  }
 }
 ```
 
@@ -271,11 +278,11 @@ check() {
 
 <CalloutInfo>
 <div>
-堆（Heap）是用于存放动态分配内存（即通过 malloc 分配的内存）的内存区域。分配在堆上的内存会一直保留，直到发生以下情况之一：
+堆（Heap）是用于存储动态分配内存（例如通过 `malloc` 分配）的内存区域。分配在堆上的内存会一直存在，直到发生以下两种情况之一：
 </div>
 
 <ul className="!m-0">
-  <li>该内存被 _free_ 释放</li>
+  <li>内存被显式释放（例如通过 `free()`）</li>
   <li>程序终止</li>
 </ul>
 
@@ -297,30 +304,34 @@ export class HealthController {
 }
 ```
 
-你还可以通过 `MemoryHealthIndicator.checkRSS` 方法检查进程的 RSS（Resident Set Size，常驻集大小）。下面的示例会在进程分配的内存超过 150 MB 时，返回不健康的响应码。
+你还可以使用 `MemoryHealthIndicator.checkRSS` 方法来检查进程的 RSS（Resident Set Size，常驻集大小）。在以下示例中，如果进程分配的内存超过 150MB，健康检查将返回不健康状态。
 
 <CalloutInfo>
-  RSS 用于表示分配给该进程并实际驻留在 RAM
-  中的内存总量。它不包括已被交换出去的内存，但包括共享库中实际驻留在内存中的页面，也包括所有的栈和堆内存。
+  RSS（常驻集大小）指分配给进程并实际保留在 RAM
+  中的内存总量。它不包括已交换到磁盘的内存，但包括共享库中已加载到内存的页面以及所有的栈和堆内存。
 </CalloutInfo>
 
 ```ts filename='health.controller.ts'
-// 在 `HealthController` 类中
+@Controller('health')
+export class HealthController {
+  constructor(
+    private health: HealthCheckService,
+    private memory: MemoryHealthIndicator
+  ) {}
 
-@Get()
-@HealthCheck()
-check() {
-  return this.health.check([
-    () => this.memory.checkRSS('memory_rss', 150 * 1024 * 1024),
-  ]);
+  @Get()
+  @HealthCheck()
+  check() {
+    return this.health.check([() => this.memory.checkRSS('memory_rss', 150 * 1024 * 1024)])
+  }
 }
 ```
 
 ## 自定义健康指示器
 
-在某些情况下，`@nestjs/terminus` 提供的预定义健康指示器并不能覆盖你所有的健康检查需求。这时，你可以根据实际需要设置自定义健康指示器。
+有时，`@nestjs/terminus` 提供的预定义健康指示器可能无法满足你所有的健康检查需求。在这种情况下，你可以创建自定义的健康指示器。
 
-我们先来创建一个服务，用于实现自定义指示器。为了帮助理解指示器的结构，这里以 `DogHealthIndicator` 为例。该服务会在所有 `Dog` 对象的 type 属性为 `'goodboy'` 时，返回状态 `'up'`。如果条件不满足，则抛出错误。
+我们先来创建一个服务，用于实现自定义指示器。为了帮助你理解其结构，这里以一个 `DogHealthIndicator` 为例。这个指示器会检查所有 `Dog` 对象。如果其中有 `Dog` 的 `type` 属性为 `'badboy'`，指示器将返回不健康状态。反之，如果所有 `Dog` 的 `type` 都是 `'goodboy'`，指示器则返回健康状态 (`'up'`)。
 
 ```ts filename='dog.health.ts'
 import { Injectable } from '@nestjs/common'
@@ -354,7 +365,7 @@ export class DogHealthIndicator {
 }
 ```
 
-接下来，需要将健康指示器注册为提供者。
+接着，需要将这个健康指示器注册为提供者。
 
 ```ts filename='health.module.ts'
 import { Module } from '@nestjs/common'
@@ -370,11 +381,11 @@ export class HealthModule {}
 ```
 
 <CalloutInfo>
-  在实际项目中，`DogHealthIndicator` 应当在单独的模块（如 `DogModule`）中提供，然后由 `HealthModule`
-  导入。
+  在实际项目中，`DogHealthIndicator` 应该在它自己所属的模块（例如 `DogModule`）中提供，然后再由
+  `HealthModule` 导入。
 </CalloutInfo>
 
-最后一步是在健康检查接口中，调用我们自定义的健康指示器。回到 `HealthController`，在 `check` 方法中加入该指示器。
+最后一步是在健康检查端点中调用我们的自定义健康指示器。为此，我们需要回到 `HealthController` 并在 `check` 方法中添加该指示器。
 
 ```ts filename='health.controller.ts'
 import { HealthCheckService, HealthCheck } from '@nestjs/terminus'
@@ -400,11 +411,11 @@ export class HealthController {
 
 Terminus 只会记录错误信息，例如当健康检查失败时。通过 `TerminusModule.forRoot()` 方法，你可以更灵活地控制错误日志的记录方式，甚至可以完全接管日志记录。
 
-本节将带你了解如何创建自定义日志记录器 `TerminusLogger`。该日志记录器继承自内置日志记录器（Logger），因此你可以按需选择性地重写日志记录器的部分功能。
+本节将介绍如何创建自定义日志记录器 `TerminusLogger`，它继承自内置的 `Logger`，因此你可以根据需要重写其部分功能。
 
 <CalloutInfo>
-  如果你想了解更多关于 NestJS
-  自定义日志记录器的信息，[请阅读此处](/techniques/logger#injecting-a-custom-logger)。
+  如果你想深入了解 NestJS
+  的自定义日志记录器，请参阅[相关章节](/techniques/logger#injecting-a-custom-logger)。
 </CalloutInfo>
 
 ```ts filename='terminus-logger.service.ts'
@@ -448,10 +459,10 @@ export class HealthModule {}
 
 Terminus 允许你配置健康检查错误在日志中的展示方式。
 
-| 错误日志样式   | 描述                                                                    | 示例图                                                                         |
-| :------------- | :---------------------------------------------------------------------- | :----------------------------------------------------------------------------- |
-| `json`（默认） | 当发生错误时，以 JSON 对象的形式输出健康检查结果摘要                    | <DocImage src={terminusErrorLogJsonImage} alt="Terminus Error Log Json" />     |
-| `pretty`       | 当发生错误时，以格式化框体输出健康检查结果摘要，并高亮显示成功/失败结果 | <DocImage src={terminusErrorLogPrettyImage} alt="Terminus Error Log Pretty" /> |
+| 错误日志样式   | 描述                                                                        | 示例图                                                                         |
+| :------------- | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| `json`（默认） | 当发生错误时，以 JSON 对象的形式输出健康检查结果摘要                        | <DocImage src={terminusErrorLogJsonImage} alt="Terminus Error Log Json" />     |
+| `pretty`       | 当发生错误时，以更易读的美化格式输出健康检查摘要，并高亮显示成功/失败的结果 | <DocImage src={terminusErrorLogPrettyImage} alt="Terminus Error Log Pretty" /> |
 
 你可以通过如下配置项 `errorLogStyle` 来切换日志样式：
 
@@ -468,9 +479,9 @@ export class HealthModule {}
 
 ## 优雅关闭超时时间
 
-如果你的应用需要延迟其关闭（shutdown）过程，Terminus 可以为你处理。
-这个设置在使用如 Kubernetes 这样的编排器（orchestrator）时尤其有用。
-通过将延迟时间设置得比就绪检查（readiness check）间隔稍长，你可以在关闭容器时实现零停机时间（zero downtime）。
+如果你的应用在关闭（shutdown）前需要一段延迟时间，可以使用 Terminus 来实现。
+这个设置在使用 Kubernetes 等编排器（orchestrator）时尤其有用。
+将延迟时间设置得略长于就绪检查（readiness check）的间隔，就可以在关闭容器时实现零停机（zero downtime）。
 
 ```ts filename='health.module.ts'
 @Module({
@@ -485,4 +496,4 @@ export class HealthModule {}
 
 ## 更多示例
 
-更多可用的示例请参见[这里](https://github.com/nestjs/terminus/tree/master/sample)。
+更多示例请参见 [Terminus GitHub 仓库](https://github.com/nestjs/terminus/tree/master/sample)。

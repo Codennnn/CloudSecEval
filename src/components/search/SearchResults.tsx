@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useSearch } from '@oramacloud/react-client'
 import { FileTextIcon, SearchIcon } from 'lucide-react'
@@ -21,7 +21,7 @@ export interface SearchResult {
 interface SearchResultsProps {
   searchTerm: string
   selectedIndex: number
-  onResultsUpdate: (count: number) => void
+
   onSelectResult: (url: string) => void
   onResultsChange: (results: SearchResult[]) => void
   onSelectedIndexChange: (index: number) => void
@@ -31,7 +31,6 @@ export function SearchResults(props: SearchResultsProps) {
   const {
     searchTerm,
     selectedIndex,
-    onResultsUpdate,
     onSelectResult,
     onResultsChange,
     onSelectedIndexChange,
@@ -58,11 +57,13 @@ export function SearchResults(props: SearchResultsProps) {
     }
   }, [searchTerm])
 
+  const hits = useMemo<SearchResult[]>(() => {
+    return results?.hits ?? []
+  }, [results])
+
   useEffect(() => {
-    const hits = results?.hits ?? []
-    onResultsUpdate(hits.length)
     onResultsChange(hits)
-  }, [results, onResultsUpdate, onResultsChange])
+  }, [hits, onResultsChange])
 
   if (!searchTerm.trim()) {
     return (
@@ -92,7 +93,7 @@ export function SearchResults(props: SearchResultsProps) {
     )
   }
 
-  if (!results?.hits.length) {
+  if (hits.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-12 text-center text-muted-foreground">
         <FileTextIcon className="mb-4 size-12" />
@@ -106,17 +107,19 @@ export function SearchResults(props: SearchResultsProps) {
 
   return (
     <div className="p-4 space-y-4">
-      {results.hits.map((hit: SearchResult, index: number) => (
+      {hits.map((hit, idx) => (
         <SearchResultItem
           key={hit.id}
-          isSelected={index === selectedIndex}
+          isSelected={idx === selectedIndex}
           result={hit}
           onClick={() => {
             if (hit.document?.path) {
               onSelectResult(hit.document.path)
             }
           }}
-          onMouseEnter={() => { onSelectedIndexChange(index) }}
+          onMouseEnter={() => {
+            onSelectedIndexChange(idx)
+          }}
         />
       ))}
     </div>

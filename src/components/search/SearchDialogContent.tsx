@@ -23,8 +23,10 @@ interface SearchDialogContentProps {
 export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [resultCount, setResultCount] = useState(0)
+
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const resultCount = searchResults.length
+
   const [isComposing, setIsComposing] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -66,54 +68,25 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
       return
     }
 
-    // 清理 URL，移除多余的斜杠
-    const cleanUrl = url.replace(/\/+/g, '/')
+    let urlObj: URL | null = null
 
     try {
       // 尝试解析为完整 URL
-      const urlObj = new URL(cleanUrl, window.location.origin)
-
-      // 检查是否为外部链接
-      if (urlObj.origin !== window.location.origin) {
-        // 外部链接在新标签页打开
-        window.open(cleanUrl, '_blank', 'noopener,noreferrer')
-
-        onClose()
-      }
-      else {
-        // 内部链接使用 Next.js 路由进行无刷新跳转
-        const pathname = urlObj.pathname + urlObj.search + urlObj.hash
-        router.push(pathname)
-
-        onClose()
-      }
+      urlObj = new URL(url, window.location.origin)
     }
     catch {
-      // 如果 URL 解析失败，尝试作为相对路径处理
-      if (cleanUrl.startsWith('/docs/')) {
-        // 已经包含 /docs 前缀的路径
-        router.push(cleanUrl)
-        onClose()
-      }
-      else if (cleanUrl.startsWith('/')) {
-        // 绝对路径但不包含 /docs 前缀
-        router.push(cleanUrl)
-        onClose()
-      }
-      else if (cleanUrl.startsWith('#')) {
-        // 页面内锚点跳转
-        const element = document.getElementById(cleanUrl.slice(1))
+      console.error('Invalid URL:', url)
+    }
 
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-        }
+    if (urlObj) {
+      if (urlObj.origin !== window.location.origin) {
+        window.open(urlObj.toString(), '_blank', 'noopener,noreferrer')
 
         onClose()
       }
       else {
-        // 相对路径，添加 /docs 前缀
-        const docsUrl = `/docs/${cleanUrl.replace(/^\/+/, '')}`
-        router.push(docsUrl)
+        router.push(urlObj.toString())
+
         onClose()
       }
     }
@@ -145,7 +118,6 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
   const handleClearSearch = useEvent(() => {
     setSearchTerm('')
     setSelectedIndex(0)
-    setResultCount(0)
     setSearchResults([])
 
     inputRef.current?.focus()
@@ -195,7 +167,6 @@ export function SearchDialogContent({ onClose }: SearchDialogContentProps) {
           searchTerm={searchTerm}
           selectedIndex={selectedIndex}
           onResultsChange={setSearchResults}
-          onResultsUpdate={setResultCount}
           onSelectResult={handleSelectResult}
           onSelectedIndexChange={setSelectedIndex}
         />
