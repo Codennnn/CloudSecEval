@@ -117,7 +117,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         >
           {children}
 
-          <span className="shrink-0 pr-0.5 pt-0.5">
+          <span className="shrink-0 pr-0.5">
             {isExternal
               ? <LinkIcon link={href} />
               : isHash

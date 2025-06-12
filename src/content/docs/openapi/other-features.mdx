@@ -3,11 +3,11 @@ import swaggerDogsImage from '/public/assets/swagger-dogs.png'
 
 # 其他功能
 
-本页列出了你可能会用到的其他可用功能。
+本页介绍了一些 NestJS Swagger 模块提供的其他实用功能。
 
 ## 全局前缀
 
-如果你希望在通过 `setGlobalPrefix()` 设置路由全局前缀后，某些路由不受该前缀影响，可以使用 `ignoreGlobalPrefix` 选项：
+如果你的应用通过 `setGlobalPrefix()` 设置了全局前缀，但希望某些路由（例如根路径 `/`）忽略该前缀，可以将 `ignoreGlobalPrefix` 选项设置为 `true`：
 
 ```ts
 const document = SwaggerModule.createDocument(app, options, {
@@ -17,7 +17,7 @@ const document = SwaggerModule.createDocument(app, options, {
 
 ## 全局参数
 
-你可以使用 `DocumentBuilder` 为所有路由定义全局参数，示例如下：
+通过 `DocumentBuilder`，可以为所有路由统一添加全局参数。例如：
 
 ```ts
 const config = new DocumentBuilder()
@@ -31,7 +31,7 @@ const config = new DocumentBuilder()
 
 ## 全局响应
 
-你可以使用 `DocumentBuilder` 为所有路由定义全局响应。这对于在整个应用中为所有端点统一设置响应（如错误码 `401 Unauthorized` 或 `500 Internal Server Error`）非常有用。
+你也可以使用 `DocumentBuilder` 为所有路由定义全局响应。例如，你可以为所有端点统一添加 `401 Unauthorized` 或 `500 Internal Server Error` 等错误响应：
 
 ```ts
 const config = new DocumentBuilder()
@@ -45,11 +45,11 @@ const config = new DocumentBuilder()
 
 ## 多规范支持
 
-`SwaggerModule` 提供了支持多规范（Multiple specifications）的方法。换句话说，你可以在不同的端点（endpoint）上，分别展示不同的文档和不同的界面。
+`SwaggerModule` 提供了多规范（Multiple specifications）支持。这意味着你可以在不同的 API 端点（endpoint）上，展示各自独立的 Swagger UI 界面。
 
-要支持多规范，你的应用需要采用模块化（modular approach）方式编写。`createDocument()` 方法的第三个参数 `extraOptions` 是一个对象，其中包含名为 `include` 的属性。`include` 属性的值是一个模块数组。
+要启用此功能，你的应用需要采用模块化设计。具体实现方式是，在调用 `createDocument()` 方法时传入第三个参数 `extraOptions`。该对象中的 `include` 属性接收一个模块数组，用于指定当前 Swagger 规范应包含哪些模块。
 
-你可以按照如下方式配置多规范支持：
+配置多规范的示例如下：
 
 ```ts
 import { NestFactory } from '@nestjs/core'
@@ -64,11 +64,12 @@ async function bootstrap() {
   /**
    * createDocument(application, configurationOptions, extraOptions);
    *
-   * createDocument 方法可以接收一个可选的第三个参数 "extraOptions"，
-   * 该参数是一个包含 "include" 属性的对象，你可以在这里传入一个模块数组，
-   * 用于指定要包含在该 Swagger 规范中的模块。
-   * 例如：CatsModule 和 DogsModule 会分别生成两个独立的 Swagger 规范，
-   * 并通过两个不同的 Swagger UI 端点进行展示。
+   * createDocument 方法可接收可选的第三个参数 `extraOptions`。
+   * 它是一个包含 `include` 属性的对象，通过该属性传入一个模块数组，
+   * 来指定当前 Swagger 规范应包含哪些模块。
+   *
+   * 例如，下面的代码会为 `CatsModule` 和 `DogsModule` 分别生成独立的 Swagger 规范，
+   * 并托管在不同的 UI 端点上。
    */
 
   const options = new DocumentBuilder()
@@ -102,31 +103,31 @@ async function bootstrap() {
 bootstrap()
 ```
 
-现在你可以通过以下命令启动服务器：
+运行以下命令启动服务器：
 
 ```bash
 $ npm run start
 ```
 
-访问 `http://localhost:3000/api/cats`，即可查看 cats 的 Swagger UI：
+访问 `http://localhost:3000/api/cats`，即可查看 Cats API 的 Swagger UI：
 
 <DocImage src={swaggerCatsImage} alt="Swagger Cats" />
 
-同样，`http://localhost:3000/api/dogs` 会展示 dogs 的 Swagger UI：
+同样，`http://localhost:3000/api/dogs` 会展示 Dogs API 的 Swagger UI：
 
 <DocImage src={swaggerDogsImage} alt="Swagger Dogs" />
 
 ## 在 Explorer 栏中使用下拉菜单
 
-要在 Explorer（探索器）栏的下拉菜单中支持多个规范，你需要在 `SwaggerCustomOptions` 中设置 `explorer: true`，并配置 `swaggerOptions.urls`。
+如果希望在 Swagger UI 的 Explorer（探索器）边栏中，通过下拉菜单切换不同的 API 规范，你需要在 `SwaggerCustomOptions` 中将 `explorer` 设为 `true`，并配置 `swaggerOptions.urls` 属性。
 
 <CalloutInfo>
-  请确保 `swaggerOptions.urls` 指向你的 Swagger 文档的 JSON 格式！如需指定 JSON 文档，请在
-  `SwaggerCustomOptions` 中使用
-  `jsonDocumentUrl`。更多设置选项请参见[这里](/openapi/introduction#setup-options)。
+  请确保 `swaggerOptions.urls` 中的地址指向各个规范的 JSON 文件。你可以通过 `SwaggerCustomOptions`
+  中的 `jsonDocumentUrl` 属性来指定 JSON
+  文件的路径。更多设置选项，请参见[相关章节](/openapi/introduction#setup-options)。
 </CalloutInfo>
 
-以下是如何在 Explorer 栏的下拉菜单中设置多个规范的示例：
+下面是在 Explorer 边栏中启用规范切换下拉菜单的示例：
 
 ```ts
 import { NestFactory } from '@nestjs/core'
@@ -212,4 +213,4 @@ async function bootstrap() {
 bootstrap()
 ```
 
-在本示例中，我们设置了一个主 API，以及 Cats 和 Dogs 的独立规范，每个规范都可以通过 Explorer（探索器）栏的下拉菜单访问。
+通过以上配置，应用将拥有一个主 API 文档和两个独立的子规范（Cats API 和 Dogs API），并且可以在 Swagger UI 的 Explorer 边栏中通过下拉菜单进行切换。

@@ -1,22 +1,22 @@
 # 异步本地存储（Async Local Storage）
 
-`AsyncLocalStorage` 是一个 [Node.js API](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage)（基于 `async_hooks` API），它提供了一种在应用程序中传播本地状态的替代方式，无需显式地将其作为函数参数传递。它类似于其他语言中的线程本地存储。
+`AsyncLocalStorage` 是一个 [Node.js API](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage)（基于 `async_hooks` API），它为在应用中传播本地状态提供了一种替代方案，你不再需要通过函数参数来显式传递状态。该机制类似于其他编程语言中的线程本地存储（Thread-Local Storage）。
 
-异步本地存储的核心思想是，我们可以用 `AsyncLocalStorage#run` 方法 _包裹_ 某个函数调用。所有在该包裹调用内被执行的代码，都能访问到同一个 `store`，而这个 `store` 对每个调用链来说都是唯一的。
+异步本地存储的核心思想是，使用 `AsyncLocalStorage#run` 方法来*包裹*一个函数调用。这样，所有在该函数调用内部执行的代码，都能访问到同一个 `store`，并且这个 `store` 对每个调用链都是唯一的。
 
-在 NestJS 的上下文中，这意味着如果我们能在请求的生命周期中找到一个合适的位置，用来包裹后续的请求处理代码，就可以访问和修改仅对该请求可见的状态。这为请求作用域提供者及其部分局限性提供了一种替代方案。
+在 NestJS 的上下文中，这意味着我们可以在请求生命周期的某个恰当位置，使用它来包裹后续的请求处理逻辑。这样，我们便能访问和修改那些仅对当前请求可见的状态。该方法为请求作用域（Request-scoped）提供者及其固有的局限性提供了一种有效的替代方案。
 
-另外，我们也可以仅在系统的某一部分（例如 _事务_ 对象）中使用 ALS 传播上下文，无需在服务之间显式传递，从而提升隔离性和封装性。
+此外，我们也可以只在系统的某个特定部分（例如，处理一个事务对象时）使用异步本地存储来传播上下文，而无需在服务之间显式传递它，从而提高了隔离性和封装性。
 
 ## 自定义实现
 
-NestJS 本身没有为 `AsyncLocalStorage` 提供内置抽象，因此我们以最简单的 HTTP 场景为例，演示如何自行实现，以便更好地理解这一概念：
+NestJS 本身没有为 `AsyncLocalStorage` 提供内置抽象。下面我们以最简单的 HTTP 场景为例，演示如何自行实现，以帮助你更好地理解这个概念：
 
 <CalloutInfo>
-  如需现成的[专用包](/recipes/async-local-storage#nestjs-cls)，请继续阅读下文。
+  如果你想直接使用现成的专用包，请直接跳转到 [NestJS CLS](#nestjs-cls) 章节。
 </CalloutInfo>
 
-1. 首先，在某个共享源文件中创建一个新的 `AsyncLocalStorage` 实例。由于我们使用的是 NestJS，建议将其封装为一个模块，并通过自定义提供者注册。
+1.  首先，在一个共享的源文件中创建一个 `AsyncLocalStorage` 的实例。在 NestJS 中，推荐的做法是将其封装在一个模块中，并通过自定义提供者进行注册。
 
 ```ts filename='als.module.ts'
 @Module({
@@ -33,11 +33,11 @@ export class AlsModule {}
 
 <CalloutInfo>
 
-`AsyncLocalStorage` 需从 `async_hooks` 导入。
+`AsyncLocalStorage` 需要从 `async_hooks` 模块导入。
 
 </CalloutInfo>
 
-2. 由于我们只关注 HTTP 场景，可以通过中间件将 `next` 函数用 `AsyncLocalStorage#run` 包裹。中间件是请求进入的第一站，这样 `store` 就能在所有增强器和后续系统中被访问。
+2.  由于我们当前只关注 HTTP 场景，因此可以通过中间件，用 `AsyncLocalStorage#run` 来包裹 `next` 函数。中间件是处理入站请求的第一个环节，这可以确保 `store` 在所有后续处理逻辑（如增强器、守卫、拦截器等）中都可用。
 
 ```ts filename='app.module.ts'
 @Module({
@@ -47,8 +47,8 @@ export class AlsModule {}
 })
 export class AppModule implements NestModule {
   constructor(
-    // 在模块构造函数中注入 AsyncLocalStorage 实例
-    private readonly als: AsyncLocalStorage
+    // 注入 AsyncLocalStorage 实例
+    private readonly als: AsyncLocalStorage<any>
   ) {}
 
   configure(consumer: MiddlewareConsumer) {
@@ -67,14 +67,14 @@ export class AppModule implements NestModule {
 }
 ```
 
-3. 现在，在请求的生命周期内的任意位置，我们都可以访问本地 store 实例。
+3.  现在，在请求处理生命周期的任何地方，我们都可以访问到这个本地 `store` 实例了。
 
 ```ts filename='cats.service.ts'
 @Injectable()
 export class CatsService {
   constructor(
-    // 可以注入 ALS 实例
-    private readonly als: AsyncLocalStorage,
+    // 注入 AsyncLocalStorage 实例
+    private readonly als: AsyncLocalStorage<any>,
     private readonly catsRepository: CatsRepository
   ) {}
 
@@ -86,36 +86,36 @@ export class CatsService {
 }
 ```
 
-4. 就这样，我们无需注入整个 `REQUEST` 对象，也能在请求间共享相关状态。
+4.  通过这种方式，我们无需注入完整的 `REQUEST` 对象，便能在同一个请求的生命周期内共享状态。
 
 <CalloutInfo type="warning">
-  请注意，虽然该技术适用于许多场景，但它本质上会让代码流程变得隐式（即创建了隐式上下文），因此请谨慎使用，尤其要避免创建上下文“[上帝对象](https://en.wikipedia.org/wiki/God_object)”。
+  尽管这项技术在许多场景下都很有用，但它本质上是通过创建隐式上下文来工作的，这可能会让数据流变得不那么明确。因此，请谨慎使用此模式，尤其要避免创建"无所不包"的上下文"[上帝对象](https://en.wikipedia.org/wiki/God_object)"。
 </CalloutInfo>
 
-# NestJS CLS
+## NestJS CLS
 
-[nestjs-cls](https://github.com/Papooch/nestjs-cls) 包为直接使用 `AsyncLocalStorage`（CLS 是 continuation-local storage 的缩写）带来了多项开发体验（DX）提升。它将实现细节封装为 `ClsModule`，为不同传输层（不仅限于 HTTP）提供多种初始化 `store` 的方式，并且支持强类型。
+[`nestjs-cls`](https://github.com/Papooch/nestjs-cls) 包在直接使用 `AsyncLocalStorage` 的基础上，提供了多项改善开发者体验（DX）的功能（CLS 是 `continuation-local storage` 的缩写）。它将实现细节封装在 `ClsModule` 中，为不同的传输层（不仅限于 HTTP）提供了多种初始化 `store` 的方式，并且支持强类型。
 
-随后，可以通过可注入的 `ClsService` 访问 store，或者通过[代理提供者（Proxy Providers）](https://www.npmjs.com/package/nestjs-cls#proxy-providers) 完全将其从业务逻辑中抽象出来。
+随后，你可以通过可注入的 `ClsService` 访问 store，或者通过[代理提供者（Proxy Providers）](https://www.npmjs.com/package/nestjs-cls#proxy-providers)将其从业务逻辑中完全抽象出来。
 
 <CalloutInfo>
-  `nestjs-cls` 是第三方包，并非由 NestJS
-  核心团队维护。如遇到问题，请在[对应仓库](https://github.com/Papooch/nestjs-cls/issues)提交 issue。
+  `nestjs-cls` 是一个第三方包，并非由 NestJS 核心团队维护。如果你遇到任何问题，请在[该项目的 GitHub
+  仓库](https://github.com/Papooch/nestjs-cls/issues)中提出。
 </CalloutInfo>
 
-## 安装
+### 安装
 
-除了依赖 `@nestjs` 相关库外，它仅使用 Node.js 内置 API。像安装其他包一样安装即可。
+该包除了依赖 `@nestjs` 相关库外，仅使用了 Node.js 的内置 API，因此你可以像安装其他 npm 包一样安装它。
 
 ```bash
 npm i nestjs-cls
 ```
 
-## 使用方法
+### 使用方法
 
-可以用 `nestjs-cls` 实现与[上文](/recipes/async-local-storage#custom-implementation)类似的功能，示例如下：
+我们可以使用 `nestjs-cls` 来实现与[上文](#自定义实现)手动实现类似的功能，示例如下：
 
-1. 在根模块中导入 `ClsModule`。
+1.  在根模块中导入 `ClsModule`。
 
 ```ts filename='app.module.ts'
 @Module({
@@ -140,7 +140,7 @@ npm i nestjs-cls
 export class AppModule {}
 ```
 
-2. 然后可以通过 `ClsService` 访问 store 中的值。
+2.  然后，通过 `ClsService` 访问 store 中的值。
 
 ```ts filename='cats.service.ts'
 @Injectable()
@@ -159,7 +159,7 @@ export class CatsService {
 }
 ```
 
-3. 若希望对 `ClsService` 管理的 store 值进行强类型约束（并获得字符串键的自动补全），可以在注入时为 `ClsService<MyClsStore>` 提供可选类型参数。
+3.  如果你希望对 `ClsService` 所管理的 store 值进行强类型约束（并获得字符串键的自动补全），可以在注入 `ClsService<MyClsStore>` 时提供一个可选的类型参数。
 
 ```ts
 export interface MyClsStore extends ClsStore {
@@ -168,15 +168,15 @@ export interface MyClsStore extends ClsStore {
 ```
 
 <CalloutInfo>
-  该包还可以自动生成请求 ID，并通过 `cls.getId()` 获取，或通过 `cls.get(CLS_REQ)`
+  该包还可以自动生成请求 ID，你可以通过 `cls.getId()` 获取它，或通过 `cls.get(CLS_REQ)`
   获取完整的请求对象。
 </CalloutInfo>
 
-## 测试
+### 测试
 
-由于 `ClsService` 只是另一个可注入的提供者，因此在单元测试中可以完全 mock 掉。
+由于 `ClsService` 只是一个普通的可注入提供者，因此在单元测试中可以轻松地将其 mock 掉。
 
-但在某些集成测试中，可能仍希望使用真实的 `ClsService` 实现。这种情况下，需要用 `ClsService#run` 或 `ClsService#runWith` 包裹上下文相关的代码。
+但在某些集成测试中，你可能仍希望使用 `ClsService` 的真实实现。在这种情况下，你需要用 `ClsService#run` 或 `ClsService#runWith` 方法来包裹那些依赖上下文的代码。
 
 ```ts
 describe('CatsService', () => {
@@ -227,6 +227,6 @@ describe('CatsService', () => {
 })
 ```
 
-## 更多信息
+### 更多信息
 
-访问 [NestJS CLS GitHub 页面](https://github.com/Papooch/nestjs-cls) 获取完整 API 文档和更多代码示例。
+访问 [NestJS CLS 的 GitHub 页面](https://github.com/Papooch/nestjs-cls)可以获取完整的 API 文档和更多代码示例。

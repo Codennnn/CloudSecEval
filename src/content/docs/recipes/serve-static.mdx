@@ -1,18 +1,18 @@
 # 静态资源服务
 
-要为单页应用（Single Page Application，SPA）等静态内容提供服务，可以使用 [`@nestjs/serve-static`](https://www.npmjs.com/package/@nestjs/serve-static) 包中的 `ServeStaticModule`。
+如需托管单页应用（Single Page Application, SPA）等静态文件，可使用 `@nestjs/serve-static` 包提供的 `ServeStaticModule`。
 
 ## 安装
 
-首先，需要安装所需的包：
+首先，安装所需的依赖包：
 
 ```bash
 $ npm install --save @nestjs/serve-static
 ```
 
-## 启动配置
+## 模块配置
 
-安装完成后，可以在根模块 `AppModule` 中导入 `ServeStaticModule`，并通过 `forRoot()` 方法传入配置对象进行设置。
+安装完成后，在根模块 `AppModule` 中导入 `ServeStaticModule`，并调用其 `forRoot()` 静态方法来配置模块。
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -33,21 +33,21 @@ import { join } from 'path'
 export class AppModule {}
 ```
 
-完成上述配置后，构建静态网站，并将其内容放置在 `rootPath` 属性指定的位置。
+完成以上配置后，只需将你的静态网站文件（例如，单页应用的构建产物）放置在 `rootPath` 指定的目录中即可。
 
-## 配置说明
+## 配置选项
 
-[ServeStaticModule](https://github.com/nestjs/serve-static) 支持多种选项，可用于自定义其行为。
-你可以设置静态应用的渲染路径、指定排除路径、启用或禁用 Cache-Control 响应头等。完整的选项列表请参见[这里](https://github.com/nestjs/serve-static/blob/master/lib/interfaces/serve-static-options.interface.ts)。
+`ServeStaticModule` 支持多种选项来自定义其行为。
+
+你可以设置渲染路径（`renderPath`）、指定排除路径（`exclude`），或配置 `Cache-Control` 响应头等。完整的选项列表，请参见[官方 `serve-static-options.interface.ts` 定义](https://github.com/nestjs/serve-static/blob/master/lib/interfaces/serve-static-options.interface.ts)。
 
 <CalloutInfo type="warning">
-  静态应用的默认 `renderPath` 为 `*`（所有路径），模块会响应发送 "index.html" 文件。 这使你能够为
-  SPA 创建客户端路由。控制器中指定的路径会回退到服务器端。 你可以通过设置 `serveRoot`、`renderPath`
-  并结合其他选项来更改此行为。 此外，在 Fastify 适配器中实现了 `serveStaticOptions.fallthrough`
-  选项，用于模拟 Express 的 fallthrough 行为。需要将其设置为 `true`，以便在请求不存在的路由时返回
-  `index.html`，而不是 404 错误。
+  默认情况下，模块会将所有请求（`renderPath: '*'`）都指向 `index.html` 文件，从而轻松实现单页应用（SPA）的客户端路由。控制器中定义的路由则会回退（fallback）到服务器端进行处理。你可以通过调整 `serveRoot`、`renderPath` 等选项来修改这一默认行为。
+
+此外，如果你使用的是 Fastify 适配器，可以将 `fallthrough` 选项设置为 `true`，以模拟 Express 的同名行为。启用后，当请求的路由不存在时，服务器将返回 `index.html` 而不是 `404` 错误，这对于 SPA 路由至关重要。
+
 </CalloutInfo>
 
 ## 示例
 
-可用的完整示例见[这里](https://github.com/nestjs/nest/tree/master/sample/24-serve-static)。
+你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/24-serve-static)找到一个完整的可用示例。

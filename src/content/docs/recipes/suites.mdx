@@ -1,32 +1,34 @@
 # Suites（原 Automock）
 
-Suites 是一个主张明确且灵活的测试元框架，旨在提升后端系统的软件测试体验。通过将多种测试工具整合到统一框架中，Suites 简化了可靠测试的创建流程，帮助开发者确保高质量软件的开发。
+Suites 是一个特征鲜明且灵活的测试元框架，旨在优化后端系统的软件测试体验。它将多种测试工具整合到统一的框架中，简化了可靠性测试的创建过程，帮助开发者保障软件质量。
 
 <CalloutInfo>
-  `Suites` 是第三方包，并非由 NestJS
-  核心团队维护。如遇到该库相关问题，请前往[对应仓库](https://github.com/suites-dev/suites)反馈。
+  `Suites` 是一个第三方软件包，并非由 NestJS
+  核心团队维护。如在使用中遇到问题，请前往其[官方仓库](https://github.com/suites-dev/suites)反馈。
 </CalloutInfo>
 
-## 简介
+## 概述
 
-控制反转（Inversion of Control，IoC）是 NestJS 框架中的一项基础原则，使其具备模块化和可测试的架构。虽然 NestJS 提供了内置工具用于创建测试模块（Testing Module），但 Suites 提供了一种替代方案，强调对单元或小型单元组的隔离测试。Suites 使用依赖的虚拟容器（virtual container），自动生成模拟对象（Mock），无需在 IoC（或依赖注入）容器中手动替换每个提供者。这种方式既可以替代，也可以与 NestJS 的 `Test.createTestingModule` 方法配合使用，根据实际需求为单元测试带来更高的灵活性。
+控制反转（Inversion of Control, IoC）是 NestJS 框架的基础性原则，也是其模块化、可测试架构的基石。尽管 NestJS 内置了用于创建测试模块（Testing Module）的工具，但 Suites 提供了一种替代方案，它更侧重于对单个单元或小规模单元簇的隔离测试。
+
+Suites 采用虚拟依赖容器，自动生成模拟对象（Mock），而无需在 IoC 容器中为每个提供者手动创建和替换模拟对象。这种方法可以作为 NestJS `Test.createTestingModule` 的替代或补充，为单元测试提供更大的灵活性。
 
 ## 安装
 
-要在 NestJS 中使用 Suites，请安装以下必要依赖：
+在你的 NestJS 项目中使用 Suites，需要安装以下依赖：
 
 ```bash
 $ npm i -D @suites/unit @suites/di.nestjs @suites/doubles.jest
 ```
 
 <CalloutInfo>
-  `Suites` 同样支持 Vitest 和 Sinon 作为测试替身（test double），可分别使用 `@suites/doubles.vitest`
-  和 `@suites/doubles.sinon`。
+  `Suites` 同样支持 Vitest 和 Sinon 作为测试替身（test double），可分别通过安装
+  `@suites/doubles.vitest` 和 `@suites/doubles.sinon` 来使用。
 </CalloutInfo>
 
 ## 示例与模块设置
 
-假设我们有一个 `CatsService` 的模块设置，其中包含了 `CatsApiService`、`CatsDAL`、`HttpClient` 和 `Logger`。这将作为本示例的基础：
+假设我们有一个 `CatsModule` 模块，其中包含了 `CatsService`、`CatsApiService`、`CatsDAL`、`HttpClient` 和 `Logger`。我们将以此作为示例的基础：
 
 ```ts filename='cats.module.ts'
 import { HttpModule } from '@nestjs/axios'
@@ -40,9 +42,9 @@ import { PrismaModule } from '../prisma.module'
 export class CatsModule {}
 ```
 
-`HttpModule` 和 `PrismaModule` 都向宿主模块导出了提供者。
+`HttpModule` 和 `PrismaModule` 都向其宿主模块导出了提供者。
 
-接下来我们将以隔离的方式测试 `CatsHttpService`。该服务负责从 API 获取猫的数据，并记录日志。
+接下来，我们将以隔离的方式测试 `CatsHttpService`。该服务负责从 API 获取数据并记录日志。
 
 ```ts filename='cats-http.service.ts'
 @Injectable()
@@ -60,7 +62,7 @@ export class CatsHttpService {
 }
 ```
 
-我们希望对 `CatsHttpService` 进行隔离测试，并对其依赖项 `HttpClient` 和 `Logger` 进行模拟（Mock）。Suites 可以通过 `TestBed` 的 `.solitary()` 方法轻松实现这一点。
+我们希望隔离测试 `CatsHttpService`，并模拟其依赖项 `HttpClient` 和 `Logger`。通过 Suites 的 `TestBed.solitary()` 方法可以轻松实现此目标。
 
 ```ts filename='cats-http.service.spec.ts'
 import { TestBed, Mocked } from '@suites/unit'
@@ -95,19 +97,19 @@ describe('Cats Http Service 单元测试', () => {
 })
 ```
 
-在上面的示例中，Suites 会自动为 `CatsHttpService` 的所有依赖项生成模拟对象，通过 `TestBed.solitary()` 方法让测试设置变得更加简单，无需手动为每个依赖项编写模拟。
+在上面的示例中，`TestBed.solitary()` 方法简化了测试的设置过程。Suites 会自动为 `CatsHttpService` 的所有依赖项创建模拟对象，从而省去了手动模拟的繁琐步骤。
 
-- 依赖项自动模拟：Suites 会为被测试单元的所有依赖项自动生成模拟对象。
-- 模拟对象初始行为为空：这些模拟对象默认没有预定义行为，需要在测试中根据需要指定。
-- `unit` 和 `unitRef` 属性：
-  - `unit` 指向被测试类的实际实例，并自动注入了模拟依赖项。
-  - `unitRef` 允许你访问这些被模拟的依赖项。
+- **依赖自动模拟**：Suites 会为被测试单元的所有依赖项自动生成模拟对象。
+- **初始行为为空**：这些模拟对象默认没有任何预定义行为，需要根据测试场景进行配置。
+- **`unit` 和 `unitRef`**：
+  - `unit` 指向被测试类的真实实例，其依赖项已被自动注入为模拟对象。
+  - `unitRef` 用于访问这些被模拟的依赖项。
 
 ## 使用 `TestingModule` 测试 `CatsApiService`
 
-对于 `CatsApiService`，我们需要确保在宿主模块 `CatsModule` 中正确导入并配置了 `HttpModule`。这包括验证 `Axios` 的基础 URL（以及其他配置项）是否设置正确。
+对于 `CatsApiService`，我们需要确保 `HttpModule` 在宿主模块 `CatsModule` 中已正确导入和配置。这包括验证 `Axios` 的基础 URL（Base URL）等配置项是否设置正确。
 
-在本例中，我们不使用 Suites，而是使用 Nest 的 `TestingModule` 来测试 `HttpModule` 的实际配置。我们将利用 `nock` 来模拟 HTTP 请求，而不是在本场景下模拟 `HttpClient`。
+在此场景下，我们将不使用 Suites，而是采用 Nest 原生的 `TestingModule` 来测试 `HttpModule` 的真实配置。同时，我们会使用 `nock` 来模拟 HTTP 请求，而不是模拟 `HttpClient` 本身。
 
 ```ts filename='cats-api.service.ts'
 import { HttpClient } from '@nestjs/axios'
@@ -123,7 +125,7 @@ export class CatsApiService {
 }
 ```
 
-我们需要使用真实（未被模拟）的 `HttpClient` 来测试 `CatsApiService`，以确保依赖注入和 `Axios`（http）的配置是正确的。这涉及导入 `CatsModule` 并使用 `nock` 进行 HTTP 请求模拟。
+为了确保依赖注入和 `Axios` (http) 的配置无误，我们需要使用真实的 `HttpClient` 来测试 `CatsApiService`。这需要导入 `CatsModule` 并结合 `nock` 进行 HTTP 请求模拟。
 
 ```ts filename='cats-api.service.integration.test.ts'
 import { Test } from '@nestjs/testing'
@@ -157,9 +159,9 @@ describe('Cats Api Service 集成测试', () => {
 })
 ```
 
-## Sociable Testing 示例
+## 社交型测试（Sociable Testing）示例
 
-接下来，我们来测试 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`。我们将对 `CatsApiService` 进行模拟（mock），并暴露 `CatsDAL`。
+接下来，我们将测试 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`。在测试中，我们将模拟 `CatsApiService`，并保留 `CatsDAL` 的真实实现（即"暴露"它）。
 
 ```ts filename='cats.dal.ts'
 import { PrismaClient } from '@prisma/client'
@@ -174,7 +176,7 @@ export class CatsDAL {
 }
 ```
 
-接下来是 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`：
+`CatsService` 的实现如下，它依赖于 `CatsApiService` 和 `CatsDAL`：
 
 ```ts filename='cats.service.ts'
 @Injectable()
@@ -191,19 +193,19 @@ export class CatsService {
 }
 ```
 
-现在，我们使用 Suites 进行友好测试，来测试 `CatsService`：
+现在，我们使用 Suites 进行社交型测试，来检验 `CatsService` 的行为：
 
 ```ts filename='cats.service.spec.ts'
 import { TestBed, Mocked } from '@suites/unit'
 import { PrismaClient } from '@prisma/client'
 
-describe('Cats Service Sociable Unit Test', () => {
+describe('Cats Service 社交型单元测试', () => {
   let catsService: CatsService
   let prisma: Mocked<PrismaClient>
   let catsApiService: Mocked<CatsApiService>
 
   beforeAll(async () => {
-    // 友好测试环境搭建，暴露 CatsDAL 并模拟 CatsApiService
+    // 搭建社交型测试环境，暴露 CatsDAL 并模拟 CatsApiService
     const { unit, unitRef } = await TestBed.sociable(CatsService)
       .expose(CatsDAL)
       .mock(CatsApiService)
@@ -214,7 +216,7 @@ describe('Cats Service Sociable Unit Test', () => {
     prisma = unitRef.get(PrismaClient)
   })
 
-  it('应根据 id 获取猫并保存', async () => {
+  it('应根据 id 获取并保存猫的信息', async () => {
     const catFixture: Cat = { id: 1, name: 'Catty' }
     prisma.cat.create.mockResolvedValue(catFixture)
 
@@ -226,36 +228,36 @@ describe('Cats Service Sociable Unit Test', () => {
 })
 ```
 
-在本示例中，我们使用 `.sociable()` 方法来搭建测试环境。通过 `.expose()` 方法允许与 `CatsDAL` 进行真实交互，同时使用 `.mock()` 方法对 `CatsApiService` 进行模拟。`.final()` 方法为 `CatsApiService` 设定固定行为，确保测试结果的一致性。
+在本例中，我们使用 `.sociable()` 方法构建测试环境。通过 `.expose()` 保留了与 `CatsDAL` 的真实交互，同时使用 `.mock()` 模拟了 `CatsApiService`。`.final()` 方法则为 `CatsApiService` 的模拟对象设定了固定的行为，以确保测试结果的一致性。
 
-这种方式强调对 `CatsService` 进行测试时，能够与 `CatsDAL` 真实交互（涉及对 Prisma 的操作）。Suites 会直接使用 `CatsDAL`，而仅对其依赖（如 Prisma）进行模拟。
+这种方法的核心在于，测试 `CatsService` 时能够与 `CatsDAL` 进行真实交互（其中涉及 Prisma 操作）。Suites 会直接使用 `CatsDAL` 的真实实现，而仅模拟其更深层次的依赖（如 `PrismaClient`）。
 
-需要注意的是，这种方式**仅用于验证行为**，与加载完整测试模块不同。友好测试适用于在隔离直接依赖的情况下，验证单元的行为，尤其适合关注单元行为和交互的场景。
+值得注意的是，这种方式**仅用于验证单元行为**，与加载完整的测试模块不同。社交型测试适用于在隔离直接依赖项的同时，验证单元自身及其协作行为的场景。
 
 ## 集成测试与数据库
 
-对于 `CatsDAL`，可以选择使用真实数据库（如 SQLite 或 PostgreSQL，例如通过 Docker Compose）进行测试。但在本例中，我们将对 `Prisma` 进行模拟（Mock），重点关注“社交型测试”（Sociable Testing）。之所以模拟 `Prisma`，是为了避免 I/O 操作，将注意力集中在 `CatsService` 的行为本身。当然，你也可以选择进行包含真实 I/O 操作和实际数据库的测试。
+对于 `CatsDAL`，虽然可以选择连接真实数据库（如通过 Docker Compose 启动的 PostgreSQL 或 SQLite）进行测试，但在本例中，我们选择模拟 `Prisma`。这样做的目的是将测试焦点集中在 `CatsService` 的行为上，避免因 I/O 操作带来的复杂性。当然，在实际项目中，进行包含真实 I/O 和数据库交互的测试也是一种有效的策略。
 
-## 社交型单元测试、集成测试与模拟（Mock）
+## 社交型单元测试、集成测试与模拟
 
-- 社交型单元测试：关注单元之间的交互和行为，同时对其更深层的依赖进行模拟。在本例中，我们模拟了 `Prisma` 并暴露了 `CatsDAL`。
+- **社交型单元测试**：关注单元之间的交互与协作，同时模拟其更深层次的依赖。例如，在本例中，我们暴露了 `CatsDAL`，但模拟了 `PrismaClient`。
 
-- 集成测试：涉及真实的 I/O 操作和完整配置的依赖注入环境。测试 `CatsApiService` 结合 `HttpModule` 和 `nock` 就属于集成测试，因为它验证了 `HttpClient` 的真实配置和交互。在这种场景下，我们会使用 Nest 的 `测试模块（TestingModule）` 加载实际的模块配置。
+- **集成测试**：涉及真实的 I/O 操作和完整配置的依赖注入环境。例如，结合 `HttpModule` 和 `nock` 测试 `CatsApiService` 就属于集成测试，因为它验证了 `HttpClient` 的真实配置和网络交互。在此类场景下，我们通常使用 Nest 的 `TestingModule` 来加载实际的模块配置。
 
-**使用模拟（Mock）时需谨慎。**一定要对 I/O 操作和依赖注入配置进行测试（尤其是涉及 HTTP 或数据库交互时）。在通过集成测试验证这些组件后，可以放心地在社交型单元测试中对他们进行模拟，从而专注于行为和交互。社交型测试主要用于验证单元在脱离直接依赖的情况下的行为，而集成测试则确保整体系统配置和 I/O 操作的正确性。
+**应谨慎使用模拟（Mock）。**对 I/O 操作和依赖注入配置的验证至关重要，尤其是在涉及 HTTP 或数据库交互时。在通过集成测试充分验证了这些组件的可靠性后，便可以在社交型单元测试中放心地模拟它们，从而更专注于业务逻辑和单元交互的验证。
 
-## 测试 IoC 容器注册情况
+## 测试 IoC 容器注册
 
-验证依赖注入容器配置是否正确非常重要，这可以防止运行时出现错误。包括确保所有提供者、服务和模块都已正确注册和注入。测试依赖注入容器的配置有助于及早发现配置错误，避免仅在运行时才暴露问题。
+验证依赖注入（IoC）容器的配置是否正确至关重要，这能有效防止运行时错误。这包括确保所有提供者、服务和模块都已正确注册和注入。
 
-为了确认 IoC 容器配置无误，我们可以编写一个集成测试，加载实际的模块配置，并验证所有提供者都已正确注册和注入。
+为了确保 IoC 容器配置无误，我们可以编写一个集成测试来加载真实的模块配置，并验证其中的提供者是否都能被正确解析。
 
 ```ts
 import { Test, TestingModule } from '@nestjs/testing'
 import { CatsModule } from './cats.module'
 import { CatsService } from './cats.service'
 
-describe('Cats Module Integration Test', () => {
+describe('CatsModule 集成测试', () => {
   let moduleRef: TestingModule
 
   beforeAll(async () => {
@@ -264,41 +266,41 @@ describe('Cats Module Integration Test', () => {
     }).compile()
   })
 
-  it('should resolve exported providers from the ioc container', () => {
+  it('应能从 IoC 容器中解析出导出的提供者', () => {
     const catsService = moduleRef.get(CatsService)
     expect(catsService).toBeDefined()
   })
 })
 ```
 
-## 孤立型、社交型、集成与端到端（E2E）测试的对比
+## 孤立型、社交型、集成与端到端（E2E）测试对比
 
-## 独立单元测试
+### 孤立型单元测试 (Solitary Unit Testing)
 
-- **关注点**：在完全隔离的环境下测试单个单元（类）。
+- **关注点**：在完全隔离的环境中测试单个单元（类）。
 - **适用场景**：测试 `CatsHttpService`。
-- **使用工具**：测试套件的 `TestBed.solitary()` 方法。
-- **示例**：通过模拟（Mock）`HttpClient`，测试 `CatsHttpService`。
+- **工具**：Suites 的 `TestBed.solitary()`。
+- **示例**：通过模拟 `HttpClient` 来测试 `CatsHttpService`。
 
-## 交互单元测试
+### 社交型单元测试 (Sociable Unit Testing)
 
-- **关注点**：在模拟更深层依赖的同时，验证各单元之间的交互。
-- **适用场景**：测试 `CatsService`，并模拟 `CatsApiService`，暴露 `CatsDAL`。
-- **使用工具**：测试套件的 `TestBed.sociable()` 方法。
-- **示例**：通过模拟 `Prisma`，测试 `CatsService`。
+- **关注点**：在模拟深层依赖的同时，验证单元间的协作。
+- **适用场景**：测试 `CatsService`，模拟 `CatsApiService` 并暴露 `CatsDAL`。
+- **工具**：Suites 的 `TestBed.sociable()`。
+- **示例**：通过模拟 `PrismaClient` 来测试 `CatsService` 与 `CatsDAL` 的协作。
 
-## 集成测试
+### 集成测试 (Integration Testing)
 
-- **关注点**：涉及真实的 I/O 操作和完整配置的模块（依赖注入容器）。
-- **适用场景**：结合 `HttpModule` 和 `nock` 测试 `CatsApiService`。
-- **使用工具**：Nest 的 `TestingModule`。
-- **示例**：测试 `HttpClient` 的真实配置与交互。
+- **关注点**：验证包含真实 I/O 操作和完整模块配置（依赖注入容器）的组件。
+- **适用场景**：结合 `HttpModule` 与 `nock` 测试 `CatsApiService`。
+- **工具**：Nest 的 `TestingModule`。
+- **示例**：测试 `HttpClient` 的真实配置与外部 API 的交互。
 
-## 端到端测试（E2E 测试）
+### 端到端测试 (E2E Testing)
 
-- **关注点**：在更高聚合层级下，覆盖类和模块之间的交互。
-- **适用场景**：从最终用户视角测试系统的完整行为。
-- **使用工具**：Nest 的 `TestingModule`、`supertest`。
-- **示例**：使用 `supertest` 模拟 HTTP 请求，测试 `CatsModule`。
+- **关注点**：在更高的聚合层级上，覆盖多个类和模块的完整交互流程。
+- **适用场景**：从最终用户的视角测试系统的完整行为。
+- **工具**：Nest 的 `TestingModule` 与 `supertest`。
+- **示例**：使用 `supertest` 模拟 HTTP 请求，测试 `CatsModule` 提供的 API 端点。
 
-如需了解端到端测试的详细设置与运行方法，请参阅 [NestJS 官方测试指南](/fundamentals/testing#end-to-end-testing)。
+如需了解端到端测试的详细设置与实践，请参阅[官方文档：端到端测试](/fundamentals/testing#end-to-end-testing)。
