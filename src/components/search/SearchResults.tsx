@@ -1,4 +1,5 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 import { useSearch } from '@oramacloud/react-client'
 import { FileTextIcon, SearchIcon } from 'lucide-react'
@@ -8,7 +9,8 @@ import {
   calculateRelevanceScore,
   generateCacheKey,
   highlightSearchTerm,
-  SearchCache } from '~/lib/search-utils'
+  SearchCache,
+} from '~/lib/search-utils'
 import { SearchResult } from '~/types/doc'
 
 import { SearchResultItem } from './SearchResultItem'
@@ -128,9 +130,9 @@ export function SearchResults(props: SearchResultsProps) {
   }, [hits, onResultsChange])
 
   // 高亮关键词的工具函数
-  const highlightText = useCallback((text: string, searchTerm: string) => {
+  const highlightText = useEvent((text: string, searchTerm: string) => {
     return highlightSearchTerm(text, searchTerm)
-  }, [])
+  })
 
   if (!searchTerm.trim()) {
     return (

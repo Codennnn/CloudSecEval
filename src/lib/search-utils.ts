@@ -1,7 +1,6 @@
 import type { SearchResult } from '~/types/doc'
 
-// 缓存值接口定义
-export interface CacheValue {
+interface CacheValue {
   results: SearchResult[]
   timestamp: number
   query: string
@@ -83,23 +82,6 @@ export function formatDocumentPath(path: string): string {
   }
 
   return path.replace(/^\//, '').replace(/\.mdx?$/, '')
-}
-
-// 截取文本并保持完整性
-export function truncateText(text: string, maxLength: number): string {
-  if (text.length <= maxLength) {
-    return text
-  }
-
-  // 在单词边界处截断
-  const truncated = text.substring(0, maxLength)
-  const lastSpaceIndex = truncated.lastIndexOf(' ')
-
-  if (lastSpaceIndex > maxLength * 0.8) {
-    return truncated.substring(0, lastSpaceIndex) + '...'
-  }
-
-  return truncated + '...'
 }
 
 // 计算搜索相关性得分（如果 API 不提供）

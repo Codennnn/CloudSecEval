@@ -1,8 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
-import { OramaClient } from '@oramacloud/client'
+import { type Interaction, OramaClient } from '@oramacloud/client'
 import { BookOpenIcon, LoaderIcon, MessageCircleIcon, RotateCcwIcon, SendIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
@@ -13,40 +14,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog'
+import { Input } from '~/components/ui/input'
+import { SearchDocument } from '~/types/doc'
 
-// 定义消息类型
+const USER_CONTEXT = '用户正在浏览 NestJS 中文文档网站，希望获得关于 NestJS 框架的准确和详细的答案。请用中文回答问题。'
+
 interface Message {
   role: 'user' | 'assistant'
   content: string
 }
 
-// 定义文档类型
-interface Document {
-  title?: string
-  path?: string
-  content?: string
-  section?: string
-}
-
-// 定义来源类型
 interface Source {
-  document: Document
+  document: SearchDocument
 }
 
-// 定义交互类型
-interface Interaction {
-  interactionId: string
-  query: string
-  response: string
-  relatedQueries?: string[] | null
-  sources?: {
-    hits: Source[]
-  } | null
-  loading: boolean
-  aborted: boolean
-}
-
-// 定义答案会话类型
 interface AnswerSession {
   ask: (params: Record<string, unknown>) => Promise<unknown>
   clearSession: () => void
@@ -68,7 +49,7 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const initializeAnswerSession = useCallback(() => {
+  const initializeAnswerSession = useEvent(() => {
     try {
       const orama = new OramaClient({
         endpoint: process.env.NEXT_PUBLIC_ORAMA_ENDPOINT!,
@@ -76,31 +57,35 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
       })
 
       const session = orama.createAnswerSession({
-        userContext: '用户正在浏览 NestJS 中文文档网站，希望获得关于 NestJS 框架的准确和详细的答案。请用中文回答问题。',
+        userContext: USER_CONTEXT,
         inferenceType: 'documentation',
         initialMessages: [],
         events: {
-          onStateChange: (state: unknown) => {
-            // Safely type check and cast the state
+          onStateChange: (state) => {
+            // 安全地进行类型检查并转换状态
             const interactions = Array.isArray(state) ? state as Interaction[] : []
             setInteractions(interactions)
 
             // 从状态中提取消息
-            const allMessages: Message[] = []
-            interactions.forEach((interaction) => {
-              if (interaction?.query) {
-                allMessages.push({ role: 'user', content: interaction.query })
+            const allMessages = interactions.reduce<Message[]>((messages, interaction) => {
+              if (interaction.query) {
+                messages.push({ role: 'user', content: interaction.query })
               }
 
-              if (interaction?.response) {
-                allMessages.push({ role: 'assistant', content: interaction.response })
+              if (interaction.response) {
+                messages.push({ role: 'assistant', content: interaction.response })
               }
-            })
+
+              return messages
+            }, [])
+
             setMessages(allMessages)
           },
+
           onMessageLoading: (loading: boolean) => {
             setIsLoading(loading)
           },
+
           onAnswerAborted: (aborted: boolean) => {
             if (aborted) {
               setIsLoading(false)
@@ -112,9 +97,9 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
       setAnswerSession(session)
     }
     catch (error) {
-      console.error('Failed to initialize answer session:', error)
+      console.error('初始化答案会话失败：', error)
     }
-  }, [])
+  })
 
   // 初始化 Orama Client 和 Answer Session
   useEffect(() => {
@@ -141,7 +126,7 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
     }
   }, [open])
 
-  const handleAskQuestion = useCallback(async () => {
+  const handleAskQuestion = useEvent(async () => {
     if (!currentQuestion.trim() || isLoading || !answerSession) {
       return
     }
@@ -163,25 +148,25 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
       console.error('Failed to ask question:', error)
       setIsLoading(false)
     }
-  }, [currentQuestion, isLoading, answerSession])
+  })
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
+  const handleKeyDown = useEvent((ev: React.KeyboardEvent) => {
+    if (ev.key === 'Enter' && !ev.shiftKey) {
+      ev.preventDefault()
       void handleAskQuestion()
     }
-  }, [handleAskQuestion])
+  })
 
-  const handleClearChat = useCallback(() => {
+  const handleClearChat = useEvent(() => {
     if (answerSession) {
       answerSession.clearSession()
     }
 
     setMessages([])
     setInteractions([])
-  }, [answerSession])
+  })
 
-  const handleRegenerateLast = useCallback(async () => {
+  const handleRegenerateLast = useEvent(async () => {
     if (!answerSession || isLoading) {
       return
     }
@@ -195,9 +180,9 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
       console.error('Failed to regenerate last answer:', error)
       setIsLoading(false)
     }
-  }, [answerSession, isLoading])
+  })
 
-  const handleSourceClick = useCallback((path: string) => {
+  const handleSourceClick = useEvent((path: string) => {
     if (path && path !== '#') {
       onOpenChange(false)
 
@@ -209,9 +194,8 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
         window.open(path, '_blank', 'noopener,noreferrer')
       }
     }
-  }, [onOpenChange])
+  })
 
-  // 建议问题
   const suggestedQuestions = [
     '什么是 NestJS？',
     '如何创建一个控制器？',
@@ -400,9 +384,9 @@ export function AnswerDialog({ open, onOpenChange }: AnswerDialogProps) {
           {/* 输入区域 */}
           <div className="border-t border-border p-4">
             <div className="flex gap-2">
-              <input
+              <Input
                 ref={inputRef}
-                className="flex-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                className="flex-1"
                 disabled={isLoading}
                 placeholder="请输入您的问题..."
                 type="text"

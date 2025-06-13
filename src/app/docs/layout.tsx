@@ -22,27 +22,33 @@ export default function DocsLayout(props: React.PropsWithChildren) {
           <div
             className={
               cn(
-                'flex relative',
-                '@lg:[--content-padding:4rem] @md:[--content-padding:3rem] @sm:[--content-padding:1.5rem]',
+                'flex relative w-full',
+                '@lg:[--content-padding:4rem] @md:[--content-padding:3rem] @sm:[--content-padding:1.5rem] [--content-padding:1rem]',
               )
             }
           >
-            <div className="flex-1 p-[var(--content-padding)]">
+            <div className="flex-1 max-w-full p-[var(--content-padding)]">
               {props.children}
             </div>
 
-            <aside className="sticky top-0 right-3 w-64 h-screen overflow-y-auto py-[var(--content-padding)] pr-[var(--content-padding)] hidden @4xl:block">
-              <TableOfContents />
+            <aside
+              className="w-64 sticky top-0 h-screen overflow-y-auto hidden @4xl:block"
+            >
+              <div
+                className="h-full py-[var(--content-padding)] pr-[var(--content-padding)]"
+              >
+                <TableOfContents />
 
-              <hr className="my-4 bg-border/70" />
+                <hr className="my-4 bg-border/70" />
 
-              <div className="inline-flex flex-col gap-1">
-                <EnglishDocLink />
+                <div className="inline-flex flex-col gap-1">
+                  <EnglishDocLink />
 
-                <ScrollToTop
-                  containerId={SCROLL_CONFIG.CONTAINER_ID}
-                  scrollThreshold={SCROLL_CONFIG.SCROLL_THRESHOLD}
-                />
+                  <ScrollToTop
+                    containerId={SCROLL_CONFIG.CONTAINER_ID}
+                    scrollThreshold={SCROLL_CONFIG.SCROLL_THRESHOLD}
+                  />
+                </div>
               </div>
             </aside>
           </div>
