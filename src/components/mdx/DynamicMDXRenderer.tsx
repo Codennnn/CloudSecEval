@@ -26,12 +26,10 @@ export interface DynamicMDXRendererProps {
   content: string
   /** Custom MDX components (will be merged with default components) */
   components?: Record<string, React.ComponentType<unknown>>
-  /** Show loading state while compiling */
-  showLoading?: boolean
 }
 
 interface CompileResult {
-  Component: React.ComponentType<{ components?: any }>
+  Component: React.ComponentType<{ components?: Record<string, unknown> }>
   error?: Error
 }
 
@@ -44,7 +42,6 @@ interface CompileResult {
 export function DynamicMDXRenderer({
   content,
   components = {},
-  showLoading = true,
 }: DynamicMDXRendererProps) {
   const [compileResult, setCompileResult] = useState<CompileResult | null>(null)
   const [isCompiling, setIsCompiling] = useState(false)
@@ -211,20 +208,6 @@ export function DynamicMDXRenderer({
       isCancelled = true
     }
   }, [content, compileOptions, runOptions])
-
-  // 渲染加载状态
-  if (isCompiling && showLoading) {
-    // if (LoadingComponent) {
-    //   return <LoadingComponent />
-    // }
-
-    // return (
-    //   <div className="flex items-center gap-2 p-4 text-muted-foreground">
-    //     <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-    //     正在渲染内容...
-    //   </div>
-    // )
-  }
 
   // 处理错误状态
   if (compileResult?.error) {

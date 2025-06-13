@@ -20,9 +20,12 @@ interface ClientCodeBlockProps {
 
 export function ClientCodeBlock(props: ClientCodeBlockProps) {
   const { code, lang, filename, showLineNumbers } = props
-  const [htmlOutput, setHtmlOutput] = useState<string>('')
+
+  const [htmlOutput, setHtmlOutput] = useState('')
+
   const [isLoading, setIsLoading] = useState(true)
   const [showLoadingState, setShowLoadingState] = useState(false)
+
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -36,78 +39,83 @@ export function ClientCodeBlock(props: ClientCodeBlockProps) {
       setHtmlOutput(cachedResult)
       setIsLoading(false)
       setShowLoadingState(false)
-
-      return
     }
-
-    // 清除之前的防抖定时器
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-    }
-
-    // 如果已经有内容，先保持显示旧内容，避免抖动
-    const hasExistingContent = htmlOutput !== ''
-
-    // 延迟显示加载状态，避免快速切换时的抖动
-    const loadingTimer = setTimeout(() => {
-      if (isLoading && !hasExistingContent) {
-        setShowLoadingState(true)
-      }
-    }, 200) // 200ms 延迟
-
-    // 防抖高亮处理
-    debounceTimerRef.current = setTimeout(() => {
-      void (async () => {
-        try {
-          setIsLoading(true)
-
-          const transformers: CodeToHastOptions['transformers'] = [transformerNotationHighlight()]
-
-          if (showLineNumbers) {
-            transformers.push({ name: 'line-numbers' })
-          }
-
-          const out = await codeToHtml(code, {
-            lang,
-            themes: {
-              light: 'github-light',
-              dark: 'github-dark',
-            },
-            transformers,
-          })
-
-          // 缓存结果
-          highlightCache.set(cacheKey, out)
-
-          // 限制缓存大小
-          if (highlightCache.size > 100) {
-            const firstKey = highlightCache.keys().next().value
-
-            if (firstKey) {
-              highlightCache.delete(firstKey)
-            }
-          }
-
-          setHtmlOutput(out)
-          setShowLoadingState(false)
-        }
-        catch (error) {
-          console.warn('代码高亮失败:', error)
-          // 如果高亮失败，使用纯文本
-          setHtmlOutput(`<pre><code>${code}</code></pre>`)
-          setShowLoadingState(false)
-        }
-        finally {
-          setIsLoading(false)
-        }
-      })()
-    }, 100) // 100ms 防抖
-
-    return () => {
-      clearTimeout(loadingTimer)
-
+    else {
+      // 清除之前的防抖定时器
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
+      }
+
+      // 如果已经有内容，先保持显示旧内容，避免抖动
+      const hasExistingContent = htmlOutput !== ''
+
+      // 延迟显示加载状态，避免快速切换时的抖动
+      const loadingTimer = setTimeout(() => {
+        if (isLoading && !hasExistingContent) {
+          setShowLoadingState(true)
+        }
+      }, 200) // 200ms 延迟
+
+      // 防抖高亮处理
+      debounceTimerRef.current = setTimeout(() => {
+        void (async () => {
+          try {
+            setIsLoading(true)
+
+            const transformers: CodeToHastOptions['transformers'] = [transformerNotationHighlight()]
+
+            if (showLineNumbers) {
+              transformers.push({ name: 'line-numbers' })
+            }
+
+            const out = await codeToHtml(code, {
+              lang,
+              themes: {
+                light: 'github-light',
+                dark: 'github-dark',
+              },
+              transformers,
+            })
+
+            // 缓存结果
+            highlightCache.set(cacheKey, out)
+
+            // 限制缓存大小
+            if (highlightCache.size > 100) {
+              const firstKey = highlightCache.keys().next().value
+
+              if (firstKey) {
+                highlightCache.delete(firstKey)
+              }
+            }
+
+            setHtmlOutput(out)
+            setShowLoadingState(false)
+          }
+          catch (err) {
+            console.warn('代码高亮失败:', err)
+
+            // 如果高亮失败，使用纯文本
+            setHtmlOutput(`
+              <pre>
+                <code>${code}</code>
+              </pre>
+            `)
+
+            setShowLoadingState(false)
+          }
+          finally {
+            setIsLoading(false)
+          }
+        })()
+      }, 100) // 100ms 防抖
+
+      return () => {
+        clearTimeout(loadingTimer)
+
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current)
+        }
       }
     }
   }, [code, lang, showLineNumbers, htmlOutput, isLoading])
@@ -165,22 +173,6 @@ export function ClientCodeBlock(props: ClientCodeBlockProps) {
 
   return (
     <div className="not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block">
-      <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
-        <div className="flex items-center gap-2">
-          <LanguageIcon
-            className="size-5.5"
-            lang={lang}
-          />
-          {filename && <span className="font-medium">{filename}</span>}
-          {/* 微妙的加载指示器 */}
-          {isLoading && (
-            <div className="w-2 h-2 bg-current opacity-50 rounded-full animate-pulse" />
-          )}
-        </div>
-        <div className="ml-auto">
-          <CopyButton text={code} />
-        </div>
-      </div>
       <div
         dangerouslySetInnerHTML={{ __html: htmlOutput }}
       />

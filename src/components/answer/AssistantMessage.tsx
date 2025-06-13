@@ -3,7 +3,7 @@
 import type { Interaction } from '@oramacloud/client'
 import { BookOpenIcon } from 'lucide-react'
 
-import { StreamingMDXRenderer } from '~/components/mdx/StreamingMDXRenderer'
+import { DynamicMDXRenderer } from '~/components/mdx/DynamicMDXRenderer'
 import { SearchDocument } from '~/types/doc'
 
 interface Source {
@@ -40,7 +40,7 @@ function SourcesList(props: SourcesListProps) {
         {sources.map((hit: Source, sourceIdx: number) => (
           <button
             key={sourceIdx}
-            className="block text-xs text-blue-600 hover:underline text-left"
+            className="block text-xs text-blue-500 hover:underline text-left"
             onClick={() => {
               onSourceClick(hit.document.path ?? '#')
             }}
@@ -73,7 +73,7 @@ function RelatedQuestions(props: RelatedQuestionsProps) {
         {questions.map((query: string, queryIdx: number) => (
           <button
             key={queryIdx}
-            className="block text-xs text-blue-600 hover:underline text-left"
+            className="block text-xs text-blue-500 hover:underline text-left"
             onClick={() => {
               onQuestionClick(query)
             }}
@@ -94,10 +94,7 @@ export function AssistantMessage(props: AssistantMessageProps) {
 
   return (
     <div className="text-sm">
-      <StreamingMDXRenderer
-        realtime
-        streamingContent={content}
-      />
+      <DynamicMDXRenderer content={content} />
 
       {/* 显示相关来源 */}
       <SourcesList
