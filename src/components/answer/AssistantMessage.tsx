@@ -1,10 +1,9 @@
 'use client'
 
-import { useMemo } from 'react'
-
 import type { Interaction } from '@oramacloud/client'
 import { BookOpenIcon } from 'lucide-react'
 
+import { StreamingMDXRenderer } from '~/components/mdx/StreamingMDXRenderer'
 import { SearchDocument } from '~/types/doc'
 
 interface Source {
@@ -90,20 +89,25 @@ function RelatedQuestions(props: RelatedQuestionsProps) {
 export function AssistantMessage(props: AssistantMessageProps) {
   const { content, interaction, onSourceClick, onRelatedQuestionClick } = props
 
+  const hits = interaction?.sources?.hits ?? []
+  const relatedQueries = interaction?.relatedQueries ?? []
+
   return (
     <div className="text-sm">
-      {content}
-      {/* <MarkdownRenderer content={content} /> */}
+      <StreamingMDXRenderer
+        realtime
+        streamingContent={content}
+      />
 
       {/* 显示相关来源 */}
       <SourcesList
-        sources={interaction?.sources?.hits || []}
+        sources={hits}
         onSourceClick={onSourceClick}
       />
 
       {/* 显示相关问题 */}
       <RelatedQuestions
-        questions={interaction?.relatedQueries || []}
+        questions={relatedQueries}
         onQuestionClick={onRelatedQuestionClick}
       />
     </div>
