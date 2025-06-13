@@ -1,4 +1,4 @@
-import type { SearchResult } from '~/components/search/SearchResults'
+import type { SearchResult } from '~/types/doc'
 
 // 缓存值接口定义
 export interface CacheValue {
@@ -162,5 +162,5 @@ export function generateSearchSuggestions(term: string): string[] {
     }
   })
 
-  return suggestions.slice(0, 5) // 返回最多5个建议
+  return suggestions.slice(0, 5) // 返回最多 5 个建议
 }

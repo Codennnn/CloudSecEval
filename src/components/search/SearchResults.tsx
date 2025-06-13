@@ -9,22 +9,9 @@ import {
   generateCacheKey,
   highlightSearchTerm,
   SearchCache } from '~/lib/search-utils'
+import { SearchResult } from '~/types/doc'
 
 import { SearchResultItem } from './SearchResultItem'
-
-export interface SearchDocument {
-  path?: string
-  title?: string
-  heading?: string
-  content?: string
-  section?: string
-}
-
-export interface SearchResult {
-  id: string
-  document?: SearchDocument
-  score?: number
-}
 
 interface SearchResultsProps {
   searchTerm: string

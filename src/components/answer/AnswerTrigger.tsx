@@ -1,14 +1,14 @@
 'use client'
 
-import { SearchIcon } from 'lucide-react'
+import { MessageCircleIcon } from 'lucide-react'
 
 import { ShortcutKey } from '~/components/shortcut/ShortcutKey'
 
-interface SearchTriggerProps {
+interface AnswerTriggerProps {
   onTriggerOpen?: () => void
 }
 
-export function SearchTrigger(props: SearchTriggerProps) {
+export function AnswerTrigger(props: AnswerTriggerProps) {
   const { onTriggerOpen } = props
 
   return (
@@ -19,15 +19,15 @@ export function SearchTrigger(props: SearchTriggerProps) {
       }}
     >
       <div className="flex items-center shrink-0 justify-center">
-        <SearchIcon className="size-3.5" />
+        <MessageCircleIcon className="size-3.5" />
       </div>
 
-      <span className="flex-1 text-xs text-left">搜索文档...</span>
+      <span className="flex-1 text-xs text-left">AI 问答助手</span>
 
       <ShortcutKey
         enableListener
         useModifier
-        mainKey="k"
+        mainKey="i"
         onShortcut={() => {
           onTriggerOpen?.()
         }}

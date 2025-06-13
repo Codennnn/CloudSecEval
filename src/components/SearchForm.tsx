@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { AnswerDialog } from '~/components/answer/AnswerDialog'
+import { AnswerTrigger } from '~/components/answer/AnswerTrigger'
 import { SearchDialog } from '~/components/search/SearchDialog'
 import { SearchTrigger } from '~/components/search/SearchTrigger'
 import {
@@ -11,14 +13,21 @@ import {
 
 export function SearchForm() {
   const [searchOpen, setSearchOpen] = useState(false)
+  const [answerOpen, setAnswerOpen] = useState(false)
 
   return (
     <div>
       <SidebarGroup className="py-0">
-        <SidebarGroupContent className="relative">
+        <SidebarGroupContent className="relative space-y-2">
           <SearchTrigger
             onTriggerOpen={() => {
               setSearchOpen(true)
+            }}
+          />
+
+          <AnswerTrigger
+            onTriggerOpen={() => {
+              setAnswerOpen(true)
             }}
           />
         </SidebarGroupContent>
@@ -27,6 +36,11 @@ export function SearchForm() {
       <SearchDialog
         open={searchOpen}
         onOpenChange={setSearchOpen}
+      />
+
+      <AnswerDialog
+        open={answerOpen}
+        onOpenChange={setAnswerOpen}
       />
     </div>
   )

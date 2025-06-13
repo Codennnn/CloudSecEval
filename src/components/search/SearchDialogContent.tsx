@@ -13,8 +13,8 @@ import {
 } from '~/components/ui/dialog'
 import { KeyboardKey } from '~/components/ui/kbd'
 import { useSearchHistory } from '~/hooks/useSearchHistory'
+import type { SearchResult } from '~/types/doc'
 
-import type { SearchResult } from './SearchResults'
 import { SearchResults } from './SearchResults'
 
 interface SearchDialogContentProps {
