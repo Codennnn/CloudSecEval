@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { AnswerDialog } from '~/components/answer/AnswerDialog'
+import { AnswerPanel } from '~/components/answer/AnswerPanel'
 import { AnswerTrigger } from '~/components/answer/AnswerTrigger'
 import { SearchDialog } from '~/components/search/SearchDialog'
 import { SearchTrigger } from '~/components/search/SearchTrigger'
@@ -18,18 +18,20 @@ export function SearchForm() {
   return (
     <div>
       <SidebarGroup className="py-0">
-        <SidebarGroupContent className="relative space-y-2">
-          <SearchTrigger
-            onTriggerOpen={() => {
-              setSearchOpen(true)
-            }}
-          />
+        <SidebarGroupContent>
+          <div className="space-y-1.5">
+            <SearchTrigger
+              onTriggerOpen={() => {
+                setSearchOpen(true)
+              }}
+            />
 
-          <AnswerTrigger
-            onTriggerOpen={() => {
-              setAnswerOpen(true)
-            }}
-          />
+            <AnswerTrigger
+              onTriggerOpen={() => {
+                setAnswerOpen(true)
+              }}
+            />
+          </div>
         </SidebarGroupContent>
       </SidebarGroup>
 
@@ -38,10 +40,15 @@ export function SearchForm() {
         onOpenChange={setSearchOpen}
       />
 
-      <AnswerDialog
-        open={answerOpen}
-        onOpenChange={setAnswerOpen}
-      />
+      {/* AI 问答面板 */}
+      {answerOpen && (
+        <div className="fixed inset-y-0 right-0 w-96 bg-background border-l border-border shadow-lg z-50">
+          <AnswerPanel
+            isVisible={answerOpen}
+            onClose={() => { setAnswerOpen(false) }}
+          />
+        </div>
+      )}
     </div>
   )
 }

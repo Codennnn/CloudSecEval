@@ -34,9 +34,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
             <aside
               className="w-64 sticky top-0 h-screen overflow-y-auto hidden @4xl:block"
             >
-              <div
-                className="h-full py-[var(--content-padding)] pr-[var(--content-padding)]"
-              >
+              <div className="h-full py-[var(--content-padding)] pr-[var(--content-padding)]">
                 <TableOfContents />
 
                 <hr className="my-4 bg-border/70" />

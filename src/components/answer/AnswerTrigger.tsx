@@ -22,7 +22,7 @@ export function AnswerTrigger(props: AnswerTriggerProps) {
         <MessageCircleIcon className="size-3.5" />
       </div>
 
-      <span className="flex-1 text-xs text-left">AI 问答助手</span>
+      <span className="flex-1 text-xs truncate text-left">AI 问答助手</span>
 
       <ShortcutKey
         enableListener

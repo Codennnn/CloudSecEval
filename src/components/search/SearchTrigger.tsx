@@ -22,7 +22,7 @@ export function SearchTrigger(props: SearchTriggerProps) {
         <SearchIcon className="size-3.5" />
       </div>
 
-      <span className="flex-1 text-xs text-left">搜索文档...</span>
+      <span className="flex-1 text-xs truncate text-left">搜索文档...</span>
 
       <ShortcutKey
         enableListener
