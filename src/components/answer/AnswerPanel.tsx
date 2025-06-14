@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { type Interaction, OramaClient } from '@oramacloud/client'
-import { MessageCircleIcon, SendIcon, Trash2Icon, XIcon } from 'lucide-react'
+import { MessageCircleIcon, Trash2Icon, XIcon } from 'lucide-react'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
+import { Textarea } from '~/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 
 import { AssistantMessage } from './AssistantMessage'
@@ -47,7 +47,7 @@ export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
   const [isUserScrolling, setIsUserScrolling] = useState(false)
   const [isNearBottom, setIsNearBottom] = useState(true)
 
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const userScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -384,35 +384,22 @@ export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
       </ScrollGradientContainer>
 
       {/* 输入区域 */}
-      <div className="border-t border-border p-panel">
-        <div className="flex gap-2">
-          <Input
-            ref={inputRef}
-            className="flex-1 text-xs h-8"
-            disabled={isLoading}
-            placeholder={
-              messages.length === 0
-                ? '输入问题开始对话...'
-                : '继续提问...'
-            }
-            type="text"
-            value={currentQuestion}
-            onChange={(ev) => {
-              setCurrentQuestion(ev.target.value)
-            }}
-            onKeyDown={handleKeyDown}
-          />
-
-          <Button
-            className="h-8 w-8 p-0"
-            disabled={!currentQuestion.trim() || isLoading}
-            size="sm"
-            title="发送问题 (Enter)"
-            onClick={() => { handleAskQuestion().catch(console.error) }}
-          >
-            <SendIcon className="size-3" />
-          </Button>
-        </div>
+      <div className="p-panel">
+        <Textarea
+          ref={inputRef}
+          className="text-xs resize-none bg-muted"
+          disabled={isLoading}
+          placeholder={
+            messages.length === 0
+              ? '输入问题开始对话，按 Enter 发送'
+              : '继续提问...'
+          }
+          value={currentQuestion}
+          onChange={(ev: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setCurrentQuestion(ev.target.value)
+          }}
+          onKeyDown={handleKeyDown}
+        />
       </div>
     </div>
   )
