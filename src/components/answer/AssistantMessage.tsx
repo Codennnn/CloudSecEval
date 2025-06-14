@@ -1,9 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import type { Interaction } from '@oramacloud/client'
 import { BookOpenIcon } from 'lucide-react'
 
-import { DynamicMDXRenderer } from '~/components/mdx/DynamicMDXRenderer'
+import { MDXRenderer } from '~/components/mdx/MDXRenderer'
+import { Prose } from '~/components/ui/prose'
 import { SearchDocument } from '~/types/doc'
 
 interface Source {
@@ -13,18 +15,16 @@ interface Source {
 interface AssistantMessageProps {
   content: string
   interaction?: Interaction
-  onSourceClick: (path: string) => void
   onRelatedQuestionClick: (question: string) => void
 }
 
 // 相关来源组件
 interface SourcesListProps {
   sources: Source[]
-  onSourceClick: (path: string) => void
 }
 
 function SourcesList(props: SourcesListProps) {
-  const { sources, onSourceClick } = props
+  const { sources } = props
 
   if (sources.length === 0) {
     return null
@@ -38,15 +38,13 @@ function SourcesList(props: SourcesListProps) {
       </div>
       <div className="space-y-0.5">
         {sources.map((hit: Source, sourceIdx: number) => (
-          <button
+          <Link
             key={sourceIdx}
             className="block text-xs text-blue-500 hover:underline text-left"
-            onClick={() => {
-              onSourceClick(hit.document.path ?? '#')
-            }}
+            href={hit.document.path ?? '#'}
           >
             {hit.document.title}
-          </button>
+          </Link>
         ))}
       </div>
     </div>
@@ -87,19 +85,18 @@ function RelatedQuestions(props: RelatedQuestionsProps) {
 }
 
 export function AssistantMessage(props: AssistantMessageProps) {
-  const { content, interaction, onSourceClick, onRelatedQuestionClick } = props
+  const { content, interaction, onRelatedQuestionClick } = props
 
   const hits = interaction?.sources?.hits ?? []
   const relatedQueries = interaction?.relatedQueries ?? []
 
   return (
-    <div className="text-sm">
-      <DynamicMDXRenderer content={content} />
+    <Prose className="prose-sm">
+      <MDXRenderer content={content} />
 
       {/* 显示相关来源 */}
       <SourcesList
         sources={hits}
-        onSourceClick={onSourceClick}
       />
 
       {/* 显示相关问题 */}
@@ -107,6 +104,6 @@ export function AssistantMessage(props: AssistantMessageProps) {
         questions={relatedQueries}
         onQuestionClick={onRelatedQuestionClick}
       />
-    </div>
+    </Prose>
   )
 }

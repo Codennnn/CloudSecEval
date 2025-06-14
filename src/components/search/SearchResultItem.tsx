@@ -4,8 +4,7 @@ import { BookOpenIcon, FileTextIcon, MapPinIcon } from 'lucide-react'
 
 import { formatDocumentPath } from '~/lib/search-utils'
 import { cn } from '~/lib/utils'
-
-import type { SearchResult } from './SearchResults'
+import type { SearchResult } from '~/types/doc'
 
 interface SearchResultItemProps {
   result: SearchResult

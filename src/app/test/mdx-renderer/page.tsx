@@ -1,9 +1,9 @@
-import { DynamicMDXRendererDemo } from '~/components/mdx/DynamicMDXRendererDemo'
+import { MDXRendererDemo } from '~/components/mdx/MDXRendererDemo'
 
 export default function MDXRendererTestPage() {
   return (
     <main className="min-h-screen bg-background">
-      <DynamicMDXRendererDemo />
+      <MDXRendererDemo />
     </main>
   )
 }

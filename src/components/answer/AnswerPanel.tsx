@@ -148,34 +148,26 @@ export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
   })
 
   const handleRegenerateLast = useEvent(async () => {
-    if (!answerSession || isLoading) {
-      return
-    }
+    if (answerSession) {
+      try {
+        setIsLoading(true)
 
-    try {
-      setIsLoading(true)
-      await answerSession.regenerateLast({ stream: true })
-    }
-    catch (error) {
-      console.error('Failed to regenerate last answer:', error)
-      setIsLoading(false)
-    }
-  })
+        handleClearChat()
 
-  const handleSourceClick = useEvent((path: string) => {
-    if (path && path !== '#') {
-      // 在侧边栏模式下，不需要关闭对话框，直接导航
-      if (path.startsWith('/')) {
-        window.location.href = path
+        await answerSession.regenerateLast({ stream: true })
       }
-      else {
-        window.open(path, '_blank', 'noopener,noreferrer')
+      catch (err) {
+        console.error('Failed to regenerate last answer:', err)
+      }
+      finally {
+        setIsLoading(false)
       }
     }
   })
 
   const handleRelatedQuestionClick = useEvent((query: string) => {
     setCurrentQuestion(query)
+
     setTimeout(() => {
       void handleAskQuestion()
     }, 100)
@@ -262,7 +254,6 @@ export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
                       content={message.content}
                       interaction={currentInteraction}
                       onRelatedQuestionClick={handleRelatedQuestionClick}
-                      onSourceClick={handleSourceClick}
                     />
                   )
                 })}
@@ -284,8 +275,8 @@ export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
             placeholder="输入问题..."
             type="text"
             value={currentQuestion}
-            onChange={(e) => {
-              setCurrentQuestion(e.target.value)
+            onChange={(ev) => {
+              setCurrentQuestion(ev.target.value)
             }}
             onKeyDown={handleKeyDown}
           />
@@ -297,10 +288,6 @@ export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
           >
             <SendIcon className="size-3" />
           </Button>
-        </div>
-
-        <div className="text-xs text-muted-foreground mt-1 text-center">
-          基于 NestJS 官方文档
         </div>
       </div>
     </div>

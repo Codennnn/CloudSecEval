@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { MessageCircleIcon } from 'lucide-react'
+import { MessageCircleIcon, MessageCircleQuestionIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 
@@ -41,6 +41,8 @@ const suggestedQuestions = [
   'NestJS 支持哪些主流数据库？',
 ]
 
+// ... existing code ...
+
 export function EmptyState(props: EmptyStateProps) {
   const { onQuestionClick } = props
 
@@ -50,33 +52,48 @@ export function EmptyState(props: EmptyStateProps) {
 
   return (
     <div className="p-panel h-full flex flex-col justify-center">
+      {/* 增强的头部区域 */}
       <div className="flex flex-col items-center p-5">
-        <MessageCircleIcon className="size-8 mb-2 text-muted-foreground mx-auto" />
+        {/* 更大的图标和渐变效果 */}
+        <div className="relative mb-4">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl" />
+          <MessageCircleIcon className="size-12 text-blue-500 relative z-10" />
+        </div>
 
-        <div className="text-sm font-medium mb-1">AI 助手</div>
+        <div className="text-lg font-semibold mb-2">NestJS AI 助手</div>
 
-        <div className="text-xs text-muted-foreground mb-4">
-          询问任何关于 NestJS 的问题
+        <div className="text-sm text-muted-foreground mb-6 text-center max-w-xs">
+          基于官方文档，为你提供准确的 NestJS 开发指导
         </div>
       </div>
 
-      {/* 建议问题 */}
-      <div className="space-y-2">
-        <div className="text-xs font-medium text-muted-foreground">快速开始：</div>
+      {/* 优化的建议问题区域 */}
+      <div className="space-y-3">
+        <div className="text-sm font-medium text-center">💡 试试这些问题</div>
 
         {randomSuggestedQuestions.map((question, idx) => (
           <Button
             key={idx}
-            className="w-full"
+            className="w-full justify-start text-left h-auto py-2 px-4 font-normal"
             size="sm"
             variant="outline"
             onClick={() => {
               onQuestionClick?.(question)
             }}
           >
-            <span className="text-xs font-normal text-left">{question}</span>
+            <div className="flex items-center gap-3 w-full">
+              <MessageCircleQuestionIcon className="size-[1.2em] shrink-0" />
+              <div className="truncate">{question}</div>
+            </div>
           </Button>
         ))}
+
+        {/* 更多问题提示 */}
+        <div className="text-center pt-2">
+          <span className="text-xs text-muted-foreground">
+            还有更多问题？直接在下方输入框中提问
+          </span>
+        </div>
       </div>
     </div>
   )
