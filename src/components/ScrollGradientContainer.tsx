@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { cn } from '~/lib/utils'
@@ -11,11 +11,13 @@ interface ScrollGradientContainerProps {
   gradientFromColor?: string
   topGradientClass?: string
   bottomGradientClass?: string
+  onScroll?: (event: React.UIEvent<HTMLDivElement>) => void
 }
 
-export function ScrollGradientContainer(
-  props: React.PropsWithChildren<ScrollGradientContainerProps>,
-) {
+export const ScrollGradientContainer = forwardRef<
+  HTMLDivElement,
+  React.PropsWithChildren<ScrollGradientContainerProps>
+>(function ScrollGradientContainer(props, ref) {
   const {
     children,
     className,
@@ -23,6 +25,7 @@ export function ScrollGradientContainer(
     gradientFromColor = 'from-background',
     topGradientClass,
     bottomGradientClass,
+    onScroll,
   } = props
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -32,7 +35,7 @@ export function ScrollGradientContainer(
     canScrollDown: false,
   })
 
-  const handleScroll = useEvent(() => {
+  const handleInternalScroll = useEvent(() => {
     if (scrollRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
       const canScrollUp = scrollTop > 0
@@ -42,21 +45,28 @@ export function ScrollGradientContainer(
     }
   })
 
+  const handleScroll = useEvent((event: React.UIEvent<HTMLDivElement>) => {
+    handleInternalScroll()
+
+    // 调用外部传入的 onScroll 回调
+    if (onScroll) {
+      onScroll(event)
+    }
+  })
+
   useEffect(() => {
     const scrollElement = scrollRef.current
 
     if (scrollElement) {
       // 初始检查
-      handleScroll()
-
-      scrollElement.addEventListener('scroll', handleScroll)
+      handleInternalScroll()
 
       // 监听容器本身的尺寸变化
-      const resizeObserver = new ResizeObserver(handleScroll)
+      const resizeObserver = new ResizeObserver(handleInternalScroll)
       resizeObserver.observe(scrollElement)
 
       // 监听内容变化（DOM 节点增删、属性变化等）
-      const mutationObserver = new MutationObserver(handleScroll)
+      const mutationObserver = new MutationObserver(handleInternalScroll)
       mutationObserver.observe(scrollElement, {
         childList: true, // 监听子节点的增加和删除
         subtree: true, // 监听所有后代节点
@@ -65,12 +75,21 @@ export function ScrollGradientContainer(
       })
 
       return () => {
-        scrollElement.removeEventListener('scroll', handleScroll)
         resizeObserver.disconnect()
         mutationObserver.disconnect()
       }
     }
-  }, [handleScroll])
+  }, [handleInternalScroll])
+
+  // 将内部的 scrollRef 暴露给外部的 ref
+  useEffect(() => {
+    if (typeof ref === 'function') {
+      ref(scrollRef.current)
+    }
+    else if (ref) {
+      ref.current = scrollRef.current
+    }
+  }, [ref])
 
   return (
     <div className="relative flex-1 overflow-hidden">
@@ -100,9 +119,13 @@ export function ScrollGradientContainer(
         />
       )}
 
-      <div ref={scrollRef} className={cn('overflow-y-auto h-full', className)}>
+      <div
+        ref={scrollRef}
+        className={cn('overflow-y-auto h-full', className)}
+        onScroll={handleScroll}
+      >
         {children}
       </div>
     </div>
   )
-}
+})

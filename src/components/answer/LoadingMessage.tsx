@@ -1,9 +1,17 @@
 import { TextShimmer } from '~/components/TextShimmer'
 
-export function LoadingMessage() {
+interface LoadingMessageProps {
+  isRegenerating?: boolean
+}
+
+export function LoadingMessage(props: LoadingMessageProps) {
+  const { isRegenerating = false } = props
+
   return (
     <div className="text-sm">
-      <TextShimmer>正在思考...</TextShimmer>
+      <TextShimmer>
+        {isRegenerating ? '正在重新生成回答...' : '正在思考...'}
+      </TextShimmer>
     </div>
   )
 }
