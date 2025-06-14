@@ -1,4 +1,4 @@
-import Image, { ImageProps, type StaticImageData } from 'next/image'
+import Image, { type ImageProps, type StaticImageData } from 'next/image'
 
 import { cn } from '~/lib/utils'
 

@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { transformerTwoslash } from '@shikijs/twoslash'
-import { type BundledLanguage } from 'shiki'
-import { codeToHtml } from 'shiki'
+import { type BundledLanguage, codeToHtml } from 'shiki'
 
 import { Button } from '~/components/ui/button'
 

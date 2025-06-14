@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
   // 只对 /assets 路径下的静态资源进行防盗链检查

@@ -6,7 +6,7 @@ import { BookOpenIcon } from 'lucide-react'
 
 import { MDXRenderer } from '~/components/mdx/MDXRenderer'
 import { Prose } from '~/components/ui/prose'
-import { SearchDocument } from '~/types/doc'
+import type { SearchDocument } from '~/types/doc'
 
 interface Source {
   document: SearchDocument

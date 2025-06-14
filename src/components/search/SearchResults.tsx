@@ -11,7 +11,7 @@ import {
   highlightSearchTerm,
   SearchCache,
 } from '~/lib/search-utils'
-import { SearchResult } from '~/types/doc'
+import type { SearchResult } from '~/types/doc'
 
 import { SearchResultItem } from './SearchResultItem'
 
