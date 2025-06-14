@@ -78,16 +78,16 @@ bootstrap()
 
 ## 多平台支持
 
-Nest 致力于成为平台无关的框架。平台无关性让开发者能够创建可复用的逻辑模块，并在多种类型的应用中复用。从技术上讲，只要有适配器，Nest 就能与任何 Node HTTP 框架协作。目前，Nest 原生支持两种 HTTP 平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io/)。你可以根据实际需求选择最合适的方案。
+Nest 致力于成为一个与平台无关的框架，这种平台无关性让开发者能够构建可复用的逻辑模块，并在不同类型的应用中灵活复用。从技术层面看，只要提供相应的适配器，Nest 就可以与任意 Node.js HTTP 框架集成。目前，Nest 原生支持两种主流平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io/)，开发者可以根据实际需求选择最合适的方案。
 
-| 平台               | 描述                                                                                                                                                     |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `platform-express` | Express 是知名的极简 Web 框架，经过大量生产环境验证，社区资源丰富。`@nestjs/platform-express` 包为默认选项。大多数用户无需额外配置即可直接使用 Express。 |
-| `platform-fastify` | Fastify 是高性能、低开销的框架，专注于极致效率和速度。如何使用可参考[这里](/techniques/performance)。                                                    |
+| 平台               | 描述                                                                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `platform-express` | Express 是一个非常流行的轻量级 Web 框架，不仅稳定可靠，而且社区资源丰富，已经在各种生产环境中被广泛使用。Nest 默认使用 `@nestjs/platform-express` 适配器，开箱即用，大多数情况下你无需额外配置即可直接开发。 |
+| `platform-fastify` | Fastify 是一个主打高性能、低开销的 Web 框架，专注于追求极致的执行效率和响应速度。如果你对性能有更高要求，可以考虑使用 Fastify。具体使用方式可以参考这篇[指南](/techniques/performance)。                     |
 
-无论选择哪种平台，都会暴露各自的应用接口，分别为 `NestExpressApplication` 和 `NestFastifyApplication`。
+无论你选择哪种平台，Nest 都会为其提供对应的应用接口，比如 `NestExpressApplication` 或 `NestFastifyApplication`。
 
-当你在 `NestFactory.create()` 方法中传入类型参数时，如下例所示，`app` 对象会拥有该平台专属的方法。但除非你需要访问底层平台 API，否则无需指定类型。
+在使用 `NestFactory.create()` 创建应用实例时，如果你传入了类型参数（如下所示），返回的 app 对象就会拥有该平台特有的方法。不过，除非你需要调用底层平台的 API，大多数情况下其实不需要指定这个类型。
 
 ```ts filename='main.ts'
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -95,20 +95,28 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
 ## 启动与调试
 
-依赖安装完成后，在终端运行以下命令即可启动应用，监听 HTTP 请求：
+依赖安装完成后，只需在终端中运行以下命令即可启动应用，并开始监听 HTTP 请求：
 
 ```bash
 $ npm run start
 ```
 
 <CalloutInfo>
-  想要加快开发速度（构建速度提升约 20 倍），可在 `start` 脚本中添加 `-b swc` 参数，使用 [SWC
-  构建器](/recipes/swc)：`npm run start -- -b swc`。
+<div>
+  如果你希望加快开发时的构建速度（可提升约 20 倍），可以在启动命令中添加 `-b swc` 参数，使用 [SWC 构建器](/recipes/swc)：
+</div>
+
+```bash
+$ npm run start -- -b swc
+```
+
+SWC 是一个用 Rust 编写的高速编译器，能显著提升 TypeScript 转译和项目构建的效率，尤其适合开发阶段使用。
+
 </CalloutInfo>
 
-该命令会启动 HTTP 服务器，监听 `src/main.ts` 文件中定义的端口。应用启动后，在浏览器访问 `http://localhost:3000/`，你将看到 `Hello World!`。
+该命令会启动一个 HTTP 服务器，监听 `src/main.ts` 文件中定义的端口。应用启动后，在浏览器访问 `http://localhost:3000/`，你将看到 `Hello World!` 的响应。
 
-如需监听文件变更并自动重载服务，可运行：
+如需在开发过程中监听文件变更并自动重载服务，可以使用以下命令：
 
 ```bash
 $ npm run start:dev
@@ -118,20 +126,23 @@ $ npm run start:dev
 
 ## 代码规范与格式化工具
 
-[CLI](/cli/overview) 旨在为大规模开发提供可靠的工作流。因此，生成的 Nest 项目默认集成了代码检查（linter）和格式化（formatter）工具，分别为 [eslint](https://eslint.org/) 和 [prettier](https://prettier.io/)。
+Nest CLI 旨在为大型项目提供稳定、高效的开发工作流。因此，默认生成的项目中已经集成了代码检查工具（ESLint）和代码格式化工具（Prettier）。
+
+- [ESLint](https://eslint.org/) 用于检测代码中的潜在错误、不一致写法或不符合规范的代码风格。
+- [Prettier](https://prettier.io/) 用于统一代码的格式，使团队协作更流畅，代码更易于阅读和维护。
 
 <CalloutInfo>
-  不清楚格式化工具和检查工具的区别？可在[这里](https://prettier.io/docs/en/comparison.html)了解。
+  不清楚这两者的区别？你可以点击[这里](https://prettier.io/docs/en/comparison.html)了解代码格式化工具和检查工具的具体作用。
 </CalloutInfo>
 
-为最大程度确保稳定性和可扩展性，Nest 项目默认集成了基础的 eslint 和 prettier CLI 包，他们天生支持通过官方扩展实现出色的 IDE 集成体验。
+为最大程度确保项目的稳定性和可扩展性，Nest 默认集成了基础的 ESLint 和 Prettier CLI 工具。这些工具天然支持通过官方扩展与主流 IDE（如 VS Code）深度集成，提供良好的开发体验。
 
-对于不依赖 IDE 的无头环境（如持续集成、Git hooks 等），Nest 项目也内置了可直接使用的 `npm` 脚本：
+此外，对于不依赖 IDE 的无头环境（如持续集成、Git hooks 等场景），Nest 项目也内置了可直接使用的 npm 脚本，方便在命令行中执行代码检查和格式化任务：
 
 ```bash
-# 使用 eslint 检查并自动修复
+# 使用 ESLint 检查代码
 $ npm run lint
 
-# 使用 prettier 格式化代码
+# 使用 Prettier 格式化代码
 $ npm run format
 ```
