@@ -2,6 +2,7 @@ import type { BundledLanguage } from 'shiki'
 
 import { CopyButton } from '~/components/code/CopyButton'
 import { LanguageIcon } from '~/components/LanguageIcon'
+import { cn } from '~/lib/utils'
 
 interface CodeContainerProps {
   /** 代码内容，用于复制功能 */
@@ -41,7 +42,7 @@ export function CodeContainer(props: CodeContainerProps) {
   } = props
 
   return (
-    <div className={`not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block ${className || ''}`}>
+    <div className={cn('not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block', className)}>
       {/* 头部工具栏 */}
       {showHeader && (
         <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
