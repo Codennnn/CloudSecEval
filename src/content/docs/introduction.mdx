@@ -4,7 +4,7 @@ NestJS 是一个专为构建高效且可扩展的 [Node.js](https://nodejs.org/)
 
 NestJS 巧妙融合了面向对象编程（OOP）、函数式编程（FP）和函数响应式编程（FRP）等多种范式，为开发者带来灵活且强大的编程体验。
 
-在底层实现上，Nest 基于强大的 HTTP 服务器框架构建。默认情况下使用 [Express](https://expressjs.com/) 作为底层框架，同时也支持配置为 [Fastify](https://github.com/fastify/fastify)。
+在底层实现上，Nest 基于强大的 HTTP 服务器框架构建。默认情况下使用 [Express](https://expressjs.com/) 作为底层框架，同时也支持配置为 [Fastify](https://fastify.dev/)。
 
 Nest 在这些成熟的 Node.js 框架（Express/Fastify）之上提供了一层抽象封装，并直接开放底层框架的 API。这种设计让开发者既能享受 Nest 的架构优势，又能充分利用底层平台丰富的第三方模块生态。
 
@@ -18,22 +18,22 @@ Nest 正是为了解决这一痛点而诞生。它提供开箱即用的应用架
 
 ## 快速安装与项目创建
 
-你可以通过两种主要方式开始使用 NestJS：一是使用 [Nest CLI](/cli/overview) 脚手架工具快速创建项目，二是[克隆现有的起始项目](#其他项目初始化方式)。这两种方式都能帮助你快速搭建项目的初始结构和基础配置，无论选择哪种方式，都能让你轻松起步。
+你可以通过两种主要方式开始使用 NestJS：一是使用 [Nest CLI](/cli/overview) 脚手架工具快速创建项目，二是[克隆现有的起始项目](#克隆起始项目)。这两种方式都能帮助你快速搭建项目的初始结构和基础配置，无论选择哪种方式，都能让你轻松起步。
 
-使用 Nest CLI 创建新项目（推荐方式）：
+使用 Nest CLI 创建新项目（官方推荐）：
 
 ```bash
 $ npm i -g @nestjs/cli
 $ nest new project-name
 ```
 
-上述命令会创建一个新的项目目录，并自动生成核心 Nest 文件及相关模块，形成标准的项目基础结构。**首次使用 NestJS 的开发者推荐采用此方式**。我们将在[快速上手](/first-steps)章节详细介绍这种创建方式。
+上述命令会创建一个新的项目目录，并自动生成核心 Nest 文件及相关模块，形成标准的项目基础结构。推荐首次使用 NestJS 的开发者采用此方式，我们将在[快速上手](/first-steps)章节详细介绍这种创建方式。
 
 <CalloutInfo>
   如果希望创建更严格的 TypeScript 项目，可在 `nest new` 命令中添加 `--strict` 参数。
 </CalloutInfo>
 
-## 其他项目初始化方式
+## 克隆起始项目
 
 你也可以通过 Git 克隆 TypeScript 起始项目：
 
@@ -53,4 +53,8 @@ $ npm run start
 
 如需使用 JavaScript 版本的起始项目，只需将上述命令中的 `typescript-starter.git` 替换为 `javascript-starter.git` 即可。
 
-你也可以手动安装核心依赖包，从零开始搭建项目。这种方式需要自行创建项目基础文件，并至少安装以下依赖：`@nestjs/core`、`@nestjs/common`、`rxjs` 和 `reflect-metadata`。如果你对此感兴趣，可以参考这篇实用教程：[5 steps to create a bare minimum NestJS app from scratch!](https://dev.to/micalevisk/5-steps-to-create-a-bare-minimum-nestjs-app-from-scratch-5c3b)。
+## 其他项目初始化方式
+
+你也可以选择手动安装核心依赖包，从零开始搭建项目。这种方式需要你自行创建项目的基础结构，并至少安装以下依赖：`@nestjs/core`、`@nestjs/common`、`rxjs` 和 `reflect-metadata`。
+
+如果你对这种方式感兴趣，推荐阅读这篇实用教程：[5 steps to create a bare minimum NestJS app from scratch!](https://dev.to/micalevisk/5-steps-to-create-a-bare-minimum-nestjs-app-from-scratch-5c3b)。

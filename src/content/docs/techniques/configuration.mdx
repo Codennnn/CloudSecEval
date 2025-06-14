@@ -282,7 +282,7 @@ constructor(private configService: ConfigService<{ database: { host: string } }>
 constructor(private configService: ConfigService<{ PORT: number }, true>) {
   //                                                               ^^^^
   const port = this.configService.get('PORT', { infer: true });
-  //    ^^^ 此时 port 的类型为 number，无需再做类型断言
+  //    ^^^^ 此时 port 的类型为 number，无需再做类型断言
 }
 ```
 

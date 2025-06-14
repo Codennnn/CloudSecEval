@@ -41,10 +41,10 @@
 pre.shiki {
   --shiki-dark-bg: var(--color-muted) !important;
 
-  @apply overflow-x-auto px-4 py-3;
+  @apply overflow-x-auto px-4 pt-3;
 
   code {
-    @apply text-sm;
+    @apply block text-sm;
 
     /* counter-increment: step 0;
     counter-reset: step;
@@ -58,11 +58,14 @@ pre.shiki {
       color: rgb(115 138 148 / 40%);
       text-align: right;
     } */
-  }
 
-  .line {
-    &.highlighted {
-      @apply border-primary bg-primary/10;
+    .line {
+      @apply inline-block w-full;
+
+      &.highlighted,
+      .highlighted-word {
+        @apply bg-primary/5;
+      }
     }
   }
 }

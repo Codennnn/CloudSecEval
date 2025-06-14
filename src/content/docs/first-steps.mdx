@@ -1,6 +1,6 @@
 # 快速上手
 
-本系列文章将带你系统学习 Nest 的核心基础知识。为帮助你快速熟悉 Nest 应用的基本构建模块，我们将通过搭建一个基础的 CRUD 应用，覆盖入门阶段常见的功能特性。
+本系列文章将带你系统学习 Nest 的核心基础知识。为帮助你快速熟悉 Nest 应用的基本构建模块，我们将通过搭建一个基础的 CRUD 应用，涵盖入门阶段常见的功能和特性。
 
 ## 开发语言
 
@@ -12,11 +12,13 @@
 
 ## 创建新项目
 
-使用 [Nest CLI](/cli/overview) 脚手架工具可以非常便捷地创建新项目。确保已安装 [npm](https://www.npmjs.com/)，然后在终端中运行以下命令，即可创建一个新的 Nest 项目：
+使用 [Nest CLI](/cli/overview) 脚手架工具可以轻松创建一个新项目。在开始之前，请确保已安装好 [npm](https://www.npmjs.com/)，然后在终端中运行以下命令，即可初始化一个新的 Nest 项目：
 
 ```bash
 $ npm i -g @nestjs/cli
+# [!code word:project-name:1]
 $ nest new project-name
+#          ^^^^^^^^^^^^ 这里可以填写你想要的项目名称
 ```
 
 <CalloutInfo>
@@ -43,20 +45,21 @@ $ nest new project-name
 
 这些核心文件的作用如下：
 
-| 文件                     | 描述                                                          |
-| ------------------------ | ------------------------------------------------------------- |
-| `app.controller.ts`      | 基础控制器，包含一个路由。                                    |
-| `app.controller.spec.ts` | 控制器的单元测试文件。                                        |
-| `app.module.ts`          | 应用的根模块。                                                |
-| `app.service.ts`         | 基础服务，包含一个方法。                                      |
-| `main.ts`                | 应用入口文件，使用核心函数 `NestFactory` 创建 Nest 应用实例。 |
+| 文件                     | 描述                                                            |
+| ------------------------ | --------------------------------------------------------------- |
+| `app.controller.ts`      | 基础控制器，包含一个路由。                                      |
+| `app.controller.spec.ts` | 控制器的单元测试文件。                                          |
+| `app.module.ts`          | 应用的根模块。                                                  |
+| `app.service.ts`         | 基础服务，包含一个方法。                                        |
+| `main.ts`                | 应用的入口文件，使用核心函数 `NestFactory` 创建 Nest 应用实例。 |
 
-`main.ts` 文件包含一个异步函数，用于**启动应用（bootstrap）**：
+`main.ts` 文件包含一个异步函数，用于**启动应用**：
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 
+// [!code highlight:4]
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   await app.listen(process.env.PORT ?? 3000)
@@ -65,15 +68,15 @@ async function bootstrap() {
 bootstrap()
 ```
 
-我们通过核心类 `NestFactory` 创建 Nest 应用实例。`NestFactory` 提供静态方法用于生成应用对象，`create()` 方法返回实现了 `INestApplication` 接口的应用实例。该对象包含丰富的方法，后续章节会详细介绍。在上述 `main.ts` 示例中，我们仅启动了 HTTP 监听器，使应用能够接收 HTTP 请求。
+我们通过核心类 `NestFactory` 创建 Nest 应用实例。`NestFactory` 提供了用于生成应用对象的静态方法，其中 `create()` 方法会返回一个实现了 `INestApplication` 接口的应用实例。该对象包含丰富的方法，后续章节将会详细介绍。在上述 `main.ts` 示例中，我们仅启动了一个 HTTP 监听器，使应用能够接收和处理 HTTP 请求。
 
-通过 Nest CLI 脚手架创建的项目，初始结构鼓励开发者将每个模块放在独立目录中，遵循最佳实践。
+通过 Nest CLI 脚手架创建的项目，默认采用模块化的目录结构，鼓励开发者将每个功能模块划分到独立的目录中。每个模块通常包含其控制器（Controller）、服务（Service）、模块定义（Module）等文件，从而实现高内聚、低耦合的设计。这种结构不仅符合 Nest 的设计理念，也有助于团队协作、代码维护与后期扩展，是构建可规模化应用的最佳实践之一。
 
 <CalloutInfo>
-  默认情况下，如果应用创建过程中发生错误，程序会以代码 `1` 退出。如果你希望抛出异常而不是直接退出，可以关闭 `abortOnError` 选项（例如：`NestFactory.create(AppModule, { abortOnError: false })`）。
+  默认情况下，如果应用创建过程中发生错误，程序会以退出码 `1` 终止运行。如果你希望在出错时抛出异常而不是立即退出程序，可以通过设置 `abortOnError: false` 来关闭该行为：`NestFactory.create(AppModule, { abortOnError: false })`
 </CalloutInfo>
 
-## 支持多平台
+## 多平台支持
 
 Nest 致力于成为平台无关的框架。平台无关性让开发者能够创建可复用的逻辑模块，并在多种类型的应用中复用。从技术上讲，只要有适配器，Nest 就能与任何 Node HTTP 框架协作。目前，Nest 原生支持两种 HTTP 平台：[express](https://expressjs.com/) 和 [fastify](https://www.fastify.io/)。你可以根据实际需求选择最合适的方案。
 

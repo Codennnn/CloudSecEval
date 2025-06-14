@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BookOpenTextIcon, ExternalLinkIcon, HashIcon } from 'lucide-react'
+import { BookOpenTextIcon, HashIcon } from 'lucide-react'
 import type { MDXComponents } from 'mdx/types'
 import type { BundledLanguage } from 'shiki'
 
@@ -8,7 +8,7 @@ import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
 import { FileTree } from '~/components/doc/FileTree'
 import { MermaidWrapper } from '~/components/doc/MermaidWrapper'
-import { GithubIcon } from '~/components/icon/brand-icons'
+import { LinkIcon } from '~/components/LinkIcon'
 import {
   Table,
   TableBody,
@@ -76,20 +76,6 @@ const createHeadingComponent = (Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') =>
       </Tag>
     )
   }
-}
-
-interface LinkIconProps {
-  link: string
-}
-
-function LinkIcon(props: LinkIconProps) {
-  const { link } = props
-
-  if (link.startsWith('https://github.com')) {
-    return <GithubIcon className="size-[1em]" />
-  }
-
-  return <ExternalLinkIcon className="size-[0.9em]" />
 }
 
 /**

@@ -1,4 +1,4 @@
-import { transformerNotationHighlight } from '@shikijs/transformers'
+import { transformerNotationHighlight, transformerNotationWordHighlight } from '@shikijs/transformers'
 // import { transformerTwoslash } from '@shikijs/twoslash'
 import { type BundledLanguage, type CodeToHastOptions, codeToHtml } from 'shiki'
 
@@ -18,6 +18,7 @@ export async function CodeBlock(props: CodeBlockProps) {
   const transformers: CodeToHastOptions['transformers'] = [
     // transformerTwoslash(),
     transformerNotationHighlight(),
+    transformerNotationWordHighlight(),
   ]
 
   if (showLineNumbers) {
