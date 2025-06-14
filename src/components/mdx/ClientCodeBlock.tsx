@@ -5,8 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { transformerNotationHighlight } from '@shikijs/transformers'
 import { type BundledLanguage, type CodeToHastOptions, codeToHtml } from 'shiki'
 
-import { CopyButton } from '~/components/code/CopyButton'
-import { LanguageIcon } from '~/components/LanguageIcon'
+import { CodeContainer } from '~/components/code/CodeContainer'
 
 /**
  * 代码高亮结果缓存
@@ -198,24 +197,13 @@ export function ClientCodeBlock(props: ClientCodeBlockProps) {
   }
 
   return (
-    <div className="not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block">
-      <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
-        <div className="flex items-center gap-2">
-          <LanguageIcon
-            className="size-5.5"
-            lang={lang}
-          />
-          {filename && <span className="font-medium">{filename}</span>}
-          {/* 微妙的加载指示器 */}
-          {isLoading && htmlOutput && (
-            <div className="w-2 h-2 bg-current opacity-50 rounded-full animate-pulse" />
-          )}
-        </div>
-        <div className="ml-auto">
-          <CopyButton text={code} />
-        </div>
-      </div>
+    <CodeContainer
+      code={code}
+      filename={filename}
+      isLoading={isLoading && htmlOutput !== ''}
+      lang={lang}
+    >
       {renderContent()}
-    </div>
+    </CodeContainer>
   )
 }

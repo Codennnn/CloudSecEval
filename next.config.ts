@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
+// import rehypeShiki from '@shikijs/rehype'
 import rehypeMdxCodeProps from 'rehype-mdx-code-props'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
@@ -75,6 +76,16 @@ const withMDX = createMDX({
     rehypePlugins: [
       rehypeMdxCodeProps,
       rehypeSlug,
+      // [
+      //   rehypeShiki,
+      //   {
+      //     themes: {
+      //       light: 'github-light',
+      //       dark: 'github-dark',
+      //     },
+      //     inline: 'tailing-curly-colon',
+      //   },
+      // ],
     ],
   },
 })
