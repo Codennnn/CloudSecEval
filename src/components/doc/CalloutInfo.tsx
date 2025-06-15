@@ -123,8 +123,10 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
 
       <AlertTitle>{title ?? getDefaultTitle()}</AlertTitle>
 
-      <AlertDescription className={contentTextColor}>
-        {children ?? description}
+      <AlertDescription>
+        <div className={contentTextColor}>
+          {children ?? description}
+        </div>
       </AlertDescription>
     </Alert>
   )
