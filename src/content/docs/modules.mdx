@@ -209,23 +209,6 @@ export class CatsModule {
 }
 ```
 
-```js hideInDoc filename='cats.module.js'
-import { Module, Dependencies } from '@nestjs/common'
-import { CatsController } from './cats.controller'
-import { CatsService } from './cats.service'
-
-@Module({
-  controllers: [CatsController],
-  providers: [CatsService],
-})
-@Dependencies(CatsService)
-export class CatsModule {
-  constructor(catsService) {
-    this.catsService = catsService
-  }
-}
-```
-
 需要注意的是，模块类本身不能作为提供者被注入，否则会导致[循环依赖](/fundamentals/circular-dependency)问题。
 
 ## 全局模块用法
@@ -270,27 +253,6 @@ import { Connection } from './connection.provider'
 })
 export class DatabaseModule {
   static forRoot(entities = [], options?): DynamicModule {
-    const providers = createDatabaseProviders(options, entities)
-    return {
-      module: DatabaseModule,
-      providers: providers,
-      exports: providers,
-    }
-  }
-}
-```
-
-```js hideInDoc
-import { Module } from '@nestjs/common'
-import { createDatabaseProviders } from './database.providers'
-import { Connection } from './connection.provider'
-
-@Module({
-  providers: [Connection],
-  exports: [Connection],
-})
-export class DatabaseModule {
-  static forRoot(entities = [], options) {
     const providers = createDatabaseProviders(options, entities)
     return {
       module: DatabaseModule,

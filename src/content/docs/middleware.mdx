@@ -61,18 +61,6 @@ export class LoggerMiddleware implements NestMiddleware {
 }
 ```
 
-```js hideInDoc filename='logger.middleware.js'
-import { Injectable } from '@nestjs/common'
-
-@Injectable()
-export class LoggerMiddleware {
-  use(req, res, next) {
-    console.log('Request...')
-    next()
-  }
-}
-```
-
 ## 中间件的依赖注入
 
 Nest 中间件完全支持依赖注入。与提供者和控制器类似，中间件也可以注入同一模块内可用的依赖。通常通过 `constructor` 实现。
@@ -96,21 +84,6 @@ export class AppModule implements NestModule {
 }
 ```
 
-```js hideInDoc filename='app.module.js'
-import { Module } from '@nestjs/common'
-import { LoggerMiddleware } from './common/middleware/logger.middleware'
-import { CatsModule } from './cats/cats.module'
-
-@Module({
-  imports: [CatsModule],
-})
-export class AppModule {
-  configure(consumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('cats')
-  }
-}
-```
-
 如上所示，我们为 `/cats` 路由（由 `CatsController` 处理）应用了 `LoggerMiddleware`。你还可以通过向 `forRoutes()` 方法传递包含路由 `path` 和请求 `method` 的对象，进一步限定中间件仅作用于特定请求方法。如下例所示，使用 `RequestMethod` 枚举指定请求类型：
 
 ```ts filename='app.module.ts'
@@ -123,21 +96,6 @@ import { CatsModule } from './cats/cats.module'
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes({ path: 'cats', method: RequestMethod.GET })
-  }
-}
-```
-
-```js hideInDoc filename='app.module.js'
-import { Module, RequestMethod } from '@nestjs/common'
-import { LoggerMiddleware } from './common/middleware/logger.middleware'
-import { CatsModule } from './cats/cats.module'
-
-@Module({
-  imports: [CatsModule],
-})
-export class AppModule {
-  configure(consumer) {
     consumer.apply(LoggerMiddleware).forRoutes({ path: 'cats', method: RequestMethod.GET })
   }
 }
@@ -192,22 +150,6 @@ import { CatsController } from './cats/cats.controller'
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes(CatsController)
-  }
-}
-```
-
-```js hideInDoc filename='app.module.js'
-import { Module } from '@nestjs/common'
-import { LoggerMiddleware } from './common/middleware/logger.middleware'
-import { CatsModule } from './cats/cats.module'
-import { CatsController } from './cats/cats.controller'
-
-@Module({
-  imports: [CatsModule],
-})
-export class AppModule {
-  configure(consumer) {
     consumer.apply(LoggerMiddleware).forRoutes(CatsController)
   }
 }

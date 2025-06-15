@@ -225,28 +225,6 @@ const connectionProvider = {
 export class AppModule {}
 ```
 
-```js hideInDoc
-const connectionProvider = {
-  provide: 'CONNECTION',
-  useFactory: (optionsProvider, optionalProvider) => {
-    const options = optionsProvider.get()
-    return new DatabaseConnection(options)
-  },
-  inject: [MyOptionsProvider, { token: 'SomeOptionalProvider', optional: true }],
-  //       \______________/            \__________________/
-  //        必需依赖项                   可选依赖项，可能为 undefined
-}
-
-@Module({
-  providers: [
-    connectionProvider,
-    MyOptionsProvider, // 基于类的提供者
-    // { provide: 'SomeOptionalProvider', useValue: 'anything' },
-  ],
-})
-export class AppModule {}
-```
-
 ## 别名提供者：`useExisting`
 
 `useExisting` 语法用于为已有提供者创建别名。这样可以通过不同的令牌访问同一个提供者。例如，字符串令牌 `'AliasedLoggerService'` 是类令牌 `LoggerService` 的别名。假如有两个依赖项分别依赖 `'AliasedLoggerService'` 和 `LoggerService`，且都为 `SINGLETON` 作用域，则解析为同一实例。
@@ -309,46 +287,12 @@ const connectionFactory = {
 export class AppModule {}
 ```
 
-```js hideInDoc
-const connectionFactory = {
-  provide: 'CONNECTION',
-  useFactory: (optionsProvider) => {
-    const options = optionsProvider.get()
-    return new DatabaseConnection(options)
-  },
-  inject: [OptionsProvider],
-}
-
-@Module({
-  providers: [connectionFactory],
-  exports: ['CONNECTION'],
-})
-export class AppModule {}
-```
-
 也可以直接导出完整的提供者对象：
 
 ```ts
 const connectionFactory = {
   provide: 'CONNECTION',
   useFactory: (optionsProvider: OptionsProvider) => {
-    const options = optionsProvider.get()
-    return new DatabaseConnection(options)
-  },
-  inject: [OptionsProvider],
-}
-
-@Module({
-  providers: [connectionFactory],
-  exports: [connectionFactory],
-})
-export class AppModule {}
-```
-
-```js hideInDoc
-const connectionFactory = {
-  provide: 'CONNECTION',
-  useFactory: (optionsProvider) => {
     const options = optionsProvider.get()
     return new DatabaseConnection(options)
   },
