@@ -1,6 +1,6 @@
 # 中间件
 
-中间件（Middleware）是在路由处理器**之前**执行的函数，它能够访问[请求对象（Request）](https://expressjs.com/en/4x/api.html#req)、[响应对象（Response）](https://expressjs.com/en/4x/api.html#res)，以及控制请求-响应流程的 `next()` 函数。**下一个**中间件函数通常以 `next` 作为参数名称。
+**中间件**（Middleware）是在路由处理器**之前**执行的函数，它能够访问[请求对象（Request）](https://expressjs.com/en/4x/api.html#req)、[响应对象（Response）](https://expressjs.com/en/4x/api.html#res)，以及控制请求-响应流程的 `next()` 函数。**下一个**中间件函数通常以 `next` 作为参数名称。
 
 ```mermaid
 graph LR
