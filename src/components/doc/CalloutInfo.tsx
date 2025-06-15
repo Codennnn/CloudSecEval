@@ -102,6 +102,9 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
       case 'error':
         return '警告'
 
+      case 'success':
+        return '建议'
+
       default:
         return '提示'
     }
