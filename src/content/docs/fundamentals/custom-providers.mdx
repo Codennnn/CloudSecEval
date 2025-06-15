@@ -1,12 +1,12 @@
 # 自定义提供者
 
-在前文中，我们已经介绍了**依赖注入**及其在 Nest 中的应用。例如，[基于构造函数的依赖注入](/providers#dependency-injection)用于将实例（通常是服务提供者）注入到类中。你可能已经注意到，依赖注入机制在 Nest 核心中扮演着至关重要的角色。此前我们只介绍了一种主要模式。随着应用复杂度提升，你可能需要更灵活地使用 DI 系统，下面我们将深入探讨其更多特性。
+此前，我们已经介绍过**依赖注入**（Dependency Injection, DI）及其在 Nest 中的基本用法。例如，[基于构造函数的依赖注入](/providers#dependency-injection) 允许我们将实例（通常是服务提供者）直接注入到类中。DI 机制是 Nest 的核心基石。前面我们仅展示了最常见的用法；随着业务复杂度不断提升，你可能需要更灵活地运用这一系统。本节将带你深入探讨 DI 的更多高级特性。
 
 ## 依赖注入基础
 
-依赖注入是一种[控制反转（Inversion of Control，IoC）](https://en.wikipedia.org/wiki/Inversion_of_control) 技术，即将依赖项的实例化过程交由 IoC 容器（在本例中为 NestJS 运行时）管理，而不是在代码中手动创建。我们以[提供者章节](/providers)的示例来分析其工作原理。
+依赖注入是一种[控制反转](https://en.wikipedia.org/wiki/Inversion_of_control)（Inversion of Control, IoC）技术，即把创建依赖实例的责任交给 IoC 容器（在 Nest 中即运行时），而不是在代码中手动实例化。下面继续沿用[提供者章节](/providers)的示例来说明其工作原理。
 
-首先，定义一个提供者。`@Injectable()` 装饰器会将 `CatsService` 类标记为可由 Nest IoC 容器管理的提供者。
+首先，定义一个提供者。使用 `@Injectable()` 装饰器即可将 `CatsService` 标记为由 Nest IoC 容器托管的提供者。
 
 ```ts filename='cats.service.ts'
 import { Injectable } from '@nestjs/common'
@@ -22,7 +22,7 @@ export class CatsService {
 }
 ```
 
-接下来，在控制器类中请求 Nest 注入该提供者：
+接着，在控制器中声明对该提供者的依赖，让 Nest 负责注入：
 
 ```ts filename='cats.controller.ts'
 import { Controller, Get } from '@nestjs/common'
@@ -40,7 +40,7 @@ export class CatsController {
 }
 ```
 
-最后，在 Nest IoC 容器中注册该提供者：
+最后，在模块中注册该提供者：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -54,24 +54,24 @@ import { CatsService } from './cats/cats.service'
 export class AppModule {}
 ```
 
-那么底层发生了什么？整个流程包含三个关键步骤：
+那么底层究竟发生了什么？整个流程可以分为三个关键步骤：
 
-1. 在 `cats.service.ts` 中，`@Injectable()` 装饰器声明 `CatsService` 类可由 Nest IoC 容器管理。
-2. 在 `cats.controller.ts` 中，`CatsController` 通过构造函数注入声明依赖于 `CatsService` 注入令牌（Injection Token）：
+1. 在 `cats.service.ts` 文件中，使用 `@Injectable()` 装饰器将 `CatsService` 类标记为可由 Nest 的 IoC 容器管理的提供者。
+2. 在 `cats.controller.ts` 文件中，`CatsController` 通过构造函数注入的方式声明对 `CatsService` 的依赖。Nest 会通过 `CatsService` 的注入令牌（Injection Token）进行解析：
 
 ```ts
   constructor(private catsService: CatsService)
 ```
 
-3. 在 `app.module.ts` 中，将 `CatsService` 注入令牌与 `cats.service.ts` 文件中的 `CatsService` 类关联。我们将在[下文](#standard-providers)详细介绍这种关联方式（也称为 注册）。
+3. 在 `app.module.ts` 中，将 `CatsService` 的注入令牌与 `cats.service.ts` 中定义的 `CatsService` 类进行注册绑定。我们将在后文中详细讲解这种注册方式。
 
-当 Nest IoC 容器实例化 `CatsController` 时，会先查找其依赖项\*。发现依赖 `CatsService` 后，会根据注册步骤（第 3 步）查找 `CatsService` 注入令牌，并返回对应的 `CatsService` 类。若采用默认的 `SINGLETON` 作用域，Nest 会创建 `CatsService` 的实例、缓存并返回，若已缓存则直接返回现有实例。
+当 Nest 的 IoC 容器实例化 `CatsController` 时，会首先分析其依赖项。发现其依赖 `CatsService` 后，会根据注册信息（见第 3 步）查找对应的注入令牌，并返回匹配的提供者类。如果采用默认的 SINGLETON（单例）作用域，Nest 会创建 `CatsService` 的实例、缓存该实例，并在后续请求中复用；若已缓存，则直接返回已有实例。
 
-\*为简化说明，实际依赖分析过程更为复杂，发生在应用启动期间。依赖分析（即“创建依赖图”）是**递归传递**的。例如，如果 `CatsService` 本身还有依赖项，也会被自动解析。依赖图确保依赖项按正确顺序解析 —— 本质上是“自底向上”。这一机制让开发者无需手动管理复杂的依赖关系。
+实际上，依赖关系的解析过程发生在应用启动期间，涉及更复杂的依赖图（Dependency Graph）构建。Nest 会递归地分析每一个提供者的依赖关系，例如若 `CatsService` 本身也依赖其他服务，这些依赖也会被自动解析并注入。整个依赖图的构建是“自底向上”的，确保各个依赖项按照正确的顺序解析与初始化，从而让开发者无需手动管理复杂的依赖链条。
 
 ## 标准提供者
 
-接下来，我们进一步了解 `@Module()` 装饰器的用法。在 `app.module` 文件中，通常这样声明模块：
+接下来，我们进一步了解` @Module()` 装饰器的用法。在 `app.module` 文件中，模块通常按如下方式声明：
 
 ```ts
 @Module({
@@ -80,7 +80,7 @@ export class AppModule {}
 })
 ```
 
-`providers` 属性接收一个提供者数组。到目前为止，我们直接通过类名列表传递这些提供者。实际上，`providers: [CatsService]` 是更完整写法的简化形式：
+`providers` 属性用于接收一个提供者数组。到目前为止，我们采用了最简洁的写法，直接传入类名列表。实际上，`providers: [CatsService]` 是以下完整写法的简化形式：
 
 ```ts
 providers: [
@@ -91,25 +91,26 @@ providers: [
 ]
 ```
 
-通过这种显式写法，可以更清晰地理解注册过程。这里，我们将 `CatsService` 作为注入令牌，并关联到 `CatsService` 类本身。简写语法仅用于简化最常见的场景，即通过类名直接请求其实例。
+通过这种显式写法，可以更清晰地理解提供者的注册过程：我们使用 `CatsService` 作为注入令牌，并将其绑定到自身的类定义上。简写形式仅适用于最常见的场景，即通过类名直接注入其实例。
 
 ## 自定义提供者
 
-如果你的需求超出了 _标准提供者_ 的能力怎么办？例如：
+当标准提供者已无法满足你的需求时，该怎么办？比如：
 
-- 希望自定义实例，而不是让 Nest 自动实例化（或返回缓存的）类
-- 希望在另一个依赖项中复用已有类
-- 希望在测试时用 mock 替换真实类
+- 希望自行创建实例，而非由 Nest 自动实例化或返回缓存的类
+- 希望在某个依赖项中复用已有的类实例
+- 希望在测试中用 mock 替代真实类
 
-Nest 允许你通过自定义提供者来满足这些场景。你可以使用多种方式定义自定义提供者，下面将逐一介绍。
+此时，你可以通过**自定义提供者**来实现这些更灵活的场景。Nest 提供了多种方式来定义自定义提供者，接下来我们将一一介绍。
 
 <CalloutInfo>
-  如果遇到依赖解析相关的问题，可以设置 `NEST_DEBUG` 环境变量，在启动时获取更详细的依赖解析日志。
+  如果你在使用过程中遇到依赖解析相关的问题，可以设置环境变量
+  `NEST_DEBUG`，以便在应用启动时输出更详细的依赖解析日志。
 </CalloutInfo>
 
 ## 值提供者：`useValue`
 
-`useValue` 适用于注入常量、集成外部库到 Nest 容器，或在测试中用 mock 对象替换真实实现。例如，若希望在测试时让 Nest 使用 mock 版的 `CatsService`：
+当需要注入常量、集成外部库到 Nest 容器，或在测试中用 mock 对象替代真实实现时，可以使用 `useValue` 提供者。例如，在测试中希望让 Nest 使用 mock 版本的 `CatsService`：
 
 ```ts
 import { CatsService } from './cats.service'
@@ -132,13 +133,13 @@ const mockCatsService = {
 export class AppModule {}
 ```
 
-在上述示例中，`CatsService` 的注入令牌会被解析为 `mockCatsService` mock 对象。`useValue` 需要传入一个值，这里是一个与 `CatsService` 类接口兼容的对象。由于 TypeScript 的[结构类型](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)特性，你可以传入任何接口兼容的对象，包括字面量对象或通过 `new` 实例化的类。
+在上述示例中，`CatsService` 的注入令牌被映射为 `mockCatsService`，即一个模拟的服务对象。`useValue` 需要传入一个具体的值，在这里是一个与 `CatsService` 接口结构兼容的对象。由于 TypeScript 采用[结构类型](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)系统，你可以传入任何满足接口要求的对象，无论是对象字面量，还是通过 new 实例化得到的类实例。
 
 ## 非类注入令牌
 
-目前为止，我们一直使用类名作为提供者的注入令牌（即 `provide` 属性的值）。这种方式与[基于构造函数的注入](/providers#dependency-injection)模式相对应，令牌通常为类名。关于令牌的概念，可参考[依赖注入基础](#dependency-injection-fundamentals)。
+在前面的章节中，我们始终使用类名作为提供者的注入令牌（即 `provide` 属性的值）。这种方式符合[基于构造函数的依赖注入](/providers#dependency-injection)模式，令牌通常就是类本身。关于令牌的基础概念，可参考[依赖注入基础](#dependency-injection-fundamentals)。
 
-有时，我们希望使用字符串或 symbol 作为 DI 令牌。例如：
+然而，在某些场景下，我们可能希望使用字符串或 `symbol` 作为 DI 令牌。例如：
 
 ```ts
 import { connection } from './connection'
@@ -154,15 +155,15 @@ import { connection } from './connection'
 export class AppModule {}
 ```
 
-在此示例中，我们用字符串类型的令牌（`'CONNECTION'`）关联已有的 `connection` 对象。
+在上述示例中，我们使用字符串 `'CONNECTION'` 作为注入令牌，将其与已有的 `connection` 对象进行关联。
 
 <CalloutInfo type="warning">
-  除了字符串，还可以使用 JavaScript
-  [symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
-  或 TypeScript [enum](https://www.typescriptlang.org/docs/handbook/enums.html) 作为令牌。
+  除了字符串，还可以使用 JavaScript 的
+  [Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
+  或 TypeScript 的 [Enum](https://www.typescriptlang.org/docs/handbook/enums.html) 作为注入令牌。
 </CalloutInfo>
 
-前文已介绍如何通过标准[构造函数注入](/providers#dependency-injection)模式注入提供者。该模式要求依赖项以类名声明。而 `'CONNECTION'` 这样的自定义提供者使用字符串令牌。要注入此类提供者，需要使用 `@Inject()` 装饰器，并传入令牌作为参数。
+我们已经介绍过标准的[构造函数注入](/providers#dependency-injection)方式，该模式要求依赖项的令牌为类名。而使用 `'CONNECTION'` 这类自定义令牌时，则需要借助 `@Inject()` 装饰器，显式传入对应令牌：
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common'
@@ -173,11 +174,11 @@ export class CatsRepository {
 }
 ```
 
-虽然上例直接使用了字符串 `'CONNECTION'`，但为了代码整洁，建议将令牌定义在单独的文件（如 `constants.ts`），集中管理和导入，无论是 symbol 还是 enum。
+尽管上例直接使用了字符串 `'CONNECTION'`，但为了代码的可维护性和一致性，推荐将所有自定义令牌统一定义在单独的文件中（如 `constants.ts`），无论它们是字符串、symbol 还是 enum。
 
 ## 类提供者：`useClass`
 
-`useClass` 语法允许你动态决定令牌应解析为哪个类。例如，假设有一个抽象（或默认）`ConfigService` 类。根据当前环境，Nest 可提供不同的配置服务实现。如下：
+`useClass` 语法允许你根据运行时条件动态指定某个令牌应解析为的类。例如，假设存在一个抽象（或默认）的 `ConfigService` 类，Nest 可以根据当前环境选择不同的配置服务实现。如下所示：
 
 ```ts
 const configServiceProvider = {
@@ -192,16 +193,16 @@ const configServiceProvider = {
 export class AppModule {}
 ```
 
-此代码中，我们先用字面量对象定义 `configServiceProvider`，再传给模块装饰器的 `providers` 属性。这只是代码组织方式，功能等同于前文示例。
+在上述代码中，我们首先通过字面量对象定义了一个 `configServiceProvider`，并将其传入模块装饰器的 `providers` 属性中。这种写法仅仅是代码组织上的选择，其功能与前文的示例完全等效。
 
-此外，我们用 `ConfigService` 类名作为令牌。依赖 `ConfigService` 的类会注入所提供的实现类（`DevelopmentConfigService` 或 `ProductionConfigService`），覆盖其他地方声明的默认实现（如用 `@Injectable()` 装饰器声明的 `ConfigService`）。
+需要注意的是，我们使用了 `ConfigService` 类名作为提供者令牌。凡是依赖 `ConfigService` 的类，都会注入这里所指定的具体实现（`DevelopmentConfigServic`e 或 `ProductionConfigService`）。这将覆盖其他地方通过 `@Injectable()` 装饰器所声明的默认实现。
 
 ## 工厂提供者：`useFactory`
 
-`useFactory` 语法用于**动态**创建提供者。实际提供者由工厂函数的返回值决定。工厂函数既可以简单，也可以复杂。简单工厂无需依赖其他提供者，复杂工厂则可注入其他依赖。实现方式如下：
+`useFactory` 用于**动态创建**提供者，其核心在于由工厂函数的返回值决定具体的提供者实例。工厂函数可以非常简单，也可以涉及复杂的逻辑。简单的工厂函数不依赖其他服务，而复杂的工厂函数则可以通过依赖注入获取所需的其他提供者。基本用法如下：
 
-1. 工厂函数可接收（可选）参数。
-2. `inject` 属性（可选）接收一个提供者数组，Nest 会在实例化时解析这些依赖，并按顺序传递给工厂函数。这些依赖项也可以被标记为可选。示例如下：
+1. 工厂函数可以接收参数（可选）。
+2. 可通过 `inject` 属性（可选）指定需要注入的依赖项。Nest 会在调用工厂函数时解析这些依赖，并按顺序传入。依赖项也可以被标记为可选。如下示例所示：
 
 ```ts
 const connectionProvider = {
@@ -227,7 +228,7 @@ export class AppModule {}
 
 ## 别名提供者：`useExisting`
 
-`useExisting` 语法用于为已有提供者创建别名。这样可以通过不同的令牌访问同一个提供者。例如，字符串令牌 `'AliasedLoggerService'` 是类令牌 `LoggerService` 的别名。假如有两个依赖项分别依赖 `'AliasedLoggerService'` 和 `LoggerService`，且都为 `SINGLETON` 作用域，则解析为同一实例。
+`useExisting` 用于为已存在的提供者创建一个新的别名令牌，使我们能够通过多个令牌访问同一个实例。例如，字符串令牌 `'AliasedLoggerService'` 被设置为类令牌 `LoggerService` 的别名。当依赖项分别注入 `'AliasedLoggerService'` 和 `LoggerService` 时，如果两者都属于 `SINGLETON` 作用域，它们将解析为同一个共享实例。
 
 ```ts
 @Injectable()
@@ -248,7 +249,7 @@ export class AppModule {}
 
 ## 非服务类提供者
 
-虽然提供者通常用于注入服务，但他们并不仅限于此。实际上，提供者可以用于注入任意值。例如，可以根据当前环境动态提供配置对象数组：
+虽然提供者通常用于注入服务，但它们的用途远不止于此。实际上，提供者可以用来注入任意类型的值。例如，可以根据当前运行环境动态地注入一组配置对象：
 
 ```ts
 const configFactory = {
@@ -266,9 +267,9 @@ export class AppModule {}
 
 ## 导出自定义提供者
 
-与其他提供者一样，自定义提供者的作用域默认仅限于声明它的模块。若需在其他模块中使用，必须将其导出。可以通过令牌或完整的提供者对象进行导出。
+自定义提供者的作用域默认仅限于其所属模块，这与其他提供者一样。如果需要在其他模块中使用，必须显式导出它。导出时既可以使用提供者的令牌，也可以直接导出完整的提供者对象。
 
-以下示例展示了通过令牌导出：
+下面示例演示了通过令牌导出自定义提供者：
 
 ```ts
 const connectionFactory = {
