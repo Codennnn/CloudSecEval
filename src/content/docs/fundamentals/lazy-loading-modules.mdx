@@ -1,22 +1,22 @@
 # 懒加载模块
 
-默认情况下，Nest 应用会**急切加载**（eagerly loaded）所有模块，也就是说，应用启动时，无论是否立即需要，所有模块都会被加载。对于大多数场景，这种方式并无问题，但在无服务器环境（serverless environment）或 worker 场景下，启动延迟（“冷启动”）尤为关键，此时急切加载可能成为瓶颈。
+在 Nest 应用中，所有模块默认会**急切加载**（eagerly loaded），也就是说，无论是否立即使用，应用在启动时会加载所有模块。对于大多数应用场景，这种行为通常不会带来问题。然而，在无服务器（Serverless）环境或基于 Worker 的架构中，启动延迟（即“冷启动”）对性能影响显著，此时急切加载可能成为性能瓶颈。
 
-通过懒加载（Lazy Loading），只加载当前 serverless 函数调用所需的模块，可以显著缩短启动时间。此外，你还可以在 serverless 函数“预热”后，异步加载其他模块（即延迟注册），进一步加快后续调用的启动速度。
+通过启用懒加载（Lazy Loading），应用只会加载当前 serverless 函数调用所需的模块，从而显著减少启动时间。你还可以在函数预热阶段异步加载其他模块（即延迟注册），进一步优化后续请求的响应速度。
 
 <CalloutInfo>
-  如果你熟悉 **[Angular](https://angular.dev/)**
-  框架，可能见过“[懒加载模块](https://angular.dev/guide/ngmodules/lazy-loading#lazy-loading-basics)”这个术语。请注意，这项技术在
-  Nest 中的实现**与 Angular 完全不同**，只是命名类似，功能和机制并不相同。
+  如果你熟悉 [Angular](https://angular.dev/)
+  框架，可能见过“[懒加载模块](https://angular.dev/guide/ngmodules/lazy-loading#lazy-loading-basics)”的概念。请注意，虽然命名相似，**Nest
+  中的懒加载实现机制与 Angular 完全不同**，两者的功能与底层逻辑并不相同。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  使用懒加载模块和服务时，[生命周期钩子方法](/fundamentals/lifecycle-events)不会被调用。
+  使用懒加载模块或服务时，[生命周期钩子方法](/fundamentals/lifecycle-events)将不会被调用。
 </CalloutInfo>
 
 ## 快速上手
 
-要实现按需加载模块，Nest 提供了 `LazyModuleLoader` 类，你可以像常规依赖注入一样将其注入到类中：
+Nest 提供了 `LazyModuleLoader` 类，用于实现模块的按需加载。你可以像注入其他依赖一样，将其注入到服务类中：
 
 ```ts filename='cats.service.ts'
 import { LazyModuleLoader } from '@nestjs/core'
@@ -27,14 +27,14 @@ export class CatsService {
 }
 ```
 
-另外，你也可以在应用的入口文件（`main.ts`）中获取 `LazyModuleLoader` 提供者的引用，如下所示：
+除了在类中注入，你也可以在应用的入口文件（`main.ts`）中手动获取 `LazyModuleLoader` 实例：
 
-```ts
-// "app" 代表 Nest 应用实例
+```ts filename='main.ts'
+// `app` 为 Nest 应用实例
 const lazyModuleLoader = app.get(LazyModuleLoader)
 ```
 
-有了它之后，你可以通过如下方式加载任意模块：
+获得 `lazyModuleLoader` 后，你就可以通过以下方式动态加载模块：
 
 ```ts
 const { LazyModule } = await import('./lazy.module')
@@ -42,9 +42,7 @@ const moduleRef = await this.lazyModuleLoader.load(() => LazyModule)
 ```
 
 <CalloutInfo>
-<div>
-“懒加载”模块在首次通过 `LazyModuleLoader#load` 方法加载时会被缓存。这意味着，后续每次加载同一个模块都会非常快，并且直接返回缓存实例，而不会重复加载。
-</div>
+懒加载模块在首次通过 `LazyModuleLoader#load` 方法加载时会被缓存。因此，后续加载同一模块时速度极快，且直接返回已缓存的模块引用，无需重复加载。
 
 ```bash
 第 1 次加载 "LazyModule"
@@ -55,19 +53,17 @@ time: 0.294ms
 time: 0.303ms
 ```
 
-<div className="mt-5">
-  此外，“懒加载”模块会与应用启动时急切加载的模块，以及后续注册的其他懒加载模块共享同一个模块图。
-</div>
+此外，懒加载模块会与应用启动时急切加载的模块，以及后续加载的其他懒加载模块，共享同一个模块图（module graph）。
 
 </CalloutInfo>
 
-`lazy.module.ts` 是一个导出**标准 Nest 模块**的 TypeScript 文件（无需额外更改）。
+被加载的 `lazy.module.ts` 文件应导出一个标准的 Nest 模块，无需进行额外修改。
 
-`LazyModuleLoader#load` 方法会返回[模块引用（module reference）](/fundamentals/module-ref)（即 `LazyModule` 的引用），你可以通过它访问内部的提供者列表，并通过注入令牌（Injection Token）获取任意提供者的实例。
+通过 `LazyModuleLoader`#load 方法返回的模块引用（ModuleRef），你可以访问模块内部的所有提供者，并通过注入令牌获取其实例。
 
-例如，假设我们有如下定义的 `LazyModule`：
+例如，假设我们有以下定义的 `LazyModule`：
 
-```ts
+```ts filename='lazy.module.ts'
 @Module({
   providers: [LazyService],
   exports: [LazyService],
@@ -76,10 +72,10 @@ export class LazyModule {}
 ```
 
 <CalloutInfo>
-  懒加载模块不能注册为**全局模块**，因为他们是按需注册的，在所有静态注册模块实例化后才会被加载。同理，注册为**全局增强器**（如守卫、拦截器等）的功能也无法正常工作。
+  懒加载模块不能注册为**全局模块**，因为它们在所有静态模块实例化之后才会被加载。同样地，无法用于注册**全局增强器**（如守卫、拦截器等），这些增强器的注册时机要求在应用启动阶段完成。
 </CalloutInfo>
 
-这样，我们就可以获取 `LazyService` 提供者的实例：
+此时我们就可以通过模块引用来获取 `LazyService` 实例：
 
 ```ts
 const { LazyModule } = await import('./lazy.module')
@@ -90,7 +86,7 @@ const lazyService = moduleRef.get(LazyService)
 ```
 
 <CalloutInfo type="warning">
-  如果你使用 Webpack，请确保在 `tsconfig.json` 文件中设置 `compilerOptions.module` 为 `"esnext"`，并添加 `compilerOptions.moduleResolution` 属性，值为 `"node"`：
+  如果你使用的是 Webpack，请确保在 `tsconfig.json` 中设置以下编译选项：
 
 ```json
  {
@@ -102,25 +98,25 @@ const lazyService = moduleRef.get(LazyService)
  }
 ```
 
-配置好这些选项后，你就可以利用[代码分割（code splitting）](https://webpack.js.org/guides/code-splitting/) 功能。
+配置完成后，即可使用 Webpack 的[代码分割（code splitting）](https://webpack.js.org/guides/code-splitting/)功能，实现更高效的懒加载。
 
 </CalloutInfo>
 
-## 懒加载控制器、网关和解析器
+## 懒加载控制器、网关与解析器
 
-在 Nest 中，控制器或 GraphQL 应用中的解析器（Resolver）用于处理一组路由、路径、主题，或 GraphQL 查询与变更。你无法通过 `LazyModuleLoader` 类对他们进行懒加载。
+在 Nest 中，控制器或 GraphQL 应用中的解析器（Resolver）负责处理一组路由、路径、主题，或 GraphQL 查询与变更。需要注意的是，无法通过 `LazyModuleLoader` 对它们进行懒加载。
 
 <CalloutInfo type="warning">
-  在懒加载模块中注册的控制器、[解析器](/graphql/resolvers)和[网关](/websockets/gateways)
-  都不会按预期工作。同样，无法按需注册中间件函数（即通过实现 `MiddlewareConsumer` 接口的中间件）。
+  在懒加载模块中注册的控制器、[解析器](/graphql/resolvers)及[网关](/websockets/gateways)
+  均无法按预期正常工作。同时，基于 `MiddlewareConsumer` 接口实现的中间件函数也无法按需注册。
 </CalloutInfo>
 
-例如，如果你在底层使用 Fastify 驱动（`@nestjs/platform-fastify` 包）构建 REST API（HTTP 应用），Fastify 不支持在应用启动并开始监听后动态注册路由。这意味着，即使我们分析了模块控制器中的路由映射，所有懒加载的路由在运行时也无法被访问，因为无法动态注册。
+举例来说，如果你使用 Fastify 驱动（`@nestjs/platform-fastify`）构建 REST API（HTTP 应用），由于 Fastify 不支持应用启动后动态注册路由，即使分析了模块中控制器的路由映射，懒加载的路由在运行时依然无法访问。
 
-同理，`@nestjs/microservices` 包中的部分传输层（如 Kafka、gRPC 或 RabbitMQ）要求在连接建立前就完成主题或通道的订阅。一旦应用开始监听消息，框架将无法再订阅新的主题。
+类似地，`@nestjs/microservices` 中的某些传输层（如 Kafka、gRPC、RabbitMQ）要求在连接建立前完成主题或通道的订阅。一旦应用开始监听消息，框架就无法再动态订阅新的主题。
 
-此外，`@nestjs/graphql` 包在启用 code first 方式时，会根据元数据动态生成 GraphQL schema。这要求所有相关类必须预先加载，否则无法生成有效的 schema。
+此外，`@nestjs/graphql` 在启用 code-first 模式时，会基于元数据动态生成 GraphQL schema，这就要求所有相关类必须在启动时被提前加载，否则无法正确生成有效的 schema。
 
 ## 常见使用场景
 
-懒加载模块通常用于如下场景：worker、定时任务（cron job）、lambda & serverless 函数、webhook 等需要根据输入参数（如路由路径、日期、查询参数等）动态触发不同服务（业务逻辑）。对于启动时间要求不高的单体应用，懒加载模块的意义并不大。
+懒加载模块一般适用于如下场景：worker 进程、定时任务（cron job）、Lambda 及 Serverless 函数、Webhook 等场景，这些场景往往需要根据输入参数（如路由路径、日期、查询参数等）动态触发不同的服务逻辑。对于启动时间要求不高的单体应用，懒加载模块的优势并不明显。

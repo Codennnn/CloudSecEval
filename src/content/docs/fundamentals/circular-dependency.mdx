@@ -1,59 +1,62 @@
 # 循环依赖
 
-当两个类互相依赖时，就会出现循环依赖（Circular Dependency）。例如，A 类依赖 B 类，同时 B 类也依赖 A 类。在 Nest 中，循环依赖既可能发生在模块之间，也可能出现在提供者之间。
+当两个类彼此依赖时，就会形成**循环依赖**（Circular Dependency）。例如，A 类依赖 B 类的实例，同时 B 类也依赖 A 类。在 Nest 中，这类循环依赖既可能发生在模块之间，也可能存在于提供者之间。
 
-虽然开发中应该尽量避免循环依赖，但有时难以完全规避。针对这种情况，Nest 提供了两种解决提供者间循环依赖的方法：一是使用 **前向引用（forward referencing）** 技术，二是通过 **ModuleRef 类**从依赖注入容器中获取提供者实例。
+虽然在实际开发中应尽量避免出现循环依赖，但在某些复杂场景下难以完全避免。为此，Nest 提供了两种主要方式用于解决提供者之间的循环依赖问题：
 
-本章将分别介绍这两种方法，并说明如何处理模块之间的循环依赖。
+1. 使用 **前向引用**（forward referencing）；
+2. 借助 **`ModuleRef` 类**从依赖注入容器中显式获取实例。
+
+本章节将详细介绍这两种解决方案，并说明如何应对模块之间的循环依赖问题。
 
 <CalloutInfo type="warning">
-  使用 "barrel files"（即 index.ts
-  文件）进行分组导入时，也可能引发循环依赖。对于模块和提供者类，建议不要使用 barrel
-  文件。例如，在同一目录下，`cats/cats.controller` 不应通过 `cats` 间接导入
-  `cats/cats.service`。更多细节请参见[此 GitHub
-  讨论](https://github.com/nestjs/nest/issues/1181#issuecomment-430197191)。
+  使用 "barrel files"（即 `index.ts`
+  文件）统一导出模块时，也容易引发循环依赖问题。**强烈建议**在处理模块和提供者类时避免使用 barrel
+  文件。 例如，`cats/cats.controller.ts` 不应通过 `cats/index.ts` 间接导入 `cats/cats.service.ts`。
+  详细说明请参见 [GitHub 讨论](https://github.com/nestjs/nest/issues/1181#issuecomment-430197191)。
 </CalloutInfo>
 
 ## 前向引用
 
-前向引用允许 Nest 通过 `forwardRef()` 工具函数引用尚未定义的类。例如，`CatsService` 和 `CommonService` 互相依赖时，双方都可以结合 `@Inject()` 和 `forwardRef()` 解决循环依赖。否则，Nest 无法实例化他们，因为缺少必要的元数据。示例代码如下：
+**前向引用**允许你在依赖尚未被完全定义的类时，通过 `forwardRef()` 延迟引用，从而打破循环依赖。例如，`CatsService` 和 `CommonService` 相互依赖时，可以通过 `@Inject()` 和 `forwardRef()` 组合实现依赖注入：
 
 ```ts filename='cats.service.ts'
-import { forwardRef } from '@nestjs/common'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
 
 @Injectable()
 export class CatsService {
   constructor(
     @Inject(forwardRef(() => CommonService))
-    private commonService: CommonService
+    private readonly commonService: CommonService
   ) {}
 }
 ```
 
-这样就完成了其中一方的处理。接下来，对 `CommonService` 也进行同样的配置：
+此时，另一端也需进行相同处理：
 
 ```ts filename='common.service.ts'
 @Injectable()
 export class CommonService {
   constructor(
     @Inject(forwardRef(() => CatsService))
-    private catsService: CatsService
+    private readonly catsService: CatsService
   ) {}
 }
 ```
 
 <CalloutInfo type="warning">
-  实例化顺序是不确定的，请确保你的代码不依赖于哪个构造函数先被调用。如果循环依赖涉及 `Scope.REQUEST`
-  的提供者，可能会导致依赖未定义。详细信息可参考[这里](https://github.com/nestjs/nest/issues/5778)。
+  请注意：由于 Nest 无法保证实例化顺序，**不要编写依赖构造函数调用顺序的逻辑**。 若涉及
+  `Scope.REQUEST` 的作用域，循环依赖还可能导致依赖为 `undefined`，请谨慎使用。 更多说明可参考 [相关
+  issue](https://github.com/nestjs/nest/issues/5778)。
 </CalloutInfo>
 
-## ModuleRef 类的替代用法
+## 使用 ModuleRef 的替代方案
 
-除了使用 `forwardRef()`，你还可以通过重构代码，利用 `ModuleRef` 类在循环依赖关系的一方动态获取提供者实例。关于 `ModuleRef` 的详细用法，请参见[这里](/fundamentals/module-ref)。
+除了在模块间使用 `forwardRef()` 解决循环依赖外，你还可以通过重构代码，借助 `ModuleRef` 类在运行时动态获取所需的提供者实例，从而避免静态依赖。有关 `ModuleRef` 的详细使用方式，请参见[本章节](/fundamentals/module-ref)。
 
 ## 模块的前向引用
 
-为了解决模块之间的循环依赖问题，也可以在相关模块的 `imports` 中使用 `forwardRef()` 工具函数。例如：
+为了解决模块之间的循环依赖问题，可以在相关模块的 `imports` 数组中使用 `forwardRef()` 工具函数。例如：
 
 ```ts filename='common.module.ts'
 @Module({
@@ -62,7 +65,7 @@ export class CommonService {
 export class CommonModule {}
 ```
 
-这样就完成了一方的配置。接下来，在 `CatsModule` 中同样进行前向引用：
+上述配置完成了 `CommonModule` 对 `CatsModule` 的前向引用。接下来，在 `CatsModule` 中也使用相同方式进行反向引用：
 
 ```ts filename='cats.module.ts'
 @Module({
