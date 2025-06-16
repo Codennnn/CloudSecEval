@@ -1,41 +1,37 @@
 # NestJS 介绍
 
-NestJS 是一个专为构建高效且可扩展的 [Node.js](https://nodejs.org/) 服务端应用而设计的框架。它采用现代 JavaScript 技术开发，完全基于 [TypeScript](http://www.typescriptlang.org/)，并对 TypeScript 提供完整支持，同时也允许开发者使用纯 JavaScript 编写代码。
+NestJS 是一个用于构建高效、可扩展的 Node.js 服务端应用的渐进式框架。它完全基于 TypeScript，并对其提供了完整支持，同时也允许开发者使用纯 JavaScript 编写应用。
 
-NestJS 巧妙融合了面向对象编程（OOP）、函数式编程（FP）和函数响应式编程（FRP）等多种范式，为开发者带来灵活且强大的编程体验。
+NestJS 融合了多种编程范式，包括面向对象编程（OOP）、函数式编程（FP）以及函数响应式编程（FRP），为开发者提供了灵活而强大的开发体验。
 
-在底层实现上，Nest 基于强大的 HTTP 服务器框架构建。默认情况下使用 [Express](https://expressjs.com/) 作为底层框架，同时也支持配置为 [Fastify](https://fastify.dev/)。
+在底层实现上，Nest 默认使用 [Express](https://expressjs.com/) 作为 HTTP 服务引擎，同时也支持切换为性能更高的 [Fastify](https://fastify.dev/)。Nest 在这些成熟框架之上构建了一层抽象，既屏蔽了底层复杂度，又保留了对原生 API 的访问能力。这种设计让开发者既能享受 Nest 提供的结构化开发体验，也能灵活使用底层框架的丰富生态与中间件系统。
 
-Nest 在这些成熟的 Node.js 框架（Express/Fastify）之上提供了一层抽象封装，并直接开放底层框架的 API。这种设计让开发者既能享受 Nest 的架构优势，又能充分利用底层平台丰富的第三方模块生态。
+## 核心理念
 
-## 设计理念
+随着 Node.js 的广泛应用，JavaScript 逐渐成为前后端通用的开发语言。由此也催生出如 Angular、React 和 Vue 等优秀的前端框架，它们大幅提升了开发效率，使应用更易于扩展、测试与维护。
 
-近年来，随着 Node.js 的普及，JavaScript 已成为前后端通用的开发语言。这一趋势催生了众多优秀项目，例如 [Angular](https://angular.dev/)、[React](https://github.com/facebook/react) 和 [Vue](https://github.com/vuejs/vue)。这些框架极大提升了开发效率，让前端应用变得更快、更易测试，也更易扩展。
+然而，在服务端开发领域，尽管 Node.js 拥有丰富的库和工具，真正系统化的**应用架构**方案仍较为稀缺。
 
-然而，尽管 Node.js（以及服务端 JavaScript）生态中涌现了大量优质的库、工具和辅助模块，但在**应用架构**这一核心问题上，现有解决方案仍显不足。
+Nest 正是为解决这一痛点而生。它提供了开箱即用的架构体系，帮助开发者快速构建高度可测试、易维护、低耦合且具备良好可扩展性的服务端应用。其整体架构深受 Angular 启发，将成熟的模块化设计理念引入到服务端开发中，为构建大型系统提供了坚实基础。
 
-Nest 正是为了解决这一痛点而诞生。它提供开箱即用的应用架构，帮助开发者和团队构建高度可测试、可扩展、低耦合且易于维护的应用。Nest 的架构设计深受 Angular 启发，将其成熟的设计理念引入 Node.js 服务端开发。
+## 快速开始：安装与项目创建
 
-## 快速安装与项目创建
+你可以通过两种主要方式开始使用 NestJS：使用官方推荐的 [Nest CLI](/cli/overview) 脚手架工具快速生成项目，或是克隆预设的起始项目。这两种方式都能帮助你迅速搭建具备基础结构和配置的 NestJS 应用，让你专注于业务开发而非繁琐的初始化流程。
 
-你可以通过两种主要方式开始使用 NestJS：一是使用 [Nest CLI](/cli/overview) 脚手架工具快速创建项目，二是[克隆现有的起始项目](#克隆起始项目)。这两种方式都能帮助你快速搭建项目的初始结构和基础配置，无论选择哪种方式，都能让你轻松起步。
+### 使用 Nest CLI 创建新项目（推荐）
 
-使用 Nest CLI 创建新项目（官方推荐）：
+Nest CLI 是构建 NestJS 应用的官方工具，能够自动生成规范的项目结构与必要依赖。安装并创建新项目的命令如下：
 
 ```bash
 $ npm i -g @nestjs/cli
 $ nest new project-name
 ```
 
-上述命令会创建一个新的项目目录，并自动生成核心 Nest 文件及相关模块，形成标准的项目基础结构。推荐首次使用 NestJS 的开发者采用此方式，我们将在[快速上手](/first-steps)章节详细介绍这种创建方式。
+上述命令将创建一个名为 `project-name` 的新目录，并自动生成核心文件与模块，形成符合官方规范的项目骨架。对于初次接触 NestJS 的开发者，强烈推荐采用这种方式。我们将在[快速上手章节](/first-steps)中详细介绍其使用流程。
 
-<CalloutInfo>
-  如果希望创建更严格的 TypeScript 项目，可在 `nest new` 命令中添加 `--strict` 参数。
-</CalloutInfo>
+### 克隆起始项目
 
-## 克隆起始项目
-
-你也可以通过 Git 克隆 TypeScript 起始项目：
+你也可以通过 Git 克隆官方维护的 TypeScript 起始模板：
 
 ```bash
 $ git clone https://github.com/nestjs/typescript-starter.git project
@@ -44,17 +40,22 @@ $ npm install
 $ npm run start
 ```
 
+该模板适用于希望快速搭建并自定义项目结构的用户。项目启动后，默认监听本地 `http://localhost:3000/`。
+
 <CalloutInfo>
-  如果你希望克隆仓库但不保留 Git 历史记录，可以使用 [degit](https://github.com/Rich-Harris/degit)
-  工具。
+  如果你只想复制项目内容而不保留 Git 历史记录，推荐使用
+  [degit](https://github.com/Rich-Harris/degit) 工具。
 </CalloutInfo>
 
-启动成功后，打开浏览器访问 `http://localhost:3000/`。
+如需使用 JavaScript 版本，只需将仓库地址中的 `typescript-starter.git` 替换为 `javascript-starter.git`。
 
-如需使用 JavaScript 版本的起始项目，只需将上述命令中的 `typescript-starter.git` 替换为 `javascript-starter.git` 即可。
+### 手动初始化项目
 
-## 其他项目初始化方式
+除了上述方式，你也可以从零开始，手动安装依赖并搭建项目结构。这种方式更灵活，也更具挑战性，适合有经验的开发者。你至少需要安装以下核心依赖：
 
-你也可以选择手动安装核心依赖包，从零开始搭建项目。这种方式需要你自行创建项目的基础结构，并至少安装以下依赖：`@nestjs/core`、`@nestjs/common`、`rxjs` 和 `reflect-metadata`。
+- `@nestjs/core`
+- `@nestjs/common`
+- `rxjs`
+- `reflect-metadata`
 
-如果你对这种方式感兴趣，推荐阅读这篇实用教程：[5 steps to create a bare minimum NestJS app from scratch!](https://dev.to/micalevisk/5-steps-to-create-a-bare-minimum-nestjs-app-from-scratch-5c3b)。
+若你倾向于这种“裸构建”方式，可参考这篇实践教程：[5 steps to create a bare minimum NestJS app from scratch!](https://dev.to/micalevisk/5-steps-to-create-a-bare-minimum-nestjs-app-from-scratch-5c3b)。

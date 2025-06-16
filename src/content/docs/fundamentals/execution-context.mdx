@@ -1,66 +1,66 @@
-# 执行上下文（Execution Context）
+# 执行上下文
 
-Nest 提供了一系列实用类，帮助开发者轻松编写可在多种应用上下文（如基于 Nest 的 HTTP 服务器、微服务和 WebSocket）下运行的应用程序。这些工具类能够提供当前执行环境的信息，使我们能够构建通用的[守卫](/guards)、[异常过滤器](/exception-filters)和[拦截器](/interceptors)，让他们适配不同的控制器、方法和执行环境。
+Nest 提供了一套强大的工具类，旨在帮助开发者构建能够适配多种运行环境的通用程序，例如基于 Nest 的 HTTP 服务、微服务架构，或是 WebSocket 应用。这些工具类可以提取当前的执行上下文信息，使我们能够编写可在不同类型的控制器、处理器与运行平台之间灵活复用的守卫、异常过滤器和拦截器。
 
-本章将重点介绍两个核心类：`ArgumentsHost` 和 `ExecutionContext`。
+本章将重点介绍两个核心类：`ArgumentsHost` 和 `ExecutionContext`，它们是构建高度抽象和可扩展逻辑的关键基础。
 
 ## ArgumentsHost 类
 
-`ArgumentsHost` 提供了一组方法，用于获取传递给处理器（handler）的参数。它允许我们根据不同的上下文（如 HTTP、RPC（微服务）或 WebSocket）获取对应的参数。框架会在需要访问参数的场景下自动注入 `ArgumentsHost` 实例，通常以 `host` 作为参数名。例如，在[异常过滤器](/exception-filters#arguments-host)的 `catch()` 方法中会接收到一个 `ArgumentsHost` 实例。
+`ArgumentsHost` 提供了一组方法，用于访问传递给处理器（handler）的原始参数。它抽象了不同上下文类型（如 HTTP、RPC 或 WebSocket）下的参数结构，并允许你以统一的方式提取相关数据。
 
-`ArgumentsHost` 本质上是对处理器参数的抽象。在 HTTP 服务器应用（如使用 `@nestjs/platform-express` 时），`host` 对象封装了 Express 的 `[request, response, next]` 数组，其中 `request` 是请求对象，`response` 是响应对象，`next` 用于控制请求-响应流程。而在 [GraphQL](/graphql/quick-start) 应用中，`host` 对象则包含 `[root, args, context, info]` 数组。
+在需要访问请求上下文的场景中，Nest 会自动注入 `ArgumentsHost` 实例，通常以 `host` 作为参数名称。例如，在[异常过滤器](/exception-filters#arguments-host)的 `catch()` 方法中，你会收到一个 `ArgumentsHost` 实例作为入参。
 
-## 当前应用上下文
+简而言之，`ArgumentsHost` 封装了对处理器参数的访问逻辑。例如：
 
-当我们需要编写可在多种应用上下文下运行的通用守卫、异常过滤器和[拦截器时，需要一种方式来判断当前方法所处的应用类型。可以通过 `ArgumentsHost` 的 `getType()` 方法实现：
+- 在 HTTP 应用中（如使用 `@nestjs/platform-express）`，它封装了 Express 风格的参数数组 `[request, response, next]`。
+- 在 GraphQL 应用中，它则封装了 GraphQL 专属参数结构 `[root, args, context, info]`。
+
+这一机制使你可以在框架内部以一致的方式访问底层平台提供的原始参数，而无需关心其具体实现。
+
+## 判断当前应用上下文类型
+
+为了编写在多种环境中通用的逻辑组件（如守卫、异常过滤器、拦截器），我们通常需要判断当前的执行上下文类型。`ArgumentsHost` 提供的 `getType()` 方法正是用于实现这一目的：
 
 ```ts
 import { GqlContextType } from '@nestjs/graphql'
 
 if (host.getType() === 'http') {
-  // 仅在常规 HTTP 请求（REST）上下文中执行的逻辑
+  // 针对 HTTP（REST）请求的处理逻辑
 } else if (host.getType() === 'rpc') {
-  // 仅在微服务（Microservice）请求上下文中执行的逻辑
+  // 针对微服务（RPC）调用的处理逻辑
 } else if (host.getType<GqlContextType>() === 'graphql') {
-  // 仅在 GraphQL 请求上下文中执行的逻辑
+  // 针对 GraphQL 请求的处理逻辑
 }
 ```
 
-通过获取应用类型，我们可以编写更通用的组件，如下所示。
+通过上下文类型判断机制，我们可以精确控制逻辑的适用范围，使组件在不同平台间具备良好的适应性与可维护性。
 
-## 处理器参数获取
+## 获取处理器参数
 
-要获取传递给处理器的参数数组，可以通过 host 对象的 `getArgs()` 方法：
+要获取传递给处理器的参数数组，可以使用 `host` 对象的 `getArgs()` 方法：
 
 ```ts
 const [req, res, next] = host.getArgs()
 ```
 
-你也可以使用 `getArgByIndex()` 方法按索引获取特定参数：
+如果只需访问某个特定参数，也可以通过 `getArgByIndex()` 方法按索引获取：
 
 ```ts
 const request = host.getArgByIndex(0)
 const response = host.getArgByIndex(1)
 ```
 
-上述示例展示了如何通过索引获取请求和响应对象。但这种方式通常不推荐，因为会导致应用与特定执行上下文强耦合。更推荐的做法是，利用 host 对象的上下文切换方法，切换到适合当前场景的上下文。常用的上下文切换方法如下：
+虽然通过索引访问参数是可行的，但这种方式会使代码强依赖于特定的执行上下文（如 HTTP、WebSocket 或 RPC），降低通用性与可维护性，因此并不推荐。
+
+更推荐的方式是使用 `host` 提供的上下文切换方法，明确切换至当前处理器所处的上下文类型。这类方法包括：
 
 ```ts
-/**
- * 切换到 RPC 上下文。
- */
-switchToRpc(): RpcArgumentsHost;
-/**
- * 切换到 HTTP 上下文。
- */
-switchToHttp(): HttpArgumentsHost;
-/**
- * 切换到 WebSocket 上下文。
- */
-switchToWs(): WsArgumentsHost;
+switchToHttp(): HttpArgumentsHost   // 切换到 HTTP 上下文
+switchToWs(): WsArgumentsHost       // 切换到 WebSocket 上下文
+switchToRpc(): RpcArgumentsHost     // 切换到 RPC（微服务）上下文
 ```
 
-我们可以用 `switchToHttp()` 方法重写前面的示例。`host.switchToHttp()` 会返回一个适用于 HTTP 场景的 `HttpArgumentsHost` 对象。该对象提供了便捷方法，帮助我们提取所需对象。结合 Express 类型断言，还可以获取原生 Express 类型对象：
+不同的传输层（如 HTTP、WebSocket、RPC）中，`ArgumentsHost` 提供了对应的适配器接口，可用于获取上下文相关的请求数据和底层框架对象。例如，在 HTTP 场景下，可以调用 `switchToHttp()` 获取一个 `HttpArgumentsHost` 实例，从中提取 Express 的请求与响应对象：
 
 ```ts
 const ctx = host.switchToHttp()
@@ -68,36 +68,35 @@ const request = ctx.getRequest<Request>()
 const response = ctx.getResponse<Response>()
 ```
 
-同理，`WsArgumentsHost` 和 `RpcArgumentsHost` 也分别提供了获取 WebSocket 和微服务上下文对象的方法。以下是 `WsArgumentsHost` 的方法：
+如果当前上下文为 WebSocket，可以通过 `switchToWs()` 获取 `WsArgumentsHost`，用于访问客户端连接对象与传入数据：
 
 ```ts
 export interface WsArgumentsHost {
-  /**
-   * 获取数据对象。
-   */
+  /** 获取客户端传入的数据 */
   getData<T>(): T
-  /**
-   * 获取客户端对象。
-   */
+
+  /** 获取客户端连接对象（如 Socket.IO 客户端） */
   getClient<T>(): T
 }
 ```
 
-`RpcArgumentsHost` 的方法如下：
+在微服务（RPC）场景中，调用 `switchToRpc()` 将返回 RpcArgumentsHost，可用于访问消息内容与上下文：
 
 ```ts
 export interface RpcArgumentsHost {
-  /**
-   * 获取数据对象。
-   */
+  /** 获取传入的数据对象 */
   getData<T>(): T
 
-  /**
-   * 获取上下文对象。
-   */
+  /** 获取 RPC 上下文对象（如消息上下文） */
   getContext<T>(): T
 }
 ```
+
+<CalloutInfo>
+  应根据所使用的传输机制（HTTP、WebSocket 或
+  RPC）选择对应的上下文切换方法。每种上下文类型都提供了访问底层平台对象（如 Express、Socket.IO
+  或自定义传输器）的能力，有助于提升代码的可读性与稳定性。
+</CalloutInfo>
 
 ## ExecutionContext 类
 
