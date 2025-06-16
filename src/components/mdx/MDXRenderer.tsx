@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import * as runtime from 'react/jsx-runtime'
 
 import { compile, type CompileOptions, run, type RunOptions } from '@mdx-js/mdx'
-import rehypeShiki from '@shikijs/rehype'
 import rehypeMdxCodeProps from 'rehype-mdx-code-props'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import type { BundledLanguage } from 'shiki'
 
+import { CodeWrapper } from '~/components/code/CodeWrapper'
 import { MermaidWrapper } from '~/components/doc/MermaidWrapper'
 import { useMDXComponents } from '~/mdx-components'
 
@@ -91,7 +91,11 @@ export function MDXRenderer(props: MDXRendererProps) {
         }
       }
 
-      return <pre {...restProps}>{children}</pre>
+      return (
+        <CodeWrapper>
+          <pre {...restProps}>{children}</pre>
+        </CodeWrapper>
+      )
     },
   })
 
@@ -103,16 +107,6 @@ export function MDXRenderer(props: MDXRendererProps) {
     rehypePlugins: [
       rehypeMdxCodeProps,
       rehypeSlug,
-      [
-        rehypeShiki,
-        {
-          themes: {
-            light: 'github-light',
-            dark: 'github-dark',
-          },
-          inline: 'tailing-curly-colon',
-        },
-      ],
     ],
   }), [])
 

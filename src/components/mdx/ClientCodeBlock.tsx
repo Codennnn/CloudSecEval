@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import { transformerNotationHighlight } from '@shikijs/transformers'
-import { type BundledLanguage, type CodeToHastOptions, codeToHtml } from 'shiki'
+import { type BundledLanguage } from 'shiki'
 
 import { CodeContainer } from '~/components/code/CodeContainer'
+import { highlightCode } from '~/components/code/transformers'
 
 /**
  * 代码高亮结果缓存
@@ -87,19 +87,9 @@ export function ClientCodeBlock(props: ClientCodeBlockProps) {
           try {
             setIsLoading(true)
 
-            const transformers: CodeToHastOptions['transformers'] = [transformerNotationHighlight()]
-
-            if (showLineNumbers) {
-              transformers.push({ name: 'line-numbers' })
-            }
-
-            const out = await codeToHtml(code, {
+            const out = await highlightCode({
+              code,
               lang,
-              themes: {
-                light: 'github-light',
-                dark: 'github-dark',
-              },
-              transformers,
             })
 
             /**

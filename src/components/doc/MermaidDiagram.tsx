@@ -20,7 +20,7 @@ function ControlButton(props: ControlButtonProps) {
   const { icon, label, onClick } = props
 
   return (
-    <Tooltip delayDuration={350}>
+    <Tooltip>
       <TooltipTrigger asChild>
         <Button
           aria-label={label}

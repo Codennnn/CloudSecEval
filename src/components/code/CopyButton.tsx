@@ -13,7 +13,9 @@ interface CopyButtonProps {
   className?: string
 }
 
-export function CopyButton({ text, className }: CopyButtonProps) {
+export function CopyButton(props: CopyButtonProps) {
+  const { text, className } = props
+
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -34,7 +36,7 @@ export function CopyButton({ text, className }: CopyButtonProps) {
   const shouldOpen = copied ? true : undefined
 
   return (
-    <Tooltip delayDuration={250} open={shouldOpen}>
+    <Tooltip open={shouldOpen}>
       <TooltipTrigger asChild>
         <Button
           className={cn(

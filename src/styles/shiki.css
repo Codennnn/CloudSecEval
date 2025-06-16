@@ -41,7 +41,7 @@
 pre.shiki {
   --shiki-dark-bg: var(--color-muted) !important;
 
-  @apply overflow-x-auto px-4 pt-3;
+  @apply overflow-x-auto px-4 py-3;
 
   code {
     @apply block text-sm;

@@ -27,7 +27,7 @@ export function EnglishDocLink() {
   const englishDocPath = getEnglishDocPath(pathname)
 
   return (
-    <Tooltip delayDuration={300}>
+    <Tooltip>
       <TooltipTrigger asChild>
         <Link href={englishDocPath} rel="noopener noreferrer" target="_blank">
           <Button

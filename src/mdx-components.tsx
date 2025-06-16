@@ -4,6 +4,7 @@ import type { MDXComponents } from 'mdx/types'
 import type { BundledLanguage } from 'shiki'
 
 import { CodeBlock } from '~/components/code/CodeBlock'
+import { CodeWrapper } from '~/components/code/CodeWrapper'
 import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
 import { FileTree } from '~/components/doc/FileTree'
@@ -158,7 +159,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         }
       }
 
-      return <pre {...restProps}>{children}</pre>
+      return (
+        <CodeWrapper>
+          <pre {...restProps}>{children}</pre>
+        </CodeWrapper>
+      )
     },
 
     table: (props: React.ComponentProps<'table'>) => {

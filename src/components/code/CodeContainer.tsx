@@ -1,8 +1,8 @@
 import type { BundledLanguage } from 'shiki'
 
+import { CodeWrapper } from '~/components/code/CodeWrapper'
 import { CopyButton } from '~/components/code/CopyButton'
 import { LanguageIcon } from '~/components/LanguageIcon'
-import { cn } from '~/lib/utils'
 
 interface CodeContainerProps {
   /** 代码内容，用于复制功能 */
@@ -45,7 +45,7 @@ export function CodeContainer(props: CodeContainerProps) {
   } = props
 
   return (
-    <div className={cn('not-prose border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block', className)}>
+    <CodeWrapper className={className}>
       {/* 头部工具栏 */}
       {showHeader && (
         <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
@@ -79,6 +79,6 @@ export function CodeContainer(props: CodeContainerProps) {
 
       {/* 内容区域 */}
       {children}
-    </div>
+    </CodeWrapper>
   )
 }

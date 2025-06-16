@@ -302,7 +302,7 @@ export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
         </div>
         <div className="flex items-center gap-1">
           {messages.length > 0 && (
-            <Tooltip delayDuration={300}>
+            <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   className="size-7"

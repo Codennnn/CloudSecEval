@@ -2,11 +2,13 @@
 
 import Link from 'next/link'
 import type { Interaction } from '@oramacloud/client'
-import { BookOpenIcon } from 'lucide-react'
+import { BookOpenIcon, MessageSquarePlusIcon } from 'lucide-react'
 
 import { MDXRenderer } from '~/components/mdx/MDXRenderer'
 import { ProseContainer } from '~/components/ProseContainer'
 import type { SearchDocument } from '~/types/doc'
+
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 interface Source {
   document: SearchDocument
@@ -66,17 +68,27 @@ function RelatedQuestions(props: RelatedQuestionsProps) {
 
   return (
     <div className="mt-2 pt-2 border-t border-border/50">
-      <div className="text-xs font-medium mb-1">相关问题：</div>
+      <div className="font-medium mb-1.5">相关问题：</div>
+
       <div className="space-y-0.5">
         {questions.map((query: string, queryIdx: number) => (
           <button
             key={queryIdx}
-            className="block text-xs text-blue-500 hover:underline text-left"
+            className="flex items-center justify-start gap-1 text-[0.8em] text-blue-500 hover:underline underline-offset-2 group/question"
             onClick={() => {
               onQuestionClick(query)
             }}
           >
             {query}
+
+            <Tooltip>
+              <TooltipTrigger>
+                <MessageSquarePlusIcon className="size-[1em] opacity-0 group-hover/question:opacity-100 transition-opacity" />
+              </TooltipTrigger>
+              <TooltipContent>
+                添加到提问
+              </TooltipContent>
+            </Tooltip>
           </button>
         ))}
       </div>
