@@ -11,6 +11,8 @@ interface CodeContainerProps {
   lang: BundledLanguage
   /** 文件名，可选 */
   filename?: string
+  /** 标题，可选 */
+  title?: string
   /** 是否显示加载状态 */
   isLoading?: boolean
   /** 容器内容 */
@@ -32,6 +34,7 @@ export function CodeContainer(props: CodeContainerProps) {
     code,
     lang,
     filename,
+    title,
     isLoading = false,
     children,
     className,
@@ -42,11 +45,11 @@ export function CodeContainer(props: CodeContainerProps) {
   } = props
 
   return (
-    <div className={cn('not-prose not-first:mt-5 border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block', className)}>
+    <div className={cn('not-prose border border-border rounded-lg overflow-hidden max-w-full w-full group/code-block', className)}>
       {/* 头部工具栏 */}
       {showHeader && (
         <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
-          <div className="flex items-center gap-2">
+          <div className="inline-flex items-center gap-2 flex-1">
             {showLanguageIcon && (
               <LanguageIcon
                 className="size-5.5"
@@ -54,11 +57,14 @@ export function CodeContainer(props: CodeContainerProps) {
               />
             )}
 
-            {filename && <span className="font-medium">{filename}</span>}
+            <div className="flex items-center gap-2 font-medium">
+              {title && <span className="opacity-70">{title}</span>}
+              {filename && <span>{filename}</span>}
+            </div>
 
             {/* 微妙的加载指示器 */}
             {isLoading && (
-              <div className="w-2 h-2 bg-current opacity-50 rounded-full animate-pulse" />
+              <div className="size-2 bg-current/60 rounded-full animate-pulse" />
             )}
 
             {/* 自定义头部内容 */}

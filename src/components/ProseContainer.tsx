@@ -2,7 +2,7 @@ import type React from 'react'
 
 import { cn } from '~/lib/utils'
 
-interface ProseProps extends React.HTMLAttributes<HTMLElement> {
+interface ProseContainerProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * 渲染的 HTML 标签名
    * @default 'div'
@@ -40,7 +40,7 @@ interface ProseProps extends React.HTMLAttributes<HTMLElement> {
  * </Prose>
  * ```
  */
-export function Prose(props: React.PropsWithChildren<ProseProps>) {
+export function ProseContainer(props: React.PropsWithChildren<ProseContainerProps>) {
   const {
     children,
     as: Component = 'div',

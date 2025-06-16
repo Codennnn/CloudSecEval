@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
+import { ProseContainer } from '~/components/ProseContainer'
 import { Button } from '~/components/ui/button'
-import { Prose } from '~/components/ui/prose'
 import { Separator } from '~/components/ui/separator'
 
 import { MDXRenderer } from './MDXRenderer'
@@ -392,7 +392,7 @@ export function MDXRendererDemo() {
           </p>
         </div>
 
-        <Prose className="border rounded-lg p-4 min-h-[200px] bg-background">
+        <ProseContainer className="border rounded-lg p-4 min-h-[200px] bg-background">
           <MDXRenderer
             content={content}
           />
@@ -402,7 +402,7 @@ export function MDXRendererDemo() {
               点击上方按钮开始测试 MDX 渲染
             </div>
           )}
-        </Prose>
+        </ProseContainer>
       </div>
 
       <Separator />

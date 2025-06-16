@@ -8,11 +8,12 @@ interface CodeBlockProps {
   code: string
   lang: BundledLanguage
   filename?: string
+  title?: string
   showLineNumbers?: boolean
 }
 
 export async function CodeBlock(props: CodeBlockProps) {
-  const { code, lang, filename, showLineNumbers } = props
+  const { code, lang, filename, title, showLineNumbers } = props
 
   const transformers: CodeToHastOptions['transformers'] = [
     // transformerTwoslash(),
@@ -38,6 +39,7 @@ export async function CodeBlock(props: CodeBlockProps) {
       code={code}
       filename={filename}
       lang={lang}
+      title={title}
     >
       <div
         dangerouslySetInnerHTML={{ __html: out }}

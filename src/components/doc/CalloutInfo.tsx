@@ -6,6 +6,7 @@ import {
   InfoIcon,
   XCircleIcon } from 'lucide-react'
 
+import { SpacingWrapper } from '~/components/doc/SpacingWrapper'
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert'
 import { cn } from '~/lib/utils'
 
@@ -111,26 +112,28 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
   }
 
   return (
-    <Alert
-      className={cn(
-        'prose-strong:text-inherit prose-strong:font-medium',
-        'prose-a:text-inherit',
-        'prose-p:first:mt-0 prose-p:last:mb-0',
-        'not-first:mt-5 outline -outline-offset-4',
-        borderClass,
-        titleTextColor,
-      )}
-      data-component="callout-info"
-    >
-      {getIcon()}
+    <SpacingWrapper>
+      <Alert
+        className={cn(
+          'prose-strong:text-inherit prose-strong:font-medium',
+          'prose-a:text-inherit',
+          'prose-p:first:mt-0 prose-p:last:mb-0',
+          'outline -outline-offset-4',
+          borderClass,
+          titleTextColor,
+        )}
+        data-component="callout-info"
+      >
+        {getIcon()}
 
-      <AlertTitle>{title ?? getDefaultTitle()}</AlertTitle>
+        <AlertTitle>{title ?? getDefaultTitle()}</AlertTitle>
 
-      <AlertDescription>
-        <div className={contentTextColor}>
-          {children ?? description}
-        </div>
-      </AlertDescription>
-    </Alert>
+        <AlertDescription>
+          <div className={contentTextColor}>
+            {children ?? description}
+          </div>
+        </AlertDescription>
+      </Alert>
+    </SpacingWrapper>
   )
 }

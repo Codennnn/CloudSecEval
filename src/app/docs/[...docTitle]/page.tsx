@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 
 import { DocNavigation } from '~/components/DocNavigation'
-import { Prose } from '~/components/ui/prose'
+import { ProseContainer } from '~/components/ProseContainer'
 import { Skeleton } from '~/components/ui/skeleton'
 import type { PageProps } from '~/types/common'
 import { getAllDocPaths, getDocNavigation } from '~/utils/docs'
@@ -70,11 +70,11 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
 
   return (
     <div className="max-w-[80ch] mx-auto">
-      <Prose as="article">
+      <ProseContainer as="article">
         <Suspense fallback={<LoadingSpinner />}>
           <DocContent docPath={docPath} />
         </Suspense>
-      </Prose>
+      </ProseContainer>
 
       <DocNavigation
         next={navigation.next}

@@ -8,6 +8,7 @@ import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
 import { FileTree } from '~/components/doc/FileTree'
 import { MermaidWrapper } from '~/components/doc/MermaidWrapper'
+import { SpacingWrapper } from '~/components/doc/SpacingWrapper'
 import { LinkIcon } from '~/components/LinkIcon'
 import {
   Table,
@@ -23,6 +24,7 @@ import { getDocLinkHref, isExternalLink, isHashLink } from '~/utils/link'
 interface PreProps {
   children: React.ReactElement<{ className: string, children: React.ReactElement | string }>
   filename?: string
+  title?: string
   showLineNumbers?: boolean
   hideInDoc?: boolean
 }
@@ -118,6 +120,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       const {
         children,
         filename,
+        title,
         showLineNumbers = false,
         hideInDoc = false,
         ...restProps
@@ -134,16 +137,23 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
         if (typeof codeContent === 'string') {
           if (lang === 'mermaid') {
-            return <MermaidWrapper chart={codeContent} />
+            return (
+              <SpacingWrapper>
+                <MermaidWrapper chart={codeContent} />
+              </SpacingWrapper>
+            )
           }
 
           return (
-            <CodeBlock
-              code={codeContent}
-              filename={filename}
-              lang={lang}
-              showLineNumbers={showLineNumbers}
-            />
+            <SpacingWrapper>
+              <CodeBlock
+                code={codeContent}
+                filename={filename}
+                lang={lang}
+                showLineNumbers={showLineNumbers}
+                title={title}
+              />
+            </SpacingWrapper>
           )
         }
       }
@@ -153,9 +163,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
     table: (props: React.ComponentProps<'table'>) => {
       return (
-        <Table>
-          {props.children}
-        </Table>
+        <SpacingWrapper>
+          <Table>
+            {props.children}
+          </Table>
+        </SpacingWrapper>
       )
     },
 

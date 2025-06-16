@@ -1,14 +1,14 @@
 # 动态模块
 
-[模块章节](/modules)介绍了 Nest 模块的基础知识，并简要提及了[动态模块](/modules#dynamic-modules#动态模块配置)。本章将深入解析动态模块，帮助你全面理解其概念、使用场景及实现方式。
+在[模块章节](/modules)中，我们介绍了 Nest 模块的基础概念，并简要提及了[动态模块（Dynamic Module）](/modules#动态模块配置)的相关内容。本章将对动态模块进行深入讲解，帮助你全面理解其概念、应用场景及实现机制。
 
 ## 简介
 
-在文档的概览部分，大多数示例代码采用了常规的静态模块（Static Module）方式。模块用于组织一组组件，如[提供者](/providers)和[控制器](/controllers)，他们作为应用的模块化单元协同工作。模块为这些组件提供执行上下文或作用域。例如，在模块中定义的提供者对该模块的其他成员可见，无需导出即可直接访问。若需让某个提供者在模块外部可用，需先从其宿主模块导出，并在消费模块中导入。
+在文档的前几章中，大多数示例均基于传统的**静态模块**（Static Module）实现方式。模块用于组织一组紧密相关的组件，如[提供者](/providers)和[控制器](/controllers)，并为它们提供统一的执行上下文与作用域。例如，在某模块内定义的提供者默认对该模块内的其他组件可见，无需额外导出即可注入使用。若需在其他模块中复用这些提供者，则需要将其显式导出，并在目标模块中进行导入。
 
-下面通过一个常见示例进行说明。
+我们通过一个常见示例进一步说明上述机制。
 
-首先，定义一个 `UsersModule`，用于提供并导出 `UsersService`。`UsersModule` 是 `UsersService` 的**宿主模块**：
+首先，定义一个 `UsersModule`，该模块负责提供并导出 `UsersService`。此时，`UsersModule` 即为 `UsersService` 的**宿主模块**：
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -21,7 +21,7 @@ import { UsersService } from './users.service'
 export class UsersModule {}
 ```
 
-接着，定义一个 `AuthModule`，它导入了 `UsersModule`，从而可以在内部使用 `UsersModule` 导出的提供者：
+接着，定义一个 `AuthModule`，它通过 `imports` 引入 `UsersModule`，从而能够在其内部使用 `UsersService`：
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -36,7 +36,7 @@ import { UsersModule } from '../users/users.module'
 export class AuthModule {}
 ```
 
-通过上述结构，可以在 `AuthModule` 的 `AuthService` 中注入 `UsersService`：
+此结构使得我们可以在 `AuthService` 中注入并使用 `UsersService`：
 
 ```ts
 import { Injectable } from '@nestjs/common'
@@ -51,69 +51,71 @@ export class AuthService {
 }
 ```
 
-这种方式称为**静态模块绑定**。Nest 需要在宿主模块和消费模块中声明所有模块组装信息。下面拆解该过程的具体步骤。Nest 通过以下流程使 `UsersService` 能在 `AuthModule` 内部使用：
+上述方式即为**静态模块绑定**。也就是说，Nest 要求开发者在编译期显式声明所有模块之间的依赖关系。Nest 实现依赖注入的过程如下：
 
-1. 实例化 `UsersModule`，递归导入其依赖的其他模块，并解析所有依赖（详见[自定义提供者](/fundamentals/custom-providers)）。
-2. 实例化 `AuthModule`，并将 `UsersModule` 导出的提供者注入到 `AuthModule` 的组件中（如同这些提供者直接在 `AuthModule` 中声明一样）。
-3. 在 `AuthService` 中注入 `UsersService` 实例。
+1. 实例化 `UsersModule`，递归加载其导入的所有模块，并解析其内部的所有依赖项（详见[自定义提供者](/fundamentals/custom-providers)）。
+2. 实例化 `AuthModule`，并将 `UsersModule` 中导出的提供者注入到 `AuthModule` 的上下文中，使这些提供者在本地声明的组件中可用。
+3. 在 `AuthService` 中成功注入 `UsersService` 实例，实现跨模块调用。
+
+理解静态模块的组织与依赖注入机制，是深入掌握 Nest 动态模块的基础。接下来，我们将进一步探讨动态模块的构建方式及其在实际应用中的优势。
 
 ## 动态模块的使用场景
 
-使用静态模块绑定时，消费模块无法影响宿主模块中提供者的配置方式。这一点为何重要？设想这样一种场景：我们有一个通用模块，需要在不同环境下展现不同行为。这类似于许多系统中的“插件”机制，即通用功能在被消费前需要进行配置。
+在**静态模块**绑定模式下，消费模块无法干预宿主模块中提供者的配置方式——这在某些情况下会成为限制。设想这样一种场景：我们有一个“通用”模块，需要在不同环境下呈现不同的行为。这就像许多系统中的“插件”机制：在被消费之前，通用功能往往需要先被配置。
 
-以 Nest 的**配置模块（Configuration Module）**为例。许多应用希望通过配置模块将配置信息外部化，从而能够根据不同部署环境动态调整应用设置，例如开发环境使用开发数据库，测试环境使用测试数据库等。通过将配置参数的管理交给配置模块，应用源码即可与配置解耦。
+以 Nest 的 Configuration Module（配置模块） 为例。多数应用希望将配置信息外部化，以便在不同部署环境（如开发、测试、生产）之间灵活切换。例如，开发环境连接开发数据库，而测试环境连接测试数据库。通过托管配置参数，配置模块让应用源码与运行配置实现松耦合。
 
-然而，配置模块本身是通用的（类似“插件”），需要由消费模块进行定制。这时就需要用到动态模块。利用动态模块特性，我们可以让配置模块变为动态，使消费模块在导入时通过 API 灵活定制其行为。
+然而，配置模块本身具有通用性，必须由**消费模块**加以定制，此时便需要用到动态模块。借助**动态模块**，配置模块可以在导入时暴露一套 API，让消费模块在引入过程中按需配置其行为，从而满足不同环境或场景下的需求。
 
-换句话说，动态模块为模块间的导入提供了 API，允许在导入时自定义模块的属性和行为，而不像静态绑定那样固定不变。
+简而言之，**动态模块为模块间的导入提供了可编程接口**：你可以在导入时自定义模块的属性和行为，而不再受静态绑定的限制。
 
 ## 配置模块示例
 
-本节将使用[配置章节](/techniques/configuration)中的基础示例代码，完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)获取。
+本节将基于[配置章节](/techniques/configuration)中的基础示例代码进行扩展，完整示例代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)查看。
 
-我们的需求是让 `ConfigModule` 能接受一个 `options` 对象进行定制。基础示例中 `.env` 文件的位置是写死在项目根目录下。假设我们希望这个位置可配置，比如将所有 `.env` 文件放在项目根目录下的 `config` 文件夹（与 `src` 同级）。这样，在不同项目中使用 `ConfigModule` 时就可以灵活选择不同的文件夹。
+我们的目标是让 `ConfigModule` 支持通过传入一个 `options` 对象来自定义行为。在基础示例中，`.env` 文件的位置是固定在项目根目录下。假设我们希望将 `.env` 文件统一放置在 `config` 文件夹中（与 `src` 目录同级），那么我们就需要让该路径具备可配置性。这样，在不同项目中使用 `ConfigModule` 时，就能根据需要灵活指定配置文件的存放位置。
 
-动态模块允许我们在导入模块时传递参数，从而改变其行为。我们先从消费模块的视角出发，倒推实现方式。首先，回顾下静态导入 `ConfigModule` 的例子（即无法影响被导入模块行为的方式）。请注意 `@Module()` 装饰器中的 `imports` 数组：
+动态模块机制允许我们在导入模块时传递参数，从而改变模块的内部行为。为了更好地理解其工作原理，我们将从“使用者”的角度出发，倒推其实现方式。首先，回顾一下静态方式导入 `ConfigModule` 的写法（即不支持传参的导入方式）。请注意 `@Module()` 装饰器中的 `imports` 配置项：
 
-```ts
+```ts title='静态模块的导入示例'
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule } from './config/config.module'
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule], // [!code hl]
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
 ```
 
-再来看下**动态模块**导入的方式，此时我们传递了一个配置对象。对比这两种方式在 `imports` 数组上的区别：
+再看一下通过动态模块导入的方式。此时我们调用 `register()` 方法，并传入一个配置对象。请注意，这种方式可以让模块在导入时接收自定义参数，实现更灵活的配置。对比下方两种写法在 `imports` 数组中的差异：
 
-```ts
+```ts title='动态模块的导入示例'
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule } from './config/config.module'
 
 @Module({
-  imports: [ConfigModule.register({ folder: './config' })],
+  imports: [ConfigModule.register({ folder: './config' })], // [!code hl]
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
 ```
 
-来看下上面动态模块示例发生了什么：
+让我们来看一下上面这个动态模块示例中发生了什么：
 
-1. `ConfigModule` 是一个普通类，因此我们可以推断它有一个**静态方法** `register()`。之所以是静态方法，是因为我们通过类名调用，而不是实例。注意：方法名可以自定义，但通常建议用 `forRoot()` 或 `register()`。
-2. `register()` 方法由我们自行定义，可以接受任意参数。这里我们用一个简单的 `options` 对象。
-3. 可以推断 `register()` 方法必须返回类似模块的对象，因为它的返回值出现在 `imports` 列表中，而该列表通常只包含模块类名。
+1. `ConfigModule` 是一个普通的类，因此我们可以推断它包含一个静态方法 `register()`。之所以称其为静态方法，是因为它是通过类本身调用的，而非类的实例。需要注意的是，这个方法名是可以自定义的，但社区推荐使用如 `forRoot()` 或 `register()` 这样的命名方式，以提高可读性。
+2. `register()` 方法由我们自行定义，并可以接受任意参数。在本例中，我们传入了一个简单的配置对象 `options`。
+3. 从使用方式可以推断，`register()` 方法必须返回一个类似模块的对象，因为它被包含在 `imports` 数组中，而该数组通常只接受模块类或动态模块对象。
 
-实际上，`register()` 方法返回的是一个**动态模块（Dynamic Module）**。动态模块是在运行时创建的模块，拥有与静态模块完全相同的属性，只是多了一个 `module` 属性。我们先回顾下静态模块声明，关注传递给装饰器的模块选项：
+实际上，`register()` 方法返回的是一个**动态模块**。动态模块是在运行时生成的模块结构，拥有与静态模块相同的组成部分，但会额外包含一个 `module` 属性，用于标识其实际模块类。下面我们先回顾一下一个典型的静态模块声明，重点关注装饰器中传递的模块选项：
 
-```ts
+```ts title='静态模块的声明示例'
 @Module({
   imports: [DogsModule],
   controllers: [CatsController],
@@ -122,20 +124,20 @@ export class AppModule {}
 })
 ```
 
-动态模块返回的对象接口与上面完全一致，只是多了一个 `module` 属性。`module` 属性用于指定模块名，通常与类名一致，如下例所示。
+动态模块返回的对象结构与上文介绍的一致，但**额外包含一个 `module` 属性**。该属性用于指定模块的类名，通常与模块类名相同。
 
 <CalloutInfo>
-  <div>对于动态模块，模块选项对象中，除了 `module` 属性外，其他属性都是可选的。</div>
+  对于动态模块而言，模块选项对象中的 `module` 属性是必须的，其余属性则根据需要选择性添加。
 </CalloutInfo>
 
-那么静态的 `register()` 方法到底做了什么？它的职责就是返回一个符合 `DynamicModule` 接口的对象。调用它时，实际上就是为 `imports` 列表提供了一个模块，就像静态方式直接写模块类名一样。也就是说，动态模块 API 只是返回一个模块，只不过这些属性是通过代码动态指定的，而不是写死在 `@Module` 装饰器里。
+那么，静态的 `register()` 方法究竟做了什么？它的职责就是返回一个符合 `DynamicModule` 接口规范的对象。调用 `register()` 实际上相当于向 `imports` 中提供了一个模块，就像静态方式中直接写模块类名一样。也就是说，动态模块的本质仍是返回一个模块对象，只不过其属性是通过代码动态生成的，而不是硬编码在 `@Module` 装饰器中。
 
-还有几点细节需要补充：
+还有几点关键细节需要补充：
 
-1. 现在我们可以明确，`@Module()` 装饰器的 `imports` 属性不仅可以接受模块类名（如 `imports: [UsersModule]`），还可以接受返回动态模块的函数（如 `imports: [ConfigModule.register(...)]`）。
-2. 动态模块本身也可以导入其他模块。虽然本例未用到，但如果动态模块依赖其他模块的提供者，可以通过 `imports` 属性导入，方式与静态模块完全一致。
+1. 现在我们可以明确：`@Module()` 装饰器的 `imports` 属性，不仅可以接收模块类名（例如 `imports: [UsersModule]`），还可以接收返回 `DynamicModule` 对象的工厂方法（例如 `imports: [ConfigModule.register(...)]`）。
+2. 动态模块本身也支持引入其他模块。虽然本例中未使用，但如果动态模块依赖其他模块的提供者，可以像静态模块一样通过 `imports` 属性引入，使用方式完全一致。
 
-理解了这些，我们来看下动态 `ConfigModule` 的声明应该是什么样子。
+理解以上内容后，我们来看下动态模块 `ConfigModule` 的基本实现结构：
 
 ```ts
 import { DynamicModule, Module } from '@nestjs/common'
@@ -153,17 +155,15 @@ export class ConfigModule {
 }
 ```
 
-现在应该能看出各部分如何协同工作了。调用 `ConfigModule.register(...)` 会返回一个 `DynamicModule` 对象，其属性本质上与之前通过 `@Module` 装饰器声明的静态模块一致。
+此时，你应该已经能清晰地理解各部分是如何协同工作的了。调用 `ConfigModule.register(...)` 会返回一个符合 `DynamicModule` 接口的对象，其结构与使用 `@Module` 装饰器声明的静态模块基本一致。
 
-<CalloutInfo>
-  <div>记得从 `@nestjs/common` 导入 `DynamicModule`。</div>
-</CalloutInfo>
+<CalloutInfo>别忘了从 `@nestjs/common` 包中导入 `DynamicModule` 类型。</CalloutInfo>
 
 不过目前我们的动态模块还未实现可配置的能力。接下来我们将实现这一功能。
 
 ## 模块配置
 
-要定制 `ConfigModule` 的行为，最直接的方式是在静态的 `register()` 方法中传入 `options` 对象。来看下消费模块的 `imports` 属性：
+要自定义 `ConfigModule` 的行为，最直接的方式是通过其静态 `register()` 方法传入一个 `options` 配置对象。来看下在消费模块中如何使用 `imports` 属性：
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -179,9 +179,16 @@ import { ConfigModule } from './config/config.module'
 export class AppModule {}
 ```
 
-这样，`options` 对象就会传递给动态模块。那么，如何在 `ConfigModule` 内部使用这个 `options` 呢？实际上，`ConfigModule` 主要用于提供并导出一个可注入的服务 —— `ConfigService`。真正需要用到 `options` 的是 `ConfigService`。假设我们已经能够将 `register()` 里的 `options` 传递给 `ConfigService`，就可以根据 `options` 的属性灵活定制服务行为。（注意：目前参数传递尚未实现，这里暂时将 `options` 写死，后续会完善。）
+在上述代码中，传入的 `options` 对象将会传递给 `ConfigModule`，从而构建一个动态模块。那么，这个 `options` 在 `ConfigModule` 内部是如何被使用的呢？
 
-```ts
+实际上，`ConfigModule` 的主要职责是提供并导出一个可注入的服务 —— `ConfigService`。而真正需要使用 `options` 的，正是这个服务本身。只要我们能将 `register()` 方法中传入的 `options` 成功地传递给 `ConfigService`，就可以根据这些配置灵活地定制服务行为。
+
+<CalloutInfo type="warning">
+  当前版本中参数传递机制尚未实现，示例中仍是使用硬编码方式传入
+  `options`，这一部分将在后续优化中完善。
+</CalloutInfo>
+
+```ts filename='config.service.ts'
 import { Injectable } from '@nestjs/common'
 import * as dotenv from 'dotenv'
 import * as fs from 'fs'
@@ -206,13 +213,15 @@ export class ConfigService {
 }
 ```
 
-现在，`ConfigService` 已经可以根据 `options` 指定的文件夹查找 `.env` 文件。
+现在，`ConfigService` 已能够根据传入的 `options` 参数指定的目录查找 `.env` 文件。
 
-接下来，我们需要将 `register()` 传入的 `options` 注入到 `ConfigService`。这一步将通过依赖注入机制实现。请务必理解这一点：`ConfigModule` 提供了 `ConfigService`，而 `ConfigService` 依赖于运行时传入的 `options` 对象。因此，我们需要先将 `options` 绑定到 Nest IoC 容器，再让 Nest 注入到 `ConfigService`。回忆一下[自定义提供者章节](/fundamentals/custom-providers#non-service-based-providers)提到，提供者不仅可以是服务，也可以是任意值，因此通过依赖注入处理简单对象完全可行。
+接下来，我们需要将 `register()` 方法中传入的 `options` 注入到 `ConfigService` 中。这一过程将通过依赖注入机制完成。请特别注意：`ConfigModule` 是 `ConfigService` 的提供者，而 `ConfigService` 又依赖于运行时传入的 `options` 对象。因此，我们必须先将该对象绑定到 Nest 的 IoC 容器，才能在后续通过依赖注入方式使用它。
 
-我们可以在静态的 `register()` 方法中，将 `options` 作为提供者绑定到 IoC 容器。只需将 `options` 定义为一个提供者，这样就能在 `ConfigService` 中注入使用。请看 `providers` 数组的写法：
+回顾一下自定义提供者章节中的内容：Nest 中的提供者不一定是类，也可以是任意的值对象。因此，将一个普通的配置对象作为提供者注入是完全可行的。
 
-```ts
+我们可以在 `register()` 静态方法中，将 `options` 作为一个值提供者绑定到 IoC 容器中。具体做法是将其定义为一个使用 `useValue` 的提供者，如下所示：
+
+```ts filename='config.module.ts'
 import { DynamicModule, Module } from '@nestjs/common'
 import { ConfigService } from './config.service'
 
@@ -234,9 +243,9 @@ export class ConfigModule {
 }
 ```
 
-最后一步，就是在 `ConfigService` 中注入 `'CONFIG_OPTIONS'` 提供者。注意，使用非类 token 时，需要用 `@Inject()` 装饰器（详见[自定义提供者章节](/fundamentals/custom-providers#non-class-based-provider-tokens)）。
+最后一步，是在 `ConfigService` 中注入名为 `'CONFIG_OPTIONS'` 的提供者。请注意，当使用非类类型的 token 时（即字符串、Symbol 等），必须使用 `@Inject()` 装饰器进行显式注入，详见[自定义提供者章节](/fundamentals/custom-providers#non-class-based-provider-tokens)。
 
-```ts
+```ts filename='config.service.ts'
 import * as dotenv from 'dotenv'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -259,7 +268,7 @@ export class ConfigService {
 }
 ```
 
-补充说明：上面为了简化，直接使用了字符串 `'CONFIG_OPTIONS'` 作为注入令牌。最佳实践是将其定义为常量（或 `Symbol`），并单独放在一个文件中，然后导入使用。例如：
+为了便于演示，以上示例代码直接使用字符串字面量 `'CONFIG_OPTIONS'` 作为注入令牌。在真实项目中，建议将该令牌提取为常量（或 `Symbol`），并放置在独立文件中后按需导入，以提高可维护性和复用性。示例：
 
 ```ts
 export const CONFIG_OPTIONS = 'CONFIG_OPTIONS'
@@ -267,25 +276,27 @@ export const CONFIG_OPTIONS = 'CONFIG_OPTIONS'
 
 ## 示例
 
-本章完整代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)查看。
+本章的完整示例代码可在[此处](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)查看。
 
 ## 社区命名规范
 
-你可能注意到，部分 `@nestjs/` 包中常见 `forRoot`、`register`、`forFeature` 等方法。虽然没有强制要求，但官方通常遵循以下约定：
+你可能已经注意到，在部分 `@nestjs/` 包中常见诸如 `forRoot`、`register`、`forFeature` 等方法名。虽然 Nest 并未强制要求，但社区和官方通常遵循以下命名约定：
 
-- `register` 用于为每个调用模块单独配置动态模块。例如，Nest 的 `@nestjs/axios`：`HttpModule.register({ baseUrl: 'someUrl' })`。如果在另一个模块中调用 `HttpModule.register({ baseUrl: 'somewhere else' })`，则会生成不同的配置。你可以为任意多个模块分别注册。
+- `register`：用于为每个使用该模块的地方单独配置动态模块。例如，在 `@nestjs/axios` 中，你可以使用 `HttpModule.register({ baseUrl: 'someUrl' })` 进行配置。如果在另一个模块中再次调用 `HttpModule.register({ baseUrl: 'somewhere else' })`，则会生成一个带有不同配置的模块实例。你可以根据需要为多个模块分别调用并配置。
 
-- `forRoot` 用于全局配置动态模块，通常只需调用一次，并在多个地方复用该配置（即使你未直接感知，因为已被抽象）。因此，像 `GraphQLModule.forRoot()`、`TypeOrmModule.forRoot()` 这类方法一般只调用一次。
+- `forRoot`：用于全局配置动态模块，通常仅调用一次。其配置可在多个模块间复用，即使你未显式感知（因其通常已被框架封装）。例如 `GraphQLModule.forRoot()`、`TypeOrmModule.forRoot()` 等，通常只需在应用的根模块中调用一次。
 
-- `forFeature` 用于在复用 `forRoot` 配置的基础上，为特定模块做进一步定制（如指定可访问的仓库、日志上下文等）。
+- `forFeature`：基于通过 `forRoot` 已注册的全局配置，为特定模块添加额外功能或定制化配置。例如指定可访问的仓库、启用特定日志上下文等。
 
-这些方法通常还提供异步版本，如 `registerAsync`、`forRootAsync`、`forFeatureAsync`，其作用类似，只是配置方式支持 Nest 的依赖注入。
+上述方法通常还提供对应的异步版本，如 `registerAsync`、`forRootAsync`、`forFeatureAsync`，功能类似，只是通过异步工厂函数的方式支持依赖注入，便于在运行时动态获取配置。
 
 ## 可配置模块构建器（ConfigurableModuleBuilder）
 
-手动实现高度可配置、支持异步方法（如 `registerAsync`、`forRootAsync` 等）的动态模块，对新手来说较为复杂。为此，Nest 提供了 `ConfigurableModuleBuilder`，可帮助你用极少代码快速构建模块“蓝图”。
+手动实现高度可配置、支持异步注册方法（如 `registerAsync`、`forRootAsync` 等）的动态模块，对于初学者而言可能较为复杂。为此，Nest 提供了 `ConfigurableModuleBuilder` 工具类，帮助你用极少的样板代码快速构建模块“蓝图”。
 
-以 `ConfigModule` 为例，使用 `ConfigurableModuleBuilder` 重写：首先，定义一个接口，描述 `ConfigModule` 所需的选项：
+以 `ConfigModule` 为例，下面演示如何使用 `ConfigurableModuleBuilder` 重构该模块。
+
+首先，定义一个接口，用于描述 `ConfigModule` 所需的配置项：
 
 ```ts
 export interface ConfigModuleOptions {
@@ -293,7 +304,7 @@ export interface ConfigModuleOptions {
 }
 ```
 
-然后，在 `config.module.ts` 同级目录下新建 `config.module-definition.ts`，利用 `ConfigurableModuleBuilder` 构建模块定义：
+接着，在 `config.module.ts` 所在目录下新建 `config.module-definition.ts` 文件，使用 `ConfigurableModuleBuilder` 构建模块定义：
 
 ```ts filename='config.module-definition.ts'
 import { ConfigurableModuleBuilder } from '@nestjs/common'
@@ -303,9 +314,9 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<ConfigModuleOptions>().build()
 ```
 
-接下来，修改 `config.module.ts`，让其继承自动生成的 `ConfigurableModuleClass`：
+然后，在 `config.module.ts` 中继承自动生成的 `ConfigurableModuleClass`，定义最终的模块类：
 
-```ts
+```ts filename='config.module.ts'
 import { Module } from '@nestjs/common'
 import { ConfigService } from './config.service'
 import { ConfigurableModuleClass } from './config.module-definition'
@@ -317,45 +328,49 @@ import { ConfigurableModuleClass } from './config.module-definition'
 export class ConfigModule extends ConfigurableModuleClass {}
 ```
 
-将 `ConfigurableModuleClass` 作为父类扩展后，`ConfigModule` 不仅具备自定义实现的 `register` 方法，还自动拥有 `registerAsync` 方法。这样，使用者即可通过异步工厂等方式异步配置该模块：
+通过继承 `ConfigurableModuleClass`，`ConfigModule` 自动获得了 `register` 和 `registerAsync` 等配置方法，使模块支持同步和异步的注册方式。例如：
 
 ```ts
 @Module({
   imports: [
     ConfigModule.register({ folder: './config' }),
-    // 或：
+    // 或使用异步注册方式：
     // ConfigModule.registerAsync({
     //   useFactory: () => ({
     //     folder: './config',
     //   }),
-    //   inject: [...其他依赖...]
+    //   inject: [...其他依赖项...],
     // }),
   ],
 })
 export class AppModule {}
 ```
 
-`registerAsync` 方法接收如下对象作为参数：
+`registerAsync` 方法支持以下几种配置方式：
 
 ```typescript
 {
   /**
-   * 注入令牌，指向将被实例化为提供者的类。
-   * 该类必须实现对应的接口。
+   * 使用类作为提供者。Nest 将自动实例化该类。
+   * 该类需实现相应接口，并定义用于生成配置的工厂方法。
    */
   useClass?: Type<
     ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>
   >;
+
   /**
-   * 返回配置对象（或返回配置对象的 Promise ）的工厂函数，用于配置模块。
+   * 使用工厂函数直接返回配置对象（或返回 Promise）。
    */
-  useFactory?: (...args: any[]) => Promise<ModuleOptions> | ModuleOptions;
+  useFactory?: (...args: any[]) => Promise<ModuleOptions> | ModuleOptions
+
   /**
-   * 工厂函数可注入的依赖项。
+   * 注入到工厂函数中的依赖项。
    */
   inject?: FactoryProvider['inject'];
+
   /**
-   * 注入令牌，指向已存在的提供者。该提供者必须实现对应的接口。
+   * 使用已存在的提供者（而非新建实例）作为配置来源。
+   * 提供者必须实现相同的接口。
    */
   useExisting?: Type<
     ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>
@@ -363,18 +378,18 @@ export class AppModule {}
 }
 ```
 
-下面依次介绍上述各个属性的作用：
+下面是对这些配置方式的简要说明：
 
-- `useFactory`：用于返回配置对象的工厂函数，可以是同步或异步函数。如果需要在工厂函数中注入依赖，请使用 `inject` 属性。上面的示例中就采用了这种方式。
-- `inject`：用于指定注入到工厂函数中的依赖项数组。依赖项的顺序必须与工厂函数参数的顺序一致。
-- `useClass`：指定一个类作为提供者，Nest 会实例化该类。该类必须实现相应的接口，通常需要提供一个 `create()` 方法用于返回配置对象。详细说明可参考下方[自定义方法名](/fundamentals/dynamic-modules#custom-method-key)小节。
-- `useExisting`：`useClass` 的变体，允许你复用已注册的现有提供者，而不是让 Nest 新建一个类实例。当你希望使用模块中已存在的提供者时非常有用。需要注意，该类必须实现与 `useClass` 相同的接口（即需要提供 `create()` 方法，除非你自定义了方法名，详见下方[自定义方法名](/fundamentals/dynamic-modules#custom-method-key)小节）。
+- `useFactory`：指定一个同步或异步的工厂函数，用于返回模块配置对象。如果需要注入依赖，可结合 `inject` 属性使用（如上方示例）。
+- `inject`：指定注入到工厂函数中的依赖项，顺序需与工厂函数参数保持一致。
+- `useClass`：指定一个类，Nest 会将其实例作为配置提供者。该类需实现特定接口，通常包含一个名为 `create()` 的方法，用于生成配置对象。详情可参考下方[自定义方法名](/fundamentals/dynamic-modules#custom-method-key)小节。
+- `useExisting`：与 `useClass` 类似，但不会创建新实例，而是复用已注册的现有提供者。这在模块中已存在配置类时尤为实用。该类同样需要实现接口中的方法。
 
-以上三种方式（`useFactory`、`useClass`、`useExisting`）互斥，请根据实际需求选择其中一种即可。
+需要注意的是：`useFactory`、`useClass` 和 `useExisting` 互斥，只能选择其中一种方式进行配置。
 
-最后，更新 `ConfigService`，注入自动生成的模块选项提供者，而非原先的 `'CONFIG_OPTIONS'`：
+最后，在 `ConfigService` 中使用自动生成的 `MODULE_OPTIONS_TOKEN` 注入模块选项，而非手动定义的常量字符串 `'CONFIG_OPTIONS'`：
 
-```ts
+```ts filename='config.service.ts'
 @Injectable()
 export class ConfigService {
   constructor(@Inject(MODULE_OPTIONS_TOKEN) private options: ConfigModuleOptions) { ... }
@@ -383,20 +398,20 @@ export class ConfigService {
 
 ## 自定义方法名
 
-`ConfigurableModuleClass` 默认提供 `register` 及其异步版本 `registerAsync` 方法。如果需要自定义方法名，可以通过 `ConfigurableModuleBuilder#setClassMethodName` 实现：
+默认情况下，`ConfigurableModuleClass` 会提供 `register` 及其异步版本 `registerAsync` 方法。如果你希望使用其他名称（例如更符合项目约定的命名方式），可以通过 `ConfigurableModuleBuilder#setClassMethodName` 方法来自定义：
 
 ```ts filename='config.module-definition.ts'
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<ConfigModuleOptions>().setClassMethodName('forRoot').build()
 ```
 
-这样会生成带有 `forRoot` 和 `forRootAsync` 方法的类。例如：
+上述代码会生成一个包含 `forRoot` 和 `forRootAsync` 方法的模块类。例如：
 
 ```ts
 @Module({
   imports: [
-    ConfigModule.forRoot({ folder: './config' }), // 注意这里使用的是 "forRoot"
-    // 或者：
+    ConfigModule.forRoot({ folder: './config' }), // 注意此处使用的是自定义方法名 `forRoot`
+    // 或者使用异步方式：
     // ConfigModule.forRootAsync({
     //   useFactory: () => ({
     //     folder: './config',
@@ -408,9 +423,11 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 export class AppModule {}
 ```
 
+通过这种方式，你可以根据实际需求定制模块的注册接口，使其更符合团队的命名规范或语义化要求。
+
 ## 自定义选项工厂类
 
-`registerAsync`（或 `forRootAsync`，具体取决于配置）方法允许用户通过提供者定义来生成模块配置。因此，库的使用者可以自定义一个类用于构建配置对象。
+在使用 `registerAsync`（或 `forRootAsync`，具体取决于模块的配置方式）方法时，开发者可以通过传入自定义的提供者类，动态生成模块的配置对象。这种方式使得模块的使用者能够完全掌控配置的构建逻辑。
 
 ```ts
 @Module({
@@ -423,7 +440,9 @@ export class AppModule {}
 export class AppModule {}
 ```
 
-默认情况下，该类需要实现一个 `create()` 方法，用于返回模块的配置对象。如果你的库采用了不同的命名规范，可以通过 `ConfigurableModuleBuilder#setFactoryMethodName` 自定义工厂方法名，例如 `createConfigOptions`：
+默认情况下，自定义类需实现一个名为 `create()` 的方法，用于返回模块所需的配置对象。
+
+如果你的模块希望使用不同的工厂方法名称，可以通过 `ConfigurableModuleBuilder#setFactoryMethodName` 进行定制，例如将方法名改为 `createConfigOptions`：
 
 ```ts filename='config.module-definition.ts'
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
@@ -432,13 +451,13 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
     .build()
 ```
 
-此时，`ConfigModuleOptionsFactory` 类必须实现 `createConfigOptions` 方法（而不是 `create`）：
+此时，自定义的配置类 `ConfigModuleOptionsFactory` 必须实现名为 `createConfigOptions` 的方法（而不是默认的 `create`）：
 
 ```ts
 @Module({
   imports: [
     ConfigModule.registerAsync({
-      useClass: ConfigModuleOptionsFactory, // 该类必须实现 "createConfigOptions" 方法
+      useClass: ConfigModuleOptionsFactory, // 该类必须实现 `createConfigOptions` 方法
     }),
   ],
 })
@@ -447,9 +466,9 @@ export class AppModule {}
 
 ## 额外选项
 
-在某些场景下，模块可能需要通过额外选项来控制其行为（如 `isGlobal` 标志，或称为 `global`）。这些选项通常不应包含在 `MODULE_OPTIONS_TOKEN` 提供者中，因为他们与模块内部注册的服务或提供者（如 `ConfigService`）无关。例如，`ConfigService` 并不需要知道其宿主模块是否为全局模块。
+在某些情况下，模块可能需要通过**额外选项**来控制其行为，例如 `isGlobal`（或称 `global`）标志。这类选项通常**不应包含在** `MODULE_OPTIONS_TOKEN` 提供者中，因为它们与模块内部注册的服务或提供者（如 `ConfigService`）**无直接关联**。例如，`ConfigService` 并不需要知道其所在的模块是否被声明为全局模块。
 
-此时，可以使用 `ConfigurableModuleBuilder#setExtras` 方法。示例代码如下：
+为了解决这类需求，可以使用 `ConfigurableModuleBuilder#setExtras` 方法进行配置。以下是一个示例：
 
 ```ts
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
@@ -466,9 +485,14 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
     .build()
 ```
 
-上述示例中，`setExtras` 方法的第一个参数用于指定“额外”属性的默认值。第二个参数是一个函数，接收自动生成的模块定义（包含 `provider`、`exports` 等）和 `extras` 对象（代表额外属性，可能由使用者指定或采用默认值），并返回修改后的模块定义。在本例中，我们将 `extras.isGlobal` 赋值给模块定义的 `global` 属性（该属性决定模块是否为全局模块，详见[此处](/modules#dynamic-modules)）。
+在上面的示例中：
 
-在使用该模块时，可以如下方式传递额外的 `isGlobal` 标志：
+- `setExtras` 的**第一个参数**定义了额外属性的默认值；
+- **第二个参数**是一个工厂函数，接收两个参数：模块的定义对象（包含 `providers`、`exports` 等）以及 `extras` 对象（表示额外属性，可能由使用者传入或采用默认值），并返回修改后的模块定义。
+
+在本例中，我们将 `extras.isGlobal` 的值赋给模块定义的 `global` 属性，该属性用于控制模块是否为**全局模块**（详见[动态模块章节](/modules#动态模块配置)）。
+
+使用该模块时，可以如下方式传递 `isGlobal` 选项：
 
 ```ts
 @Module({
@@ -482,13 +506,13 @@ export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
 export class AppModule {}
 ```
 
-需要注意的是，由于 `isGlobal` 被声明为“额外”属性，它不会出现在 `MODULE_OPTIONS_TOKEN` 提供者中：
+需要注意的是，由于 `isGlobal` 是通过 `setExtras` 声明的额外属性，因此它不会包含在 `MODULE_OPTIONS_TOKEN` 对应的选项对象中：
 
 ```ts
 @Injectable()
 export class ConfigService {
   constructor(@Inject(MODULE_OPTIONS_TOKEN) private options: ConfigModuleOptions) {
-    // "options" 对象中不会包含 "isGlobal" 属性
+    // `options` 对象中不会包含 `isGlobal` 属性
     // ...
   }
 }
@@ -496,7 +520,7 @@ export class ConfigService {
 
 ## 扩展自动生成的方法
 
-如有需要，可以扩展自动生成的静态方法（如 `register`、`registerAsync`）：
+如有需要，你可以扩展由 `ConfigurableModuleBuilder` 自动生成的静态方法，例如 `register` 和 `registerAsync`，以添加自定义逻辑：
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -514,21 +538,21 @@ import {
 export class ConfigModule extends ConfigurableModuleClass {
   static register(options: typeof OPTIONS_TYPE): DynamicModule {
     return {
-      // 你的自定义逻辑
+      // 添加你的自定义逻辑
       ...super.register(options),
     }
   }
 
   static registerAsync(options: typeof ASYNC_OPTIONS_TYPE): DynamicModule {
     return {
-      // 你的自定义逻辑
+      // 添加你的自定义逻辑
       ...super.registerAsync(options),
     }
   }
 }
 ```
 
-请确保从模块定义文件中导出 `OPTIONS_TYPE` 和 `ASYNC_OPTIONS_TYPE` 类型：
+请确保你从模块定义文件中导出了 `OPTIONS_TYPE` 和 `ASYNC_OPTIONS_TYPE` 类型：
 
 ```ts
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN, OPTIONS_TYPE, ASYNC_OPTIONS_TYPE } =

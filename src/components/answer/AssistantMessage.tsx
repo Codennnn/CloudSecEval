@@ -5,7 +5,7 @@ import type { Interaction } from '@oramacloud/client'
 import { BookOpenIcon } from 'lucide-react'
 
 import { MDXRenderer } from '~/components/mdx/MDXRenderer'
-import { Prose } from '~/components/ui/prose'
+import { ProseContainer } from '~/components/ProseContainer'
 import type { SearchDocument } from '~/types/doc'
 
 interface Source {
@@ -91,7 +91,7 @@ export function AssistantMessage(props: AssistantMessageProps) {
   const relatedQueries = interaction?.relatedQueries ?? []
 
   return (
-    <Prose className="prose-sm">
+    <ProseContainer className="prose-sm">
       <MDXRenderer content={content} />
 
       {/* 显示相关来源 */}
@@ -104,6 +104,6 @@ export function AssistantMessage(props: AssistantMessageProps) {
         questions={relatedQueries}
         onQuestionClick={onRelatedQuestionClick}
       />
-    </Prose>
+    </ProseContainer>
   )
 }
