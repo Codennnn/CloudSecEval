@@ -4,12 +4,12 @@ import { MessageCircleIcon } from 'lucide-react'
 
 import { ShortcutKey } from '~/components/shortcut/ShortcutKey'
 
-interface AnswerTriggerProps {
+interface AnswerTriggerProps extends Pick<React.HTMLAttributes<HTMLButtonElement>, 'onMouseEnter'> {
   onTriggerOpen?: () => void
 }
 
 export function AnswerTrigger(props: AnswerTriggerProps) {
-  const { onTriggerOpen } = props
+  const { onTriggerOpen, ...restButtonProps } = props
 
   return (
     <button
@@ -17,6 +17,7 @@ export function AnswerTrigger(props: AnswerTriggerProps) {
       onClick={() => {
         onTriggerOpen?.()
       }}
+      {...restButtonProps}
     >
       <div className="flex items-center shrink-0 justify-center">
         <MessageCircleIcon className="size-3.5" />
