@@ -29,7 +29,7 @@ export const navMainData: NavMenuItem[] = [
       { title: '自定义提供者', titleEn: 'Custom providers', url: '/fundamentals/custom-providers' },
       { title: '异步提供者', titleEn: 'Asynchronous providers', url: '/fundamentals/async-providers' },
       { title: '动态模块', titleEn: 'Dynamic modules', url: '/fundamentals/dynamic-modules' },
-      { title: '依赖注入作用域', titleEn: 'Injection scopes', url: '/fundamentals/injection-scopes' },
+      { title: '依赖注入的作用域', titleEn: 'Injection scopes', url: '/fundamentals/injection-scopes' },
       { title: '循环依赖', titleEn: 'Circular dependency', url: '/fundamentals/circular-dependency' },
       { title: '模块引用', titleEn: 'Module reference', url: '/fundamentals/module-ref' },
       { title: '懒加载模块', titleEn: 'Lazy-loading modules', url: '/fundamentals/lazy-loading-modules' },
