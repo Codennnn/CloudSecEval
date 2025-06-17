@@ -67,13 +67,13 @@ const createHeadingComponent = (Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') =>
               )
             }
           >
-            <a
+            <Link
               aria-label={`链接到 ${typeof children === 'string' ? children : '此标题'}`}
               className="rounded-md hover:bg-muted p-1 opacity-60 hover:opacity-100 transition-all duration-200"
               href={`#${id}`}
             >
               <HashIcon className="size-[0.7em]" />
-            </a>
+            </Link>
           </span>
         </span>
       </Tag>

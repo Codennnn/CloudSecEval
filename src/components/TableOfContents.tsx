@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { useTableOfContents } from '~/hooks/useTableOfContents'
 import { cn } from '~/lib/utils'
 
@@ -32,7 +34,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
 
       <nav className="space-y-2">
         {tocItems.map((item) => (
-          <a
+          <Link
             key={item.id}
             className={cn(
               'block w-full text-left transition-colors duration-200 hover:text-foreground truncate',
@@ -46,7 +48,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
             href={`#${item.id}`}
           >
             {item.text}
-          </a>
+          </Link>
         ))}
       </nav>
     </div>

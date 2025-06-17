@@ -100,35 +100,48 @@ export interface RpcArgumentsHost {
 
 ## ExecutionContext 类
 
-`ExecutionContext` 继承自 `ArgumentsHost`，并在此基础上提供了更多关于当前执行流程的详细信息。与 `ArgumentsHost` 类似，Nest 会在需要的地方自动注入 `ExecutionContext` 实例，比如[守卫](/guards#execution-context)的 `canActivate()` 方法和[拦截器](/interceptors#execution-context)的 `intercept()` 方法。它提供了如下方法：
+`ExecutionContext` 是一个继承自 `ArgumentsHost` 的接口，在其基础上提供了更丰富的上下文信息，用于描述当前的请求处理流程。Nest 会在特定场景下自动注入 `ExecutionContext` 实例，例如在 守卫 的 `canActivate()` 方法中，或在[拦截器](/interceptors#execution-context)的 `intercept()` 方法中。
+
+除了 `ArgumentsHost` 提供的通用参数访问能力，`ExecutionContext` 还扩展了以下两个关键方法：
 
 ```ts
 export interface ExecutionContext extends ArgumentsHost {
   /**
-   * 返回当前处理器所属控制器类的类型。
+   * 获取当前处理器所属的控制器类（类型）。
    */
   getClass<T>(): Type<T>
+
   /**
-   * 返回即将在请求管道中被调用的处理器（方法）引用。
+   * 获取即将被调用的处理器方法（函数引用）。
    */
   getHandler(): Function
 }
 ```
 
-`getHandler()` 方法返回即将被调用的处理器方法引用。`getClass()` 方法返回该处理器所属的控制器类类型。例如，在 HTTP 场景下，如果当前处理的是绑定到 `CatsController` 的 `create()` 方法的 `POST` 请求，`getHandler()` 会返回 `create()` 方法的引用，`getClass()` 会返回 `CatsController` 类（注意是类而非实例）。
+- `getHandler()`：返回当前处理请求的方法的函数引用。
+- `getClass()`：返回该方法所属的控制器类（注意是类的类型，而非其实例）。
+
+举例来说，在处理一个绑定到 `CatsController` 的 `create()` 方法的 `POST` 请求时：
 
 ```ts
 const methodKey = ctx.getHandler().name // "create"
 const className = ctx.getClass().name // "CatsController"
 ```
 
-能够同时访问当前类和处理器方法的引用极大提升了灵活性。更重要的是，这让我们可以在守卫或拦截器中访问通过 `Reflector#createDecorator` 或内置 `@SetMetadata()` 装饰器设置的元数据。相关用法将在下文介绍。
+通过这两个方法，我们可以同时获取当前控制器类与其方法的信息，从而具备更强的上下文感知能力。这在编写守卫或拦截器时尤为有用 —— 比如，你可以配合 `Reflector` 提供的 `get()` 方法，读取通过 `@SetMetadata()` 或自定义装饰器设置的元数据，实现更灵活的逻辑控制。相关用法将在后续章节中进一步讲解。
 
 ## 反射与元数据
 
-Nest 支持通过 `Reflector#createDecorator` 方法自定义装饰器，或使用内置的 `@SetMetadata()` 装饰器，为路由处理器附加自定义元数据（Metadata）。本节将对比这两种方式，并演示如何在守卫或拦截器中访问这些元数据。
+Nest 提供了多种方式为路由处理器附加自定义元数据（Metadata），最常用的有两种：
 
-要使用 `Reflector#createDecorator` 创建强类型装饰器，需要指定类型参数。例如，下面创建了一个接收字符串数组参数的 `Roles` 装饰器：
+- 使用 `@SetMetadata()` 装饰器（Nest 内置）；
+- 使用 `Reflector.createDecorator()` 创建强类型的自定义装饰器。
+
+本节将对比这两种方式，并展示如何在守卫或拦截器中提取这些元数据。
+
+### 使用 `Reflector.createDecorator()` 创建强类型装饰器
+
+当你希望创建一个类型安全的装饰器时，可以使用 `Reflector.createDecorator()` 方法。比如，下面的示例定义了一个接收 `string[]` 类型参数的 `@Roles()` 装饰器：
 
 ```ts filename='roles.decorator.ts'
 import { Reflector } from '@nestjs/core'
@@ -136,9 +149,7 @@ import { Reflector } from '@nestjs/core'
 export const Roles = Reflector.createDecorator<string[]>()
 ```
 
-此时，`Roles` 装饰器是一个接收 `string[]` 类型参数的函数。
-
-现在，我们可以直接在处理器上使用该装饰器：
+此时，`Roles` 是一个类型明确的装饰器函数，可以直接用于控制器的方法上：
 
 ```ts filename='cats.controller.ts'
 @Post()
@@ -148,9 +159,11 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-如上，我们将 `Roles` 装饰器的元数据附加到了 `create()` 方法上，表示只有拥有 `admin` 角色的用户才能访问该路由。
+上述代码中，我们将角色信息作为元数据附加在 `create()` 路由处理器上，表示该接口只允许角色为 `admin` 的用户访问。
 
-要访问路由的角色（自定义元数据），可以通过 `Reflector` 辅助类实现。`Reflector` 可像普通服务一样注入到类中：
+### 在运行时提取元数据
+
+若要在守卫、拦截器或其他上下文感知组件中访问这些元数据，可以使用 `Reflector` 工具类。它可以像普通服务一样被注入使用：
 
 ```ts filename='roles.guard.ts'
 import { Reflector } from '@nestjs/core'
@@ -161,15 +174,17 @@ export class RolesGuard {
 }
 ```
 
-接下来，可以通过 `get()` 方法读取处理器上的元数据：
+要读取附加在处理器上的元数据，可以调用 `get()` 方法：
 
 ```ts
 const roles = this.reflector.get(Roles, context.getHandler())
 ```
 
-`Reflector#get` 方法允许我们通过传入两个参数（装饰器引用和上下文对象）来获取元数据。在本例中，第一个参数是 `Roles` 装饰器（见上文 `roles.decorator.ts`），第二个参数是 `context.getHandler()`，即当前处理的路由处理器函数。
+这里的第一个参数是装饰器的引用（即 `Roles`），第二个参数是目标上下文，通常是通过 `ExecutionContext.getHandler()` 获取的当前处理器函数。
 
-此外，也可以在控制器类上应用元数据，使其作用于该控制器下的所有路由：
+### 控制器级别的元数据
+
+除了方法级装饰器，你还可以将 `@Roles()` 应用于整个控制器，使元数据作用于控制器下的所有路由：
 
 ```ts filename='cats.controller.ts'
 @Roles(['admin'])
@@ -177,15 +192,15 @@ const roles = this.reflector.get(Roles, context.getHandler())
 export class CatsController {}
 ```
 
-此时，如需提取控制器上的元数据，只需将 `context.getClass()` 作为第二个参数传递（即以控制器类作为元数据提取的上下文），而不是 `context.getHandler()`：
+此时，如需提取控制器的元数据，只需将目标上下文切换为类本身，即使用 `context.getClass()`：
 
 ```ts filename='roles.guard.ts'
 const roles = this.reflector.get(Roles, context.getClass())
 ```
 
-由于可以在多个层级（如控制器和方法）上设置元数据，有时我们需要同时提取并合并多个上下文的元数据。`Reflector` 类为此提供了两个实用方法，可以一次性提取控制器和方法上的元数据，并以不同方式进行合并。
+### 合并多个层级的元数据
 
-来看一个同时在控制器和方法上都设置了 `Roles` 元数据的场景：
+在实际项目中，可能会同时在控制器和处理器方法上设置 `@Roles()` 装饰器，例如：
 
 ```ts filename='cats.controller.ts'
 @Roles(['user'])
@@ -199,27 +214,35 @@ export class CatsController {
 }
 ```
 
-如果你的意图是将 `'user'` 作为默认角色，并在某些方法上进行覆盖，可以使用 `getAllAndOverride()` 方法：
+此时，Nest 提供了两个实用方法，用于合并并提取不同层级的元数据：
+
+#### `getAllAndOverride()`
+
+该方法从多个上下文中提取元数据，**优先使用靠前的值进行覆盖**。如果你希望方法上的 `@Roles()` 覆盖控制器上的默认值，可以这样写：
 
 ```ts
 const roles = this.reflector.getAllAndOverride(Roles, [context.getHandler(), context.getClass()])
 ```
 
-在上述代码中，守卫运行在 `create()` 方法上下文时，`roles` 的值将为 `['admin']`。
+在上例中，当守卫运行于 `create()` 方法时，返回的 roles 将是 `['admin']`。
 
-如果你希望将多个层级的元数据合并（该方法会合并数组和对象），可以使用 `getAllAndMerge()` 方法：
+#### `getAllAndMerge()`
+
+若你希望**合并多个层级的元数据**（适用于数组、对象等），可以使用 `getAllAndMerge()`：
 
 ```ts
 const roles = this.reflector.getAllAndMerge(Roles, [context.getHandler(), context.getClass()])
 ```
 
-此时，`roles` 的值将为 `['user', 'admin']`。
+该方法将返回合并结果，如 `['user', 'admin']`。
 
-这两个合并方法的第一个参数为元数据键，第二个参数为元数据目标上下文数组（即 `getHandler()` 和/或 `getClass()` 的调用结果）。
+### 小结
 
-## 底层实现方式（Low-level approach）
+无论是通过 `@SetMetadata()` 还是强类型的 `createDecorator()`，Nest 都允许你以灵活的方式设置与提取自定义元数据。而 `Reflector` 提供的 `get()`、`getAllAndOverride()` 与 `getAllAndMerge()` 方法，极大地简化了这些元数据在运行时的访问与处理。
 
-如前所述，除了使用 `Reflector#createDecorator`，你还可以用内置的 `@SetMetadata()` 装饰器为处理器附加元数据。
+## 底层实现方式（Low-level Approach）
+
+如前所述，除了使用 `Reflector#createDecorator` 创建自定义装饰器外，Nest 还提供了一个内置的装饰器 `@SetMetadata()`，可用于向处理器附加元数据。
 
 ```ts filename='cats.controller.ts'
 import { SetMetadata } from '@nestjs/common'
@@ -231,7 +254,9 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-如上，我们将 `roles` 元数据（`roles` 为元数据键，`['admin']` 为对应值）附加到了 `create()` 方法上。虽然这样做可以实现功能，但并不推荐直接在路由中使用 `@SetMetadata()`。更好的做法是自定义装饰器，如下所示：
+在上述示例中，我们通过 `@SetMetadata()` 将名为 `roles` 的元数据附加到了 `create()` 方法上，其值为 `['admin']`。虽然这种方式确实可行，但并不推荐直接在路由处理器中使用 `@SetMetadata()`，原因在于其可读性较差，也不利于代码复用和维护。
+
+更好的实践是封装成一个自定义装饰器：
 
 ```ts filename='roles.decorator.ts'
 import { SetMetadata } from '@nestjs/common'
@@ -239,9 +264,9 @@ import { SetMetadata } from '@nestjs/common'
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles)
 ```
 
-这种方式更简洁、可读性更高，也更接近 `Reflector#createDecorator` 的用法。不同之处在于，`@SetMetadata` 允许你完全控制元数据的键和值，并且可以创建接收多个参数的装饰器。
+这种方式不仅语义更清晰、代码更简洁，也更接近使用 `Reflector#createDecorator` 创建装饰器的风格。二者的主要区别在于：`@SetMetadata()` 允许你显式指定元数据的键和值，适合需要更高自由度的场景，例如接收多个参数。
 
-有了自定义的 `@Roles()` 装饰器后，我们就可以用它来装饰 `create()` 方法：
+有了自定义装饰器后，我们就可以更优雅地为路由方法添加角色信息：
 
 ```ts filename='cats.controller.ts'
 @Post()
@@ -251,7 +276,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-要访问路由的角色（自定义元数据），依然可以使用 `Reflector` 辅助类：
+要在运行时获取这些元数据，依然可以借助 Nest 提供的 `Reflector` 辅助类：
 
 ```ts filename='roles.guard.ts'
 import { Reflector } from '@nestjs/core'
@@ -262,10 +287,10 @@ export class RolesGuard {
 }
 ```
 
-此时，读取处理器元数据的方法如下：
+获取元数据的方式如下：
 
 ```ts
 const roles = this.reflector.get<string[]>('roles', context.getHandler())
 ```
 
-这里我们传入元数据键（本例为 `'roles'`）作为第一个参数，其他用法与 `Reflector#createDecorator` 示例一致。
+此方法接受两个参数：第一个是元数据的键（此处为 `'roles'`），第二个是目标处理器。整体用法与 `Reflector#createDecorator` 创建的装饰器完全一致。
