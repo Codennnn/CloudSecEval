@@ -2,18 +2,20 @@ import type { NavMenuItem } from '~/types/nav'
 
 export const navMainData: NavMenuItem[] = [
   {
-    title: '介绍',
-    titleEn: 'Introduction',
-    url: '/introduction',
-  },
-  {
-    title: '概述',
-    titleEn: 'Overview',
+    title: '入门指南',
+    titleEn: 'Getting Started',
     items: [
+      { title: '介绍', titleEn: 'Introduction', url: '/introduction' },
       { title: '快速上手', titleEn: 'First steps', url: '/first-steps' },
       { title: '控制器', titleEn: 'Controllers', url: '/controllers' },
       { title: '提供者', titleEn: 'Providers', url: '/providers' },
       { title: '模块', titleEn: 'Modules', url: '/modules' },
+    ],
+  },
+  {
+    title: '核心机制',
+    titleEn: 'Core Mechanisms',
+    items: [
       { title: '中间件', titleEn: 'Middleware', url: '/middleware' },
       { title: '异常过滤器', titleEn: 'Exception filters', url: '/exception-filters' },
       { title: '管道', titleEn: 'Pipes', url: '/pipes' },
@@ -23,13 +25,13 @@ export const navMainData: NavMenuItem[] = [
     ],
   },
   {
-    title: '基础原理',
-    titleEn: 'Fundamentals',
+    title: '进阶原理',
+    titleEn: 'Advanced Fundamentals',
     items: [
       { title: '自定义提供者', titleEn: 'Custom providers', url: '/fundamentals/custom-providers' },
       { title: '异步提供者', titleEn: 'Asynchronous providers', url: '/fundamentals/async-providers' },
       { title: '动态模块', titleEn: 'Dynamic modules', url: '/fundamentals/dynamic-modules' },
-      { title: '依赖注入的作用域', titleEn: 'Injection scopes', url: '/fundamentals/injection-scopes' },
+      { title: '依赖注入作用域', titleEn: 'Injection scopes', url: '/fundamentals/injection-scopes' },
       { title: '循环依赖', titleEn: 'Circular dependency', url: '/fundamentals/circular-dependency' },
       { title: '模块引用', titleEn: 'Module reference', url: '/fundamentals/module-ref' },
       { title: '懒加载模块', titleEn: 'Lazy-loading modules', url: '/fundamentals/lazy-loading-modules' },
@@ -41,11 +43,10 @@ export const navMainData: NavMenuItem[] = [
     ],
   },
   {
-    title: '技术专题',
+    title: '功能扩展',
+    titleEn: 'Feature Extensions',
     items: [
       { title: '配置', titleEn: 'Configuration', url: '/techniques/configuration' },
-      { title: '数据库', titleEn: 'Database', url: '/techniques/database' },
-      { title: 'Mongo 数据库', titleEn: 'Mongo', url: '/techniques/mongodb' },
       { title: '验证', titleEn: 'Validation', url: '/techniques/validation' },
       { title: '缓存', titleEn: 'Caching', url: '/techniques/caching' },
       { title: '序列化', titleEn: 'Serialization', url: '/techniques/serialization' },
@@ -56,29 +57,39 @@ export const navMainData: NavMenuItem[] = [
       { title: 'Cookie', titleEn: 'Cookies', url: '/techniques/cookies' },
       { title: '事件', titleEn: 'Events', url: '/techniques/events' },
       { title: '压缩', titleEn: 'Compression', url: '/techniques/compression' },
-      { title: '文件上传', titleEn: 'File upload', url: '/techniques/file-upload' },
+      { title: '文件上传与流式处理', titleEn: 'File upload', url: '/techniques/file-upload' },
       { title: '文件流', titleEn: 'Streaming files', url: '/techniques/streaming-files' },
       { title: 'HTTP 模块', titleEn: 'HTTP module', url: '/techniques/http-module' },
-      { title: 'Session', titleEn: 'Session', url: '/techniques/session' },
+      { title: 'Session 支持', titleEn: 'Session', url: '/techniques/session' },
       { title: 'MVC 模式', titleEn: 'Model-View-Controller', url: '/techniques/mvc' },
       { title: '性能优化（Fastify）', titleEn: 'Performance (Fastify)', url: '/techniques/performance' },
       { title: '服务端推送事件', titleEn: 'Server-Sent Events', url: '/techniques/server-sent-events' },
     ],
   },
   {
-    title: '安全',
+    title: '数据库集成',
+    titleEn: 'Database Integration',
+    items: [
+      { title: '数据库概述', titleEn: 'Database', url: '/techniques/database' },
+      { title: 'MongoDB', titleEn: 'Mongo', url: '/techniques/mongodb' },
+    ],
+  },
+  {
+    title: '安全实践',
+    titleEn: 'Security Practices',
     items: [
       { title: '认证', titleEn: 'Authentication', url: '/security/authentication' },
       { title: '授权', titleEn: 'Authorization', url: '/security/authorization' },
       { title: '加密与哈希', titleEn: 'Encryption and Hashing', url: '/security/encryption-and-hashing' },
       { title: 'Helmet', titleEn: 'Helmet', url: '/security/helmet' },
-      { title: '跨源资源共享', titleEn: 'CORS', url: '/security/cors' },
+      { title: 'CORS', titleEn: 'CORS', url: '/security/cors' },
       { title: 'CSRF 防护', titleEn: 'CSRF Protection', url: '/security/csrf' },
       { title: '请求频率限制', titleEn: 'Rate limiting', url: '/security/rate-limiting' },
     ],
   },
   {
-    title: 'GraphQL',
+    title: 'GraphQL 支持',
+    titleEn: 'GraphQL',
     items: [
       { title: '快速入门', titleEn: 'Quick start', url: '/graphql/quick-start' },
       { title: '解析器', titleEn: 'Resolvers', url: '/graphql/resolvers' },
@@ -113,7 +124,7 @@ export const navMainData: NavMenuItem[] = [
     ],
   },
   {
-    title: '微服务',
+    title: '微服务架构',
     titleEn: 'Microservices',
     items: [
       { title: '概述', titleEn: 'Overview', url: '/microservices/basics' },
@@ -131,17 +142,8 @@ export const navMainData: NavMenuItem[] = [
     ],
   },
   {
-    title: '部署',
-    titleEn: 'Deployment',
-    url: '/deployment',
-  },
-  {
-    title: '独立应用',
-    titleEn: 'Standalone apps',
-    url: '/standalone-applications',
-  },
-  {
-    title: 'CLI',
+    title: 'CLI 工具',
+    titleEn: 'CLI Tools',
     items: [
       { title: '概述', titleEn: 'Overview', url: '/cli/overview' },
       { title: '工作空间', titleEn: 'Workspaces', url: '/cli/monorepo' },
@@ -152,6 +154,7 @@ export const navMainData: NavMenuItem[] = [
   },
   {
     title: 'OpenAPI',
+    titleEn: 'OpenAPI',
     items: [
       { title: '介绍', titleEn: 'Introduction', url: '/openapi/introduction' },
       { title: '类型和参数', titleEn: 'Types and Parameters', url: '/openapi/types-and-parameters' },
@@ -191,7 +194,16 @@ export const navMainData: NavMenuItem[] = [
     ],
   },
   {
-    title: '常见问题解答',
+    title: '部署与发布',
+    titleEn: 'Deployment & Publishing',
+    items: [
+      { title: '部署指南', titleEn: 'Deployment', url: '/deployment' },
+      { title: '独立应用模式', titleEn: 'Standalone apps', url: '/standalone-applications' },
+    ],
+  },
+  {
+    title: '常见问题',
+    titleEn: 'Frequently Asked Questions',
     items: [
       { title: 'Serverless', titleEn: 'Serverless', url: '/faq/serverless' },
       { title: 'HTTP 适配器', titleEn: 'HTTP adapter', url: '/faq/http-adapter' },
@@ -207,6 +219,7 @@ export const navMainData: NavMenuItem[] = [
   },
   {
     title: '开发者工具',
+    titleEn: 'Developer Tools',
     items: [
       { title: '概述', titleEn: 'Overview', url: '/devtools/overview' },
       { title: 'CI/CD 集成', titleEn: 'CI/CD integration', url: '/devtools/ci-cd-integration' },
@@ -228,12 +241,11 @@ export const navMainData: NavMenuItem[] = [
     url: 'https://courses.nestjs.com/',
   },
   {
-    title: '发现',
-    items: [{ title: '谁在使用 Nest？', titleEn: 'Who is using Nest?', url: '/discover/companies' }],
-  },
-  {
-    title: '支持我们',
-    titleEn: 'Support us',
-    url: '/support',
+    title: '社区与支持',
+    titleEn: 'Community & Support',
+    items: [
+      { title: '谁在使用 Nest？', titleEn: 'Who is using Nest?', url: '/discover/companies' },
+      { title: '支持我们', titleEn: 'Support us', url: '/support' },
+    ],
   },
 ]

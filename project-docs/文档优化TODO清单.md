@@ -192,11 +192,11 @@
 
 ## 16. 发现 (Discover)
 
-- [ ] `/discover/companies` - 谁在使用 Nest？
+- [x] `/discover/companies` - 谁在使用 Nest？
 
 ## 17. 其他页面
 
-- [ ] `/support` - 支持我们
+- [x] `/support` - 支持我们
 
 ## 外部链接（无需优化）
 
