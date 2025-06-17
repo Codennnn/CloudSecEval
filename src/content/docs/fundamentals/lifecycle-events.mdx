@@ -1,10 +1,12 @@
 # 生命周期事件
 
-Nest 应用程序及其各个组成部分都受 Nest 生命周期管理。Nest 提供了**生命周期钩子（Lifecycle Hook）**，允许你在关键生命周期节点感知并执行相应操作（如在模块、提供者或控制器中运行注册代码）。
+Nest 应用程序及其组成部分都受框架生命周期机制的统一管理。Nest 提供了一套**生命周期钩子**（Lifecycle Hooks），允许你在应用的不同阶段插入自定义逻辑，例如在模块、提供者或控制器中执行初始化或清理操作。
 
 ## 生命周期流程
 
-下图展示了应用程序从启动到 Node 进程退出期间，关键生命周期事件的顺序。整个生命周期分为三个阶段：**初始化（initializing）**、**运行中（running）**和**终止中（terminating）**。理解生命周期有助于合理安排模块和服务的初始化、活跃连接管理，以及在收到终止信号时优雅关闭应用。
+下图展示了从应用启动到 Node.js 进程退出期间，各个生命周期事件的调用顺序。整个生命周期可以划分为三个阶段：**初始化**（initializing）、**运行中**（running） 和**终止中**（terminating）。
+
+理解这三个阶段的执行流程，有助于你合理安排服务的初始化、连接的管理，以及在收到关闭信号时实现应用的**优雅退出**。
 
 ```mermaid
 flowchart TD
@@ -45,34 +47,46 @@ flowchart TD
 
 ## 生命周期事件
 
-生命周期事件在应用程序启动和关闭过程中触发。Nest 会在每个生命周期节点调用已注册的生命周期钩子方法（Lifecycle Hook Method），这些方法可定义在模块、提供者或控制器中（关闭钩子（shutdown hook）需先启用，详见[下文](/fundamentals/lifecycle-events#application-shutdown)）。如上图所示，Nest 还会调用底层方法来开始或停止监听连接。
+在应用启动与关闭过程中，Nest 会依照特定的生命周期阶段，自动调用已注册的生命周期钩子方法（Lifecycle Hook Method）。这些钩子可定义在模块、提供者或控制器中，用于在特定节点执行自定义逻辑（关于关闭阶段的钩子，需先启用，详见[下文](/fundamentals/lifecycle-events#application-shutdown)）。
 
-下表说明，只有在显式调用 `app.init()` 或 `app.listen()` 时，`onModuleInit` 和 `onApplicationBootstrap` 才会被触发。
+如上图所示，Nest 除了调用各类钩子方法，还会在底层管理应用的连接监听状态（启动/停止）。
 
-同理，`onModuleDestroy`、`beforeApplicationShutdown` 和 `onApplicationShutdown` 仅在显式调用 `app.close()`，或进程收到特殊系统信号（如 SIGTERM）且应用已正确启用 `enableShutdownHooks` 时才会触发（详见下文[应用关闭](/fundamentals/lifecycle-events#application-shutdown)部分）。
+需要注意的是，某些生命周期钩子仅在应用显式调用 `app.init()` 或 `app.listen()` 时才会触发，例如：
 
-| 生命周期钩子方法                | 触发钩子方法调用的生命周期事件                                                                                                              |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onModuleInit()`                | 宿主模块依赖关系解析完成后调用。                                                                                                            |
-| `onApplicationBootstrap()`      | 所有模块初始化完成但尚未开始监听连接时调用。                                                                                                |
-| `onModuleDestroy()`\*           | 收到终止信号（如 `SIGTERM`）后调用。                                                                                                        |
-| `beforeApplicationShutdown()`\* | 所有 `onModuleDestroy()` 处理器完成（Promise 已 resolve 或 reject）后调用；<br />一旦完成，所有现有连接将被关闭（即调用了 `app.close()`）。 |
-| `onApplicationShutdown()`\*     | 连接关闭后（`app.close()` resolve 后）调用。                                                                                                |
+- `onModuleInit`
+- `onApplicationBootstrap`
 
-\* 对于这些事件，如果未显式调用 `app.close()`，则必须主动启用相关钩子，才能响应如 `SIGTERM` 等系统信号。详见[应用关闭](/fundamentals/lifecycle-events#application-shutdown)。
+而应用关闭阶段的钩子 —— 如 `onModuleDestroy`、`beforeApplicationShutdown` 和 `onApplicationShutdown` —— 则需在调用 `app.close()`，或进程接收到诸如 `SIGTERM` 等系统信号时才会生效。此外，响应系统信号还要求显式启用关闭钩子（详见下文应用关闭）。
+
+### 生命周期钩子与对应事件
+
+| 生命周期钩子方法                | 触发钩子方法调用的生命周期事件                                                                                                 |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `onModuleInit()`                | 宿主模块的依赖关系解析完成后执行。                                                                                             |
+| `onApplicationBootstrap()`      | 所有模块完成初始化，但尚未开始监听连接之前执行。                                                                               |
+| `onModuleDestroy()`\*           | 应用收到终止信号（如 SIGTERM）后触发。                                                                                         |
+| `beforeApplicationShutdown()`\* | 所有模块的 `onModuleDestroy()` 钩子执行完毕（即相关 `Promise` 被解析或拒绝）后调用；随后将关闭所有连接，等同于 `app.close()`。 |
+| `onApplicationShutdown()`\*     | 应用连接关闭完成（`app.close()` 已解析）后调用。                                                                               |
+
+\* 上述钩子不会在默认情况下响应系统信号，需调用 `app.enableShutdownHooks()` 主动启用。
 
 <CalloutInfo type="warning">
-  上述生命周期钩子不会在请求作用域类中触发。请求作用域类不受应用生命周期管理，其生命周期不可预测，仅在每个请求中单独创建，并在响应发送后自动被垃圾回收。
+  生命周期钩子**不会**在请求作用域类中触发。
+
+这是因为请求作用域类的实例在每个请求中动态创建，生命周期受请求驱动，且会在响应结束后被自动销毁，不参与应用生命周期管理。
+
 </CalloutInfo>
 
 <CalloutInfo>
-  `onModuleInit()` 和 `onApplicationBootstrap()`
-  的执行顺序取决于模块导入顺序，并会等待前一个钩子完成后再执行。
+  `onModuleInit()` 与 `onApplicationBootstrap()`
+  的执行顺序遵循模块的导入顺序，并将在前一个钩子完成后才继续执行下一个。
 </CalloutInfo>
 
 ## 用法
 
-每个生命周期钩子都对应一个接口（Interface）。接口在 TypeScript 编译后不会保留，因此实现接口并非强制，但推荐这样做，以获得类型检查和编辑器智能提示。要注册生命周期钩子，只需在类（如控制器、提供者或模块）中实现相应接口并提供对应方法。例如，若需在模块初始化阶段注册方法，只需实现 `OnModuleInit` 接口并定义 `onModuleInit()` 方法，如下所示：
+Nest 中的每个生命周期钩子都对应一个接口。虽然这些接口在 TypeScript 编译后不会被保留，因此实现接口并非强制要求，但建议这么做，以便获得类型检查和更完善的编辑器智能提示。
+
+要使用某个生命周期钩子，只需在类中（如控制器、提供者或模块）实现相应接口，并定义对应的方法。例如，若希望在模块初始化阶段执行自定义逻辑，只需实现 `OnModuleInit` 接口并定义 `onModuleInit()` 方法，如下所示：
 
 ```ts
 import { Injectable, OnModuleInit } from '@nestjs/common'
@@ -87,7 +101,7 @@ export class UsersService implements OnModuleInit {
 
 ## 异步初始化
 
-`OnModuleInit` 和 `OnApplicationBootstrap` 钩子支持异步操作（即方法可返回 `Promise`，或将方法声明为 `async` 并在方法体内 `await` 异步任务完成），从而延迟应用初始化流程。
+`OnModuleInit` 和 `OnApplicationBootstrap` 生命周期钩子支持异步操作。换言之，这些钩子方法可以返回 `Promise`，也可以使用 `async/await` 来执行异步任务。通过这种方式，可以在模块初始化或应用启动阶段执行需要等待完成的逻辑，从而有效地延迟整个初始化流程的推进。
 
 ```ts
 async onModuleInit(): Promise<void> {
@@ -95,11 +109,21 @@ async onModuleInit(): Promise<void> {
 }
 ```
 
-## 应用关闭
+## 应用关闭机制
 
-`onModuleDestroy()`、`beforeApplicationShutdown()` 和 `onApplicationShutdown()` 钩子会在应用终止阶段被调用（如显式调用 `app.close()`，或收到 SIGTERM 等系统信号，前提是已主动开启关闭钩子）。此特性常用于 [Kubernetes](https://kubernetes.io/) 管理容器生命周期，或 [Heroku](https://www.heroku.com/) 等平台管理 dyno 或类似服务。
+在应用终止过程中，Nest 会依次触发以下生命周期钩子：
 
-关闭钩子监听器会占用系统资源，因此默认关闭。要启用关闭钩子，必须调用 `enableShutdownHooks()`：
+- `onModuleDestroy()`
+- `beforeApplicationShutdown()`
+- `onApplicationShutdown()`
+
+这些钩子会在显式调用 `app.close()`、或应用接收到如 SIGTERM 等系统信号时被执行（前提是你已手动启用了关闭钩子监听）。
+
+此机制在容器化部署场景中尤为重要，例如在 [Kubernetes](https://kubernetes.io/) 中管理 Pod 生命周期，或在 [Heroku](https://www.heroku.com/) 上处理 dyno 关闭等情况。
+
+### 启用关闭钩子
+
+出于性能考虑，Nest 默认不会启用关闭钩子监听器。若需要使用，必须显式调用 `enableShutdownHooks()` 方法：
 
 ```ts
 import { NestFactory } from '@nestjs/core'
@@ -108,7 +132,7 @@ import { AppModule } from './app.module'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
-  // 启用关闭钩子监听
+  // 启用关闭钩子
   app.enableShutdownHooks()
 
   await app.listen(process.env.PORT ?? 3000)
@@ -117,33 +141,44 @@ async function bootstrap() {
 bootstrap()
 ```
 
-<CalloutInfo type="warning">
-  由于平台本身的限制，NestJS 在 Windows 上对应用关闭钩子的支持有限。你可以预期 `SIGINT`、`SIGBREAK`
-  以及部分 `SIGHUP`
-  能正常工作——[详细说明](https://nodejs.org/api/process.html#process_signal_events)。但 `SIGTERM` 在
-  Windows 上始终无效，因为任务管理器强制结束进程时，应用无法检测或阻止该操作。更多信息可参考 [libuv
-  官方文档](https://docs.libuv.org/en/v1.x/signal.html) 及 Node.js
-  的[进程信号事件文档](https://nodejs.org/api/process.html#process_signal_events)。
+<CalloutInfo type="warning" title="Windows 平台限制">
+由于平台机制限制，Nest 在 Windows 上对关闭钩子的支持存在差异。例如 `SIGINT`、`SIGBREAK` 和部分 `SIGHUP` 通常可以正常工作（详见 [Node.js 信号文档](https://nodejs.org/api/process.html#process_signal_events)）。但 `SIGTERM` 在 Windows 中始终无效，因为任务管理器直接终止进程时不会发送此信号，应用也无法感知或阻止该行为。
+
+推荐阅读： [libuv 信号文档](https://docs.libuv.org/en/v1.x/signal.html)
+
 </CalloutInfo>
 
-<CalloutInfo>
-  `enableShutdownHooks` 会因启动监听器而占用内存。如果你在单个 Node 进程中运行多个 Nest 应用（如使用
-  Jest 并行测试时），Node 可能会因监听器过多而发出警告。因此，`enableShutdownHooks`
-  默认未启用。运行多个实例时请注意。
+<CalloutInfo title="多实例运行时的监听器限制">
+  启用关闭钩子会注册进程监听器，增加内存占用。在单个 Node 进程中运行多个 Nest
+  应用（如使用 Jest 并行测试）时，可能因监听器过多而触发 Node
+  的警告提示。因此，`enableShutdownHooks()`
+  默认关闭，使用时请评估实例数量和资源情况。
 </CalloutInfo>
 
-当应用收到终止信号时，会依次调用已注册的 `onModuleDestroy()`、`beforeApplicationShutdown()` 和 `onApplicationShutdown()` 方法（顺序如上），并将信号名称作为第一个参数传递。如果注册的方法为异步（返回 Promise），Nest 会等待 Promise resolve 或 reject 后再继续后续流程。
+### 钩子执行顺序与信号传递
+
+当应用收到终止信号（例如 `SIGINT`），Nest 会依照以下顺序调用生命周期钩子：
+
+1. `onModuleDestroy()`
+2. `beforeApplicationShutdown()`
+3. `onApplicationShutdown(signal: string)`
+
+如果这些钩子方法是异步的（即返回 Promise），Nest 会等待每个 `Promise` 被解析或拒绝后再继续执行下一个钩子。
+
+示例：
 
 ```ts
 @Injectable()
 class UsersService implements OnApplicationShutdown {
   onApplicationShutdown(signal: string) {
-    console.log(signal) // 例如 "SIGINT"
+    console.log(signal) // 输出接收到的信号，例如 "SIGINT"
   }
 }
 ```
 
 <CalloutInfo>
-  调用 `app.close()` 并不会终止 Node 进程，只会触发 `onModuleDestroy()` 和 `onApplicationShutdown()`
-  钩子。因此，如果存在定时器、长时间运行的后台任务等，进程不会自动退出。
+  `app.close()` 不会关闭 Node.js 进程，只会触发 `onModuleDestroy()` 与
+  `onApplicationShutdown()`
+  钩子。如果应用中存在定时器、长时间运行的任务等，进程仍会继续运行，需手动清理或调用
+  `process.exit()`。
 </CalloutInfo>

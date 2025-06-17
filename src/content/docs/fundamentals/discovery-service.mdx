@@ -1,10 +1,12 @@
-# 发现服务（Discovery service）
+# 发现服务（Discovery Service）
 
-`@nestjs/core` 包中提供的 `DiscoveryService`（发现服务）是一个功能强大的工具，允许开发者在 NestJS 应用中动态检查和获取所有的提供者（Provider）、控制器（Controller）以及其他元数据（Metadata）。这对于开发插件、装饰器（Decorator）或依赖运行时自省的高级特性尤为有用。通过 `DiscoveryService`，你可以构建更灵活、模块化的架构，实现自动化和动态行为。
+NestJS 提供的 `DiscoveryService` 是一个强大的运行时工具，来源于 `@nestjs/core` 包。它允许你在应用运行期间动态地获取所有注册的**提供者**、**控制器**以及相关的**元数据**。这在开发插件系统、自定义装饰器，或实现基于运行时自省（runtime introspection）的高级功能时非常有价值。
+
+借助 `DiscoveryService`，你可以构建更加灵活、可扩展的架构，实现自动化注册、行为动态化等高级特性。
 
 ## 快速上手
 
-在使用 `DiscoveryService` 之前，需要在目标模块中导入 `DiscoveryModule`（发现模块），这样才能通过依赖注入获取该服务。下面是模块配置示例：
+在使用 `DiscoveryService` 之前，需要在模块中导入 `DiscoveryModule`，以启用相关的依赖注入能力。以下是一个模块配置示例：
 
 ```ts
 import { Module } from '@nestjs/common'
@@ -18,38 +20,45 @@ import { ExampleService } from './example.service'
 export class ExampleModule {}
 ```
 
-模块配置完成后，就可以在需要动态发现能力的服务或提供者中注入 `DiscoveryService`：
+配置完成后，即可在服务或其他提供者中通过构造函数注入 `DiscoveryService`：
 
 ```ts filename='example.service.ts'
+import { Injectable } from '@nestjs/common'
+import { DiscoveryService } from '@nestjs/core'
+
 @Injectable()
 export class ExampleService {
   constructor(private readonly discoveryService: DiscoveryService) {}
 }
 ```
 
-## 发现提供者和控制器
+## 获取提供者和控制器
 
-`DiscoveryService` 的核心能力之一是获取应用中所有已注册的提供者，这对于根据特定条件动态处理提供者非常有用。以下代码演示了如何获取所有提供者：
+`DiscoveryService` 最常用的功能之一，是检索所有已注册的提供者。这在需要根据某些条件对提供者进行动态处理时尤其实用。例如：
 
 ```ts
 const providers = this.discoveryService.getProviders()
 console.log(providers)
 ```
 
-每个提供者对象都包含其实例、注入令牌（Token）和元数据信息。如果需要获取应用中所有已注册的控制器，也可以这样做：
+返回的每个提供者对象都包含其实例、注入令牌（token）以及相关的元数据。
+
+如果你想获取应用中所有注册的控制器，也可以使用类似的方法：
 
 ```ts
 const controllers = this.discoveryService.getControllers()
 console.log(controllers)
 ```
 
-这种能力在需要动态处理控制器的场景下非常实用，比如埋点分析或自动注册机制等。
+这种能力在诸如**埋点分析**、**自动化路由注册**或 **AOP 扩展机制**等场景中非常有用，使你可以在运行时轻松操控应用的内部结构。
+
+如需更深入地探索 `DiscoveryService` 的高级用法，如过滤、遍历元数据等，也可配合 `Reflector` 和 `MetadataScanner` 等工具一起使用，进一步释放框架的动态能力。
 
 ## 提取元数据
 
-除了发现提供者和控制器，`DiscoveryService` 还支持获取这些组件上附加的元数据。这在你使用自定义装饰器并在运行时存储元数据时，尤其有价值。
+除了用于发现应用中的**提供者**和**控制器**，`DiscoveryService` 还支持读取它们上所附加的**元数据**。这项能力在你通过自定义装饰器为组件添加元数据时尤其有用，可用于在运行时对组件进行分类、筛选等操作。
 
-例如，假设我们通过自定义装饰器为某个提供者打上特定的元数据标签：
+例如，假设我们定义了一个名为 `FeatureFlag` 的装饰器，用于标记某些服务具备实验性质的功能：
 
 ```ts
 import { DiscoveryService } from '@nestjs/core'
@@ -57,7 +66,7 @@ import { DiscoveryService } from '@nestjs/core'
 export const FeatureFlag = DiscoveryService.createDecorator()
 ```
 
-将该装饰器应用到服务后，即可为其存储元数据，后续查询也非常方便：
+将该装饰器应用到服务类上，即可为其关联一条元数据：
 
 ```ts
 import { Injectable } from '@nestjs/common'
@@ -68,20 +77,24 @@ import { FeatureFlag } from './custom-metadata.decorator'
 export class CustomService {}
 ```
 
-通过这种方式为提供者附加元数据后，`DiscoveryService` 可以根据指定的元数据值，轻松筛选出对应的提供者。下面的代码演示了如何获取带有特定元数据值的提供者：
+通过上述方式添加的元数据，`DiscoveryService` 可以在运行时进行提取与判断。以下示例展示了如何筛选出具有特定元数据值的提供者：
 
 ```ts
 const providers = this.discoveryService.getProviders()
 
 const [provider] = providers.filter(
-  (item) => this.discoveryService.getMetadataByDecorator(FeatureFlag, item) === 'experimental'
+  (item) =>
+    this.discoveryService.getMetadataByDecorator(FeatureFlag, item) ===
+    'experimental'
 )
 
-console.log('带有 "experimental" 功能标记元数据的提供者:', provider)
+console.log('标记为 "experimental" 的提供者：', provider)
 ```
 
 ## 总结
 
-`DiscoveryService` 是一个灵活且强大的工具，为 NestJS 应用提供了运行时自省能力。  
-通过动态发现提供者、控制器和元数据，它在构建可扩展框架、插件系统和自动化驱动的高级特性时，发挥着关键作用。  
-无论是批量扫描和处理提供者、提取元数据进行高级处理，还是构建模块化、可扩展的架构，`DiscoveryService` 都能为你提供高效且结构化的解决方案。
+`DiscoveryService` 是 NestJS 提供的一项功能强大、用途广泛的运行时自省工具。
+
+它能够动态发现应用中的提供者、控制器以及附加的元数据，在构建**可扩展架构**、**插件系统**，或实现**自动化驱动**的高级功能时，发挥着至关重要的作用。
+
+无论是批量扫描组件并应用处理逻辑，还是根据元数据筛选并动态注册功能模块，`DiscoveryService` 都能为你提供高效、结构化的解决方案，助力构建灵活而模块化的应用体系。
