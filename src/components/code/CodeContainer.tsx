@@ -59,7 +59,7 @@ export function CodeContainer(props: CodeContainerProps) {
 
             <div className="flex items-center gap-2 font-medium">
               {title && <span className="opacity-70">{title}</span>}
-              {filename && <span>{filename}</span>}
+              {filename && <span className="font-mono">{filename}</span>}
             </div>
 
             {/* 微妙的加载指示器 */}

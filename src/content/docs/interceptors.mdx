@@ -1,14 +1,14 @@
 # 拦截器
 
-**拦截器**（Interceptor）是一个使用 `@Injectable()` 装饰器标记，并实现了 `NestInterceptor` 接口的类。
+**拦截器**（Interceptor）是通过 `@Injectable()` 装饰器声明的类，并实现了 `NestInterceptor` 接口。
 
-它受到[面向切面编程](https://en.wikipedia.org/wiki/Aspect-oriented_programming)（Aspect Oriented Programming, AOP）理念的启发，主要用于在方法执行流程中插入横切关注点逻辑，具备如下能力：
+它借鉴了[面向切面编程](https://en.wikipedia.org/wiki/Aspect-oriented_programming)（AOP）的设计理念，用于在方法的调用流程中插入“横切关注点”的逻辑。通过拦截器，可以在不干扰核心业务代码的前提下，对方法执行过程进行增强或改造。其主要作用包括：
 
-- 在方法调用前后执行自定义逻辑
-- 转换方法的返回值
-- 捕获并处理方法抛出的异常
-- 扩展方法的默认行为
-- 根据特定条件（如缓存）改变方法的执行流程
+- 在方法调用之前或之后插入自定义逻辑
+- 修改方法的返回结果
+- 捕获并处理方法内部抛出的异常
+- 扩展方法默认行为，实现更灵活的功能控制
+- 基于特定条件（如缓存命中）改变方法的执行路径
 
 ```mermaid
 graph LR
@@ -50,27 +50,30 @@ graph LR
 
 ## 基础用法
 
-每个拦截器都需要实现 `intercept()` 方法。该方法接收两个参数：第一个是 `ExecutionContext` 实例（与守卫中相同），它继承自 `ArgumentsHost`。在异常过滤器章节我们已介绍过 `ArgumentsHost`，它封装了传递给处理器的参数，并根据应用类型提供不同的参数数组。你可以参考[异常过滤器](/exception-filters#arguments-host)章节了解更多。
+拦截器类必须实现 `intercept()` 方法，该方法是其核心逻辑的入口。它接收两个参数：
 
-每个拦截器类都必须实现 `intercept()` 方法。该方法接收两个参数：第一个是 `ExecutionContext` 实例（与守卫中的相同），它继承自 `ArgumentsHost`。我们在[异常过滤器](/exception-filters#argumentshost-参数)一章中已介绍过 `ArgumentsHost` —— 它用于封装传递给处理器的参数，并根据应用类型（如 HTTP、RPC、WebSocket）提供相应的参数访问方式。你可以查阅该章节以了解更多详情。
+- 第一个参数是 `ExecutionContext` 实例，与守卫中使用的是同一个对象。它继承自 `ArgumentsHost`，用于封装传递给处理器的请求上下文信息。
+- 第二个参数稍后会在其他小节中讲解。
+
+关于 `ArgumentsHost` 的具体作用和不同上下文（如 HTTP、RPC、WebSocket）下的参数访问方式，建议参考[异常过滤器章节](/exception-filters#argumentshost-参数)获取更详细的介绍。
 
 ## 执行上下文
 
-`ExecutionContext` 是 `ArgumentsHost` 的扩展，提供了更多用于获取当前执行流程上下文信息的辅助方法。这些方法使我们能够访问控制器类、处理器方法、请求类型等，从而支持构建可适用于多种场景的通用拦截器。更多内容请参阅[执行上下文](/fundamentals/execution-context)章节。
+`ExecutionContext` 是 `ArgumentsHost` 的扩展，提供了更多用于获取当前执行流程上下文信息的便捷方法。通过这些方法，我们可以访问控制器类、处理器方法、请求类型等关键信息，从而更轻松地编写兼容多种执行环境（如 HTTP、WebSocket、RPC）的通用拦截器。详细内容可参考[执行上下文](/fundamentals/execution-context)章节。
 
-## CallHandler 处理器调用机制
+## CallHandler：处理器调用机制
 
-`intercept()` 方法的第二个参数是 `CallHandler`，它是一个接口，内部定义了 `handle()` 方法。在拦截器中调用该方法，即可继续执行后续的路由处理器逻辑；如果不调用 `handle()`，对应的路由处理器方法将不会被执行。
+`intercept()` 方法的第二个参数是 `CallHandler` 接口，定义了一个 `handle()` 方法。调用 `handle()` 即表示继续执行后续的路由处理器逻辑；如果未调用该方法，对应的处理器将不会被触发。
 
-这种设计使得 `intercept()` 实际上成为了整个请求-响应流程的一个包装器。你可以在调用 `handle()` 之前或之后插入自定义逻辑。由于 `handle()` 返回的是一个 `Observable`，我们可以借助强大的 [RxJS](https://github.com/ReactiveX/rxjs) 操作符对响应数据进行进一步处理和转换。
+这一机制使得 `intercept()` 方法本质上成为整个请求-响应链路的“包装器”：我们可以在执行核心业务逻辑前后，插入自定义逻辑。由于 `handle()` 返回的是一个 `Observable`，我们可以借助强大的 [RxJS](https://github.com/ReactiveX/rxjs) 操作符对响应数据进行进一步加工和转换。
 
-在面向切面编程中，调用路由处理器（即调用 `handle()`）被称为[切入点（Pointcut）](https://en.wikipedia.org/wiki/Pointcut)，代表的是执行核心业务逻辑前后插入额外操作的时机。
+在面向切面编程中，调用路由处理器（即 `handle()`）的动作被称为[切入点（Pointcut）](https://en.wikipedia.org/wiki/Pointcut)，代表可以在方法执行前后插入额外逻辑的关键位置。
 
-举个例子，假设有一个 `POST /cats` 请求，对应控制器 `CatsController` 中的 `create()` 方法。如果一个拦截器被触发但未调用 `handle()`，那么 `create()` 方法将不会执行。只有当拦截器中调用了 `handle()` 并返回 `Observable` 后，`create()` 方法才会被触发，随后我们可以在响应流上使用 RxJS 操作符进行加工处理，最终将结果返回给客户端。
+例如，假设我们有一个 `POST /cats` 请求，其对应的控制器方法是 `CatsController` 中的 `create()`。如果一个拦截器被触发但未调用 `handle()`，那么 `create()` 方法将不会执行。只有在拦截器中调用了 `handle()` 并返回 `Observable`，`create()` 方法才会被执行，随后我们可以通过 RxJS 操作符对响应流进行处理，最终将结果返回给客户端。
 
-## 切面拦截
+## 拦截器示例：记录日志
 
-第一个用例展示了如何使用拦截器记录用户操作，例如用于存储调用日志、异步分发事件，或统计接口耗时。以下是一个简单的 `LoggingInterceptor`（日志拦截器）示例：
+拦截器常用于在请求处理流程中插入额外的逻辑，例如记录操作日志、统计接口耗时，或异步触发某些事件。下面是一个基本的日志拦截器示例，用于演示如何实现这一功能：
 
 ```ts filename='logging.interceptor.ts'
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
@@ -89,18 +92,18 @@ export class LoggingInterceptor implements NestInterceptor {
 ```
 
 <CalloutInfo>
-  `NestInterceptor<T, R>` 是一个泛型接口，其中 `T` 表示进入拦截器前的值类型（对应 `Observable<T>`），`R` 表示拦截处理后的最终值类型（对应 `Observable<R>`）。
+  `NestInterceptor<T, R>` 是一个泛型接口，其中 `T` 表示传入拦截器的数据类型（即 `Observable<T>` 中的类型），`R` 表示拦截器处理完成后返回的数据类型（即 `Observable<R>` 中的类型）。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  拦截器与控制器、提供者、守卫类似，同样支持通过构造函数注入依赖。
+  拦截器同样支持依赖注入，可通过构造函数注入服务，与控制器、提供者或守卫的用法一致。
 </CalloutInfo>
 
-由于 `handle()` 方法返回的是一个 RxJS 的 `Observable`，我们可以灵活地使用各种操作符对数据流进行处理。在上述示例中，`tap()` 操作符用于在响应流结束（无论正常或异常）时记录日志，但不会改变或中断原有的响应流程。
+由于 `handle()` 方法返回的是一个 RxJS 的 `Observable`，我们可以利用各种操作符对数据流进行扩展或观察。在上面的示例中，使用了 `tap()` 操作符来在响应流程结束时记录耗时日志——这一操作不会修改或中断原有的数据流，仅用于副作用处理。
 
 ## 绑定拦截器
 
-要绑定拦截器，可以使用 `@nestjs/common` 包中的 `@UseInterceptors()` 装饰器。与[管道](/pipes)和[守卫](/guards)类似，拦截器既可应用于控制器，也可应用于单个方法，或配置为全局拦截器。
+拦截器的绑定方式与管道和守卫类似，可通过 `@nestjs/common` 包中的 `@UseInterceptors()` 装饰器实现。你可以将拦截器绑定到整个控制器、某个具体方法，或配置为全局拦截器。
 
 ```ts filename='cats.controller.ts'
 import { UseInterceptors } from '@nestjs/common'
@@ -109,30 +112,34 @@ import { UseInterceptors } from '@nestjs/common'
 export class CatsController {}
 ```
 
-如上所示，`LoggingInterceptor` 会应用于 `CatsController` 中定义的所有路由处理器。当调用 `GET /cats` 接口时，标准输出将打印：
+如上例所示，`LoggingInterceptor` 会作用于 `CatsController` 中定义的所有处理器方法。当客户端请求 `GET /cats` 接口时，控制台将输出：
 
 ```ts
 Before...
 After... 1ms
 ```
 
-注意，这里传入的是 `LoggingInterceptor` 类本身（而非其实例），实例化过程由框架自动完成，以支持依赖注入机制。与管道、守卫、异常过滤器类似，拦截器也可以通过传入实例的方式使用：
+需要注意，传入的应是 `LoggingInterceptor` 类本身，而不是其实例。Nest 会自动实例化该类，以便在创建时注入其所需的依赖。与管道、守卫和异常过滤器一样，拦截器同样支持传入类实例的方式：
 
 ```ts filename='cats.controller.ts'
 @UseInterceptors(new LoggingInterceptor())
 export class CatsController {}
 ```
 
-如前所述，这种写法会将拦截器绑定到该控制器中声明的所有处理器方法。如果只需作用于特定方法，可以在**方法级别**使用装饰器进行绑定。
+使用这种写法时，`LoggingInterceptor` 将同样作用于控制器中所有的处理器方法。若只需拦截某个特定方法，可以直接在方法级别使用 `@UseInterceptors()` 装饰器进行绑定。
 
-若需配置全局拦截器，可通过 Nest 应用实例的 `useGlobalInterceptors()` 方法实现：
+### 全局拦截器
+
+若希望拦截器在整个应用范围内生效，可通过 Nest 应用实例调用 `useGlobalInterceptors()` 方法进行配置：
 
 ```ts
 const app = await NestFactory.create(AppModule)
 app.useGlobalInterceptors(new LoggingInterceptor())
 ```
 
-全局拦截器会应用于应用中的所有控制器与路由处理器。需要注意的是，使用 `useGlobalInterceptors()` 在模块上下文之外注册的拦截器**无法注入依赖**，因为此时拦截器的实例化不受 Nest 容器管理。为解决此限制，可在模块中使用内置的 `APP_INTERCEPTOR` 提供者令牌进行注册：
+这种方式注册的拦截器会自动应用于所有控制器与路由处理器。但需要特别留意：使用 `useGlobalInterceptors()` 注册的拦截器实例**不受 Nest 容器管理**，因此**无法进行依赖注入**。
+
+为解决此限制，建议使用框架内置的 APP_INTERCEPTOR 提供者令牌，在模块中以提供者的形式注册拦截器：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -150,21 +157,22 @@ export class AppModule {}
 ```
 
 <CalloutInfo>
-  通过上述方式注册的拦截器，无论在哪个模块中声明，都会在全局范围内生效。建议在定义拦截器（如上例中的
-  `LoggingInterceptor`）的模块中进行注册。此外，`useClass`
-  并不是唯一的注册方式，更多内容请参见[自定义提供者](/fundamentals/custom-providers)。
+  无论在哪个模块中通过 `APP_INTERCEPTOR`
+  注册拦截器，其都会在全局范围内生效。推荐在定义拦截器（如本例中的
+  `LoggingInterceptor`）的模块中完成注册。此外，`useClass`
+  并非唯一的注册方式，更多高级用法请参考[自定义提供者](/fundamentals/custom-providers)。
 </CalloutInfo>
 
 ## 响应数据映射
 
-在 NestJS 中，`handle()` 方法返回的是一个 `Observable`，其中包含了路由处理器的返回值。因此，我们可以直接使用 RxJS 的 `map()` 操作符对其进行转换和包装。
+在 NestJS 中，拦截器的 `handle()` 方法返回一个 `Observable`，其中封装了路由处理器的返回结果。因此，我们可以使用 RxJS 的 `map()` 操作符对响应数据进行转换与封装。
 
 <CalloutInfo type="warning">
-  响应映射功能不适用于某些特定库的响应处理方式，尤其是显式注入了 `@Res()`
-  对象的场景。在这种情况下，请避免手动操作响应对象。
+  响应映射功能不适用于某些特定场景，尤其是手动注入了 `@Res()`
+  的情况。此时应避免通过拦截器操作响应对象。
 </CalloutInfo>
 
-下面我们实现一个名为 `TransformInterceptor` 的转换拦截器。它会使用 `map()` 操作符将每个响应数据包装到一个包含 `data` 属性的对象中，并将该对象返回给客户端。
+下面是一个名为 `TransformInterceptor` 的拦截器示例，它会将每个响应结果包装成一个包含 `data` 属性的对象，并将其发送给客户端。
 
 ```ts filename='transform.interceptor.ts'
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
@@ -184,10 +192,10 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
 ```
 
 <CalloutInfo>
-  拦截器中的 `intercept()` 方法既支持同步实现，也支持异步实现。如有需要，可将其声明为 `async`。
+  `intercept()` 方法支持同步和异步两种实现方式。若需在内部执行异步逻辑，可将其声明为 `async`。
 </CalloutInfo>
 
-使用该拦截器后，假设某路由处理器返回一个空数组 `[]`，如调用 `GET /cats` 接口，则响应结果如下所示：
+使用上述拦截器后，假设某路由处理器返回一个空数组 `[]`，如请求 `GET /cats` 接口，则客户端收到的响应将为：
 
 ```json
 {
@@ -195,7 +203,9 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
 }
 ```
 
-拦截器非常适合处理全局性需求。例如，如果我们希望统一将所有响应中的 `null` 值转换为空字符串 `''`，可以通过如下拦截器实现，并将其注册为全局拦截器，使所有路由自动应用此逻辑：
+### 拦截器的扩展用途
+
+拦截器非常适合处理通用性逻辑。例如，如果你希望统一将响应中的所有 `null` 值替换为空字符串 `''`，可以实现如下拦截器并将其注册为全局拦截器，从而自动作用于所有路由处理器：
 
 ```ts
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
@@ -210,17 +220,19 @@ export class ExcludeNullInterceptor implements NestInterceptor {
 }
 ```
 
+通过这种方式，NestJS 的响应拦截器机制可以为应用提供强大的响应数据统一处理能力，无需在每个处理器中重复编写类似逻辑。
+
 ## 异常处理与映射
 
-借助 RxJS 的 `catchError()` 操作符可以优雅地“改写”抛出的异常。例如，以下拦截器会把管道中出现的任何错误统一转换为 `BadGatewayException`：
+利用 RxJS 提供的 `catchError()` 操作符，我们可以优雅地拦截并“映射”原始异常，实现统一的错误处理逻辑。例如，下面的拦截器会将处理流程中抛出的任意异常，统一转换为 `BadGatewayException`：
 
 ```ts filename='errors.interceptor.ts'
 import {
   Injectable,
   NestInterceptor,
   ExecutionContext,
-  BadGatewayException,
   CallHandler,
+  BadGatewayException,
 } from '@nestjs/common'
 import { Observable, throwError } from 'rxjs'
 import { catchError } from 'rxjs/operators'
@@ -233,11 +245,13 @@ export class ErrorsInterceptor implements NestInterceptor {
 }
 ```
 
-这样做可以在不修改业务代码的前提下，统一错误格式，提升异常处理的一致性。
+通过这种方式，我们无需修改任何业务逻辑代码，即可实现统一的错误格式输出，从而提升系统的异常处理一致性与可维护性。
 
 ## 响应流重写
 
-有时我们希望完全绕过处理器逻辑，直接返回结果。常见场景是**缓存**：命中缓存时立即返回缓存数据，避免重复计算。下面的 `CacheInterceptor` 演示了这一思路；真实项目中还需结合 TTL、失效策略、容量控制等机制。
+在某些场景下，我们可能希望**绕过路由处理器的执行逻辑，直接返回响应结果**。这种做法在缓存处理中尤为常见：当请求命中缓存时，无需重复计算，直接返回缓存内容即可。
+
+下面的 `CacheInterceptor` 拦截器演示了这一机制。在实际应用中，你通常还需要结合 TTL（过期时间）、失效策略、缓存容量控制等功能实现一个健壮的缓存方案。
 
 ```ts filename='cache.interceptor.ts'
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
@@ -248,18 +262,20 @@ export class CacheInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const isCached = true
     if (isCached) {
-      return of([])
+      return of([]) // 直接返回缓存响应，跳过处理器
     }
     return next.handle()
   }
 }
 ```
 
-在示例中，`isCached` 与返回值均为硬编码，旨在突出“短路”流程：使用 `of()` 创建新的响应流后，后续路由处理器将**不会**执行。若要扩展为通用缓存解决方案，可结合 `Reflector` 和自定义装饰器；有关 `Reflector` 的详细用法，请参阅[守卫](/guards)章节。
+上述示例中，`isCached` 和返回值均为硬编码，目的是演示所谓“**短路响应**”的核心逻辑：通过 `of()` 创建一个新的响应流，Nest 会直接将其返回，而不会继续执行后续的处理器逻辑。
+
+若你希望构建一个可复用、可配置的缓存拦截器，建议结合 `Reflector` 与自定义装饰器，为特定的处理器或控制器添加缓存元数据。关于 `Reflector` 的使用方法，请参阅[守卫章节](/guards)。
 
 ## 常用 RxJS 操作符实践
 
-RxJS 操作符在处理数据流时非常强大，能够实现多种常见的应用场景。以下示例展示了如何为路由请求设置超时时间：当某个端点在指定时间内未响应时，自动中止处理流程并返回错误响应。
+RxJS 提供了丰富的操作符，用于灵活地处理异步数据流。在 Nest 中，操作符常用于对路由处理流程进行扩展，例如设置请求超时时间。以下示例展示了如何使用 RxJS 操作符为路由添加超时控制：当处理逻辑在指定时间内未完成时，自动中止流程并返回超时错误。
 
 ```ts filename='timeout.interceptor.ts'
 import {
@@ -270,7 +286,7 @@ import {
   RequestTimeoutException,
 } from '@nestjs/common'
 import { Observable, throwError, TimeoutError } from 'rxjs'
-import { catchError, timeout } from 'rxjs/operators'
+import { timeout, catchError } from 'rxjs/operators'
 
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
@@ -288,4 +304,6 @@ export class TimeoutInterceptor implements NestInterceptor {
 }
 ```
 
-如上所示，当请求处理时间超过 5 秒时，将自动抛出 `RequestTimeoutException` 异常，终止响应流程。你也可以根据实际需求，在抛出异常前加入自定义逻辑，例如资源清理、日志记录等操作。
+如上所示，`timeout(5000)` 操作符会在请求处理超过 5 秒后触发 `TimeoutError`，随后被 `catchError` 捕获并转换为 Nest 提供的 `RequestTimeoutException`，从而终止响应流程并返回 408 超时错误。
+
+你也可以根据实际需求，在抛出异常前加入其他逻辑处理，例如记录日志、清理资源或上报监控数据等。

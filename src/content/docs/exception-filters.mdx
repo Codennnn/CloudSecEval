@@ -1,6 +1,6 @@
 # 异常过滤器
 
-Nest 内置了一套**异常处理机制**（Exceptions Layer），用于统一处理应用中所有未被捕获的异常。当你的业务代码未能捕获某个异常时，这一机制会拦截该异常，并自动生成一份用户可读的响应结果。
+Nest 提供了完善的**异常处理机制**（Exceptions Layer），用于统一捕获和处理应用中未被显式处理的异常。当某个异常未在业务逻辑中被捕获时，Nest 会自动拦截该异常，并生成一份格式化的响应，返回给客户端。
 
 ```mermaid
 flowchart TD
@@ -58,7 +58,7 @@ flowchart TD
     end
 ```
 
-默认情况下，这项功能由框架提供的**全局异常过滤器**（Global Exception Filter）实现。该过滤器会处理所有 `HttpException` 及其子类。当遇到无法识别的异常（即既非 `HttpException`，也非其子类）时，内置异常过滤器将返回如下默认的 JSON 响应：
+这一机制的默认实现是由框架内置的**全局异常过滤器**（Global Exception Filter）完成的。该过滤器专门处理 `HttpException` 及其所有子类。如果抛出的异常不是 `HttpException` 类型，框架将退回至默认处理策略，返回如下的标准 JSON 响应：
 
 ```json
 {
@@ -68,16 +68,16 @@ flowchart TD
 ```
 
 <CalloutInfo>
-  全局异常过滤器对 `http-errors` 库提供了部分兼容支持。只要抛出的异常对象中包含 `statusCode` 和
-  `message` 属性，这些信息就会被正确提取并用于响应；否则，系统将退回至默认的
-  `InternalServerErrorException`。
+  Nest 对第三方库 `http-errors` 提供了有限的兼容性支持。只要异常对象中包含 `statusCode` 和 `message`
+  属性，框架就能提取这些信息并构造响应。否则，将回退至默认的 `InternalServerErrorException`。
 </CalloutInfo>
 
 ## 抛出标准异常
 
-Nest 提供了内置的 `HttpException` 类（从 `@nestjs/common` 包导出）。对于典型的 HTTP REST 或 GraphQL API 应用，推荐在出现错误时返回标准化的 HTTP 响应对象。
+Nest 提供了内置的 `HttpException` 类（由 `@nestjs/common` 模块导出），用于在处理 HTTP 请求时统一返回结构化的错误响应。
+在开发常见的 RESTful 或 GraphQL API 时，推荐使用该机制来抛出符合 HTTP 规范的异常信息。
 
-以 `CatsController` 中的 `findAll()` 方法为例（GET 路由处理器）。假设该方法由于某些原因抛出异常，可参考如下写法：
+以下是一个基于 `CatsController` 中 `findAll()` 方法的示例。假设该方法由于某种原因需要返回“禁止访问”错误，可以这样处理：
 
 ```ts filename='cats.controller.ts'
 @Get()
@@ -87,10 +87,11 @@ async findAll() {
 ```
 
 <CalloutInfo>
-  `HttpStatus` 是一个辅助枚举，同样从 `@nestjs/common` 包中导入，用于提供语义化的 HTTP 状态码。
+  `HttpStatus` 是由 `@nestjs/common` 提供的枚举类型，用于语义化地表示常见的 HTTP 状态码，例如
+  `HttpStatus.OK`（200）、`HttpStatus.FORBIDDEN`（403）等。
 </CalloutInfo>
 
-当客户端调用该接口时，返回的响应如下所示：
+当客户端调用上述接口时，返回的响应体如下所示：
 
 ```json
 {
@@ -99,41 +100,45 @@ async findAll() {
 }
 ```
 
-`HttpException` 构造函数接收两个必选参数：
+### HttpException 的构造函数参数
 
-- `response`：定义返回的 JSON 响应体，可以是字符串或对象（详见下文）；
-- `status`：定义 HTTP 状态码，推荐使用 `HttpStatus` 枚举值。
+该异常类的构造函数接受两个必填参数：
 
-默认情况下，响应体包含以下两个字段：
+- `response`：用于定义返回给客户端的响应体内容，可以是字符串或对象；
+- `status`：HTTP 状态码，建议使用 HttpStatus 枚举值来增强代码的可读性与可维护性。
 
-- `statusCode`：值为 `status` 参数指定的 HTTP 状态码；
-- `message`：根据 `status` 自动生成的简短错误描述。
+默认情况下，Nest 会根据这两个参数生成如下结构的响应：
 
-如果只想自定义 `message`，可以传入字符串作为 `response`；若需完全自定义响应体结构，则可传入一个对象，Nest 会将其序列化为 JSON 返回给客户端。
+- `statusCode`：即 `status` 参数指定的 HTTP 状态码；
+- `message`：如果 `response` 为字符串，则作为该字段的值；否则根据状态码自动生成简要信息。
 
-`status` 参数应为合法的 HTTP 状态码，最佳实践是使用 `@nestjs/common` 中的 `HttpStatus` 枚举，以确保语义明确且便于维护。
+你可以仅传入字符串来自定义错误消息，例如 `'Forbidden'`；也可以传入一个对象以完全控制响应体的结构。
 
-此外，`HttpException` 还支持第三个可选参数 `options`，用于传递异常的 [cause](https://nodejs.org/en/blog/release/v16.9.0/#error-cause)。该 cause 不会出现在响应体中，但可用于日志记录，有助于定位错误的根本原因。
+### 自定义响应体与错误根因（cause）
 
-如下所示，通过传入自定义响应体及错误根因：
+`HttpException` 还支持一个第三个参数 `options`，其中可包含 `cause` 字段，用于记录导致该异常的原始错误。该字段不会出现在响应体中，但非常适合用于日志记录与错误追踪。
+
+示例如下：
 
 ```ts filename='cats.controller.ts'
 @Get()
 async findAll() {
   try {
-    await this.service.findAll()
+    await this.service.findAll();
   } catch (error) {
-    throw new HttpException({
-      status: HttpStatus.FORBIDDEN,
-      error: 'This is a custom message',
-    }, HttpStatus.FORBIDDEN, {
-      cause: error
-    });
+    throw new HttpException(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: 'This is a custom message',
+      },
+      HttpStatus.FORBIDDEN,
+      { cause: error },
+    );
   }
 }
 ```
 
-上述代码的响应为：
+上述代码中，我们自定义了响应体的结构，并通过 `cause` 保留了原始错误，方便后续排查问题。其返回结果为：
 
 ```json
 {
@@ -144,23 +149,22 @@ async findAll() {
 
 ## 异常日志记录
 
-在**默认配置**下，Nest 提供的全局异常过滤器**不会**把框架内置异常（如 `HttpException` 及其派生类）打印到控制台。这类异常被视为可预期的业务流程，因此不会记录为系统错误。`WsException`、`RpcException` 等协议层异常同样如此。
+在**默认配置**下，Nest 提供的全局异常过滤器**不会将框架内置的异常**（如 `HttpException` 及其子类）输出到控制台。这些异常通常属于**可预期**的业务错误，因此不会被视为系统级错误进行记录。同样地，WsException 和 RpcException 等协议层的异常也不会被自动记录。
 
-所有这类异常最终都继承自 `@nestjs/common` 导出的抽象基类 `IntrinsicException`。
-借助这一层级结构，Nest 能区分**预期异常**与**非预期异常**，从而决定是否写入日志。
+这类异常最终都继承自 `@nestjs/common` 包中导出的抽象基类 `IntrinsicException`。Nest 正是借助这一继承结构，区分**可预期异常**与**非预期异常**，从而决定是否需要记录日志。
 
-如果你希望同时记录这些预期异常，可以编写并绑定自定义异常过滤器。下一节将演示具体做法。
+如果你希望连同这些预期异常一并记录日志，可以通过编写并绑定**自定义异常过滤器**来实现。具体实现方式将在下一节中介绍。
 
 ## 自定义异常
 
-在大多数情况下，直接使用官方提供的 HTTP 异常已足够，只有当业务需要更细粒度的语义或附加元数据时，才建议实现自定义异常。
+在绝大多数场景中，Nest 提供的内置 HTTP 异常类已能满足常规需求。只有在需要表达更细致的业务语义，或附加额外元数据时，才建议实现自定义异常类。
 
-<CalloutInfo title="最佳实践" type="success">
-  为保持一致性，建议为业务定义一个异常层级结构，并让所有自定义异常继承自基类
-  `HttpException`。这样，Nest 内置的异常处理链即可自动识别并格式化这些异常，无需额外配置。
+<CalloutInfo type="success">
+  为保持异常结构的一致性，推荐定义一套符合业务逻辑的异常类体系，并统一继承自
+  `HttpException`。这样，Nest 的内建异常处理机制便可自动识别这些异常，格式化响应内容，无需额外配置。
 </CalloutInfo>
 
-示例：
+例如，定义一个代表“禁止访问”的异常类：
 
 ```ts filename='forbidden.exception.ts'
 export class ForbiddenException extends HttpException {
@@ -170,9 +174,7 @@ export class ForbiddenException extends HttpException {
 }
 ```
 
-由于 `ForbiddenException` 继承自基础 `HttpException`，它能与内置异常处理器无缝协作，因此可直接在 `findAll()` 方法中使用：
-
-由于 `ForbiddenException` 继承自基础类 `HttpException`，它能够被框架内置的异常处理机制正确识别并处理，因此可直接在 `findAll()` 方法中抛出使用：
+由于 `ForbiddenException` 继承自 `HttpException`，它能够被框架的内置异常处理器正确识别和格式化，因此我们可以直接在控制器方法中抛出该异常：
 
 ```ts filename='cats.controller.ts'
 @Get()
@@ -181,11 +183,11 @@ async findAll() {
 }
 ```
 
-这样，框架会自动返回合适的响应，并按你的日志策略处理该异常。
+当异常被抛出后，Nest 会自动返回相应的 HTTP 响应（如状态码和错误信息），同时根据你的日志策略记录相关信息，无需额外手动处理。
 
-## 内置 HTTP 异常
+## 内置 HTTP 异常类
 
-Nest 提供了一组内置的标准 HTTP 异常类，这些类均继承自基础类 `HttpException`，并由 `@nestjs/common` 包导出，涵盖了常见的 HTTP 状态码对应的异常类型，包括：
+Nest 提供了一套内置的标准 HTTP 异常类，这些类均继承自基础类 `HttpException`，并通过 `@nestjs/common` 包导出。它们对应常见的 HTTP 状态码，方便在应用中快速抛出语义明确的异常。包括但不限于以下类型：
 
 - `BadRequestException`
 - `UnauthorizedException`
@@ -208,7 +210,7 @@ Nest 提供了一组内置的标准 HTTP 异常类，这些类均继承自基础
 - `GatewayTimeoutException`
 - `PreconditionFailedException`
 
-这些异常类在构造函数中均支持传入 `options` 参数，用于同时提供错误的 cause（原因）和 description（描述）信息。例如：
+这些异常类在构造函数中支持传入一个 `options` 参数，可用于同时指定异常的 `cause`（错误原因）和 `description`（描述信息）。例如：
 
 ```ts
 throw new BadRequestException('Something bad happened', {
@@ -217,7 +219,7 @@ throw new BadRequestException('Something bad happened', {
 })
 ```
 
-上述代码将返回如下结构的 HTTP 响应：
+上述代码会返回以下结构的 HTTP 响应体：
 
 ```json
 {
@@ -227,11 +229,16 @@ throw new BadRequestException('Something bad happened', {
 }
 ```
 
+通过使用内置异常类，你可以更规范地表达服务中的错误状态，提升代码的可维护性与可读性。
+
 ## 异常过滤器
 
-Nest 提供的内置异常过滤器已能自动处理大多数常见情况，但在某些场景下，你可能希望对异常处理过程拥有更**精细**的控制。例如，你可能需要添加日志记录，或根据运行时上下文返回不同结构的 JSON 响应。此时，可以使用自定义异常过滤器来精确掌控异常的处理逻辑和返回给客户端的响应内容。
+Nest 内置的异常过滤器已能覆盖绝大多数常见异常处理场景。然而，在某些特定情况下，你可能需要更**精细化**的控制——比如记录日志，或根据当前运行环境返回结构差异较大的 JSON 响应。这时，自定义异常过滤器就派上用场了，它可以让你精准掌控异常处理逻辑及最终返回给客户端的响应格式。
 
-下面是一个用于捕获 `HttpException` 异常的自定义过滤器示例，并展示如何自定义响应格式。为了实现这一点，我们需要访问底层平台提供的 `Request` 和 `Response` 对象：其中，`Request` 可用于获取原始请求路径以进行日志记录，而 `Response` 可用于手动构造响应内容，通过 `response.json()` 方法发送数据。
+以下示例展示了一个用于捕获 `HttpException` 的自定义异常过滤器，并演示了如何手动定义响应内容。为了实现这一目标，我们需要获取底层平台的原始 `Request` 和 `Response` 对象：
+
+- `Request` 可用于提取请求路径、方法等信息，便于记录日志；
+- `Response` 则用于自定义响应结构，通过 `response.json()` 方法返回数据。
 
 ```ts filename='http-exception.filter.ts'
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common'
@@ -254,31 +261,39 @@ export class HttpExceptionFilter implements ExceptionFilter {
 }
 ```
 
-<CalloutInfo>
-  所有异常过滤器都应实现通用接口 `ExceptionFilter<T>`，你需要实现其中的 `catch(exception: T, host: ArgumentsHost)` 方法。其中 `T` 表示需要捕获的异常类型。
+<CalloutInfo>  
+所有异常过滤器都需实现通用接口 `ExceptionFilter<T>`，并定义 `catch(exception: T, host: ArgumentsHost)` 方法。其中泛型参数 `T` 表示要捕获的异常类型。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  如果你使用的是 `@nestjs/platform-fastify`，请使用 `response.send()` 替代
-  `response.json()`，并确保从 `fastify` 导入正确的类型。
+  如果你使用的是 `@nestjs/platform-fastify`，应将 `response.json()` 替换为
+  `response.send()`，并确保引入自 `fastify` 的正确类型定义。
 </CalloutInfo>
 
-`@Catch(HttpException)` 装饰器用于为过滤器绑定异常类型元数据，告知 Nest 此过滤器仅处理 `HttpException` 类型的异常。你也可以传入多个参数（以逗号分隔），从而让过滤器同时处理多种异常类型。
+装饰器 `@Catch(HttpException)` 用于标注当前过滤器专门处理 `HttpException` 类型的异常。你也可以传入多个异常类（以逗号分隔），让过滤器支持处理多种异常类型。
 
 ## ArgumentsHost 参数
 
-下面来看看 `catch()` 方法的两个参数：`exception` 表示当前捕获到的异常，而 `host` 是一个 `ArgumentsHost` 实例。`ArgumentsHost` 是 Nest 提供的通用上下文封装器，我们会在[执行上下文](/fundamentals/execution-context)一章中做更详细的介绍。
+在 `catch()` 方法中，我们通常会接收两个参数：
 
-在本示例中，我们借助 `host` 取回原始请求处理器（即抛出异常的控制器方法）收到的 `Request` 和 `Response` 对象。得益于 `ArgumentsHost` 内置的辅助方法，这一步骤十分直观。想了解更多细节，可查阅 [ArgumentsHost 文档](/fundamentals/execution-context)。
+- `exception`：表示当前捕获到的异常对象；
+- `host`：一个 `ArgumentsHost` 实例，用于封装请求上下文信息。
+
+`ArgumentsHost` 是由 Nest 提供的通用上下文适配器，可统一处理多种运行环境（如 HTTP、微服务、WebSocket 等）下的参数访问逻辑。关于其原理与应用，我们会在执行上下文章节中展开讲解。
+
+在本示例中，我们通过 `host` 对象，获取到原始控制器方法中传入的 `Request` 和 `Response` 对象。得益于 `ArgumentsHost` 提供的便捷辅助方法，这一操作简单直观。
+如需深入了解 `ArgumentsHost` 的使用方式，可参考[官方文档](/fundamentals/execution-context)。
 
 <CalloutInfo title="为什么需要 ArgumentsHost？">
-  这一抽象层可在所有类型的上下文中工作（HTTP、微服务、WebSocket
-  等）。在后文的执行上下文章节中，你将看到怎样利用这些辅助方法访问**任意上下文**下的底层参数，从而编写能够跨多种场景复用的异常过滤器。
+  `ArgumentsHost` 提供了统一的参数访问接口，适用于所有类型的请求上下文（HTTP、微服务、WebSocket
+  等）。你将在后文的执行上下文章节中看到，如何通过它访问不同环境下的底层请求参数，从而构建可跨多场景复用的异常过滤器。
 </CalloutInfo>
 
-## 绑定过滤器
+## 绑定异常过滤器
 
 我们可以通过 `@UseFilters()` 装饰器，将自定义的 `HttpExceptionFilter` 绑定到 `CatsController` 的 `create()` 方法上：
+
+要将自定义的异常过滤器应用到特定路由处理方法中，可使用 `@UseFilters()` 装饰器。例如，将自定义的 `HttpExceptionFilter` 绑定到 `CatsController` 的 `create()` 方法：
 
 ```ts filename='cats.controller.ts'
 import { UseFilters } from '@nestjs/common'
@@ -286,30 +301,35 @@ import { UseFilters } from '@nestjs/common'
 @Post()
 @UseFilters(new HttpExceptionFilter())
 async create(@Body() createCatDto: CreateCatDto) {
-  throw new ForbiddenException();
+  throw new ForbiddenException()
 }
 ```
 
-如上所示，`@UseFilters()` 装饰器可接收一个或多个异常过滤器实例，多个实例以逗号分隔传入。在该示例中，我们直接传入了 `HttpExceptionFilter` 的实例。实际上，也可以传入过滤器类本身（而非其实例），由框架负责实例化，并自动支持**依赖注入**：
+`@UseFilters()` 接受一个或多个异常过滤器的**实例**，多个实例可通过逗号分隔传入。上述示例中，我们直接传入了 `HttpExceptionFilter` 的实例。
+
+实际上，也可以传入过滤器类本身，而非其实例。此时，Nest 会自动完成实例化，并支持依赖注入：
 
 ```ts filename='cats.controller.ts'
 @Post()
 @UseFilters(HttpExceptionFilter)
 async create(@Body() createCatDto: CreateCatDto) {
-  throw new ForbiddenException();
+  throw new ForbiddenException()
 }
 ```
 
 <CalloutInfo type="success">
-  推荐使用类方式（即传入过滤器类）进行绑定。这样可减少内存开销，Nest
-  会在模块范围内复用同一个过滤器实例。
+  推荐使用“传入过滤器类”的方式进行绑定。这样不仅可以启用依赖注入，还能在模块内复用同一个实例，降低内存开销。
 </CalloutInfo>
 
-如上例，`HttpExceptionFilter` 只应用于单个 `create()` 路由处理器，即方法级作用域。异常过滤器可按不同层级作用域绑定：方法级、控制器级或全局级。
+上面的例子展示了将过滤器绑定在方法层级，即该过滤器仅作用于 `create()` 方法。事实上，异常过滤器可以根据需求绑定在以下三个作用域：
 
-上述示例中，`HttpExceptionFilter` 仅应用于 `create()` 路由处理方法，即属于方法级作用域。实际上，异常过滤器可以绑定在三个不同的作用域：方法级、控制器级或全局级。
+- **方法级**：仅对单个处理方法生效
+- **控制器级**：作用于整个控制器的所有处理方法
+- **全局级**：应用于整个应用程序的所有请求处理流程
 
-例如，将过滤器绑定到整个控制器：
+### 控制器级绑定
+
+要将过滤器应用于整个控制器，只需将其绑定在控制器装饰器上：
 
 ```ts filename='cats.controller.ts'
 @Controller()
@@ -317,9 +337,11 @@ async create(@Body() createCatDto: CreateCatDto) {
 export class CatsController {}
 ```
 
-这种写法会使 `HttpExceptionFilter` 应用于 `CatsController` 内的所有路由处理器。
+此方式会让 `HttpExceptionFilter` 作用于 `CatsController` 中的所有路由处理方法。
 
-如需注册为全局过滤器，可在 `main.ts` 中使用如下方式：
+### 全局级绑定
+
+若希望让过滤器作用于整个应用，可以在 `main.ts` 中注册为全局过滤器：
 
 ```ts filename='main.ts'
 async function bootstrap() {
@@ -330,10 +352,10 @@ async function bootstrap() {
 ```
 
 <CalloutInfo type="warning">
-  `useGlobalFilters()` 注册的过滤器不会作用于网关（Gateway）或混合应用中的过滤器逻辑。
+  通过 `useGlobalFilters()` 注册的过滤器不会应用于 WebSocket 网关或混合应用中的相关逻辑。
 </CalloutInfo>
 
-通过 `useGlobalFilters()` 注册的全局过滤器将作用于应用中所有控制器与其方法。但请注意：此方式注册的过滤器**无法注入依赖**，因为它们不在 Nest 的模块上下文中。若需要依赖注入支持，可通过模块内提供者注册的方式实现：
+需要注意的是，**使用 `useGlobalFilters()` 注册的过滤器无法注入依赖**，因为它们并不处于 Nest 的模块上下文中。如果你需要注入服务或其他依赖，建议通过模块提供者的方式注册全局过滤器：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -352,17 +374,17 @@ export class AppModule {}
 
 <CalloutInfo>
   通过 `APP_FILTER`
-  提供者注册的过滤器，**无论在哪个模块注册，都会作为全局过滤器生效**。建议在定义该过滤器的模块中进行注册。此外，`useClass`
-  并非唯一的注册方式，更多注册策略详见[自定义提供者](/fundamentals/custom-providers)。
+  注册的异常过滤器将作为全局过滤器生效，无论它在哪个模块中注册。通常建议在定义该过滤器的模块中完成注册。此外，`useClass`
+  只是注册策略之一，更多高级用法详见[自定义提供者](/fundamentals/custom-providers)。
 </CalloutInfo>
 
 如需同时注册多个全局过滤器，只需将它们一并添加到 `providers` 数组中即可。
 
 ## 捕获所有异常
 
-如需捕获所有未处理的异常（无论其具体类型），只需在 `@Catch()` 装饰器中不传入任何参数，即 `@Catch()`。这表示该过滤器将处理所有抛出的异常。
+若希望统一处理所有未被显式捕获的异常（无论类型为何），只需在 `@Catch()` 装饰器中**省略参数**，即直接使用 `@Catch()`。这表示该异常过滤器将接管**所有类型的异常**。
 
-下方示例展示了一个平台无关的异常过滤器实现。该实现通过使用 Nest 提供的 [HTTP 适配器](/faq/http-adapter)来返回响应，而非直接依赖具体平台提供的对象（如 `Request` 和 `Response`）：
+以下示例展示了一个**平台无关**的异常过滤器实现。它借助 Nest 提供的 [HTTP 适配器](/faq/http-adapter)来构造响应，而不依赖于特定平台的请求和响应对象：
 
 ```ts
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common'
@@ -373,7 +395,7 @@ export class CatchEverythingFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
-    // 注意：在某些情况下，`httpAdapter` 可能尚未初始化，因此推荐在方法中获取。
+    // 注意：某些场景下 httpAdapter 可能尚未初始化，建议在方法内部获取。
     const { httpAdapter } = this.httpAdapterHost
 
     const ctx = host.switchToHttp()
@@ -393,14 +415,14 @@ export class CatchEverythingFilter implements ExceptionFilter {
 ```
 
 <CalloutInfo>
-  如果同时注册了“捕获所有异常”的过滤器和**针对特定异常类型**的过滤器，应优先注册“捕获所有异常”的过滤器。否则，特定异常过滤器可能无法正确处理其目标异常类型。
+  若同时注册了“全局异常过滤器”（用于捕获所有异常）和**特定异常类型的过滤器**，请确保将“全局过滤器”注册在优先位置。否则，特定异常可能会被前者截获，从而导致专用过滤器失效。
 </CalloutInfo>
 
-## 继承
+## 继承内置异常过滤器
 
-在实际开发中，你通常会根据应用的需求自定义异常过滤器。但有时，你可能只需要在内置的**全局异常过滤器**上，按需重写部分行为。
+在实际开发中，我们通常会根据业务需求编写自定义的异常过滤器。但在某些场景下，你可能只希望在框架提供的**默认异常处理逻辑**基础上，做少量调整。
 
-此时，你可以继承 `BaseExceptionFilter` 并在子类中调用其 `catch()` 方法，将默认的异常处理逻辑委托给基类：
+此时，可以通过继承 `BaseExceptionFilter`，在子类中调用其 `catch()` 方法，从而复用默认逻辑，并按需扩展：
 
 ```ts filename='all-exceptions.filter.ts'
 import { Catch, ArgumentsHost } from '@nestjs/common'
@@ -415,13 +437,15 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 ```
 
 <CalloutInfo type="warning">
-  如果在方法级或控制器级使用继承自 `BaseExceptionFilter` 的过滤器，**不要使用 `new`
-  手动实例化**，应交由框架自动创建实例。
+  如果你打算在方法级或控制器级使用继承自 `BaseExceptionFilter` 的过滤器，**请勿使用 `new`
+  手动创建实例**，应交由 Nest 的依赖注入机制自动完成实例化。
 </CalloutInfo>
 
-全局异常过滤器可以继承 `BaseExceptionFilter`。有两种推荐的实现方式：
+### 注册为全局异常过滤器
 
-- **方式一**：构造时手动注入 `HttpAdapter` 实例
+将继承自 `BaseExceptionFilter` 的过滤器设置为全局过滤器，有两种推荐方式：
+
+#### 方式一：手动注入 `HttpAdapter` 实例
 
 ```ts
 async function bootstrap() {
@@ -435,6 +459,6 @@ async function bootstrap() {
 bootstrap()
 ```
 
-- **方式二**：使用 `APP_FILTER` 令牌注册为全局过滤器
+#### 方式二：使用 `APP_FILTER` 令牌注册为全局过滤器
 
-详见[绑定过滤器](/exception-filters#绑定过滤器)部分。
+此方式更契合 Nest 的依赖注入设计。具体用法详见：[绑定过滤器](/exception-filters#绑定过滤器) 小节。
