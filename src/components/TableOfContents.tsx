@@ -40,7 +40,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
                 'text-foreground': activeId === item.id,
                 'text-muted-foreground': activeId !== item.id,
                 'pl-2 text-[0.9em]': item.level === 2,
-                'pl-4 text-[0.8em]': item.level === 3,
+                'pl-4 text-[0.85em]': item.level === 3,
               },
             )}
             href={`#${item.id}`}

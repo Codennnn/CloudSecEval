@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { SCROLL_CONFIG } from '~/lib/scroll-config'
 
 const getHeadings = () => {
-  return document.querySelectorAll(`#${SCROLL_CONFIG.CONTAINER_ID} article :where(h1, h2, h3, h4, h5, h6)`)
+  return document.querySelectorAll(`#${SCROLL_CONFIG.CONTAINER_ID} article :where(h1, h2, h3)`)
 }
 
 interface TocItem {
