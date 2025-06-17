@@ -69,7 +69,7 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
   const navigation = getDocNavigation(`/${docPath}`)
 
   return (
-    <div className="max-w-[80ch] mx-auto">
+    <div className="max-w-[80ch] mx-auto py-[var(--content-padding)]">
       <ProseContainer as="article">
         <Suspense fallback={<LoadingSpinner />}>
           <DocContent docPath={docPath} />

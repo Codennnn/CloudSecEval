@@ -1,8 +1,8 @@
 # 异步提供者
 
-在某些场景下，应用启动前需要等待一个或多个**异步任务**完成。例如，可能希望在与数据库建立连接之前，不开始接收请求。此时，可以借助异步提供者（Async Provider）来满足这一需求。
+在某些场景中，应用在启动前可能需要完成一些**异步操作**，比如等待数据库连接建立成功，才能开始处理外部请求。此时，可以使用**异步提供者**（Async Provider）来实现这一流程控制。
 
-具体实现通常结合 `useFactory` 语法和 `async/await`，使工厂函数返回一个 `Promise`，并在函数内部通过 `await` 等待异步操作完成。Nest 会在实例化依赖注入该提供者的任何类之前，自动等待该 Promise 完成并返回结果。
+实现方式通常基于 `useFactory` 配置，并结合 `async/await` 使用。通过让工厂函数返回一个 `Promise`，Nest 会在注入该提供者之前，自动等待异步任务完成并使用其结果进行依赖注入。
 
 ```ts
 {
@@ -15,13 +15,20 @@
 ```
 
 <CalloutInfo>
-  你可以在[这里](/fundamentals/custom-providers)了解更多关于自定义提供者的用法。
+  你可以在[自定义提供者](/fundamentals/custom-providers)章节中查看更多相关用法。
 </CalloutInfo>
 
-## 注入方式
+## 提供者注入
 
-异步提供者和普通提供者一样，通过注入令牌（Injection Token）注入到其他组件。在上例中，可以使用 `@Inject('ASYNC_CONNECTION')` 进行注入。
+异步提供者的注入方式与普通提供者一致，都是通过注入令牌进行识别与绑定。在上面的示例中，可以使用 `@Inject('ASYNC_CONNECTION')` 将其注入到其他类中：
 
-## 示例
+```ts
+@Injectable()
+export class SomeService {
+  constructor(@Inject('ASYNC_CONNECTION') private connection: Connection) {}
+}
+```
 
-在 [TypeORM 实践](/recipes/sql-typeorm)中，有更完整的异步提供者示例供参考。
+## 进阶示例
+
+在 [TypeORM 实践](/recipes/sql-typeorm)一节中，你可以找到更完整的异步提供者配置与使用案例，适用于真实项目中的数据库连接管理。

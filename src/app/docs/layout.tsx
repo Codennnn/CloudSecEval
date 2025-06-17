@@ -31,7 +31,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
                 )
               }
             >
-              <div className="flex-1 max-w-full p-[var(--content-padding)]">
+              <div className="flex-1 max-w-full px-[var(--content-padding)]">
                 {props.children}
               </div>
 
