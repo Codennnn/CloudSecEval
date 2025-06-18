@@ -11,16 +11,16 @@
 
 ---
 
-## 1. 介绍 (Introduction)
+## 1. 入门指南 (Getting Started)
 
 - [x] `/introduction` - 介绍
-
-## 2. 概述 (Overview)
-
 - [x] `/first-steps` - 快速上手
 - [x] `/controllers` - 控制器
 - [x] `/providers` - 提供者
 - [x] `/modules` - 模块
+
+## 2. 核心机制 (Core Mechanisms)
+
 - [x] `/middleware` - 中间件
 - [x] `/exception-filters` - 异常过滤器
 - [x] `/pipes` - 管道
@@ -28,12 +28,12 @@
 - [x] `/interceptors` - 拦截器
 - [x] `/custom-decorators` - 自定义装饰器
 
-## 3. 基础原理 (Fundamentals)
+## 3. 进阶原理 (Advanced Fundamentals)
 
 - [x] `/fundamentals/custom-providers` - 自定义提供者
 - [x] `/fundamentals/async-providers` - 异步提供者
 - [x] `/fundamentals/dynamic-modules` - 动态模块
-- [x] `/fundamentals/injection-scopes` - 依赖注入的作用域
+- [x] `/fundamentals/injection-scopes` - 依赖注入作用域
 - [x] `/fundamentals/circular-dependency` - 循环依赖
 - [x] `/fundamentals/module-ref` - 模块引用
 - [x] `/fundamentals/lazy-loading-modules` - 懒加载模块
@@ -43,11 +43,9 @@
 - [x] `/fundamentals/platform-agnosticism` - 跨平台无关性
 - [x] `/fundamentals/testing` - 测试
 
-## 4. 技术专题 (Techniques)
+## 4. 功能扩展 (Feature Extensions)
 
 - [ ] `/techniques/configuration` - 配置
-- [ ] `/techniques/database` - 数据库
-- [ ] `/techniques/mongodb` - Mongo 数据库
 - [ ] `/techniques/validation` - 验证
 - [ ] `/techniques/caching` - 缓存
 - [ ] `/techniques/serialization` - 序列化
@@ -58,25 +56,30 @@
 - [ ] `/techniques/cookies` - Cookie
 - [ ] `/techniques/events` - 事件
 - [ ] `/techniques/compression` - 压缩
-- [ ] `/techniques/file-upload` - 文件上传
+- [ ] `/techniques/file-upload` - 文件上传与流式处理
 - [ ] `/techniques/streaming-files` - 文件流
 - [ ] `/techniques/http-module` - HTTP 模块
-- [ ] `/techniques/session` - Session
+- [ ] `/techniques/session` - Session 支持
 - [ ] `/techniques/mvc` - MVC 模式
 - [ ] `/techniques/performance` - 性能优化（Fastify）
 - [ ] `/techniques/server-sent-events` - 服务端推送事件
 
-## 5. 安全 (Security)
+## 5. 数据库集成 (Database Integration)
+
+- [ ] `/techniques/database` - 数据库概述
+- [ ] `/techniques/mongodb` - MongoDB
+
+## 6. 安全实践 (Security Practices)
 
 - [ ] `/security/authentication` - 认证
 - [ ] `/security/authorization` - 授权
 - [ ] `/security/encryption-and-hashing` - 加密与哈希
 - [ ] `/security/helmet` - Helmet
-- [ ] `/security/cors` - 跨源资源共享
+- [ ] `/security/cors` - CORS
 - [ ] `/security/csrf` - CSRF 防护
 - [ ] `/security/rate-limiting` - 请求频率限制
 
-## 6. GraphQL
+## 7. GraphQL 支持
 
 - [ ] `/graphql/quick-start` - 快速入门
 - [ ] `/graphql/resolvers` - 解析器
@@ -97,7 +100,7 @@
 - [ ] `/graphql/other-features` - 其他功能
 - [ ] `/graphql/federation` - 联邦
 
-## 7. WebSocket 通信 (WebSockets)
+## 8. WebSocket 通信
 
 - [ ] `/websockets/gateways` - 网关
 - [ ] `/websockets/exception-filters` - 异常过滤器
@@ -106,7 +109,7 @@
 - [ ] `/websockets/interceptors` - 拦截器
 - [ ] `/websockets/adapter` - 适配器
 
-## 8. 微服务 (Microservices)
+## 9. 微服务架构
 
 - [ ] `/microservices/basics` - 概述
 - [ ] `/microservices/redis` - Redis
@@ -121,12 +124,7 @@
 - [ ] `/microservices/guards` - 守卫
 - [ ] `/microservices/interceptors` - 拦截器
 
-## 9. 单页面文档
-
-- [ ] `/deployment` - 部署
-- [ ] `/standalone-applications` - 独立应用
-
-## 10. CLI
+## 10. CLI 工具
 
 - [ ] `/cli/overview` - 概述
 - [ ] `/cli/monorepo` - 工作空间
@@ -145,7 +143,7 @@
 - [ ] `/openapi/cli-plugin` - CLI 插件
 - [ ] `/openapi/other-features` - 其他功能
 
-## 12. 实用案例 (Recipes)
+## 12. 实用案例
 
 - [ ] `/recipes/repl` - REPL
 - [ ] `/recipes/crud-generator` - CRUD 生成器
@@ -169,7 +167,12 @@
 - [ ] `/recipes/necord` - Necord
 - [ ] `/recipes/suites` - Suites（原 Automock）
 
-## 13. 常见问题解答 (FAQ)
+## 13. 部署与发布
+
+- [ ] `/deployment` - 部署指南
+- [ ] `/standalone-applications` - 独立应用模式
+
+## 14. 常见问题 (Frequently Asked Questions)
 
 - [ ] `/faq/serverless` - Serverless
 - [ ] `/faq/http-adapter` - HTTP 适配器
@@ -181,21 +184,18 @@
 - [ ] `/faq/request-lifecycle` - 请求生命周期
 - [ ] `/faq/common-errors` - 常见错误
 
-## 14. 开发者工具 (Developer Tools)
+## 15. 开发者工具
 
 - [ ] `/devtools/overview` - 概述
 - [ ] `/devtools/ci-cd-integration` - CI/CD 集成
 
-## 15. 单页面文档
+## 16. 独立页面
 
 - [ ] `/migration-guide` - 迁移指南
 
-## 16. 发现 (Discover)
+## 17. 社区与支持
 
 - [x] `/discover/companies` - 谁在使用 Nest？
-
-## 17. 其他页面
-
 - [x] `/support` - 支持我们
 
 ## 外部链接（无需优化）
@@ -209,34 +209,41 @@
 ## 优化统计
 
 - **总计文档数量**: 约 130 个
-- **已完成优化**: 0
-- **待优化文档**: 130
-- **完成进度**: 0%
+- **已完成优化**: 23 个（入门指南、核心机制、进阶原理、社区与支持）
+- **待优化文档**: 107 个
+- **完成进度**: 17.7%
 
 ## 优化重点
 
 根据访问频率和重要性，建议优先优化以下文档：
 
-### 高优先级 (P0)
+### 高优先级 (P0) - 已完成
 
-- [ ] 介绍
-- [ ] 快速上手
-- [ ] 控制器
-- [ ] 提供者
-- [ ] 模块
+- [x] 介绍
+- [x] 快速上手
+- [x] 控制器
+- [x] 提供者
+- [x] 模块
 
-### 中优先级 (P1)
+### 中优先级 (P1) - 已完成
 
-- [ ] 中间件
-- [ ] 异常过滤器
-- [ ] 管道
-- [ ] 守卫
-- [ ] 拦截器
+- [x] 中间件
+- [x] 异常过滤器
+- [x] 管道
+- [x] 守卫
+- [x] 拦截器
 
-### 技术专题优先级 (P2)
+### 功能扩展优先级 (P2)
 
 - [ ] 配置
-- [ ] 数据库
 - [ ] 验证
+- [ ] 缓存
+- [ ] 数据库概述
+- [ ] MongoDB
+
+### 安全实践优先级 (P3)
+
 - [ ] 认证
 - [ ] 授权
+- [ ] CORS
+- [ ] Helmet

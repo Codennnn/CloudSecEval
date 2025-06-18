@@ -1,7 +1,7 @@
 import { AppSidebar } from '~/components/AppSidebar'
-import { EnglishDocLink } from '~/components/EnglishDocLink'
-import { ScrollToTop } from '~/components/ScrollToTop'
-import { TableOfContents } from '~/components/TableOfContents'
+import { EnglishDocLink } from '~/components/doc/EnglishDocLink'
+import { ScrollToTop } from '~/components/doc/ScrollToTop'
+import { TableOfContents } from '~/components/doc/TableOfContents'
 import {
   SidebarInset,
   SidebarProvider,

@@ -14,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
+import { SITE_CONFIG } from '~/constants'
 import { navMainData } from '~/lib/data/nav'
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
@@ -29,7 +30,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                     <Image
                       alt="NestJS Logo"
                       height={32}
-                      src="/logo.png"
+                      src={SITE_CONFIG.logoPath}
                       width={32}
                     />
                   </div>

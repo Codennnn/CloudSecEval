@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 
+import { Skeleton } from '~/components/ui/skeleton'
 import { useTableOfContents } from '~/hooks/useTableOfContents'
 import { cn } from '~/lib/utils'
-
-import { Skeleton } from './ui/skeleton'
 
 interface TableOfContentsProps {
   className?: string

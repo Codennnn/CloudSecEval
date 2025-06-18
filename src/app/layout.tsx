@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 
+import { StructuredData } from '~/components/StructuredData'
 import { ThemeProvider } from '~/components/ThemeProvider'
+import { SITE_CONFIG } from '~/constants'
 import { cn } from '~/lib/utils'
 import { getPageTitle } from '~/utils/common'
 
@@ -65,10 +67,68 @@ const mapleMono = localFont({
 
 export const metadata: Metadata = {
   title: getPageTitle(),
-  description: 'NestJS 中文文档 - 用于构建高效、可靠和可扩展的服务端应用程序的渐进式 Node.js 框架',
-  icons: [{ url: '/logo.png', sizes: '32x32', rel: 'icon' }],
-  keywords: ['NestJS', 'Node.js', 'TypeScript', '后端框架', '中文文档'],
-  authors: [{ name: 'NestJS 中文文档团队' }],
+  description: SITE_CONFIG.description,
+  icons: [
+    { url: SITE_CONFIG.logoPath, sizes: '32x32', rel: 'icon' },
+    { url: SITE_CONFIG.logoPath, sizes: '192x192', rel: 'apple-touch-icon' },
+  ],
+  keywords: ['NestJS', 'Node.js', 'TypeScript', '后端框架', '中文文档', 'JavaScript', 'Express', 'Fastify', '微服务', 'GraphQL', 'REST API'],
+  authors: [{ name: SITE_CONFIG.author }],
+  creator: SITE_CONFIG.author,
+  publisher: SITE_CONFIG.publisher,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(SITE_CONFIG.baseUrl),
+  alternates: {
+    canonical: SITE_CONFIG.baseUrl,
+    languages: {
+      'zh-CN': SITE_CONFIG.baseUrl,
+      en: SITE_CONFIG.englishDocsUrl,
+    },
+  },
+  manifest: SITE_CONFIG.manifestPath,
+  openGraph: {
+    title: SITE_CONFIG.title,
+    description: SITE_CONFIG.description,
+    url: SITE_CONFIG.baseUrl,
+    siteName: SITE_CONFIG.name,
+    locale: SITE_CONFIG.language,
+    type: 'website',
+    images: [
+      {
+        url: SITE_CONFIG.logoPath,
+        width: 1200,
+        height: 630,
+        alt: SITE_CONFIG.name,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_CONFIG.title,
+    description: SITE_CONFIG.description,
+    images: [SITE_CONFIG.logoPath],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    // 添加搜索引擎验证（需要时取消注释并填入实际值）
+    // google: 'your-google-verification-code',
+    // bing: 'your-bing-verification-code',
+    // baidu: 'your-baidu-verification-code',
+  },
 }
 
 export default function RootLayout(props: React.PropsWithChildren) {
@@ -81,6 +141,13 @@ export default function RootLayout(props: React.PropsWithChildren) {
           mapleMono.variable,
         ])}
       >
+        <StructuredData
+          description={SITE_CONFIG.description}
+          title={SITE_CONFIG.title}
+          type="website"
+          url={SITE_CONFIG.baseUrl}
+        />
+
         <ThemeProvider
           disableTransitionOnChange
           enableSystem

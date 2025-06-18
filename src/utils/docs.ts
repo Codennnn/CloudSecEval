@@ -113,3 +113,56 @@ export function getDocNavigation(currentPath: string): {
 
   return { prev, next }
 }
+
+/**
+ * 根据 URL 路径从导航数据中获取中文标题
+ */
+export function getDocTitleFromNav(docPath: string): string | null {
+  // 确保路径以 / 开头
+  const normalizedPath = docPath.startsWith('/') ? docPath : `/${docPath}`
+
+  // 递归搜索导航项
+  function findTitleInNavItems(items: NavMenuItem[]): string | null {
+    for (const item of items) {
+      // 检查当前项是否匹配
+      if (item.url === normalizedPath) {
+        return item.title ?? null
+      }
+
+      // 递归检查子项
+      if (item.items) {
+        const foundTitle = findTitleInNavItems(item.items)
+
+        if (foundTitle) {
+          return foundTitle
+        }
+      }
+    }
+
+    return null
+  }
+
+  return findTitleInNavItems(navMainData)
+}
+
+/**
+ * 统一获取文档标题
+ * 优先从导航数据中获取中文标题，如果找不到则使用默认格式化逻辑
+ */
+export function getDocTitle(docPath: string, fallbackSegments?: string[]): string {
+  // 首先尝试从导航数据中获取中文标题
+  const titleFromNav = getDocTitleFromNav(docPath)
+
+  if (titleFromNav) {
+    return titleFromNav
+  }
+
+  // 如果没有找到，使用默认格式化逻辑
+  // 如果提供了 fallbackSegments，使用最后一个段；否则从 docPath 中提取
+  const segment = fallbackSegments?.at(-1) ?? docPath.split('/').at(-1) ?? ''
+
+  return segment
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}

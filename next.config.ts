@@ -15,6 +15,32 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // 为所有页面添加 SEO 相关的安全头
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+        ],
+      },
+      {
         // 为所有静态资源添加安全头
         source: '/assets/:path*',
         headers: [
@@ -68,6 +94,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  // 压缩配置
+  compress: true,
+
+  // 启用实验性功能
+  experimental: {
+    // 优化字体加载
+    optimizePackageImports: ['lucide-react'],
+  },
+
+  // 性能优化
+  poweredByHeader: false, // 移除 X-Powered-By 头
 }
 
 const withMDX = createMDX({
