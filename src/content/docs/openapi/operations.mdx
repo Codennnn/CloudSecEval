@@ -277,7 +277,9 @@ export class CatsController {}
 import { applyDecorators, Type } from '@nestjs/common'
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger'
 
-export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
+export const ApiPaginatedResponse = <TModel extends Type<any>>(
+  model: TModel
+) => {
   return applyDecorators(
     ApiExtraModels(PaginatedDto, model),
     ApiOkResponse({
@@ -299,7 +301,7 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) =>
 }
 ```
 
-请注意，在上面的自定义装饰器中，我们不仅要注册 `PaginatedDto`，也要注册传入的 `model`（例如 `CatDto`），这样 `SwaggerModule` 才能为它们都生成对应的模型定义。
+请注意，在上面的自定义装饰器中，我们不仅要注册 `PaginatedDto`，也要注册传入的 `model`（例如 `CatDto`），这样 `SwaggerModule` 才能为他们都生成对应的模型定义。
 
 这样，我们就可以在端点上使用自定义的 `@ApiPaginatedResponse()` 装饰器了：
 
@@ -318,7 +320,9 @@ findAll(): Observable<{ total: number, limit: number, offset: number, results: C
 可以看到，这里生成的返回类型是一个匿名对象，缺乏明确的类型名称。为了解决这个问题，我们可以在 `ApiPaginatedResponse` 的 `schema` 中添加一个 `title` 属性：
 
 ```ts
-export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
+export const ApiPaginatedResponse = <TModel extends Type<any>>(
+  model: TModel
+) => {
   return applyDecorators(
     ApiOkResponse({
       schema: {

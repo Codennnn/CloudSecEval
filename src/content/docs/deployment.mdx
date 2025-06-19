@@ -197,8 +197,9 @@ CMD ["node", "dist/main"]
 ```
 
 <CalloutInfo>
-  请注意，你应该根据项目需要将 `node:20` 替换为合适的 Node.js 版本。所有可用的 Node.js 镜像都可以在
-  [Docker Hub 官方仓库](https://hub.docker.com/_/node)中找到。
+  请注意，你应该根据项目需要将 `node:20` 替换为合适的 Node.js 版本。所有可用的
+  Node.js 镜像都可以在 [Docker Hub
+  官方仓库](https://hub.docker.com/_/node)中找到。
 </CalloutInfo>
 
 这个多阶段构建的 `Dockerfile` 具有以下优势：
@@ -217,7 +218,7 @@ dist
 .git
 ```
 
-该文件可以确保无关文件和目录不会被复制到构建上下文中，从而避免它们被不必要地打包进镜像，有助于减小镜像体积。
+该文件可以确保无关文件和目录不会被复制到构建上下文中，从而避免他们被不必要地打包进镜像，有助于减小镜像体积。
 
 创建好 `Dockerfile` 和 `.dockerignore` 文件后，就可以构建 Docker 镜像了。在项目根目录中，打开终端并执行以下命令：
 

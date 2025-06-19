@@ -42,7 +42,7 @@ graph TD
 |               |
 | `controllers` | 当前模块中定义的**控制器**数组，由 Nest 自动实例化并处理传入请求。                                         |
 |               |
-| `imports`     | 当前模块所依赖的**其他模块**数组，用于引入它们导出的提供者。                                               |
+| `imports`     | 当前模块所依赖的**其他模块**数组，用于引入他们导出的提供者。                                               |
 |               |
 | `exports`     | 当前模块中希望**对外暴露**的提供者，可供导入本模块的其他模块使用，支持提供者本体或其令牌（`provide` 值）。 |
 
@@ -50,7 +50,7 @@ graph TD
 
 ## 功能模块
 
-在本示例中，`CatsController` 与 `CatsService` 同属于“猫”这一业务领域，二者密切配合、职责相关。因此，将它们封装为一个独立的功能模块（Feature Module）是一种合理且官方推荐的架构方式。
+在本示例中，`CatsController` 与 `CatsService` 同属于“猫”这一业务领域，二者密切配合、职责相关。因此，将他们封装为一个独立的功能模块（Feature Module）是一种合理且官方推荐的架构方式。
 
 功能模块的作用在于**将相关功能的代码组织在一起**，从而实现更清晰的模块边界、更强的内聚性与可维护性。随着应用规模的增长和开发协作的复杂化，模块化的结构优势将愈加突出，同时也更符合 [SOLID 原则](https://en.wikipedia.org/wiki/SOLID)中强调的高内聚、低耦合设计理念。
 
@@ -70,7 +70,9 @@ export class CatsModule {
 }
 ```
 
-<CalloutInfo>你也可以通过命令行快速生成模块结构：`nest g module cats`。</CalloutInfo>
+<CalloutInfo>
+  你也可以通过命令行快速生成模块结构：`nest g module cats`。
+</CalloutInfo>
 
 如上所示，我们在 `cats.module.ts` 文件中声明了 `CatsModule`，并将相关的控制器和服务注册其中。同时，也建议将这些文件统一放置在 `cats` 目录中，以保持结构清晰、易于维护。
 
@@ -182,7 +184,7 @@ import { CatsService } from './cats.service'
 export class CatsModule {}
 ```
 
-这样一来，任何导入了 `CatsModule` 的模块都可以直接注入 `CatsService`，并且它们共享同一个服务实例。
+这样一来，任何导入了 `CatsModule` 的模块都可以直接注入 `CatsService`，并且他们共享同一个服务实例。
 
 反过来，如果在每个使用场景中都单独注册一次 `CatsService`，虽然功能上仍然可用，但每个模块都会创建一个独立实例。这不仅增加了内存开销，还可能导致服务状态不一致的问题。
 
@@ -226,7 +228,7 @@ export class CatsModule {
 
 ## 全局模块的使用
 
-在 Nest 项目中，如果你需要在多个模块间复用某些依赖，频繁地在 `imports` 中手动引入同一个模块会显得繁琐。与 Angular 不同，Nest 中的 `providers` 默认只在声明它们的模块作用域内可用，并不会自动暴露给全局。这意味着：只有将某个模块显式加入当前模块的 `imports` 数组，才能访问其导出的提供者。
+在 Nest 项目中，如果你需要在多个模块间复用某些依赖，频繁地在 `imports` 中手动引入同一个模块会显得繁琐。与 Angular 不同，Nest 中的 `providers` 默认只在声明他们的模块作用域内可用，并不会自动暴露给全局。这意味着：只有将某个模块显式加入当前模块的 `imports` 数组，才能访问其导出的提供者。
 
 这种按需引入的机制有助于维护模块边界，避免全局作用域被过度污染，也降低了隐式依赖带来的维护成本。
 
@@ -249,8 +251,9 @@ export class CatsModule {}
 通过 `@Global()` 装饰器修饰后，`CatsModule` 会被注册到全局作用域，其中导出的 `CatsService` 将自动成为全局提供者。其他模块无需在 `imports` 中引入 `CatsModule`，也能直接注入并使用 `CatsService`。
 
 <CalloutInfo title="谨慎使用全局模块">
-  虽然全局模块能减少重复导入的样板代码，但更推荐的做法是按需引入所需模块，并通过 `exports`
-  显式暴露其 API。这样可以保持模块之间的清晰边界，避免产生不必要的耦合，从而提升项目的可维护性。
+  虽然全局模块能减少重复导入的样板代码，但更推荐的做法是按需引入所需模块，并通过
+  `exports` 显式暴露其
+  API。这样可以保持模块之间的清晰边界，避免产生不必要的耦合，从而提升项目的可维护性。
 </CalloutInfo>
 
 ## 动态模块配置
@@ -279,7 +282,8 @@ export class DatabaseModule {
 ```
 
 <CalloutInfo>
-  `forRoot()` 方法既可以返回同步的动态模块对象，也支持返回 `Promise`，从而满足异步配置的需求。
+  `forRoot()` 方法既可以返回同步的动态模块对象，也支持返回
+  `Promise`，从而满足异步配置的需求。
 </CalloutInfo>
 
 在上述示例中，模块通过 `@Module()` 装饰器静态注册了一个名为 `Connection` 的提供者。与此同时，`forRoot()` 方法根据传入的 `entities` 和 `options` 参数动态生成一组提供者（例如用于数据库访问的仓储类）。

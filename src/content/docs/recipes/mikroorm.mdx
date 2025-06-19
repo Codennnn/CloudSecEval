@@ -3,7 +3,8 @@
 本篇教程将指导你在 Nest 中快速上手 MikroORM。MikroORM 是一款适用于 Node.js 的 TypeScript ORM（对象关系映射），它基于数据映射器（Data Mapper）、工作单元（Unit of Work）和标识映射（Identity Map）模式构建。作为 TypeORM 的优秀替代品，从 TypeORM 迁移过来也相对容易。关于 MikroORM 的完整文档，请参阅其[官方网站](https://mikro-orm.io/docs)。
 
 <CalloutInfo>
-  `@mikro-orm/nestjs` 是一个第三方包，不由 NestJS 核心团队维护。如遇相关问题，请前往其 [GitHub
+  `@mikro-orm/nestjs` 是一个第三方包，不由 NestJS
+  核心团队维护。如遇相关问题，请前往其 [GitHub
   仓库](https://github.com/mikro-orm/nestjs)报告。
 </CalloutInfo>
 
@@ -83,7 +84,8 @@ export class MyService {
 ```
 
 <CalloutInfo>
-  请注意，`EntityManager` 应从你所用的驱动包（例如 `@mikro-orm/sqlite`）中导入。如果你已安装
+  请注意，`EntityManager` 应从你所用的驱动包（例如
+  `@mikro-orm/sqlite`）中导入。如果你已安装
   `@mikro-orm/knex`，也可以直接从该包导入。
 </CalloutInfo>
 
@@ -95,8 +97,8 @@ MikroORM 支持仓储模式（Repository Pattern）。你可以为每个实体�
 
 <CalloutInfo>
   你不应该通过 `forFeature()` 注册基础实体（Base
-  Entity），因为它们没有独立的仓库。同时，基础实体应被包含在 `forRoot()` 方法的 `entities`
-  列表（或全局 ORM 配置）中。
+  Entity），因为他们没有独立的仓库。同时，基础实体应被包含在 `forRoot()` 方法的
+  `entities` 列表（或全局 ORM 配置）中。
 </CalloutInfo>
 
 ```ts
@@ -178,13 +180,15 @@ export class AppModule {}
 启用此选项后，所有通过 `forFeature()` 方法注册的实体，都会被自动添加到配置对象的 `entities` 数组中。
 
 <CalloutInfo>
-  值得注意的是，那些未通过 `forFeature()` 注册、仅通过实体间关系引用的实体，不会因为启用了
-  `autoLoadEntities` 而被自动包含进来。
+  值得注意的是，那些未通过 `forFeature()`
+  注册、仅通过实体间关系引用的实体，不会因为启用了 `autoLoadEntities`
+  而被自动包含进来。
 </CalloutInfo>
 
 <CalloutInfo>
   `autoLoadEntities` 选项对 MikroORM CLI 没有影响。在这种情况下，你仍需在 CLI
-  配置文件中明确列出所有实体。不过，由于 CLI 不经过 webpack 处理，因此它可以使用 glob 路径。
+  配置文件中明确列出所有实体。不过，由于 CLI 不经过 webpack 处理，因此它可以使用
+  glob 路径。
 </CalloutInfo>
 
 ## 序列化
@@ -233,8 +237,8 @@ export class MyService {
 ```
 
 <CalloutInfo type="warning">
-  顾名思义，此装饰器**每次都会创建**一个新的上下文。其替代方案 `@EnsureRequestContext`
-  则只在当前不存在可用上下文时，才会创建新上下文。
+  顾名思义，此装饰器**每次都会创建**一个新的上下文。其替代方案
+  `@EnsureRequestContext` 则只在当前不存在可用上下文时，才会创建新上下文。
 </CalloutInfo>
 
 ## 测试

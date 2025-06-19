@@ -7,7 +7,7 @@
 
 不过，中间件是**无状态**的：它无法得知调用 `next()` 之后将会进入哪个处理器。而守卫则不同，它可以访问 `ExecutionContext`，从而准确识别当前请求对应的控制器方法及其元数据。
 
-和异常过滤器、管道、拦截器一样，守卫属于 Nest 提供的“声明式扩展机制”之一。它们都允许我们在请求/响应流程中的特定阶段插入逻辑，编写出更加**职责清晰**、**易于维护**、符合 DRY 原则的代码。
+和异常过滤器、管道、拦截器一样，守卫属于 Nest 提供的“声明式扩展机制”之一。他们都允许我们在请求/响应流程中的特定阶段插入逻辑，编写出更加**职责清晰**、**易于维护**、符合 DRY 原则的代码。
 
 ```mermaid
 graph TD
@@ -61,7 +61,9 @@ graph TD
     X -.-> C
 ```
 
-<CalloutInfo>守卫的执行顺序：**所有中间件之后，任何管道和拦截器之前**。</CalloutInfo>
+<CalloutInfo>
+  守卫的执行顺序：**所有中间件之后，任何管道和拦截器之前**。
+</CalloutInfo>
 
 ## 授权守卫
 
@@ -73,7 +75,9 @@ import { Observable } from 'rxjs'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext
+  ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest()
     return validateRequest(request)
   }
@@ -119,7 +123,9 @@ import { Observable } from 'rxjs'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext
+  ): boolean | Promise<boolean> | Observable<boolean> {
     return true
   }
 }
@@ -280,7 +286,8 @@ export class RolesGuard implements CanActivate {
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  `matchRoles()` 函数的具体实现可根据业务需求灵活设计。示例的核心在于演示守卫如何介入 Nest
+  `matchRoles()`
+  函数的具体实现可根据业务需求灵活设计。示例的核心在于演示守卫如何介入 Nest
   的请求处理流程，实现访问权限控制。
 </CalloutInfo>
 

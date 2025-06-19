@@ -5,7 +5,9 @@
 采用**无服务器架构（Serverless Architecture）**，开发者可以专注于编写独立的函数，而无需关心底层。AWS Lambda、Google Cloud Functions 和 Microsoft Azure Functions 等服务会为你处理好所有物理硬件、虚拟机操作系统和 Web 服务器软件的管理工作。
 
 <CalloutInfo>
-  <div>本章不讨论无服务器函数的优缺点，也不会深入探讨特定云厂商的实现细节。</div>
+  <div>
+    本章不讨论无服务器函数的优缺点，也不会深入探讨特定云厂商的实现细节。
+  </div>
 </CalloutInfo>
 
 ## 冷启动
@@ -73,7 +75,8 @@ bootstrap()
 | 原生 Node.js 脚本                       | 0.0071 秒（7.1 毫秒）   |
 
 <CalloutInfo title="说明">
-  机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
+  机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz
+  DDR3，SSD。
 </CalloutInfo>
 
 接下来，我们使用 `webpack` 将所有脚本打包后再进行一次基准测试。（如果你安装了 [Nest CLI](/cli/overview)，可以通过 `nest build --webpack` 命令将应用打包成一个独立的 JavaScript 文件）。我们没有使用 Nest CLI 的默认 `webpack` 配置，而是通过以下配置确保所有依赖项（`node_modules`）都被打包到最终文件中：
@@ -121,11 +124,14 @@ module.exports = (options, webpack) => {
 | 原生 Node.js 脚本                       | 0.0066 秒（6.6 毫秒）  |
 
 <CalloutInfo title="说明">
-  机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz DDR3，SSD。
+  机器配置：MacBook Pro Mid 2014，2.5 GHz 四核 Intel Core i7，16 GB 1600 MHz
+  DDR3，SSD。
 </CalloutInfo>
 
 <CalloutInfo>
-  <div>你还可以通过进一步的代码压缩和优化（如使用 `webpack` 插件等）来提升性能。</div>
+  <div>
+    你还可以通过进一步的代码压缩和优化（如使用 `webpack` 插件等）来提升性能。
+  </div>
 </CalloutInfo>
 
 可以看到，编译和打包方式对应用的整体启动时间有显著影响。通过 `webpack` 打包后，一个独立的 Nest 应用（包含一个模块、一个控制器和一个服务）的平均启动时间可以降至约 32 毫秒，而一个标准的、基于 Express 的 NestJS 应用约为 81.5 毫秒。
@@ -157,7 +163,7 @@ if (request.method === RequestMethod[RequestMethod.GET]) {
 }
 ```
 
-另一个适合懒加载的典型场景是 Webhook 或 Worker。它们通常会根据输入参数等特定条件执行不同的逻辑。
+另一个适合懒加载的典型场景是 Webhook 或 Worker。他们通常会根据输入参数等特定条件执行不同的逻辑。
 在这种情况下，你可以在请求处理函数中加入判断逻辑，只在需要时才加载相应的模块，从而避免加载非必需模块带来的开销。
 
 ```ts
@@ -237,14 +243,18 @@ async function bootstrap(): Promise<Handler> {
   return serverlessExpress({ app: expressApp })
 }
 
-export const handler: Handler = async (event: any, context: Context, callback: Callback) => {
+export const handler: Handler = async (
+  event: any,
+  context: Context,
+  callback: Callback
+) => {
   server = server ?? (await bootstrap())
   return server(event, context, callback)
 }
 ```
 
 <CalloutInfo>
-  如果你需要创建多个无服务器函数并希望它们共享模块，建议采用 [CLI 的 Monorepo
+  如果你需要创建多个无服务器函数并希望他们共享模块，建议采用 [CLI 的 Monorepo
   模式](/cli/monorepo#monorepo-mode)。
 </CalloutInfo>
 
@@ -325,7 +335,11 @@ import { Callback, Context, Handler } from 'aws-lambda'
 import { AppModule } from './app.module'
 import { AppService } from './app.service'
 
-export const handler: Handler = async (event: any, context: Context, callback: Callback) => {
+export const handler: Handler = async (
+  event: any,
+  context: Context,
+  callback: Callback
+) => {
   const appContext = await NestFactory.createApplicationContext(AppModule)
   const appService = appContext.get(AppService)
 
@@ -338,13 +352,18 @@ export const handler: Handler = async (event: any, context: Context, callback: C
 
 <CalloutInfo>
   请注意，`NestFactory.createApplicationContext`
-  不会为控制器方法应用增强器（如守卫、拦截器等）。如需此功能，必须使用 `NestFactory.create` 方法。
+  不会为控制器方法应用增强器（如守卫、拦截器等）。如需此功能，必须使用
+  `NestFactory.create` 方法。
 </CalloutInfo>
 
 你也可以将 `event` 对象传递给某个服务（例如 `EventsService`），让它根据你的业务逻辑处理输入并返回结果。
 
 ```ts
-export const handler: Handler = async (event: any, context: Context, callback: Callback) => {
+export const handler: Handler = async (
+  event: any,
+  context: Context,
+  callback: Callback
+) => {
   const appContext = await NestFactory.createApplicationContext(AppModule)
   const eventsService = appContext.get(EventsService)
   return eventsService.process(event)

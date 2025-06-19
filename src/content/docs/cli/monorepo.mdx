@@ -107,8 +107,8 @@ $ nest generate app my-app
 
 <CalloutInfo type="warning">
   请注意，只有遵循标准 Nest 项目结构的项目，才能顺利地从标准模式转换为 Monorepo
-  模式。具体而言，转换工具会尝试将原有的 `src` 和 `test` 文件夹移动到根目录下的 `apps`
-  文件夹中。如果你的项目不符合此结构，转换过程可能会失败或产生意外结果。
+  模式。具体而言，转换工具会尝试将原有的 `src` 和 `test` 文件夹移动到根目录下的
+  `apps` 文件夹中。如果你的项目不符合此结构，转换过程可能会失败或产生意外结果。
 </CalloutInfo>
 
 ## 工作空间项目
@@ -359,10 +359,10 @@ TypeScript 编译器会自动将编译产物（`.js` 和 `.d.ts` 文件）输出
 ```
 
 <CalloutInfo type="warning">
-  如果在顶层 `compilerOptions` 属性中设置了 `watchAssets`，它将覆盖 `assets` 属性中任何
-  `watchAssets` 的设置。
+  如果在顶层 `compilerOptions` 属性中设置了 `watchAssets`，它将覆盖 `assets`
+  属性中任何 `watchAssets` 的设置。
 </CalloutInfo>
 
 ## 项目属性
 
-此元素仅存在于 Monorepo 中。通常不建议修改这些属性，因为 Nest 会使用它们来定位各个项目及其在 Monorepo 中的配置选项。
+此元素仅存在于 Monorepo 中。通常不建议修改这些属性，因为 Nest 会使用他们来定位各个项目及其在 Monorepo 中的配置选项。

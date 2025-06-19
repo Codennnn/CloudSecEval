@@ -72,7 +72,7 @@ Nest 中间件原生支持依赖注入，与控制器和服务（提供者）一
 
 ## 中间件的注册与应用
 
-在 Nest 中，中间件**无需**像提供者那样在 `@Module()` 装饰器中显式声明。相反，它们通过模块类的 `configure()` 方法进行注册。为了使用该方法，模块需要实现 `NestModule` 接口。
+在 Nest 中，中间件**无需**像提供者那样在 `@Module()` 装饰器中显式声明。相反，他们通过模块类的 `configure()` 方法进行注册。为了使用该方法，模块需要实现 `NestModule` 接口。
 
 下面的示例展示了如何在 `AppModule` 中将 `LoggerMiddleware` 应用于指定路由：
 
@@ -122,7 +122,7 @@ export class AppModule implements NestModule {
 <CalloutInfo type="warning">
 当使用 Express 作为底层 HTTP 适配器时，Nest 默认会注册 `body-parser` 提供的 `json` 与 `urlencoded` 中间件。
 
-如果你希望完全自定义这些中间件的行为，并通过 `MiddlewareConsumer` 手动注册它们，需要在调用 `NestFactory.create()` 时将 `bodyParser` 选项设置为 `false`，以禁用默认中间件的自动注入。
+如果你希望完全自定义这些中间件的行为，并通过 `MiddlewareConsumer` 手动注册他们，需要在调用 `NestFactory.create()` 时将 `bodyParser` 选项设置为 `false`，以禁用默认中间件的自动注入。
 
 </CalloutInfo>
 
@@ -140,7 +140,9 @@ forRoutes({
 ```
 
 <CalloutInfo>
-  `splat` 仅作为占位符使用，不具备特殊含义。你可以使用任意合法的标识符进行替换，如 `*wildcard` 等。
+  `splat`
+  仅作为占位符使用，不具备特殊含义。你可以使用任意合法的标识符进行替换，如
+  `*wildcard` 等。
 </CalloutInfo>
 
 需要注意，像连字符（`-`）和点（`.`）等字符在路径中会按字面意义进行匹配，**不会被通配符捕获**。此外，`'abcd/*'` 不会匹配纯 `'abcd/'`（即末尾无附加路径段）的请求。
@@ -213,7 +215,8 @@ consumer
 ```
 
 <CalloutInfo>
-  `exclude()` 方法内部基于 [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters)
+  `exclude()` 方法内部基于
+  [path-to-regexp](https://github.com/pillarjs/path-to-regexp#parameters)
   实现，因此支持通配符语法（如 `*`、`+`、命名参数等），可实现更复杂的匹配规则。
 </CalloutInfo>
 
@@ -267,5 +270,6 @@ await app.listen(process.env.PORT ?? 3000)
 <CalloutInfo>
   由于通过 `app.use()`
   注册的全局中间件**无法访问依赖注入容器**，因此推荐优先使用[函数式中间件](/middleware#函数式中间件)。若确实需要使用类中间件，可在
-  `AppModule`（或其他模块）中通过 `.forRoutes('*')` 的方式显式挂载，以覆盖全局范围。
+  `AppModule`（或其他模块）中通过 `.forRoutes('*')`
+  的方式显式挂载，以覆盖全局范围。
 </CalloutInfo>

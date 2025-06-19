@@ -25,16 +25,18 @@ import * as mongoose from 'mongoose'
 export const databaseProviders = [
   {
     provide: 'DATABASE_CONNECTION',
-    useFactory: (): Promise<typeof mongoose> => mongoose.connect('mongodb://localhost/nest'),
+    useFactory: (): Promise<typeof mongoose> =>
+      mongoose.connect('mongodb://localhost/nest'),
   },
 ]
 ```
 
 <CalloutInfo>
-  按照最佳实践，建议将自定义提供者声明在独立的文件中，并以 `.providers.ts` 作为文件名后缀。
+  按照最佳实践，建议将自定义提供者声明在独立的文件中，并以 `.providers.ts`
+  作为文件名后缀。
 </CalloutInfo>
 
-接下来，需要导出这些提供者，以便它们能在应用的其他部分被注入和使用。
+接下来，需要导出这些提供者，以便他们能在应用的其他部分被注入和使用。
 
 ```ts filename='database.module.ts'
 import { Module } from '@nestjs/common'
@@ -81,8 +83,9 @@ export const catsProviders = [
 ```
 
 <CalloutInfo type="warning">
-  在实际项目中应避免使用**魔法字符串**。建议将 `CAT_MODEL` 和 `DATABASE_CONNECTION`
-  等注入令牌（token）统一放在独立的 `constants.ts` 文件中管理。
+  在实际项目中应避免使用**魔法字符串**。建议将 `CAT_MODEL` 和
+  `DATABASE_CONNECTION` 等注入令牌（token）统一放在独立的 `constants.ts`
+  文件中管理。
 </CalloutInfo>
 
 现在，就可以通过 `@Inject()` 装饰器将 `CAT_MODEL` 注入 `CatsService` 了：

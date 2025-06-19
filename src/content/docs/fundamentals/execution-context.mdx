@@ -2,7 +2,7 @@
 
 Nest 提供了一套强大的工具类，旨在帮助开发者构建能够适配多种运行环境的通用程序，例如基于 Nest 的 HTTP 服务、微服务架构，或是 WebSocket 应用。这些工具类可以提取当前的执行上下文信息，使我们能够编写可在不同类型的控制器、处理器与运行平台之间灵活复用的守卫、异常过滤器和拦截器。
 
-本章将重点介绍两个核心类：`ArgumentsHost` 和 `ExecutionContext`，它们是构建高度抽象和可扩展逻辑的关键基础。
+本章将重点介绍两个核心类：`ArgumentsHost` 和 `ExecutionContext`，他们是构建高度抽象和可扩展逻辑的关键基础。
 
 ## ArgumentsHost 类
 
@@ -94,8 +94,8 @@ export interface RpcArgumentsHost {
 
 <CalloutInfo>
   应根据所使用的传输机制（HTTP、WebSocket 或
-  RPC）选择对应的上下文切换方法。每种上下文类型都提供了访问底层平台对象（如 Express、Socket.IO
-  或自定义传输器）的能力，有助于提升代码的可读性与稳定性。
+  RPC）选择对应的上下文切换方法。每种上下文类型都提供了访问底层平台对象（如
+  Express、Socket.IO 或自定义传输器）的能力，有助于提升代码的可读性与稳定性。
 </CalloutInfo>
 
 ## ExecutionContext 类
@@ -221,7 +221,10 @@ export class CatsController {
 该方法从多个上下文中提取元数据，**优先使用靠前的值进行覆盖**。如果你希望方法上的 `@Roles()` 覆盖控制器上的默认值，可以这样写：
 
 ```ts
-const roles = this.reflector.getAllAndOverride(Roles, [context.getHandler(), context.getClass()])
+const roles = this.reflector.getAllAndOverride(Roles, [
+  context.getHandler(),
+  context.getClass(),
+])
 ```
 
 在上例中，当守卫运行于 `create()` 方法时，返回的 roles 将是 `['admin']`。
@@ -231,7 +234,10 @@ const roles = this.reflector.getAllAndOverride(Roles, [context.getHandler(), con
 若你希望**合并多个层级的元数据**（适用于数组、对象等），可以使用 `getAllAndMerge()`：
 
 ```ts
-const roles = this.reflector.getAllAndMerge(Roles, [context.getHandler(), context.getClass()])
+const roles = this.reflector.getAllAndMerge(Roles, [
+  context.getHandler(),
+  context.getClass(),
+])
 ```
 
 该方法将返回合并结果，如 `['user', 'admin']`。

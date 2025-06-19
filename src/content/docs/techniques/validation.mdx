@@ -82,14 +82,15 @@ create(@Body() createUserDto: CreateUserDto) {
 ```
 
 <CalloutInfo>
-  需要注意，TypeScript 不会保留泛型或接口的元数据。因此，当你在数据传输对象（Data Transfer
-  Object，DTO）中使用它们时，`ValidationPipe` 可能无法正确校验传入数据。建议在 DTO
-  中始终使用具体的类。
+  需要注意，TypeScript
+  不会保留泛型或接口的元数据。因此，当你在数据传输对象（DTO）中使用他们时，`ValidationPipe`
+  可能无法正确校验传入数据。建议在 DTO 中始终使用具体的类。
 </CalloutInfo>
 
 <CalloutInfo>
-  在导入数据传输对象时，不能只用 type-only 导入，因为这类导入会在运行时被移除。也就是说，请务必使用
-  `import {CreateUserDto}`，而不是 `import type {CreateUserDto}`。
+  在导入数据传输对象时，不能只用 type-only
+  导入，因为这类导入会在运行时被移除。也就是说，请务必使用 `import{' '}
+  {CreateUserDto}`，而不是 `import type {CreateUserDto}`。
 </CalloutInfo>
 
 接下来，我们可以在 `CreateUserDto` 中添加一些校验规则。这些规则通过 `class-validator` 包提供的装饰器实现，详细说明可参考[官方文档](https://github.com/typestack/class-validator#validation-decorators)。这样，所有使用 `CreateUserDto` 的路由都会自动强制执行这些校验。
@@ -315,7 +316,10 @@ export class AdditionalCatInfo {
 你可以生成一个新类型，包含两个类型中的所有属性：
 
 ```ts
-export class UpdateCatDto extends IntersectionType(CreateCatDto, AdditionalCatInfo) {}
+export class UpdateCatDto extends IntersectionType(
+  CreateCatDto,
+  AdditionalCatInfo
+) {}
 ```
 
 <CalloutInfo>
@@ -325,12 +329,14 @@ export class UpdateCatDto extends IntersectionType(CreateCatDto, AdditionalCatIn
 这些类型映射工具函数可以组合使用。例如，下面的写法会生成一个类型（类），它拥有 `CreateCatDto` 类型中除了 `name` 以外的所有属性，并且这些属性都是可选的：
 
 ```ts
-export class UpdateCatDto extends PartialType(OmitType(CreateCatDto, ['name'] as const)) {}
+export class UpdateCatDto extends PartialType(
+  OmitType(CreateCatDto, ['name'] as const)
+) {}
 ```
 
 ## 解析与验证数组
 
-TypeScript 不会存储关于泛型或接口的元数据。因此，当你在数据传输对象中使用它们时，`ValidationPipe` 可能无法正确验证传入的数据。例如，下面的代码中，`createUserDtos` 无法被正确验证：
+TypeScript 不会存储关于泛型或接口的元数据。因此，当你在数据传输对象中使用他们时，`ValidationPipe` 可能无法正确验证传入的数据。例如，下面的代码中，`createUserDtos` 无法被正确验证：
 
 ```ts
 @Post()

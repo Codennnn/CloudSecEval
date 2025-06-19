@@ -15,8 +15,8 @@ async create(@Body() createCatDto: CreateCatDto) {
 ```
 
 <CalloutInfo>
-  如果你需要显式设置请求体（Request Body）的定义，可以使用 `@ApiBody()` 装饰器（从 `@nestjs/swagger`
-  包中导入）。
+  如果你需要显式设置请求体（Request Body）的定义，可以使用 `@ApiBody()`
+  装饰器（从 `@nestjs/swagger` 包中导入）。
 </CalloutInfo>
 
 Swagger UI 将根据 `CreateCatDto` 生成以下模型定义：
@@ -25,7 +25,7 @@ Swagger UI 将根据 `CreateCatDto` 生成以下模型定义：
 
 如上图所示，`CreateCatDto` 类的模型定义是空的，尽管它已经声明了多个属性。
 
-为了让 `SwaggerModule` 能够识别并展示这些属性，我们需要用 `@ApiProperty()` 装饰器来注解它们。另一个选择是使用 CLI 插件（详见[插件](/openapi/cli-plugin)章节），它会自动处理这个步骤：
+为了让 `SwaggerModule` 能够识别并展示这些属性，我们需要用 `@ApiProperty()` 装饰器来注解他们。另一个选择是使用 CLI 插件（详见[插件](/openapi/cli-plugin)章节），它会自动处理这个步骤：
 
 ```ts
 import { ApiProperty } from '@nestjs/swagger'
@@ -85,7 +85,8 @@ names: string[];
 ```
 
 <CalloutInfo>
-  建议使用 Swagger 插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测数组类型。
+  建议使用 Swagger
+  插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测数组类型。
 </CalloutInfo>
 
 一种方法是如上所示，将类型作为数组的第一个元素传入；另一种方法是将 `isArray` 属性设置为 `true`。
@@ -100,12 +101,13 @@ node: Node;
 ```
 
 <CalloutInfo>
-  建议使用 Swagger 插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测循环依赖。
+  建议使用 Swagger
+  插件（详见[插件](/openapi/cli-plugin)章节），该插件会自动检测循环依赖。
 </CalloutInfo>
 
 ## 泛型与接口
 
-由于 TypeScript 不存储泛型（Generics）或接口（Interfaces）的元数据（Metadata），因此当你在数据传输对象（DTO）中使用它们时，`SwaggerModule` 可能无法在运行时正确地生成模型定义。例如，`SwaggerModule` 将无法正确识别以下代码：
+由于 TypeScript 不存储泛型（Generics）或接口（Interfaces）的元数据（Metadata），因此当你在数据传输对象（DTO）中使用他们时，`SwaggerModule` 可能无法在运行时正确地生成模型定义。例如，`SwaggerModule` 将无法正确识别以下代码：
 
 ```ts
 createBulk(@Body() usersDto: CreateUserDto[])
@@ -148,7 +150,11 @@ async filterByRole(@Query('role') role: UserRole = UserRole.User) {}
 
 如果将 `isArray` 设置为 **true**，枚举就可以作为多选列表呈现：
 
-<DocImage src={enumQueryArrayImage} alt="Enum Query Array" placeholder={undefined} />
+<DocImage
+  src={enumQueryArrayImage}
+  alt="Enum Query Array"
+  placeholder={undefined}
+/>
 
 ## 枚举 Schema
 
@@ -189,7 +195,9 @@ export enum CatInformationEnum {
 ```
 
 <CalloutInfo>
-  <div>以上代码片段由 [NSwag](https://github.com/RicoSuter/NSwag) 工具生成。</div>
+  <div>
+    以上代码片段由 [NSwag](https://github.com/RicoSuter/NSwag) 工具生成。
+  </div>
 </CalloutInfo>
 
 你会发现，生成的代码中出现了两个完全相同的 `枚举`。
@@ -305,7 +313,7 @@ async create(@Body() coords: number[][]) {}
 
 ## 额外模型
 
-在某些场景下，你可能需要定义一些模型，它们虽未在控制器中直接作为类型引用，但仍需被 Swagger 模块扫描。此时，可以使用 `@ApiExtraModels()` 装饰器来注册它们：
+在某些场景下，你可能需要定义一些模型，他们虽未在控制器中直接作为类型引用，但仍需被 Swagger 模块扫描。此时，可以使用 `@ApiExtraModels()` 装饰器来注册他们：
 
 ```ts
 @ApiExtraModels(ExtraModel)

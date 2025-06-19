@@ -32,7 +32,8 @@ $ npm install --save-dev @types/passport-local
   无论选择哪种 Passport 策略，`@nestjs/passport` 和 `passport`
   都是必须安装的核心依赖包。随后，再根据你选择的具体策略（例如 `passport-jwt` 或
   `passport-local`）安装相应的包。此外，为了获得更好的 TypeScript
-  开发体验和类型提示，建议同时安装该策略的类型定义包（例如 `@types/passport-local`）。
+  开发体验和类型提示，建议同时安装该策略的类型定义包（例如
+  `@types/passport-local`）。
 </CalloutInfo>
 
 ## 实现 Passport 策略
@@ -552,7 +553,11 @@ $ # 结果 -> {"userId":1,"username":"john"}
 在大多数情况下，直接使用内置的 `AuthGuard` 就已经足够了。但在某些场景下，你可能希望扩展其默认的错误处理或认证逻辑。为此，你可以继承 `AuthGuard`，并在子类中重写相应方法。
 
 ```ts
-import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
@@ -729,10 +734,12 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
 import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
-export const CurrentUser = createParamDecorator((data: unknown, context: ExecutionContext) => {
-  const ctx = GqlExecutionContext.create(context)
-  return ctx.getContext().req.user
-})
+export const CurrentUser = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context)
+    return ctx.getContext().req.user
+  }
+)
 ```
 
 要在解析器中使用该装饰器，只需在查询（query）或变更（mutation）处理函数中将其作为参数注入即可：
@@ -745,7 +752,7 @@ whoAmI(@CurrentUser() user: User) {
 }
 ```
 
-对于 `passport-local` 策略，你还需要将 GraphQL 上下文中的参数添加到请求体中，以便 Passport 能找到并验证它们。否则，请求将因缺少凭证而认证失败。
+对于 `passport-local` 策略，你还需要将 GraphQL 上下文中的参数添加到请求体中，以便 Passport 能找到并验证他们。否则，请求将因缺少凭证而认证失败。
 
 ```ts
 @Injectable()

@@ -526,7 +526,7 @@ export class AppModule {}
 
 在某些场景下，模块可能需要通过一些额外配置项来控制其行为，比如 `isGlobal`（或 `global`）标志，用于声明模块是否为全局模块。
 
-这类选项通常不应包含在 `MODULE_OPTIONS_TOKEN` 绑定的配置对象中，因为它们与模块内部实际依赖的服务（例如 `ConfigService`）并无直接关联。比如：`ConfigService` 本身并不关心模块是否被注册为全局模块。
+这类选项通常不应包含在 `MODULE_OPTIONS_TOKEN` 绑定的配置对象中，因为他们与模块内部实际依赖的服务（例如 `ConfigService`）并无直接关联。比如：`ConfigService` 本身并不关心模块是否被注册为全局模块。
 
 为了解决这一需求，Nest 提供了 `ConfigurableModuleBuilder#setExtras()` 方法，用于处理这类“模块级”的附加选项。以下是一个使用示例：
 

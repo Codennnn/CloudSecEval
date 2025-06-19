@@ -51,7 +51,8 @@ graph TD
 Nest 除了内置了一系列常用管道，也支持开发者自定义管道逻辑。本章节将介绍内置管道的使用方式、绑定机制，并通过一个实际示例带你从零实现一个自定义管道。
 
 <CalloutInfo>
-  所有管道都会在异常捕获区域（exceptions zone）中执行。换句话说，一旦管道抛出异常，Nest
+  所有管道都会在异常捕获区域（exceptions
+  zone）中执行。换句话说，一旦管道抛出异常，Nest
   的异常处理机制（包括全局异常过滤器和当前上下文的[异常过滤器](/exception-filters)）会立即接手处理，阻止控制器方法继续执行。这一机制非常适合在系统边界对外部输入进行预处理和防御性校验。
 </CalloutInfo>
 
@@ -145,12 +146,15 @@ async findOne(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
 ```
 
 <CalloutInfo>
-  `ParseUUIDPipe()` 默认支持第 3、4、5 版本的 UUID。若需要限制为特定版本，可通过构造参数进行配置。
+  `ParseUUIDPipe()` 默认支持第 3、4、5 版本的
+  UUID。若需要限制为特定版本，可通过构造参数进行配置。
 </CalloutInfo>
 
-以上内容介绍了 `Parse*` 系列转换管道的常见使用方式，它们主要用于对传入数据进行类型转换和初步校验。而对于更复杂的校验逻辑，可使用专门的**校验类管道**，其绑定方式略有不同，将在下节中详细说明。
+以上内容介绍了 `Parse*` 系列转换管道的常见使用方式，他们主要用于对传入数据进行类型转换和初步校验。而对于更复杂的校验逻辑，可使用专门的**校验类管道**，其绑定方式略有不同，将在下节中详细说明。
 
-<CalloutInfo>想了解更全面的校验机制，请参阅[校验技术](/techniques/validation)一节。</CalloutInfo>
+<CalloutInfo>
+  想了解更全面的校验机制，请参阅[校验技术](/techniques/validation)一节。
+</CalloutInfo>
 
 ## 自定义管道
 
@@ -195,7 +199,8 @@ export interface ArgumentMetadata {
 | `data`     | 装饰器中传入的字段名，例如 `@Body('name')` 中的 `'name'`。如果未指定字段，则该值为 `undefined`。                                                      |
 
 <CalloutInfo type="warning">
-  请注意，TypeScript 的接口类型在编译后会被擦除。如果参数使用接口声明类型（而非类），则运行时
+  请注意，TypeScript
+  的接口类型在编译后会被擦除。如果参数使用接口声明类型（而非类），则运行时
   `metatype` 的值为 `Object`，这会影响基于类型的验证逻辑。
 </CalloutInfo>
 
@@ -224,7 +229,7 @@ export class CreateCatDto {
 
 为了确保每个 `create()` 方法的请求体都具备合法的 `name`、`age` 和 `breed` 字段，我们可以编写显式的校验逻辑。但如果将这些逻辑直接写入控制器，将破坏**单一职责原则**（SRP），使代码变得冗长难维护。
 
-另一种做法是为每个处理器方法创建对应的校验器类，并手动调用它们。但这种方式不仅容易被忽略，还会引入大量重复代码。
+另一种做法是为每个处理器方法创建对应的校验器类，并手动调用他们。但这种方式不仅容易被忽略，还会引入大量重复代码。
 
 也可以选择在中间件中实现统一校验，但中间件层无法获取当前的**执行上下文**（即调用的处理器方法及其参数信息），难以实现具备上下文感知能力的动态校验。
 
@@ -251,7 +256,11 @@ $ npm install zod
 根据 NestJS 的设计约定，管道应当返回验证通过后的值；若校验失败，则应抛出异常。
 
 ```ts filename='zod-validation.pipe.ts'
-import { PipeTransform, ArgumentMetadata, BadRequestException } from '@nestjs/common'
+import {
+  PipeTransform,
+  ArgumentMetadata,
+  BadRequestException,
+} from '@nestjs/common'
 import { ZodSchema } from 'zod'
 
 export class ZodValidationPipe implements PipeTransform {
@@ -315,7 +324,8 @@ export class CatsController {
 ```
 
 <CalloutInfo>
-  使用 Zod 时，建议在 `tsconfig.json` 中启用 `strictNullChecks` 选项，以确保类型检查的准确性。
+  使用 Zod 时，建议在 `tsconfig.json` 中启用 `strictNullChecks`
+  选项，以确保类型检查的准确性。
 </CalloutInfo>
 
 ## 类装饰器校验器
@@ -359,7 +369,12 @@ export class CreateCatDto {
 为了理解底层实现，我们来手动实现一个简单的 `ValidationPipe`，用于处理参数转换与校验：
 
 ```ts filename='validation.pipe.ts'
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common'
+import {
+  PipeTransform,
+  Injectable,
+  ArgumentMetadata,
+  BadRequestException,
+} from '@nestjs/common'
 import { validate } from 'class-validator'
 import { plainToInstance } from 'class-transformer'
 
@@ -393,7 +408,8 @@ export class ValidationPipe implements PipeTransform<any> {
 </CalloutInfo>
 
 <CalloutInfo type="success">
-  示例中使用的 [class-transformer](https://github.com/typestack/class-transformer) 与
+  示例中使用的
+  [class-transformer](https://github.com/typestack/class-transformer) 与
   **class-validator** 来自同一作者，搭配使用效果最佳。
 </CalloutInfo>
 
@@ -479,7 +495,12 @@ export class AppModule {}
 下面是一个自定义 `ParseIntPipe` 的示例，它用于将字符串形式的数字转换为整数。（需要注意的是，Nest 本身已提供了功能更完整的内置 `ParseIntPipe`，此处仅作为编写自定义转换管道的示范。）
 
 ```ts filename='parse-int.pipe.ts'
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common'
+import {
+  PipeTransform,
+  Injectable,
+  ArgumentMetadata,
+  BadRequestException,
+} from '@nestjs/common'
 
 @Injectable()
 export class ParseIntPipe implements PipeTransform<string, number> {

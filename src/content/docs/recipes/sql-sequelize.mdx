@@ -7,7 +7,8 @@
 <CalloutInfo type="warning">
   本文将介绍如何基于 **Sequelize** 包，从零开始创建一个自定义的
   `DatabaseModule`。请注意，这种方式涉及较多手动配置。作为替代方案，你可以使用开箱即用的
-  [`@nestjs/sequelize` 包](/techniques/database#sequelize-integration)来大幅简化此过程。
+  [`@nestjs/sequelize`
+  包](/techniques/database#sequelize-integration)来大幅简化此过程。
 </CalloutInfo>
 
 [Sequelize](https://github.com/sequelize/sequelize) 是一个流行的 Node.js 对象关系映射器（ORM）。它基于原生 JavaScript 构建，但社区为其提供了一个 TypeScript 封装库：[sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)。该封装库在 Sequelize 的基础上提供了一系列装饰器及其他功能，以便更好地与 TypeScript 集成。
@@ -48,10 +49,11 @@ export const databaseProviders = [
 ```
 
 <CalloutInfo>
-  按照最佳实践，我们通常会将自定义提供者声明在独立的文件中，其文件名以 `.providers.ts` 结尾。
+  按照最佳实践，我们通常会将自定义提供者声明在独立的文件中，其文件名以
+  `.providers.ts` 结尾。
 </CalloutInfo>
 
-接下来，我们需要导出这些提供者，以便在应用的其他部分重用它们。
+接下来，我们需要导出这些提供者，以便在应用的其他部分重用他们。
 
 ```ts
 import { Module } from '@nestjs/common'

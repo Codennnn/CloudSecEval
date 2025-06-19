@@ -68,8 +68,10 @@ flowchart TD
 ```
 
 <CalloutInfo>
-  Nest 对第三方库 `http-errors` 提供了有限的兼容性支持。只要异常对象中包含 `statusCode` 和 `message`
-  属性，框架就能提取这些信息并构造响应。否则，将回退至默认的 `InternalServerErrorException`。
+  Nest 对第三方库 `http-errors` 提供了有限的兼容性支持。只要异常对象中包含
+  `statusCode` 和 `message`
+  属性，框架就能提取这些信息并构造响应。否则，将回退至默认的
+  `InternalServerErrorException`。
 </CalloutInfo>
 
 ## 抛出标准异常
@@ -87,8 +89,8 @@ async findAll() {
 ```
 
 <CalloutInfo>
-  `HttpStatus` 是由 `@nestjs/common` 提供的枚举类型，用于语义化地表示常见的 HTTP 状态码，例如
-  `HttpStatus.OK`（200）、`HttpStatus.FORBIDDEN`（403）等。
+  `HttpStatus` 是由 `@nestjs/common` 提供的枚举类型，用于语义化地表示常见的 HTTP
+  状态码，例如 `HttpStatus.OK`（200）、`HttpStatus.FORBIDDEN`（403）等。
 </CalloutInfo>
 
 当客户端调用上述接口时，返回的响应体如下所示：
@@ -161,7 +163,8 @@ async findAll() {
 
 <CalloutInfo type="success">
   为保持异常结构的一致性，推荐定义一套符合业务逻辑的异常类体系，并统一继承自
-  `HttpException`。这样，Nest 的内建异常处理机制便可自动识别这些异常，格式化响应内容，无需额外配置。
+  `HttpException`。这样，Nest
+  的内建异常处理机制便可自动识别这些异常，格式化响应内容，无需额外配置。
 </CalloutInfo>
 
 例如，定义一个代表“禁止访问”的异常类：
@@ -187,7 +190,7 @@ async findAll() {
 
 ## 内置 HTTP 异常类
 
-Nest 提供了一套内置的标准 HTTP 异常类，这些类均继承自基础类 `HttpException`，并通过 `@nestjs/common` 包导出。它们对应常见的 HTTP 状态码，方便在应用中快速抛出语义明确的异常。包括但不限于以下类型：
+Nest 提供了一套内置的标准 HTTP 异常类，这些类均继承自基础类 `HttpException`，并通过 `@nestjs/common` 包导出。他们对应常见的 HTTP 状态码，方便在应用中快速抛出语义明确的异常。包括但不限于以下类型：
 
 - `BadRequestException`
 - `UnauthorizedException`
@@ -241,7 +244,12 @@ Nest 内置的异常过滤器已能覆盖绝大多数常见异常处理场景。
 - `Response` 则用于自定义响应结构，通过 `response.json()` 方法返回数据。
 
 ```ts filename='http-exception.filter.ts'
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common'
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+} from '@nestjs/common'
 import { Request, Response } from 'express'
 
 @Catch(HttpException)
@@ -285,7 +293,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 如需深入了解 `ArgumentsHost` 的使用方式，可参考[官方文档](/fundamentals/execution-context)。
 
 <CalloutInfo title="为什么需要 ArgumentsHost？">
-  `ArgumentsHost` 提供了统一的参数访问接口，适用于所有类型的请求上下文（HTTP、微服务、WebSocket
+  `ArgumentsHost`
+  提供了统一的参数访问接口，适用于所有类型的请求上下文（HTTP、微服务、WebSocket
   等）。你将在后文的执行上下文章节中看到，如何通过它访问不同环境下的底层请求参数，从而构建可跨多场景复用的异常过滤器。
 </CalloutInfo>
 
@@ -352,10 +361,11 @@ async function bootstrap() {
 ```
 
 <CalloutInfo type="warning">
-  通过 `useGlobalFilters()` 注册的过滤器不会应用于 WebSocket 网关或混合应用中的相关逻辑。
+  通过 `useGlobalFilters()` 注册的过滤器不会应用于 WebSocket
+  网关或混合应用中的相关逻辑。
 </CalloutInfo>
 
-需要注意的是，**使用 `useGlobalFilters()` 注册的过滤器无法注入依赖**，因为它们并不处于 Nest 的模块上下文中。如果你需要注入服务或其他依赖，建议通过模块提供者的方式注册全局过滤器：
+需要注意的是，**使用 `useGlobalFilters()` 注册的过滤器无法注入依赖**，因为他们并不处于 Nest 的模块上下文中。如果你需要注入服务或其他依赖，建议通过模块提供者的方式注册全局过滤器：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -378,7 +388,7 @@ export class AppModule {}
   只是注册策略之一，更多高级用法详见[自定义提供者](/fundamentals/custom-providers)。
 </CalloutInfo>
 
-如需同时注册多个全局过滤器，只需将它们一并添加到 `providers` 数组中即可。
+如需同时注册多个全局过滤器，只需将他们一并添加到 `providers` 数组中即可。
 
 ## 捕获所有异常
 
@@ -387,7 +397,13 @@ export class AppModule {}
 以下示例展示了一个**平台无关**的异常过滤器实现。它借助 Nest 提供的 [HTTP 适配器](/faq/http-adapter)来构造响应，而不依赖于特定平台的请求和响应对象：
 
 ```ts
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common'
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common'
 import { HttpAdapterHost } from '@nestjs/core'
 
 @Catch()
@@ -401,7 +417,9 @@ export class CatchEverythingFilter implements ExceptionFilter {
     const ctx = host.switchToHttp()
 
     const httpStatus =
-      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR
 
     const responseBody = {
       statusCode: httpStatus,
@@ -437,8 +455,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 ```
 
 <CalloutInfo type="warning">
-  如果你打算在方法级或控制器级使用继承自 `BaseExceptionFilter` 的过滤器，**请勿使用 `new`
-  手动创建实例**，应交由 Nest 的依赖注入机制自动完成实例化。
+  如果你打算在方法级或控制器级使用继承自 `BaseExceptionFilter`
+  的过滤器，**请勿使用 `new` 手动创建实例**，应交由 Nest
+  的依赖注入机制自动完成实例化。
 </CalloutInfo>
 
 ### 注册为全局异常过滤器

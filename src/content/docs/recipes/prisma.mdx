@@ -298,8 +298,8 @@ $ npm install @prisma/client
 请注意，在安装过程中，Prisma 会自动为你执行 `prisma generate` 命令。此后，每当你修改 Prisma 模型时，都需要重新运行该命令，以更新生成的 Prisma 客户端。
 
 <CalloutInfo>
-  `prisma generate` 命令会读取你的 Prisma schema，并在 `node_modules/@prisma/client` 目录下更新
-  Prisma 客户端库。
+  `prisma generate` 命令会读取你的 Prisma schema，并在
+  `node_modules/@prisma/client` 目录下更新 Prisma 客户端库。
 </CalloutInfo>
 
 ## 在 NestJS 服务中使用 Prisma Client
@@ -324,8 +324,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 ```
 
 <CalloutInfo>
-  `onModuleInit` 是可选的。如果省略此方法，Prisma 会在首次执行数据库查询时进行懒连接（lazy
-  connect）。
+  `onModuleInit` 是可选的。如果省略此方法，Prisma
+  会在首次执行数据库查询时进行懒连接（lazy connect）。
 </CalloutInfo>
 
 接下来，你可以开始编写服务，通过 Prisma schema 中定义的 `User` 和 `Post` 模型来操作数据库。
@@ -341,7 +341,9 @@ import { User, Prisma } from '@prisma/client'
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async user(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
+  async user(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput
+  ): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     })
@@ -404,7 +406,9 @@ import { Post, Prisma } from '@prisma/client'
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  async post(postWhereUniqueInput: Prisma.PostWhereUniqueInput): Promise<Post | null> {
+  async post(
+    postWhereUniqueInput: Prisma.PostWhereUniqueInput
+  ): Promise<Post | null> {
     return this.prisma.post.findUnique({
       where: postWhereUniqueInput,
     })
@@ -454,7 +458,7 @@ export class PostsService {
 
 目前，你的 `UsersService` 和 `PostsService` 封装了 Prisma Client 提供的 CRUD 查询。在真实的应用场景中，服务层通常还承载着核心的业务逻辑。例如，你可以在 `UsersService` 中添加一个 `updatePassword` 方法，专门用于处理用户密码的更新。
 
-请记得，在 `AppModule` 中注册这些新创建的服务，以便让 NestJS 的依赖注入系统能够识别并管理它们。
+请记得，在 `AppModule` 中注册这些新创建的服务，以便让 NestJS 的依赖注入系统能够识别并管理他们。
 
 ## 在主控制器中实现 REST API 路由
 
@@ -488,7 +492,9 @@ export class AppController {
   }
 
   @Get('filtered-posts/:searchString')
-  async getFilteredPosts(@Param('searchString') searchString: string): Promise<PostModel[]> {
+  async getFilteredPosts(
+    @Param('searchString') searchString: string
+  ): Promise<PostModel[]> {
     return this.postService.posts({
       where: {
         OR: [
@@ -518,7 +524,9 @@ export class AppController {
   }
 
   @Post('user')
-  async signupUser(@Body() userData: { name?: string; email: string }): Promise<UserModel> {
+  async signupUser(
+    @Body() userData: { name?: string; email: string }
+  ): Promise<UserModel> {
     return this.userService.createUser(userData)
   }
 

@@ -86,7 +86,7 @@ export class YourCatchAllExceptionFilter implements ExceptionFilter {
 }
 ```
 
-默认情况下，`HttpException` 及其子类不会被上报，因为框架通常将它们视为预期的、可控的响应，而非意外错误。只有未被任何异常过滤器捕获的异常才会被自动上报。
+默认情况下，`HttpException` 及其子类不会被上报，因为框架通常将他们视为预期的、可控的响应，而非意外错误。只有未被任何异常过滤器捕获的异常才会被自动上报。
 
 如果你没有设置自定义的全局异常过滤器，可以在根模块的 `providers` 中注册 Sentry 提供的 `SentryGlobalFilter`。它会自动捕获所有未被处理的异常，并将其上报到 Sentry。
 

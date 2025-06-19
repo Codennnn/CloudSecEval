@@ -26,7 +26,8 @@ $ npm run start -- --entryFile repl
 ```
 
 <CalloutInfo>
-  `repl()` 函数会返回一个 [Node.js REPL 服务器](https://nodejs.org/api/repl.html)实例。
+  `repl()` 函数会返回一个 [Node.js REPL
+  服务器](https://nodejs.org/api/repl.html)实例。
 </CalloutInfo>
 
 启动后，你会在控制台看到如下消息：
@@ -99,7 +100,7 @@ Nest REPL 内置了一些辅助函数。启动 REPL 后，这些函数将在全�
 
 | 函数名                                                | 描述                                                                                | 签名                                                                  |
 | ----------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `debug`                                               | 打印所有已注册的模块，以及它们的 Controller 和 Provider。                           | `debug(moduleCls?: ClassRef \| string) => void`                       |
+| `debug`                                               | 打印所有已注册的模块，以及他们的 Controller 和 Provider。                           | `debug(moduleCls?: ClassRef \| string) => void`                       |
 | <div className='whitespace-nowrap'>`get` 或 `$`</div> | 检索一个可注入类（或 Controller）的实例。如果未找到，则抛出异常。                   | `get(token: InjectionToken) => any`                                   |
 | `methods`                                             | 显示某个 Provider 或 Controller 的所有公开方法。                                    | `methods(token: ClassRef \| string) => void`                          |
 | `resolve`                                             | 解析一个瞬态或请求作用域的可注入类（或 Controller）的实例。如果未找到，则抛出异常。 | `resolve(token: InjectionToken, contextId: any) => Promise<any>`      |

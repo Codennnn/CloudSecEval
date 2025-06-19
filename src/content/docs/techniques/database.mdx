@@ -94,7 +94,8 @@ export class User {
 ```
 
 <CalloutInfo>
-  你可以在 [TypeORM 文档](https://typeorm.io/#/entities) 了解更多关于实体（Entity）的内容。
+  你可以在 [TypeORM 文档](https://typeorm.io/#/entities)
+  了解更多关于实体（Entity）的内容。
 </CalloutInfo>
 
 `User` 实体文件位于 `users` 目录。该目录包含了与 `UsersModule` 相关的所有文件。模型文件的存放位置可以根据实际需求自行决定，但推荐放在与其**领域相关**的模块目录下。
@@ -243,7 +244,8 @@ export class User {
 ```
 
 <CalloutInfo>
-  想了解更多关于 TypeORM 关系的内容，请访问 [TypeORM 官方文档](https://typeorm.io/#/relations)。
+  想了解更多关于 TypeORM 关系的内容，请访问 [TypeORM
+  官方文档](https://typeorm.io/#/relations)。
 </CalloutInfo>
 
 ### 自动加载实体
@@ -268,8 +270,8 @@ export class AppModule {}
 启用该选项后，所有通过 `forFeature()` 方法注册的实体都会被自动添加到配置对象的 `entities` 数组中，无需手动维护。
 
 <CalloutInfo type="warning">
-  需要注意的是，仅通过实体间关系被引用、但未通过 `forFeature()` 方法注册的实体，并不会被
-  `autoLoadEntities` 自动包含。
+  需要注意的是，仅通过实体间关系被引用、但未通过 `forFeature()`
+  方法注册的实体，并不会被 `autoLoadEntities` 自动包含。
 </CalloutInfo>
 
 ### 分离实体定义
@@ -310,8 +312,8 @@ export const UserSchema = new EntitySchema<User>({
 ```
 
 <CalloutInfo type="warning">
-  如果你设置了 `target` 选项，则 `name` 选项的值必须与目标类的名称保持一致。如果未设置
-  `target`，则可以使用任意名称。
+  如果你设置了 `target` 选项，则 `name`
+  选项的值必须与目标类的名称保持一致。如果未设置 `target`，则可以使用任意名称。
 </CalloutInfo>
 
 Nest 允许你在任何需要实体（Entity）的地方使用 `EntitySchema` 实例。例如：
@@ -376,7 +378,8 @@ async createMany(users: User[]) {
 ```
 
 <CalloutInfo>
-  请注意，`dataSource` 仅用于创建 `QueryRunner`。但在对该类进行测试时，需要模拟整个 `DataSource`
+  请注意，`dataSource` 仅用于创建
+  `QueryRunner`。但在对该类进行测试时，需要模拟整个 `DataSource`
   对象（它暴露了多个方法）。因此，建议使用一个辅助工厂类（如
   `QueryRunnerFactory`），并定义一个只包含维护事务所需方法的接口。这样可以更方便地对这些方法进行模拟。
 </CalloutInfo>
@@ -397,7 +400,12 @@ async createMany(users: User[]) {
 通过 TypeORM 的[订阅者](https://typeorm.io/#/listeners-and-subscribers/what-is-a-subscriber)，你可以监听特定实体的相关事件。
 
 ```ts
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm'
+import {
+  DataSource,
+  EntitySubscriberInterface,
+  EventSubscriber,
+  InsertEvent,
+} from 'typeorm'
 import { User } from './user.entity'
 
 @EventSubscriber()
@@ -417,7 +425,8 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
 ```
 
 <CalloutInfo type="error">
-  事件订阅者（Event subscribers）不能设置为[请求作用域](/fundamentals/injection-scopes)。
+  事件订阅者（Event
+  subscribers）不能设置为[请求作用域](/fundamentals/injection-scopes)。
 </CalloutInfo>
 
 接下来，将 `UserSubscriber` 类添加到 `providers`（提供者）数组中：
@@ -485,7 +494,7 @@ export class AppModule {}
 
 <CalloutInfo type="warning">
   如果你没有为数据源（data source）设置 `name`，则其名称会被设为
-  `default`。请注意，不要创建多个未命名或同名的连接，否则它们会相互覆盖。
+  `default`。请注意，不要创建多个未命名或同名的连接，否则他们会相互覆盖。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
@@ -648,8 +657,8 @@ TypeOrmModule.forRootAsync({
 这种写法与 `useClass` 类似，但有一个关键区别 —— `TypeOrmModule` 会在已导入的模块中查找并复用现有的 `ConfigService`，而不是新建一个实例。
 
 <CalloutInfo>
-  请确保 `name` 属性与 `useFactory`、`useClass` 或 `useValue` 属性处于同一级别。这样，Nest
-  才能正确地在相应的注入令牌下注册数据源。
+  请确保 `name` 属性与 `useFactory`、`useClass` 或 `useValue`
+  属性处于同一级别。这样，Nest 才能正确地在相应的注入令牌下注册数据源。
 </CalloutInfo>
 
 ### 自定义数据源工厂
@@ -992,8 +1001,8 @@ async createMany() {
 ```
 
 <CalloutInfo>
-  请注意，`Sequelize` 实例仅用于启动事务。但在对该类进行测试时，需要模拟整个 `Sequelize`
-  对象（该对象包含多个方法）。因此，推荐使用一个辅助工厂类（如
+  请注意，`Sequelize` 实例仅用于启动事务。但在对该类进行测试时，需要模拟整个
+  `Sequelize` 对象（该对象包含多个方法）。因此，推荐使用一个辅助工厂类（如
   `TransactionRunner`），并定义一个只包含维护事务所需方法的接口。这样可以更方便地模拟这些方法。
 </CalloutInfo>
 
@@ -1039,7 +1048,7 @@ export class AppModule {}
 
 <CalloutInfo type="warning">
   如果没有为连接设置 `name`，该连接的名称会被设为
-  `default`。请注意，不能存在多个未命名或同名的连接，否则它们会相互覆盖。
+  `default`。请注意，不能存在多个未命名或同名的连接，否则他们会相互覆盖。
 </CalloutInfo>
 
 此时，`User` 和 `Album` 模型已经分别注册到各自的连接中。在这种配置下，使用 `SequelizeModule.forFeature()` 方法和 `@InjectModel()` 装饰器时，需要指定对应的连接名称。如果未传递连接名称，则默认使用 `default` 连接。
