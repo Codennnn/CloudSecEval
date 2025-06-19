@@ -1,54 +1,59 @@
 # 加密与哈希
 
-**加密（Encryption）** 是指将信息（即“明文”）编码，使其转换为另一种无法直接读取的形式（即“密文”）。加密并不能防止数据被截获，但能确保即使数据落入未授权者手中，其内容也无法被轻易理解。这是一个可逆的过程：只有持有正确密钥的授权方，才能将密文解密，还原为原始信息。
+**加密**（Encryption）是一种将原始数据（明文）转换为不可直接识别形式（密文）的技术。它的核心目的是防止信息在传输或存储过程中被未授权方理解。虽然加密无法阻止数据被截获，但可以确保只有掌握正确密钥的授权用户才能将密文还原为可读的明文。加密是一个**可逆过程**。
 
-**哈希（Hashing）** 是指将任意数据通过哈希函数，转换为一个固定长度的唯一标识。它是一个单向过程，意味着从生成的哈希值理论上无法反向推导出原始数据。
+**哈希**（Hashing） 则是一种将任意输入数据通过哈希函数处理，生成固定长度的唯一标识符（哈希值）的过程。哈希是**不可逆的**，也就是说，理论上无法从哈希值反推原始数据。它常用于数据完整性校验、密码存储等场景。
 
 ## 加密
 
-Node.js 提供了内置的 [crypto 模块](https://nodejs.org/api/crypto.html)，它提供了丰富的功能，用于加密和解密字符串、Buffer、流等各类数据。为了避免引入不必要的抽象，Nest 鼓励开发者直接使用这个强大的原生模块。
+Node.js 原生提供了功能强大的 [crypto 模块](https://nodejs.org/api/crypto.html)，可用于对字符串、Buffer、流等多种数据进行加密与解密。Nest 并未对此模块进行额外封装，鼓励开发者直接使用，以避免引入不必要的抽象层。
 
-下面以 AES（Advanced Encryption System，高级加密标准）的 `'aes-256-ctr'` 算法为例进行演示：
+下面以常见的对称加密算法 AES（高级加密标准）中的 `'aes-256-ctr'` 模式为例，演示如何加密文本内容：
 
 ```ts
 import { createCipheriv, randomBytes, scrypt } from 'crypto'
 import { promisify } from 'util'
 
-const iv = randomBytes(16)
+const iv = randomBytes(16) // 初始化向量
 const password = 'Password used to generate key'
 
-// 密钥的长度取决于所选的加密算法。
-// 例如，`aes256` 算法需要 32 字节的密钥。
+// 密钥长度取决于所使用的算法，例如 aes-256 需要 32 字节密钥
 const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer
 const cipher = createCipheriv('aes-256-ctr', key, iv)
 
 const textToEncrypt = 'Nest'
-const encryptedText = Buffer.concat([cipher.update(textToEncrypt), cipher.final()])
+const encryptedText = Buffer.concat([
+  cipher.update(textToEncrypt),
+  cipher.final(),
+])
 ```
 
-现在，我们来解密 `encryptedText`：
+接下来，演示如何使用相同的密钥和初始化向量来解密密文：
 
 ```ts
 import { createDecipheriv } from 'crypto'
 
 const decipher = createDecipheriv('aes-256-ctr', key, iv)
-const decryptedText = Buffer.concat([decipher.update(encryptedText), decipher.final()])
+const decryptedText = Buffer.concat([
+  decipher.update(encryptedText),
+  decipher.final(),
+])
 ```
 
 ## 哈希
 
-在需要进行哈希处理的场景中（例如安全地存储用户密码），我们强烈推荐使用 [bcrypt](https://www.npmjs.com/package/bcrypt) 或 [argon2](https://www.npmjs.com/package/argon2) 这类经过安全验证的专用库。与加密模块类似，Nest 并未对这些库进行封装，这使得你可以直接利用它们的原生功能，同时避免了不必要的抽象层。
+在处理诸如密码存储等安全敏感场景时，推荐使用经过广泛验证的哈希库，如 [bcrypt](https://www.npmjs.com/package/bcrypt) 或 [argon2](https://www.npmjs.com/package/argon2)。Nest 并不对这些库进行封装，开发者可直接调用其原生 API，以保持灵活性和最小化依赖层级。
 
-下面以 `bcrypt` 为例，演示如何哈希密码。
+以下以 `bcrypt` 为例，演示如何生成密码的哈希值：
 
-首先，安装所需依赖：
+首先安装依赖：
 
 ```bash
-$ npm i bcrypt
-$ npm i -D @types/bcrypt
+npm install bcrypt
+npm install -D @types/bcrypt # 如果使用 TypeScript
 ```
 
-安装完成后，你可以使用 `hash` 函数来生成哈希值：
+使用 `hash` 函数生成哈希值：
 
 ```ts
 import * as bcrypt from 'bcrypt'
@@ -58,16 +63,16 @@ const password = 'random_password'
 const hash = await bcrypt.hash(password, saltOrRounds)
 ```
 
-如果你需要独立生成盐（salt），可以使用 `genSalt` 函数：
+如果你希望手动生成盐（salt），可使用 `genSalt` 方法：
 
 ```ts
 const salt = await bcrypt.genSalt()
 ```
 
-要验证一个明文密码是否与给定的哈希值匹配，可以使用 `compare` 函数：
+要验证用户输入的明文密码是否与哈希值匹配，可使用 `compare` 方法：
 
 ```ts
 const isMatch = await bcrypt.compare(password, hash)
 ```
 
-你可以在[这里](https://www.npmjs.com/package/bcrypt)了解更多关于 `bcrypt` 的可用函数和详细用法。
+更多函数与用法，请参阅 [bcrypt 官方文档](https://www.npmjs.com/package/bcrypt)。

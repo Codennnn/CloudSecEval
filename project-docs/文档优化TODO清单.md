@@ -53,12 +53,12 @@
 - [ ] `/techniques/task-scheduling` - 任务调度
 - [ ] `/techniques/queues` - 队列
 - [ ] `/techniques/logger` - 日志
-- [ ] `/techniques/cookies` - Cookie
-- [ ] `/techniques/events` - 事件
-- [ ] `/techniques/compression` - 压缩
+- [x] `/techniques/cookies` - Cookie
+- [x] `/techniques/events` - 事件
+- [x] `/techniques/compression` - 压缩
 - [ ] `/techniques/file-upload` - 文件上传
 - [ ] `/techniques/streaming-files` - 文件流
-- [ ] `/techniques/http-module` - HTTP 模块
+- [x] `/techniques/http-module` - HTTP 模块
 - [x] `/techniques/session` - Session 支持
 - [x] `/techniques/mvc` - MVC 模式
 - [ ] `/techniques/performance` - 性能优化（Fastify）
@@ -73,9 +73,9 @@
 
 - [ ] `/security/authentication` - 认证
 - [ ] `/security/authorization` - 授权
-- [ ] `/security/encryption-and-hashing` - 加密与哈希
-- [ ] `/security/helmet` - Helmet
-- [ ] `/security/cors` - CORS
+- [x] `/security/encryption-and-hashing` - 加密与哈希
+- [x] `/security/helmet` - Helmet
+- [x] `/security/cors` - CORS
 - [ ] `/security/csrf` - CSRF 防护
 - [ ] `/security/rate-limiting` - 请求频率限制
 

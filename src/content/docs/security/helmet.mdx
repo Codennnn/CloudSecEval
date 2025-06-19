@@ -1,34 +1,31 @@
-# Helmet
+# Helmet 安全中间件
 
-[Helmet](https://github.com/helmetjs/helmet) 可以通过设置适当的 HTTP 标头来帮助应用抵御一些常见的 Web 安全漏洞。它本身是多个小型中间件函数的集合，每个函数负责设置一个与安全相关的 HTTP 标头（详情请参阅[官方文档](https://github.com/helmetjs/helmet#how-it-works)）。
+[Helmet](https://github.com/helmetjs/helmet) 是一组可帮助提升 Web 应用安全性的中间件集合。它通过设置一系列合适的 HTTP 头部，防止常见的 Web 漏洞攻击，例如跨站脚本（XSS）、点击劫持等。Helmet 实际上由多个独立的中间件函数组成，每个函数负责配置一个具体的安全相关 HTTP 头部。详细信息请参考[官方文档](https://github.com/helmetjs/helmet#how-it-works)。
 
 <CalloutInfo>
-  请注意，无论是全局中间件还是局部中间件，`helmet` 都必须在其他 `app.use()` 调用或路由定义**之前**
-  注册。底层平台会根据注册顺序来应用中间件和路由。如果在路由定义之后再应用 `helmet` 或 `cors`
-  这类中间件，那么它们将无法作用于之前定义的路由。
+  请注意，`helmet` 无论作为全局中间件还是局部中间件，都**必须在所有 `app.use()`
+  调用和路由定义**之前注册。因为底层平台会按照中间件的注册顺序依次处理请求，如果在路由之后再引入
+  `helmet` 或 `cors` 这类中间件，它们将**无法生效于先前已定义的路由**。
 </CalloutInfo>
 
 ## 在 Express (默认) 中使用
 
-首先，安装所需依赖：
+首先，安装必要的依赖项：
 
 ```bash
-$ npm i --save helmet
+npm install helmet
 ```
 
-然后，将其作为全局中间件应用。
+安装完成后，将 `helmet` 注册为全局中间件：
 
-```ts
+```ts filename='main.ts'
 import helmet from 'helmet'
 
-// 在应用初始化文件中
 app.use(helmet())
 ```
 
 <CalloutInfo>
-  <div>
-  如果同时使用 `helmet`、`@apollo/server` (v4) 和 [Apollo Sandbox](/graphql/quick-start#apollo-sandbox)，可能会因 [CSP（内容安全策略）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 冲突而导致 Sandbox 无法加载。为解决此问题，请按如下方式配置 `helmet`：
-  </div>
+如果你的应用同时使用了 `helmet`、`@apollo/server`（v4 版本）以及 [Apollo Sandbox](/graphql/quick-start#apollo-sandbox)，可能会遇到由于 [内容安全策略（CSP）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP) 限制导致 Sandbox 无法加载的问题。为解决该问题，可以对 `helmet` 进行如下配置：
 
 ```ts
 app.use(
@@ -36,9 +33,16 @@ app.use(
     crossOriginEmbedderPolicy: false,
     contentSecurityPolicy: {
       directives: {
-        imgSrc: [`'self'`, 'data:', 'apollo-server-landing-page.cdn.apollographql.com'],
+        imgSrc: [
+          `'self'`,
+          'data:',
+          'apollo-server-landing-page.cdn.apollographql.com',
+        ],
         scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
-        manifestSrc: [`'self'`, 'apollo-server-landing-page.cdn.apollographql.com'],
+        manifestSrc: [
+          `'self'`,
+          'apollo-server-landing-page.cdn.apollographql.com',
+        ],
         frameSrc: [`'self'`, 'sandbox.embed.apollographql.com'],
       },
     },
@@ -50,25 +54,24 @@ app.use(
 
 ## 在 Fastify 中使用
 
-若使用 `FastifyAdapter`，请安装 `@fastify/helmet` 包：
+如果你使用的是 `FastifyAdapter`，需要额外安装 `@fastify/helmet` 模块：
 
 ```bash
-$ npm i --save @fastify/helmet
+npm install @fastify/helmet
 ```
 
 与 Express 不同，`@fastify/helmet` 不应作为中间件使用，而应通过 `app.register()` 方法注册为 [Fastify 插件](https://www.fastify.io/docs/latest/Reference/Plugins/)：
 
-```ts
+与 Express 中作为中间件使用的方式不同，`@fastify/helmet` 应通过 `app.register()` 方法注册为 [Fastify 插件](https://www.fastify.io/docs/latest/Reference/Plugins/)：
+
+```ts filename='main.ts'
 import helmet from '@fastify/helmet'
 
-// 在应用初始化文件中
 await app.register(helmet)
 ```
 
 <CalloutInfo type="warning">
-  <div>
-  若同时使用 `apollo-server-fastify` 和 `@fastify/helmet`，GraphQL Playground 可能会因 CSP 冲突而无法加载。为解决此问题，请按如下方式配置：
-  </div>
+当 `@fastify/helmet` 与 `apollo-server-fastify` 一同使用时，GraphQL Playground 可能因内容安全策略（CSP）冲突而无法正常加载。为解决此问题，可按以下方式自定义 CSP 配置：
 
 ```ts
 await app.register(fastifyHelmet, {
@@ -84,12 +87,21 @@ await app.register(fastifyHelmet, {
       ],
       fontSrc: [`'self'`, 'fonts.gstatic.com', 'data:'],
       imgSrc: [`'self'`, 'data:', 'cdn.jsdelivr.net'],
-      scriptSrc: [`'self'`, `https: 'unsafe-inline'`, `cdn.jsdelivr.net`, `'unsafe-eval'`],
+      scriptSrc: [
+        `'self'`,
+        `'unsafe-inline'`,
+        'https:',
+        'cdn.jsdelivr.net',
+        `'unsafe-eval'`,
+      ],
     },
   },
 })
+```
 
-// 若要完全禁用 CSP，可进行如下配置：
+如果你希望**完全禁用 CSP**，可以如下配置：
+
+```ts
 await app.register(fastifyHelmet, {
   contentSecurityPolicy: false,
 })

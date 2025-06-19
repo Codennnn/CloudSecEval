@@ -1,50 +1,60 @@
 # Cookie
 
-**HTTP Cookie** 是一种由用户浏览器存储的小型数据片段。Cookie 的设计初衷，是让网站能够可靠地记住有状态的信息，当用户再次访问网站时，浏览器会自动将 Cookie 随请求一同发送给服务器。
+**HTTP Cookie** 是一种由浏览器存储的小型数据片段，通常用于在客户端与服务端之间维持会话状态。当用户再次访问网站时，浏览器会自动将 Cookie 随请求一起发送给服务器，从而实现状态记忆。
 
 ## 在 Express（默认）中使用
 
-首先需要安装[所需依赖包](https://github.com/expressjs/cookie-parser)（如果你使用 TypeScript，还需安装类型声明）：
+NestJS 默认使用 Express，因此可直接集成 [cookie-parser](https://github.com/expressjs/cookie-parser) 中间件来处理 Cookie。首先，安装相关依赖：
 
 ```bash
-$ npm i cookie-parser
-$ npm i -D @types/cookie-parser
+npm install cookie-parser
+npm install -D @types/cookie-parser # 如果使用 TypeScript
 ```
 
-安装完成后，将 `cookie-parser` 中间件作为全局中间件应用。例如，可以在你的 `main.ts` 文件中这样配置：
+安装完成后，可在应用入口文件（通常是 `main.ts`）中将其注册为全局中间件：
 
-```ts
+```ts filename='main.ts'
 import * as cookieParser from 'cookie-parser'
-// 在应用初始化阶段
+
 app.use(cookieParser())
 ```
 
-你可以为 `cookieParser` 中间件传递多个选项参数：
+`cookie-parser()` 接收两个可选参数：
 
-- `secret`：用于签名 Cookie 的字符串或字符串数组。该参数为可选项。如果未指定，则不会解析已签名的 Cookie。若传入字符串，则该字符串作为密钥使用；若传入数组，则会依次尝试用每个密钥对 Cookie 进行解签。
-- `options`：一个对象，会作为第二个参数传递给 `cookie.parse`。更多信息请参见 [cookie](https://www.npmjs.org/package/cookie)。
+- `secret`：用于签名 Cookie 的密钥，可以是字符串或字符串数组。如果不传该参数，则不会解析已签名的 Cookie。若传入数组，会尝试使用每个密钥依次解签。
+- `options`：会作为第二个参数传递给底层的 `cookie.parse()` 方法。具体配置可参考 cookie 模块的文档。
 
-该中间件会解析请求头（Header）中的 `Cookie`，并将 Cookie 数据暴露为 `req.cookies` 属性。如果提供了密钥，还会暴露为 `req.signedCookies` 属性。这些属性都是以 Cookie 名称为键、Cookie 值为值的对象。
+中间件会自动解析请求头中的 Cookie 字段，并将解析结果挂载到 `req.cookies` 对象上。若设置了密钥，还会将已签名的 Cookie 解析到 `req.signedCookies` 中。
 
-当提供了密钥时，模块会对所有已签名的 Cookie 值进行解签和校验，并将这些键值对从 `req.cookies` 移动到 `req.signedCookies`。已签名的 Cookie 指的是值以 `s:` 前缀开头的 Cookie。如果签名校验失败，对应的 Cookie 值会被设置为 `false`，而不是被篡改的值。
+所谓“已签名的 Cookie”，是指值以 `s`: 前缀开头的 Cookie。中间件会自动验证这些值的签名：
 
-完成上述配置后，你就可以在路由处理器（Route Handler）中读取 Cookie，例如：
+- 若验证通过，对应键值会出现在 `req.signedCookies` 中；
+- 若验证失败，该值会被设置为 `false`，而不会暴露原始（可能被篡改的）内容；
+- 无论是否签名，原始 Cookie 都会保留在 `req.cookies` 中。
+
+### 在控制器中访问 Cookie
+
+一旦中间件配置完成，即可在控制器方法中通过 `Request` 对象读取 Cookie，例如：
 
 ```ts
+import { Req } from '@nestjs/common'
+import { Request } from 'express'
+
 @Get()
 findAll(@Req() request: Request) {
-  console.log(request.cookies) // 或 "request.cookies['cookieKey']"
+  console.log(request.cookies['cookieKey'])
   // 或 console.log(request.signedCookies)
 }
 ```
 
-<CalloutInfo>
-  `@Req()` 装饰器需从 `@nestjs/common` 导入，`Request` 类型需从 `express` 包导入。
-</CalloutInfo>
+### 设置 Cookie 到响应中
 
-如果需要在响应对象（Response Object）中设置 Cookie，可以使用 `Response#cookie()` 方法：
+要在响应中写入 Cookie，可使用 Express 的 `Response#cookie()` 方法。如下所示：
 
 ```ts
+import { Res } from '@nestjs/common'
+import { Response } from 'express'
+
 @Get()
 findAll(@Res({ passthrough: true }) response: Response) {
   response.cookie('key', 'value')
@@ -52,89 +62,91 @@ findAll(@Res({ passthrough: true }) response: Response) {
 ```
 
 <CalloutInfo type="warning">
-  如果你希望将响应处理逻辑交由框架处理，请务必如上所示将 `passthrough` 选项设置为
-  `true`。详细说明请参见[此处](/controllers#library-specific-approach)。
-</CalloutInfo>
-
-<CalloutInfo>
-  `@Res()` 装饰器需从 `@nestjs/common` 导入，`Response` 类型需从 `express` 包导入。
+  如果希望保留由 Nest 自动处理响应的能力，请务必将 `@Res()` 装饰器的
+  `passthrough` 选项设置为
+  `true`。更多信息请参考[响应处理方式](/controllers#library-specific-approach)。
 </CalloutInfo>
 
 ## 在 Fastify 中使用
 
-首先，安装所需依赖包：
+首先，安装所需的依赖包：
 
 ```bash
-$ npm i @fastify/cookie
+npm install @fastify/cookie
 ```
 
-安装完成后，需要在应用中注册 `@fastify/cookie` 插件：
+安装完成后，需要在应用初始化阶段注册 `@fastify/cookie` 插件：
 
-```ts
+```ts filename='main.ts'
 import fastifyCookie from '@fastify/cookie'
 
-// 在初始化文件中
-const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter())
+const app = await NestFactory.create<NestFastifyApplication>(
+  AppModule,
+  new FastifyAdapter()
+)
+
 await app.register(fastifyCookie, {
-  secret: 'my-secret', // 用于 Cookie 签名
+  secret: 'my-secret', // 用于对 Cookie 进行签名
 })
 ```
 
-完成上述配置后，你就可以在路由处理器中读取 Cookie 了。例如：
+配置完成后，即可在控制器中访问客户端发送的 Cookie。例如：
 
 ```ts
+import { Req } from '@nestjs/common'
+import { FastifyRequest } from 'fastify'
+
 @Get()
 findAll(@Req() request: FastifyRequest) {
-  console.log(request.cookies) // 或 "request.cookies['cookieKey']"
+  console.log(request.cookies) // 或 request.cookies['cookieKey']
 }
 ```
 
-<CalloutInfo>
-  `@Req()` 装饰器需从 `@nestjs/common` 导入，`FastifyRequest` 则来自 `fastify` 包。
-</CalloutInfo>
-
-如果需要在响应中设置 Cookie，可以使用 `FastifyReply#setCookie()` 方法：
+如果你需要向客户端设置 Cookie，可以通过 `FastifyReply#setCookie() `方法实现：
 
 ```ts
+import { Res } from '@nestjs/common'
+import { FastifyReply } from 'fastify'
+
 @Get()
 findAll(@Res({ passthrough: true }) response: FastifyReply) {
   response.setCookie('key', 'value')
 }
 ```
 
-如需了解更多关于 `FastifyReply#setCookie()` 方法的用法，请参阅[官方文档](https://github.com/fastify/fastify-cookie#sending)。
+如需了解 `setCookie()` 方法的更多选项和用法，建议查阅[官方文档](https://github.com/fastify/fastify-cookie#sending)。
 
 <CalloutInfo type="warning">
-  如果你希望将响应处理逻辑交由框架处理，请务必如上例所示，将 `passthrough` 选项设置为
-  `true`。详细说明可参考[这里](/controllers#library-specific-approach)。
+  如果希望框架继续接管响应处理流程，必须将 `@Res()` 装饰器的 `passthrough`
+  选项设为
+  `true`，如上述示例所示。更多说明请参考[控制器章节](/controllers#library-specific-approach)。
 </CalloutInfo>
 
-<CalloutInfo>
-  `@Res()` 装饰器需从 `@nestjs/common` 导入，`FastifyReply` 则来自 `fastify` 包。
-</CalloutInfo>
+## 创建通用的自定义装饰器（跨平台适用）
 
-## 创建自定义装饰器（跨平台通用）
-
-为了让你能够更便捷、声明式地访问请求中的 Cookie，我们可以创建一个[自定义装饰器](/custom-decorators)。
+为了更方便地在控制器中访问请求携带的 Cookie 信息，我们可以定义一个[自定义装饰器](/custom-decorators)，实现声明式地提取 Cookie 值。
 
 ```ts
 import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 
-// Cookies 装饰器：用于获取请求中的 Cookie
-export const Cookies = createParamDecorator((data: string, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest()
-  // 如果传入参数，则返回指定名称的 Cookie，否则返回全部 Cookie
-  return data ? request.cookies?.[data] : request.cookies
-})
+// 自定义装饰器：用于获取请求中的 Cookie
+export const Cookies = createParamDecorator(
+  (data: string, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest()
+    // 若指定了 Cookie 名称，则返回对应的值；否则返回所有 Cookie
+    return data ? request.cookies?.[data] : request.cookies
+  }
+)
 ```
 
-`@Cookies()` 装饰器会从 `req.cookies` 对象中提取所有 Cookie。你也可以通过传入参数，获取指定名称的 Cookie。最终，获取到的值会赋给被装饰的参数。
+`@Cookies()` 装饰器的核心逻辑是从 `req.cookies` 中提取信息。
+如果你不传入参数，它会返回所有的 Cookie；若传入某个 Cookie 名称，则返回对应的值。最终结果会被注入到装饰的参数上。
 
-有了这个装饰器后，你可以在路由处理器方法的参数中直接这样使用：
+有了这个装饰器后，你就可以在控制器方法中像下面这样使用：
 
 ```ts
 @Get()
 findAll(@Cookies('name') name: string) {
-  // 这里的 name 参数会自动获取名为 'name' 的 Cookie
+  // 这里的 name 参数将自动接收到名为 'name' 的 Cookie 值
 }
 ```

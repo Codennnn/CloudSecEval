@@ -1,60 +1,66 @@
-# 压缩
+# 压缩（Compression）
 
-压缩（Compression）能够显著减小响应体体积，从而提升 Web 应用的响应速度。
+通过压缩响应体，可以显著减小数据传输体积，从而提升 Web 应用的响应速度，特别是在网络环境不佳或数据量较大的场景中尤为有效。
 
-对于**高并发**的生产环境网站，强烈建议将压缩操作从应用服务器中剥离，交由反向代理（如 Nginx）处理。在这种场景下，不建议在应用中使用压缩中间件。
+在**高并发的生产环境**中，强烈建议将压缩任务交由反向代理服务器（如 Nginx）处理，而非在应用层中进行。这样可以减轻应用服务器负担，提高整体系统性能。因此，在此类场景下**不推荐**在应用中启用压缩中间件。
 
 ## 在 Express（默认）中使用
 
-你可以通过 [compression](https://github.com/expressjs/compression) 中间件包为应用启用 gzip 压缩。
+若你使用的是默认的 Express 平台，可以借助 [`compression`](https://github.com/expressjs/compression) 中间件为应用添加 gzip 压缩支持。
 
-首先安装依赖：
+首先安装相关依赖：
 
 ```bash
-$ npm i --save compression
-$ npm i --save-dev @types/compression
+npm install compression
+npm install -D @types/compression
 ```
 
-安装完成后，将 compression 作为全局中间件应用到应用实例上：
+然后，在应用初始化阶段将其作为全局中间件注册：
 
-```ts
+```ts filename='main.ts'
 import * as compression from 'compression'
-// 在初始化文件中
+
 app.use(compression())
 ```
 
 ## 在 Fastify 中使用
 
-如果你使用的是 `FastifyAdapter`，推荐使用 [fastify-compress](https://github.com/fastify/fastify-compress) 包：
+如果你选择了 `FastifyAdapter`，建议使用官方提供的 [`@fastify/compress`](https://github.com/fastify/fastify-compress) 插件来实现响应压缩：
 
 ```bash
-$ npm i --save @fastify/compress
+npm install @fastify/compress
 ```
 
-安装后，将 `@fastify/compress` 注册为全局中间件：
+安装完成后，在应用初始化时注册该插件：
 
-```ts
+```ts filename='main.ts'
 import compression from '@fastify/compress'
-// 在初始化文件中
+
 await app.register(compression)
 ```
 
-默认情况下，`@fastify/compress` 会在浏览器支持时优先使用 Brotli 压缩（Brotli 需 Node >= 11.7.0）。Brotli 通常具备更高的压缩比，但压缩速度可能较慢。Brotli 的最大压缩质量为 11。你可以通过调整 `BROTLI_PARAM_QUALITY`（取值范围 0 ~ 11）来平衡压缩时间和响应速度。以下示例将质量设置为 4：
+默认配置下，`@fastify/compress` 会根据客户端支持情况优先启用 Brotli 压缩（要求 Node.js 版本 ≥ 11.7.0）。相较于 gzip，Brotli 通常具备更高的压缩比，但压缩耗时也可能略高。
 
-```ts
+你可以通过设置 `BROTLI_PARAM_QUALITY` 参数（取值范围为 0～11）来平衡压缩率与压缩速度。例如，以下配置将压缩质量设置为 4：
+
+```ts filename='main.ts'
 import { constants } from 'zlib'
-// 在初始化文件中
+
 await app.register(compression, {
-  brotliOptions: { params: { [constants.BROTLI_PARAM_QUALITY]: 4 } },
+  brotliOptions: {
+    params: {
+      [constants.BROTLI_PARAM_QUALITY]: 4,
+    },
+  },
 })
 ```
 
-如果你希望简化配置，也可以让 `fastify-compress` 仅使用 deflate 和 gzip 两种压缩方式。这样虽然响应体可能更大，但传输速度会更快。
-
-要指定压缩编码格式，可以为 `app.register` 提供第二个参数：
+如果你更关注压缩性能而非压缩比，也可以禁用 Brotli，仅使用 gzip 和 deflate，这通常能获得更快的响应速度。你可以通过 `encodings` 参数显式指定可用的压缩格式：
 
 ```ts
-await app.register(compression, { encodings: ['gzip', 'deflate'] })
+await app.register(compression, {
+  encodings: ['gzip', 'deflate'],
+})
 ```
 
-上述配置会让 `fastify-compress` 仅使用 gzip 和 deflate，并在客户端同时支持时优先选择 gzip。
+上述配置将在客户端同时支持 gzip 与 deflate 时，优先使用 gzip。

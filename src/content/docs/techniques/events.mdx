@@ -1,18 +1,18 @@
-# 事件
+# 事件机制
 
-[Event Emitter](https://www.npmjs.com/package/@nestjs/event-emitter) 包（`@nestjs/event-emitter`）为 NestJS 提供了简洁的观察者模式实现，让你可以在应用中订阅和监听各种事件（Event）。事件机制是一种优秀的解耦方式，因为同一个事件可以被多个互不依赖的监听器响应。
+[`@nestjs/event-emitter`](https://www.npmjs.com/package/@nestjs/event-emitter) 是一个为 NestJS 提供事件机制的模块，它基于简洁的观察者模式实现，使你能够在应用中方便地订阅和监听事件。这种事件机制天然具备解耦能力：同一个事件可以被多个互不依赖的监听器响应，从而提升系统的灵活性与可维护性。
 
-`EventEmitterModule` 底层基于 [eventemitter2](https://github.com/EventEmitter2/EventEmitter2) 实现。
+该模块底层基于强大的 [eventemitter2](https://github.com/EventEmitter2/EventEmitter2) 库构建。
 
 ## 快速开始
 
 首先，安装所需依赖：
 
 ```bash
-$ npm i --save @nestjs/event-emitter
+npm install @nestjs/event-emitter
 ```
 
-安装完成后，将 `EventEmitterModule` 导入到根模块 `AppModule`，并通过其静态方法 `forRoot()` 进行初始化：
+接着，在应用的根模块中引入并初始化 `EventEmitterModule`：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -24,42 +24,44 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
 export class AppModule {}
 ```
 
-调用 `.forRoot()` 方法会初始化事件发射器（Event Emitter），并注册应用中已声明的所有事件监听器。注册过程会在 `onApplicationBootstrap` 生命周期钩子（Lifecycle Hook）中触发，确保所有模块都已加载并声明了相关监听器。
+调用 `forRoot()` 方法将自动创建一个事件发射器实例，并在 `onApplicationBootstrap` 生命周期钩子中注册所有已声明的事件监听器。这样可以确保监听器在所有模块加载完成后统一注册，避免初始化时序问题。
 
-如果需要自定义底层 `EventEmitter` 实例的配置，可以为 `.forRoot()` 方法传入配置对象。例如：
+### 自定义配置
+
+你还可以通过传入配置对象，自定义底层 `EventEmitter` 实例的行为。例如：
 
 ```ts
 EventEmitterModule.forRoot({
-  // 启用通配符支持
+  // 是否启用通配符支持（如 user.*）
   wildcard: false,
-  // 命名空间分隔符
+  // 事件命名空间的分隔符
   delimiter: '.',
-  // 启用时会触发 newListener 事件
+  // 启用后可监听 newListener 事件
   newListener: false,
-  // 启用时会触发 removeListener 事件
+  // 启用后可监听 removeListener 事件
   removeListener: false,
-  // 单个事件允许的最大监听器数量
+  // 每个事件允许注册的最大监听器数量
   maxListeners: 10,
-  // 超出监听器数量限制时，内存泄漏提示中显示事件名
+  // 超出监听器限制时，在内存泄漏警告中显示事件名称
   verboseMemoryLeak: false,
-  // error 事件无监听器时，禁用抛出 uncaughtException
+  // 当 error 事件没有监听器时，是否抑制抛出异常
   ignoreErrors: false,
 })
 ```
 
+这些配置参数直接传递给 eventemitter2，用于微调其事件发射与监听行为。
+
 ## 事件派发
 
-要派发（即触发）事件，首先需要通过标准的依赖注入方式，将 `EventEmitter2` 注入到构造函数中：
+要在应用中派发（触发）事件，需要通过依赖注入的方式，将 `EventEmitter2` 注入到类的构造函数中：
 
 ```ts
+import { EventEmitter2 } from '@nestjs/event-emitter'
+
 constructor(private eventEmitter: EventEmitter2) {}
 ```
 
-<CalloutInfo>
-  <div>需要从 `@nestjs/event-emitter` 包中导入 `EventEmitter2`。</div>
-</CalloutInfo>
-
-随后，你可以在类的方法中这样派发事件：
+然后，你就可以在类的方法中调用 `.emit()` 方法来派发事件。例如：
 
 ```ts
 this.eventEmitter.emit(
@@ -71,9 +73,11 @@ this.eventEmitter.emit(
 )
 ```
 
+在这个例子中，我们向事件通道 `order.created` 派发了一个 `OrderCreatedEvent` 实例。所有订阅该事件的监听器都会收到这条事件通知，并以此为基础执行相应逻辑。
+
 ## 事件监听
 
-要声明事件监听器（event listener），只需在方法定义前添加 `@OnEvent()` 装饰器。例如：
+要声明事件监听器（event listener），只需在方法前使用 `@OnEvent()` 装饰器。例如：
 
 ```ts
 @OnEvent('order.created')
@@ -83,28 +87,24 @@ handleOrderCreatedEvent(payload: OrderCreatedEvent) {
 ```
 
 <CalloutInfo type="warning">
-
-事件订阅者（Event subscribers）不能设置为请求作用域。
-
+  事件订阅器（event subscriber）**不能**设为请求作用域（request-scoped）。
 </CalloutInfo>
 
-`@OnEvent()` 的第一个参数可以是简单事件发射器（event emitter）中的 `string` 或 `symbol`，也可以在使用通配符发射器（wildcard emitter）时为 `string | symbol | Array<string | symbol>`。
+`@OnEvent()` 的第一个参数用于指定要监听的事件，可以是 `string` 或 `symbol`，也可以在启用通配符支持时传入 `string | symbol | Array<string | symbol>`。
 
-第二个参数（可选）是监听器选项对象，定义如下：
+第二个参数是可选的监听器选项对象，类型如下：
 
 ```ts
 export type OnEventOptions = OnOptions & {
   /**
-   * 如果为 true，则会将该监听器插入监听器数组的开头（而不是末尾）。
-   *
-   * @see https://github.com/EventEmitter2/EventEmitter2#emitterprependlistenerevent-listener-options
+   * 是否将该监听器插入到监听队列的前面（而非末尾）。
    *
    * @default false
    */
   prependListener?: boolean
 
   /**
-   * 如果为 true，则 onEvent 回调在处理事件时不会抛出错误。否则（为 false）会抛出错误。
+   * 是否抑制事件处理过程中的异常抛出。
    *
    * @default true
    */
@@ -113,58 +113,74 @@ export type OnEventOptions = OnOptions & {
 ```
 
 <CalloutInfo>
-  关于 `OnOptions` 选项对象的详细信息，请参阅 [`eventemitter2`
-  文档](https://github.com/EventEmitter2/EventEmitter2#emitteronevent-listener-options-objectboolean)。
+  关于 `OnOptions` 类型的更多细节，请参考 [`eventemitter2`
+  官方文档](https://github.com/EventEmitter2/EventEmitter2#emitteronevent-listener-options-objectboolean)。
 </CalloutInfo>
+
+例如，下面的监听器会异步处理事件：
 
 ```ts
 @OnEvent('order.created', { async: true })
 handleOrderCreatedEvent(payload: OrderCreatedEvent) {
-  // 处理并响应 "OrderCreatedEvent" 事件
+  // 异步处理 "OrderCreatedEvent" 事件
 }
 ```
 
-如果你需要使用命名空间或通配符，可以在调用 `EventEmitterModule#forRoot()` 方法时传入 `wildcard` 选项。启用命名空间或通配符后，事件名称可以是用分隔符（delimiter）分隔的字符串（如 `foo.bar`），也可以是数组（如 `['foo', 'bar']`）。分隔符可以通过配置属性（`delimiter`）自定义。启用命名空间功能后，可以使用通配符订阅事件：
+### 命名空间与通配符支持
+
+如需使用命名空间或通配符监听功能，需要在调用 `EventEmitterModule.forRoot()` 时启用 `wildcard` 选项。
+
+启用后，事件名称可以使用分隔符（默认为 `.`）表示层级结构，例如 `order.created`，也可以使用数组形式如 `['order', 'created']`。分隔符可以通过配置项 `delimiter` 自定义。
+
+使用通配符订阅事件示例如下：
 
 ```ts
 @OnEvent('order.*')
 handleOrderEvents(payload: OrderCreatedEvent | OrderRemovedEvent | OrderUpdatedEvent) {
-  // 处理并响应事件
+  // 处理所有 "order" 命名空间下的事件
 }
 ```
 
-需要注意的是，这种通配符只适用于单个区块。例如，`order.*` 可以匹配 `order.created` 和 `order.shipped` 事件，但无法匹配 `order.delayed.out_of_stock`。如果需要监听这类多级事件，请使用多级通配符（multilevel wildcard）模式（即 `**`），详细用法请参考 `EventEmitter2` [官方文档](https://github.com/EventEmitter2/EventEmitter2#multi-level-wildcards)。
+请注意，单个 `*` 仅匹配一级事件名称，例如：
 
-通过该模式，你可以创建一个监听所有事件的事件监听器：
+- ✅ `order.*` 可匹配 `order.created`、`order.shipped`。
+- ❌ 无法匹配 `order.delayed.out_of_stock`。
+
+如需监听多级事件，请使用多级通配符 `**`，其语义与 `glob` 模式相似：
 
 ```ts
 @OnEvent('**')
 handleEverything(payload: any) {
-  // 处理并响应任意事件
+  // 捕获所有事件
 }
 ```
 
 <CalloutInfo>
-  `EventEmitter2` 类还提供了许多用于事件交互的实用方法，例如 `waitFor` 和
-  `onAny`。更多内容请参考[官方文档](https://github.com/EventEmitter2/EventEmitter2)。
+  `EventEmitter2` 还提供了诸如 `waitFor()`、`onAny()` 等实用方法，详见
+  [官方文档](https://github.com/EventEmitter2/EventEmitter2)。
 </CalloutInfo>
 
 ## 避免事件丢失
 
-如果在 `onApplicationBootstrap` 生命周期钩子之前或期间触发事件（例如在模块构造函数或 `onModuleInit` 方法中），由于 `EventSubscribersLoader` 可能尚未完成事件监听器的注册，这些事件有可能会被遗漏。
+如果你在 `onApplicationBootstrap` 生命周期钩子之前或期间触发事件（例如在模块的构造函数或 `onModuleInit` 方法中），可能会遇到事件被遗漏的情况。这是因为此时 `EventSubscribersLoader` 可能尚未完成所有事件监听器的注册工作。
 
-为了解决这个问题，你可以在模块的 `onApplicationBootstrap` 生命周期钩子中调用 `EventEmitterReadinessWatcher` 的 `waitUntilReady` 方法。该方法会返回一个 Promise，只有在所有监听器都注册完成后才会 resolve，从而确保后续触发的事件都能被正确捕获。
+为避免这种问题，建议在模块的 `onApplicationBootstrap` 钩子中使用 `EventEmitterReadinessWatcher` 提供的 `waitUntilReady()` 方法。该方法会返回一个 `Promise`，并在**所有监听器完成注册之后**才会 `resolve`，从而确保接下来的事件都能被正确监听。
 
 ```ts
 await this.eventEmitterReadinessWatcher.waitUntilReady()
-// 等待所有事件监听器注册完成后再触发事件
-await this.eventEmitter.emit('order.created', new OrderCreatedEvent({ orderId: 1, payload: {} }))
+
+// 等待监听器就绪后再触发事件
+await this.eventEmitter.emit(
+  'order.created',
+  new OrderCreatedEvent({ orderId: 1, payload: {} })
+)
 ```
 
 <CalloutInfo>
-  只有在 `onApplicationBootstrap` 生命周期钩子完成之前需要触发事件时，才需要这样处理。
+  仅当你**必须在 `onApplicationBootstrap` 钩子完成前**触发事件时，才需要使用
+  `waitUntilReady()` 进行处理。
 </CalloutInfo>
 
 ## 示例
 
-完整的示例代码请参见[这里](https://github.com/nestjs/nest/tree/master/sample/30-event-emitter)。
+查看完整示例代码：[GitHub 示例仓库](https://github.com/nestjs/nest/tree/master/sample/30-event-emitter)。
