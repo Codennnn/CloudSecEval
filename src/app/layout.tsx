@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import Script from 'next/script'
 
 import { StructuredData } from '~/components/StructuredData'
 import { ThemeProvider } from '~/components/ThemeProvider'
@@ -156,6 +157,20 @@ export default function RootLayout(props: React.PropsWithChildren) {
         >
           {props.children}
         </ThemeProvider>
+
+        {/*
+          Umami 网站分析脚本
+          - 用于收集网站访问数据和用户行为分析
+          - 使用 Next.js Script 组件优化加载性能
+          - strategy="afterInteractive" 确保在页面交互就绪后加载，不阻塞渲染
+          - data-website-id 是 Umami 分配的唯一网站标识符
+          - 隐私友好的 Google Analytics 替代方案
+        */}
+        <Script
+          data-website-id="17a93541-f99f-43ed-8d7c-3887b4e85693"
+          src="https://cloud.umami.is/script.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )
