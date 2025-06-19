@@ -165,12 +165,15 @@ export default function RootLayout(props: React.PropsWithChildren) {
           - strategy="afterInteractive" 确保在页面交互就绪后加载，不阻塞渲染
           - data-website-id 是 Umami 分配的唯一网站标识符
           - 隐私友好的 Google Analytics 替代方案
+          - 仅在生产环境中加载，避免开发环境的访问数据污染
         */}
-        <Script
-          data-website-id="17a93541-f99f-43ed-8d7c-3887b4e85693"
-          src="https://cloud.umami.is/script.js"
-          strategy="afterInteractive"
-        />
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            data-website-id="17a93541-f99f-43ed-8d7c-3887b4e85693"
+            src="https://cloud.umami.is/script.js"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   )
