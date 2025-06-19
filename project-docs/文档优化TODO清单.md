@@ -56,13 +56,13 @@
 - [ ] `/techniques/cookies` - Cookie
 - [ ] `/techniques/events` - 事件
 - [ ] `/techniques/compression` - 压缩
-- [ ] `/techniques/file-upload` - 文件上传与流式处理
+- [ ] `/techniques/file-upload` - 文件上传
 - [ ] `/techniques/streaming-files` - 文件流
 - [ ] `/techniques/http-module` - HTTP 模块
-- [ ] `/techniques/session` - Session 支持
-- [ ] `/techniques/mvc` - MVC 模式
+- [x] `/techniques/session` - Session 支持
+- [x] `/techniques/mvc` - MVC 模式
 - [ ] `/techniques/performance` - 性能优化（Fastify）
-- [ ] `/techniques/server-sent-events` - 服务端推送事件
+- [x] `/techniques/server-sent-events` - 服务端推送事件
 
 ## 5. 数据库集成 (Database Integration)
 

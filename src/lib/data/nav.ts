@@ -57,7 +57,7 @@ export const navMainData: NavMenuItem[] = [
       { title: 'Cookie', titleEn: 'Cookies', url: '/techniques/cookies' },
       { title: '事件', titleEn: 'Events', url: '/techniques/events' },
       { title: '压缩', titleEn: 'Compression', url: '/techniques/compression' },
-      { title: '文件上传与流式处理', titleEn: 'File upload', url: '/techniques/file-upload' },
+      { title: '文件上传', titleEn: 'File upload', url: '/techniques/file-upload' },
       { title: '文件流', titleEn: 'Streaming files', url: '/techniques/streaming-files' },
       { title: 'HTTP 模块', titleEn: 'HTTP module', url: '/techniques/http-module' },
       { title: 'Session 支持', titleEn: 'Session', url: '/techniques/session' },
