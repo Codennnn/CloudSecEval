@@ -129,8 +129,8 @@
 - [x] `/cli/overview` - 概述
 - [x] `/cli/monorepo` - 工作空间
 - [x] `/cli/libraries` - 库
-- [ ] `/cli/usages` - 使用方法
-- [ ] `/cli/scripts` - 脚本
+- [x] `/cli/usages` - 使用方法
+- [x] `/cli/scripts` - 脚本
 
 ## 11. OpenAPI
 
