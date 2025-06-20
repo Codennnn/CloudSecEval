@@ -126,9 +126,9 @@
 
 ## 10. CLI 工具
 
-- [ ] `/cli/overview` - 概述
-- [ ] `/cli/monorepo` - 工作空间
-- [ ] `/cli/libraries` - 库
+- [x] `/cli/overview` - 概述
+- [x] `/cli/monorepo` - 工作空间
+- [x] `/cli/libraries` - 库
 - [ ] `/cli/usages` - 使用方法
 - [ ] `/cli/scripts` - 脚本
 

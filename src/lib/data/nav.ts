@@ -146,7 +146,7 @@ export const navMainData: NavMenuItem[] = [
     titleEn: 'CLI Tools',
     items: [
       { title: '概述', titleEn: 'Overview', url: '/cli/overview' },
-      { title: '工作空间', titleEn: 'Workspaces', url: '/cli/monorepo' },
+      { title: '工作空间与代码组织', titleEn: 'Workspaces', url: '/cli/monorepo' },
       { title: '库', titleEn: 'Libraries', url: '/cli/libraries' },
       { title: '使用方法', titleEn: 'Usage', url: '/cli/usages' },
       { title: '脚本', titleEn: 'Scripts', url: '/cli/scripts' },

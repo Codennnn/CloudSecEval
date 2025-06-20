@@ -1,35 +1,41 @@
-# 工作空间
+# 工作空间与代码组织
 
-Nest 提供了两种代码组织模式：
+Nest 提供了两种主要的代码组织方式，分别适用于不同规模和复杂度的项目场景：
 
-- **标准模式**：适用于构建单个独立的应用程序。这类项目有自己独立的依赖和配置，不涉及模块共享或复杂的构建优化，是默认的模式。
-- **Monorepo 模式**：此模式将多个代码项目组织在一个轻量级的 Monorepo 中，尤其适合大型开发团队和多项目环境。它能自动化部分构建流程，让你轻松创建和组合模块化组件、促进代码复用、简化集成测试，并方便地共享 `eslint` 规则等项目级配置。相比 Git 子模块等方案，它更易于使用。Monorepo 模式引入了**工作空间（Workspace）**的概念，通过 `nest-cli.json` 文件来协调其中各个项目的关系。
+- **标准模式**：默认使用的组织方式，适合构建单一独立的应用程序。此类项目拥有独立的依赖项和配置文件，不涉及模块共享或复杂的构建策略，结构清晰，易于上手。
+- **Monorepo 模式**：适用于多项目开发或大型团队协作场景。该模式将多个逻辑项目集中管理于一个轻量级的 Monorepo 中。它支持模块化组件的高效组合、构建流程的自动化、代码的集中复用与集成测试的简化，同时也便于统一管理如 ESLint 配置等项目级工具。与 Git 子模块等方案相比，Monorepo 模式更为直观易用。
 
-值得注意的是，几乎所有 Nest 功能都与代码组织模式无关，**唯一**的区别在于项目的组合方式以及构建产物的生成方式。无论是命令行工具（CLI）、核心模块还是附加模块，在两种模式下都能正常工作。
+在 Monorepo 模式中，Nest 引入了**工作空间**（Workspace）的概念，用于协调多个项目之间的关系。这一配置通过 `nest-cli.json` 文件实现。
 
-此外，你可以随时从标准模式切换到 Monorepo 模式，因此可以等到明确需要该模式的优势时再做转换。
+需要注意的是：Nest 的大部分核心功能与所选的组织模式无关。CLI 命令、核心模块以及大多数生态模块在两种模式下均可无缝使用。两者的**唯一差异**在于项目如何组合及其构建产物的生成方式。
+
+你也无需一开始就采用 Monorepo 模式。Nest 支持从标准模式平滑迁移到 Monorepo，因此可以根据项目的发展需求灵活切换。
 
 ## 标准模式
 
-当你运行 `nest new` 命令时，Nest CLI 会使用其内置的 Schematic (原型生成器) 为你创建一个新的项目。具体操作如下：
+当你执行 `nest new` 命令创建项目时，Nest CLI 会基于内置的 Schematic（代码原型生成器）生成一个基础的应用骨架，具体流程如下：
 
-1.  创建一个新文件夹，其名称对应你在 `nest new` 命令中提供的 `name` 参数。
-2.  在该文件夹中生成一套默认文件，构成一个最小化的基础 Nest 应用。你可以在 [typescript-starter](https://github.com/nestjs/typescript-starter) 仓库中查看这些文件。
-3.  额外生成 `nest-cli.json`、`package.json` 和 `tsconfig.json` 等文件，用于配置和启用编译、测试及服务等工具。
+1. 创建一个新目录，目录名即为 `nest new` 命令中指定的项目名称；
+2. 在该目录中生成一套最小化的 Nest 应用结构。你可以在官方示例项目 [typescript-starter](https://github.com/nestjs/typescript-starter) 中查看对应的目录与文件；
+3. 同时生成包括 `nest-cli.json`、`package.json` 和 `tsconfig.json` 在内的配置文件，用于支持构建、测试和开发流程。
 
-从这里开始，你可以修改起始文件、添加新组件、安装依赖（如 `npm install`），并按照文档的其他部分继续开发你的应用。
+从这个基础结构出发，你可以修改默认代码、添加新模块组件、安装所需依赖（例如执行 npm install），并按照文档继续构建你的应用。
 
 ## Monorepo 模式
 
-要启用 Monorepo 模式，你需要从一个标准模式的项目开始，然后向其添加另一个项目。项目可以是完整的**应用（Application）**（通过 `nest generate app` 添加），也可以是可复用的库（通过 `nest generate library` 添加）。我们将在下文详细介绍这两类项目。这里的关键在于：**向标准模式的项目中添加一个新项目，就会将其自动转换为 Monorepo 模式**。下面来看一个例子。
+要启用 Monorepo 模式，首先需要从一个标准模式的 Nest 项目开始，然后在其基础上新增一个项目。这个新项目可以是一个完整的**应用**（Application）（通过 nest generate app 创建），也可以是一个可复用的**库**（Library）（通过 `nest generate library` 创建）。我们将在后文详细介绍这两类项目的用途与差异。
 
-如果我们运行：
+这里的关键在于：**一旦向标准项目中添加新项目，Nest CLI 会自动将其结构转换为 Monorepo 模式**。
+
+### 示例：从标准模式迁移到 Monorepo
+
+我们先创建一个标准的 Nest 项目：
 
 ```bash
-$ nest new my-project
+nest new my-project
 ```
 
-我们就创建了一个标准模式的项目，其文件夹结构如下：
+项目创建完成后，其目录结构如下：
 
 <FileTree
   data={[
@@ -50,14 +56,14 @@ $ nest new my-project
   ]}
 />
 
-我们可以通过以下方式将其转换为 Monorepo 模式：
+接下来，我们通过以下命令添加一个新的应用：
 
 ```bash
-$ cd my-project
-$ nest generate app my-app
+cd my-project
+nest generate app my-app
 ```
 
-此时，`nest` 会将现有结构转换为 Monorepo 模式。这一转换会带来几个重要变化，最终的文件夹结构如下：
+此命令将项目结构重构为 Monorepo 模式。变更后的目录结构如下：
 
 <FileTree
   data={[
@@ -103,54 +109,64 @@ $ nest generate app my-app
   ]}
 />
 
-这个 `generate app` Schematic 重构了项目结构：它将每个应用都移动到 `apps` 文件夹下，并为每个应用根目录创建一个专属的 `tsconfig.app.json` 文件。我们最初的 `my-project` 应用，现在与新添加的 `my-app` 一样，都位于 `apps` 文件夹下，并成为了这个 Monorepo 的**默认项目**。我们稍后会详细解释默认项目的概念。
+可以看到，CLI 工具将每个应用都移动到了 `apps` 目录下，并为每个应用单独生成了一个 `tsconfig.app.json` 配置文件。原先的 `my-project` 也被归类为一个应用，和新添加的 `my-app` 并列存在，二者共同组成了 Monorepo 项目结构，其中 `my-project` 会被默认识别为默认应用（default project）。我们将在后续内容中进一步解释默认项目的含义与用途。
 
 <CalloutInfo type="warning">
-  请注意，只有遵循标准 Nest 项目结构的项目，才能顺利地从标准模式转换为 Monorepo
-  模式。具体而言，转换工具会尝试将原有的 `src` 和 `test` 文件夹移动到根目录下的
-  `apps` 文件夹中。如果你的项目不符合此结构，转换过程可能会失败或产生意外结果。
+  请注意，**只有遵循标准 Nest 项目结构的工程，才能顺利迁移至 Monorepo
+  模式**。转换过程会尝试将原有的 `src` 和 `test` 目录迁移至 `apps`
+  文件夹下。如果当前项目结构发生过较大修改，迁移可能失败，或导致结果异常。
 </CalloutInfo>
 
 ## 工作空间项目
 
-在 Monorepo 模式中，我们使用工作空间来管理其内部的多个项目。一个项目可以是：
+在 Monorepo 模式下，Nest 通过工作空间来统一管理多个独立项目。每个项目通常属于以下两类之一：
 
-- **应用（Application）**：一个完整的 Nest 应用，包含用于启动应用的 `main.ts` 文件。在功能上，工作空间中的应用与标准模式下的应用完全相同，区别仅在于编译和构建过程。
-- **库（Library）**：一种用于封装通用功能（如模块、提供者、控制器等）并在其他项目中复用的软件包。库本身无法独立运行，也没有 `main.ts` 文件。关于库的更多信息，请参考[库（Libraries）章节](/cli/libraries)。
+- **应用**（Application）：一个完整的 Nest 应用，具备用于启动的 `main.ts` 文件。在功能层面，工作空间中的应用与标准模式下的应用没有差别，区别主要体现在编译与构建的方式上。
+- **库**（Library）：用于封装通用功能（如模块、提供者、控制器等）以供其他项目复用的代码包。库本身不可独立运行，通常不包含 main.ts 文件。更多关于库的介绍，请参见[库](/cli/libraries)章节。
 
-所有工作空间都有一个默认项目（必须是应用类型）。它由顶层 `nest-cli.json` 文件中的 `"root"` 属性指定，该属性指向默认项目的根目录（更多细节见下文的 [CLI 属性](#cli-属性) 部分）。通常，默认项目就是你一开始创建的标准模式应用，它在转换到 Monorepo 模式时被自动设置。当你遵循标准步骤操作时，Nest CLI 会自动配置好这个属性。
+每个工作空间都需要一个默认项目（必须是应用类型）。这个默认项目由根目录下的 `nest-cli.json` 文件中的 `"root"` 属性指定，它定义了默认项目所在的目录位置。通常，在将现有项目迁移为 Monorepo 结构时，最初创建的应用会自动设为默认项目。只要你遵循 CLI 的标准创建流程，该配置会自动完成。
 
-默认项目供 `nest` 命令（如 `nest build` 和 `nest start`）在未指定项目名称时使用。
+当你使用如 `nest build` 或 `nest start` 等命令时，如果未显式指定项目名称，Nest CLI 会默认操作这个项目。
 
-例如，在上述多包仓库结构中，运行：
-
-```bash
-$ nest start
-```
-
-会启动 `my-project` 应用。若要启动 `my-app`，则需使用：
+例如，在一个多项目结构中，直接运行以下命令：
 
 ```bash
-$ nest start my-app
+nest start
 ```
 
-## 应用
+将会启动默认项目（如 `my-project`）。如果你希望启动其他应用（如 `my-app`），则需要显式指定项目名称：
 
-应用（Application）项目（通常简称为"应用"）是可以独立运行和部署的完整 Nest 应用。你可以通过 `nest generate app` 命令生成一个应用项目。
+```bash
+nest start my-app
+```
 
-该命令会自动生成项目骨架，包含 [typescript starter](https://github.com/nestjs/typescript-starter) 中的标准 `src` 和 `test` 文件夹。与标准模式不同，Monorepo 下的应用项目不会包含任何包依赖文件（`package.json`）或其他项目配置文件（如 `.prettierrc` 和 `eslint.config.mjs`）。相反，依赖和配置文件在整个 Monorepo 中统一管理。
+## 应用项目
 
-不过，Schematic 会在项目根目录下生成一个项目专用的 `tsconfig.app.json` 文件。该配置文件会自动设置合适的构建选项，包括正确设置编译输出目录。该文件继承自 Monorepo 根目录的 `tsconfig.json` 文件，因此你可以在全局管理大部分配置，同时在项目级别进行个别覆盖。
+在 Nest 中，**应用项目**（通常简称为 “应用”）指的是一个可独立运行和部署的完整 Nest 应用程序。你可以通过以下命令快速生成一个新的应用项目：
+
+```bash
+nest generate app my-app
+```
+
+该命令会自动创建应用的项目结构，包含与 [TypeScript Starter 模板](https://github.com/nestjs/typescript-starter)一致的标准目录，例如 `src` 和 `test` 文件夹。
+
+在 Monorepo 模式下，生成的应用项目与标准模式略有不同：
+它不会包含独立的依赖声明文件（如 `package.json`）或格式化/代码检查相关的配置文件（如 `.prettierrc` 和 `eslint.config.mjs`）。这些内容将由整个 Monorepo 根目录统一管理和维护。
+
+不过，Schematic 仍会在项目根目录中生成一个专用于该应用的 `tsconfig.app.json` 文件。这个配置文件用于指定编译选项，确保输出路径和构建行为符合预期。它默认继承自 Monorepo 根目录的 `tsconfig.json`，从而实现**全局统一配置**与**项目级个性化定制**的平衡。
 
 ## 库
 
-如前所述，库（Library）项目（通常简称为“库”）是 Nest 的可复用组件包，它本身不能独立运行，需要被集成到某个应用中。你可以通过 `nest generate library` 命令生成一个库项目。至于哪些功能适合放入库中，这是一个架构设计决策。我们将在[库（Libraries）](/cli/libraries)章节中详细讨论此话题。
+正如前文所述，**库**（Library） 是一种可复用的 Nest 组件单元，通常作为功能模块打包使用。本身并不具备独立运行能力，必须集成进某个应用中才能发挥作用。
+你可以使用命令 `nest generate library` 快速生成一个新的库项目。
 
-## CLI 属性
+至于哪些功能应当被封装为库，这是一个与系统架构密切相关的设计决策。关于库的使用场景与设计原则，我们将在[库](/cli/libraries)章节中展开讨论。
 
-Nest 将组织、构建和部署标准项目及 Monorepo 的元数据保存在 `nest-cli.json` 文件中。Nest 会在你添加项目时自动补充和更新该文件，因此你通常无需手动编辑它。不过，有些设置你可能需要手动调整，因此了解其文件结构会很有帮助。
+## CLI 配置属性详解
 
-在按照上述步骤创建 Monorepo 后，我们的 `nest-cli.json` 文件如下所示：
+Nest 会将与项目组织、构建和部署相关的元数据，统一保存在根目录下的 `nest-cli.json` 文件中。无论是标准项目还是 Monorepo 架构，Nest 都会在创建或添加项目时自动更新此文件，因此你通常不需要手动修改。但在某些场景下，了解该文件的结构和配置项仍然十分有用，尤其是当你需要进行特定的自定义配置时。
+
+以创建 Monorepo 项目为例，生成的 `nest-cli.json` 配置大致如下：
 
 ```json
 {
@@ -185,68 +201,68 @@ Nest 将组织、构建和部署标准项目及 Monorepo 的元数据保存在 `
 }
 ```
 
-该文件分为以下几个部分：
+该配置文件主要由两个部分组成：
 
-- 全局部分，包含用于控制标准项目和 Monorepo 的顶层属性。
-- 顶层属性 `"projects"`，包含每个项目的元数据。该部分仅在 Monorepo 中存在。
+- 全局配置区域：控制整个工作区（包括标准项目和 Monorepo）行为的顶层属性。
+- `projects` 节点：仅在 Monorepo 模式中存在，用于定义每个子项目的具体信息。
 
-顶层属性说明如下：
+以下是常见顶层属性的说明：
 
-- `"collection"`：指定用于生成组件的 Schematic 集合，通常无需更改。
-- `"sourceRoot"`：在标准模式下，指定单一项目的源代码根目录；在 Monorepo 模式下，指定默认项目的源代码根目录。
-- `"compilerOptions"`：一个对象，键是编译器选项名，值是对应的设置。详见下文。
-- `"generateOptions"`：一个对象，键是全局生成选项名，值是对应的设置。详见下文。
-- `"monorepo"`：（仅 Monorepo）在 Monorepo 模式下，此值始终为 `true`。
-- `"root"`：（仅 Monorepo）指向默认项目的项目根目录。
+- `collection`：指定默认使用的 Schematic 集合，通常无需修改，默认值为 `@nestjs/schematics`。
+- `sourceRoot`：在标准项目中，指向项目的源代码根目录；在 Monorepo 中，代表默认项目的源码路径。
+- `compilerOptions`：用于配置编译相关选项，如是否启用 Webpack、指定 TypeScript 配置文件路径等。
+- `generateOptions`：控制资源生成（如模块、控制器等）的全局默认行为。
+- `monorepo`：用于标识当前是否为 Monorepo 架构。在 Monorepo 中，该值始终为 `true`。
+- `root`：在 Monorepo 中，表示默认项目的根目录路径。
 
 ## 全局编译器选项
 
-这些属性用于指定要使用的编译器，以及影响**任何**编译步骤的各种选项，无论是通过 `nest build` 还是 `nest start`，也无论使用的是 `tsc` 还是 webpack。
+这些配置项用于指定编译器类型，并定义一系列影响**所有编译流程**的全局参数。无论是使用 `nest build` 还是 `nest start` 命令，或是采用 tsc 还是 webpack 进行构建，这些选项始终生效。
 
-| 属性名              | 属性值类型    | 说明                                                                                                                                                                                                                                          |
-| ------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `webpack`           | boolean       | 若为 `true`，使用 [webpack 编译器](https://webpack.js.org/)。若为 `false` 或未设置，则使用 `tsc`。在 Monorepo 模式下，默认值为 `true`（使用 webpack），在标准模式下，默认值为 `false`（使用 `tsc`）。详情见下文。（已弃用：请改用 `builder`） |
-| `tsConfigPath`      | string        | （**仅限 Monorepo**）指向包含 `tsconfig.json` 设置的文件，当在未指定 `project` 选项的情况下调用 `nest build` 或 `nest start` 时（例如，构建或启动默认项目时）会使用该文件。                                                                   |
-| `webpackConfigPath` | string        | 指定 webpack 配置文件路径。如果未指定，Nest 会查找 `webpack.config.js` 文件。详情见下文。                                                                                                                                                     |
-| `deleteOutDir`      | boolean       | 若为 `true`，每当编译器被调用时，会首先移除编译输出目录（在 `tsconfig.json` 中配置，默认是 `./dist`）。                                                                                                                                       |
-| `assets`            | array         | 启用后，每当编译步骤开始时会自动分发非 TypeScript 资产（在 `--watch` 增量编译模式下不会分发资源）。详情见下文。                                                                                                                               |
-| `watchAssets`       | boolean       | 若为 `true`，以 watch 模式运行，监视**所有**非 TypeScript 资产。（如需更细粒度的资产监控，请参见下方[资源（Assets）](#资源文件)部分。）                                                                                                       |
-| `manualRestart`     | boolean       | 若为 `true`，启用 `rs` 快捷命令以手动重启服务器。默认值为 `false`。                                                                                                                                                                           |
-| `builder`           | string/object | 指定 CLI 使用哪种 `builder` 编译项目（`tsc`、`swc` 或 `webpack`）。如需自定义 builder 行为，可传递一个包含 `type`（`tsc`、`swc` 或 `webpack`）和 `options` 两个属性的对象。                                                                   |
-| `typeCheck`         | boolean       | 若为 `true`，则为 SWC 驱动的项目启用类型检查（当 `builder` 为 `swc` 时）。默认值为 `false`。                                                                                                                                                  |
+| 属性名              | 属性值类型    | 说明                                                                                                                                                                                                                            |
+| ------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `webpack`           | boolean       | 是否启用 [webpack 编译器](https://webpack.js.org/)。设为 `true` 时使用 webpack；设为 `false` 或未显式配置时，使用 tsc。在 Monorepo 模式下默认启用 webpack，在标准项目中默认使用 tsc。⚠️ 此选项已弃用，建议使用 `builder` 替代。 |
+| `tsConfigPath`      | string        | （**仅适用于 Monorepo 模式**）指定包含 `tsconfig.json` 配置的路径。当未显式设置 project 选项时（例如构建或启动默认项目），CLI 将使用该路径对应的配置文件。                                                                      |
+| `webpackConfigPath` | string        | 指定 webpack 的配置文件路径。若未设置，则默认查找项目根目录下的 `webpack.config.js` 文件。                                                                                                                                      |
+| `deleteOutDir`      | boolean       | 若设为 `true`，每次执行编译任务前会清空输出目录（该目录通常在 `tsconfig.json` 中通过 `outDir` 指定，默认值为 `./dist`）。                                                                                                       |
+| `assets`            | array         | 启用后，在每次编译时自动复制非 TypeScript 资源（静态文件等）。注意：在 `--watch` 模式下不会自动复制。详情参见下文说明。                                                                                                         |
+| `watchAssets`       | boolean       | 是否在监听模式下监视所有非 TypeScript 类型的资源文件。设为 `true` 后，将自动监听并响应资源文件变更。若需更细粒度的控制，可参考下方[资源](#资源文件)部分。                                                                       |
+| `manualRestart`     | boolean       | 是否启用命令行中的 `rs` 快捷键来手动重启服务器。默认为 `false`（不启用）。                                                                                                                                                      |
+| `builder`           | string/object | 指定 CLI 使用的构建器类型，可选值为 `tsc`、`swc` 或 `webpack`。如需自定义构建行为，也可传入对象形式，包括 `type`（构建器类型）和 `options`（构建器选项）两个字段。                                                              |
+| `typeCheck`         | boolean       | 当构建器设置为 swc 时，是否启用类型检查功能。默认为 `false`。                                                                                                                                                                   |
 
 ## 全局生成选项
 
-这些属性用于指定 `nest generate` 命令的默认生成选项。
+你可以通过设置 `generateOptions`，为 `nest generate` 命令配置默认的生成行为。
 
-| 属性名 | 属性值类型        | 说明                                                                                                                                                                                                                        |
-| ------ | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `spec` | boolean 或 object | 若为布尔值，`true` 表示默认启用 spec 文件生成，`false` 表示禁用。命令行参数或项目级 `generateOptions` 设置会覆盖该值（见下文）。若为对象，每个 key 代表一个 Schematic 名称，布尔值决定该 Schematic 是否默认生成 spec 文件。 |
-| `flat` | boolean           | 如果为 true，所有生成命令将生成扁平结构。                                                                                                                                                                                   |
+| 属性名 | 类型              | 说明                                                                                                                                                                                                                                                  |
+| ------ | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec` | boolean 或 object | 控制是否默认生成测试（spec）文件。- 若为布尔值，`true` 表示启用，`false` 表示禁用。- 若为对象形式，每个键对应一个 schematic 名称（如 `service`），其布尔值决定该类型资源是否生成 `spec` 文件。该设置可被命令行参数或项目级的 `generateOptions` 覆盖。 |
+| `flat` | boolean           | 是否生成扁平结构的文件。如果设置为 `true`，生成的文件不会嵌套在子目录中。                                                                                                                                                                             |
 
-以下示例使用布尔值指定所有项目默认禁用 spec 文件生成：
+### 示例
+
+#### 全局禁用 `spec` 文件生成：
 
 ```json
 {
   "generateOptions": {
     "spec": false
-  },
-  ...
+  }
 }
 ```
 
-以下示例使用布尔值指定所有项目默认生成扁平结构：
+#### 默认使用扁平结构生成文件：
 
 ```json
 {
   "generateOptions": {
     "flat": true
-  },
-  ...
+  }
 }
 ```
 
-在下例中，仅为 `service` 原型生成器（如 `nest generate service...`）禁用 spec 文件生成：
+#### 仅对 service schematic 禁用 `spec` 文件生成：
 
 ```json
 {
@@ -254,15 +270,14 @@ Nest 将组织、构建和部署标准项目及 Monorepo 的元数据保存在 `
     "spec": {
       "service": false
     }
-  },
-  ...
+  }
 }
 ```
 
 <CalloutInfo type="warning">
-  <div>
-    当 `spec` 以对象形式指定时，Schematic 的 key 目前不支持自动别名处理。这意味着如果只指定了 `service: false`，但通过别名 `s` 生成 service，仍会生成 spec 文件。为确保命令名和别名都按预期工作，请同时指定命令名和别名，如下所示：
-  </div>
+当 `spec` 以对象形式指定时，schematic 名称的别名不会被自动解析。例如，如果你仅配置了 `"service": false`，但使用 `nest generate s` 这样的别名执行命令，`spec` 文件仍会被生成。
+
+为确保行为一致，建议同时为全名与别名都设置值，例如：
 
 ```json
 {
@@ -271,8 +286,7 @@ Nest 将组织、构建和部署标准项目及 Monorepo 的元数据保存在 `
       "service": false,
       "s": false
     }
-  },
-  ...
+  }
 }
 ```
 
@@ -280,9 +294,9 @@ Nest 将组织、构建和部署标准项目及 Monorepo 的元数据保存在 `
 
 ## 项目专属 generate 选项
 
-除了设置全局 generate 选项，你还可以为每个项目单独配置。项目专属的 generate 选项格式与全局选项完全一致，但直接写在项目配置下。
+除了全局的 generate 配置，你还可以为每个项目单独指定 `generateOptions`。项目级配置的格式与全局配置保持一致，但需直接写在对应项目的配置对象中。
 
-项目专属 generate 选项会覆盖全局 generate 选项。
+当存在项目级配置时，它将覆盖全局的 generate 设置。
 
 ```json
 {
@@ -301,17 +315,21 @@ Nest 将组织、构建和部署标准项目及 Monorepo 的元数据保存在 `
 ```
 
 <CalloutInfo type="warning">
-  generate 选项的优先级顺序为：**CLI 命令行参数 > 项目级选项 >
-  全局选项**。也就是说，命令行中指定的选项会覆盖项目级选项，而项目级选项会覆盖全局选项。
+  `generate` 配置的优先级如下：**命令行参数 > 项目级配置 >
+  全局配置**。换句话说，若你在命令行中显式传入生成选项，它将覆盖项目级设置，而项目级设置又会优先于全局设置生效。
 </CalloutInfo>
 
 ## 指定编译器
 
-默认编译器之所以不同，是因为对于大型项目（在 Monorepo 中更常见），webpack 在构建速度和将所有组件打包成单一文件方面具有显著优势。如果你希望每个文件被单独编译（而不是打包），可以将 `builder` 设置为 `"tsc"`（或 `"swc"`），构建过程将改用 TypeScript 编译器。
+在 NestJS 中，默认的构建工具因项目规模而异。对于大型项目（尤其是在 Monorepo 场景下），默认使用 webpack，这是因为它在构建速度和将多个模块打包成单个文件方面具备明显优势。
 
-## Webpack 选项
+如果你希望每个源文件被独立编译，而不是进行打包处理，可以将 `builder` 设置为 `tsc` 或 `swc`，构建过程将使用 TypeScript 编译器或替代方案（如 swc）执行更原始的逐文件编译。
 
-webpack 配置文件可以包含标准的 [webpack 配置选项](https://webpack.js.org/configuration/)。例如，如果你希望 webpack 打包 `node_modules`（默认会被排除），可以在 `webpack.config.js` 中添加如下内容：
+## Webpack 配置
+
+webpack.config.js 支持标准的 [webpack 配置选项](https://webpack.js.org/configuration/)。
+
+例如，默认情况下，webpack 会将 `node_modules` 排除在打包之外。如果你希望将其包含在构建产物中，可以显式清空 `externals` 字段：
 
 ```js
 module.exports = {
@@ -319,7 +337,7 @@ module.exports = {
 }
 ```
 
-由于 webpack 配置文件本质上是一个 JavaScript 文件，你甚至可以导出一个函数，该函数接收默认选项并返回修改后的对象：
+由于 webpack 配置本质上是一个 JavaScript 模块，你也可以导出一个函数，该函数接收默认配置作为参数并返回自定义的配置对象：
 
 ```js
 module.exports = function (options) {
@@ -330,39 +348,43 @@ module.exports = function (options) {
 }
 ```
 
-## 资源文件
+## 资源文件处理
 
-TypeScript 编译器会自动将编译产物（`.js` 和 `.d.ts` 文件）输出到指定目录。同时，你也可以配置它来复制非 TypeScript 文件，例如 `.graphql` 文件、图片、`.html` 文件以及其他静态资源。这样，`nest build` 命令就不仅仅是编译，也承担了轻量级**开发构建**的角色，让你在迭代开发中也能处理非 TS 文件。
+在使用 TypeScript 编译项目时，`.js` 与 `.d.ts` 等产物会被自动输出到指定目录。除了这些编译结果，你还可以配置编译器将其他非 TypeScript 文件（如 `.graphql`、图片、`.html` 文件等静态资源）一并复制。借助这一机制，`nest build` 不仅执行编译任务，同时也扮演了轻量级的开发构建工具角色，使你在开发迭代过程中能够一并处理静态资源。
 
-资源文件应位于 `src` 文件夹下，否则不会被复制。
+注意：资源文件必须放置在 `src` 目录下，否则将不会被正确复制。
 
-`assets` 键的值是一个数组，其中每个元素用于指定要分发的文件。元素可以是简单的 `glob` 风格字符串，例如：
+你可以通过 `assets` 配置项指定需要打包的资源文件。该字段接受一个数组，支持使用 glob 模式的字符串，如下所示：
 
-```ts
+```json
 "assets": ["**/*.graphql"],
-"watchAssets": true,
+"watchAssets": true
 ```
 
-如果需要更精细的控制，元素也可以是包含以下键的对象：
+若需更灵活的配置方式，每个数组元素也可以是对象，支持以下字段：
 
-- `"include"`：用于指定要分发的资源文件的 `glob` 风格匹配规则
-- `"exclude"`：用于指定要从 `include` 列表中**排除**的资源文件的 `glob` 风格匹配规则
-- `"outDir"`：字符串，指定资源文件分发的路径（相对于根目录）。默认为编译输出目录。
-- `"watchAssets"`：布尔值；若为 `true`，则以监听模式运行，监控指定的资源文件
+- `include`：指定需要包含的文件（使用 glob 匹配语法）。
+- `exclude`：从 include 列表中排除的文件。
+- `outDir`：设置资源文件的输出目录，路径相对于项目根目录。默认与 TypeScript 编译输出路径一致。
+- `watchAssets`：是否启用资源文件的监听模式，布尔值。启用后可在开发过程中自动同步变更。
 
-例如：
+示例配置：
 
 ```ts
 "assets": [
-  { "include": "**/*.graphql", "exclude": "**/omitted.graphql", "watchAssets": true },
+  {
+    "include": "**/*.graphql",
+    "exclude": "**/omitted.graphql",
+    "watchAssets": true
+  }
 ]
 ```
 
 <CalloutInfo type="warning">
-  如果在顶层 `compilerOptions` 属性中设置了 `watchAssets`，它将覆盖 `assets`
-  属性中任何 `watchAssets` 的设置。
+  如果在顶层的 `compilerOptions` 中设置了 `watchAssets`，该配置会覆盖 `assets`
+  项中每个对象单独设置的 `watchAssets` 值。
 </CalloutInfo>
 
-## 项目属性
+## 项目属性（Monorepo 专用）
 
-此元素仅存在于 Monorepo 中。通常不建议修改这些属性，因为 Nest 会使用他们来定位各个项目及其在 Monorepo 中的配置选项。
+该配置项仅适用于 Monorepo 架构的项目。一般情况下不建议手动修改这些属性，因为 Nest 会依赖它们来定位各子项目及其配置文件的位置。
