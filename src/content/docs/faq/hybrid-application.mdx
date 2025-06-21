@@ -1,9 +1,12 @@
 # 混合应用
 
-混合应用（Hybrid application）是指一个能同时监听来自两个或多个不同来源请求的应用。它通常由一个 HTTP 服务器和一个微服务监听器构成，也可以由多个不同类型的微服务监听器组成。由于 Nest 提供的 `createMicroservice()` 方法不支持一次性创建多个微服务，因此你需要为每个微服务单独创建实例并启动。要实现这一点，你可以通过 `connectMicroservice()` 方法，将一个 `INestApplication` 实例与一个或多个 `INestMicroservice` 实例连接起来。
+所谓**混合应用**（Hybrid application），是指能够同时处理来自多个不同传输层协议请求的 Nest 应用。常见的场景包括同时监听 HTTP 请求和微服务消息，或同时运行多个类型的微服务监听器（如 TCP、Redis、MQTT 等）。
+
+由于 `createMicroservice()` 方法无法一次性创建多个微服务实例，因此需要分别为每个微服务独立创建并启动。实现这一需求的推荐方式是：通过 `connectMicroservice()` 方法将一个主应用实例（`INestApplication`）与一个或多个微服务实例（`INestMicroservice`）连接起来。
 
 ```ts
 const app = await NestFactory.create(AppModule)
+
 const microservice = app.connectMicroservice<MicroserviceOptions>({
   transport: Transport.TCP,
 })
@@ -13,22 +16,26 @@ await app.listen(3001)
 ```
 
 <CalloutInfo>
-  `app.listen(port)` 方法用于在指定端口启动 HTTP 服务器。如果你的应用无需处理 HTTP 请求，可以使用
-  `app.init()` 方法来代替。
+  如果你的应用不需要处理 HTTP 请求，可以用 `app.init()` 来替代
+  `app.listen(port)`，只初始化框架而不绑定端口。
 </CalloutInfo>
 
-如果需要连接多个微服务实例，只需为每个微服务调用一次 `connectMicroservice()`：
+## 连接多个微服务
+
+若应用需要同时连接多个微服务，只需为每个微服务单独调用一次 `connectMicroservice()` 即可。例如，以下代码展示了同时启动一个 TCP 微服务和一个 Redis 微服务的方式：
 
 ```ts
 const app = await NestFactory.create(AppModule)
-// 微服务 #1
+
+// 微服务实例 #1 - TCP
 const microserviceTcp = app.connectMicroservice<MicroserviceOptions>({
   transport: Transport.TCP,
   options: {
     port: 3001,
   },
 })
-// 微服务 #2
+
+// 微服务实例 #2 - Redis
 const microserviceRedis = app.connectMicroservice<MicroserviceOptions>({
   transport: Transport.REDIS,
   options: {
@@ -41,14 +48,17 @@ await app.startAllMicroservices()
 await app.listen(3001)
 ```
 
-在混合应用中，如果你希望 `@MessagePattern()` 装饰器仅对特定的传输策略（例如 MQTT）生效，可以在装饰器中传递第二个参数 `Transport`。这是一个包含了所有内置传输策略的枚举。
+## 绑定特定传输层的消息处理器
+
+在混合应用中，如果希望 `@MessagePattern()` 装饰器仅处理来自特定传输层（例如仅处理 NATS 消息），可以通过第二个参数显式指定传输类型。`Transport` 是一个枚举，包含了所有内置传输协议选项。
 
 ```ts
 @MessagePattern('time.us.*', Transport.NATS)
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
-  console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
+  console.log(`Subject: ${context.getSubject()}`) // 例如 "time.us.east"
   return new Date().toLocaleTimeString(...);
 }
+
 @MessagePattern({ cmd: 'time.us' }, Transport.TCP)
 getTCPDate(@Payload() data: number[]) {
   return new Date().toLocaleTimeString(...);
@@ -56,18 +66,23 @@ getTCPDate(@Payload() data: number[]) {
 ```
 
 <CalloutInfo>
-  `@Payload()`、`@Ctx()`、`Transport` 和 `NatsContext` 都是从 `@nestjs/microservices` 导入的。
+  `@Payload()`、`@Ctx()`、`Transport` 和 `NatsContext` 均来自
+  `@nestjs/microservices` 包。
 </CalloutInfo>
 
-## 共享配置（Sharing configuration）
+## 共享配置（Sharing Configuration）
 
-默认情况下，混合应用不会继承主应用（即基于 HTTP 的应用）所配置的全局管道、拦截器、守卫和过滤器。如果你希望微服务也能应用这些全局配置，可以在 `connectMicroservice()` 方法的第二个参数（一个可选的配置对象）中将 `inheritAppConfig` 属性设为 `true`，如下所示：
+默认情况下，混合应用中的微服务实例**不会自动继承**主应用（即基于 HTTP 的 `INestApplication` 实例）所注册的全局配置，例如全局管道、拦截器、守卫和异常过滤器。
+
+如果你希望这些全局配置同样应用于微服务，可以在调用 `connectMicroservice()` 时，通过其**第二个参数**启用继承机制。只需将 `inheritAppConfig` 选项设置为 `true` 即可：
 
 ```ts
 const microservice = app.connectMicroservice<MicroserviceOptions>(
   {
     transport: Transport.TCP,
   },
-  { inheritAppConfig: true }
+  {
+    inheritAppConfig: true,
+  }
 )
 ```

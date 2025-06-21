@@ -175,13 +175,13 @@
 ## 14. 常见问题
 
 - [x] `/faq/serverless` - Serverless
-- [ ] `/faq/http-adapter` - HTTP 适配器
-- [ ] `/faq/keep-alive-connections` - HTTP 长连接
-- [ ] `/faq/global-prefix` - 全局路径前缀
-- [ ] `/faq/raw-body` - 原始请求体
-- [ ] `/faq/hybrid-application` - 混合应用
-- [ ] `/faq/multiple-servers` - HTTPS 和多服务器
-- [ ] `/faq/request-lifecycle` - 请求生命周期
+- [x] `/faq/http-adapter` - HTTP 适配器
+- [x] `/faq/keep-alive-connections` - HTTP 长连接
+- [x] `/faq/global-prefix` - 全局路由前缀
+- [x] `/faq/raw-body` - 原始请求体
+- [x] `/faq/hybrid-application` - 混合应用
+- [x] `/faq/multiple-servers` - HTTPS 和多服务器
+- [x] `/faq/request-lifecycle` - 请求生命周期
 - [ ] `/faq/common-errors` - 常见错误
 
 ## 15. 开发者工具

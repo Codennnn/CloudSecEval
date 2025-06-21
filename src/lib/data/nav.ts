@@ -208,7 +208,7 @@ export const navMainData: NavMenuItem[] = [
       { title: 'Serverless', titleEn: 'Serverless', url: '/faq/serverless' },
       { title: 'HTTP 适配器', titleEn: 'HTTP adapter', url: '/faq/http-adapter' },
       { title: 'HTTP 长连接', titleEn: 'Keep-Alive connections', url: '/faq/keep-alive-connections' },
-      { title: '全局路径前缀', titleEn: 'Global path prefix', url: '/faq/global-prefix' },
+      { title: '全局路由前缀', titleEn: 'Global path prefix', url: '/faq/global-prefix' },
       { title: '原始请求体', titleEn: 'Raw body', url: '/faq/raw-body' },
       { title: '混合应用', titleEn: 'Hybrid application', url: '/faq/hybrid-application' },
       { title: 'HTTPS 和多服务器', titleEn: 'HTTPS & multiple servers', url: '/faq/multiple-servers' },
