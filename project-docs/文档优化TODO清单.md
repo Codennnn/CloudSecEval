@@ -130,7 +130,7 @@
 - [x] `/cli/monorepo` - 工作空间
 - [x] `/cli/libraries` - 库
 - [x] `/cli/usages` - 使用方法
-- [x] `/cli/scripts` - 脚本
+- [x] `/cli/scripts` - CLI 与构建脚本
 
 ## 11. OpenAPI
 
@@ -172,9 +172,9 @@
 - [ ] `/deployment` - 部署指南
 - [ ] `/standalone-applications` - 独立应用模式
 
-## 14. 常见问题 (Frequently Asked Questions)
+## 14. 常见问题
 
-- [ ] `/faq/serverless` - Serverless
+- [x] `/faq/serverless` - Serverless
 - [ ] `/faq/http-adapter` - HTTP 适配器
 - [ ] `/faq/keep-alive-connections` - HTTP 长连接
 - [ ] `/faq/global-prefix` - 全局路径前缀
