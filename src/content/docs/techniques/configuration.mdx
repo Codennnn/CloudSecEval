@@ -1,32 +1,38 @@
 # 配置
 
-应用程序通常会运行在不同的环境（Environment）下。根据环境的不同，应当使用不同的配置设置。例如，本地环境通常依赖于只对本地数据库实例有效的特定数据库凭据，而生产环境则会使用另一套数据库凭据。由于配置变量会发生变化，最佳实践是将[配置变量](https://12factor.net/config)存储在环境变量（Environment Variable）中。
+在实际开发中，应用通常会运行在多个不同的环境中，例如本地开发环境、测试环境或生产环境。不同环境下的配置需求往往不同，例如本地环境可能使用专用于本地数据库的凭据，而生产环境则使用另一套更安全的配置。
 
-在 Node.js 中，可以通过全局对象 `process.env` 访问外部定义的环境变量。虽然我们可以尝试在每个环境中分别设置环境变量，但这种方式在开发和测试环境下很快会变得难以管理，尤其是当这些值需要频繁模拟或更改时。
+由于这些配置项在各环境中会有所差异，**最佳实践是将这些配置作为环境变量进行管理**。
 
-在 Node.js 应用中，通常会使用 `.env` 文件来集中管理环境变量。每个 `.env` 文件以键值对的形式保存变量，每个键代表一个特定的配置项。切换不同环境时，只需替换对应的 `.env` 文件即可。
+在 Node.js 中，环境变量可以通过全局对象 `process.env` 访问。虽然可以手动为每个环境设置这些变量，但当你在开发或测试过程中需要频繁修改或模拟配置时，这种做法会变得难以维护。
 
-在 Nest 中，推荐的做法是创建一个 `配置模块（ConfigModule）`，并通过 `配置服务（ConfigService）` 加载对应的 `.env` 文件。虽然你可以自行实现这样的模块，但 Nest 已经内置提供了 `@nestjs/config` 包，极大简化了配置管理流程。本章节将详细介绍该包的用法。
+为了解决这个问题，Node.js 应用通常会使用 `.env` 文件集中管理配置项。每个 `.env` 文件由一组键值对组成，用于定义环境变量。通过切换不同的 `.env` 文件，即可快速切换运行环境。
+
+在 Nest 应用中，推荐的做法是使用**配置模块**（`ConfigModule`） 来加载和管理环境变量，并通过**配置服务**（`ConfigService`） 进行访问。虽然你也可以手动实现类似功能，但 Nest 官方已经提供了内置的 `@nestjs/config` 包，大幅简化了这一流程。
+
+本章节将介绍如何使用 `@nestjs/config` 包进行配置管理。
 
 ## 安装
 
-要开始使用，首先需要安装相关依赖：
+要开始使用配置功能，首先需要安装官方提供的依赖包：
 
 ```bash
-$ npm i --save @nestjs/config
+npm install @nestjs/config
 ```
 
 <CalloutInfo>
-  `@nestjs/config` 包内部依赖了 [dotenv](https://github.com/motdotla/dotenv)。
+  `@nestjs/config` 底层依赖了
+  [dotenv](https://github.com/motdotla/dotenv)，用于解析 `.env`
+  文件中的环境变量。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  <div>`@nestjs/config` 需要 TypeScript 4.1 或更高版本。</div>
+  `@nestjs/config` 要求 TypeScript 版本不低于 4.1。
 </CalloutInfo>
 
 ## 快速上手
 
-安装完成后，我们可以导入 `ConfigModule`。通常会在根模块 `AppModule` 中导入，并通过其静态方法 `.forRoot()` 控制行为。在这一步，环境变量的键值对会被解析和加载。后续我们还会介绍如何在其他功能模块中访问 `ConfigModule` 提供的 `ConfigService`。
+安装完成后，你可以通过导入 `ConfigModule` 快速启用配置功能。通常建议在根模块（`AppModule`）中使用其静态方法 `forRoot()` 进行初始化。在此过程中，模块会自动解析并加载 `.env` 文件中的变量。
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -38,24 +44,37 @@ import { ConfigModule } from '@nestjs/config'
 export class AppModule {}
 ```
 
-上述代码会从默认位置（项目根目录）加载并解析 `.env` 文件，将 `.env` 文件中的键值对与 `process.env` 中已有的环境变量合并，并将结果存储在一个私有结构中，供 `ConfigService` 访问。`forRoot()` 方法会注册 `ConfigService` 提供者，该服务通过 `get()` 方法读取已解析和合并的配置变量。由于 `@nestjs/config` 依赖 [dotenv](https://github.com/motdotla/dotenv)，因此变量冲突时会遵循 dotenv 的解析规则：如果某个键同时存在于运行时环境变量（如通过 shell 导出 `export DATABASE_USER=test`）和 `.env` 文件中，则以运行时环境变量为准。
+上面的代码会从项目根目录读取 `.env` 文件，并将其内容与已有的 `process.env` 变量合并。最终的结果被存储在内部结构中，供 `ConfigService` 使用。
 
-一个示例 `.env` 文件如下：
+`forRoot()` 方法会自动注册 `ConfigService`，你可以通过它的 `get()` 方法读取任何环境变量。
 
-```json
+由于该模块底层依赖 dotenv，如果同一个变量既存在于 `.env` 文件中，又已被系统环境变量（例如通过 `export` 命令）定义，则会优先使用系统环境变量。这一行为符合 dotenv 的解析规则。
+
+例如，下面是一个简单的 `.env` 文件：
+
+```bash
 DATABASE_USER=test
 DATABASE_PASSWORD=test
 ```
 
-如果你需要在 `ConfigModule` 加载和 Nest 应用启动之前就能访问某些环境变量（例如，需要将微服务配置传递给 `NestFactory#createMicroservice` 方法），可以使用 Nest CLI 的 `--env-file` 选项。该选项允许你在应用启动前指定要加载的 `.env` 文件路径。`--env-file` 标志在 Node v20 中引入，详见[官方文档](https://nodejs.org/dist/v20.18.1/docs/api/cli.html#--env-fileconfig)。
+### 提前加载 `.env` 文件（可选）
+
+如果你希望在应用启动之前（例如在调用 `NestFactory.createMicroservice()` 之前）就能读取某些环境变量，可以使用 Nest CLI 提供的 `--env-file` 参数，指定要加载的 `.env` 文件路径。
+
+<CalloutInfo>
+  该参数是在 Node.js v20 中引入的，详见 [Node.js
+  官方文档](https://nodejs.org/dist/v20.18.1/docs/api/cli.html#--env-fileconfig)。
+</CalloutInfo>
+
+示例命令如下：
 
 ```bash
-$ nest start --env-file .env
+nest start --env-file .env
 ```
 
 ## 自定义 env 文件路径
 
-默认情况下，`@nestjs/config` 包会在应用程序根目录查找 `.env` 文件。如果你希望指定其他路径，可以在传递给 `forRoot()` 方法的选项对象中设置 `envFilePath` 属性。例如：
+默认情况下，`@nestjs/config` 模块会在应用程序的根目录下查找 `.env` 文件。如果你希望使用自定义路径的配置文件，可以通过 `forRoot()` 方法的配置对象指定 `envFilePath` 属性，例如：
 
 ```ts
 ConfigModule.forRoot({
@@ -63,7 +82,7 @@ ConfigModule.forRoot({
 })
 ```
 
-此外，你还可以同时指定多个 `.env` 文件路径，如下所示：
+该属性同样支持传入路径数组，用于指定多个 `.env` 文件。示例：
 
 ```ts
 ConfigModule.forRoot({
@@ -71,11 +90,11 @@ ConfigModule.forRoot({
 })
 ```
 
-当同一个变量在多个文件中都存在时，会优先采用第一个文件中的值。
+当多个文件中存在同名环境变量时，优先使用数组中靠前文件中的值。
 
 ## 禁用 env 文件加载
 
-如果你不希望加载 `.env` 文件，而是只想直接访问运行环境中的环境变量（例如通过 shell 导出的 `export DATABASE_USER=test`），可以将选项对象的 `ignoreEnvFile` 属性设置为 `true`，如下所示：
+如果你希望完全跳过 `.env` 文件的加载，仅从系统环境变量中读取配置（例如通过 shell 预先设置的 `export DATABASE_USER=test`），可以将 `ignoreEnvFile` 设置为 `true`：
 
 ```ts
 ConfigModule.forRoot({
@@ -83,9 +102,13 @@ ConfigModule.forRoot({
 })
 ```
 
+这样配置后，`@nestjs/config` 将不会尝试读取任何 `.env` 文件，仅依赖运行时已有的环境变量。
+
 ## 全局使用配置模块
 
-在 NestJS 中，如果你希望在多个模块中使用 `ConfigModule`，通常需要在每个模块单独导入。不过，你也可以通过将选项对象的 `isGlobal` 属性设置为 `true`，将其声明为[全局模块](/modules#global-modules)。这样一来，只需在根模块（如 `AppModule`）中导入一次，后续其他模块无需再单独导入。
+在 NestJS 中，若多个模块都需要使用 `ConfigModule`，通常需要分别在每个模块中显式导入它。但为了简化使用，你可以将其声明为一个[全局模块](/modules#使用全局模块)：只需在应用的根模块（如 `AppModule`）中引入一次，之后所有模块中均可直接使用，无需重复导入。
+
+要实现这一点，只需在 `forRoot()` 方法的配置对象中设置 `isGlobal: true`：
 
 ```ts
 ConfigModule.forRoot({
@@ -93,11 +116,13 @@ ConfigModule.forRoot({
 })
 ```
 
+开启全局模式后，`ConfigService` 等提供者将在整个应用中自动可用，有效减少模块之间的重复依赖声明。
+
 ## 自定义配置文件
 
-对于更复杂的项目，可以使用自定义配置文件，将配置按功能分组，分别存放在独立文件中，便于维护和管理。自定义配置文件需要导出一个工厂函数，返回嵌套的配置对象。该对象可以是任意嵌套的普通 JavaScript 对象。
+对于结构更复杂的项目，将配置项按功能模块划分、分别存放在独立的配置文件中，是一种更易维护的做法。NestJS 支持通过“自定义配置文件”方式加载配置内容，只需导出一个返回普通对象的工厂函数即可，该对象可以是任意嵌套结构。
 
-此时，`process.env` 对象会包含所有已解析的环境变量（包括 `.env` 文件和外部定义的变量，合并方式见[上文](/techniques/configuration#getting-started)）。你可以在工厂函数中添加类型转换、默认值等逻辑。例如：
+在配置函数中，你可以灵活处理类型转换、设置默认值等逻辑。此时，`process.env` 已包含来自 `.env` 文件和系统环境的全部变量，合并规则可参考[前文说明](#快速上手)。以下是一个基本示例：
 
 ```ts filename='config/configuration.ts'
 export default () => ({
@@ -109,9 +134,9 @@ export default () => ({
 })
 ```
 
-通过在 `ConfigModule.forRoot()` 的选项对象中设置 `load` 属性，可以加载自定义配置文件：
+要加载这个配置文件，只需在 `ConfigModule.forRoot()` 中设置 `load` 属性：
 
-```ts
+```ts filename='app.module.ts'
 import configuration from './config/configuration'
 
 @Module({
@@ -125,10 +150,15 @@ export class AppModule {}
 ```
 
 <CalloutInfo>
-  `load` 属性接收一个数组，因此可以同时加载多个配置文件（如 `load: [databaseConfig, authConfig]`）。
+  `load` 属性接受一个函数数组，允许一次加载多个配置模块。例如：`load:
+  [databaseConfig, authConfig]`。
 </CalloutInfo>
 
 使用自定义配置文件时，也可以管理如 YAML 等自定义格式的文件。以下是一个使用 YAML 格式的配置示例：
+
+### 加载 YAML 配置文件
+
+NestJS 同样支持加载如 `YAML` 等自定义格式的配置文件。以下是一个使用 `YAML` 格式的配置示例：
 
 ```yaml
 http:
@@ -145,14 +175,14 @@ db:
     database: 'sqlite.db'
 ```
 
-要读取和解析 YAML 文件，可以借助 `js-yaml` 包：
+你可以使用 `js-yaml` 包来读取并解析 `YAML` 文件：
 
 ```bash
-$ npm i js-yaml
-$ npm i -D @types/js-yaml
+npm install js-yaml
+npm install -D @types/js-yaml
 ```
 
-安装完成后，可以使用 `yaml#load` 方法加载刚刚创建的 YAML 文件：
+然后通过 `yaml.load()` 方法加载配置内容：
 
 ```ts filename='config/configuration.ts'
 import { readFileSync } from 'fs'
@@ -162,29 +192,43 @@ import { join } from 'path'
 const YAML_CONFIG_FILENAME = 'config.yaml'
 
 export default () => {
-  return yaml.load(readFileSync(join(__dirname, YAML_CONFIG_FILENAME), 'utf8')) as Record<
-    string,
-    any
-  >
+  return yaml.load(
+    readFileSync(join(__dirname, YAML_CONFIG_FILENAME), 'utf8')
+  ) as Record<string, any>
 }
 ```
 
 <CalloutInfo type="warning">
-Nest CLI 在构建过程中不会自动将你的“资源文件”（非 TS 文件）移动到 `dist` 目录。为了确保 YAML 文件被正确复制，需要在 `nest-cli.json` 的 `compilerOptions#assets` 字段中进行配置。例如，如果 `config` 文件夹与 `src` 文件夹同级，可以这样设置：`"assets": [{{ '{' }}"include": "../config/*.yaml", "outDir": "./dist/config"{{ '}' }}]`。详细说明可参考[官方文档](/cli/monorepo#资源文件)。
+Nest CLI 在编译项目时**不会自动复制资源文件**（如 YAML）。你需要在 `nest-cli.json` 的 `compilerOptions.assets` 字段中显式指定。若你的 `config` 文件夹位于项目根目录，可配置如下：
+
+```json
+"assets": [
+  {
+    "include": "./config/*.yaml",
+    "outDir": "dist/config"
+  }
+]
+```
+
+详见 [Nest CLI 文档](/cli/monorepo#资源文件)。
+
 </CalloutInfo>
 
-需要注意的是，即使在 `ConfigModule` 中使用了 `validationSchema` 选项，配置文件本身也不会被自动校验。如果需要校验或转换配置内容，需要在工厂函数内部自行处理，这样可以完全自定义校验逻辑。
+### 自定义校验逻辑
 
-例如，如果你希望确保端口号在某个范围内，可以在工厂函数中添加校验步骤：
+需要注意的是：即使你使用了 `ConfigModule` 的 `validationSchema` 选项，它也**不会自动校验你通过 `load` 加载的配置文件内容**。如果你希望为配置项添加校验逻辑，需要在工厂函数中手动处理。
+
+例如，下面的代码会在端口号不符合预期时抛出错误：
 
 ```ts filename='config/configuration.ts'
 export default () => {
-  const config = yaml.load(readFileSync(join(__dirname, YAML_CONFIG_FILENAME), 'utf8')) as Record<
-    string,
-    any
-  >
+  const config = yaml.load(
+    readFileSync(join(__dirname, YAML_CONFIG_FILENAME), 'utf8')
+  ) as Record<string, any>
 
-  if (config.http.port < 1024 || config.http.port > 49151) {
+  const port = config.http?.port
+
+  if (typeof port !== 'number' || port < 1024 || port > 49151) {
     throw new Error('HTTP 端口号必须在 1024 到 49151 之间')
   }
 
@@ -192,20 +236,20 @@ export default () => {
 }
 ```
 
-这样，如果端口号超出指定范围，应用会在启动时抛出错误。
+这样，当配置不符合预期时，应用会在启动时立即失败，避免潜在隐患。
 
 ## 使用 `ConfigService`
 
-若要获取 `配置服务（ConfigService）` 中的配置信息，首先需要将 `ConfigService` 注入到你的类中。与其他提供者类似，使用前需在对应模块中导入 `配置模块（ConfigModule）`。如果你在 `ConfigModule.forRoot()` 的配置中将 `isGlobal` 设为 `true`，则无需重复导入。一般在功能模块中这样导入：
+要在应用中访问配置信息，可以通过注入 `ConfigService` 实现。和使用其他提供者类似，你需要先在模块中引入 ConfigModule。如果你在 `ConfigModule.forRoot()` 中将 `isGlobal` 设置为 `true`，那么该模块会自动注册为全局模块，无需在每个使用的模块中重复导入。但如果未设置为全局模块，需手动引入，例如：
 
 ```ts filename='feature.module.ts'
 @Module({
   imports: [ConfigModule],
-  // ...
 })
+export class FeatureModule {}
 ```
 
-随后，可以通过标准的构造函数注入方式引入 `ConfigService`：
+然后，就可以通过构造函数注入 `ConfigService`：
 
 ```ts
 import { ConfigService } from '@nestjs/config'
@@ -213,19 +257,19 @@ import { ConfigService } from '@nestjs/config'
 constructor(private configService: ConfigService) {}
 ```
 
-在类的方法中，你可以这样获取配置信息：
+在类的方法中，即可使用 `get()` 方法读取环境变量或自定义配置：
 
 ```ts
-// 获取环境变量
+// 读取环境变量
 const dbUser = this.configService.get<string>('DATABASE_USER')
 
-// 获取自定义配置项
+// 读取嵌套配置项
 const dbHost = this.configService.get<string>('database.host')
 ```
 
-如上所示，调用 `configService.get()` 并传入变量名即可获取环境变量。你还可以通过传递类型参数（如 `get<string>(...)`）获得 TypeScript 类型提示。对于通过[自定义配置文件](/techniques/configuration#custom-configuration-files)创建的嵌套配置对象，也可以使用点号语法访问其属性。
+如上所示，传入键名即可获取对应的配置值。你也可以通过泛型参数（如 `<string>`）获得类型提示。对于自定义配置文件中定义的嵌套对象，也可以使用点号语法读取属性值。
 
-此外，还可以通过接口类型提示，一次性获取整个嵌套的自定义配置对象：
+如果你希望一次性获取整个嵌套配置对象，可以使用接口来定义类型：
 
 ```ts
 interface DatabaseConfig {
@@ -235,65 +279,74 @@ interface DatabaseConfig {
 
 const dbConfig = this.configService.get<DatabaseConfig>('database')
 
-// 现在可以直接使用 dbConfig.port 和 dbConfig.host
 const port = dbConfig.port
 ```
 
-`get()` 方法还支持传入第二个参数，用于指定默认值（当对应 key 不存在时返回该值）：
+此外，`get()` 方法还支持传入一个默认值，当配置项不存在时会返回该默认值：
 
 ```ts
-// 当未定义 database.host 时，使用 "localhost" 作为默认值
+// 若 database.host 未定义，则返回 "localhost"
 const dbHost = this.configService.get<string>('database.host', 'localhost')
 ```
 
-`ConfigService` 支持两个可选泛型参数。第一个泛型可以防止访问未定义的配置属性，示例如下：
+### 使用泛型增强类型安全
+
+`ConfigService` 支持两个可选泛型参数。第一个泛型用于约束配置项的结构，从而提高类型安全性。例如：
 
 ```ts
 interface EnvironmentVariables {
-  PORT: number;
-  TIMEOUT: string;
+  PORT: number
+  TIMEOUT: string
 }
 
-// 代码片段
 constructor(private configService: ConfigService<EnvironmentVariables>) {
-  const port = this.configService.get('PORT', { infer: true });
+  const port = this.configService.get('PORT', { infer: true })
 
-  // TypeScript 错误：URL 属性未在 EnvironmentVariables 中定义
-  const url = this.configService.get('URL', { infer: true });
+  // TypeScript 报错：URL 未在接口中定义
+  const url = this.configService.get('URL', { infer: true })
 }
 ```
 
-当 `infer` 属性为 `true` 时，`ConfigService#get` 方法会自动根据接口推断属性类型。例如，接口中 `PORT` 为 `number` 类型，则 `port` 变量的类型也会被正确推断为 `number`（前提是未启用 TypeScript 的 `strictNullChecks`）。
+当 `infer: true` 时，`get()` 方法会根据接口自动推断返回值类型。上例中 PORT 是 `number` 类型，因此 port 的类型也被自动推断为 `number`（前提是未启用 `strictNullChecks`）。
 
-此外，借助 `infer`，即使通过点号语法访问嵌套配置对象的属性，也能自动推断类型：
-
-```ts
-constructor(private configService: ConfigService<{ database: { host: string } }>) {
-  const dbHost = this.configService.get('database.host', { infer: true })!;
-  // typeof dbHost === "string"                                          |
-  //                                                                     +--> 非空断言操作符
-}
-```
-
-第二个泛型参数依赖于第一个，用于断言类型。当启用 TypeScript 的 `strictNullChecks` 时，可以去除 `ConfigService` 方法可能返回的 `undefined` 类型。例如：
+点号语法同样支持类型推断：
 
 ```ts
-// ...
-constructor(private configService: ConfigService<{ PORT: number }, true>) {
-  //                                                               ^^^^
-  const port = this.configService.get('PORT', { infer: true });
-  //    ^^^^ 此时 port 的类型为 number，无需再做类型断言
+constructor(
+  private configService: ConfigService<{ database: { host: string } }>
+) {
+  const dbHost = this.configService.get('database.host', { infer: true })!
+  // typeof dbHost === "string"
 }
 ```
 
 <CalloutInfo>
-  如果你希望 `ConfigService#get` 方法仅从自定义配置文件获取值，而忽略 `process.env` 变量，可以在
-  `ConfigModule.forRoot()` 的配置中设置 `skipProcessEnv: true`。
+  使用非空断言（`!`）的原因是 `get()` 方法默认返回 `T |
+  undefined`，除非你启用了下文所述的第二个泛型参数。
 </CalloutInfo>
 
-## 配置命名空间（Configuration namespaces）
+### 去除返回值中的 `undefined`
 
-`配置模块（ConfigModule）` 支持像[自定义配置文件](/techniques/configuration#custom-configuration-files)那样，定义并加载多个自定义配置文件。对于复杂的配置层级结构，你可以通过嵌套配置对象进行管理。此外，还可以使用 `registerAs()` 函数，返回一个“命名空间配置对象（namespaced configuration object）”。示例代码如下：
+如果你开启了 TypeScript 的 `strictNullChecks`，可以通过第二个泛型参数来消除返回值的 `undefined` 类型：
+
+```ts
+constructor(private configService: ConfigService<{ PORT: number }, true>) {
+  const port = this.configService.get('PORT', { infer: true })
+  // port 的类型为 number，不再包含 undefined
+}
+```
+
+### 只从配置文件中读取值
+
+如果你希望 `ConfigService#get` 只从自定义配置文件中读取值，而不读取
+`process.env` 中的变量，可以在 `ConfigModule.forRoot()` 中设置
+`skipProcessEnv: true`。
+
+## 配置命名空间（Configuration Namespaces）
+
+`ConfigModule` 支持加载多个[自定义配置文件](#自定义配置文件)，适用于复杂或模块化的配置结构。你可以将配置定义为嵌套对象，也可以使用 `registerAs()` 函数为配置创建命名空间，从而更清晰地组织和访问不同模块的配置项。
+
+以下是一个使用 `registerAs()` 创建命名空间配置的示例：
 
 ```ts filename='config/database.config.ts'
 import { registerAs } from '@nestjs/config'
@@ -304,9 +357,11 @@ export default registerAs('database', () => ({
 }))
 ```
 
-与自定义配置文件类似，在 `registerAs()` 工厂函数内部，`process.env` 对象会包含所有已解析的环境变量。这些变量包括 `.env` 文件中的内容以及外部定义的环境变量，具体的合并方式可参考[上文](/techniques/configuration#getting-started)。
+在 `registerAs()` 的工厂函数中，你可以使用 `process.env` 访问环境变量，包括 `.env` 文件中定义的值和运行时环境中注入的变量。关于环境变量的加载与合并规则，可参考[上文](#快速上手)。
 
-要加载命名空间配置，只需像加载自定义配置文件一样，将其传递给 `forRoot()` 方法选项对象的 `load` 属性：
+### 加载命名空间配置
+
+与普通自定义配置文件类似，你可以将命名空间配置文件通过 `load` 选项传入 `ConfigModule.forRoot()`：
 
 ```ts
 import databaseConfig from './config/database.config'
@@ -321,13 +376,17 @@ import databaseConfig from './config/database.config'
 export class AppModule {}
 ```
 
-此时，如果你想从 `database` 命名空间获取 `host` 配置项，可以使用点号语法，前缀为命名空间名称（即 `registerAs()` 的第一个参数）：
+此时，配置项会被挂载在以命名空间名称为前缀的路径下（即 `registerAs()` 中的第一个参数）。
+
+例如，若要获取 `database` 命名空间中的 `host` 值，可以使用点号语法：
 
 ```ts
 const dbHost = this.configService.get<string>('database.host')
 ```
 
-另一种常见做法是直接注入 `database` 命名空间，这样可以获得更强的类型提示：
+### 注入命名空间配置（推荐方式）
+
+相比于字符串键访问，更推荐的方式是直接注入命名空间配置对象，这不仅更清晰，还能获得完整的类型提示：
 
 ```ts
 import { ConfigType } from '@nestjs/config'
@@ -335,41 +394,51 @@ import { ConfigType } from '@nestjs/config'
 constructor(
   @Inject(databaseConfig.KEY)
   private dbConfig: ConfigType<typeof databaseConfig>,
-) {}
-```
-
-## 在模块中使用命名空间配置
-
-如果你希望将命名空间配置作为其他模块的配置对象，可以使用配置对象的 `.asProvider()` 方法。该方法会将命名空间配置转换为一个提供者，然后可以将其传递给目标模块的 `forRootAsync()`（或类似方法）。
-
-示例：
-
-```ts
-import databaseConfig from './config/database.config';
-
-@Module({
-  imports: [
-    TypeOrmModule.forRootAsync(databaseConfig.asProvider()),
-  ],
-})
-```
-
-要理解 `.asProvider()` 方法的作用，可以看下它的返回值结构：
-
-```ts
-// .asProvider() 方法的返回值
-{
-  imports: [ConfigModule.forFeature(databaseConfig)],
-  useFactory: (configuration: ConfigType<typeof databaseConfig>) => configuration,
-  inject: [databaseConfig.KEY]
+) {
+  const host = this.dbConfig.host
 }
 ```
 
-这种结构让你能够无缝地将命名空间配置集成到各个模块中，保持应用结构清晰、模块化，无需编写重复的样板代码。
+这种方式充分利用了 TypeScript 的类型推断能力，能有效避免键名拼写错误或类型不匹配的问题，尤其适用于结构复杂的配置对象。
+
+## 在模块中使用命名空间配置
+
+当你希望将某个命名空间下的配置对象作为参数，传递给其他模块（如数据库模块、第三方模块等）进行初始化时，可以使用命名空间配置对象的 `.asProvider()` 方法。
+
+该方法会将配置封装为一个标准的异步模块配置对象（即 `DynamicModule` 中 `forRootAsync()` 支持的格式），使你能以最小的样板代码完成模块集成。
+
+### 示例：将 `database` 命名空间配置传入 `TypeOrmModule`：
+
+```ts filename='app.module.ts'
+import databaseConfig from './config/database.config'
+
+@Module({
+  imports: [TypeOrmModule.forRootAsync(databaseConfig.asProvider())],
+})
+export class AppModule {}
+```
+
+如上所示，`asProvider()` 返回的对象可直接传入 `forRootAsync()` 方法。其本质是一个符合 Nest 异步模块初始化约定的配置结构：
+
+```ts
+{
+  imports: [ConfigModule.forFeature(databaseConfig)],
+  useFactory: (config: ConfigType<typeof databaseConfig>) => config,
+  inject: [databaseConfig.KEY],
+}
+```
+
+### 工作原理解析
+
+- `imports`：通过 `ConfigModule.forFeature()` 注册命名空间配置；
+- `useFactory`：定义工厂函数，将配置对象传递给目标模块；
+- `inject`：指定注入的配置提供者（即命名空间 key）。
+
+这种方式极大提升了模块配置的复用性和结构清晰度，尤其适合在多个模块中复用命名空间配置，避免冗余代码。
 
 ## 缓存环境变量
 
-访问 `process.env` 可能会带来性能瓶颈。为提升 `ConfigService#get` 方法读取环境变量时的性能，你可以在传递给 `ConfigModule.forRoot()` 的选项对象中设置 `cache` 属性。
+频繁访问 `process.env` 可能会成为性能瓶颈。为了提升 `ConfigService#get` 方法读取环境变量时的执行效率，可以在调用 `ConfigModule.forRoot()` 时开启缓存功能：
 
 ```ts
 ConfigModule.forRoot({
@@ -377,9 +446,13 @@ ConfigModule.forRoot({
 })
 ```
 
-## 局部注册（Partial registration）
+启用后，模块会在首次读取时将环境变量缓存起来，后续访问将直接从内存中读取，避免重复解析。
 
-到目前为止，我们通常会在根模块（如 `AppModule`）中通过 `forRoot()` 方法加载所有配置文件。但如果你的项目结构较为复杂，存在多个特性模块分别拥有各自的配置文件，其实无需在根模块一次性加载全部配置。`@nestjs/config` 包提供了**局部注册（partial registration）**功能，让你只需在特性模块中引用与其相关的配置文件。你可以通过特性模块的 `forFeature()` 静态方法实现局部注册，示例如下：
+## 配置的局部注册（Partial Registration）
+
+在常规用法中，我们通常会在应用的根模块（例如 `AppModule`）中通过 `forRoot()` 一次性加载所有配置文件。然而，当项目结构复杂、存在多个特性模块各自维护独立的配置时，集中式注册可能不够灵活。
+
+此时，可以借助 `@nestjs/config` 提供的局部注册能力，将配置文件按需加载到对应的模块中。通过 `ConfigModule.forFeature()` 方法，你可以在特性模块中仅注册与当前模块相关的配置：
 
 ```ts
 import databaseConfig from './config/database.config'
@@ -390,27 +463,31 @@ import databaseConfig from './config/database.config'
 export class DatabaseModule {}
 ```
 
-<CalloutInfo>
-  某些情况下，你可能需要通过 `onModuleInit()`
-  钩子访问通过局部注册加载的配置属性，而不是在构造函数中直接访问。原因在于 `forFeature()`
-  方法会在模块初始化阶段运行，而模块的初始化顺序并不确定。如果你在构造函数中访问其他模块通过局部注册加载的配置，可能会遇到依赖模块尚未初始化的问题。`onModuleInit()`
-  方法会在所有依赖模块初始化完成后才执行，因此这种方式更为安全。
+<CalloutInfo type="success">
+  在某些场景下，如果你需要访问局部注册的配置项，建议通过 `onModuleInit()`
+  生命周期钩子进行，而非在构造函数中直接访问。
+
+这是因为 `forFeature()` 的注册逻辑会在模块初始化过程中执行，但模块的初始化顺序并不总是可预测的。若在构造函数中尝试访问来自其他模块的配置，可能会因为目标模块尚未完成初始化而导致错误。相比之下，`onModuleInit()` 会在所有依赖模块完成初始化后才被调用，因此更为可靠。
+
 </CalloutInfo>
 
-## 配置校验（Schema validation）
+## 配置校验（Schema Validation）
 
-在应用程序启动时，如果缺少必要的环境变量，或者这些变量不符合特定的校验规则，通常应当抛出异常。`@nestjs/config` 包支持两种校验方式：
+在应用启动阶段，如果缺少必要的环境变量，或者某些变量不符合预期格式，通常应立即抛出异常，防止应用进入不确定状态。
+`@nestjs/config` 模块原生支持两种配置校验方式：
 
-- 内置 [Joi](https://github.com/sideway/joi) 校验器。你可以使用 Joi 定义对象的校验模式（Validation Schema），并对 JavaScript 对象进行校验。
-- 自定义 `validate()` 函数，接收环境变量作为输入参数。
+- 使用内置的 [Joi 校验器](https://github.com/sideway/joi)，定义校验模式（Validation Schema）并验证配置对象。
+- 提供自定义的 `validate()` 函数，直接对环境变量进行程序化校验。
 
-要使用 Joi，首先需要安装 Joi 包：
+### 使用 Joi 进行配置校验
+
+首先，安装 `joi`：
 
 ```bash
-$ npm install --save joi
+npm install joi
 ```
 
-安装完成后，可以像下面这样定义 Joi 校验模式，并通过 `forRoot()` 方法的 `validationSchema` 选项传递：
+安装完成后，可以通过 `validationSchema` 选项，将 Joi 定义的校验模式传入 `ConfigModule.forRoot()` 方法中。例如：
 
 ```ts filename='app.module.ts'
 import * as Joi from 'joi'
@@ -430,9 +507,21 @@ import * as Joi from 'joi'
 export class AppModule {}
 ```
 
-默认情况下，所有校验模式中的键都是可选的。上例中，我们为 `NODE_ENV` 和 `PORT` 设置了默认值，如果环境（`.env` 文件或进程环境变量）中未提供这些变量，则会使用默认值。你也可以使用 `required()` 校验方法，强制要求环境中必须定义某个变量。如果未定义，校验阶段会抛出异常。更多 Joi 校验方法可参考 [Joi 官方文档](https://joi.dev/api/?v=17.3.0#example)。
+在上例中：
 
-默认情况下，校验模式中未声明的环境变量（即未知环境变量）是允许的，不会触发校验异常。同时，所有校验错误都会被报告。你可以通过 `forRoot()` 选项对象的 `validationOptions` 属性传递一个选项对象，来修改这些行为。该对象可以包含 [Joi 校验选项](https://joi.dev/api/?v=17.3.0#anyvalidatevalue-options)支持的任何标准属性。例如，若要反转上述两个默认设置，可以这样写：
+- `NODE_ENV` 和 `PORT` 都定义了默认值。如果 `.env` 文件或进程环境变量中未提供对应项，则使用默认值。
+- 如果某个变量必须显式提供，可以使用 `.required()` 方法强制要求该变量存在，否则在启动时将抛出校验错误。
+
+更多 Joi 的校验方法和用法，请参阅 [Joi 官方文档](https://joi.dev/api/?v=17.3.0#example)。
+
+### 控制校验行为：`validationOptions`
+
+默认情况下：
+
+- 未在 schema 中声明的环境变量（未知变量）是允许的。
+- 所有校验错误会被汇总报告，而不是在遇到第一个错误时立即中止。
+
+你可以通过 `validationOptions` 选项修改上述行为。该选项接受 Joi 的标准配置项，例如：
 
 ```ts filename='app.module.ts'
 import * as Joi from 'joi'
@@ -447,8 +536,8 @@ import * as Joi from 'joi'
         PORT: Joi.number().port().default(3000),
       }),
       validationOptions: {
-        allowUnknown: false,
-        abortEarly: true,
+        allowUnknown: false, // 禁止未声明的变量
+        abortEarly: true, // 遇到第一个错误即中止
       },
     }),
   ],
@@ -456,27 +545,43 @@ import * as Joi from 'joi'
 export class AppModule {}
 ```
 
-`@nestjs/config` 包的默认设置如下：
+需要特别注意的是：
+一旦你传入了 `validationOptions`，未显式指定的属性将使用 Joi 的默认值，而不是 `@nestjs/config` 的默认设置。
 
-- `allowUnknown`：控制是否允许环境变量中出现未知键。默认值为 `true`。
-- `abortEarly`：为 `true` 时，遇到第一个校验错误即停止校验；为 `false` 时，返回所有错误。默认值为 `false`。
+例如：`@nestjs/config` 默认 `allowUnknown` 为 `true`，但 Joi 默认是 `false`。如果你未在 `validationOptions` 中手动设置 `allowUnknown`，则它会被自动重置为 Joi 的默认值 `false`，可能导致某些变量无法通过校验。
 
-注意：一旦你传递了 `validationOptions` 对象，未显式指定的设置将采用 Joi 的标准默认值（而不是 `@nestjs/config` 的默认值）。例如，如果你在自定义 `validationOptions` 对象中未指定 `allowUnknown`，则其值会变为 Joi 的默认值 `false`。因此，建议在自定义对象中**同时指定**这两个设置。
+因此，强烈建议你在自定义 `validationOptions` 时，显式声明所有关键选项，以避免意外行为。
 
-<CalloutInfo>
-  如果你希望禁用对预定义环境变量的校验，可以在 `forRoot()` 方法的选项对象中设置 `validatePredefined:
-  false`。预定义环境变量指的是在导入模块前就已设置的进程变量（`process.env` 变量）。例如，使用
-  `PORT=3000 node main.js` 启动应用时，`PORT` 就是预定义环境变量。
+### 可选配置：关闭预定义变量校验
+
+如果你希望跳过对“预定义环境变量”的校验（例如在启动命令中直接设置的变量），可以通过以下方式禁用：
+
+```ts
+ConfigModule.forRoot({
+  validatePredefined: false,
+})
+```
+
+所谓“预定义环境变量”，是指在导入 `ConfigModule` 之前就已经存在于 `process.env` 中的变量，例如通过命令行启动应用时设置的变量：
+
+```bash
+PORT=3000 node main.js
+```
+
+此时 `PORT` 就是一个预定义变量。
+
+## 自定义环境变量校验函数
+
+你可以通过实现一个同步的 `validate` 函数，来自定义环境变量的校验逻辑。该函数会接收一个包含所有环境变量（包括 `.env` 文件和进程环境变量）的原始对象，并返回一个经过校验和必要转换的配置对象。
+
+<CalloutInfo type="warning">
+  若校验函数抛出错误，应用将在启动阶段终止，无法正常运行。
 </CalloutInfo>
 
-## 自定义校验函数
+以下示例展示了如何结合 `class-validator` 与 `class-transformer` 两个库来实现这一功能。主要步骤如下：
 
-你可以自定义一个同步的 `validate` 函数。该函数会接收一个包含所有环境变量（包括 env 文件和进程环境变量）的对象，并返回经过校验和（如有需要）转换后的环境变量对象。如果该函数抛出错误，应用会在启动阶段中断，无法正常启动。
-
-下面的示例使用了 `class-transformer` 和 `class-validator` 两个包。首先，需要完成以下两步：
-
-- 定义一个带有校验约束的类
-- 编写一个利用 `plainToInstance` 和 `validateSync` 方法的校验函数
+1. 定义一个带有验证装饰器的类，用于描述配置项结构及其校验规则；
+2. 实现一个 `validate` 函数，利用 `plainToInstance` 将普通对象转换为类实例，并使用 `validateSync` 进行同步校验。
 
 ```ts filename='env.validation.ts'
 import { plainToInstance } from 'class-transformer'
@@ -501,20 +606,26 @@ class EnvironmentVariables {
 
 export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
-    enableImplicitConversion: true,
+    enableImplicitConversion: true, // 自动类型转换
   })
-  const errors = validateSync(validatedConfig, { skipMissingProperties: false })
+
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false, // 不允许缺少字段
+  })
 
   if (errors.length > 0) {
     throw new Error(errors.toString())
   }
+
   return validatedConfig
 }
 ```
 
-定义好校验函数后，可以将其作为 `ConfigModule` 的配置选项传入：
+完成校验函数的定义后，只需在注册 `ConfigModule` 时传入该函数即可：
 
 ```ts filename='app.module.ts'
+import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 import { validate } from './env.validation'
 
 @Module({
@@ -529,12 +640,14 @@ export class AppModule {}
 
 ## 自定义 getter 函数
 
-`ConfigService` 提供了通用的 `get()` 方法，可以通过键名获取对应的配置信息。除此之外，你还可以为其添加自定义的 `getter` 属性，让代码风格更加简洁、自然。
+`ConfigService` 提供了通用的 `get()` 方法，用于通过键名读取配置项。但在实际开发中，如果某些配置项频繁被访问，或者你希望以更语义化的方式表达配置含义，可以在服务中封装成自定义的 `getter` 属性，使代码更清晰、自然。
+
+下面是一个示例，展示如何封装布尔型配置项 `AUTH_ENABLED`：
 
 ```ts
 @Injectable()
 export class ApiConfigService {
-  constructor(private configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
 
   get isAuthEnabled(): boolean {
     return this.configService.get('AUTH_ENABLED') === 'true'
@@ -542,28 +655,42 @@ export class ApiConfigService {
 }
 ```
 
-现在可以像下面这样使用自定义 getter：
+这样，你可以在其他服务中以更简洁的方式使用配置值：
 
 ```ts filename='app.service.ts'
 @Injectable()
 export class AppService {
-  constructor(apiConfigService: ApiConfigService) {
-    if (apiConfigService.isAuthEnabled) {
-      // 已启用身份验证
+  constructor(private readonly apiConfigService: ApiConfigService) {
+    if (this.apiConfigService.isAuthEnabled) {
+      // 已启用身份验证逻辑
     }
   }
 }
 ```
 
-## 环境变量加载钩子（Environment variables loaded hook）
+<CalloutInfo type="success">
+  使用 `getter`
+  属性封装常用或具有业务语义的配置项，有助于集中管理配置逻辑，提升代码可维护性与表达清晰度。
+</CalloutInfo>
 
-当某个模块的配置依赖于环境变量，并且这些变量是从 `.env` 文件加载时，你可以使用 `ConfigModule.envVariablesLoaded` 钩子。这样可以确保在操作 `process.env` 之前，`.env` 文件已经被加载。例如：
+## 环境变量加载钩子（Environment Variables Loaded Hook）
+
+在某些场景下，模块的初始化过程可能依赖环境变量，而这些变量又来自 `.env` 文件。为了确保在访问 `process.env` 之前，`.env` 文件已成功加载，`ConfigModule` 提供了一个静态钩子：`ConfigModule.envVariablesLoaded`。
+
+你可以在异步逻辑中等待该钩子完成，确保配置环境已就绪：
 
 ```ts
 export async function getStorageModule() {
   await ConfigModule.envVariablesLoaded
+
   return process.env.STORAGE === 'S3' ? S3StorageModule : DefaultStorageModule
 }
 ```
 
-通过这种方式，可以保证在 `ConfigModule.envVariablesLoaded` 之后再访问环境变量，避免因加载时机问题导致的异常。
+通过使用 `envVariablesLoaded`，可以避免在 `.env` 尚未加载时就访问 `process.env`，从而避免潜在的初始化错误或配置缺失问题。
+
+<CalloutInfo type="success">
+  仅在 `ConfigModule`
+  尚未完全初始化、但你又需要读取环境变量的模块加载逻辑中使用该钩子。若已通过
+  `ConfigService` 注入配置，一般无需使用此钩子。
+</CalloutInfo>
