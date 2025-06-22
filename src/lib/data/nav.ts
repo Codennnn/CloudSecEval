@@ -213,7 +213,7 @@ export const navMainData: NavMenuItem[] = [
       { title: '混合应用', titleEn: 'Hybrid application', url: '/faq/hybrid-application' },
       { title: 'HTTPS 和多服务器', titleEn: 'HTTPS & multiple servers', url: '/faq/multiple-servers' },
       { title: '请求生命周期', titleEn: 'Request lifecycle', url: '/faq/request-lifecycle' },
-      { title: '常见错误', titleEn: 'Common errors', url: '/faq/common-errors' },
+      { title: '常见错误排查', titleEn: 'Common errors', url: '/faq/common-errors' },
       { title: '示例', titleEn: 'Examples', url: 'https://github.com/nestjs/nest/tree/master/sample' },
     ],
   },

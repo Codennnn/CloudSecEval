@@ -182,7 +182,7 @@
 - [x] `/faq/hybrid-application` - 混合应用
 - [x] `/faq/multiple-servers` - HTTPS 和多服务器
 - [x] `/faq/request-lifecycle` - 请求生命周期
-- [ ] `/faq/common-errors` - 常见错误
+- [x] `/faq/common-errors` - 常见错误排查
 
 ## 15. 开发者工具
 
