@@ -45,10 +45,10 @@
 
 ## 4. 功能扩展 (Feature Extensions)
 
-- [ ] `/techniques/configuration` - 配置
-- [ ] `/techniques/validation` - 验证
-- [ ] `/techniques/caching` - 缓存
-- [ ] `/techniques/serialization` - 序列化
+- [x] `/techniques/configuration` - 配置
+- [x] `/techniques/validation` - 数据验证
+- [x] `/techniques/caching` - 缓存机制
+- [x] `/techniques/serialization` - 序列化
 - [ ] `/techniques/versioning` - 版本控制
 - [ ] `/techniques/task-scheduling` - 任务调度
 - [ ] `/techniques/queues` - 队列

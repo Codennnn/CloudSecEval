@@ -47,8 +47,8 @@ export const navMainData: NavMenuItem[] = [
     titleEn: 'Feature Extensions',
     items: [
       { title: '配置', titleEn: 'Configuration', url: '/techniques/configuration' },
-      { title: '验证', titleEn: 'Validation', url: '/techniques/validation' },
-      { title: '缓存', titleEn: 'Caching', url: '/techniques/caching' },
+      { title: '数据验证', titleEn: 'Validation', url: '/techniques/validation' },
+      { title: '缓存机制', titleEn: 'Caching', url: '/techniques/caching' },
       { title: '序列化', titleEn: 'Serialization', url: '/techniques/serialization' },
       { title: '版本控制', titleEn: 'Versioning', url: '/techniques/versioning' },
       { title: '任务调度', titleEn: 'Task scheduling', url: '/techniques/task-scheduling' },
