@@ -1,16 +1,18 @@
 # 任务调度
 
-任务调度（Task scheduling）让你可以按照固定的日期、时间、周期性间隔，或在指定间隔后执行任意代码（方法或函数）。在 Linux 世界中，这类功能通常由操作系统层面的 [cron](https://en.wikipedia.org/wiki/Cron) 等软件包实现。对于 Node.js 应用，有多个软件包可以模拟类似 cron 的功能。Nest 提供了 `@nestjs/schedule` 包，该包集成了流行的 Node.js [cron](https://github.com/kelektiv/node-cron) 包。本章将介绍如何使用该包实现任务调度。
+任务调度（Task Scheduling）允许你以特定的时间点、周期性间隔，或延迟一段时间后执行任意代码（如方法或函数）。在 Linux 系统中，这类功能通常由操作系统层级的工具（如 [cron](https://en.wikipedia.org/wiki/Cron)）来实现。而在 Node.js 中，也有许多类似 cron 的调度库可供使用。
 
-## 安装
+Nest 提供了官方的任务调度模块 `@nestjs/schedule`，它基于流行的 [`node-cron`](https://github.com/kelektiv/node-cron) 库构建，封装了更加声明式、模块化的用法。本章将介绍如何使用该模块为 Nest 应用添加任务调度能力。
 
-要使用任务调度功能，首先需要安装相关依赖。
+## 安装依赖
+
+要启用任务调度功能，首先需要安装对应的依赖包：
 
 ```bash
-$ npm install --save @nestjs/schedule
+npm install @nestjs/schedule
 ```
 
-接下来，在根模块（AppModule）中导入 `ScheduleModule`，并通过其静态方法 `forRoot()` 进行初始化：
+安装完成后，在应用的根模块（`AppModule`）中导入 `ScheduleModule`，并通过其静态方法 `forRoot()` 完成初始化：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -22,16 +24,24 @@ import { ScheduleModule } from '@nestjs/schedule'
 export class AppModule {}
 ```
 
-调用 `.forRoot()` 方法会初始化调度器，并注册应用中所有声明式的[定时任务（cron jobs）](/techniques/task-scheduling#declarative-cron-jobs)、[超时任务（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和[间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。这些任务会在 `onApplicationBootstrap` 生命周期钩子（lifecycle hook）触发时统一注册，确保所有模块都已加载并声明了各自的调度任务。
+调用 `ScheduleModule.forRoot()` 会初始化全局调度器，并自动注册应用中所有基于装饰器声明的定时任务，包括：
+
+- [Cron 定时任务](/techniques/task-scheduling#declarative-cron-jobs)
+- [延时任务（Timeouts）](/techniques/task-scheduling#declarative-timeouts)
+- [循环任务（Intervals）](/techniques/task-scheduling#declarative-intervals)
+
+这些任务会在 `onApplicationBootstrap` 生命周期钩子触发时统一注册，确保所有模块和服务都已加载完毕，从而避免初始化时遗漏任何任务。
 
 ## 声明式定时任务
 
-定时任务用于自动调度执行任意函数（方法调用）。你可以通过定时任务实现以下功能：
+定时任务允许你自动化执行特定的方法，常用于实现如下场景：
 
-- 在指定的日期或时间执行一次任务。
-- 按设定周期重复执行任务，例如：每小时、每周或每 5 分钟执行一次。
+- 在某个指定的时间点运行一次任务；
+- 按设定周期重复执行，例如每小时、每周，或每 5 分钟执行一次。
 
-只需在方法定义前添加 `@Cron()` 装饰器（Decorator），即可声明一个定时任务。被装饰的方法中包含需要自动执行的代码。示例：
+在 Nest 中，只需为方法添加 `@Cron()` 装饰器，即可将其声明为一个定时任务。该方法中的代码会在设定的时间点自动执行。
+
+### 示例：每分钟的第 45 秒执行任务
 
 ```ts
 import { Injectable, Logger } from '@nestjs/common'
@@ -43,43 +53,41 @@ export class TasksService {
 
   @Cron('45 * * * * *')
   handleCron() {
-    this.logger.debug('当当前秒数为 45 时调用')
+    this.logger.debug('当当前秒数为 45 时执行任务')
   }
 }
 ```
 
-在上述示例中，`handleCron()` 方法会在每分钟的第 45 秒自动执行一次。
+上述代码中，`handleCron()` 方法将在每分钟的第 45 秒被自动调用一次。
 
-`@Cron()` 装饰器支持标准的 [cron 表达式](http://crontab.org/)，包括：
+### Cron 表达式简介
 
-- 星号（如：`*`）
-- 范围（如：`1-3,5`）
-- 步进（如：`*/2`）
-
-以 `45 * * * * *` 为例，下面是 cron 表达式每个位置的含义：
+`@Cron()` 装饰器使用标准的 [cron 表达式](http://crontab.org/)，用于描述任务的执行周期。表达式共包含 6 个字段，分别代表秒、分、时、日、月、周：
 
 ```
-* * * * * *
-| | | | | |
-| | | | | +-- 星期几 (0 - 7)（星期日为 0 或 7）
-| | | | +---- 月份 (1 - 12)
-| | | +------ 每月的第几天 (1 - 31)
-| | +-------- 小时 (0 - 23)
-| +---------- 分钟 (0 - 59)
-+------------ 秒（可选）(0 - 59)
+*  *  *  *  *  *
+|  |  |  |  |  |
+|  |  |  |  |  +---- 星期几 (0 - 7，星期天为 0 或 7)
+|  |  |  |  +------- 月份 (1 - 12)
+|  |  |  +---------- 月内日期 (1 - 31)
+|  |  +------------- 小时 (0 - 23)
+|  +---------------- 分钟 (0 - 59)
++------------------- 秒 (0 - 59)
 ```
 
 以下是一些常用 cron 表达式示例：
 
-| Cron 表达式         | 说明                                          |
-| ------------------- | --------------------------------------------- |
-| `* * * * * *`       | 每秒执行一次                                  |
-| `45 * * * * *`      | 每分钟的第 45 秒执行                          |
-| `0 10 * * * *`      | 每小时的第 10 分钟开始时执行                  |
-| `0 */30 9-17 * * *` | 每天 9:00 至 17:00 之间，每隔 30 分钟执行一次 |
-| `0 30 11 * * 1-5`   | 每周一至周五的 11:30 执行                     |
+| 表达式              | 说明                                        |
+| ------------------- | ------------------------------------------- |
+| `* * * * * *`       | 每秒执行一次                                |
+| `45 * * * * *`      | 每分钟的第 45 秒执行一次                    |
+| `0 10 * * * *`      | 每小时的第 10 分钟执行一次                  |
+| `0 */30 9-17 * * *` | 每天 9:00 至 17:00 之间，每 30 分钟执行一次 |
+| `0 30 11 * * 1-5`   | 每周一至周五的 11:30 执行一次               |
 
-`@nestjs/schedule` 包内置了常用 cron 表达式（Cron Expression）枚举，方便直接引用。例如：
+### 使用内置 Cron 表达式枚举
+
+`@nestjs/schedule` 提供了内置的 cron 表达式枚举 `CronExpression`，可以提高代码可读性：
 
 ```ts
 import { Injectable, Logger } from '@nestjs/common'
@@ -91,33 +99,45 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_30_SECONDS)
   handleCron() {
-    this.logger.debug('每 30 秒调用一次')
+    this.logger.debug('每 30 秒执行一次')
   }
 }
 ```
 
-如上，`handleCron()` 方法会每隔 30 秒自动执行一次。若发生异常，异常信息会被记录到控制台，因为所有使用 `@Cron()` 装饰器的方法都会被自动包裹在 `try-catch` 语句块中。
+所有使用 `@Cron()` 装饰器的方法会自动包裹在 `try-catch` 块中，如果抛出异常，会记录在日志中，避免程序崩溃。
 
-此外，你还可以为 `@Cron()` 装饰器传入一个 JavaScript 的 `Date` 对象，让任务在指定日期和时间仅执行一次。
+## 计划一次性任务
+
+除了使用 cron 表达式，你也可以传入一个 JavaScript 的 `Date` 对象来安排只执行一次的任务：
+
+```ts
+@Cron(new Date(Date.now() + 10 * 1000))
+runAfterTenSeconds() {
+  this.logger.debug('启动后 10 秒执行')
+}
+```
 
 <CalloutInfo>
-  你可以利用 JavaScript 的日期运算来实现相对当前时间的定时任务。例如，`@Cron(new Date(Date.now() +
-  10 * 1000))` 可让任务在应用启动后 10 秒执行一次。
+  你可以使用 JS 日期运算动态创建相对于当前时间的调度任务。
 </CalloutInfo>
 
-`@Cron()` 装饰器还支持第二个参数，用于传递额外选项：
+### 配置选项
 
-| 选项                | 说明                                                                                                                                                       |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`              | 用于在声明后访问和控制定时任务（cron job）。                                                                                                               |
-| `timeZone`          | 指定任务执行时所用的时区。会根据你的时区调整实际执行时间。若时区无效，将抛出错误。可在 [Moment Timezone](http://momentjs.com/timezone/) 查询所有可用时区。 |
-| `utcOffset`         | 通过设置偏移量（offset）指定时区，而不是直接使用 `timeZone` 参数。                                                                                         |
-| `waitForCompletion` | 若设为 `true`，则当前 onTick 回调未执行完前，不会启动新的定时任务实例。任务运行期间发生的新调度会被跳过。                                                  |
-| `disabled`          | 指定该任务是否会被执行。                                                                                                                                   |
+`@Cron()` 装饰器还支持传入第二个参数，用于配置任务行为：
+
+| 选项名              | 说明                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `name`              | 任务名称，用于在运行时引用或控制该定时任务。                                                                              |
+| `timeZone`          | 指定任务运行时使用的时区（例如 'Europe/Paris'）。支持所有 [Moment Timezone](http://momentjs.com/timezone/) 中的时区标识。 |
+| `utcOffset`         | 通过 UTC 偏移量（数字）设置时区，例如 +8 表示东八区。若设置了 `timeZone`，则此项将被忽略。                                |
+| `waitForCompletion` | 如果为 `true`，当上一次任务尚未执行完毕时，新的调度将被跳过，避免重复执行。                                               |
+| `disabled`          | 如果为 `true`，则该任务不会被注册执行。                                                                                   |
+
+### 示例：指定任务名称与时区
 
 ```ts
 import { Injectable } from '@nestjs/common'
-import { Cron, CronExpression } from '@nestjs/schedule'
+import { Cron } from '@nestjs/schedule'
 
 @Injectable()
 export class NotificationService {
@@ -125,15 +145,17 @@ export class NotificationService {
     name: 'notifications',
     timeZone: 'Europe/Paris',
   })
-  triggerNotifications() {}
+  triggerNotifications() {
+    // 执行通知逻辑
+  }
 }
 ```
 
-你可以在声明后访问和控制定时任务，也可以通过[动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 动态创建定时任务（即在运行时定义 cron 表达式）。要通过 API 访问声明式定时任务，需在装饰器第二个参数 options 对象中通过 `name` 属性为任务指定名称。
+通过给任务命名（如上例中的 `'notifications'`），你可以在后续通过[动态调度 API](#动态调度模块-api) 对该任务进行访问和控制。
 
-## 声明式周期执行任务
+## 声明式周期任务
 
-如果你希望让某个方法以指定的（周期性）间隔自动执行，只需在方法定义前添加 `@Interval()` 装饰器。如下所示，将间隔时间（以毫秒为单位的数字）作为参数传递给装饰器：
+如果你希望某个方法以固定的时间间隔自动执行，只需在方法前添加 `@Interval()` 装饰器，并传入以毫秒为单位的间隔时间。例如，以下代码每 10 秒执行一次方法：
 
 ```ts
 @Interval(10000)
@@ -143,23 +165,24 @@ handleInterval() {
 ```
 
 <CalloutInfo>
-  该机制底层依赖 JavaScript 的 `setInterval()` 函数。同时，你也可以使用 cron 任务来调度周期性任务。
+  该机制底层依赖 JavaScript 的 `setInterval()` 函数。你也可以使用 cron
+  规则来调度周期性任务。
 </CalloutInfo>
 
-如果你希望通过[动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在类的外部控制声明式定时任务，可以为定时任务指定名称，示例如下：
+如果你希望从类的外部通过[动态调度 API](#动态调度模块-api) 控制声明式任务（如启动、停止等），可以为任务指定名称，例如：
 
 ```ts
 @Interval('notifications', 2500)
 handleInterval() {}
 ```
 
-当方法执行过程中发生异常时，异常信息会被记录到控制台。因为所有使用 `@Interval()` 装饰器的方法，都会被自动包裹在 `try-catch` 代码块中。
+当被装饰的方法在执行过程中抛出异常时，Nest 会自动捕获并将异常信息输出到控制台。所有使用 `@Interval()` 装饰器的方法，都会被自动包装在 `try-catch` 块中。
 
-[动态 API](/techniques/task-scheduling#dynamic-intervals) 还支持创建动态定时任务（dynamic intervals），即可以在运行时定义定时任务的属性，并且能够列出和删除这些任务。
+此外，动态调度 API 还支持创建“动态周期任务”（dynamic intervals）。你可以在运行时定义周期任务，并可随时查看或删除它们。
 
-## 声明式超时执行任务
+## 声明式延时任务
 
-要声明某个方法在指定超时时间后（仅一次）运行，只需在方法定义前添加 `@Timeout()` 装饰器。如下所示，将相对于应用启动时间的延迟（以毫秒为单位）作为参数传递给装饰器：
+若希望某个方法在延迟一段时间后执行一次，可以使用 `@Timeout()` 装饰器。该装饰器接收一个以毫秒为单位的延迟时间，表示从应用启动起，等待多久后执行方法。例如：
 
 ```ts
 @Timeout(5000)
@@ -169,24 +192,32 @@ handleTimeout() {
 ```
 
 <CalloutInfo>
-  <div>该机制底层使用了 JavaScript 的 `setTimeout()` 函数。</div>
+  该机制底层基于 JavaScript 的 `setTimeout()` 函数实现。
 </CalloutInfo>
 
-如果发生异常，异常信息会被记录到控制台，因为所有使用 `@Timeout()` 装饰器的方法都会被自动包裹在 `try-catch` 代码块中。
+与周期任务一样，`@Timeout()` 装饰器也会将方法自动包裹在 `try-catch` 中，确保异常被捕获并输出到控制台。
 
-如果你希望通过[动态 API](/techniques/task-scheduling#dynamic-schedule-module-api) 在声明类外部控制声明式超时任务，可以通过如下方式为超时任务指定名称：
+如果你希望通过[动态调度 API](#动态调度模块-api) 在类外控制该延时任务，同样可以为任务命名：
 
 ```ts
 @Timeout('notifications', 2500)
 handleTimeout() {}
 ```
 
-[动态 API](/techniques/task-scheduling#dynamic-timeouts)还支持创建动态超时任务（dynamic
-timeouts），即在运行时定义超时任务的属性，并且可以列出和删除这些任务。
+此外，动态调度 API 同样支持创建“动态延时任务”（dynamic timeouts），允许你在运行时定义、管理、查看和删除这些任务。
 
 ## 动态调度模块 API
 
-`@nestjs/schedule` 模块提供了一个灵活的 API，支持管理声明式的[定时任务](/techniques/task-scheduling#declarative-cron-jobs)、[超时（timeouts）](/techniques/task-scheduling#declarative-timeouts) 和[间隔任务（intervals）](/techniques/task-scheduling#declarative-intervals)。此外，该 API 还允许你在运行时动态创建和管理定时任务、超时和间隔任务。
+`@nestjs/schedule` 模块不仅支持声明式的[定时任务](#声明式定时任务)、[延时任务](#声明式延时任务) 和[周期任务](#声明式周期任务)，还提供了一套灵活的 API，用于在运行时动态创建与管理这些任务。
+
+通过该动态 API，你可以：
+
+- 启动或停止指定名称的任务；
+- 动态添加新的定时任务、延时任务或周期任务；
+- 查询当前正在运行的任务；
+- 删除不再需要的任务。
+
+这一机制为任务调度带来了更高的灵活性，适用于需要根据配置、用户行为或外部事件动态调整任务的场景。
 
 ## 动态定时任务
 
@@ -230,7 +261,8 @@ console.log(job.lastDate())
 - `nextDates(count: number)` - 返回一个数组（长度为 `count`），包含该任务接下来将被触发的日期（`DateTime` 类型）。`count` 默认为 0，此时返回空数组。
 
 <CalloutInfo>
-  你可以对 `DateTime` 对象调用 `toJSDate()` 方法，将其转换为 JavaScript 的 `Date` 类型。
+  你可以对 `DateTime` 对象调用 `toJSDate()` 方法，将其转换为 JavaScript 的
+  `Date` 类型。
 </CalloutInfo>
 
 **动态创建**新定时任务时，可以使用 `SchedulerRegistry#addCronJob` 方法，示例如下：
@@ -253,7 +285,8 @@ addCronJob(name: string, seconds: string) {
 在上述代码中，我们使用 `cron` 包中的 `CronJob` 类来创建定时任务。`CronJob` 构造函数的第一个参数是 cron 表达式（与 `@Cron()` [装饰器](/techniques/task-scheduling#declarative-cron-jobs)用法一致），第二个参数是定时器触发时要执行的回调函数。`SchedulerRegistry#addCronJob` 方法接收两个参数：任务名称和 `CronJob` 实例。
 
 <CalloutInfo type="warning">
-  在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需要从 `cron` 包中导入。
+  在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需要从 `cron`
+  包中导入。
 </CalloutInfo>
 
 **删除**指定名称的定时任务，可以使用 `SchedulerRegistry#deleteCronJob` 方法，示例如下：
@@ -284,22 +317,26 @@ getCrons() {
 
 `getCronJobs()` 方法会返回一个 `map`。在上述代码中，我们遍历该 map，并尝试访问每个 `CronJob` 的 `nextDate()` 方法。如果任务已经执行完毕且没有未来的触发时间，`CronJob` 的 API 会抛出异常。
 
-## 动态定时任务间隔
+## 管理动态定时任务
 
-你可以通过 `SchedulerRegistry#getInterval` 方法获取指定定时任务（interval）的引用。首先，使用标准的构造函数依赖注入方式注入 `SchedulerRegistry`：
+在 NestJS 中，你可以借助 `SchedulerRegistry` 来动态管理定时任务。例如，获取、添加、删除或列出任务。
+
+### 获取并清除定时任务
+
+要获取某个已注册的定时任务，可以通过依赖注入引入 `SchedulerRegistry`，并使用其 `getInterval` 方法：
 
 ```ts
 constructor(private schedulerRegistry: SchedulerRegistry) {}
+
+const interval = this.schedulerRegistry.getInterval('notifications');
+clearInterval(interval);
 ```
 
-然后可以这样获取并清除定时任务：
+上述代码中，我们通过名称 `'notifications'` 获取对应的定时任务引用，并使用原生的 `clearInterval` 将其清除。
 
-```ts
-const interval = this.schedulerRegistry.getInterval('notifications')
-clearInterval(interval)
-```
+### 动态创建定时任务
 
-如果需要**动态创建**新的定时任务间隔，可以使用 `SchedulerRegistry#addInterval` 方法。例如：
+你还可以动态添加新的定时任务。使用 `addInterval` 方法，将任务注册到调度器中：
 
 ```ts
 addInterval(name: string, milliseconds: number) {
@@ -312,10 +349,16 @@ addInterval(name: string, milliseconds: number) {
 }
 ```
 
-上述代码中，先创建了一个标准的 JavaScript 定时任务（interval），再通过 `SchedulerRegistry#addInterval` 方法将其注册到调度器中。
-该方法接收两个参数：定时任务的名称和定时任务对象本身。
+在这个例子中，我们通过 `setInterval` 创建了一个原生 JavaScript 定时器，然后将其通过 `addInterval` 方法注册到调度器中。
 
-如需**删除**指定名称的定时任务，可以使用 `SchedulerRegistry#deleteInterval` 方法。例如：
+该方法接收两个参数：
+
+- `name`：定时任务的唯一标识符（字符串）
+- `interval`：由 `setInterval` 返回的定时器对象
+
+### 删除定时任务
+
+要移除某个已注册的定时任务，只需调用 `deleteInterval` 方法并传入任务名称：
 
 ```ts
 deleteInterval(name: string) {
@@ -324,36 +367,44 @@ deleteInterval(name: string) {
 }
 ```
 
-要**列出**所有已注册的定时任务，可以使用 `SchedulerRegistry#getIntervals` 方法。例如：
+### 获取所有定时任务
+
+若想查看当前注册的所有定时任务，可以使用 `getIntervals` 方法，它会返回一个包含所有任务名称的字符串数组：
 
 ```ts
 getIntervals() {
   const intervals = this.schedulerRegistry.getIntervals();
-  intervals.forEach(key => this.logger.log(`Interval: ${key}`));
+  intervals.forEach(name => this.logger.log(`Interval: ${name}`));
 }
 ```
 
-## 动态超时任务
+## 管理动态延时任务
 
-你可以通过 `SchedulerRegistry#getTimeout` 方法获取指定超时任务（timeout）的引用。首先，使用标准的构造函数依赖注入方式注入 `SchedulerRegistry`：
+在 NestJS 中，你可以通过 `SchedulerRegistry` 对延时任务（timeout）进行动态管理，包括创建、查询、删除等操作。
+
+### 获取并清除延时任务
+
+要操作已注册的延时任务，首先需要通过依赖注入方式获取 `SchedulerRegistry` 实例：
 
 ```ts
 constructor(private readonly schedulerRegistry: SchedulerRegistry) {}
 ```
 
-然后可以这样获取并清除超时任务：
+然后即可通过任务名称获取对应的超时句柄，并使用 `clearTimeout` 将其清除：
 
 ```ts
 const timeout = this.schedulerRegistry.getTimeout('notifications')
 clearTimeout(timeout)
 ```
 
-如果需要**动态创建**新的超时任务，可以使用 `SchedulerRegistry#addTimeout` 方法。例如：
+### 动态创建延时任务
+
+如果需要在运行时创建新的延时任务，可使用 `addTimeout` 方法手动注册。例如：
 
 ```ts
 addTimeout(name: string, milliseconds: number) {
   const callback = () => {
-    this.logger.warn(`Timeout ${name} executing after (${milliseconds})!`);
+    this.logger.warn(`延时任务 ${name} 在 ${milliseconds}ms 后执行。`);
   };
 
   const timeout = setTimeout(callback, milliseconds);
@@ -361,27 +412,33 @@ addTimeout(name: string, milliseconds: number) {
 }
 ```
 
-上述代码中，先创建了一个标准的 JavaScript 超时任务（timeout），再通过 `SchedulerRegistry#addTimeout` 方法注册到调度器中。
-该方法同样接收两个参数：超时任务的名称和超时对象本身。
+上述示例中，我们先使用原生的 `setTimeout` 创建了一个延时任务，然后通过 `addTimeout` 方法将其注册到调度器中。该方法接收两个参数：
 
-如需**删除**指定名称的超时任务，可以使用 `SchedulerRegistry#deleteTimeout` 方法。例如：
+- `name`：任务名称（字符串，需唯一）；
+- `timeout`：由 `setTimeout` 返回的超时句柄。
+
+### 删除延时任务
+
+要移除指定名称的延时任务，可调用 `deleteTimeout` 方法。例如：
 
 ```ts
 deleteTimeout(name: string) {
   this.schedulerRegistry.deleteTimeout(name);
-  this.logger.warn(`Timeout ${name} deleted!`);
+  this.logger.warn(`延时任务 ${name} 已被删除。`);
 }
 ```
 
-要**列出**所有已注册的超时任务，可以使用 `SchedulerRegistry#getTimeouts` 方法。例如：
+### 获取所有延时任务
+
+你还可以通过 `getTimeouts` 获取所有已注册的延时任务名称：
 
 ```ts
 getTimeouts() {
   const timeouts = this.schedulerRegistry.getTimeouts();
-  timeouts.forEach(key => this.logger.log(`Timeout: ${key}`));
+  timeouts.forEach(name => this.logger.log(`Timeout: ${name}`));
 }
 ```
 
-## 示例
+## 示例项目
 
-完整的可用示例请参考[官方仓库示例](https://github.com/nestjs/nest/tree/master/sample/27-scheduling)。
+完整示例代码可参考官方仓库中的 [27-scheduling 示例项目](https://github.com/nestjs/nest/tree/master/sample/27-scheduling)。

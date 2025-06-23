@@ -49,10 +49,10 @@
 - [x] `/techniques/validation` - 数据验证
 - [x] `/techniques/caching` - 缓存机制
 - [x] `/techniques/serialization` - 序列化
-- [ ] `/techniques/versioning` - 版本控制
-- [ ] `/techniques/task-scheduling` - 任务调度
-- [ ] `/techniques/queues` - 队列
-- [ ] `/techniques/logger` - 日志
+- [x] `/techniques/versioning` - 版本控制
+- [x] `/techniques/task-scheduling` - 任务调度
+- [x] `/techniques/queues` - 队列
+- [x] `/techniques/logger` - 日志
 - [x] `/techniques/cookies` - Cookie
 - [x] `/techniques/events` - 事件
 - [x] `/techniques/compression` - 压缩
