@@ -5,7 +5,8 @@
 <CalloutInfo>
   `nest-commander` 是一个由社区维护的第三方包，并非由 NestJS
   核心团队提供官方支持。如需报告问题或提出功能请求，请访问其 [GitHub
-  仓库](https://github.com/jmcdo29/nest-commander/issues/new/choose) 提交 Issue。
+  仓库](https://github.com/jmcdo29/nest-commander/issues/new/choose) 提交
+  Issue。
 </CalloutInfo>
 
 ## 安装
@@ -13,7 +14,7 @@
 使用以下命令安装所需的包：
 
 ```bash
-$ npm i nest-commander
+npm install nest-commander
 ```
 
 ## 定义命令
@@ -89,7 +90,10 @@ export class BasicCommand extends CommandRunner {
     super()
   }
 
-  async run(passedParam: string[], options?: BasicCommandOptions): Promise<void> {
+  async run(
+    passedParam: string[],
+    options?: BasicCommandOptions
+  ): Promise<void> {
     if (options?.boolean !== undefined && options?.boolean !== null) {
       this.runWithBoolean(passedParam, options.boolean)
     } else if (options?.number) {

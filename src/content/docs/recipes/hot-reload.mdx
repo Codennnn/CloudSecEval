@@ -3,8 +3,8 @@
 TypeScript 编译是影响应用启动性能的主要瓶颈。幸运的是，借助 webpack 的热模块替换（Hot-Module Replacement，HMR）功能，你无需在每次代码变更后都重新编译整个项目。这可以显著缩短应用的启动时间，从而大幅提升开发效率和体验。
 
 <CalloutInfo type="warning">
-  请注意，`webpack` 不会自动将资源文件（如 `.graphql` 文件）复制到 `dist` 目录，它也不兼容静态 glob
-  路径（例如 `TypeOrmModule` 中的 `entities` 属性）。
+  请注意，`webpack` 不会自动将资源文件（如 `.graphql` 文件）复制到 `dist`
+  目录，它也不兼容静态 glob 路径（例如 `TypeOrmModule` 中的 `entities` 属性）。
 </CalloutInfo>
 
 ## 使用 CLI
@@ -16,12 +16,12 @@ TypeScript 编译是影响应用启动性能的主要瓶颈。幸运的是，借
 首先，请安装以下依赖包：
 
 ```bash
-$ npm i --save-dev webpack-node-externals run-script-webpack-plugin webpack
+npm install -D webpack-node-externals run-script-webpack-plugin webpack
 ```
 
 <CalloutInfo>
-  如果你使用的是 **Yarn Berry**（而非经典版 Yarn），请安装 `webpack-pnp-externals` 包来代替
-  `webpack-node-externals`。
+  如果你使用的是 **Yarn Berry**（而非经典版 Yarn），请安装
+  `webpack-pnp-externals` 包来代替 `webpack-node-externals`。
 </CalloutInfo>
 
 ### 配置
@@ -47,7 +47,10 @@ module.exports = function (options, webpack) {
       new webpack.WatchIgnorePlugin({
         paths: [/\.js$/, /\.d\.ts$/],
       }),
-      new RunScriptWebpackPlugin({ name: options.output.filename, autoRestart: false }),
+      new RunScriptWebpackPlugin({
+        name: options.output.filename,
+        autoRestart: false,
+      }),
     ],
   }
 }
@@ -100,12 +103,12 @@ $ npm run start:dev
 首先，安装以下依赖包：
 
 ```bash
-$ npm i --save-dev webpack webpack-cli webpack-node-externals ts-loader run-script-webpack-plugin
+npm install -D webpack webpack-cli webpack-node-externals ts-loader run-script-webpack-plugin
 ```
 
 <CalloutInfo>
-  如果你使用的是 **Yarn Berry**（而不是经典版 Yarn），请安装 `webpack-pnp-externals` 包来代替
-  `webpack-node-externals`。
+  如果你使用的是 **Yarn Berry**（而不是经典版 Yarn），请安装
+  `webpack-pnp-externals` 包来代替 `webpack-node-externals`。
 </CalloutInfo>
 
 ### 配置

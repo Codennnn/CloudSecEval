@@ -1,10 +1,12 @@
-# 独立应用
+# 独立应用模式
 
-Nest 提供了多种创建和运行应用的方式。你可以创建一个 Web 应用、一个微服务，或者是一个不监听任何网络端口的纯 Nest **独立应用 (Standalone application)**。Nest 独立应用本质上是对 Nest IoC 容器的一层封装，该容器管理着所有实例化的类。通过这个独立应用对象，你可以直接获取任何已导入模块中存在的实例。这意味着，你可以在任何场景下利用 Nest 的能力，例如在编写 CRON 定时任务脚本时，甚至可以基于它来构建你自己的命令行工具。
+除了常规的 Web 应用和微服务架构，Nest 还支持创建**独立应用（Standalone Application）** —— 一种不监听任何网络端口的纯逻辑应用形式。它基于 Nest 的 IoC 容器构建，容器内部管理着所有被实例化的类。
+
+独立应用允许你在没有 HTTP 服务的上下文中，依然能够充分使用 Nest 的依赖注入和模块化能力。比如你可以用它来编写定时任务、构建 CLI 工具，或者执行初始化脚本等。
 
 ## 快速开始
 
-使用以下代码可以创建一个 Nest 独立应用：
+创建一个独立应用的方式非常简单，只需调用 `createApplicationContext()` 方法：
 
 ```ts
 async function bootstrap() {
@@ -14,41 +16,51 @@ async function bootstrap() {
 bootstrap()
 ```
 
-## 从静态模块获取提供者
+## 获取静态模块中的提供者
 
-独立应用对象允许你获取在 Nest 应用中注册的任何提供者实例。假设 `AppModule` 导入了 `TasksModule`，而 `TasksModule` 中包含一个 `TasksService` 提供者。现在，我们希望在 CRON 任务中调用 `TasksService` 提供的方法。
+独立应用同样支持访问模块中注册的任何提供者。假设 `AppModule` 导入了一个 `TasksModule`，而 `TasksModule` 中声明了一个 `TasksService`：
 
 ```ts
 const tasksService = app.get(TasksService)
 ```
 
-要访问 `TasksService` 实例，我们使用 `get()` 方法。`get()` 方法就像一个查询函数，它会在所有已注册的模块中搜索对应的提供者实例。你可以向它传递任何提供者的令牌 (token)。
+`get()` 方法可以直接获取任何注册在模块中的提供者实例。它接收一个提供者的令牌（token）作为参数，并从整个模块图中查找对应的实例。
 
-如果你想进行严格的上下文检查，可以向 `get()` 方法传递一个包含 `strict: true` 属性的选项对象。启用此选项后，你必须先选择一个特定的模块，然后才能从该模块的上下文中获取实例。
+如果你希望更精确地从某个特定模块中获取实例（例如当多个模块中存在同名提供者时），可以搭配 `select()` 方法使用：
 
 ```ts
 const tasksService = app.select(TasksModule).get(TasksService, { strict: true })
 ```
 
-下面是独立应用对象可用的实例获取方法的简要说明：
-
-| 方法       | 描述                                                                             |
-| ---------- | -------------------------------------------------------------------------------- |
-| `get()`    | 获取应用上下文中任何可用的控制器或提供者（包括守卫、过滤器等）的实例。           |
-| `select()` | 在模块图中导航，用于从特定模块中提取实例（通常与严格模式结合使用，如上例所示）。 |
-
 <CalloutInfo>
-  直接调用 `app.get()` 将从根模块开始搜索。若要从其他模块（而非根模块）中获取实例，你需要先使用
-  `app.select()` 来指定该模块。
+  使用 `strict: true` 时，Nest
+  将只在你指定的模块上下文中查找该实例，不再从全局模块图回退查找。
 </CalloutInfo>
 
-需要注意的是，独立应用不监听网络端口，因此它不会接收 HTTP 请求。这意味着，所有依赖于请求-响应周期的 Nest 特性（如中间件、拦截器、大部分管道和守卫）在独立应用上下文中都无法自动生效。
+### 常用实例获取方法
 
-例如，即便你通过 `app.get()` 获取了一个控制器实例并调用了它的方法，绑定到该方法的拦截器也不会被触发。
+| 方法       | 描述                                                                   |
+| ---------- | ---------------------------------------------------------------------- |
+| `get()`    | 从整个应用上下文中获取任何已注册的控制器、提供者、守卫、拦截器等实例。 |
+| `select()` | 在模块图中选择特定模块，通常与 get() 搭配使用以限制查找范围。          |
 
-## 从动态模块获取提供者
+<CalloutInfo>
+  默认情况下，`app.get()` 会从根模块（root
+  module）开始查找提供者实例；若你希望限定查找范围，应先使用 `app.select()`
+  指定模块。
+</CalloutInfo>
 
-当你使用[动态模块](/fundamentals/dynamic-modules)时，你需要将动态模块注册时返回的对象传递给 `app.select()` 方法。例如：
+### 注意事项
+
+独立应用不会启动 HTTP 服务，因此它不会处理任何请求。这也意味着，依赖于请求上下文的特性（如中间件、拦截器、请求作用域的守卫和管道等）将不会自动生效。
+
+例如，即使你通过 `app.get()` 获取了某个控制器，并直接调用其方法，也不会触发绑定在该方法上的拦截器逻辑。
+
+## 获取动态模块中的提供者
+
+如果你的项目使用了[动态模块](/fundamentals/dynamic-modules)，在通过 `app.select()` 获取实例时，需要使用模块注册返回的引用对象作为参数。
+
+示例如下：
 
 ```ts
 export const dynamicConfigModule = ConfigModule.register({ folder: './config' })
@@ -59,15 +71,17 @@ export const dynamicConfigModule = ConfigModule.register({ folder: './config' })
 export class AppModule {}
 ```
 
-然后，你就可以用这个对象来选择模块：
+接着你可以这样访问动态模块中的服务：
 
 ```ts
-const configService = app.select(dynamicConfigModule).get(ConfigService, { strict: true })
+const configService = app
+  .select(dynamicConfigModule)
+  .get(ConfigService, { strict: true })
 ```
 
 ## 关闭应用
 
-如果你希望 Node.js 进程在脚本执行完毕后自动退出（例如，在运行 CRON 任务的脚本中），你需要在 `bootstrap` 函数的末尾调用 `app.close()` 方法，如下所示：
+在某些使用场景下（如执行 CRON 定时任务），你可能希望在脚本完成后自动退出 Node.js 进程。此时，需要在 `bootstrap` 函数的末尾调用 `app.close()` 方法来优雅地关闭应用上下文：
 
 ```ts
 async function bootstrap() {
@@ -78,8 +92,8 @@ async function bootstrap() {
 bootstrap()
 ```
 
-如[生命周期事件](/fundamentals/lifecycle-events)一章所述，此调用将触发应用的关闭生命周期钩子 (shutdown lifecycle hooks)。
+正如[生命周期事件](/fundamentals/lifecycle-events)一章所介绍的，调用 `app.close()` 会触发应用的**关闭生命周期钩子**，用于执行清理逻辑，例如关闭数据库连接、停止任务调度器等。
 
-## 示例
+## 示例项目
 
-你可以在[这里](https://github.com/nestjs/nest/tree/master/sample/18-context)找到一个完整的示例。
+你可以参考 Nest 官方提供的[独立应用示例](https://github.com/nestjs/nest/tree/master/sample/18-context)，查看完整的使用代码与最佳实践。

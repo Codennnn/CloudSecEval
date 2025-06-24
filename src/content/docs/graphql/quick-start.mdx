@@ -14,19 +14,21 @@ import playgroundImage from '/public/assets/playground.png'
 
 ```bash
 # 适用于 Express 和 Apollo（默认）
-$ npm i @nestjs/graphql @nestjs/apollo @apollo/server graphql
+npm install @nestjs/graphql @nestjs/apollo @apollo/server graphql
 
 # 适用于 Fastify 和 Apollo
-# npm i @nestjs/graphql @nestjs/apollo @apollo/server @as-integrations/fastify graphql
+# npm install @nestjs/graphql @nestjs/apollo @apollo/server @as-integrations/fastify graphql
 
 # 适用于 Fastify 和 Mercurius
-# npm i @nestjs/graphql @nestjs/mercurius graphql mercurius
+# npm install @nestjs/graphql @nestjs/mercurius graphql mercurius
 ```
 
 <CalloutInfo type="warning">
-  `@nestjs/graphql@>=9` 和 `@nestjs/apollo^10` 这两个包与 **Apollo v3** 兼容（更多细节请参考 Apollo
-  Server 3 [迁移指南](https://www.apollographql.com/docs/apollo-server/migration/)），而
-  `@nestjs/graphql@^8` 仅支持 **Apollo v2**（例如 `apollo-server-express@2.x.x` 包）。
+  `@nestjs/graphql@>=9` 和 `@nestjs/apollo^10` 这两个包与 **Apollo v3**
+  兼容（更多细节请参考 Apollo Server 3
+  [迁移指南](https://www.apollographql.com/docs/apollo-server/migration/)），而
+  `@nestjs/graphql@^8` 仅支持 **Apollo v2**（例如 `apollo-server-express@2.x.x`
+  包）。
 </CalloutInfo>
 
 ## 概述
@@ -62,8 +64,8 @@ export class AppModule {}
 ```
 
 <CalloutInfo>
-  如果你需要集成 `mercurius`，应当使用 `MercuriusDriver` 和 `MercuriusDriverConfig`，这两个均由
-  `@nestjs/mercurius` 包导出。
+  如果你需要集成 `mercurius`，应当使用 `MercuriusDriver` 和
+  `MercuriusDriverConfig`，这两个均由 `@nestjs/mercurius` 包导出。
 </CalloutInfo>
 
 `forRoot()` 方法接收一个配置对象作为参数。该对象中的选项会被传递给底层的驱动实例（可在这里查看更多可用设置：[Apollo](https://www.apollographql.com/docs/apollo-server/api/apollo-server) 和 [Mercurius](https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options)）。  
@@ -288,8 +290,8 @@ const { schema } = app.get(GraphQLSchemaHost)
 ```
 
 <CalloutInfo>
-  你必须在应用初始化完成后（即在 `onModuleInit` 生命周期钩子被 `app.listen()` 或 `app.init()`
-  方法触发后），再调用 `GraphQLSchemaHost#schema` 的 getter。
+  你必须在应用初始化完成后（即在 `onModuleInit` 生命周期钩子被 `app.listen()` 或
+  `app.init()` 方法触发后），再调用 `GraphQLSchemaHost#schema` 的 getter。
 </CalloutInfo>
 
 ## 异步配置（Async configuration）
@@ -389,8 +391,9 @@ GraphQLModule.forRoot({
 ```
 
 <CalloutInfo type="warning">
-  如果你在单个应用中结合 `@apollo/server` 与 `@as-integrations/fastify` 包使用多个 GraphQL
-  端点，请务必在 `GraphQLModule` 配置中启用 `disableHealthCheck` 设置。
+  如果你在单个应用中结合 `@apollo/server` 与 `@as-integrations/fastify`
+  包使用多个 GraphQL 端点，请务必在 `GraphQLModule` 配置中启用
+  `disableHealthCheck` 设置。
 </CalloutInfo>
 
 ## 第三方集成

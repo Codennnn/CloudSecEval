@@ -56,27 +56,27 @@
 - [x] `/techniques/cookies` - Cookie
 - [x] `/techniques/events` - 事件
 - [x] `/techniques/compression` - 压缩
-- [ ] `/techniques/file-upload` - 文件上传
-- [ ] `/techniques/streaming-files` - 文件流
+- [x] `/techniques/file-upload` - 文件上传
+- [x] `/techniques/streaming-files` - 文件流式传输
 - [x] `/techniques/http-module` - HTTP 模块
 - [x] `/techniques/session` - Session 支持
 - [x] `/techniques/mvc` - MVC 模式
-- [ ] `/techniques/performance` - 性能优化（Fastify）
+- [x] `/techniques/performance` - 性能优化（Fastify）
 - [x] `/techniques/server-sent-events` - 服务端推送事件
 
 ## 5. 数据库集成 (Database Integration)
 
-- [ ] `/techniques/database` - 数据库概述
+- [x] `/techniques/database` - 数据库概述
 - [ ] `/techniques/mongodb` - MongoDB
 
 ## 6. 安全实践 (Security Practices)
 
-- [ ] `/security/authentication` - 认证
-- [ ] `/security/authorization` - 授权
+- [x] `/security/authentication` - 认证
+- [x] `/security/authorization` - 授权
 - [x] `/security/encryption-and-hashing` - 加密与哈希
 - [x] `/security/helmet` - Helmet
 - [x] `/security/cors` - CORS
-- [ ] `/security/csrf` - CSRF 防护
+- [x] `/security/csrf` - CSRF 防护
 - [ ] `/security/rate-limiting` - 请求频率限制
 
 ## 7. GraphQL 支持
@@ -170,7 +170,7 @@
 ## 13. 部署与发布
 
 - [ ] `/deployment` - 部署指南
-- [ ] `/standalone-applications` - 独立应用模式
+- [x] `/standalone-applications` - 独立应用模式
 
 ## 14. 常见问题
 

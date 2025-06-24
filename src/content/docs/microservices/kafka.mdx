@@ -13,7 +13,7 @@ Kafka 项目旨在提供一个统一的、高吞吐量、低延迟的平台，�
 要开始构建基于 Kafka 的微服务，首先需要安装相关依赖包：
 
 ```bash
-$ npm i --save kafkajs
+npm install kafkajs
 ```
 
 ## 概述
@@ -23,14 +23,17 @@ $ npm i --save kafkajs
 ```ts filename='main.ts'
 import { Transport } from '@nestjs/microservices'
 
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.KAFKA,
-  options: {
-    client: {
-      brokers: ['localhost:9092'],
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: ['localhost:9092'],
+      },
     },
-  },
-})
+  }
+)
 ```
 
 ## 配置项
@@ -116,8 +119,8 @@ Kafka 微服务的消息模式（Message pattern）会为请求和响应通道�
 <CalloutInfo type="warning">
   本节内容仅适用于你使用[请求-响应](/microservices/basics#request-response)消息风格（即使用
   `@MessagePattern` 装饰器和 `ClientKafkaProxy#send`
-  方法）时。对于[基于事件](/microservices/basics#event-based)通信（`@EventPattern` 装饰器和
-  `ClientKafkaProxy#emit` 方法），无需订阅响应主题。
+  方法）时。对于[基于事件](/microservices/basics#event-based)通信（`@EventPattern`
+  装饰器和 `ClientKafkaProxy#emit` 方法），无需订阅响应主题。
 </CalloutInfo>
 
 `ClientKafkaProxy` 类提供了 `subscribeToResponseOf()` 方法。该方法接收一个请求主题名称作为参数，并将派生出的响应主题名称添加到响应主题集合中。在实现消息模式时，必须调用此方法。
@@ -285,18 +288,21 @@ async killDragon(@Payload() message: KillDragonMessage, @Ctx() context: KafkaCon
 Kafka 微服务组件会在 `client.clientId` 和 `consumer.groupId` 选项后追加各自角色的描述，以防止 Nest 微服务客户端和服务端组件之间发生命名冲突。默认情况下，`ClientKafkaProxy` 组件会在这两个选项后追加 `-client`，而 `ServerKafka` 组件则追加 `-server`。请注意下方示例中，所提供的值会被这样转换（如注释所示）。
 
 ```ts filename='main.ts'
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.KAFKA,
-  options: {
-    client: {
-      clientId: 'hero', // hero-server
-      brokers: ['localhost:9092'],
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: 'hero', // hero-server
+        brokers: ['localhost:9092'],
+      },
+      consumer: {
+        groupId: 'hero-consumer', // hero-consumer-server
+      },
     },
-    consumer: {
-      groupId: 'hero-consumer', // hero-consumer-server
-    },
-  },
-})
+  }
+)
 ```
 
 对于客户端：
@@ -318,8 +324,8 @@ client: ClientKafkaProxy;
 ```
 
 <CalloutInfo>
-  你可以通过继承自定义提供者中的 `ClientKafkaProxy` 和 `KafkaServer`，并重写构造函数，来自定义 Kafka
-  客户端和消费者的命名规范。
+  你可以通过继承自定义提供者中的 `ClientKafkaProxy` 和
+  `KafkaServer`，并重写构造函数，来自定义 Kafka 客户端和消费者的命名规范。
 </CalloutInfo>
 
 由于 Kafka 微服务消息模式会为请求和响应通道各使用一个主题（Topic），因此响应模式应当基于请求主题生成。默认情况下，响应主题的名称是在请求主题名称后追加 `.reply` 得到的。
@@ -331,8 +337,8 @@ onModuleInit() {
 ```
 
 <CalloutInfo>
-  你可以通过继承自定义提供者中的 `ClientKafkaProxy`，并重写 `getResponsePatternName` 方法，来自定义
-  Kafka 响应主题的命名规范。
+  你可以通过继承自定义提供者中的 `ClientKafkaProxy`，并重写
+  `getResponsePatternName` 方法，来自定义 Kafka 响应主题的命名规范。
 </CalloutInfo>
 
 ## 可重试异常（Retriable exceptions）
@@ -378,7 +384,9 @@ export class KafkaMaxRetryExceptionFilter extends BaseExceptionFilter {
     const currentRetryCount = this.getRetryCountFromContext(kafkaContext)
 
     if (currentRetryCount >= this.maxRetries) {
-      this.logger.warn(`已超过最大重试次数（${this.maxRetries}），消息：${JSON.stringify(message)}`)
+      this.logger.warn(
+        `已超过最大重试次数（${this.maxRetries}），消息：${JSON.stringify(message)}`
+      )
 
       if (this.skipHandler) {
         try {
@@ -467,17 +475,20 @@ async handleUserCreated(@Payload() data: IncomingMessage, @Ctx() context: KafkaC
 如果你希望禁用消息的自动提交，可以在 `run` 配置中将 `autoCommit` 设置为 `false`，如下所示：
 
 ```ts filename='main.ts'
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.KAFKA,
-  options: {
-    client: {
-      brokers: ['localhost:9092'],
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: ['localhost:9092'],
+      },
+      run: {
+        autoCommit: false,
+      },
     },
-    run: {
-      autoCommit: false,
-    },
-  },
-})
+  }
+)
 ```
 
 ## 实例状态更新

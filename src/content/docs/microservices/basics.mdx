@@ -75,7 +75,7 @@ Nest 提供了多种内置的传输层实现，称为**传输器**，他们负�
 要开始构建微服务，首先需要安装相关依赖包：
 
 ```bash
-$ npm i --save @nestjs/microservices
+npm install @nestjs/microservices
 ```
 
 ## 快速上手
@@ -88,9 +88,12 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-    transport: Transport.TCP,
-  })
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.TCP,
+    }
+  )
   await app.listen()
 }
 
@@ -461,15 +464,18 @@ async function bootstrap() {
   const key = fs.readFileSync('<pathToKeyFile>', 'utf8').toString()
   const cert = fs.readFileSync('<pathToCertFile>', 'utf8').toString()
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-    transport: Transport.TCP,
-    options: {
-      tlsOptions: {
-        key,
-        cert,
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.TCP,
+      options: {
+        tlsOptions: {
+          key,
+          cert,
+        },
       },
-    },
-  })
+    }
+  )
 
   await app.listen()
 }
@@ -516,16 +522,19 @@ import { AsyncMicroserviceOptions, Transport } from '@nestjs/microservices'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<AsyncMicroserviceOptions>(AppModule, {
-    useFactory: (configService: ConfigService) => ({
-      transport: Transport.TCP,
-      options: {
-        host: configService.get<string>('HOST'),
-        port: configService.get<number>('PORT'),
-      },
-    }),
-    inject: [ConfigService],
-  })
+  const app = await NestFactory.createMicroservice<AsyncMicroserviceOptions>(
+    AppModule,
+    {
+      useFactory: (configService: ConfigService) => ({
+        transport: Transport.TCP,
+        options: {
+          host: configService.get<string>('HOST'),
+          port: configService.get<number>('PORT'),
+        },
+      }),
+      inject: [ConfigService],
+    }
+  )
 
   await app.listen()
 }

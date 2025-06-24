@@ -58,7 +58,7 @@ export const navMainData: NavMenuItem[] = [
       { title: '事件机制', titleEn: 'Events', url: '/techniques/events' },
       { title: '压缩', titleEn: 'Compression', url: '/techniques/compression' },
       { title: '文件上传', titleEn: 'File upload', url: '/techniques/file-upload' },
-      { title: '文件流', titleEn: 'Streaming files', url: '/techniques/streaming-files' },
+      { title: '文件流式传输', titleEn: 'Streaming files', url: '/techniques/streaming-files' },
       { title: 'HTTP 模块', titleEn: 'HTTP module', url: '/techniques/http-module' },
       { title: 'Session 支持', titleEn: 'Session', url: '/techniques/session' },
       { title: 'MVC 模式', titleEn: 'Model-View-Controller', url: '/techniques/mvc' },

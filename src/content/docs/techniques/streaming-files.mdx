@@ -1,10 +1,11 @@
 # 文件流式传输
 
 <CalloutInfo>
-  本章节将介绍如何在 **HTTP 应用**中实现文件流式传输。以下示例不适用于 GraphQL 或微服务场景。
+  本章节介绍如何在 **HTTP 应用**中实现文件的流式传输。请注意，以下示例**不适用于
+  GraphQL 或微服务架构**。
 </CalloutInfo>
 
-在实际开发中，你可能需要通过 RESTful 接口将文件返回给客户端。在 Nest 中，常见的实现方式如下：
+在实际开发中，你可能需要通过 RESTful 接口将文件直接返回给客户端。在 Nest 中，一种常见的做法是使用 Node.js 原生的流对象：
 
 ```ts
 @Controller('file')
@@ -17,25 +18,25 @@ export class FileController {
 }
 ```
 
-不过，这种方式会导致控制器中的拦截器逻辑无法生效。为了解决这个问题，你可以返回一个 `StreamableFile` 实例，底层框架会自动处理响应的流式传输。
+尽管这种方式简单直观，但它会绕过 Nest 的响应处理机制，例如，**拦截器将不再生效**。为了保留框架特性，建议使用 `StreamableFile` 类来处理文件流的返回。
 
 ## StreamableFile 类
 
-`StreamableFile` 是一个用于封装待返回流的类。你可以通过向其构造函数传入 `Buffer` 或 `Stream` 来创建实例。
+`StreamableFile` 是 Nest 提供的一个工具类，用于封装文件流或缓冲数据，使其能够作为响应返回。底层会自动处理流式传输，确保中间件和拦截器仍能正常工作。
 
-<CalloutInfo>
+你可以通过传入一个 Buffer 或 Node.js 的 `Stream` 对象来创建 `StreamableFile` 实例：
 
-`StreamableFile` 类可从 `@nestjs/common` 包中导入。
-
-</CalloutInfo>
+<CalloutInfo>`StreamableFile` 可从 `@nestjs/common` 包中导入。</CalloutInfo>
 
 ## 跨平台支持
 
-Fastify 默认支持直接发送文件，无需调用 `stream.pipe(res)`，因此无需使用 `StreamableFile` 类。不过，Nest 在 Express 和 Fastify 两种平台下都支持 `StreamableFile`，因此你无需担心平台兼容性。
+在 Fastify 平台中，发送文件响应时可以直接返回文件流，而无需手动调用 `stream.pipe(res)`。因此，从技术上讲，Fastify 并不强制使用 `StreamableFile`。
 
-## 示例
+不过，为了统一开发体验，Nest 官方在 Express 与 Fastify 两种平台下均提供了对 `StreamableFile` 的原生支持。因此，无论你使用哪种 HTTP 适配器，都可以放心使用 `StreamableFile` 实现流式响应，而无需担心兼容性问题。
 
-下面是一个简单示例，演示如何将 `package.json` 作为文件返回，而不是以 JSON 格式返回。当然，这一思路同样适用于图片、文档等任意类型的文件。
+## 使用示例
+
+以下是一个简单示例，演示如何通过控制器将 `package.json` 文件作为文件流返回给客户端，而不是以 JSON 格式输出。这个方法同样适用于返回图片、PDF、Word 文档等任意类型的文件：
 
 ```ts
 import { Controller, Get, StreamableFile } from '@nestjs/common'
@@ -52,45 +53,60 @@ export class FileController {
 }
 ```
 
-默认情况下，响应头 `Content-Type` 的值为 `application/octet-stream`。如果你需要自定义该值，可以通过 `StreamableFile` 的 `type` 选项、`res.set` 方法，或使用 [`@Header()`](/controllers#设置响应头) 装饰器来实现。例如：
+默认情况下，`StreamableFile` 会将响应的 `Content-Type` 设置为 `application/octet-stream`，即通用二进制流格式。如果你希望自定义响应头，例如指定文件类型或下载文件名，有以下几种方式可选：
+
+### 方式一：通过构造函数配置项传入
+
+你可以在创建 `StreamableFile` 实例时，传入一个包含 MIME 类型、文件名、长度等信息的配置对象：
+
+```ts
+@Get()
+getFile(): StreamableFile {
+  const file = createReadStream(join(process.cwd(), 'package.json'))
+  return new StreamableFile(file, {
+    type: 'application/json',
+    disposition: 'attachment; filename="package.json"',
+    // 如果需要自定义 Content-Length：
+    // length: 123,
+  })
+}
+```
+
+### 方式二：直接操作响应对象（`@Res()`）
+
+通过 `@Res({ passthrough: true })` 装饰器获取底层响应对象，并手动设置响应头：
 
 ```ts
 import { Controller, Get, StreamableFile, Res } from '@nestjs/common'
 import { createReadStream } from 'fs'
 import { join } from 'path'
-import type { Response } from 'express' // 假设当前使用的是 Express HTTP 适配器
+import type { Response } from 'express'
 
-@Controller('file')
-export class FileController {
-  @Get()
-  getFile(): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'package.json'))
-    return new StreamableFile(file, {
-      type: 'application/json',
-      disposition: 'attachment; filename="package.json"',
-      // 如果你希望自定义 Content-Length，而不是使用文件实际长度：
-      // length: 123,
-    })
-  }
+@Get()
+getFileWithRes(@Res({ passthrough: true }) res: Response): StreamableFile {
+  const file = createReadStream(join(process.cwd(), 'package.json'))
+  res.set({
+    'Content-Type': 'application/json',
+    'Content-Disposition': 'attachment; filename="package.json"',
+  })
+  return new StreamableFile(file)
+}
+```
 
-  // 也可以这样：
-  @Get()
-  getFileChangingResponseObjDirectly(@Res({ passthrough: true }) res: Response): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'package.json'))
-    res.set({
-      'Content-Type': 'application/json',
-      'Content-Disposition': 'attachment; filename="package.json"',
-    })
-    return new StreamableFile(file)
-  }
+### 方式三：使用 `@Header()` 装饰器设置响应头
 
-  // 或者这样：
-  @Get()
-  @Header('Content-Type', 'application/json')
-  @Header('Content-Disposition', 'attachment; filename="package.json"')
-  getFileUsingStaticValues(): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'package.json'))
-    return new StreamableFile(file)
-  }
+若你的响应头是静态的，推荐使用 `@Header()` 装饰器，写法更简洁：
+
+```ts
+import { Controller, Get, StreamableFile, Header } from '@nestjs/common'
+import { createReadStream } from 'fs'
+import { join } from 'path'
+
+@Get()
+@Header('Content-Type', 'application/json')
+@Header('Content-Disposition', 'attachment; filename="package.json"')
+getFileWithHeader(): StreamableFile {
+  const file = createReadStream(join(process.cwd(), 'package.json'))
+  return new StreamableFile(file)
 }
 ```

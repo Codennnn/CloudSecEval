@@ -5,7 +5,7 @@ Nest 支持两种方式集成 [MongoDB](https://www.mongodb.com/) 数据库。�
 首先，安装[所需依赖](https://github.com/Automattic/mongoose)：
 
 ```bash
-$ npm i @nestjs/mongoose mongoose
+npm install @nestjs/mongoose mongoose
 ```
 
 安装完成后，我们可以在根模块 `AppModule` 中导入 `MongooseModule`。
@@ -110,7 +110,8 @@ async findAllPopulated() {
 ```
 
 <CalloutInfo>
-  如果没有需要填充的外部文档，类型可能为 `Owner | null`，具体取决于你的 [Mongoose
+  如果没有需要填充的外部文档，类型可能为 `Owner | null`，具体取决于你的
+  [Mongoose
   配置](https://mongoosejs.com/docs/populate.html#doc-not-found)。另外，也有可能抛出错误，此时类型为
   `Owner`。
 </CalloutInfo>
@@ -248,7 +249,9 @@ export class AppModule {}
 
 ```ts
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }], 'cats')],
+  imports: [
+    MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }], 'cats'),
+  ],
 })
 export class CatsModule {}
 ```
@@ -422,7 +425,8 @@ export class ClickedLinkEvent {
   url: string
 }
 
-export const ClickedLinkEventSchema = SchemaFactory.createForClass(ClickedLinkEvent)
+export const ClickedLinkEventSchema =
+  SchemaFactory.createForClass(ClickedLinkEvent)
 ```
 
 接下来是 `SignUpEvent` 类：

@@ -48,7 +48,7 @@ graph TB
 要开始构建基于 WebSocket 通信的应用，首先需要安装相关依赖包：
 
 ```bash
-$ npm i --save @nestjs/websockets @nestjs/platform-socket.io
+npm install @nestjs/websockets @nestjs/platform-socket.io
 ```
 
 ## 概述
@@ -60,7 +60,8 @@ $ npm i --save @nestjs/websockets @nestjs/platform-socket.io
 ```
 
 <CalloutInfo type="warning">
-  只有当网关被引用到某个已存在模块（Module）的 providers 数组中时，网关才会被实例化。
+  只有当网关被引用到某个已存在模块（Module）的 providers
+  数组中时，网关才会被实例化。
 </CalloutInfo>
 
 你可以将任何受支持的[选项（option）](https://socket.io/docs/v4/server-options/) 作为第二个参数传递给 `@WebSocketGateway()` 装饰器，例如：
@@ -79,7 +80,8 @@ handleEvent(@MessageBody() data: string): string {
 ```
 
 <CalloutInfo>
-  `@SubscribeMessage()` 和 `@MessageBody()` 装饰器需从 `@nestjs/websockets` 包中导入。
+  `@SubscribeMessage()` 和 `@MessageBody()` 装饰器需从 `@nestjs/websockets`
+  包中导入。
 </CalloutInfo>
 
 网关创建完成后，我们可以在模块中注册它。
@@ -162,8 +164,8 @@ handleEvent(@MessageBody() data: unknown): WsResponse<unknown> {
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  如果你的 `data` 字段依赖于 `ClassSerializerInterceptor`，你应该返回一个实现了 `WsResponse`
-  的类实例，因为该拦截器会忽略普通的 JavaScript 对象响应。
+  如果你的 `data` 字段依赖于 `ClassSerializerInterceptor`，你应该返回一个实现了
+  `WsResponse` 的类实例，因为该拦截器会忽略普通的 JavaScript 对象响应。
 </CalloutInfo>
 
 为了监听传入的响应，客户端需要添加另一个事件监听器。

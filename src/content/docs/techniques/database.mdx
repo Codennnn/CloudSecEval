@@ -1,10 +1,29 @@
 # 数据库
 
-Nest 是一个与数据库无关的框架，允许你轻松集成任意 SQL 或 NoSQL 数据库。你可以根据自己的需求，选择多种集成方式。从整体来看，将 Nest 连接到数据库，其实就像在 [Express](https://expressjs.com/en/guide/database-integration.html) 或 Fastify 中一样，加载对应数据库的 Node.js 驱动即可。
+Nest 是一个与**数据库无关**（database-agnostic）的框架，支持灵活接入各种 SQL 和 NoSQL 数据库。你可以根据项目需求，自由选择数据库驱动或 ORM 工具进行集成。
 
-你也可以直接使用任意通用的 Node.js 数据库集成库或 ORM（对象关系映射，Object Relational Mapper），例如 [MikroORM](https://mikro-orm.io/)（参见 [MikroORM 实践](/recipes/mikroorm)）、[Sequelize](https://sequelize.org/)（参见 [Sequelize 集成](/techniques/database#sequelize-integration)）、[Knex.js](https://knexjs.org/)（参见 [Knex.js 教程](https://dev.to/nestjs/build-a-nestjs-module-for-knex-js-or-other-resource-based-libraries-in-5-minutes-12an)）、[TypeORM](https://github.com/typeorm/typeorm) 以及 [Prisma](https://www.github.com/prisma/prisma)（参见 [Prisma 实践](/recipes/prisma)）。这些库可以为你带来更高层次的抽象操作体验。
+从整体来看，在 Nest 中连接数据库的方式与在 Express 或 Fastify 中类似——只需加载相应的 Node.js 驱动或数据库库即可。
 
-为了方便开发，Nest 针对 TypeORM 和 Sequelize 提供了开箱即用的深度集成，分别通过 `@nestjs/typeorm` 和 `@nestjs/sequelize` 包实现。本章将详细介绍这两种集成方式。关于 Mongoose 的集成，请参见[此章节](/techniques/mongodb)。这些集成不仅让你更容易访问所选数据库，还带来了如模型/仓库注入、可测试性、异步配置等 NestJS 特有的功能。
+Nest 完全兼容常见的 Node.js 数据访问工具与 ORM，如：
+
+- TypeORM（Nest 官方提供支持）
+- Prisma（参考 [Prisma 实践](/recipes/prisma)）
+- Sequelize（参考 [Sequelize 集成](#集成 Sequelize)）
+- MikroORM（参考 [MikroORM 实践](/recipes/mikroorm)）
+- Knex.js（参考 [Knex.js 教程](https://dev.to/nestjs/build-a-nestjs-module-for-knex-js-or-other-resource-based-libraries-in-5-minutes-12an)）
+
+这些库通常提供了更高层次的抽象，能简化数据库操作，提升开发效率。
+
+为了进一步提升开发体验，Nest 对 TypeORM 和 Sequelize 提供了**开箱即用的官方集成包**，分别是：
+
+- `@nestjs/typeorm`
+- `@nestjs/sequelize`
+
+本章将详细介绍这两种数据库集成方式的用法。
+
+如果你使用的是 MongoDB，请参考[专门的章节](/techniques/mongodb)以了解基于 Mongoose 的集成方案。
+
+借助这些集成模块，你不仅可以轻松访问数据库，还可以使用 Nest 提供的特性，如模型与仓库的依赖注入、异步配置、增强的可测试性等。
 
 ## TypeORM 集成
 
@@ -13,7 +32,7 @@ Nest 是一个与数据库无关的框架，允许你轻松集成任意 SQL 或 
 要开始使用 TypeORM，首先需要安装相关依赖。本章以主流的 [MySQL](https://www.mysql.com/) 关系型数据库管理系统（Relational DBMS）为例进行演示。当然，TypeORM 还支持多种关系型数据库，如 PostgreSQL、Oracle、Microsoft SQL Server、SQLite，甚至还支持 MongoDB 等 NoSQL 数据库。无论你选择哪种数据库，操作流程基本一致，只需安装对应数据库的客户端 API 库即可。
 
 ```bash
-$ npm install --save @nestjs/typeorm typeorm mysql2
+npm install @nestjs/typeorm typeorm mysql2
 ```
 
 依赖安装完成后，我们可以在根模块 `AppModule` 中导入 `TypeOrmModule`。

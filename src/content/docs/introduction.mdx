@@ -23,8 +23,13 @@ Nest 正是为解决这一痛点而生。它提供了开箱即用的架构体系
 Nest CLI 是构建 NestJS 应用的官方工具，能够自动生成规范的项目结构与必要依赖。安装并创建新项目的命令如下：
 
 ```bash
-$ npm i -g @nestjs/cli
-$ nest new project-name
+# 安装依赖
+npm install -g @nestjs/cli
+
+# 创建项目
+# [!code word:project-name:1]
+nest new project-name
+#          ^^^^^^^^^^^^ 这里可以填写你想要的项目名称
 ```
 
 上述命令将创建一个名为 `project-name` 的新目录，并自动生成核心文件与模块，形成符合官方规范的项目骨架。对于初次接触 NestJS 的开发者，强烈推荐采用这种方式。我们将在[快速上手章节](/first-steps)中详细介绍其使用流程。

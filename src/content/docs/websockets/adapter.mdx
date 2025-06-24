@@ -15,13 +15,14 @@ WebSocket 模块本身与平台无关，因此你可以通过实现 `WebSocketAd
 [socket.io](https://github.com/socketio/socket.io) 包被封装在 `IoAdapter` 类中。如果你希望增强适配器的基础功能，比如你的技术需求要求能够在多个负载均衡的 Web 服务实例之间广播事件，你可以通过继承 `IoAdapter` 并重写负责实例化新 socket.io 服务器的方法来实现。首先，我们需要安装相关依赖包。
 
 <CalloutInfo type="warning">
-  如果你希望在多个负载均衡实例中使用 socket.io，必须在客户端 socket.io 配置中通过设置 `transports:
-  ['websocket']` 禁用轮询，或者在负载均衡器中启用基于 Cookie 的路由。仅使用 Redis
+  如果你希望在多个负载均衡实例中使用 socket.io，必须在客户端 socket.io
+  配置中通过设置 `transports: ['websocket']`
+  禁用轮询，或者在负载均衡器中启用基于 Cookie 的路由。仅使用 Redis
   并不足够。详情请参见[这里](https://socket.io/docs/v4/using-multiple-nodes/#enabling-sticky-session)。
 </CalloutInfo>
 
 ```bash
-$ npm i --save redis socket.io @socket.io/redis-adapter
+npm install redis socket.io @socket.io/redis-adapter
 ```
 
 安装完依赖后，我们可以创建一个 `RedisIoAdapter` 类。
@@ -73,7 +74,7 @@ app.useWebSocketAdapter(redisIoAdapter)
 要使用 `ws`，首先需要安装相关依赖包：
 
 ```bash
-$ npm i --save @nestjs/platform-ws
+npm install @nestjs/platform-ws
 ```
 
 安装完依赖包后，我们可以切换适配器：
@@ -145,7 +146,9 @@ export class WsAdapter implements WebSocketAdapter {
     process: (data: any) => Observable<any>
   ): Observable<any> {
     const message = JSON.parse(buffer.data)
-    const messageHandler = handlers.find((handler) => handler.message === message.event)
+    const messageHandler = handlers.find(
+      (handler) => handler.message === message.event
+    )
     if (!messageHandler) {
       return EMPTY
     }
@@ -159,8 +162,8 @@ export class WsAdapter implements WebSocketAdapter {
 ```
 
 <CalloutInfo>
-  如果你希望充分利用 [ws](https://github.com/websockets/ws) 库，建议直接使用内置的
-  `WsAdapter`，而不是自行实现适配器。
+  如果你希望充分利用 [ws](https://github.com/websockets/ws)
+  库，建议直接使用内置的 `WsAdapter`，而不是自行实现适配器。
 </CalloutInfo>
 
 接下来，我们可以通过 `useWebSocketAdapter()` 方法设置自定义适配器：

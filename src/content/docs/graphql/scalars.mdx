@@ -86,7 +86,7 @@ creationDate: Date;
 首先安装该包：
 
 ```bash
-$ npm i --save graphql-type-json
+npm install graphql-type-json
 ```
 
 安装完成后，我们将自定义解析器传递给 `forRoot()` 方法：
@@ -163,7 +163,7 @@ uuid: string;
 首先，安装该包：
 
 ```bash
-$ npm i --save graphql-type-json
+npm install graphql-type-json
 ```
 
 安装完成后，我们可以将自定义解析器传递给 `forRoot()` 方法：
@@ -257,9 +257,10 @@ definitionsFactory.generate({
 ```
 
 <CalloutInfo>
-  你也可以直接使用类型引用，例如：`DateTime: Date`。此时，`GraphQLDefinitionsFactory`
-  会提取指定类型的 name 属性（如 `Date.name`）来生成 TS
-  类型定义。注意：对于非内置类型（自定义类型），需要添加 import 语句。
+  你也可以直接使用类型引用，例如：`DateTime:
+  Date`。此时，`GraphQLDefinitionsFactory` 会提取指定类型的 name 属性（如
+  `Date.name`）来生成 TS 类型定义。注意：对于非内置类型（自定义类型），需要添加
+  import 语句。
 </CalloutInfo>
 
 假设有如下 GraphQL 自定义标量类型：

@@ -7,7 +7,7 @@
 要开始构建基于 RabbitMQ 的微服务，首先需要安装以下依赖包：
 
 ```bash
-$ npm i --save amqplib amqp-connection-manager
+npm install amqplib amqp-connection-manager
 ```
 
 ## 概述
@@ -17,16 +17,19 @@ $ npm i --save amqplib amqp-connection-manager
 ```ts filename='main.ts'
 import { Transport } from '@nestjs/microservices'
 
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.RMQ,
-  options: {
-    urls: ['amqp://localhost:5672'],
-    queue: 'cats_queue',
-    queueOptions: {
-      durable: false,
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://localhost:5672'],
+      queue: 'cats_queue',
+      queueOptions: {
+        durable: false,
+      },
     },
-  },
-})
+  }
+)
 ```
 
 ## 选项
@@ -220,13 +223,15 @@ server.on<RmqEvents>('error', (err) => {
 要实现这一点，可以使用 `unwrap()` 方法，该方法会返回底层驱动实例。泛型类型参数应指定你期望的驱动实例类型。
 
 ```ts
-const managerRef = this.client.unwrap<import('amqp-connection-manager').AmqpConnectionManager>()
+const managerRef =
+  this.client.unwrap<import('amqp-connection-manager').AmqpConnectionManager>()
 ```
 
 同样地，你也可以访问服务端的底层驱动实例：
 
 ```ts
-const managerRef = server.unwrap<import('amqp-connection-manager').AmqpConnectionManager>()
+const managerRef =
+  server.unwrap<import('amqp-connection-manager').AmqpConnectionManager>()
 ```
 
 ## 通配符
@@ -238,14 +243,17 @@ RabbitMQ 支持在路由键中使用通配符，从而实现灵活的消息路�
 要在 RabbitMQ 微服务中启用通配符支持，需要在配置对象中将 `wildcards` 选项设置为 `true`：
 
 ```ts
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.RMQ,
-  options: {
-    urls: ['amqp://localhost:5672'],
-    queue: 'cats_queue',
-    wildcards: true,
-  },
-})
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://localhost:5672'],
+      queue: 'cats_queue',
+      wildcards: true,
+    },
+  }
+)
 ```
 
 配置完成后，你可以在订阅事件或消息时使用通配符路由键。例如，监听路由键为 `cats.#` 的消息，可以使用如下代码：

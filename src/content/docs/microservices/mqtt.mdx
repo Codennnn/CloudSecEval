@@ -7,7 +7,7 @@
 要开始构建基于 MQTT 的微服务，请先安装所需依赖包：
 
 ```bash
-$ npm i --save mqtt
+npm install mqtt
 ```
 
 ## 概述
@@ -17,12 +17,15 @@ $ npm i --save mqtt
 ```ts filename='main.ts'
 import { Transport } from '@nestjs/core'
 
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.MQTT,
-  options: {
-    url: 'mqtt://localhost:1883',
-  },
-})
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.MQTT,
+    options: {
+      url: 'mqtt://localhost:1883',
+    },
+  }
+)
 ```
 
 ## 配置项
@@ -92,15 +95,18 @@ getTemperature(@Ctx() context: MqttContext) {
 通过 `@MessagePattern` 或 `@EventPattern` 装饰器创建的任何订阅，默认使用 QoS 0。如果需要更高的 QoS，可以在建立连接时通过 `subscribeOptions` 全局设置，如下所示：
 
 ```ts filename='main.ts'
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.MQTT,
-  options: {
-    url: 'mqtt://localhost:1883',
-    subscribeOptions: {
-      qos: 2,
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.MQTT,
+    options: {
+      url: 'mqtt://localhost:1883',
+      subscribeOptions: {
+        qos: 2,
+      },
     },
-  },
-})
+  }
+)
 ```
 
 如果需要针对某个主题设置特定的 QoS，建议实现[自定义传输器](/microservices/custom-transport)。

@@ -75,7 +75,7 @@ graph TB
 要开始构建基于 Redis 的微服务，首先需要安装所需的依赖包：
 
 ```bash
-$ npm i --save ioredis
+npm install ioredis
 ```
 
 ## 概述
@@ -85,13 +85,16 @@ $ npm i --save ioredis
 ```ts filename='main.ts'
 import { Transport } from '@nestjs/core'
 
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.REDIS,
-  options: {
-    host: 'localhost',
-    port: 6379,
-  },
-})
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.REDIS,
+    options: {
+      host: 'localhost',
+      port: 6379,
+    },
+  }
+)
 ```
 
 ## 选项
@@ -217,13 +220,15 @@ server.on<RedisEvents>('error', (err) => {
 要访问底层驱动，可以使用 `unwrap()` 方法。该方法会返回底层驱动实例。泛型类型参数应指定你期望获得的驱动实例类型。
 
 ```ts
-const [pub, sub] = this.client.unwrap<[import('ioredis').Redis, import('ioredis').Redis]>()
+const [pub, sub] =
+  this.client.unwrap<[import('ioredis').Redis, import('ioredis').Redis]>()
 ```
 
 同样地，你也可以访问服务器的底层驱动实例：
 
 ```ts
-const [pub, sub] = server.unwrap<[import('ioredis').Redis, import('ioredis').Redis]>()
+const [pub, sub] =
+  server.unwrap<[import('ioredis').Redis, import('ioredis').Redis]>()
 ```
 
 需要注意的是，与其他传输器不同，Redis 传输器返回的是一个包含两个 `ioredis` 实例的元组：第一个用于发布消息，第二个用于订阅消息。

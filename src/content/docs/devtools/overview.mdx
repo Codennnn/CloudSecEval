@@ -14,8 +14,8 @@ import bootstrapPerformanceImage from '/public/assets/devtools/bootstrap-perform
 # 概述
 
 <CalloutInfo>
-  本章介绍了 Nest Devtools 与 Nest 框架的集成。如果你想了解 Devtools 应用本身，请访问
-  [Devtools](https://devtools.nestjs.com) 官网。
+  本章介绍了 Nest Devtools 与 Nest 框架的集成。如果你想了解 Devtools
+  应用本身，请访问 [Devtools](https://devtools.nestjs.com) 官网。
 </CalloutInfo>
 
 要开始调试本地应用，请打开 `main.ts` 文件，并确保在应用选项对象中将 `snapshot` 属性设置为 `true`，如下所示：
@@ -34,7 +34,7 @@ async function bootstrap() {
 接下来，请安装所需依赖包：
 
 ```bash
-$ npm i @nestjs/devtools-integration
+npm install @nestjs/devtools-integration
 ```
 
 <CalloutInfo type="warning">
@@ -67,8 +67,9 @@ export class AppModule {}
 
 <CalloutInfo>
   如上图所示，每个模块都会连接到 `InternalCoreModule`。`InternalCoreModule`
-  是一个全局模块，它始终会导入到根模块中。由于它被注册为全局节点，Nest 会自动在所有模块与
-  `InternalCoreModule` 节点之间创建连接。如需在图中隐藏全局模块，可以勾选侧边栏中的"**Hide global
+  是一个全局模块，它始终会导入到根模块中。由于它被注册为全局节点，Nest
+  会自动在所有模块与 `InternalCoreModule`
+  节点之间创建连接。如需在图中隐藏全局模块，可以勾选侧边栏中的"**Hide global
   modules**"复选框。
 </CalloutInfo>
 
@@ -81,7 +82,9 @@ export class AppModule {}
 如果你想聚焦某个节点，可以点击矩形节点，图表会弹出窗口，并显示 **"Focus"** 按钮。你也可以使用侧边栏的搜索栏查找特定节点。
 
 <CalloutInfo>
-  <div>如果点击 **Inspect** 按钮，应用会跳转到 `/debug` 页面，并自动选中该节点。</div>
+  <div>
+    如果点击 **Inspect** 按钮，应用会跳转到 `/debug` 页面，并自动选中该节点。
+  </div>
 </CalloutInfo>
 
 <DocImage src={nodePopupImage} alt="Node popup" />
@@ -184,7 +187,8 @@ const app = await NestFactory.create(AppModule, {
 <DocImage src={sandboxTableImage} alt="Sandbox table" />
 
 <CalloutInfo>
-  如需以表格形式美观地展示对象数组，可以使用 `console.table()`（或直接用 `table()`）函数。
+  如需以表格形式美观地展示对象数组，可以使用 `console.table()`（或直接用
+  `table()`）函数。
 </CalloutInfo>
 
 你可以观看下方视频，了解**交互式 Playground** 功能的实际效果：

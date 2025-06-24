@@ -5,14 +5,16 @@ Nest 默认基于 Express 构建，因此 Express 中的 MVC（模型-视图-控
 通常，我们可以使用官方提供的[命令行工具（CLI）](https://github.com/nestjs/nest-cli)快速搭建一个基础项目：
 
 ```bash
-$ npm i -g @nestjs/cli
-$ nest new project
+npm install -g @nestjs/cli
+
+# 创建项目
+nest new project-name
 ```
 
 如果你希望构建一个 MVC 应用，还需要安装[模板引擎](https://expressjs.com/en/guide/using-template-engines.html)（template engine）以支持 HTML 视图的渲染。这里以 `hbs`（[Handlebars](https://github.com/pillarjs/hbs#readme) 的 Express 封装）为例：
 
 ```bash
-$ npm install --save hbs
+npm install hbs
 ```
 
 当然，你也可以根据项目需求选择其他模板引擎。安装完成后，可通过以下方式配置 Express 实例：

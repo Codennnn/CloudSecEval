@@ -15,16 +15,19 @@
 使用 [Nest CLI](/cli/overview) 脚手架工具可以快速初始化一个全新的 Nest 项目。在开始之前，请确保系统已安装 [npm](https://www.npmjs.com/)。然后在终端中运行以下命令：
 
 ```bash
-$ npm i -g @nestjs/cli
+# 安装依赖
+npm install -g @nestjs/cli
+
+# 创建项目
 # [!code word:project-name:1]
-$ nest new project-name
+nest new project-name
 #          ^^^^^^^^^^^^ 这里可以填写你想要的项目名称
 ```
 
 <CalloutInfo>
   若希望项目启用 TypeScript 的
-  [严格模式](https://www.typescriptlang.org/tsconfig#strict)，可以在创建时添加 `--strict`
-  参数：`nest new project-name --strict`
+  [严格模式](https://www.typescriptlang.org/tsconfig#strict)，可以在创建时添加
+  `--strict` 参数：`nest new project-name --strict`
 </CalloutInfo>
 
 执行以上命令后，CLI 会创建一个名为 `project-name` 的目录，自动安装依赖并生成项目的基础结构，包括 `src/` 目录及多个核心文件。

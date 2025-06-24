@@ -11,7 +11,7 @@
 要开始构建基于 gRPC 的微服务，首先需要安装以下依赖包：
 
 ```bash
-$ npm i --save @grpc/grpc-js @grpc/proto-loader
+npm install @grpc/grpc-js @grpc/proto-loader
 ```
 
 ## 概述
@@ -23,13 +23,16 @@ import { NestFactory } from '@nestjs/core'
 import { type MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { join } from 'path'
 
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.GRPC,
-  options: {
-    package: 'hero',
-    protoPath: join(__dirname, 'hero/hero.proto'),
-  },
-})
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.GRPC,
+    options: {
+      package: 'hero',
+      protoPath: join(__dirname, 'hero/hero.proto'),
+    },
+  }
+)
 ```
 
 在 `nest-cli.json` 文件中，我们添加了 `assets` 属性，用于分发非 TypeScript 文件，同时通过 `watchAssets` 属性开启对所有非 TypeScript 资源的监听。在本例中，我们希望 `.proto` 文件能够被自动复制到 `dist` 目录。
@@ -86,8 +89,8 @@ message Hero {
 
 <CalloutInfo>
   之前微服务章节介绍的 `@MessagePattern()`
-  装饰器（[详细说明](/microservices/basics#request-response)）在基于 gRPC 的微服务中不再使用。对于
-  gRPC 微服务，`@GrpcMethod()` 装饰器起到了同样的作用。
+  装饰器（[详细说明](/microservices/basics#request-response)）在基于 gRPC
+  的微服务中不再使用。对于 gRPC 微服务，`@GrpcMethod()` 装饰器起到了同样的作用。
 </CalloutInfo>
 
 ```ts filename='heroes.controller.ts'
@@ -97,7 +100,11 @@ import { ServerUnaryCall } from 'grpc'
 @Controller()
 export class HeroesController {
   @GrpcMethod('HeroesService', 'FindOne')
-  findOne(data: HeroById, metadata: Metadata, call: ServerUnaryCall<any, any>): Hero {
+  findOne(
+    data: HeroById,
+    metadata: Metadata,
+    call: ServerUnaryCall<any, any>
+  ): Hero {
     const items = [
       { id: 1, name: 'John' },
       { id: 2, name: 'Doe' },
@@ -117,7 +124,11 @@ export class HeroesController {
 @Controller()
 export class HeroesController {
   @GrpcMethod('HeroesService')
-  findOne(data: HeroById, metadata: Metadata, call: ServerUnaryCall<any, any>): Hero {
+  findOne(
+    data: HeroById,
+    metadata: Metadata,
+    call: ServerUnaryCall<any, any>
+  ): Hero {
     const items = [
       { id: 1, name: 'John' },
       { id: 2, name: 'Doe' },
@@ -133,7 +144,11 @@ export class HeroesController {
 @Controller()
 export class HeroesService {
   @GrpcMethod()
-  findOne(data: HeroById, metadata: Metadata, call: ServerUnaryCall<any, any>): Hero {
+  findOne(
+    data: HeroById,
+    metadata: Metadata,
+    call: ServerUnaryCall<any, any>
+  ): Hero {
     const items = [
       { id: 1, name: 'John' },
       { id: 2, name: 'Doe' },
@@ -188,8 +203,9 @@ export class AppService implements OnModuleInit {
 ```
 
 <CalloutInfo type="warning" title="警告">
-  如果未在 proto 加载器配置中（microservice transporter 配置的 `options.loader.keepcase`）将
-  `keepCase` 选项设置为 `true`，gRPC 客户端不会发送名称中包含下划线 `_` 的字段。
+  如果未在 proto 加载器配置中（microservice transporter 配置的
+  `options.loader.keepcase`）将 `keepCase` 选项设置为 `true`，gRPC
+  客户端不会发送名称中包含下划线 `_` 的字段。
 </CalloutInfo>
 
 请注意，与其他微服务传输方式相比，这里有一个小区别。我们不是使用 `ClientProxy` 类，而是使用 `ClientGrpc` 类，它提供了 `getService()` 方法。`getService()` 泛型方法接收服务名称作为参数，并返回其实例（如果可用）。
@@ -267,7 +283,7 @@ call(): Observable<any> {
 要为你的服务器添加 gRPC 反射机制支持，首先需要安装相关实现包：
 
 ```bash
-$ npm i --save @grpc/reflection
+npm install @grpc/reflection
 ```
 
 然后，可以通过在 gRPC 服务器选项中的 `onLoadPackageDefinition` 钩子（hook）集成反射服务，示例如下：
@@ -275,13 +291,16 @@ $ npm i --save @grpc/reflection
 ```ts filename='main.ts'
 import { ReflectionService } from '@grpc/reflection'
 
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  options: {
-    onLoadPackageDefinition: (pkg, server) => {
-      new ReflectionService(pkg).addToServer(server)
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    options: {
+      onLoadPackageDefinition: (pkg, server) => {
+        new ReflectionService(pkg).addToServer(server)
+      },
     },
-  },
-})
+  }
+)
 ```
 
 现在，服务器将能够响应基于反射规范的 API 信息请求。
@@ -372,7 +391,8 @@ bidiHello(messages: Observable<any>, metadata: Metadata, call: ServerDuplexStrea
 ```
 
 <CalloutInfo type="warning" title="警告">
-  要支持使用 `@GrpcStreamMethod()` 装饰器实现全双工（full-duplex）交互，控制器方法必须返回一个 RxJS
+  要支持使用 `@GrpcStreamMethod()`
+  装饰器实现全双工（full-duplex）交互，控制器方法必须返回一个 RxJS
   `Observable`（可观察对象）。
 </CalloutInfo>
 
@@ -444,7 +464,7 @@ lotsOfGreetings(requestStream: any, callback: (err: unknown, value: HelloRespons
 要添加 gRPC 健康检查支持，首先安装 [grpc-node](https://github.com/grpc/grpc-node/tree/master/packages/grpc-health-check) 包：
 
 ```bash
-$ npm i --save grpc-health-check
+npm install grpc-health-check
 ```
 
 然后，可以通过在 gRPC 服务器选项中的 `onLoadPackageDefinition` 钩子（hook）将其集成到 gRPC 服务中。请注意，`protoPath` 需要同时包含健康检查和 hero 包。
@@ -471,8 +491,8 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 ```
 
 <CalloutInfo>
-  [gRPC health probe](https://github.com/grpc-ecosystem/grpc-health-probe) 是一个在容器化环境中测试
-  gRPC 健康检查非常实用的命令行工具（CLI）。
+  [gRPC health probe](https://github.com/grpc-ecosystem/grpc-health-probe)
+  是一个在容器化环境中测试 gRPC 健康检查非常实用的命令行工具（CLI）。
 </CalloutInfo>
 
 ## gRPC 元数据（Metadata）
@@ -487,7 +507,11 @@ gRPC 元数据是关于某个远程过程调用（RPC）的信息，以键值对
 @Controller()
 export class HeroesService {
   @GrpcMethod()
-  findOne(data: HeroById, metadata: Metadata, call: ServerUnaryCall<any, any>): Hero {
+  findOne(
+    data: HeroById,
+    metadata: Metadata,
+    call: ServerUnaryCall<any, any>
+  ): Hero {
     const serverMetadata = new Metadata()
     const items = [
       { id: 1, name: 'John' },

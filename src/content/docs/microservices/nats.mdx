@@ -7,7 +7,7 @@
 要开始构建基于 NATS 的微服务，请首先安装所需的包：
 
 ```bash
-$ npm i --save nats
+npm install nats
 ```
 
 ## 概述
@@ -17,12 +17,15 @@ $ npm i --save nats
 ```ts filename='main.ts'
 import { Transport } from '@nestjs/microservices'
 
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.NATS,
-  options: {
-    servers: ['nats://localhost:4222'],
-  },
-})
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.NATS,
+    options: {
+      servers: ['nats://localhost:4222'],
+    },
+  }
+)
 ```
 
 ## 选项
@@ -73,13 +76,16 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
 NATS 提供了一种内置的负载均衡功能，称为[分布式队列（distributed queues）](https://docs.nats.io/nats-concepts/queue)。要创建队列订阅，可以如下使用 `queue` 属性：
 
 ```ts filename='main.ts'
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  transport: Transport.NATS,
-  options: {
-    servers: ['nats://localhost:4222'],
-    queue: 'cats_queue',
-  },
-})
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    transport: Transport.NATS,
+    options: {
+      servers: ['nats://localhost:4222'],
+      queue: 'cats_queue',
+    },
+  }
+)
 ```
 
 ## 上下文

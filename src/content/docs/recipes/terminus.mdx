@@ -39,8 +39,8 @@ $ npm install --save @nestjs/terminus
 接下来，我们来创建一个 `HealthModule`，并在其 `imports` 数组中导入 `TerminusModule`。
 
 <CalloutInfo>
-  你可以通过 [Nest 命令行工具（Nest CLI）](/cli/overview) 快速创建模块，只需执行 `$ nest g module
-  health` 命令。
+  你可以通过 [Nest 命令行工具（Nest CLI）](/cli/overview) 快速创建模块，只需执行
+  `$ nest g module health` 命令。
 </CalloutInfo>
 
 ```ts filename='health.module.ts'
@@ -72,14 +72,18 @@ $ nest g controller health
 `HTTPHealthIndicator` 依赖 `@nestjs/axios` 包，因此你需要先安装它：
 
 ```bash
-$ npm i --save @nestjs/axios axios
+npm install @nestjs/axios axios
 ```
 
 接下来，我们来设置 `HealthController`：
 
 ```ts filename='health.controller.ts'
 import { Controller, Get } from '@nestjs/common'
-import { HealthCheckService, HttpHealthIndicator, HealthCheck } from '@nestjs/terminus'
+import {
+  HealthCheckService,
+  HttpHealthIndicator,
+  HealthCheck,
+} from '@nestjs/terminus'
 
 @Controller('health')
 export class HealthController {
@@ -91,7 +95,9 @@ export class HealthController {
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([() => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com')])
+    return this.health.check([
+      () => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com'),
+    ])
   }
 }
 ```
@@ -166,8 +172,8 @@ Terminus 提供了将数据库检查集成到健康检查中的功能。在使�
 
 <CalloutInfo>
   在底层，`TypeOrmHealthIndicator` 实际上执行的是一条 `SELECT 1` SQL
-  命令，这是一种验证数据库是否仍然可用的常用方法。如果你使用的是 Oracle 数据库，则会执行 `SELECT 1
-  FROM DUAL`。
+  命令，这是一种验证数据库是否仍然可用的常用方法。如果你使用的是 Oracle
+  数据库，则会执行 `SELECT 1 FROM DUAL`。
 </CalloutInfo>
 
 ```ts filename='health.controller.ts'
@@ -223,8 +229,12 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      () => this.db.pingCheck('albums-database', { connection: this.albumsConnection }),
-      () => this.db.pingCheck('database', { connection: this.defaultConnection }),
+      () =>
+        this.db.pingCheck('albums-database', {
+          connection: this.albumsConnection,
+        }),
+      () =>
+        this.db.pingCheck('database', { connection: this.defaultConnection }),
     ])
   }
 }
@@ -246,7 +256,8 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      () => this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.5 }),
+      () =>
+        this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.5 }),
     ])
   }
 }
@@ -266,7 +277,11 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      () => this.disk.checkStorage('storage', { path: '/', threshold: 250 * 1024 * 1024 * 1024 }),
+      () =>
+        this.disk.checkStorage('storage', {
+          path: '/',
+          threshold: 250 * 1024 * 1024 * 1024,
+        }),
     ])
   }
 }
@@ -299,7 +314,9 @@ export class HealthController {
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([() => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024)])
+    return this.health.check([
+      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
+    ])
   }
 }
 ```
@@ -322,7 +339,9 @@ export class HealthController {
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([() => this.memory.checkRSS('memory_rss', 150 * 1024 * 1024)])
+    return this.health.check([
+      () => this.memory.checkRSS('memory_rss', 150 * 1024 * 1024),
+    ])
   }
 }
 ```
@@ -344,7 +363,9 @@ export interface Dog {
 
 @Injectable()
 export class DogHealthIndicator {
-  constructor(private readonly healthIndicatorService: HealthIndicatorService) {}
+  constructor(
+    private readonly healthIndicatorService: HealthIndicatorService
+  ) {}
 
   private dogs: Dog[] = [
     { name: 'Fido', type: 'goodboy' },
@@ -381,8 +402,8 @@ export class HealthModule {}
 ```
 
 <CalloutInfo>
-  在实际项目中，`DogHealthIndicator` 应该在它自己所属的模块（例如 `DogModule`）中提供，然后再由
-  `HealthModule` 导入。
+  在实际项目中，`DogHealthIndicator` 应该在它自己所属的模块（例如
+  `DogModule`）中提供，然后再由 `HealthModule` 导入。
 </CalloutInfo>
 
 最后一步是在健康检查端点中调用我们的自定义健康指示器。为此，我们需要回到 `HealthController` 并在 `check` 方法中添加该指示器。
@@ -425,7 +446,12 @@ import { Injectable, Scope, ConsoleLogger } from '@nestjs/common'
 export class TerminusLogger extends ConsoleLogger {
   error(message: any, stack?: string, context?: string): void
   error(message: any, ...optionalParams: any[]): void
-  error(message: unknown, stack?: unknown, context?: unknown, ...rest: unknown[]): void {
+  error(
+    message: unknown,
+    stack?: unknown,
+    context?: unknown,
+    ...rest: unknown[]
+  ): void {
     // 在这里重写错误信息的日志记录方式
   }
 }
