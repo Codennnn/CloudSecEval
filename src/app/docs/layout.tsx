@@ -2,6 +2,7 @@ import { AppSidebar } from '~/components/AppSidebar'
 import { EnglishDocLink } from '~/components/doc/EnglishDocLink'
 import { ScrollToTop } from '~/components/doc/ScrollToTop'
 import { TableOfContents } from '~/components/doc/TableOfContents'
+import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import {
   SidebarInset,
   SidebarProvider,
@@ -38,12 +39,14 @@ export default function DocsLayout(props: React.PropsWithChildren) {
               <aside
                 className="w-64 sticky top-0 h-screen hidden @4xl:block"
               >
-                <div className="h-full overflow-y-auto py-[var(--content-padding)] pr-[var(--content-padding)]">
-                  <TableOfContents />
+                <div className="h-full pt-[var(--content-padding)] pr-[var(--content-padding)] flex flex-col pb-[calc(var(--content-padding)_/_2)]">
+                  <ScrollGradientContainer className="pb-4">
+                    <TableOfContents />
+                  </ScrollGradientContainer>
 
-                  <hr className="my-4 bg-border/70" />
+                  <hr className="bg-border/70" />
 
-                  <div className="inline-flex flex-col gap-1">
+                  <div className="inline-flex flex-col gap-1 pt-4">
                     <EnglishDocLink />
 
                     <ScrollToTop

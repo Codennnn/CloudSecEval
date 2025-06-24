@@ -10,7 +10,9 @@ interface TableOfContentsProps {
   className?: string
 }
 
-export function TableOfContents({ className }: TableOfContentsProps) {
+export function TableOfContents(props: TableOfContentsProps) {
+  const { className } = props
+
   const { tocItems, activeId } = useTableOfContents()
 
   if (tocItems.length === 0) {
