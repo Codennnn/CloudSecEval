@@ -1,12 +1,14 @@
 # 请求频率限制
 
-请求频率限制（Rate Limiting）是一种保护应用免受暴力破解等攻击的常用技术。要开始使用，请先安装 `@nestjs/throttler` 包。
+**请求频率限制**（Rate Limiting）是一种常用的安全机制，用于防止暴力破解等恶意请求，保护应用稳定运行。Nest 提供了 `@nestjs/throttler` 模块来实现这一功能。
+
+首先，安装依赖：
 
 ```bash
 npm install @nestjs/throttler
 ```
 
-安装完成后，可以像配置其他 Nest 包一样，使用 `forRoot` 或 `forRootAsync` 方法来配置 `ThrottlerModule` (限流模块)。
+安装完成后，可以像配置其他模块一样，使用 `forRoot` 或 `forRootAsync` 方法引入并配置 `ThrottlerModule`：
 
 ```ts filename='app.module.ts'
 @Module({
@@ -14,8 +16,8 @@ npm install @nestjs/throttler
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60000,
-          limit: 10,
+          ttl: 60000, // 时间窗口，单位为毫秒
+          limit: 10, // 每个窗口内允许的最大请求数
         },
       ],
     }),
@@ -24,9 +26,9 @@ npm install @nestjs/throttler
 export class AppModule {}
 ```
 
-上述配置为所有受 `ThrottlerGuard` 保护的路由设置了全局限流规则：`ttl` (Time To Live，单位为毫秒) 和 `limit` (在 `ttl` 时间窗口内允许的最大请求数)。
+上例为所有受限流守卫 `ThrottlerGuard` 保护的路由设置了默认的全局限流规则：在 60 秒（60000 毫秒）内最多允许 10 次请求。
 
-引入模块后，你可以根据需要绑定 `ThrottlerGuard` (限流守卫)。与[守卫 (Guard)](/guards)类似，任何绑定方式都适用。若要全局启用，可将其作为 `provider` 添加到任意模块中：
+模块配置完成后，需要绑定守卫以启用限流机制。`ThrottlerGuard` 可以通过与其他守卫相同的方式进行绑定。若希望在整个应用中生效，可将其注册为全局守卫：
 
 ```ts
 {
@@ -35,9 +37,15 @@ export class AppModule {}
 }
 ```
 
-## 多重限流定义
+## 定义多组限流策略
 
-有时，你可能需要设置多套限流规则，例如：每秒最多 3 次请求，每 10 秒最多 20 次，以及每分钟最多 100 次。为此，你可以在配置数组中为每套规则指定 `name`，然后通过 `@SkipThrottle()` 和 `@Throttle()` 装饰器按名称引用，从而实现灵活的策略切换。
+在某些场景下，你可能需要设置多套限流规则。例如：
+
+- 每秒最多 3 次请求；
+- 每 10 秒最多 20 次；
+- 每分钟最多 100 次。
+
+此时可以在配置中为每套规则命名，通过装饰器按需引用，实现策略切换：
 
 ```ts filename='app.module.ts'
 @Module({
@@ -64,9 +72,18 @@ export class AppModule {}
 export class AppModule {}
 ```
 
+定义完成后，可以使用以下装饰器灵活控制路由限流行为：
+
+- `@Throttle('short')`：应用指定规则；
+- `@SkipThrottle()`：跳过限流。
+
 ## 个性化定制
 
-在某些场景下，你可能需要将守卫全局绑定，但又希望对特定接口禁用限流。此时，可以使用 `@SkipThrottle()` 装饰器，使整个控制器类或单个路由跳过限流检查。`@SkipThrottle()` 还可以接收一个对象参数 (键为限流器名称，值为布尔值)，这在你需要排除控制器中的大部分路由，或根据名称跳过特定限流规则时非常有用。若不带参数使用，其效果等同于 `{{ '{' }} default: true {{ '}' }}`。
+在实际开发中，可能存在这样一种需求：你希望全局启用限流，但又希望某些接口或控制器跳过限流检查。这时，可以使用 `@SkipThrottle()` 装饰器，实现对特定路由的“豁免”。
+
+### 跳过限流
+
+`@SkipThrottle()` 可用于类或方法级别：
 
 ```ts
 @SkipThrottle()
@@ -74,41 +91,75 @@ export class AppModule {}
 export class UsersController {}
 ```
 
-`@SkipThrottle()` 装饰器不仅能跳过限流，还能在已跳过限流的类中，通过参数对特定路由重新启用限流。
+上述代码中，`users` 控制器下的所有路由都将跳过限流检查。
+
+你还可以传入一个对象作为参数，以按限流器名称精细控制哪些规则需要跳过。例如：
+
+```ts
+@SkipThrottle({ default: true, medium: false })
+```
+
+这在以下场景中非常实用：
+
+- 控制器中大多数路由都无需限流；
+- 使用了多套限流规则（见上一节），希望根据名称排除部分策略。
+
+如果不传入参数，则默认效果等同于：
+
+```ts
+@SkipThrottle({ default: true })
+```
+
+### 在跳过中“反向启用”
+
+即使在类上使用了 `@SkipThrottle()`，你仍然可以对某些方法局部重新启用限流，只需传入 `{ default: false }`：
 
 ```ts
 @SkipThrottle()
 @Controller('users')
 export class UsersController {
-  // 此路由将应用限流策略
+  // 此路由重新启用限流
   @SkipThrottle({ default: false })
   dontSkip() {
-    return 'List users work with Rate limiting.'
+    return '此接口启用了限流'
   }
 
-  // 此路由将跳过限流
+  // 此路由继续跳过限流
   doSkip() {
-    return 'List users work without Rate limiting.'
+    return '此接口未启用限流'
   }
 }
 ```
 
-此外，你还可以使用 `@Throttle()` 装饰器来覆盖全局配置的 `limit` 和 `ttl`，以实现更精细的安全策略。该装饰器可应用于类或方法级别。自 v5 版本起，该装饰器接收一个对象，其键是限流规则的名称 (若未命名，则为 `default`)，值是包含 `limit` 和 `ttl` 的新配置。示例如下：
+### 局部限流策略覆盖
+
+除了跳过，你也可以使用 `@Throttle()` 装饰器在类或方法级别覆盖全局配置，自定义请求频率。
+
+从 v5 版本起，`@Throttle()` 支持传入一个对象，按规则名称进行配置。例如：
 
 ```ts
-// 覆盖默认的限流次数和持续时间
+// 覆盖默认限流规则：每 60 秒最多请求 3 次
 @Throttle({ default: { limit: 3, ttl: 60000 } })
 @Get()
 findAll() {
-  return "List users works with custom rate limiting.";
+  return '此接口使用自定义限流策略';
 }
 ```
 
-## 代理服务器
+如需使用命名限流规则（例如 `short`、`medium` 等），可传入多个键值对进行覆盖。
 
-如果你的应用部署在代理服务器之后，必须将 HTTP 适配器配置为信任代理，以便正确获取客户端 IP。你可以参考 [Express](http://expressjs.com/en/guide/behind-proxies.html) 和 [Fastify](https://www.fastify.io/docs/latest/Reference/Server/#trustproxy) 的官方文档来启用 `trust proxy` 设置。
+## 代理服务器支持
 
-以下示例演示了如何为 Express 适配器启用 `trust proxy`：
+当你的应用部署在代理服务器（如 Nginx、API 网关等）之后，获取真实客户端 IP 可能会受到影响。为确保限流功能能够准确追踪用户请求来源，必须显式配置 HTTP 适配器以信任代理。
+
+Nest 支持的底层 HTTP 平台（如 Express、Fastify）均提供了相关配置。具体可参考：
+
+- Express：[Behind Proxies 指南](http://expressjs.com/en/guide/behind-proxies.html)
+- Fastify：[trustProxy 配置](https://www.fastify.io/docs/latest/Reference/Server/#trustproxy)
+
+### 配置 Express 的 `trust proxy`
+
+若使用的是 Express 适配器，可通过如下方式启用 `trust proxy` 设置：
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
@@ -117,14 +168,16 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
-  app.set('trust proxy', 'loopback') // 信任来自 loopback 地址的请求
+
+  // 信任来自 loopback（127.0.0.1）地址的代理请求
+  app.set('trust proxy', 'loopback')
+
   await app.listen(3000)
 }
-
 bootstrap()
 ```
 
-启用 `trust proxy` 后，`ThrottlerModule` 将能通过 `X-Forwarded-For` 请求头获取真实的客户端 IP。你还可以通过继承 `ThrottlerGuard` 并重写 `getTracker()` 方法，来完全自定义 IP 的追踪逻辑 (例如，从不同的请求头中提取)，而不依赖默认的 `req.ip`。以下示例展示了如何实现：
+启用后，Nest 中的 `req.ip` 将自动解析 `X-Forwarded-For` 请求头，从而获取到客户端的真实 IP 地址。这对于限流模块（如 `ThrottlerModule`）至关重要。
 
 ```ts filename='throttler-behind-proxy.guard.ts'
 import { ThrottlerGuard } from '@nestjs/throttler'
@@ -133,21 +186,24 @@ import { Injectable } from '@nestjs/common'
 @Injectable()
 export class ThrottlerBehindProxyGuard extends ThrottlerGuard {
   protected async getTracker(req: Record<string, any>): Promise<string> {
-    return req.ips.length ? req.ips[0] : req.ip // 可根据需求自定义 IP 提取逻辑
+    // 优先使用 req.ips 中的第一个地址；否则回退到 req.ip
+    return req.ips.length ? req.ips[0] : req.ip
   }
 }
 ```
 
+该方法返回的字符串将作为限流判断的唯一标识（key），通常是 IP，也可以是用户 ID、请求路径等。
+
 <CalloutInfo>
-  你可以在 Express 的[官方文档](https://expressjs.com/en/api.html#req.ips)和
-  Fastify
-  的[官方文档](https://www.fastify.io/docs/latest/Reference/Request/)中查阅
-  `req` 请求对象的 API。
+  你可以参考 Express 的 [`req.ips`](https://expressjs.com/en/api.html#req.ips)
+  和 Fastify 的 [`Request`
+  对象文档](https://www.fastify.io/docs/latest/Reference/Request/)，了解其如何处理代理下的
+  IP 信息。
 </CalloutInfo>
 
-## WebSocket 通信
+## WebSocket 通信支持
 
-本模块同样支持 WebSocket 通信，但这需要对 `ThrottlerGuard` 进行扩展。你可以通过继承该守卫并重写 `handleRequest` 方法来实现，示例如下：
+该模块同样支持 WebSocket 通信，但需要扩展内置的 `ThrottlerGuard`。你可以通过继承守卫并重写其 `handleRequest` 方法，实现自定义的节流逻辑。如下示例：
 
 ```ts
 @Injectable()
@@ -166,6 +222,7 @@ export class WsThrottlerGuard extends ThrottlerGuard {
     const client = context.switchToWs().getClient()
     const tracker = client._socket.remoteAddress
     const key = generateKey(context, tracker, throttler.name)
+
     const { totalHits, timeToExpire, isBlocked, timeToBlockExpire } =
       await this.storageService.increment(
         key,
@@ -178,7 +235,7 @@ export class WsThrottlerGuard extends ThrottlerGuard {
     const getThrottlerSuffix = (name: string) =>
       name === 'default' ? '' : `-${name}`
 
-    // 当请求总数超过限制时，抛出节流异常
+    // 超出限制时抛出节流异常
     if (isBlocked) {
       await this.throwThrottlingException(context, {
         limit,
@@ -192,29 +249,30 @@ export class WsThrottlerGuard extends ThrottlerGuard {
       })
     }
 
-    // 允许请求通过
+    // 请求未超限，允许继续处理
     return true
   }
 }
 ```
 
 <CalloutInfo>
-  `context.switchToWs().getClient()` 返回的客户端对象会因你使用的 WebSocket 驱动而异。
-  - **对于 `@nestjs/platform-ws`**：如示例所示，`client._socket.remoteAddress` 通常可以获取 IP 地址。
-  - **对于 `socket.io`**：你可以尝试通过 `client.handshake.address` 获取 IP。
+`context.switchToWs().getClient()` 返回的客户端对象依赖于所使用的 WebSocket 平台实现：
 
-请注意，依赖 `_socket` 这类内部属性可能在不同版本间存在兼容性问题。
+- 使用 `@nestjs/platform-ws` 时：如上示例所示，可通过 `client._socket.remoteAddress` 获取客户端 IP 地址。
+- 使用 `socket.io` 时：推荐通过 `client.handshake.address` 获取 IP。
+
+请注意：访问 `_socket` 这类内部属性可能存在兼容性问题，尤其在库版本更新时。
 
 </CalloutInfo>
 
-在使用 WebSocket 通信时，有几点需要注意：
+使用 WebSocket 节流功能时，请特别留意以下几点：
 
-- 此守卫不能通过 `APP_GUARD` 或 `app.useGlobalGuards()` 全局注册。
-- 当请求被限制时，守卫会抛出 `ThrottlingException`，Nest 会发出一个 `exception` 事件。请确保你有一个监听此事件的异常过滤器。
+- 该守卫无法通过 `APP_GUARD` 或 `app.useGlobalGuards()` 全局注册。 必须显式在每个处理器（如网关类）中使用。
+- 被限流的请求将触发 `ThrottlingException` 异常。 Nest 将自动广播 `exception` 事件，因此你需要实现一个异常过滤器来监听并处理该事件。
 
-## GraphQL 查询
+## GraphQL 支持
 
-`ThrottlerGuard` 同样可以保护 GraphQL 解析器 (Resolver)。只需继承该守卫，并重写 `getRequestResponse` 方法，从中提取原生的 `request` 和 `response` 对象即可。
+`ThrottlerGuard` 同样适用于 GraphQL 查询。你只需继承守卫并重写 `getRequestResponse` 方法，从 GraphQL 上下文中提取原始的 `request` 和 `response` 对象：
 
 ```ts
 @Injectable()
@@ -227,36 +285,38 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 }
 ```
 
-## 配置
+## 配置选项
 
-以下选项可用于 `ThrottlerModule` 选项数组中的配置对象：
+你可以在 `ThrottlerModule` 的配置数组中传入以下参数，每个对象代表一个限流器配置项：
 
-| 参数               | 描述                                                                                                                       |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------------- |
-| `name`             | 用于内部追踪当前限流器集合的名称。如果未传递，则默认为 `'default'`                                                         |
-| `ttl`              | 每个请求在存储中持续的毫秒数                                                                                               |
-| `limit`            | 在 TTL 限制内允许的最大请求次数                                                                                            |
-| `blockDuration`    | 请求被阻止的持续时间 (毫秒)                                                                                                |
-| `ignoreUserAgents` | 一个包含需要忽略限流的用户代理 (User-Agent) 正则表达式的数组                                                               |
-| `skipIf`           | 一个函数，接收 `ExecutionContext` 并返回 `boolean`，用于短路限流逻辑。类似于 `@SkipThrottle()`，但可基于请求自定义跳过条件 |
+| 参数名             | 说明                                                                                                                            |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| `name`             | 限流器集合的名称，用于内部追踪。若未指定，默认为 `'default'`。                                                                  |
+| `ttl`              | 请求在存储中保留的时间（毫秒）。                                                                                                |
+| `limit`            | 在 `ttl` 时间范围内允许的最大请求次数。                                                                                         |
+| `blockDuration`    | 请求触发限流后的封禁时间（毫秒）。                                                                                              |
+| `ignoreUserAgents` | 一个包含正则表达式的数组，用于匹配并忽略指定的 `User-Agent`，不对其应用限流。                                                   |
+| `skipIf`           | 接收 `ExecutionContext` 并返回布尔值的函数，支持动态跳过限流逻辑。与 `@SkipThrottle()` 类似，但允许基于请求内容自定义跳过条件。 |
 
-如果你需要设置存储 (storage)，或者希望以更全局的方式应用上述部分选项 (即应用于每个限流器集合)，可以通过 `throttlers` 选项键传递上述选项，并参考下表：
+如果你希望全局配置某些选项（如统一存储方案），或集中定义多个限流器集合，可以通过 `throttlers` 选项进行配置，并使用以下参数：
 
-| 参数               | 描述                                                                                                                                                             |
-| :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `storage`          | 自定义存储服务，用于记录限流信息。[详见此处](#存储方式)。                                                                                                        |
-| `ignoreUserAgents` | 一个包含需要忽略限流的用户代理正则表达式的数组                                                                                                                   |
-| `skipIf`           | 一个函数，接收 `ExecutionContext` 并返回 `boolean`，用于短路限流逻辑。类似于 `@SkipThrottle()`，但可基于请求自定义跳过条件                                       |
-| `throttlers`       | 限流器集合的数组，定义方式见上表                                                                                                                                 |
-| `errorMessage`     | 一个 `string` 或函数，接收 `ExecutionContext` 和 `ThrottlerLimitDetail`，返回 `string`，用于自定义限流错误消息，覆盖默认提示                                     |
-| `getTracker`       | 一个函数，接收 `Request` 对象并返回 `string`，用于覆盖 `getTracker` 方法的默认逻辑                                                                               |
-| `generateKey`      | 一个函数，接收 `ExecutionContext`、追踪字符串 `string` 以及限流器名称 `string`，返回 `string`，用于覆盖 `generateKey` 方法的默认逻辑，决定最终用于存储限流值的键 |
+| 参数名             | 说明                                                                                                                                  |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
+| `storage`          | 自定义的限流存储服务实例，用于持久化请求状态。详见下方[存储方式](#存储方式)。                                                         |
+| `ignoreUserAgents` | 正则表达式数组，用于忽略特定 `User-Agent` 的限流逻辑。                                                                                |
+| `skipIf`           | 用于跳过限流逻辑的函数，接收 `ExecutionContext`，返回布尔值。支持灵活配置跳过条件。                                                   |
+| `throttlers`       | 定义多个限流器配置项的数组，结构与上表一致。                                                                                          |
+| `errorMessage`     | 自定义限流错误信息。可以是字符串，或函数形式，接收 `ExecutionContext` 与 `ThrottlerLimitDetail`，返回提示文本，用于覆盖默认错误信息。 |
+| `getTracker`       | 自定义追踪标识生成函数。接收 `Request` 对象，返回字符串，用于替代默认的 `getTracker` 实现。                                           |
+| `generateKey`      | 自定义存储键生成逻辑。接收 `ExecutionContext`、追踪标识字符串和限流器名称，返回最终存储使用的键，用于替换默认的 `generateKey` 方法。  |
 
 ## 异步配置
 
-有时你可能希望以异步方式获取限流配置，而不是同步进行。此时可以使用 `forRootAsync()` 方法，该方法支持依赖注入和 `async` 方法。
+在某些场景下，你可能希望异步加载限流配置（例如从配置中心或数据库中获取）。此时可以使用 `ThrottlerModule.forRootAsync()` 方法。
 
-一种常见做法是使用工厂函数：
+该方法支持依赖注入，并允许通过工厂函数或配置类的方式提供限流设置：
+
+### 使用工厂函数
 
 ```ts
 @Module({
@@ -276,7 +336,7 @@ export class GqlThrottlerGuard extends ThrottlerGuard {
 export class AppModule {}
 ```
 
-你也可以使用 `useClass` 语法：
+### 使用配置类
 
 ```ts
 @Module({
@@ -290,35 +350,35 @@ export class AppModule {}
 export class AppModule {}
 ```
 
-只要 `ThrottlerConfigService` 实现了 `ThrottlerOptionsFactory` 接口，这种方式便同样可行。
+只要 `ThrottlerConfigService` 实现了 `ThrottlerOptionsFactory` 接口，该方式即可正常工作。
 
 ## 存储方式
 
-模块内置的存储器是一个内存缓存，它会追踪请求记录，直到记录的存活时间 (TTL) 结束。你可以提供自己的存储器来替换默认实现，只需让自定义的类实现 `ThrottlerStorage` 接口，并将其传递给模块的 `storage` 选项即可。
+`@nestjs/throttler` 默认使用内存缓存作为存储器，用于追踪每个请求的访问记录，直到其生命周期（TTL）结束。
+如果你希望自定义存储机制（如持久化存储或跨服务共享），只需实现 `ThrottlerStorage` 接口，并将该实现类通过模块配置中的 `storage` 选项注入即可。
 
-对于分布式应用场景，你可以使用社区提供的 [Redis 存储适配器](https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis)，以实现统一的限流数据源。
+在分布式应用场景下，推荐使用社区维护的 [Redis 存储适配器](https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis)，以实现多节点间共享限流状态。
 
 <CalloutInfo>
-  <div>`ThrottlerStorage` 接口可从 `@nestjs/throttler` 包中导入。</div>
+  `ThrottlerStorage` 接口可从 `@nestjs/throttler` 包中导入。
 </CalloutInfo>
 
-## 时间辅助方法
+## 时间辅助函数
 
-为了提高可读性，`@nestjs/throttler` 导出了一些时间单位辅助函数，包括 `seconds`、`minutes`、`hours`、`days` 和 `weeks`。你可以直接使用他们来设置 `ttl` 或 `blockDuration`，例如 `seconds(5)`，函数会自动将其转换为毫秒。
+为提升可读性，`@nestjs/throttler` 提供了若干时间单位转换函数，如 `seconds`、`minutes`、`hours`、`days` 和 `weeks`。
+你可以使用这些函数更直观地设置 `ttl`（存活时间）或 `blockDuration`（封禁时长），例如：`seconds(5)` 将自动转换为 5000 毫秒。
 
 ## 迁移指南
 
-对于大多数用户，只需将你的根配置选项包装在一个数组中即可完成迁移。
+在 v5 版本中，限流模块引入了多策略支持，大部分迁移只需将原有配置包裹进一个数组。
 
-如果你正在使用自定义存储，应将原有的 `ttl` 和 `limit` 选项移入 `throttlers` 数组中。
+- 如果使用了自定义存储器，请将原本顶层的 `ttl` 和 `limit` 移入 `throttlers` 数组项中；
+- `@Throttle()` 装饰器现在接受一个对象参数，其中键为限流规则名称（默认是 `'default'`），值为包含 limit 和 ttl 的配置对象；
+- 同理，`@SkipThrottle()` 装饰器也应接收一个 `{ [key: string]: boolean }` 形式的对象，键为规则名称。
 
-所有的 `@SkipThrottle()` 装饰器现在都应接收一个 `{ [key: string]: boolean }` 形式的对象。其中的键是限流规则的名称 (如果未命名，则使用 `'default'`)。
-
-同样，`@Throttle()` 装饰器现在也接收一个对象，其键为限流规则的名称 (默认为 `'default'`)，值为一个包含 `limit` 和 `ttl` 的新配置对象。
-
-<CalloutInfo>
-  请注意：v5 版本后，`ttl` 的单位已变更为**毫秒**。为了保持可读性，建议使用
-  `seconds()` 等[时间辅助函数](#时间辅助方法)来设置时间，它会自动完成单位转换。
+<CalloutInfo type="warning">
+  自 v5 起，`ttl` 的单位已统一为 **毫秒**。为了确保配置清晰易懂，建议配合
+  [时间辅助函数](#时间辅助函数) 使用，如 `seconds()`。
 </CalloutInfo>
 
-更多信息请参见[更新日志](https://github.com/nestjs/throttler/blob/master/CHANGELOG.md#500)
+如需了解更多详细变更内容，请参阅[更新日志](https://github.com/nestjs/throttler/blob/master/CHANGELOG.md#500)。

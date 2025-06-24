@@ -77,7 +77,7 @@
 - [x] `/security/helmet` - Helmet
 - [x] `/security/cors` - CORS
 - [x] `/security/csrf` - CSRF 防护
-- [ ] `/security/rate-limiting` - 请求频率限制
+- [x] `/security/rate-limiting` - 请求频率限制
 
 ## 7. GraphQL 支持
 
