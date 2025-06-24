@@ -80,7 +80,7 @@ export default function HomePage() {
             <div className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium mb-6">
               🎉 社区开发者维护的高质量中文文档
             </div>
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl mb-6">
+            <h1 className="text-3xl leading-[1.2] font-bold sm:text-4xl md:text-5xl lg:text-6xl mb-6">
               NestJS 中文文档
               <br />
               <span className="text-primary">精校版 · 优化阅读体验</span>
