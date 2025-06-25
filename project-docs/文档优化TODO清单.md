@@ -146,7 +146,7 @@
 ## 12. 实用案例
 
 - [ ] `/recipes/repl` - REPL
-- [ ] `/recipes/crud-generator` - CRUD 生成器
+- [x] `/recipes/crud-generator` - CRUD 生成器
 - [x] `/recipes/swc` - SWC 编译支持
 - [ ] `/recipes/passport` - Passport（认证）
 - [ ] `/recipes/hot-reload` - 热重载

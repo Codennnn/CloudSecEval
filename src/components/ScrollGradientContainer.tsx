@@ -6,6 +6,7 @@ import { useEvent } from 'react-use-event-hook'
 import { cn } from '~/lib/utils'
 
 interface ScrollGradientContainerProps {
+  rootClassName?: string
   className?: string
   gradientHeight?: string
   gradientFromColor?: string
@@ -20,6 +21,7 @@ export const ScrollGradientContainer = forwardRef<
 >(function ScrollGradientContainer(props, ref) {
   const {
     children,
+    rootClassName,
     className,
     gradientHeight = 'h-10',
     gradientFromColor = 'from-background',
@@ -92,7 +94,7 @@ export const ScrollGradientContainer = forwardRef<
   }, [ref])
 
   return (
-    <div className="relative flex-1 overflow-hidden">
+    <div className={cn('relative flex-1 overflow-hidden', rootClassName)}>
       {/* 顶部渐变遮罩 */}
       {scrollState.canScrollUp && (
         <div

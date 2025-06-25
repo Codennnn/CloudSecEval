@@ -38,7 +38,7 @@ flowchart TD
 
 在以下示例中，我们使用了 `@Controller()` 装饰器来定义一个控制器，该装饰器是创建控制器类的必要组成部分。通过在 `@Controller()` 中传入一个可选的路径前缀（如 `'cats'`），可以将所有相关路由归类到同一基础路径下，从而避免在每个处理方法中重复书写公共路径。
 
-例如，若希望将所有与「猫（cat）」相关的路由统一归在 `/cats` 下，只需在装饰器中传入 `'cats'` 作为前缀，便可简化后续的路径声明：
+例如，若希望将所有与“猫咪（cat）”相关的路由统一归在 `/cats` 下，只需在装饰器中传入 `'cats'` 作为前缀，便可简化后续的路径声明：
 
 ```ts filename='cats.controller.ts'
 import { Controller, Get } from '@nestjs/common'
@@ -47,12 +47,14 @@ import { Controller, Get } from '@nestjs/common'
 export class CatsController {
   @Get()
   findAll(): string {
-    return '该操作返回所有猫'
+    return '该操作返回所有猫咪'
   }
 }
 ```
 
-<CalloutInfo>你可以通过 CLI 命令 `nest g controller [name]` 快速生成一个控制器文件。</CalloutInfo>
+<CalloutInfo>
+  你可以通过 CLI 命令 `nest g controller [name]` 快速生成一个控制器文件。
+</CalloutInfo>
 
 `@Get()` 是一个 HTTP 请求方法装饰器，作用是将被装饰的方法映射为 GET 请求的处理器。在上面的例子中，`findAll()` 方法没有额外路径定义，而控制器的路径前缀为 `'cats'`，因此该方法会响应 `GET /cats` 路由。
 
@@ -66,7 +68,7 @@ export class CatsController {
 
 | 方式                                                          | 说明                                                                                                                                                                                                                                                                                                                                  |
 | :------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| <div className='whitespace-nowrap'>**标准方式（推荐）**</div> | 当处理器返回一个值（如对象、数组或原始类型），Nest 会自动根据内容生成响应。例如返回对象或数组时会自动序列化为 JSON；返回字符串、数字或布尔值时则原样发送。默认状态码为 200，POST 请求则默认为 201。若需修改，可使用 `@HttpCode(...)` 装饰器（详见[自定义状态码](#自定义状态码)）。                                                    |
+| <div className='whitespace-nowrap'>**标准方式（推荐）**</div> | 当处理器返回一个值（如对象、数组或原始类型），Nest 会自动根据内容生成响应。例如，返回对象或数组时会自动序列化为 JSON；返回字符串、数字或布尔值时则原样发送。默认状态码为 200，POST 请求则默认为 201。若需修改，可使用 `@HttpCode(...)` 装饰器（详见[自定义状态码](#自定义状态码)）。                                                  |
 | <div className='whitespace-nowrap'>**库特定方式**</div>       | 通过在方法参数中注入底层 HTTP 框架（如 Express）提供的[响应对象](https://expressjs.com/en/api.html#res)（使用 `@Res()` 装饰器），可以手动控制状态码、响应头和返回内容。例如：`response.status(200).send()`。该方式适用于需要精细控制响应行为的场景。但需注意，一旦使用原生响应对象，Nest 将不再自动处理响应，需完全由开发者负责管理。 |
 
 <CalloutInfo type="warning">
@@ -90,7 +92,7 @@ import { Request } from 'express'
 export class CatsController {
   @Get()
   findAll(@Req() request: Request): string {
-    return '该操作返回所有猫'
+    return '该操作返回所有猫咪'
   }
 }
 ```
@@ -116,9 +118,11 @@ export class CatsController {
 | `@Ip()`                               | `req.ip`                            |
 | `@HostParam()`                        | `req.hosts`                         |
 
-<sup>*</sup> `@Res()` 是 `@Response()` 的别名，二者均用于获取底层平台提供的原生响应对象。Nest
+<sup>*</sup> `@Res()` 是 `@Response()`
+的别名，二者均用于获取底层平台提供的原生响应对象。Nest
 提供这两个装饰器，以支持多种 HTTP 平台（如 Express、Fastify）。
-使用时建议同时安装对应平台的类型声明包（如 `@types/express`），以获得更完整的类型提示。
+使用时建议同时安装对应平台的类型声明包（如
+`@types/express`），以获得更完整的类型提示。
 
 请注意，一旦在处理器方法中注入了 `@Res()` 或 `@Response()`，Nest 将切换为**库特定模式**（library-specific mode）。此模式下，框架不再自动处理响应，而需要你手动调用方法（如 `res.send()` 或` res.json()`）来结束请求，否则可能导致客户端请求长时间无响应。
 
@@ -142,7 +146,7 @@ export class CatsController {
 
   @Get()
   findAll(): string {
-    return '该操作返回所有猫'
+    return '该操作返回所有猫咪'
   }
 }
 ```
@@ -217,8 +221,8 @@ Nest 提供了多种方式用于实现响应重定向。你可以使用 `@Redire
 ```
 
 <CalloutInfo>
-  如果需要根据业务逻辑动态确定重定向的地址或状态码，可以通过返回一个符合 `HttpRedirectResponse`
-  接口（定义于 `@nestjs/common`）的对象来实现。
+  如果需要根据业务逻辑动态确定重定向的地址或状态码，可以通过返回一个符合
+  `HttpRedirectResponse` 接口（定义于 `@nestjs/common`）的对象来实现。
 </CalloutInfo>
 
 需要注意的是，**返回的对象会覆盖装饰器中指定的默认值**。例如：
@@ -281,7 +285,8 @@ export class AdminController {
 ```
 
 <CalloutInfo type="warning">
-  由于 Fastify 不支持嵌套路由，如果你需要使用子域名路由，建议使用默认的 Express 适配器。
+  由于 Fastify 不支持嵌套路由，如果你需要使用子域名路由，建议使用默认的 Express
+  适配器。
 </CalloutInfo>
 
 类似 `path` 属性，`host` 也支持使用参数占位符（例如 `:subdomain`）来匹配主机名中的动态部分。你可以使用 `@HostParam()` 装饰器获取这些动态值，如下示例所示：
@@ -356,8 +361,8 @@ async create(@Body() createCatDto: CreateCatDto) {
 ```
 
 <CalloutInfo>
-  使用 `ValidationPipe` 时，Nest 能够自动移除所有不在白名单中的字段。以 `CreateCatDto` 为例，只有
-  `name`、`age` 和 `breed`
+  使用 `ValidationPipe` 时，Nest 能够自动移除所有不在白名单中的字段。以
+  `CreateCatDto` 为例，只有 `name`、`age` 和 `breed`
   三个字段是被允许的，任何额外字段都会被自动剥离。详细用法请参考[属性剥离说明](/techniques/validation#属性剥离)。
 </CalloutInfo>
 
@@ -416,8 +421,9 @@ const app = await NestFactory.create<NestFastifyApplication>(
 ```
 
 <CalloutInfo>
-  `qs` 是一个功能强大的查询字符串解析器，支持嵌套对象、数组等复杂结构，你可以通过运行 `npm install
-  qs` 安装它。
+  `qs`
+  是一个功能强大的查询字符串解析器，支持嵌套对象、数组等复杂结构，你可以通过运行
+  `npm install qs` 安装它。
 </CalloutInfo>
 
 ## 错误处理机制
@@ -429,7 +435,16 @@ const app = await NestFactory.create<NestFastifyApplication>(
 下面的示例展示了如何使用多个装饰器快速构建一个基础控制器。该控制器包含常见的 RESTful 端点，用于处理猫咪数据的读取与更新操作：
 
 ```ts filename='cats.controller.ts'
-import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Query,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common'
 import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto'
 
 @Controller('cats')

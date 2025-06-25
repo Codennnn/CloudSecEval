@@ -228,8 +228,9 @@ function MermaidChart(props: MermaidChartProps) {
       {showControls && (
         <div
           className={cn(
-            'absolute top-1 right-1',
+            'absolute',
             'flex gap-1 z-10 rounded-sm p-0.5 border border-border bg-background/50 backdrop-blur-sm shadow-xs',
+            isFullScreen ? 'top-4 right-4' : 'top-1 right-1',
             !isFullScreen && 'group-hover/mermaid-chart:opacity-100 opacity-0 transition-opacity',
             controlsClassName,
           )}
@@ -265,9 +266,6 @@ function MermaidChart(props: MermaidChartProps) {
           )}
         </div>
       )}
-
-      {/* 渲染区域 */}
-
     </div>
   )
 }
