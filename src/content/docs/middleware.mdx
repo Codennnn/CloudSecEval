@@ -1,6 +1,6 @@
 # 中间件
 
-**中间件**（Middleware）是一个在路由处理器**执行之前**调用的函数，它可以访问[请求对象](https://expressjs.com/en/4x/api.html#req)（Request）、[响应对象](https://expressjs.com/en/4x/api.html#res)（Response），以及控制请求流程的 `next()` 回调函数。通常情况下，**下一个中间件函数**通过名为 `next` 的参数显式调用。
+**中间件**（Middleware） 是一种在路由处理器**执行之前**被调用的函数。它可以访问[请求对象](https://expressjs.com/en/4x/api.html#req)（Request）、[响应对象](https://expressjs.com/en/4x/api.html#res)（Response），以及用于控制请求流程的 `next()` 回调函数。通常，中间件函数需要显式调用 `next()`，以将控制权传递给**下一个中间件**或最终的路由处理器。
 
 ```mermaid
 graph LR
@@ -36,7 +36,7 @@ graph LR
     end
 ```
 
-在 Nest 中，中间件默认遵循 Express 的中间件机制。以下是 [Express 官方文档](https://expressjs.com/en/guide/using-middleware.html)对中间件功能的定义：
+在 Nest 中，中间件默认遵循 Express 的中间件机制。以下是 [Express 官方文档](https://expressjs.com/en/guide/using-middleware.html)对中间件的定义：
 
 > 中间件函数可以执行以下操作：
 >
@@ -46,12 +46,12 @@ graph LR
 > - 调用栈中的下一个中间件函数
 > - 如果当前中间件没有终止请求流程，必须显式调用 `next()`，否则请求将被挂起
 
-Nest 支持两种方式定义中间件：函数形式与类形式。
+Nest 支持两种形式的中间件定义方式：**函数式中间件**和**类中间件**。
 
-- **函数式中间件**是普通的函数，没有强制的结构或接口要求；
-- **类中间件**需要使用 `@Injectable()` 装饰器，并实现 `NestMiddleware` 接口。
+- 函数式中间件是一个普通函数，不依赖特定结构或接口。
+- 类中间件则需使用 `@Injectable()` 装饰器，并实现 `NestMiddleware` 接口。
 
-以下是一个使用类实现的中间件示例：
+下面是一个使用类实现中间件的示例：
 
 ```ts filename='logger.middleware.ts'
 import { Injectable, NestMiddleware } from '@nestjs/common'
@@ -68,7 +68,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
 ## 中间件的依赖注入
 
-Nest 中间件原生支持依赖注入，与控制器和服务（提供者）一样，你可以通过构造函数将模块中已注册的依赖注入到中间件中使用。这意味着中间件同样可以享受 Nest 的依赖注入机制带来的便利和一致性。
+Nest 中间件原生支持依赖注入。与控制器和服务（提供者）类似，你可以通过构造函数将模块中已注册的依赖注入到中间件中。这意味着中间件同样可以充分利用 Nest 的依赖注入机制，享受一致的开发体验和良好的可维护性。
 
 ## 中间件的注册与应用
 
@@ -91,7 +91,7 @@ export class AppModule implements NestModule {
 }
 ```
 
-在上述代码中，`LoggerMiddleware` 被绑定到 `/cats` 路由，该路由由 `CatsController` 处理。你还可以通过 `forRoutes()` 方法传入一个包含 `path` 和 `method` 属性的对象，进一步限定中间件的匹配范围。
+在上述代码中，`LoggerMiddleware` 被绑定到 `/cats` 路由，该路由由 `CatsController` 处理。你还可以通过 `forRoutes()` 方法传入一个包含 `path` 和 `method` 属性的对象，以进一步精确控制中间件的应用范围。
 
 例如，以下示例仅将中间件应用于对 `/cats` 路由发起的 GET 请求：
 
@@ -119,7 +119,7 @@ export class AppModule implements NestModule {
   `await`。
 </CalloutInfo>
 
-<CalloutInfo type="warning">
+<CalloutInfo>
 当使用 Express 作为底层 HTTP 适配器时，Nest 默认会注册 `body-parser` 提供的 `json` 与 `urlencoded` 中间件。
 
 如果你希望完全自定义这些中间件的行为，并通过 `MiddlewareConsumer` 手动注册它们，需要在调用 `NestFactory.create()` 时将 `bodyParser` 选项设置为 `false`，以禁用默认中间件的自动注入。
@@ -141,13 +141,13 @@ forRoutes({
 
 <CalloutInfo>
   `splat`
-  仅作为占位符使用，不具备特殊含义。你可以使用任意合法的标识符进行替换，如
-  `*wildcard` 等。
+  仅作为占位符使用，不具备特殊含义。你可以使用任意合法的标识符进行替换，比如
+  `*wildcard`。
 </CalloutInfo>
 
 需要注意，像连字符（`-`）和点（`.`）等字符在路径中会按字面意义进行匹配，**不会被通配符捕获**。此外，`'abcd/*'` 不会匹配纯 `'abcd/'`（即末尾无附加路径段）的请求。
 
-如果你希望同时匹配 'abcd/' 本身以及后续子路径，可以将通配符包裹在大括号中，使其成为可选参数：
+如果你希望同时匹配 `'abcd/'` 本身以及后续子路径，可以将通配符包裹在大括号中，使其成为可选参数：
 
 ```ts
 forRoutes({
@@ -156,15 +156,15 @@ forRoutes({
 })
 ```
 
-## MiddlewareConsumer 使用指南
+## `MiddlewareConsumer` 使用指南
 
-`MiddlewareConsumer` 是 Nest 提供的一个辅助类，用于灵活配置和管理中间件。它支持**链式调用**（[Fluent Interface](https://en.wikipedia.org/wiki/Fluent_interface)），使中间件的注册过程更加简洁、可读。
+`MiddlewareConsumer` 是 Nest 提供的一个辅助类，用于灵活配置和管理中间件。它支持**链式调用**（[Fluent Interface](https://zh.wikipedia.org/wiki/流式接口)），使中间件的注册过程更加简洁、可读。
 
 其中，`forRoutes()` 方法的参数类型非常丰富，既可以是：
 
-- 路由路径字符串（单个或多个），
-- 控制器类（单个或多个），
-- `RouteInfo` 对象，
+- 单个或多个路由路径字符串
+- 单个或多个控制器类
+- `RouteInfo` 对象
 
 也可以混合使用。在实际开发中，最常见的做法是直接传入一个或多个控制器类，用于匹配其下所有路由。
 
@@ -188,20 +188,20 @@ export class AppModule implements NestModule {
 
 <CalloutInfo>
   `apply()`
-  方法不仅支持传入一个中间件类，也可以同时传入多个中间件，使用逗号分隔即可。详见：[组合多个中间件](/middleware#组合多个中间件)。
+  方法不仅支持传入一个中间件类，也可以同时传入多个中间件，使用逗号分隔即可。详见：[组合多个中间件](#组合多个中间件)。
 </CalloutInfo>
 
 ## 路由排除策略
 
-在使用中间件时，我们有时需要排除某些特定路由，使其不被中间件作用。Nest 提供了 `exclude()` 方法，可用于精确排除这些路由。
+在使用中间件时，有时我们希望将某些特定路由排除在中间件的作用范围之外。Nest 提供了 `exclude()` 方法，用于精确排除这些路由。
 
-该方法支持传入以下类型作为排除条件：
+该方法支持以下几种类型的排除条件：
 
 - 单个或多个路径字符串
-- 一个或多个 `RouteInfo` 对象（包含路径与请求方法）
-- 还可结合通配符，进行灵活的路径匹配
+- 单个或多个 `RouteInfo` 对象（包含路径与请求方法）
+- 支持通配符以实现灵活的路径匹配
 
-以下是一个常见示例：
+以下是一个常见的使用示例：
 
 ```ts
 consumer
@@ -228,7 +228,7 @@ consumer
 
 在前面的示例中，`LoggerMiddleware` 类结构十分简单，不包含任何属性、方法或依赖项。这种情况下，我们可以选择使用函数的形式来实现中间件，这种写法被称为**函数式中间件**（Functional Middleware）。
 
-下面演示如何将 `logger` 中间件由类形式改为函数实现：
+下面演示如何将 `logger` 中间件由类形式改为函数形式：
 
 ```ts filename='logger.middleware.ts'
 import { Request, Response, NextFunction } from 'express'
@@ -241,7 +241,7 @@ export function logger(req: Request, res: Response, next: NextFunction) {
 
 注册方式与类中间件相同，只需在 `AppModule` 中通过 `apply()` 方法引入该函数：
 
-```ts filename='app.module.ts'
+```ts
 consumer.apply(logger).forRoutes(CatsController)
 ```
 
