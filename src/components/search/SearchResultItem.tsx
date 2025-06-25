@@ -60,7 +60,7 @@ export function SearchResultItem(props: SearchResultItemProps) {
       ref={ref}
       className={cn(
         'flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all duration-150 hover:bg-accent/50',
-        isSelected && 'bg-accent border-accent-foreground/20 shadow-sm ring-1 ring-accent-foreground/10',
+        isSelected && 'bg-accent border-accent-foreground/20 shadow-sm',
       )}
       onClick={onClick}
       onMouseEnter={onMouseEnter}

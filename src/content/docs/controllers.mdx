@@ -362,19 +362,19 @@ async create(@Body() createCatDto: CreateCatDto) {
 <CalloutInfo>
   使用 `ValidationPipe` 时，Nest 能够自动移除所有不在白名单中的字段。以
   `CreateCatDto` 为例，只有 `name`、`age` 和 `breed`
-  三个字段是被允许的，任何额外字段都会被自动剥离。详细用法请参考[属性剥离说明](/techniques/validation#属性剥离)。
+  三个字段是被允许的，任何额外字段都会被自动剥离。详细用法请参考[属性剥离说明](/techniques/validation#属性剥离whitelist)。
 </CalloutInfo>
 
 ## 提取查询参数
 
-在处理路由中的查询参数时，Nest 提供了 `@Query()` 装饰器，用于从请求的查询字符串中提取所需参数。我们通过一个示例来说明其用法。
+在处理路由中的查询参数时，Nest 提供了 `@Query()` 装饰器，用于从请求的查询字符串中提取所需参数。我们来看一个示例来了解它的用法。
 
-假设你希望根据查询参数 `age` 和 `breed` 对猫咪列表进行筛选，可以在 `CatsController` 中这样定义：
+假设你希望根据查询参数 `age` 和 `breed` 对猫咪列表进行筛选，可以在 `CatsController` 中这样编写：
 
 ```ts filename='cats.controller.ts'
 @Get()
 async findAll(@Query('age') age: number, @Query('breed') breed: string) {
-  return `该操作返回符合条件的所有猫（年龄：${age}，品种：${breed}）`;
+  return `该操作返回符合条件的所有猫咪（年龄：${age}，品种：${breed}）`;
 }
 ```
 
@@ -399,7 +399,7 @@ GET /cats?age=2&breed=Persian
 
 #### 在 Express 中
 
-Express 默认使用的是 `querystring` 模块，其对复杂结构支持有限。你可以通过设置解析模式为 `extended`，改用 `qs` 模块以增强解析能力：
+Express 默认使用内置的 `querystring` 模块来解析查询字符串，但它对嵌套对象等复杂结构的支持较为有限。你可以通过将解析模式设置为 `extended`，改用功能更强大的 `qs` 模块，从而增强查询参数的解析能力：
 
 ```ts
 const app = await NestFactory.create<NestExpressApplication>(AppModule)
@@ -408,7 +408,7 @@ app.set('query parser', 'extended')
 
 #### 在 Fastify 中
 
-Fastify 允许你通过 `querystringParser` 选项自定义查询字符串的解析方式。例如，可结合 `qs` 使用如下：
+Fastify 允许你通过 `querystringParser` 选项自定义查询字符串的解析方式。例如，可以结合 `qs` 库，实现对嵌套对象等复杂结构的支持，配置方式如下：
 
 ```ts
 const app = await NestFactory.create<NestFastifyApplication>(
@@ -427,11 +427,11 @@ const app = await NestFactory.create<NestFastifyApplication>(
 
 ## 错误处理机制
 
-如需全面了解 NestJS 中的错误（异常）处理方式，请参阅[异常过滤器章节](/exception-filters)。
+如需深入了解 NestJS 中的错误（异常）处理机制，请查阅[异常过滤器](/exception-filters)一章。
 
 ## 控制器示例：构建基础的 REST 接口
 
-下面的示例展示了如何使用多个装饰器快速构建一个基础控制器。该控制器包含常见的 RESTful 端点，用于处理猫咪数据的读取与更新操作：
+下面的示例展示了如何使用多个装饰器快速构建一个基础控制器。该控制器包含常见的 RESTful 端点，用于实现猫咪数据的读取与更新操作：
 
 ```ts filename='cats.controller.ts'
 import {
@@ -450,42 +450,42 @@ import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto'
 export class CatsController {
   @Post()
   create(@Body() createCatDto: CreateCatDto) {
-    return '添加一只新猫'
+    return '添加一只新猫咪'
   }
 
   @Get()
   findAll(@Query() query: ListAllEntities) {
-    return `返回所有猫（限制：${query.limit} 只）`
+    return `返回所有猫咪（限制：${query.limit} 只）`
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return `返回 ID 为 #${id} 的猫`
+    return `返回 ID 为 #${id} 的猫咪`
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
-    return `更新 ID 为 #${id} 的猫`
+    return `更新 ID 为 #${id} 的猫咪`
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return `删除 ID 为 #${id} 的猫`
+    return `删除 ID 为 #${id} 的猫咪`
   }
 }
 ```
 
 <CalloutInfo>
-  Nest CLI 提供了基于 **schematics** 的代码生成器，支持快速生成控制器、服务、DTO
-  等结构化模块，省去繁琐的手工创建过程，显著提升开发效率。详见：[CRUD
+  Nest CLI 提供了基于 **Schematics** 的代码生成器，支持快速生成控制器、服务、DTO
+  等结构化模块，省去了繁琐的手工创建过程，显著提升开发效率。详细内容可参考：[CRUD
   代码生成器指南](/recipes/crud-generator)。
 </CalloutInfo>
 
 ## 控制器注册与模块集成
 
-即便我们已经定义好了 `CatsController`，Nest 并不会自动发现或实例化它。每个控制器都必须隶属于某个模块，必须显式地在模块的 `controllers` 数组中进行注册。
+即便我们已经定义好了 `CatsController`，Nest 并不会自动发现或实例化它。每个控制器都必须显式地隶属于某个模块，并在该模块的 `controllers` 数组中进行注册。
 
-当前项目只有一个根模块 `AppModule`，因此我们可以直接在该模块中挂载控制器：
+由于当前项目中仅包含一个根模块 `AppModule`，我们可以直接在该模块中引入并注册控制器：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -513,12 +513,12 @@ import { Response } from 'express'
 export class CatsController {
   @Post()
   create(@Res() res: Response) {
-    res.status(HttpStatus.CREATED).send()
+    res.status(HttpStatus.CREATED).send() // [!code hl]
   }
 
   @Get()
   findAll(@Res() res: Response) {
-    res.status(HttpStatus.OK).json([])
+    res.status(HttpStatus.OK).json([]) // [!code hl]
   }
 }
 ```
@@ -529,7 +529,7 @@ export class CatsController {
 - 测试难度提高：你需要手动模拟响应对象，增加了测试的复杂度。
 - 失去 Nest 提供的内建功能：如拦截器、`@HttpCode()`、`@Header()` 等装饰器将不再生效。
 
-为在保留框架特性的同时获得一定的控制能力，你可以启用 `passthrough` 模式：
+如果希望在保留框架默认行为的基础上，获得对流程的更多控制，可以启用 `passthrough` 模式：
 
 ```ts
 @Get()
@@ -539,4 +539,4 @@ findAll(@Res({ passthrough: true }) res: Response) {
 }
 ```
 
-当 `passthrough` 设为 `true` 时，Nest 会继续接管响应的最终处理流程，同时允许你在需要时对原生响应对象进行部分操作（例如有条件地设置 Cookie 或响应头），实现灵活性与框架能力的平衡。
+当 `passthrough` 设置为 `true` 时，Nest 仍会负责响应的最终处理流程，同时允许你在必要时对原生响应对象进行部分操作（例如按需设置 Cookie 或响应头），从而在保持框架抽象能力的基础上，实现更高的灵活性。
