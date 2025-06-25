@@ -46,8 +46,8 @@ export class Author {
 <CalloutInfo>
   TypeScript 的元数据反射（metadata
   reflection）系统存在一些限制，例如无法确定一个类包含哪些属性，或识别某个属性是可选还是必需。由于这些限制，我们必须在模式定义类中显式使用
-  `@Field()` 装饰器，为每个字段提供关于其 GraphQL 类型和可选性的元数据，或者使用 [CLI
-  插件](/graphql/cli-plugin)自动生成这些装饰器。
+  `@Field()` 装饰器，为每个字段提供关于其 GraphQL 类型和可选性的元数据，或者使用
+  [CLI 插件](/graphql/cli-plugin)自动生成这些装饰器。
 </CalloutInfo>
 
 `Author` 对象类型就像任何类一样，由一组字段组成，每个字段都声明了一个类型。字段的类型对应于 [GraphQL 类型](https://graphql.org/learn/schema/)。字段的 GraphQL 类型可以是另一个对象类型，也可以是标量类型（scalar type）。GraphQL 标量类型是一种原始类型（如 `ID`、`String`、`Boolean` 或 `Int`），其值为单一值。
@@ -97,7 +97,8 @@ posts: Post[];
 ```
 
 <CalloutInfo>
-  使用数组括号表示法（`[ ]`），可以指明数组的嵌套深度。例如，`[[Int]]` 表示一个整数矩阵。
+  使用数组括号表示法（`[ ]`），可以指明数组的嵌套深度。例如，`[[Int]]`
+  表示一个整数矩阵。
 </CalloutInfo>
 
 如果要声明数组的元素（而不是数组本身）可为空，可以将 `nullable` 属性设置为 `'items'`，如下所示：
@@ -108,7 +109,9 @@ posts: Post[];
 ```
 
 <CalloutInfo>
-  <div>如果数组本身和其元素都可为空，则将 `nullable` 设置为 `'itemsAndList'`。</div>
+  <div>
+    如果数组本身和其元素都可为空，则将 `nullable` 设置为 `'itemsAndList'`。
+  </div>
 </CalloutInfo>
 
 现在我们已经创建了 `Author` 对象类型，接下来定义 `Post` 对象类型。
@@ -165,14 +168,15 @@ export class AuthorsResolver {
 ```
 
 <CalloutInfo>
-  所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都由 `@nestjs/graphql` 包导出。
+  所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都由
+  `@nestjs/graphql` 包导出。
 </CalloutInfo>
 
-你可以定义多个解析器类。Nest 会在运行时将他们合并。关于代码组织的更多内容，请参见下方的[模块](#模块)部分。
+你可以定义多个解析器类。Nest 会在运行时将它们合并。关于代码组织的更多内容，请参见下方的[模块](#模块)部分。
 
 <CalloutInfo type="warning">
   `AuthorsService` 和 `PostsService`
-  类中的逻辑可以根据需要非常简单或复杂。此示例的重点在于展示如何构建解析器，以及他们如何与其他提供者进行交互。
+  类中的逻辑可以根据需要非常简单或复杂。此示例的重点在于展示如何构建解析器，以及它们如何与其他提供者进行交互。
 </CalloutInfo>
 
 在上面的示例中，我们创建了 `AuthorsResolver`，它定义了一个查询解析器函数和一个字段解析器函数。要创建解析器，我们需要创建一个包含解析器方法的类，并使用 `@Resolver()` 装饰器对该类进行注解。
@@ -183,7 +187,7 @@ export class AuthorsResolver {
 
 在本例中，由于该类包含了一个**字段解析器**函数（用于 `Author` 对象类型的 `posts` 属性），我们**必须**为 `@Resolver()` 装饰器提供一个值，以指明该类中所有字段解析器的父类型（即对应的 `ObjectType` 类名）。从示例中可以看出，在编写字段解析器函数时，需要访问父对象（即当前正在解析字段所属的对象）。在本例中，我们通过字段解析器为作者填充 `posts` 数组，该解析器会调用服务并以作者的 `id` 作为参数。因此，需要在 `@Resolver()` 装饰器中指定父对象。同时，注意在字段解析器中通过 `@Parent()` 方法参数装饰器获取父对象的引用。
 
-我们可以定义多个 `@Query()` 解析器函数（无论是在本类中还是在其他解析器类中），他们会被聚合到生成的 SDL 中的单一 **Query 类型**定义中，并在解析器映射表中生成相应的条目。这样，你可以将查询定义靠近其所使用的模型和服务，并通过模块进行良好组织。
+我们可以定义多个 `@Query()` 解析器函数（无论是在本类中还是在其他解析器类中），它们会被聚合到生成的 SDL 中的单一 **Query 类型**定义中，并在解析器映射表中生成相应的条目。这样，你可以将查询定义靠近其所使用的模型和服务，并通过模块进行良好组织。
 
 <CalloutInfo>
   Nest 命令行工具（Nest
@@ -210,7 +214,8 @@ type Query {
 ```
 
 <CalloutInfo>
-  你可以在[这里](https://graphql.org/learn/queries/)了解更多关于 GraphQL 查询的信息。
+  你可以在[这里](https://graphql.org/learn/queries/)了解更多关于 GraphQL
+  查询的信息。
 </CalloutInfo>
 
 通常情况下，我们更倾向于将这些名称解耦。例如，我们更喜欢将查询处理方法命名为 `getAuthor()`，而查询类型名称仍然使用 `author`。字段解析器同理。我们可以通过将映射名称作为 `@Query()` 和 `@ResolveField()` 装饰器的参数传递，轻松实现这一点，如下所示：
@@ -290,9 +295,10 @@ getAuthor(
 ```
 
 <CalloutInfo>
-  对于 `firstName` 这样的 GraphQL 可为 null 字段，不需要在类型中显式添加 `null` 或
-  `undefined`。但请注意，在解析器（resolver）中需要对这些可能的非值类型进行类型保护，因为 GraphQL
-  可为 null 字段会允许这些类型传递到解析器中。
+  对于 `firstName` 这样的 GraphQL 可为 null 字段，不需要在类型中显式添加 `null`
+  或
+  `undefined`。但请注意，在解析器（resolver）中需要对这些可能的非值类型进行类型保护，因为
+  GraphQL 可为 null 字段会允许这些类型传递到解析器中。
 </CalloutInfo>
 
 ## 专用参数类
@@ -321,9 +327,11 @@ class GetAuthorArgs {
 ```
 
 <CalloutInfo>
-  由于 TypeScript 的元数据反射机制（metadata reflection system）存在一定限制，因此你需要使用
-  `@Field` 装饰器手动标注类型和可选性，或者使用 [CLI 插件](/graphql/cli-plugin)。另外，对于
-  `firstName` 这样的 GraphQL 可空字段（nullable field），无需在类型中额外添加 `null` 或
+  由于 TypeScript 的元数据反射机制（metadata reflection
+  system）存在一定限制，因此你需要使用 `@Field`
+  装饰器手动标注类型和可选性，或者使用 [CLI
+  插件](/graphql/cli-plugin)。另外，对于 `firstName` 这样的 GraphQL
+  可空字段（nullable field），无需在类型中额外添加 `null` 或
   `undefined`，但需要注意：你仍需在解析器（resolver）中对这些可能的非值类型进行类型保护（type
   guard），因为 GraphQL 可空字段允许这些类型传递到解析器中。
 </CalloutInfo>
@@ -495,10 +503,12 @@ class PaginatedAuthor extends Paginated(Author) {}
 如在[上一章](/graphql/quick-start)中提到的，采用 Schema First 方法时，我们首先会手动使用 SDL 定义 schema 类型（详见[更多介绍](https://graphql.org/learn/schema/#type-language)）。请参考以下 SDL 类型定义示例。
 
 <CalloutInfo>
-  为了便于本章讲解，我们将所有 SDL 代码集中放在一个位置（例如如下所示的一个 `.graphql`
-  文件）。在实际项目中，你可以根据需要以模块化方式组织代码。例如，可以为每个领域实体分别创建 SDL
-  文件，定义类型，并将相关的服务、解析器代码以及 Nest 模块定义类放在该实体专属的目录下。Nest
-  会在运行时自动聚合所有独立的 schema 类型定义。
+  为了便于本章讲解，我们将所有 SDL 代码集中放在一个位置（例如如下所示的一个
+  `.graphql`
+  文件）。在实际项目中，你可以根据需要以模块化方式组织代码。例如，可以为每个领域实体分别创建
+  SDL 文件，定义类型，并将相关的服务、解析器代码以及 Nest
+  模块定义类放在该实体专属的目录下。Nest 会在运行时自动聚合所有独立的 schema
+  类型定义。
 </CalloutInfo>
 
 ```graphql
@@ -525,7 +535,8 @@ type Query {
 上面的 schema 暴露了一个查询 —— `author(id: Int!): Author`。
 
 <CalloutInfo>
-  你可以在[这里](https://graphql.org/learn/queries/)了解更多关于 GraphQL 查询的信息。
+  你可以在[这里](https://graphql.org/learn/queries/)了解更多关于 GraphQL
+  查询的信息。
 </CalloutInfo>
 
 现在，让我们创建一个 `AuthorsResolver` 类，用于解析作者相关的查询：
@@ -552,12 +563,13 @@ export class AuthorsResolver {
 ```
 
 <CalloutInfo>
-  所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都从 `@nestjs/graphql` 包中导出。
+  所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都从
+  `@nestjs/graphql` 包中导出。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
   `AuthorsService` 和 `PostsService`
-  类中的逻辑可以非常简单，也可以非常复杂。这个示例的重点在于展示如何构建解析器（Resolver），以及他们如何与其他提供者进行交互。
+  类中的逻辑可以非常简单，也可以非常复杂。这个示例的重点在于展示如何构建解析器（Resolver），以及它们如何与其他提供者进行交互。
 </CalloutInfo>
 
 `@Resolver()` 装饰器是必需的。它可以接收一个可选的字符串参数，表示类名。只要类中包含 `@ResolveField()` 装饰器，就必须指定该类名，以便 Nest 知道被装饰的方法与哪个父类型（在本例中为 `Author` 类型）相关联。或者，也可以不在类顶部设置 `@Resolver()`，而是在每个方法上单独设置：
@@ -574,12 +586,13 @@ async posts(@Parent() author) {
 在这种情况下（即在方法级别使用 `@Resolver()` 装饰器），如果你在一个类中有多个 `@ResolveField()` 装饰器，则必须为每一个都添加 `@Resolver()`。但这种做法并不是最佳实践（因为会带来额外的维护负担）。
 
 <CalloutInfo>
-  传递给 `@Resolver()` 的类名参数**不会**影响查询（`@Query()` 装饰器）或变更（`@Mutation()`
-  装饰器）。
+  传递给 `@Resolver()` 的类名参数**不会**影响查询（`@Query()`
+  装饰器）或变更（`@Mutation()` 装饰器）。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  在方法级别使用 `@Resolver` 装饰器在**代码优先**（code first）方式下是不被支持的。
+  在方法级别使用 `@Resolver` 装饰器在**代码优先**（code
+  first）方式下是不被支持的。
 </CalloutInfo>
 
 在上面的示例中，`@Query()` 和 `@ResolveField()` 装饰器会根据方法名自动关联到 GraphQL schema 类型。例如，参考上面示例中的如下写法：
@@ -680,7 +693,7 @@ export class CreatePostInput extends Post {
 
 ## GraphQL 参数装饰器
 
-我们可以通过专用装饰器访问标准的 GraphQL 解析器参数。下表对比了 Nest 装饰器与他们所代表的原生 Apollo 参数。
+我们可以通过专用装饰器访问标准的 GraphQL 解析器参数。下表对比了 Nest 装饰器与它们所代表的原生 Apollo 参数。
 
 | Nest 装饰器                | Apollo 参数                  |
 | -------------------------- | ---------------------------- |
@@ -716,7 +729,8 @@ export class AuthorsModule {}
   推荐按照你的**领域模型**（domain model）来组织代码（类似于在 RESTful
   接口中组织入口点的方式）。在这种方式下，将模型（`ObjectType`
   类）、解析器和服务（Service）都放在代表该领域模型的 Nest
-  模块（Module）中，并将这些组件集中在每个模块的单独文件夹内。当你这样做，并使用 [Nest
-  命令行工具（CLI）](/cli/overview) 生成各个元素时，Nest
-  会自动将所有部分串联起来（将文件放在合适的文件夹、自动生成 `provider` 和 `imports` 数组等）。
+  模块（Module）中，并将这些组件集中在每个模块的单独文件夹内。当你这样做，并使用
+  [Nest 命令行工具（CLI）](/cli/overview) 生成各个元素时，Nest
+  会自动将所有部分串联起来（将文件放在合适的文件夹、自动生成 `provider` 和
+  `imports` 数组等）。
 </CalloutInfo>

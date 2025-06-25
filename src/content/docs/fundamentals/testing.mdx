@@ -30,7 +30,7 @@ $ npm install -D @nestjs/testing
 
 如前所述，Nest 默认集成了 Jest 作为测试框架。Jest 不仅是测试运行器，还内置了断言方法和测试替身工具（Test Doubles），支持模拟（Mocking）、监视（Spying）等常见测试需求。
 
-在本示例中，我们将手动实例化控制器与服务类，并验证他们是否按照既定的 API 行为正常工作。
+在本示例中，我们将手动实例化控制器与服务类，并验证它们是否按照既定的 API 行为正常工作。
 
 ```ts filename='cats.controller.spec.ts'
 import { CatsController } from './cats.controller'
@@ -128,7 +128,7 @@ catsService = await moduleRef.resolve(CatsService)
   想了解更多关于模块引用和作用域实例管理的内容，请参阅[模块引用（ModuleRef）章节](/fundamentals/module-ref)。
 </CalloutInfo>
 
-除了使用生产环境中的真实提供者外，测试时你还可以**覆盖**（override）他们，以注入[自定义提供者](/fundamentals/custom-providers)。这在需要替换数据库连接等外部依赖为 mock 实现时尤其有用。我们将在下一节详细介绍如何进行提供者覆盖，该机制在单元测试中同样适用。
+除了使用生产环境中的真实提供者外，测试时你还可以**覆盖**（override）它们，以注入[自定义提供者](/fundamentals/custom-providers)。这在需要替换数据库连接等外部依赖为 mock 实现时尤其有用。我们将在下一节详细介绍如何进行提供者覆盖，该机制在单元测试中同样适用。
 
 ## 自动模拟
 
@@ -182,7 +182,7 @@ describe('CatsController', () => {
 
 <CalloutInfo type="warning">
   `REQUEST` 和 `INQUIRER`
-  是框架内部的上下文绑定提供者，**无法被自动模拟**。如需在测试中替换他们，可通过自定义提供者或调用
+  是框架内部的上下文绑定提供者，**无法被自动模拟**。如需在测试中替换它们，可通过自定义提供者或调用
   `.overrideProvider()` 方法进行显式覆盖。
 </CalloutInfo>
 

@@ -458,7 +458,7 @@ export class PostsService {
 
 目前，你的 `UsersService` 和 `PostsService` 封装了 Prisma Client 提供的 CRUD 查询。在真实的应用场景中，服务层通常还承载着核心的业务逻辑。例如，你可以在 `UsersService` 中添加一个 `updatePassword` 方法，专门用于处理用户密码的更新。
 
-请记得，在 `AppModule` 中注册这些新创建的服务，以便让 NestJS 的依赖注入系统能够识别并管理他们。
+请记得，在 `AppModule` 中注册这些新创建的服务，以便让 NestJS 的依赖注入系统能够识别并管理它们。
 
 ## 在主控制器中实现 REST API 路由
 

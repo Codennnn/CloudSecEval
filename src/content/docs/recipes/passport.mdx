@@ -219,7 +219,7 @@ export class AuthModule {}
 
 答案是使用一个特殊守卫。`@nestjs/passport` 模块提供了一个内置的 `AuthGuard`，它会自动调用底层的 Passport 策略，并启动认证流程（如获取凭证、调用验证函数、创建 `user` 属性等）。
 
-对于已认证的用户，我们则使用常规的守卫，允许他们访问受保护的路由。
+对于已认证的用户，我们则使用常规的守卫，允许它们访问受保护的路由。
 
 ## 实现登录路由
 
@@ -752,7 +752,7 @@ whoAmI(@CurrentUser() user: User) {
 }
 ```
 
-对于 `passport-local` 策略，你还需要将 GraphQL 上下文中的参数添加到请求体中，以便 Passport 能找到并验证他们。否则，请求将因缺少凭证而认证失败。
+对于 `passport-local` 策略，你还需要将 GraphQL 上下文中的参数添加到请求体中，以便 Passport 能找到并验证它们。否则，请求将因缺少凭证而认证失败。
 
 ```ts
 @Injectable()

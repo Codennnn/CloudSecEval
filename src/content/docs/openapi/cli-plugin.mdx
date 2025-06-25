@@ -60,14 +60,14 @@ export class CreateUserDto {
   页面清晰地展示 API 模型。
 
 然而，插件本身**不处理运行时校验**。因此，`IsEmail()`、`IsNumber()` 这类 `class-validator`
-装饰器依然是必需的，他们负责在程序运行时确保输入数据的有效性。
+装饰器依然是必需的，它们负责在程序运行时确保输入数据的有效性。
 
 </CalloutInfo>
 
 <CalloutInfo>
   当你在 DTO 中使用 `PartialType`、`OmitType`
   等[映射类型工具](/openapi/mapped-types)时，**务必**从 `@nestjs/swagger`
-  包中导入他们，而不是从 `@nestjs/mapped-types`。只有这样，CLI
+  包中导入它们，而不是从 `@nestjs/mapped-types`。只有这样，CLI
   插件才能正确地识别和生成 OpenAPI schema。
 </CalloutInfo>
 

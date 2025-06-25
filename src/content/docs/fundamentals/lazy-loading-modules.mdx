@@ -98,7 +98,7 @@ const lazyService = moduleRef.get(LazyService)
 
 ## 懒加载控制器、网关与解析器
 
-在 Nest 应用中，控制器、GraphQL 的解析器（Resolver）以及 WebSocket 的网关分别用于处理路由、GraphQL 查询与变更，或消息主题等相关逻辑。然而，需要特别注意的是，他们**无法通过 `LazyModuleLoader` 实现懒加载**。
+在 Nest 应用中，控制器、GraphQL 的解析器（Resolver）以及 WebSocket 的网关分别用于处理路由、GraphQL 查询与变更，或消息主题等相关逻辑。然而，需要特别注意的是，它们**无法通过 `LazyModuleLoader` 实现懒加载**。
 
 <CalloutInfo type="warning">
   所有在懒加载模块中注册的控制器、[解析器](/graphql/resolvers) 和

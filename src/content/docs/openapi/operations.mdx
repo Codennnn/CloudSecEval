@@ -301,7 +301,7 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
 }
 ```
 
-请注意，在上面的自定义装饰器中，我们不仅要注册 `PaginatedDto`，也要注册传入的 `model`（例如 `CatDto`），这样 `SwaggerModule` 才能为他们都生成对应的模型定义。
+请注意，在上面的自定义装饰器中，我们不仅要注册 `PaginatedDto`，也要注册传入的 `model`（例如 `CatDto`），这样 `SwaggerModule` 才能为它们都生成对应的模型定义。
 
 这样，我们就可以在端点上使用自定义的 `@ApiPaginatedResponse()` 装饰器了：
 

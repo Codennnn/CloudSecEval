@@ -113,7 +113,7 @@ class AdditionalCatInfo {
 }
 ```
 
-现在，我们可以将这两个类型合并，创建一个包含他们所有属性的新类型：
+现在，我们可以将这两个类型合并，创建一个包含它们所有属性的新类型：
 
 ```ts
 import { IntersectionType } from '@nestjs/swagger'
@@ -126,7 +126,7 @@ export class UpdateCatDto extends IntersectionType(
 
 ## 组合使用（Composition）
 
-这些映射类型工具函数可以灵活地组合使用。例如，以下示例组合了 `OmitType()` 和 `PartialType()`。它创建了一个新类型，该类型继承了 `CreateCatDto` 中除 `name` 以外的所有属性，并将他们全部设为可选：
+这些映射类型工具函数可以灵活地组合使用。例如，以下示例组合了 `OmitType()` 和 `PartialType()`。它创建了一个新类型，该类型继承了 `CreateCatDto` 中除 `name` 以外的所有属性，并将它们全部设为可选：
 
 ```ts
 export class UpdateCatDto extends PartialType(

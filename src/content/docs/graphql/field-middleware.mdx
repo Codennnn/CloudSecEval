@@ -17,7 +17,10 @@
 ```ts
 import { FieldMiddleware, MiddlewareContext, NextFn } from '@nestjs/graphql'
 
-const loggerMiddleware: FieldMiddleware = async (ctx: MiddlewareContext, next: NextFn) => {
+const loggerMiddleware: FieldMiddleware = async (
+  ctx: MiddlewareContext,
+  next: NextFn
+) => {
   const value = await next()
   console.log(value)
   return value
@@ -25,15 +28,17 @@ const loggerMiddleware: FieldMiddleware = async (ctx: MiddlewareContext, next: N
 ```
 
 <CalloutInfo>
-  `MiddlewareContext`（中间件上下文）对象包含了 GraphQL 解析器函数通常接收的所有参数（`
+  `MiddlewareContext`（中间件上下文）对象包含了 GraphQL
+  解析器函数通常接收的所有参数（`
   {(source, args, context, info)}`），而
   `NextFn`（下一个中间件函数）是一个函数，用于执行下一个绑定到该字段的中间件，或者实际的字段解析器。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
   字段中间件函数无法注入依赖，也无法访问 Nest
-  的依赖注入容器，因为他们设计为非常轻量级，不应执行任何可能耗时的操作（如从数据库获取数据）。如果你需要调用外部服务或查询数据源，建议在绑定到根查询/变更处理器的守卫或拦截器中处理，并将结果赋值到
-  `context` 对象中，然后可以在字段中间件（具体来说，在 `MiddlewareContext` 对象中）访问。
+  的依赖注入容器，因为它们设计为非常轻量级，不应执行任何可能耗时的操作（如从数据库获取数据）。如果你需要调用外部服务或查询数据源，建议在绑定到根查询/变更处理器的守卫或拦截器中处理，并将结果赋值到
+  `context` 对象中，然后可以在字段中间件（具体来说，在 `MiddlewareContext`
+  对象中）访问。
 </CalloutInfo>
 
 需要注意的是，字段中间件必须符合 `FieldMiddleware` 接口。在上面的示例中，我们首先运行 `next()` 函数（它会执行实际的字段解析器并返回字段值），然后将该值输出到终端。同时，中间件函数返回的值会完全覆盖之前的值。由于我们不需要修改值，所以直接返回原始值。

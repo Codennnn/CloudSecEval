@@ -513,7 +513,7 @@ export class AppModule {}
 
 <CalloutInfo type="warning">
   如果你没有为数据源（data source）设置 `name`，则其名称会被设为
-  `default`。请注意，不要创建多个未命名或同名的连接，否则他们会相互覆盖。
+  `default`。请注意，不要创建多个未命名或同名的连接，否则它们会相互覆盖。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
@@ -1067,7 +1067,7 @@ export class AppModule {}
 
 <CalloutInfo type="warning">
   如果没有为连接设置 `name`，该连接的名称会被设为
-  `default`。请注意，不能存在多个未命名或同名的连接，否则他们会相互覆盖。
+  `default`。请注意，不能存在多个未命名或同名的连接，否则它们会相互覆盖。
 </CalloutInfo>
 
 此时，`User` 和 `Album` 模型已经分别注册到各自的连接中。在这种配置下，使用 `SequelizeModule.forFeature()` 方法和 `@InjectModel()` 装饰器时，需要指定对应的连接名称。如果未传递连接名称，则默认使用 `default` 连接。

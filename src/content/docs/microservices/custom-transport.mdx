@@ -6,7 +6,8 @@ Nest 提供了多种**传输器**，并且还为开发者提供了 API，可以�
 <CalloutInfo>
   使用 Nest 构建微服务并不一定要用 `@nestjs/microservices`
   包。例如，如果你需要与外部服务（比如用其他语言编写的微服务）通信，可能并不需要
-  `@nestjs/microservices` 提供的全部功能。 > 实际上，如果你不需要用装饰器（如 `@EventPattern` 或
+  `@nestjs/microservices` 提供的全部功能。 > 实际上，如果你不需要用装饰器（如
+  `@EventPattern` 或
   `@MessagePattern`）来声明式地定义订阅者（Subscriber），那么只需运行一个[独立应用（Standalone
   Application）](/application-context)，并手动维护连接/订阅通道（Channel），对于大多数场景来说就足够了，并且会带来更高的灵活性。
 </CalloutInfo>
@@ -14,9 +15,11 @@ Nest 提供了多种**传输器**，并且还为开发者提供了 API，可以�
 通过自定义传输器，你可以集成任何消息系统/协议（比如 Google Cloud Pub/Sub、Amazon Kinesis 等），或者扩展现有传输器，在其基础上增加额外功能（例如为 MQTT 增加[服务质量（QoS）](https://github.com/mqttjs/MQTT.js/blob/master/README.md#qos)）。
 
 <CalloutInfo>
-  如果你想深入了解 Nest 微服务的工作原理，以及如何扩展现有传输器的能力，推荐阅读 [NestJS
-  Microservices in Action](https://dev.to/johnbiundo/series/4724) 和 [Advanced NestJS
-  Microservices](https://dev.to/nestjs/part-1-introduction-and-setup-1a2l) 系列文章。
+  如果你想深入了解 Nest 微服务的工作原理，以及如何扩展现有传输器的能力，推荐阅读
+  [NestJS Microservices in Action](https://dev.to/johnbiundo/series/4724) 和
+  [Advanced NestJS
+  Microservices](https://dev.to/nestjs/part-1-introduction-and-setup-1a2l)
+  系列文章。
 </CalloutInfo>
 
 ## 创建自定义策略
@@ -26,7 +29,10 @@ Nest 提供了多种**传输器**，并且还为开发者提供了 API，可以�
 ```ts
 import { CustomTransportStrategy, Server } from '@nestjs/microservices'
 
-class GoogleCloudPubSubServer extends Server implements CustomTransportStrategy {
+class GoogleCloudPubSubServer
+  extends Server
+  implements CustomTransportStrategy
+{
   /**
    * 当你调用 "app.listen()" 时会触发。
    */
@@ -67,9 +73,12 @@ class GoogleCloudPubSubServer extends Server implements CustomTransportStrategy 
 有了这些准备后，我们就可以像下面这样，使用自定义策略来替代内置传输器：
 
 ```ts
-const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-  strategy: new GoogleCloudPubSubServer(),
-})
+const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+  AppModule,
+  {
+    strategy: new GoogleCloudPubSubServer(),
+  }
+)
 ```
 
 本质上，我们不再传递包含 `transport` 和 `options` 属性的常规传输器配置对象，而是传递一个名为 `strategy` 的属性，其值为自定义传输器类的实例。
@@ -87,7 +96,7 @@ echo(@Payload() data: object) {
 }
 ```
 
-该消息处理器会被 Nest 运行时自动注册。通过 `Server` 类，你可以查看已注册的所有消息（和事件）处理器，还可以访问并执行分配给他们的实际方法。
+该消息处理器会被 Nest 运行时自动注册。通过 `Server` 类，你可以查看已注册的所有消息（和事件）处理器，还可以访问并执行分配给它们的实际方法。
 为了验证这一点，我们可以在 `listen()` 方法中，在调用 `callback` 之前添加一个简单的 `console.log`：
 
 ```ts
@@ -104,8 +113,8 @@ Map { 'echo' => [AsyncFunction] { isEventHandler: false } }
 ```
 
 <CalloutInfo>
-  如果我们使用了 `@EventPattern` 装饰器，你会看到类似的输出，但 `isEventHandler` 属性会被设置为
-  `true`。
+  如果我们使用了 `@EventPattern` 装饰器，你会看到类似的输出，但 `isEventHandler`
+  属性会被设置为 `true`。
 </CalloutInfo>
 
 如你所见，`messageHandlers` 属性是一个包含所有消息（和事件）处理器的 `Map` 集合，消息模式作为键。
@@ -127,7 +136,7 @@ Hello world!
 
 这说明我们的消息处理器已被正确执行。
 
-当你在拦截器中使用 `CustomTransportStrategy（自定义传输策略）` 时，处理器会被包装为 RxJS 流。这意味着你需要订阅（subscribe）他们，才能执行流的底层逻辑（例如在拦截器执行后继续进入控制器逻辑）。
+当你在拦截器中使用 `CustomTransportStrategy（自定义传输策略）` 时，处理器会被包装为 RxJS 流。这意味着你需要订阅（subscribe）它们，才能执行流的底层逻辑（例如在拦截器执行后继续进入控制器逻辑）。
 
 下面是一个示例：
 
@@ -160,7 +169,10 @@ class GoogleCloudPubSubClient extends ClientProxy {
   async connect(): Promise<any> {}
   async close() {}
   async dispatchEvent(packet: ReadPacket<any>): Promise<any> {}
-  publish(packet: ReadPacket<any>, callback: (packet: WritePacket<any>) => void): Function {}
+  publish(
+    packet: ReadPacket<any>,
+    callback: (packet: WritePacket<any>) => void
+  ): Function {}
   unwrap<T = never>(): T {
     throw new Error('Method not implemented.')
   }
@@ -191,7 +203,10 @@ class GoogleCloudPubSubClient extends ClientProxy {
     return console.log('event to dispatch: ', packet)
   }
 
-  publish(packet: ReadPacket<any>, callback: (packet: WritePacket<any>) => void): Function {
+  publish(
+    packet: ReadPacket<any>,
+    callback: (packet: WritePacket<any>) => void
+  ): Function {
     console.log('message:', packet)
 
     // 在实际应用中，应该由响应方返回数据后执行 "callback" 回调。
@@ -211,7 +226,9 @@ class GoogleCloudPubSubClient extends ClientProxy {
 
 ```ts
 const googlePubSubClient = new GoogleCloudPubSubClient()
-googlePubSubClient.send('pattern', 'Hello world!').subscribe((response) => console.log(response))
+googlePubSubClient
+  .send('pattern', 'Hello world!')
+  .subscribe((response) => console.log(response))
 ```
 
 此时，你应该会在终端看到如下输出：
@@ -288,6 +305,7 @@ export class AppModule
 ```
 
 <CalloutInfo>
-  这里传递给 `customClass` 的是类本身，而不是类的实例。Nest 会在底层自动为你创建实例，并且会将传递给
-  `options` 属性的任何选项传递给新的 `ClientProxy`。
+  这里传递给 `customClass` 的是类本身，而不是类的实例。Nest
+  会在底层自动为你创建实例，并且会将传递给 `options` 属性的任何选项传递给新的
+  `ClientProxy`。
 </CalloutInfo>
