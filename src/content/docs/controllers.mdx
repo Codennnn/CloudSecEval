@@ -47,7 +47,7 @@ import { Controller, Get } from '@nestjs/common'
 export class CatsController {
   @Get()
   findAll(): string {
-    return '该操作返回所有猫咪'
+    return '该操作将返回所有猫咪'
   }
 }
 ```
@@ -82,8 +82,6 @@ export class CatsController {
 
 在实际开发中，处理器（Handler）通常需要访问来自客户端的请求信息。Nest 提供了访问底层 HTTP 平台（默认为 Express）原始[请求对象](https://expressjs.com/en/api.html#req)的能力。你只需在方法参数中使用 `@Req()` 装饰器，Nest 就会自动注入对应的请求对象。
 
-在实际开发中，处理器（Handler）通常需要访问来自客户端的请求信息。Nest 提供了直接访问底层 HTTP 平台（默认是 Express）中原始请求对象的能力。你只需在方法参数中使用 `@Req()` 装饰器，Nest 就会自动注入对应的请求对象。
-
 ```ts filename='cats.controller.ts'
 import { Controller, Get, Req } from '@nestjs/common'
 import { Request } from 'express'
@@ -92,7 +90,7 @@ import { Request } from 'express'
 export class CatsController {
   @Get()
   findAll(@Req() request: Request): string {
-    return '该操作返回所有猫咪'
+    return '该操作将返回所有猫咪'
   }
 }
 ```
@@ -102,8 +100,9 @@ export class CatsController {
   [`@types/express`](https://www.npmjs.com/package/@types/express) 类型声明包。
 </CalloutInfo>
 
-请求对象代表一次完整的 HTTP 请求，包含诸如查询参数、路由参数、请求头、请求体等属性（详见[官方文档](https://expressjs.com/en/api.html#req)）。
-在大多数场景下，你并不需要直接操作这些底层属性。Nest 提供了更简洁的方式 —— 使用专用的参数装饰器（如 `@Body()`、`@Query()` 等）从请求中提取所需数据。下表列出了常用的装饰器及其在 Express 中对应的原始对象或属性：
+请求对象代表一次完整的 HTTP 请求，包含诸如查询参数、路由参数、请求头、请求体等属性。在大多数场景下，你并不需要直接操作这些底层属性。Nest 提供了更简洁的方式 —— 使用专用的参数装饰器（如 `@Body()`、`@Query()` 等）从请求中提取所需数据。
+
+下表列出了常用的装饰器及其在 Express 中对应的原始对象或属性（详见[官方文档](https://expressjs.com/en/api.html#req)）：
 
 | 装饰器                                | 对应 Express 对象/属性              |
 | ------------------------------------- | ----------------------------------- |
@@ -124,7 +123,7 @@ export class CatsController {
 使用时建议同时安装对应平台的类型声明包（如
 `@types/express`），以获得更完整的类型提示。
 
-请注意，一旦在处理器方法中注入了 `@Res()` 或 `@Response()`，Nest 将切换为**库特定模式**（library-specific mode）。此模式下，框架不再自动处理响应，而需要你手动调用方法（如 `res.send()` 或` res.json()`）来结束请求，否则可能导致客户端请求长时间无响应。
+请注意，一旦在处理器方法中注入了 `@Res()` 或 `@Response()`，Nest 将切换为**库特定模式**（library-specific mode）。此模式下，框架不再自动处理响应，而需要你手动调用方法（如 `res.send()` 或 `res.json()`）来结束请求，否则可能导致客户端请求长时间无响应。
 
 <CalloutInfo>
   如需了解如何创建自定义参数装饰器，请参考[自定义装饰器](/custom-decorators)一节。
@@ -141,12 +140,12 @@ import { Controller, Get, Post } from '@nestjs/common'
 export class CatsController {
   @Post()
   create(): string {
-    return '该操作将添加一只新猫'
+    return '该操作将添加一只新猫咪'
   }
 
   @Get()
   findAll(): string {
-    return '该操作返回所有猫咪'
+    return '该操作将返回所有猫咪'
   }
 }
 ```
@@ -174,7 +173,7 @@ findAll() {
 
 其中 `splat` 是一个自定义的参数名，用于捕获通配符部分。幸运的是，得益于 Nest 对 Express 的封装，在 Nest 中仍然可以使用简单的 `*` 通配符，而无需显式命名参数。
 
-如果你希望在路径中间使用通配符，Express 需要采用命名通配符的形式（例如 `ab{*splat}cd`），而 Fastify 则不支持这种中间通配符的写法。
+如果你希望在路径中间使用通配符，在 Express 中需要采用命名通配符的形式（例如 `ab{*splat}cd`），而 Fastify 则不支持这种中间通配符的写法。
 
 ## 自定义状态码
 
@@ -186,7 +185,7 @@ import { HttpCode, Post } from '@nestjs/common'
 @Post()
 @HttpCode(204)
 create() {
-  return '该操作将添加一只新猫';
+  return '该操作将添加一只新猫咪';
 }
 ```
 
@@ -205,7 +204,7 @@ import { Header, Post } from '@nestjs/common'
 @Post()
 @Header('Cache-Control', 'no-store')
 create() {
-  return '该操作将添加一只新猫';
+  return '该操作将添加一只新猫咪';
 }
 ```
 
@@ -225,7 +224,7 @@ Nest 提供了多种方式用于实现响应重定向。你可以使用 `@Redire
   `HttpRedirectResponse` 接口（定义于 `@nestjs/common`）的对象来实现。
 </CalloutInfo>
 
-需要注意的是，**返回的对象会覆盖装饰器中指定的默认值**。例如：
+需要特别注意的是，如果方法返回一个对象，那么将会**覆盖装饰器中指定的默认值**。例如：
 
 ```ts
 @Get('docs')
@@ -241,7 +240,7 @@ getDocs(@Query('version') version) {
 
 在实际开发中，我们常常需要根据 URL 中的动态参数来处理请求。静态路径（如 `GET /cats`）无法满足这类需求，例如：`GET /cats/1` 表示获取 ID 为 1 的猫咪信息。
 
-为此，NestJS 允许在路由路径中通过**参数占位符**（如 :id）来声明动态部分。被匹配到的参数可通过 `@Param()` 装饰器注入到控制器的方法中。
+为此，NestJS 允许在路由路径中通过**参数占位符**（如 `:id`）来声明动态部分，被匹配到的参数可通过 `@Param()` 装饰器注入到控制器的方法中。
 
 <CalloutInfo type="warning">
   参数化路由应始终声明在所有静态路径之后，以避免动态路径错误地匹配本应属于静态路径的请求。
@@ -253,7 +252,7 @@ import { Param, Get } from '@nestjs/common'
 @Get(':id')
 findOne(@Param() params: any): string {
   console.log(params.id);
-  return `该猫的 ID 为 #${params.id}`;
+  return `该猫咪的 ID 为 #${params.id}`;
 }
 ```
 
@@ -264,7 +263,7 @@ findOne(@Param() params: any): string {
 ```ts
 @Get(':id')
 findOne(@Param('id') id: string): string {
-  return `该猫的 ID 为 #${id}`;
+  return `该猫咪的 ID 为 #${id}`;
 }
 ```
 
@@ -303,15 +302,15 @@ export class AccountController {
 
 ## 控制器中的状态共享
 
-对于习惯于其他编程语言的开发者来说，Nest 的状态管理方式可能略显意外：在多数情况下，**应用中的状态在多个请求之间是共享的**。这包括数据库连接池、具备全局状态的单例服务等。
+对于习惯于其他编程语言的开发者来说，Nest 的状态管理方式可能略显不同：在大多数情况下，应用中的状态在多个请求之间是**共享**的。这包括数据库连接池、具有全局状态的单例服务等组件。
 
 这一特性源于 Node.js 的执行模型。与传统的“多线程、无状态”架构不同，Node.js 并不会为每个请求创建一个独立的线程。这意味着在 Nest 中使用单例对象是**安全且高效**的。
 
-当然，在某些特定场景下，你可能仍需要按请求粒度管理控制器或服务的生命周期。例如，在 GraphQL 应用中，常见的需求包括每请求缓存、请求级追踪或多租户支持。此时，可以通过配置注入作用域（Scope）来实现按需实例化。详见[作用域控制说明](/fundamentals/injection-scopes)。
+当然，在某些特定场景下，你可能仍需要按请求粒度管理控制器或服务的生命周期。例如，在 GraphQL 应用中，常见的需求包括每请求缓存、请求级追踪或多租户支持。此时，可以通过配置注入作用域来实现按需实例化。详见[作用域控制说明](/fundamentals/injection-scopes)。
 
 ## 支持异步处理
 
-Nest 天生契合现代 JavaScript，特别是在**异步编程模型**方面提供了出色的支持。框架原生支持 `async/await`，你只需在处理器方法中返回一个 `Promise`，Nest 会自动解析其结果并作为响应返回：
+Nest 天生契合现代 JavaScript，尤其在**异步编程模型**方面提供了卓越的支持。框架原生支持 `async/await`，你只需在处理器方法中返回一个 `Promise`，Nest 会自动解析其结果并作为响应返回：
 
 ```ts filename='cats.controller.ts'
 @Get()
@@ -320,7 +319,7 @@ async findAll(): Promise<any[]> {
 }
 ```
 
-除了 Promise，Nest 也原生支持使用 RxJS 的 [Observable 流](https://rxjs-dev.firebaseapp.com/guide/observable)。当处理器方法返回一个 Observable 时，Nest 会自动订阅该流，并在其完成后提取最终值作为响应发送：
+除了 `Promise`，Nest 也原生支持使用 RxJS 的 [Observable 流](https://rxjs-dev.firebaseapp.com/guide/observable)。当处理器方法返回一个 `Observable` 时，Nest 会自动订阅该流，并在其完成后提取最终值作为响应发送：
 
 ```ts filename='cats.controller.ts'
 @Get()
@@ -329,17 +328,17 @@ findAll(): Observable<any[]> {
 }
 ```
 
-无论是返回 Promise 还是 Observable，Nest 都能自动处理其异步结果。你可以根据具体业务需求，自由选择最适合的异步处理方式。
+无论是返回 `Promise` 还是 `Observable`，Nest 都能自动处理其异步结果。你可以根据具体业务需求，自由选择最适合的异步处理方式。
 
 ## 处理请求体数据
 
 在之前的示例中，我们的 POST 路由处理器尚未接收任何来自客户端的参数。为了获取请求体中的数据，你可以使用 `@Body()` 装饰器。
 
-在继续之前（如果你使用 TypeScript），需要先定义一个**数据传输对象**（Data Transfer Object，DTO）来明确客户端提交的数据结构。你可以使用类或接口来定义 DTO，但**推荐使用类**。为什么？
+在继续之前（如果你使用 TypeScript），需要先定义一个**数据传输对象**（Data Transfer Object，简称 DTO）来明确客户端提交的数据结构。
 
-因为类属于 ES6 标准的一部分，编译后依然会保留在运行时代码中；而接口在 TypeScript 编译阶段会被完全移除，Nest 在运行时将无法访问这些类型信息。
+你可以使用类或接口来定义 DTO，但**更推荐使用类**。这是因为类属于 ES6 标准的一部分，经过 TypeScript 编译后仍会保留在运行时代码中；而接口则仅存在于编译时，编译后会被完全移除，Nest 在运行时将无法获取任何接口的类型信息。
 
-例如，像**管道**（Pipe）这样的功能依赖于运行时的类型数据，而这只能通过类来提供。
+例如，Nest 中的**管道**（Pipe）功能就依赖于运行时的类型数据，用于实现自动验证与数据转换，而这些能力只有通过类才能实现。
 
 我们可以创建一个 `CreateCatDto` 类作为示例：
 
@@ -356,7 +355,7 @@ export class CreateCatDto {
 ```ts filename='cats.controller.ts'
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
-  return '该操作将添加一只新猫';
+  return '该操作将添加一只新猫咪';
 }
 ```
 

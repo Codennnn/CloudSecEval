@@ -46,7 +46,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
 
                   <hr className="bg-border/70" />
 
-                  <div className="inline-flex flex-col gap-1 pt-4">
+                  <div className="inline-flex flex-col items-start gap-1 pt-4">
                     <EnglishDocLink />
 
                     <ScrollToTop

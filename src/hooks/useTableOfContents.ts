@@ -92,7 +92,7 @@ export function useTableOfContents(): TableOfContentsHook {
 
           const scrollTop = scrollContainer.scrollTop
 
-          const offset = 80 // 偏移量，用于提前高亮
+          const offset = 180 // 偏移量，用于提前高亮
 
           let currentId = ''
 
