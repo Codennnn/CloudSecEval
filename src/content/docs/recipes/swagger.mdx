@@ -38,9 +38,10 @@ bootstrap();
 ```
 
 <CalloutInfo>
-  `SwaggerModule.createDocument()` 方法返回一个可序列化的对象，该对象完全符合 [OpenAPI
-  文档](https://swagger.io/specification/#openapi-document)规范。你不仅可以通过 HTTP
-  提供此文档，还可以将其保存为 JSON 或 YAML 文件，用于多种用途。
+  `SwaggerModule.createDocument()` 方法返回一个可序列化的对象，该对象完全符合
+  [OpenAPI
+  文档](https://swagger.io/specification/#openapi-document)规范。你不仅可以通过
+  HTTP 提供此文档，还可以将其保存为 JSON 或 YAML 文件，用于多种用途。
 </CalloutInfo>
 
 `DocumentBuilder` 有助于构建一个符合 OpenAPI 规范的基础文档。它提供了多种方法，可以设置诸如标题、描述、版本等属性。为了创建一个完整的文档（包含所有定义的 HTTP 路由），我们使用 `SwaggerModule` 类的 `createDocument()` 方法。此方法接收两个参数：一个是应用程序实例，另一个是 Swagger 选项对象。此外，我们还可以提供第三个参数，其类型应为 `SwaggerDocumentOptions`。更多信息请参阅 [文档选项](#文档选项) 部分。
@@ -67,7 +68,8 @@ $ npm run start
 如你所见，`SwaggerModule` 会自动反射你所有的端点。
 
 <CalloutInfo>
-  要生成并下载 Swagger JSON 文件，请访问 `http://localhost:3000/api-json`（假设你的 Swagger 文档在
+  要生成并下载 Swagger JSON 文件，请访问
+  `http://localhost:3000/api-json`（假设你的 Swagger 文档在
   `http://localhost:3000/api` 下可用）。
 </CalloutInfo>
 

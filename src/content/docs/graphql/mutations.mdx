@@ -16,7 +16,8 @@ async upvotePost(@Args({ name: 'postId', type: () => Int }) postId: number) {
 ```
 
 <CalloutInfo>
-  所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都从 `@nestjs/graphql` 包中导出。
+  所有装饰器（如 `@Resolver`、`@ResolveField`、`@Args` 等）都从
+  `@nestjs/graphql` 包中导出。
 </CalloutInfo>
 
 这样会在 GraphQL 的 SDL 中生成如下部分：
@@ -42,9 +43,10 @@ export class UpvotePostInput {
 ```
 
 <CalloutInfo>
-  `@InputType()` 装饰器可以接收一个选项对象作为参数，例如可以指定输入类型的描述。需要注意的是，由于
-  TypeScript 的元数据反射机制限制，必须使用 `@Field` 装饰器手动指明类型，或者使用 [CLI
-  插件](/graphql/cli-plugin)。
+  `@InputType()`
+  装饰器可以接收一个选项对象作为参数，例如可以指定输入类型的描述。需要注意的是，由于
+  TypeScript 的元数据反射机制限制，必须使用 `@Field`
+  装饰器手动指明类型，或者使用 [CLI 插件](/graphql/cli-plugin)。
 </CalloutInfo>
 
 然后我们可以在解析器类中使用这个类型：

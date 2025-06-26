@@ -43,7 +43,9 @@ export const checkRoleMiddleware: FieldMiddleware = async (
   const userRole = Role.USER
   if (userRole === extensions.role) {
     // 或直接 "return null" 忽略
-    throw new ForbiddenException(`用户没有足够的权限访问 "${info.fieldName}" 字段。`)
+    throw new ForbiddenException(
+      `用户没有足够的权限访问 "${info.fieldName}" 字段。`
+    )
   }
   return next()
 }

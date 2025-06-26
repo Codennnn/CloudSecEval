@@ -89,7 +89,10 @@ export class AppCommands {
     name: 'ping',
     description: '以 Pong 作为回应！',
   })
-  public onPing(@Context() [message]: TextCommandContext, @Arguments() args: string[]) {
+  public onPing(
+    @Context() [message]: TextCommandContext,
+    @Arguments() args: string[]
+  ) {
     return message.reply('Pong!')
   }
 }
@@ -124,8 +127,8 @@ export class AppCommands {
 ```
 
 <CalloutInfo>
-  当机器人客户端登录时，所有已定义的命令都会自动注册。请注意，全局命令的缓存时间最长可达 1
-  小时。为避免全局缓存带来的延迟，建议在 Necord 模块配置中使用 `development`
+  当机器人客户端登录时，所有已定义的命令都会自动注册。请注意，全局命令的缓存时间最长可达
+  1 小时。为避免全局缓存带来的延迟，建议在 Necord 模块配置中使用 `development`
   参数，将命令的作用域限制在单个服务器（Guild）内进行测试。
 </CalloutInfo>
 
@@ -231,7 +234,10 @@ export class CatsCommands {
     name: 'cat',
     description: '获取指定猫品种的信息',
   })
-  public async onSearch(@Context() [interaction]: SlashCommandContext, @Options() { cat }: CatDto) {
+  public async onSearch(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() { cat }: CatDto
+  ) {
     return interaction.reply({
       content: `我找到了关于 ${cat} 品种的信息！`,
     })
@@ -272,7 +278,12 @@ export class AppCommands {
 
 ```ts filename='app.commands.ts'
 import { Injectable } from '@nestjs/common'
-import { Context, MessageCommand, MessageCommandContext, TargetMessage } from 'necord'
+import {
+  Context,
+  MessageCommand,
+  MessageCommandContext,
+  TargetMessage,
+} from 'necord'
 import { Message } from 'discord.js'
 
 @Injectable()
@@ -310,7 +321,12 @@ export class AppComponents {
 
 ```ts filename='app.components.ts'
 import { Injectable } from '@nestjs/common'
-import { Context, StringSelect, StringSelectContext, SelectedStrings } from 'necord'
+import {
+  Context,
+  StringSelect,
+  StringSelectContext,
+  SelectedStrings,
+} from 'necord'
 
 @Injectable()
 export class AppComponents {

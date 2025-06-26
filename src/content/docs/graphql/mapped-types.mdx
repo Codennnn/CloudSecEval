@@ -72,7 +72,9 @@ class CreateUserInput {
 
 ```ts
 @InputType()
-export class UpdateEmailInput extends PickType(CreateUserInput, ['email'] as const) {}
+export class UpdateEmailInput extends PickType(CreateUserInput, [
+  'email',
+] as const) {}
 ```
 
 <CalloutInfo>
@@ -103,7 +105,9 @@ class CreateUserInput {
 
 ```ts
 @InputType()
-export class UpdateUserInput extends OmitType(CreateUserInput, ['email'] as const) {}
+export class UpdateUserInput extends OmitType(CreateUserInput, [
+  'email',
+] as const) {}
 ```
 
 <CalloutInfo>
@@ -140,7 +144,10 @@ export class AdditionalUserInfo {
 
 ```ts
 @InputType()
-export class UpdateUserInput extends IntersectionType(CreateUserInput, AdditionalUserInfo) {}
+export class UpdateUserInput extends IntersectionType(
+  CreateUserInput,
+  AdditionalUserInfo
+) {}
 ```
 
 <CalloutInfo>
@@ -155,5 +162,7 @@ export class UpdateUserInput extends IntersectionType(CreateUserInput, Additiona
 
 ```ts
 @InputType()
-export class UpdateUserInput extends PartialType(OmitType(CreateUserInput, ['email'] as const)) {}
+export class UpdateUserInput extends PartialType(
+  OmitType(CreateUserInput, ['email'] as const)
+) {}
 ```

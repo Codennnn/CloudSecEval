@@ -7,7 +7,8 @@
 <CalloutInfo type="warning">
   本篇将引导你使用 **TypeORM** 包，通过自定义提供者从零开始创建一个
   `DatabaseModule`（数据库模块）。此方法涉及较多步骤，旨在演示底层原理。在实际项目中，建议直接使用官方提供的
-  `@nestjs/typeorm` 包来简化流程。要了解更多信息，请参阅[这篇文档](/techniques/sql)。
+  `@nestjs/typeorm`
+  包来简化流程。要了解更多信息，请参阅[这篇文档](/techniques/sql)。
 </CalloutInfo>
 
 [TypeORM](https://github.com/typeorm/typeorm) 是目前 Node.js 生态中最成熟的对象关系映射（Object Relational Mapper，ORM）工具。由于其采用 TypeScript 编写，因此与 Nest 框架配合良好。
@@ -51,7 +52,8 @@ export const databaseProviders = [
 </CalloutInfo>
 
 <CalloutInfo>
-  按照最佳实践，我们将自定义提供者声明在单独的文件中，并以 `*.providers.ts` 作为文件后缀。
+  按照最佳实践，我们将自定义提供者声明在单独的文件中，并以 `*.providers.ts`
+  作为文件后缀。
 </CalloutInfo>
 
 接下来，我们需要导出这些提供者，以便在应用的其他部分复用。
@@ -116,8 +118,8 @@ export const photoProviders = [
 ```
 
 <CalloutInfo type="warning">
-  在实际项目中，建议将 `'PHOTO_REPOSITORY'` 和 `'DATA_SOURCE'` 等注入令牌 (Token) 统一定义在
-  `constants.ts` 文件中，以避免使用**魔法字符串**。
+  在实际项目中，建议将 `'PHOTO_REPOSITORY'` 和 `'DATA_SOURCE'` 等注入令牌
+  (Token) 统一定义在 `constants.ts` 文件中，以避免使用**魔法字符串**。
 </CalloutInfo>
 
 现在，我们可以通过 `@Inject()` 装饰器将 `Repository<Photo>` 注入到 `PhotoService` 中：
@@ -158,5 +160,7 @@ export class PhotoModule {}
 ```
 
 <CalloutInfo>
-  <div>为使 `PhotoModule` 生效，请确保已将其导入到根模块 (例如 `AppModule`) 中。</div>
+  <div>
+    为使 `PhotoModule` 生效，请确保已将其导入到根模块 (例如 `AppModule`) 中。
+  </div>
 </CalloutInfo>

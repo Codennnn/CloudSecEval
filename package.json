@@ -12,7 +12,7 @@
     "lint:es": "eslint \"**/*.{ts,tsx}\"",
     "update-deps": "pnpm up --interactive --latest",
     "lint:ts": "tsc --noEmit --skipLibCheck",
-    "format:mdx": "prettier --write \"**/*.mdx\""
+    "format:docs": "prettier --write \"src/content/docs/**/*.mdx\""
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",

@@ -17,7 +17,8 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 
 <CalloutInfo type="warning">
   `installSubscriptionHandlers` 配置项已在最新版本的 Apollo Server
-  中被移除，并且即将在本包中废弃。默认情况下，`installSubscriptionHandlers` 会回退使用
+  中被移除，并且即将在本包中废弃。默认情况下，`installSubscriptionHandlers`
+  会回退使用
   `subscriptions-transport-ws`（[详细说明](https://github.com/apollographql/subscriptions-transport-ws)），但我们强烈建议改用
   `graphql-ws`（[详细说明](https://github.com/enisdenjo/graphql-ws)）库。
 </CalloutInfo>
@@ -34,7 +35,8 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
 ```
 
 <CalloutInfo>
-  你也可以同时使用这两个包（`subscriptions-transport-ws` 和 `graphql-ws`），例如用于兼容旧版本。
+  你也可以同时使用这两个包（`subscriptions-transport-ws` 和
+  `graphql-ws`），例如用于兼容旧版本。
 </CalloutInfo>
 
 ## 代码优先（Code first）
@@ -57,7 +59,8 @@ export class AuthorResolver {
 ```
 
 <CalloutInfo>
-  所有装饰器均由 `@nestjs/graphql` 包导出，而 `PubSub` 类由 `graphql-subscriptions` 包导出。
+  所有装饰器均由 `@nestjs/graphql` 包导出，而 `PubSub` 类由
+  `graphql-subscriptions` 包导出。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
@@ -407,11 +410,13 @@ export class AuthorResolver {
 ```
 
 <CalloutInfo>
-  上述示例中用到的所有装饰器均由 `@nestjs/graphql` 包导出，而 `PubSub` 类则由 `mercurius` 包导出。
+  上述示例中用到的所有装饰器均由 `@nestjs/graphql` 包导出，而 `PubSub` 类则由
+  `mercurius` 包导出。
 </CalloutInfo>
 
 <CalloutInfo type="warning">
-  `PubSub` 是一个类，提供了简单的 `publish` 和 `subscribe` API。关于如何注册自定义 `PubSub`
+  `PubSub` 是一个类，提供了简单的 `publish` 和 `subscribe`
+  API。关于如何注册自定义 `PubSub`
   类，请参考[本节内容](https://github.com/mercurius-js/mercurius/blob/master/docs/subscriptions.md#subscriptions-with-custom-pubsub)。
 </CalloutInfo>
 

@@ -67,7 +67,10 @@ export class UsersResolver {
 最后，我们通过在配置对象中传入 `ApolloFederationDriver` 驱动，注册 `GraphQLModule`，将所有内容串联起来：
 
 ```ts
-import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig,
+} from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { UsersResolver } from './users.resolver'
@@ -128,7 +131,10 @@ export class UsersResolver {
 最后，我们通过在配置对象中传入 `ApolloFederationDriver` 驱动，注册 `GraphQLModule`，将所有内容串联起来：
 
 ```ts
-import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig,
+} from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { UsersResolver } from './users.resolver'
 import { UsersService } from './users.service' // 本示例未包含实现
@@ -199,7 +205,10 @@ export class PostsResolver {
 最后，我们需要像在“Users 服务”部分一样注册 `GraphQLModule`。
 
 ```ts
-import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig,
+} from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { PostsResolver } from './posts.resolver'
@@ -311,7 +320,10 @@ export class PostsResolver {
 最后，将其在模块中整合。请注意 schema 构建选项，其中指定了 `User` 是一个孤立（外部）类型。
 
 ```ts
-import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig,
+} from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { User } from './user.entity'
 import { PostsResolvers } from './posts.resolvers'
@@ -387,7 +399,8 @@ $ npm install --save @apollo/subgraph @nestjs/mercurius
 ```
 
 <CalloutInfo>
-  `@apollo/subgraph` 包是构建子图模式（buildSubgraphSchema、printSubgraphSchema 函数）所必需的。
+  `@apollo/subgraph` 包是构建子图模式（buildSubgraphSchema、printSubgraphSchema
+  函数）所必需的。
 </CalloutInfo>
 
 ## 模式优先（Schema First）
@@ -430,7 +443,10 @@ export class UsersResolver {
 最后，我们通过在配置对象中传入 `MercuriusFederationDriver` 驱动，将其注册到 `GraphQLModule`，完成所有配置：
 
 ```ts
-import { MercuriusFederationDriver, MercuriusFederationDriverConfig } from '@nestjs/mercurius'
+import {
+  MercuriusFederationDriver,
+  MercuriusFederationDriverConfig,
+} from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { UsersResolver } from './users.resolver'
@@ -492,7 +508,10 @@ export class UsersResolver {
 最后，我们通过在配置对象中传入 `MercuriusFederationDriver` 驱动，将其注册到 `GraphQLModule`，完成所有配置：
 
 ```ts
-import { MercuriusFederationDriver, MercuriusFederationDriverConfig } from '@nestjs/mercurius'
+import {
+  MercuriusFederationDriver,
+  MercuriusFederationDriverConfig,
+} from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { UsersResolver } from './users.resolver'
 import { UsersService } from './users.service' // 本示例未包含实现
@@ -562,7 +581,10 @@ export class PostsResolver {
 最后，我们需要像在“Users 服务”部分一样注册 `GraphQLModule`。
 
 ```ts
-import { MercuriusFederationDriver, MercuriusFederationDriverConfig } from '@nestjs/mercurius'
+import {
+  MercuriusFederationDriver,
+  MercuriusFederationDriverConfig,
+} from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { PostsResolver } from './posts.resolver'
@@ -675,7 +697,10 @@ export class PostsResolver {
 最后，将所有内容整合到一个模块中。请注意 schema 构建选项，其中指定了 `User` 是一个孤立（外部）类型。
 
 ```ts
-import { MercuriusFederationDriver, MercuriusFederationDriverConfig } from '@nestjs/mercurius'
+import {
+  MercuriusFederationDriver,
+  MercuriusFederationDriverConfig,
+} from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { User } from './user.entity'
 import { PostsResolvers } from './posts.resolvers'
@@ -703,7 +728,10 @@ export class AppModule {}
 网关需要指定一组端点（endpoints），并会自动发现对应的模式。因此，无论是代码优先还是模式优先方式，网关服务的实现方式保持一致。
 
 ```ts
-import { MercuriusGatewayDriver, MercuriusGatewayDriverConfig } from '@nestjs/mercurius'
+import {
+  MercuriusGatewayDriver,
+  MercuriusGatewayDriverConfig,
+} from '@nestjs/mercurius'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 
@@ -759,7 +787,10 @@ type Query {
 要使用 Federation 2，需要在 `autoSchemaFile` 选项中指定联邦版本。
 
 ```ts
-import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig,
+} from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { UsersResolver } from './users.resolver'
 import { UsersService } from './users.service' // 本示例未包含该服务实现
@@ -826,7 +857,10 @@ export class User {
 同样地，与用户服务类似，我们需要在 `GraphQLModule` 中指定使用 Federation 2。
 
 ```ts
-import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo'
+import {
+  ApolloFederationDriver,
+  ApolloFederationDriverConfig,
+} from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { User } from './user.entity'
 import { PostsResolvers } from './posts.resolvers'

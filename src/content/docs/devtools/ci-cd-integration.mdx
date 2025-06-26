@@ -209,8 +209,8 @@ publish_graph:
 
 <CalloutInfo>
   与 GitHub Actions 类似，此工作流会在每次向 `master` 分支发起合并请求（Merge
-  Request）或直接推送时运行。请务必将 `DEVTOOLS_API_KEY` 作为 CI/CD 变量添加到你的 GitLab
-  项目中。理想情况下，应使用 GitLab 的[项目 CI/CD
+  Request）或直接推送时运行。请务必将 `DEVTOOLS_API_KEY` 作为 CI/CD
+  变量添加到你的 GitLab 项目中。理想情况下，应使用 GitLab 的[项目 CI/CD
   变量](https://docs.gitlab.com/ee/ci/variables/#add-a-cicd-variable-to-a-project)功能进行安全存储。你可以在[此页面](https://devtools.nestjs.com/settings/manage-api-keys)生成
   API 密钥。
 </CalloutInfo>
@@ -225,7 +225,9 @@ const publishOptions = {
   sha: process.env.CI_COMMIT_SHA,
   target: process.env.CI_MERGE_REQUEST_DIFF_BASE_SHA,
   trigger: process.env.CI_MERGE_REQUEST_DIFF_BASE_SHA ? 'pull' : 'push',
-  branch: process.env.CI_COMMIT_BRANCH ?? process.env.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME,
+  branch:
+    process.env.CI_COMMIT_BRANCH ??
+    process.env.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME,
 }
 ```
 

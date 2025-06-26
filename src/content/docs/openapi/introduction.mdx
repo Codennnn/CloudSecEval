@@ -42,8 +42,9 @@ bootstrap()
 <CalloutInfo>
   `SwaggerModule.createDocument()` 是一个工厂方法，用于按需生成 Swagger
   文档。这种方式有助于缩短初始化时间。它会生成一个符合 [OpenAPI
-  文档](https://swagger.io/specification/#openapi-document) 规范的可序列化对象。该文档不仅可以通过
-  HTTP 访问，还可以保存为 JSON 或 YAML 文件，用于多种场景。
+  文档](https://swagger.io/specification/#openapi-document)
+  规范的可序列化对象。该文档不仅可以通过 HTTP 访问，还可以保存为 JSON 或 YAML
+  文件，用于多种场景。
 </CalloutInfo>
 
 `DocumentBuilder` 用于构建符合 OpenAPI 规范的基础文档结构。它提供了多种方法，用于设置标题、描述、版本等属性。要生成包含所有 HTTP 路由定义的完整文档，需要使用 `SwaggerModule` 类的 `createDocument()` 方法。该方法接收应用实例和 Swagger 配置对象作为参数。此外，你还可以传递第三个参数，其类型为 `SwaggerDocumentOptions`，详细信息请参见[文档选项](#document-options)部分。
@@ -143,7 +144,11 @@ export interface SwaggerDocumentOptions {
    *
    * @default (controllerKey: string, methodKey: string, fieldKey: string) => `${controllerKey}_${methodKey}_from_${fieldKey}`
    */
-  linkNameFactory?: (controllerKey: string, methodKey: string, fieldKey: string) => string
+  linkNameFactory?: (
+    controllerKey: string,
+    methodKey: string,
+    fieldKey: string
+  ) => string
 
   /*
    * 是否基于控制器名称自动生成标签。

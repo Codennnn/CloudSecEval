@@ -99,7 +99,8 @@ export class CatsService {
 随后，你可以通过可注入的 `ClsService` 访问 store，或者通过[代理提供者（Proxy Providers）](https://www.npmjs.com/package/nestjs-cls#proxy-providers)将其从业务逻辑中完全抽象出来。
 
 <CalloutInfo>
-  `nestjs-cls` 是一个第三方包，并非由 NestJS 核心团队维护。如果你遇到任何问题，请在[该项目的 GitHub
+  `nestjs-cls` 是一个第三方包，并非由 NestJS
+  核心团队维护。如果你遇到任何问题，请在[该项目的 GitHub
   仓库](https://github.com/Papooch/nestjs-cls/issues)中提出。
 </CalloutInfo>
 
@@ -168,8 +169,8 @@ export interface MyClsStore extends ClsStore {
 ```
 
 <CalloutInfo>
-  该包还可以自动生成请求 ID，你可以通过 `cls.getId()` 获取它，或通过 `cls.get(CLS_REQ)`
-  获取完整的请求对象。
+  该包还可以自动生成请求 ID，你可以通过 `cls.getId()` 获取它，或通过
+  `cls.get(CLS_REQ)` 获取完整的请求对象。
 </CalloutInfo>
 
 ### 测试

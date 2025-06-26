@@ -762,14 +762,12 @@ this.audioQueue.add(taskData, jobOptions)
 - `removeOnComplete: boolean | number`
 
   控制任务在成功完成后是否自动移除。
-
   - 若为 `true`，任务完成后会被删除；
   - 若为数字，表示保留的已完成任务数量上限。
 
 - `removeOnFail: boolean | number`
 
   控制任务在所有重试失败后是否自动移除。
-
   - 若为 true，失败任务将被删除；
   - 若为数字，表示保留的失败任务数量上限。
 
