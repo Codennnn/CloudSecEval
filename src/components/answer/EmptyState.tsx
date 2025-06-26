@@ -41,8 +41,6 @@ const suggestedQuestions = [
   'NestJS 支持哪些主流数据库？',
 ]
 
-// ... existing code ...
-
 export function EmptyState(props: EmptyStateProps) {
   const { onQuestionClick } = props
 

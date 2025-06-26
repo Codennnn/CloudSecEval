@@ -19,6 +19,7 @@ export async function CodeBlock(props: CodeBlockProps) {
     code,
     lang,
     showLineNumbers,
+    enableTwoslash: true,
   })
 
   return (

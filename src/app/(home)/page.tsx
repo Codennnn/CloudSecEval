@@ -1,9 +1,12 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Check, Coffee, Gift, Lightbulb, RotateCcw, Star, Workflow } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
+
+import logo from '/public/logos/logo-128.png'
 
 export default function HomePage() {
   return (
@@ -14,9 +17,13 @@ export default function HomePage() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link className="flex items-center space-x-2" href="/">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">N</span>
-              </div>
+              <Image
+                alt="NestJS Logo"
+                className="rounded-lg"
+                height={32}
+                src={logo}
+                width={32}
+              />
               <span className="font-bold text-lg">
                 NestJS 中文文档
               </span>
@@ -327,9 +334,13 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
               <div className="flex items-center justify-center space-x-3 mb-4">
-                <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">N</span>
-                </div>
+                <Image
+                  alt="NestJS Logo"
+                  className="rounded-lg"
+                  height={32}
+                  src={logo}
+                  width={32}
+                />
                 <span className="font-bold text-lg">NestJS 中文文档</span>
               </div>
               <p className="text-muted-foreground max-w-2xl mx-auto text-sm leading-relaxed">

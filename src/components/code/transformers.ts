@@ -1,4 +1,5 @@
 import { transformerNotationHighlight, transformerNotationWordHighlight } from '@shikijs/transformers'
+// import { transformerTwoslash } from '@shikijs/twoslash'
 import { type BundledLanguage, codeToHtml, type ShikiTransformer } from 'shiki'
 
 /**
@@ -35,6 +36,8 @@ export interface CodeHighlightOptions {
   code: string
   /** 是否显示行号，默认不显示 */
   showLineNumbers?: boolean
+  /** 是否启用 twoslash 转换，默认不启用 */
+  enableTwoslash?: boolean
 }
 
 /**
@@ -49,7 +52,12 @@ export interface CodeHighlightOptions {
  * @returns 高亮后的 HTML 字符串
  */
 export async function highlightCode(options: CodeHighlightOptions): Promise<string> {
-  const { code, lang, showLineNumbers = false } = options
+  const {
+    code,
+    lang,
+    showLineNumbers = false,
+    enableTwoslash = false,
+  } = options
 
   // 基础 transformers 配置
   const transformers: ShikiTransformer[] = [
@@ -61,6 +69,11 @@ export async function highlightCode(options: CodeHighlightOptions): Promise<stri
   // 可选的行号显示功能
   if (showLineNumbers) {
     transformers.push({ name: 'line-numbers' })
+  }
+
+  // 可选的 twoslash 转换功能
+  if (enableTwoslash) {
+    // transformers.push(transformerTwoslash())
   }
 
   // 执行代码高亮

@@ -38,10 +38,12 @@ const user = req.user
 ```ts filename='user.decorator.ts'
 import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 
-export const User = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest()
-  return request.user
-})
+export const User = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest()
+    return request.user
+  }
+)
 ```
 
 定义完成后，就可以在控制器方法中直接通过装饰器获取用户信息：
@@ -78,12 +80,14 @@ async findOne(@User() user: UserEntity) {
 ```ts filename='user.decorator.ts'
 import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 
-export const User = createParamDecorator((data: string, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest()
-  const user = request.user
+export const User = createParamDecorator(
+  (data: string, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest()
+    const user = request.user
 
-  return data ? user?.[data] : user
-})
+    return data ? user?.[data] : user
+  }
+)
 ```
 
 在控制器中，你可以像这样使用 `@User()` 装饰器，按需提取用户信息：
@@ -155,6 +159,6 @@ findAllUsers() {}
 这样不仅提升了代码可读性，还增强了装饰器的复用性与语义表达力。
 
 <CalloutInfo type="warning">
-  由于实现机制的限制，`@nestjs/swagger` 中的 `@ApiHideProperty()` 装饰器**不能与**
-  `applyDecorators()` **一起使用**，否则会导致运行时异常。
+  由于实现机制的限制，`@nestjs/swagger` 中的 `@ApiHideProperty()`
+  装饰器**不能与** `applyDecorators()` **一起使用**，否则会导致运行时异常。
 </CalloutInfo>

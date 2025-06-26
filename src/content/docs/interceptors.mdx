@@ -1,6 +1,6 @@
 # 拦截器
 
-**拦截器**（Interceptor）是通过 `@Injectable()` 装饰器声明的类，并实现了 `NestInterceptor` 接口。
+**拦截器**（Interceptor）是通过 `@Injectable()` 装饰器修饰的类，并且实现了 `NestInterceptor` 接口。
 
 它借鉴了[面向切面编程](https://en.wikipedia.org/wiki/Aspect-oriented_programming)（AOP）的设计理念，用于在方法的调用流程中插入“横切关注点”的逻辑。通过拦截器，可以在不干扰核心业务代码的前提下，对方法执行过程进行增强或改造。其主要作用包括：
 
@@ -76,7 +76,12 @@ graph LR
 拦截器常用于在请求处理流程中插入额外的逻辑，例如记录操作日志、统计接口耗时，或异步触发某些事件。下面是一个基本的日志拦截器示例，用于演示如何实现这一功能：
 
 ```ts filename='logging.interceptor.ts'
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { tap } from 'rxjs/operators'
 
@@ -86,7 +91,9 @@ export class LoggingInterceptor implements NestInterceptor {
     console.log('Before...')
 
     const now = Date.now()
-    return next.handle().pipe(tap(() => console.log(`After... ${Date.now() - now}ms`)))
+    return next
+      .handle()
+      .pipe(tap(() => console.log(`After... ${Date.now() - now}ms`)))
   }
 }
 ```
@@ -175,7 +182,12 @@ export class AppModule {}
 下面是一个名为 `TransformInterceptor` 的拦截器示例，它会将每个响应结果包装成一个包含 `data` 属性的对象，并将其发送给客户端。
 
 ```ts filename='transform.interceptor.ts'
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
@@ -184,15 +196,21 @@ export interface Response<T> {
 }
 
 @Injectable()
-export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
+export class TransformInterceptor<T>
+  implements NestInterceptor<T, Response<T>>
+{
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler
+  ): Observable<Response<T>> {
     return next.handle().pipe(map((data) => ({ data })))
   }
 }
 ```
 
 <CalloutInfo>
-  `intercept()` 方法支持同步和异步两种实现方式。若需在内部执行异步逻辑，可将其声明为 `async`。
+  `intercept()`
+  方法支持同步和异步两种实现方式。若需在内部执行异步逻辑，可将其声明为 `async`。
 </CalloutInfo>
 
 使用上述拦截器后，假设某路由处理器返回一个空数组 `[]`，如请求 `GET /cats` 接口，则客户端收到的响应将为：
@@ -208,7 +226,12 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
 拦截器非常适合处理通用性逻辑。例如，如果你希望统一将响应中的所有 `null` 值替换为空字符串 `''`，可以实现如下拦截器并将其注册为全局拦截器，从而自动作用于所有路由处理器：
 
 ```ts
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
@@ -240,7 +263,9 @@ import { catchError } from 'rxjs/operators'
 @Injectable()
 export class ErrorsInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next.handle().pipe(catchError(() => throwError(() => new BadGatewayException())))
+    return next
+      .handle()
+      .pipe(catchError(() => throwError(() => new BadGatewayException())))
   }
 }
 ```
@@ -254,7 +279,12 @@ export class ErrorsInterceptor implements NestInterceptor {
 下面的 `CacheInterceptor` 拦截器演示了这一机制。在实际应用中，你通常还需要结合 TTL（过期时间）、失效策略、缓存容量控制等功能实现一个健壮的缓存方案。
 
 ```ts filename='cache.interceptor.ts'
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common'
 import { Observable, of } from 'rxjs'
 
 @Injectable()

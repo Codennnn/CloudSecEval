@@ -1,6 +1,6 @@
 # 管道
 
-**管道**（Pipe）是一种带有 `@Injectable()` 装饰器的类，并实现了 `PipeTransform` 接口。
+**管道**（Pipe）是通过 `@Injectable()` 装饰器修饰的类，并且实现了 `PipeTransform` 接口。
 
 ```mermaid
 graph TD
@@ -43,12 +43,12 @@ graph TD
 
 它主要应用于两个核心场景：
 
-- **数据转换**：将传入数据转换为目标格式，例如将字符串转为整数；
+- **数据转换**：将传入数据自动转换为预期的类型，例如将字符串转换为整数。
 - **数据校验**：验证数据是否有效。若校验通过，数据将原样传入控制器；若不通过，则抛出异常。
 
-无论是数据转换还是校验，管道的执行时机都发生在调用控制器方法之前 —— 它会拦截并处理控制器参数，确保传入方法的值已经是“干净且可用”的。
+无论是数据转换还是数据校验，管道的执行时机都发生在控制器方法调用之前 —— 它会拦截并预处理参数，确保传入的值是“干净且可用”的。
 
-Nest 除了内置了一系列常用管道，也支持开发者自定义管道逻辑。本章节将介绍内置管道的使用方式、绑定机制，并通过一个实际示例带你从零实现一个自定义管道。
+Nest 除了内置了一系列常用管道，也支持开发者编写自定义管道。本章将介绍内置管道的使用方法和绑定机制，并通过一个示例，带你从零实现一个自定义管道。
 
 <CalloutInfo>
   所有管道都会在异常捕获区域（exceptions
@@ -81,7 +81,7 @@ Nest 提供了一套常用的内置管道，用于在请求到达处理逻辑前
 
 ## 管道的绑定方式
 
-在 Nest 应用中使用管道（Pipe），需要将其绑定到合适的上下文中。以内置的 `ParseIntPipe` 为例，假设我们希望在某个路由处理方法中对传入参数进行类型转换，并在方法执行前完成处理，可以按如下方式在**方法参数级别**绑定管道：
+在 Nest 应用中使用管道，需要将其绑定到合适的上下文中。以内置的 `ParseIntPipe` 为例，假设我们希望在某个路由处理方法中对传入参数进行类型转换，并在方法执行前完成处理，可以按如下方式在**方法参数级别**绑定管道：
 
 ```ts
 @Get(':id')
@@ -125,7 +125,7 @@ async findOne(
 }
 ```
 
-除了路由参数，`Parse*` 系列管道也常用于对查询参数、请求体等内容进行类型转换与基本验证。以下是一些典型示例：
+除了路由参数，`Parse*` 系列管道也常用于对查询参数、请求体等内容进行类型转换和基本验证。以下是一些典型示例：
 
 #### 绑定到查询参数：
 
@@ -153,14 +153,14 @@ async findOne(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
 以上内容介绍了 `Parse*` 系列转换管道的常见使用方式，它们主要用于对传入数据进行类型转换和初步校验。而对于更复杂的校验逻辑，可使用专门的**校验类管道**，其绑定方式略有不同，将在下节中详细说明。
 
 <CalloutInfo>
-  想了解更全面的校验机制，请参阅[校验技术](/techniques/validation)一节。
+  想了解更全面的校验机制，请参阅[数据验证](/techniques/validation)一节。
 </CalloutInfo>
 
 ## 自定义管道
 
 正如前文所述，Nest 允许我们编写自定义管道。虽然框架已经内置了功能强大的 `ParseIntPipe` 和 `ValidationPipe`，但为了帮助你更好地理解其实现机制，我们将从零开始构建一个简化版本的验证管道。
 
-下面是一个最基础的 `ValidationPipe` 实现。当前它的功能非常简单：接收一个输入值并原样返回，等同于一个恒等函数：
+下面是一个最基础的 `ValidationPipe` 实现，它的功能非常简单：接收一个输入值并原样返回，等同于一个恒等函数：
 
 ```ts filename='validation.pipe.ts'
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common'
@@ -182,13 +182,13 @@ export class ValidationPipe implements PipeTransform {
 - `value`：当前控制器方法参数的原始值，在传入处理器方法前由管道拦截。
 - `metadata`：参数的元数据对象，结构如下：
 
-```ts
-export interface ArgumentMetadata {
-  type: 'body' | 'query' | 'param' | 'custom'
-  metatype?: Type<unknown>
-  data?: string
-}
-```
+  ```ts
+  export interface ArgumentMetadata {
+    type: 'body' | 'query' | 'param' | 'custom'
+    metatype?: Type<unknown>
+    data?: string
+  }
+  ```
 
 这三个属性的含义如下：
 
@@ -199,9 +199,10 @@ export interface ArgumentMetadata {
 | `data`     | 装饰器中传入的字段名，例如 `@Body('name')` 中的 `'name'`。如果未指定字段，则该值为 `undefined`。                                                      |
 
 <CalloutInfo type="warning">
-  请注意，TypeScript
-  的接口类型在编译后会被擦除。如果参数使用接口声明类型（而非类），则运行时
-  `metatype` 的值为 `Object`，这会影响基于类型的验证逻辑。
+  TypeScript
+  的接口类型在编译阶段会被擦除。也就是说，如果你**使用接口而不是类**来定义参数的类型，那么在运行时，Nest
+  无法获取到实际的类型信息，此时 `metatype` 的值将是
+  `Object`。这会导致依赖类型信息的运行时验证逻辑（如基于类的验证管道）无法正常工作。
 </CalloutInfo>
 
 ## 基于模式的校验
@@ -225,13 +226,13 @@ export class CreateCatDto {
 }
 ```
 
-在调用服务方法前，我们通常希望先验证 createCatDto 是否符合预期格式——这是校验管道大显身手的场景。
+在调用服务方法之前，我们通常希望先验证 `createCatDto` 是否符合预期的数据格式 —— 这正是校验管道发挥作用的典型场景。
 
-为了确保每个 `create()` 方法的请求体都具备合法的 `name`、`age` 和 `breed` 字段，我们可以编写显式的校验逻辑。但如果将这些逻辑直接写入控制器，将破坏**单一职责原则**（SRP），使代码变得冗长难维护。
+为了确保每个 `create()` 方法的请求体都包含合法的 `name`、`age` 和 `breed` 字段，我们可以手动编写显式的校验逻辑。然而，如果将这些校验直接写入控制器中，不仅会违反单一职责原则（SRP），还会导致代码冗长、可维护性下降。
 
-另一种做法是为每个处理器方法创建对应的校验器类，并手动调用它们。但这种方式不仅容易被忽略，还会引入大量重复代码。
+另一种做法是为每个处理器方法单独创建对应的校验器类，并在方法中手动调用它们。然而，这种方式不仅容易被遗漏，还会引入大量重复的样板代码，降低开发效率。
 
-也可以选择在中间件中实现统一校验，但中间件层无法获取当前的**执行上下文**（即调用的处理器方法及其参数信息），难以实现具备上下文感知能力的动态校验。
+还可以选择在中间件中实现统一的参数校验。然而，中间件层无法访问当前的执行上下文（例如具体调用的处理器方法及其参数类型），因此难以实现具备上下文感知能力的动态校验逻辑。
 
 因此，Nest 的**管道机制**正好填补了这一空缺。它既支持自动注入 DTO，也能够结合元数据感知上下文信息，是实现灵活、可维护校验逻辑的最佳方式。
 
@@ -284,8 +285,8 @@ export class ZodValidationPipe implements PipeTransform {
 
 以下是使用 `ZodValidationPipe` 进行参数校验的典型流程：
 
-1. 定义 Zod schema；
-2. 创建 `ZodValidationPipe` 实例，并传入 schema；
+1. 定义 Zod schema。
+2. 创建 `ZodValidationPipe` 实例并传入 schema。
 3. 使用 `@UsePipes()` 装饰器将管道绑定到控制器方法。
 
 ### 定义参数校验规则
@@ -316,7 +317,7 @@ import { ZodValidationPipe } from './zod-validation.pipe'
 @Controller('cats')
 export class CatsController {
   @Post()
-  @UsePipes(new ZodValidationPipe(createCatSchema))
+  @UsePipes(new ZodValidationPipe(createCatSchema)) // [!code hl]
   async create(@Body() createCatDto: CreateCatDto) {
     return this.catsService.create(createCatDto)
   }
@@ -328,7 +329,7 @@ export class CatsController {
   选项，以确保类型检查的准确性。
 </CalloutInfo>
 
-## 类装饰器校验器
+## 基于类装饰器的参数校验
 
 <CalloutInfo type="warning">
   本节内容仅适用于 TypeScript 项目，因为原生 JavaScript 不支持类装饰器语法。
@@ -336,7 +337,7 @@ export class CatsController {
 
 除了手动编写逻辑外，Nest 还提供了另一种更优雅且功能强大的参数校验方式。
 
-Nest 深度集成了 [class-validator](https://github.com/typestack/class-validator) 库，它允许你使用装饰器为类属性声明校验规则。这种方式与 Nest 的管道机制天然契合，能够结合参数的 `metatype` 自动完成类型转换与数据验证，大幅简化代码逻辑。
+Nest 深度集成了 [class-validator](https://github.com/typestack/class-validator) 库，允许你通过装饰器为类属性声明校验规则。这种方式与 Nest 的管道机制天然契合，能够结合参数的 `metatype` 自动完成类型转换和数据验证，从而大幅简化参数验证的实现逻辑。
 
 在开始之前，请先安装相关依赖：
 
@@ -344,7 +345,7 @@ Nest 深度集成了 [class-validator](https://github.com/typestack/class-valida
 npm install class-validator class-transformer
 ```
 
-安装完成后，我们可以在 `CreateCatDto` 类中直接使用装饰器为字段添加校验规则。这样，该类既定义了数据结构，又承担了校验职责，做到结构与校验逻辑的统一：
+安装完成后，我们可以在 `CreateCatDto` 类中直接使用装饰器为各字段添加校验规则。通过这种方式，该类不仅定义了数据结构，同时也承担了数据校验的职责，实现了结构与校验逻辑的统一。
 
 ```ts filename='create-cat.dto.ts'
 import { IsString, IsInt } from 'class-validator'
@@ -362,11 +363,11 @@ export class CreateCatDto {
 ```
 
 <CalloutInfo>
-  更多装饰器与校验规则的用法，请参见 [class-validator
+  更多装饰器与校验规则的用法可以查阅 [class-validator
   官方文档](https://github.com/typestack/class-validator#usage)。
 </CalloutInfo>
 
-为了理解底层实现，我们来手动实现一个简单的 `ValidationPipe`，用于处理参数转换与校验：
+为了更好地理解底层原理，我们来动手实现一个简化版的 `ValidationPipe`，它可以完成参数的类型转换和数据校验。
 
 ```ts filename='validation.pipe.ts'
 import {
@@ -404,7 +405,7 @@ export class ValidationPipe implements PipeTransform<any> {
 
 <CalloutInfo>
   实际开发中无需手动编写验证管道，Nest 已内置功能完善的
-  `ValidationPipe`。上述代码仅用于帮助理解其工作原理。更多信息请参见[官方文档](/techniques/validation)。
+  `ValidationPipe`，上述代码仅用于帮助理解其工作原理。更多信息请参阅[数据验证](/techniques/validation)一章。
 </CalloutInfo>
 
 <CalloutInfo type="success">
@@ -447,14 +448,14 @@ async function bootstrap() {
 ```
 
 <CalloutInfo type="warning">
-  如果你正在构建[混合应用](/faq/hybrid-application)，请注意：`useGlobalPipes()`
-  注册的全局管道**不会**作用于 WebSocket
-  网关或微服务部分。不过，对于标准的微服务架构，该方法依然能够正常工作。
+  如果你正在构建一个[混合应用](/faq/hybrid-application)，那么请注意：通过
+  `useGlobalPipes()` 注册的全局管道**不会**作用于 WebSocket
+  网关或微服务部分。不过，对于标准的微服务架构，该方法仍然是有效的。
 </CalloutInfo>
 
 通过 `useGlobalPipes()` 注册的全局管道，会自动应用于所有控制器及其方法，无需手动声明。
 
-但需要注意的是，这种方式注册的管道是在**模块系统之外**进行的，因此**无法使用依赖注入**。如果你的管道依赖其他服务或配置项，建议采用模块内部注册的方式，以提供者的形式声明：
+但需要注意的是，以这种方式注册的管道是在**模块系统之外**进行的，因此**无法使用依赖注入**。如果你的管道依赖其他服务或配置项，建议采用模块内部注册的方式，以提供者的形式声明：
 
 ```ts filename='app.module.ts'
 import { Module } from '@nestjs/common'
@@ -471,14 +472,14 @@ import { APP_PIPE } from '@nestjs/core'
 export class AppModule {}
 ```
 
+通过提供者方式注册的全局管道不仅支持依赖注入，还可以在任意模块中声明并实现全局生效。推荐在定义该管道的模块中完成注册，以便逻辑集中、结构清晰。
+
 <CalloutInfo>
-通过提供者方式注册的全局管道，不仅支持依赖注入，而且可以在任意模块中声明并全局生效。建议在定义该管道的模块内完成注册。
-
-此处使用的 `useClass` 只是众多自定义提供者用法之一，更多高级用法可参考[自定义提供者文档](/fundamentals/custom-providers)。
-
+  上例使用的 `useClass`
+  只是众多自定义提供者用法之一，更多高级用法可参考[自定义提供者文档](/fundamentals/custom-providers)。
 </CalloutInfo>
 
-## 内置的 ValidationPipe
+## 内置的 `ValidationPipe`
 
 需要特别说明的是，Nest 框架已经内置了功能强大的 `ValidationPipe`，无需你手动实现通用的验证逻辑。相比本章的示例，官方提供的 `ValidationPipe` 拥有更全面的配置项与更完善的功能支持。
 
@@ -488,11 +489,11 @@ export class AppModule {}
 
 ## 转换用例
 
-自定义管道不仅可用于校验输入数据的有效性，还可以实现数据的转换功能。因为 `transform` 方法的返回值会直接替代原始参数，因此它非常适合处理格式转换等预处理逻辑。
+自定义管道不仅可以用于校验输入数据的有效性，还能够实现数据的转换功能。由于 `transform` 方法的返回值会直接替代原始参数，因此非常适合用于格式转换等预处理逻辑。
 
-这种特性在实际开发中非常有用。比如，前端通常以字符串形式传递参数，而后端往往需要将其转换为整数、布尔值等合适的数据类型；又如，当某些参数缺省时，我们可能希望为其设置默认值。这类需求可以通过转换管道（transformation pipe）统一处理，从而实现前后端数据格式的自动对齐。
+这种特性在实际开发中非常实用。例如，前端通常以字符串形式传递参数，而后端往往需要将其转换为整数、布尔值等合适的数据类型；又如，在某些参数缺省时，我们可能希望为其设置默认值。这类需求可通过转换管道（Transformation Pipe）统一处理，从而实现前后端数据格式的自动对齐和预处理。
 
-下面是一个自定义 `ParseIntPipe` 的示例，它用于将字符串形式的数字转换为整数。（需要注意的是，Nest 本身已提供了功能更完整的内置 `ParseIntPipe`，此处仅作为编写自定义转换管道的示范。）
+下面是一个自定义的 `ParseIntPipe` 示例，用于将字符串形式的数字转换为整数。实际上，Nest 已内置了功能更完善的 `ParseIntPipe`，此处示例仅用于演示如何实现自定义的转换管道。
 
 ```ts filename='parse-int.pipe.ts'
 import {
@@ -505,10 +506,12 @@ import {
 @Injectable()
 export class ParseIntPipe implements PipeTransform<string, number> {
   transform(value: string, metadata: ArgumentMetadata): number {
-    const val = parseInt(value, 10)
-    if (isNaN(val)) {
+    const val = Number.parseInt(value, 10)
+
+    if (Number.isNaN(val)) {
       throw new BadRequestException('Validation failed')
     }
+
     return val
   }
 }
@@ -523,7 +526,7 @@ async findOne(@Param('id', new ParseIntPipe()) id: number) {
 }
 ```
 
-另另一个常见的转换场景是：根据请求参数中的 id，从数据库中查找并注入对应的用户实体对象：
+另一个常见的转换场景是：根据请求参数中的 id，从数据库中查找并注入对应的用户实体对象：
 
 ```ts
 @Get(':id')
@@ -532,12 +535,11 @@ findOne(@Param('id', UserByIdPipe) user: UserEntity) {
 }
 ```
 
-该管道的实现可以作为练习尝试：它接收一个输入值（如用户 ID），并返回一个已处理的实体对象（如对应的 `UserEntity` 实例）。通过将这类重复逻辑抽离到管道中，不仅让控制器更加简洁，还增强了代码的声明式风格，符合 [DRY 原则](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)（Don’t Repeat Yourself）。
+该管道的实现可以作为练习尝试：它接收一个输入值（如用户 ID），并返回一个已处理的实体对象（如对应的 `UserEntity` 实例）。通过将这类重复逻辑抽离到管道中，不仅让控制器更加简洁，还增强了代码的声明式风格，符合 [DRY 原则](https://zh.wikipedia.org/wiki/一次且仅一次)（Don’t Repeat Yourself）。
 
 ## 设置默认值
 
-`Parse*` 系列管道要求传入参数必须存在；如果参数值为 `null` 或 `undefined`，将会抛出异常。
-为了支持参数的默认值设置，可以在 `Parse*` 管道之前添加 `DefaultValuePipe`，用于在值缺失时提供一个默认值。
+`Parse*` 系列管道要求传入参数必须存在，如果参数值为 `null` 或 `undefined`，就会抛出异常。为了支持参数的默认值设置，可以在 `Parse*` 管道之前添加 `DefaultValuePipe`，用于在值缺失时提供一个默认值。
 
 只需将 `DefaultValuePipe` 插入到目标参数的管道链的前面即可。例如：
 
