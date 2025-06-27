@@ -13,18 +13,23 @@ import '~/styles/global.css'
 const harmonySansSC = localFont({
   src: [
     {
-      path: '../../public/assets/fonts/HarmonyOS_Sans_SC_Regular.woff2',
+      path: '../../public/assets/fonts/vivoSans-Regular.woff2',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../../public/assets/fonts/HarmonyOS_Sans_SC_Medium.woff2',
+      path: '../../public/assets/fonts/vivoSans-Medium.woff2',
       weight: '500',
       style: 'normal',
     },
     {
-      path: '../../public/assets/fonts/HarmonyOS_Sans_SC_Bold.woff2',
+      path: '../../public/assets/fonts/vivoSans-DemiBold.woff2',
       weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../../public/assets/fonts/vivoSans-Bold.woff2',
+      weight: '700',
       style: 'normal',
     },
   ],
