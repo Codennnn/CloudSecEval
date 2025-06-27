@@ -1,6 +1,6 @@
 # 模块
 
-**模块**（Module）是通过 `@Module()` 装饰器定义的类，用于承载应用的结构单元。装饰器中定义的元数据能够指导 Nest 有效组织各类组件，并协调它们之间的依赖关系。
+**模块**（Module）是通过 `@Module()` 装饰器标记的类，用于承载应用的结构单元。装饰器中定义的元数据能够指导 Nest 有效组织各类组件，并协调它们之间的依赖关系。
 
 ```mermaid
 graph TD
@@ -245,7 +245,7 @@ import { CatsService } from './cats.service'
 export class CatsModule {}
 ```
 
-通过 `@Global()` 装饰器修饰后，`CatsModule` 会被注册到全局作用域，其导出的 `CatsService` 也会自动成为全局提供者。其他模块无需在 `imports` 中显式引入 `CatsModule`，即可直接注入并使用 `CatsService`。
+通过 `@Global()` 装饰器标记后，`CatsModule` 会被注册到全局作用域，其导出的 `CatsService` 也会自动成为全局提供者。其他模块无需在 `imports` 中显式引入 `CatsModule`，即可直接注入并使用 `CatsService`。
 
 <CalloutInfo type="warning" title="谨慎使用全局模块">
   虽然全局模块能减少重复导入的样板代码，但更推荐的做法是按需引入所需模块，并通过

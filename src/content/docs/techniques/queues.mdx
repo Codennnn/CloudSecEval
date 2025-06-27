@@ -887,7 +887,7 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 
 当队列或任务状态发生变化时，Bull 会生成一系列有用的事件。Nest 提供了一组装饰器，用于订阅这些标准核心事件。这些装饰器由 `@nestjs/bull` 包导出。
 
-事件监听器必须声明在消费者类中（即，被 `@Processor()` 装饰器修饰的类）。要监听某个事件，可以使用下表中的装饰器之一，在类中声明对应的事件处理方法。例如，若要监听 `audio` 队列中任务进入 active 状态时触发的事件，可以参考如下写法：
+事件监听器必须声明在消费者类中（即，被 `@Processor()` 装饰器标记的类）。要监听某个事件，可以使用下表中的装饰器之一，在类中声明对应的事件处理方法。例如，若要监听 `audio` 队列中任务进入 active 状态时触发的事件，可以参考如下写法：
 
 ```ts
 import { Processor, Process, OnQueueActive } from '@nestjs/bull';
