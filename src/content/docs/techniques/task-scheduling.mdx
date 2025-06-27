@@ -1,6 +1,6 @@
 # 任务调度
 
-任务调度（Task Scheduling）允许你以特定的时间点、周期性间隔，或延迟一段时间后执行任意代码（如方法或函数）。在 Linux 系统中，这类功能通常由操作系统层级的工具（如 [cron](https://en.wikipedia.org/wiki/Cron)）来实现。而在 Node.js 中，也有许多类似 cron 的调度库可供使用。
+任务调度（Task Scheduling）允许你以特定的时间点、周期性间隔，或延迟一段时间后执行任意代码（如方法或函数）。在 Linux 系统中，这类功能通常由操作系统层级的工具（如 [cron](https://zh.wikipedia.org/wiki/Cron)）来实现。而在 Node.js 中，也有许多类似 cron 的调度库可供使用。
 
 Nest 提供了官方的任务调度模块 `@nestjs/schedule`，它基于流行的 [`node-cron`](https://github.com/kelektiv/node-cron) 库构建，封装了更加声明式、模块化的用法。本章将介绍如何使用该模块为 Nest 应用添加任务调度能力。
 

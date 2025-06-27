@@ -110,7 +110,7 @@ export class CatsService {
   你可以使用 CLI 命令 `nest g service cats` 快速生成服务文件和相关模板。
 </CalloutInfo>
 
-上面的 `CatsService` 是一个包含属性与方法的基础类，其中最关键的是使用了 `@Injectable()` 装饰器。该装饰器用于标记当前类为可注入的服务，Nest 会为其附加必要的元数据，以便将其实例交由框架的[控制反转](https://en.wikipedia.org/wiki/Inversion_of_control)（Inversion of Control，简称 IoC）容器统一管理。
+上面的 `CatsService` 是一个包含属性与方法的基础类，其中最关键的是使用了 `@Injectable()` 装饰器。该装饰器用于标记当前类为可注入的服务，Nest 会为其附加必要的元数据，以便将其实例交由框架的[控制反转](https://zh.wikipedia.org/wiki/控制反转)（Inversion of Control，简称 IoC）容器统一管理。
 
 此外，示例中引用了一个名为 `Cat` 的接口，其定义如下：
 

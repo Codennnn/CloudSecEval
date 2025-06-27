@@ -89,7 +89,7 @@ export class CatsService {
 4.  通过这种方式，我们无需注入完整的 `REQUEST` 对象，便能在同一个请求的生命周期内共享状态。
 
 <CalloutInfo type="warning">
-  尽管这项技术在许多场景下都很有用，但它本质上是通过创建隐式上下文来工作的，这可能会让数据流变得不那么明确。因此，请谨慎使用此模式，尤其要避免创建"无所不包"的上下文"[上帝对象](https://en.wikipedia.org/wiki/God_object)"。
+  尽管这项技术在许多场景下都很有用，但它本质上是通过创建隐式上下文来工作的，这可能会让数据流变得不那么明确。因此，请谨慎使用此模式，尤其要避免创建"无所不包"的上下文"[上帝对象](https://zh.wikipedia.org/wiki/上帝对象)"。
 </CalloutInfo>
 
 ## NestJS CLS
