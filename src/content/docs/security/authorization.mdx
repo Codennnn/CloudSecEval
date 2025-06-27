@@ -134,7 +134,7 @@ providers: [
 
 ## 基于声明的授权（Claims-based Authorization）
 
-在用户身份被认证后，可信任方可以为其附加一组声明（claim）。每条声明是一个“键-值对”，用于描述该用户所具备的权限或操作能力，而非仅仅描述其身份属性。
+在用户身份被认证后，可信任方可以为其附加一组声明（claim）。每条声明是一个「键-值对」，用于描述该用户所具备的权限或操作能力，而非仅仅描述其身份属性。
 
 在 Nest 中实现基于声明的授权，整体流程可参考上文的[基于角色的访问控制](#实现基础的-rbac)。两者的核心区别在于：
 
@@ -217,7 +217,7 @@ export enum Action {
 }
 ```
 
-<CalloutInfo>`manage` 是 CASL 中的特殊关键字，表示“任意操作”。</CalloutInfo>
+<CalloutInfo>`manage` 是 CASL 中的特殊关键字，表示「任意操作」。</CalloutInfo>
 
 ### 封装 CASL 能力模块
 
@@ -266,7 +266,7 @@ export class CaslAbilityFactory {
 }
 ```
 
-<CalloutInfo>`all` 是 CASL 中的特殊关键字，表示“所有主体”。</CalloutInfo>
+<CalloutInfo>`all` 是 CASL 中的特殊关键字，表示「所有主体」。</CalloutInfo>
 
 <CalloutInfo>
   自 CASL v6 起，默认使用 `MongoAbility` 替代原始 `Ability`
@@ -276,7 +276,7 @@ export class CaslAbilityFactory {
 
 <CalloutInfo>
   `detectSubjectType` 选项用于让 CASL
-  正确识别对象的“主体类型”，详情可查阅[官方文档](https://casl.js.org/v6/en/guide/subject-type-detection#use-classes-as-subject-types)。
+  正确识别对象的「主体类型」，详情可查阅[官方文档](https://casl.js.org/v6/en/guide/subject-type-detection#use-classes-as-subject-types)。
 </CalloutInfo>
 
 在上述示例中，我们通过 `AbilityBuilder` 创建了 `MongoAbility` 实例。可以看到，`can` 和 `cannot` 方法参数相同但含义相反，`can` 用于授权，`cannot` 用于限制。两者最多可接收 4 个参数。详细用法请参考 [CASL 官方文档](https://casl.js.org/v6/en/guide/intro)。

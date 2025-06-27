@@ -281,7 +281,7 @@ providers: [HeroKilledDragonHandler]
 
 ## Saga
 
-Saga（或称“编排器”）是一种设计模式，用于管理应用中的复杂工作流。它通过监听事件并触发新命令来协调各个流程。例如，一个 Saga 可以监听 `UserRegisteredEvent` 事件，在用户成功注册后触发一个发送欢迎邮件的命令。
+Saga（或称「编排器」）是一种设计模式，用于管理应用中的复杂工作流。它通过监听事件并触发新命令来协调各个流程。例如，一个 Saga 可以监听 `UserRegisteredEvent` 事件，在用户成功注册后触发一个发送欢迎邮件的命令。
 
 Saga 是一项非常强大的功能。单个 Saga 可以监听一个或多个事件。借助 [RxJS](https://github.com/ReactiveX/rxjs) 库，可以对事件流进行过滤、映射、分支和合并，从而创建复杂的工作流。每个 Saga 都返回一个产生命令实例的 Observable。随后，`CommandBus` 会**异步**分发这些命令。
 

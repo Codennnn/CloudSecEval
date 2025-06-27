@@ -5,12 +5,12 @@ import terminusErrorLogJsonImage from '/public/assets/Terminus_Error_Log_Json.pn
 
 Terminus 集成可以为你提供**就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查是不可或缺的一环。简单来说，Web 开发中的健康检查通常指一个特殊的端点（Endpoint），例如 `https://my-website.com/health/readiness`。
 
-你的基础设施中的某个服务或组件（例如 [Kubernetes](https://kubernetes.io/)）会持续轮询此端点，当向此端点发起的 `GET` 请求返回“不健康”的 HTTP 状态码时，该服务就会采取相应的纠正措施。
+你的基础设施中的某个服务或组件（例如 [Kubernetes](https://kubernetes.io/)）会持续轮询此端点，当向此端点发起的 `GET` 请求返回「不健康」的 HTTP 状态码时，该服务就会采取相应的纠正措施。
 
-“健康”或“不健康”的定义因服务类型而异，因此，**Terminus** 提供了一套 **健康指示器（Health Indicator）**，让你可以根据具体场景自定义健康评估逻辑。
+「健康」或「不健康」的定义因服务类型而异，因此，**Terminus** 提供了一套 **健康指示器（Health Indicator）**，让你可以根据具体场景自定义健康评估逻辑。
 
 例如，假设你的 Web 服务器使用 MongoDB 存储数据，那么确认 MongoDB 服务是否正常运行就至关重要。
-此时，便可以使用 `MongooseHealthIndicator`。正确配置后（下文将详细说明），你的健康检查端点就会根据 MongoDB 的运行状态返回“健康”或“不健康”的 HTTP 状态码。
+此时，便可以使用 `MongooseHealthIndicator`。正确配置后（下文将详细说明），你的健康检查端点就会根据 MongoDB 的运行状态返回「健康」或「不健康」的 HTTP 状态码。
 
 ## 快速开始
 

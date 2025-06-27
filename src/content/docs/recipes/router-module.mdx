@@ -6,7 +6,7 @@
 
 在 HTTP 应用（如 RESTful API）中，路由的完整路径是由控制器上 `@Controller()` 装饰器所定义的前缀（可选），与方法装饰器（如 `@Get('users')`) 中指定的路径组合而成。你可以在[本章](/controllers#路由)了解更多细节。此外，你也可以为应用的所有路由设置[全局前缀](/faq/global-prefix)，或启用[版本控制](/techniques/versioning)。
 
-有时，为模块内注册的所有控制器统一添加路径前缀会非常方便。例如，假设你的 REST 应用中有一组专门服务于“仪表盘（Dashboard）”功能的端点。此时，为避免在每个相关控制器中重复添加 `/dashboard` 前缀，你可以借助便捷的 `RouterModule` 来实现，示例如下：
+有时，为模块内注册的所有控制器统一添加路径前缀会非常方便。例如，假设你的 REST 应用中有一组专门服务于「仪表盘（Dashboard）」功能的端点。此时，为避免在每个相关控制器中重复添加 `/dashboard` 前缀，你可以借助便捷的 `RouterModule` 来实现，示例如下：
 
 ```ts filename='app.module.ts'
 import { RouterModule } from '@nestjs/core'

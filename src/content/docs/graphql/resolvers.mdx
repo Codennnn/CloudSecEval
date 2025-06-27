@@ -10,7 +10,7 @@
 
 在 GraphQL 模式（schema）中，大多数定义都是**对象类型**。每个你定义的对象类型都应该代表一个应用客户端可能需要交互的领域对象。例如，我们的示例 API 需要能够获取作者及其文章的列表，因此我们应该定义 `Author` 类型和 `Post` 类型来支持这一功能。
 
-如果我们采用“schema first”方法，可以用 SDL 这样定义模式：
+如果我们采用「schema first」方法，可以用 SDL 这样定义模式：
 
 ```graphql
 type Author {
@@ -21,7 +21,7 @@ type Author {
 }
 ```
 
-在“code first”方法中，我们使用 TypeScript 类，并通过 TypeScript 装饰器为这些类的字段添加注解来定义模式。上述 SDL 的等价代码如下：
+在「code first」方法中，我们使用 TypeScript 类，并通过 TypeScript 装饰器为这些类的字段添加注解来定义模式。上述 SDL 的等价代码如下：
 
 ```ts filename='authors/models/author.model.ts'
 import { Field, Int, ObjectType } from '@nestjs/graphql'

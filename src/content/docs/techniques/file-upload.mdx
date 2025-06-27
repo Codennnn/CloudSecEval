@@ -59,7 +59,7 @@ import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common'
 @Injectable()
 export class FileSizeValidationPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
-    // “value” 是一个包含文件数据的对象
+    // 「value」 是一个包含文件数据的对象
     const oneKb = 1000
     if (value.size >= oneKb) {
       throw new Error('文件大小不能超过 1KB')
@@ -193,7 +193,7 @@ file: Express.Multer.File,
 
 ## 上传多个文件（文件数组）
 
-如果你需要上传多个文件，并且这些文件对应同一个字段名（即“文件数组”），可以使用 `FilesInterceptor()` 装饰器（注意其名称中的复数 `Files`）。该装饰器接收以下三个参数：
+如果你需要上传多个文件，并且这些文件对应同一个字段名（即「文件数组」），可以使用 `FilesInterceptor()` 装饰器（注意其名称中的复数 `Files`）。该装饰器接收以下三个参数：
 
 - `fieldName`：字段名称（与前端 `FormData` 中的字段名一致）
 - `maxCount`（可选）：允许上传的最大文件数

@@ -303,7 +303,7 @@ await app.listen(process.env.PORT ?? 3000)
   `Logger.flush()`）。
 </CalloutInfo>
 
-这里通过 `app.get(MyLogger)` 获取自定义日志器的单例，这种方式相当于将其从依赖注入容器中“取出”，并交由 Nest 作为全局日志器使用。前提是 `MyLogger` 已被某个模块正确注册。
+这里通过 `app.get(MyLogger)` 获取自定义日志器的单例，这种方式相当于将其从依赖注入容器中「取出」，并交由 Nest 作为全局日志器使用。前提是 `MyLogger` 已被某个模块正确注册。
 
 此外，在控制器、服务或守卫等类中，你也可以像普通依赖一样注入 `MyLogger`，从而确保系统日志与应用日志统一使用同一个记录器实例。
 

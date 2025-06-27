@@ -234,7 +234,8 @@ export class AudioConsumer {}
 ```
 
 <CalloutInfo>
-  消费者类必须以“提供者”的形式进行注册，`@nestjs/bullmq` 才能正确识别并启用它。
+  消费者类必须以「提供者」的形式进行注册，`@nestjs/bullmq`
+  才能正确识别并启用它。
 </CalloutInfo>
 
 装饰器中的字符串参数（如 `'audio'`）指定了该类关联的队列名称。
@@ -278,7 +279,7 @@ async transcode(job: Job<unknown>) { ... }
   该特性在 BullMQ 中已被移除，不再支持此方式，具体原因详见下方说明。
 </CalloutInfo>
 
-为了避免行为混淆，BullMQ 取消了“按任务名称绑定处理方法”的支持。如今，如需根据任务名称执行不同逻辑，推荐在 `process()` 方法中使用 `switch` 语句进行分发：
+为了避免行为混淆，BullMQ 取消了「按任务名称绑定处理方法」的支持。如今，如需根据任务名称执行不同逻辑，推荐在 `process()` 方法中使用 `switch` 语句进行分发：
 
 ```ts
 import { Processor, WorkerHost } from '@nestjs/bullmq'
@@ -321,7 +322,7 @@ export class AudioConsumer extends WorkerHost {
 })
 ```
 
-由于此类消费者是“按作业实例化”的，因此你可以直接在构造函数中通过标准方式注入 `JOB_REF` 令牌，从而获取当前作业的引用。
+由于此类消费者是「按作业实例化」的，因此你可以直接在构造函数中通过标准方式注入 `JOB_REF` 令牌，从而获取当前作业的引用。
 
 ```ts
 import { Inject } from '@nestjs/common'
@@ -748,7 +749,7 @@ this.audioQueue.add(taskData, jobOptions)
 
 - `lifo: boolean`
 
-  是否启用“后进先出”模式（LIFO）。若为 true，任务将插入队列末端。
+  是否启用「后进先出」模式（LIFO）。若为 true，任务将插入队列末端。
 
 - `timeout: number`
 

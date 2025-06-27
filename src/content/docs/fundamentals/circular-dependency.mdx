@@ -10,7 +10,7 @@
 本章节将详细介绍这两种方式，并补充说明在模块之间出现循环依赖时的处理策略。
 
 <CalloutInfo type="warning">
-  当你使用“barrel 文件”（即 `index.ts`
+  当你使用「barrel 文件」（即 `index.ts`
   文件）来统一导出模块内容时，**很容易**引发循环依赖问题。**强烈建议**避免通过
   barrel 文件导入模块或提供者。例如，不应在 `cats/cats.controller.ts` 中通过
   `cats/index.ts` 间接导入 `cats/cats.service.ts`。详情可参考[相关 GitHub

@@ -26,7 +26,7 @@ app.use(cookieParser())
 
 中间件会自动解析请求头中的 Cookie 字段，并将解析结果挂载到 `req.cookies` 对象上。若设置了密钥，还会将已签名的 Cookie 解析到 `req.signedCookies` 中。
 
-所谓“已签名的 Cookie”，是指值以 `s`: 前缀开头的 Cookie。中间件会自动验证这些值的签名：
+所谓「已签名的 Cookie」，是指值以 `s`: 前缀开头的 Cookie。中间件会自动验证这些值的签名：
 
 - 若验证通过，对应键值会出现在 `req.signedCookies` 中；
 - 若验证失败，该值会被设置为 `false`，而不会暴露原始（可能被篡改的）内容；

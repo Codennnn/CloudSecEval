@@ -142,11 +142,11 @@ async onModuleInit() {
 
 ## 消息接收
 
-Nest 会将接收到的 Kafka 消息解析为一个包含 `key`、`value` 和 `headers` 属性的对象，这些属性的值类型均为 `Buffer`。随后，Nest 会将这些 Buffer 转换为字符串。如果字符串表现为“类对象”格式，Nest 会尝试将其作为 `JSON` 进行解析。最终，`value` 会被传递给其对应的处理器。
+Nest 会将接收到的 Kafka 消息解析为一个包含 `key`、`value` 和 `headers` 属性的对象，这些属性的值类型均为 `Buffer`。随后，Nest 会将这些 Buffer 转换为字符串。如果字符串表现为「类对象」格式，Nest 会尝试将其作为 `JSON` 进行解析。最终，`value` 会被传递给其对应的处理器。
 
 ## 消息发送
 
-Nest 在发布事件或发送消息时，会对即将发送的 Kafka 消息进行序列化处理。这一过程会应用于传递给 `ClientKafkaProxy` 的 `emit()` 和 `send()` 方法的参数，或是 `@MessagePattern` 方法的返回值。序列化时，若对象不是字符串或 Buffer，则会通过 `JSON.stringify()` 或 `toString()` 原型方法将其“字符串化”。
+Nest 在发布事件或发送消息时，会对即将发送的 Kafka 消息进行序列化处理。这一过程会应用于传递给 `ClientKafkaProxy` 的 `emit()` 和 `send()` 方法的参数，或是 `@MessagePattern` 方法的返回值。序列化时，若对象不是字符串或 Buffer，则会通过 `JSON.stringify()` 或 `toString()` 原型方法将其「字符串化」。
 
 ```ts filename='heroes.controller.ts'
 import { Payload } from '@nestjs/microservices'
@@ -343,7 +343,7 @@ onModuleInit() {
 
 ## 可重试异常（Retriable exceptions）
 
-与其他传输层类似，所有未处理的异常都会被自动包装为 `RpcException`，并转换为“用户友好”的格式。然而，在某些边界场景下，你可能希望绕过这一机制，让异常直接被 `kafkajs` 驱动程序处理。当消息处理过程中抛出异常时，会指示 `kafkajs` 对该消息进行**重试**（重新投递）。这意味着即使消息（或事件）处理器已被触发，其 offset 也不会被提交到 Kafka。
+与其他传输层类似，所有未处理的异常都会被自动包装为 `RpcException`，并转换为「用户友好」的格式。然而，在某些边界场景下，你可能希望绕过这一机制，让异常直接被 `kafkajs` 驱动程序处理。当消息处理过程中抛出异常时，会指示 `kafkajs` 对该消息进行**重试**（重新投递）。这意味着即使消息（或事件）处理器已被触发，其 offset 也不会被提交到 Kafka。
 
 <CalloutInfo type="warning">
   对于事件处理器（基于事件的通信），所有未处理的异常默认都被视为**可重试异常**。

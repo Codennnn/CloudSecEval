@@ -120,7 +120,7 @@ export class AppModule {}
 
 </CalloutInfo>
 
-“无法解析提供者的依赖关系”是一个常见错误。借助 Nest Devtools，你可以轻松定位问题并找到解决方案。
+「无法解析提供者的依赖关系」是一个常见错误。借助 Nest Devtools，你可以轻松定位问题并找到解决方案。
 
 首先，打开 `main.ts` 文件，并按如下方式更新 `bootstrap()` 调用：
 
@@ -140,7 +140,7 @@ const app = await NestFactory.create(AppModule, {
 })
 ```
 
-现在，当应用因**“无法解析依赖关系”**错误而启动失败时，会在根目录下生成一个 `graph.json` 文件（该文件表示部分依赖关系图）。你可以将此文件拖拽到 Devtools 中（请确保将当前模式从“Interactive”切换为“Preview”）：
+现在，当应用因**「无法解析依赖关系」**错误而启动失败时，会在根目录下生成一个 `graph.json` 文件（该文件表示部分依赖关系图）。你可以将此文件拖拽到 Devtools 中（请确保将当前模式从「Interactive」切换为「Preview」）：
 
 <DocImage src={dragAndDropImage} alt="Drag and drop" />
 

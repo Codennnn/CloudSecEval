@@ -73,7 +73,7 @@ Nest 对第三方库 `http-errors` 提供了有限的兼容性支持。只要异
 
 Nest 提供了内置的 `HttpException` 类（由 `@nestjs/common` 模块导出），用于在处理 HTTP 请求时统一返回结构化的错误响应。在开发 RESTful 或 GraphQL API 时，推荐使用该类抛出符合 HTTP 规范的异常，以实现一致且可预测的错误处理机制。
 
-以下是一个基于 `CatsController` 中 `findAll()` 方法的示例。假设由于某种原因，该方法需要返回一个“禁止访问”的错误，可以按如下方式处理：
+以下是一个基于 `CatsController` 中 `findAll()` 方法的示例。假设由于某种原因，该方法需要返回一个「禁止访问」的错误，可以按如下方式处理：
 
 ```ts filename='cats.controller.ts'
 @Get()
@@ -157,7 +157,7 @@ async findAll() {
 
 为保持异常结构的一致性，建议定义一套符合业务语义的异常类体系，并统一继承自 `HttpException`。如此一来，Nest 的内建异常处理机制便可自动识别并格式化这些异常的响应内容，无需额外配置。
 
-例如，定义一个代表“禁止访问”的异常类：
+例如，定义一个代表「禁止访问」的异常类：
 
 ```ts filename='forbidden.exception.ts'
 export class ForbiddenException extends HttpException {
@@ -307,7 +307,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 ```
 
 <CalloutInfo type="success">
-  推荐使用“传入过滤器类本身”的方式进行绑定。这样不仅可以启用依赖注入，还能在模块内复用同一个实例，降低内存开销。
+  推荐使用「传入过滤器类本身」的方式进行绑定。这样不仅可以启用依赖注入，还能在模块内复用同一个实例，降低内存开销。
 </CalloutInfo>
 
 上面的例子展示了将过滤器绑定在方法层级，即该过滤器仅作用于 `create()` 方法。事实上，异常过滤器可以根据需求绑定在以下三个作用域：
@@ -409,7 +409,7 @@ export class CatchEverythingFilter implements ExceptionFilter {
 ```
 
 <CalloutInfo>
-  若同时注册了“全局异常过滤器”（用于捕获所有异常）和**特定异常类型的过滤器**，请确保将“全局过滤器”注册在优先位置。否则，特定异常可能会被前者截获，从而导致专用过滤器失效。
+  若同时注册了「全局异常过滤器」（用于捕获所有异常）和**特定异常类型的过滤器**，请确保将「全局过滤器」注册在优先位置。否则，特定异常可能会被前者截获，从而导致专用过滤器失效。
 </CalloutInfo>
 
 ## 继承内置异常过滤器

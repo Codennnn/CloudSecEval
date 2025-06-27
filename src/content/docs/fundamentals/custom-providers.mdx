@@ -60,23 +60,29 @@ export class AppModule {}
 
 ### 注入流程解析
 
-上面的代码背后，Nest 实际上完成了以下三个关键步骤：
+在上述代码的背后，Nest 实际上完成了以下三个关键步骤：
 
 1. **定义提供者**
-   在 `cats.service.ts` 文件中，`@Injectable()` 装饰器将 `CatsService` 声明为由 IoC 容器托管的提供者。
-2. **声明依赖关系**
-   在控制器 `CatsController` 的构造函数中，声明了对 `CatsService` 的依赖。Nest 会根据构造函数参数的类型推断出所需的依赖，并自动注入对应的实例：
 
-```ts
-  constructor(private catsService: CatsService)
-```
+   在 `cats.service.ts` 文件中，通过 `@Injectable()` 装饰器将 `CatsService` 标记为一个提供者。这意味着该类将由 Nest 的 IoC 容器进行管理和实例化。
+
+2. **声明依赖关系**
+
+   在 `CatsController` 控制器的构造函数中声明了对 `CatsService` 的依赖。Nest 会根据构造函数参数的类型信息，**自动推断所需的依赖**，并注入对应的实例。
+
+   ```ts
+     constructor(private catsService: CatsService)
+   ```
 
 3. **模块注册**
-   在 `app.module.ts` 中，`CatsService` 被添加到模块的 `providers` 数组中。Nest 会将该类的类型作为注入令牌（Injection Token），并据此完成依赖绑定。
 
-当 Nest 创建 `CatsController` 实例时，会先检查它所依赖的服务。发现它依赖 `CatsService` 后，Nest 会根据已注册的提供者信息找到对应的注入令牌，进而实例化 `CatsService` 并注入。如果该服务采用默认的**单例作用域**，则其实例会被缓存起来，后续请求将复用这个实例；若已缓存，则直接返回。
+   在 `app.module.ts` 文件中，将 `CatsService` 添加到模块的 `providers` 数组中。Nest 会将该类的类型作为**注入令牌**（Injection Token），并据此建立依赖绑定关系。
 
-实际上，Nest 在应用启动阶段就会构建整个**依赖图**（Dependency Graph），并解析所有提供者之间的依赖关系。如果某个服务本身还依赖其他服务，Nest 会递归处理这些依赖项，确保它们按照正确的顺序被初始化。整个过程遵循“**自底向上**”的构建逻辑，开发者无需手动管理复杂的依赖链，极大提升了系统的可维护性与模块化能力。
+当 Nest 创建 `CatsController` 实例时，会首先检查其构造函数中声明的依赖。发现其依赖于 `CatsService` 后，Nest 会根据已注册的提供者信息，查找对应的注入令牌，然后实例化 `CatsService` 并注入至控制器中。
+
+如果该服务使用默认的单例作用域，其实例会被缓存起来，后续对该服务的请求将复用同一个实例；若实例已存在，则直接返回缓存结果，无需重新创建。
+
+实际上，Nest 在应用启动阶段就会构建完整的**依赖图**（Dependency Graph），并解析所有提供者之间的依赖关系。如果某个服务自身还依赖其他服务，Nest 会递归地解析并注入这些依赖，确保所有依赖项按正确顺序被初始化。整个过程遵循「自底向上」的构建逻辑，开发者无需手动管理繁琐的依赖链，从而显著提升了系统的模块化能力和可维护性。
 
 ## 标准提供者
 
