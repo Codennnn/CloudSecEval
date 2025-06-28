@@ -32,14 +32,14 @@ export default function DocsLayout(props: React.PropsWithChildren) {
                 )
               }
             >
-              <div className="flex-1 max-w-full px-[var(--content-padding)]">
+              <div className="flex-1 min-w-0 max-w-full px-[var(--content-padding)]">
                 {props.children}
               </div>
 
               <aside
-                className="w-64 sticky top-0 h-screen hidden @4xl:block"
+                className="w-60 sticky top-0 h-screen hidden @4xl:block @2xl:w-64"
               >
-                <div className="max-h-full pt-[var(--content-padding)] pr-[var(--content-padding)] inline-flex flex-col pb-[calc(var(--content-padding)_/_2)]">
+                <div className="max-h-full w-full pt-[var(--content-padding)] pr-[var(--content-padding)] inline-flex flex-col pb-[calc(var(--content-padding)_/_2)] overflow-hidden">
                   <ScrollGradientContainer className="pb-4" rootClassName="flex flex-col">
                     <TableOfContents />
                   </ScrollGradientContainer>
