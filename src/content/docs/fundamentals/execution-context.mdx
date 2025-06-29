@@ -1,25 +1,25 @@
 # 执行上下文
 
-Nest 提供了一套强大的工具类，旨在帮助开发者构建能够适配多种运行环境的通用程序，例如基于 Nest 的 HTTP 服务、微服务架构，或是 WebSocket 应用。这些工具类可以提取当前的执行上下文信息，使我们能够编写可在不同类型的控制器、处理器与运行平台之间灵活复用的守卫、异常过滤器和拦截器。
+Nest 提供了一套强大的工具类，旨在帮助开发者构建能够适配多种运行环境的通用程序，例如基于 Nest 的 HTTP 服务、微服务架构，或是 WebSocket 应用。这些工具类可以提取当前的执行上下文信息，使我们能够编写可在不同类型的控制器、处理器和运行平台之间灵活复用的守卫、异常过滤器和拦截器。
 
 本章将重点介绍两个核心类：`ArgumentsHost` 和 `ExecutionContext`，它们是构建高度抽象和可扩展逻辑的关键基础。
 
 ## ArgumentsHost 类
 
-`ArgumentsHost` 提供了一组方法，用于访问传递给处理器（handler）的原始参数。它抽象了不同上下文类型（如 HTTP、RPC 或 WebSocket）下的参数结构，并允许你以统一的方式提取相关数据。
+`ArgumentsHost` 是一个抽象层，用于统一访问处理器（handler）接收到的原始参数。它屏蔽了不同上下文（如 HTTP、RPC 或 WebSocket）下参数结构的差异，让你可以通过统一的方式获取所需数据。
 
-在需要访问请求上下文的场景中，Nest 会自动注入 `ArgumentsHost` 实例，通常以 `host` 作为参数名称。例如，在[异常过滤器](/exception-filters#arguments-host)的 `catch()` 方法中，你会收到一个 `ArgumentsHost` 实例作为入参。
+在需要访问请求上下文的场景中，Nest 会自动注入一个 `ArgumentsHost` 实例，通常命名为 `host`。例如，在[异常过滤器](/exception-filters#argumentshost-参数)的 `catch()` 方法中，就会收到一个 `ArgumentsHost` 实例作为参数。
 
-简而言之，`ArgumentsHost` 封装了对处理器参数的访问逻辑。例如：
+简而言之，`ArgumentsHost` 封装了对处理器参数的访问逻辑，让开发者无需关心底层平台的具体实现。例如：
 
-- 在 HTTP 应用中（如使用 `@nestjs/platform-express）`，它封装了 Express 风格的参数数组 `[request, response, next]`。
-- 在 GraphQL 应用中，它则封装了 GraphQL 专属参数结构 `[root, args, context, info]`。
+- 在 HTTP 应用中（如使用 `@nestjs/platform-express`），它封装了 Express 风格的参数数组 `[request, response, next]`。
+- 在 GraphQL 应用中，则封装了 GraphQL 专属参数结构 `[root, args, context, info]`。
 
-这一机制使你可以在框架内部以一致的方式访问底层平台提供的原始参数，而无需关心其具体实现。
+借助这种抽象机制，无论底层运行于何种平台，你都能通过一致的方式获取原始参数。
 
 ## 判断当前应用上下文类型
 
-为了编写在多种环境中通用的逻辑组件（如守卫、异常过滤器、拦截器），我们通常需要判断当前的执行上下文类型。`ArgumentsHost` 提供的 `getType()` 方法正是用于实现这一目的：
+在编写需要同时适用于多种环境的通用逻辑组件（例如守卫、异常过滤器或拦截器）时，我们通常需要先确定当前的执行上下文类型。此时，可以通过 `ArgumentsHost` 提供的 `getType()` 方法来实现这一需求：
 
 ```ts
 import { GqlContextType } from '@nestjs/graphql'
@@ -33,7 +33,7 @@ if (host.getType() === 'http') {
 }
 ```
 
-通过上下文类型判断机制，我们可以精确控制逻辑的适用范围，使组件在不同平台间具备良好的适应性与可维护性。
+通过上下文类型判断机制，我们可以精确控制逻辑的适用范围，使组件在不同平台间具备良好的适应性。
 
 ## 获取处理器参数
 
@@ -80,7 +80,7 @@ export interface WsArgumentsHost {
 }
 ```
 
-在微服务（RPC）场景中，调用 `switchToRpc()` 将返回 RpcArgumentsHost，可用于访问消息内容与上下文：
+在微服务场景中，调用 `switchToRpc()` 将返回 `RpcArgumentsHost`，可用于访问消息内容和上下文：
 
 ```ts
 export interface RpcArgumentsHost {
@@ -95,12 +95,12 @@ export interface RpcArgumentsHost {
 <CalloutInfo>
   应根据所使用的传输机制（HTTP、WebSocket 或
   RPC）选择对应的上下文切换方法。每种上下文类型都提供了访问底层平台对象（如
-  Express、Socket.IO 或自定义传输器）的能力，有助于提升代码的可读性与稳定性。
+  Express、Socket.IO 或自定义传输器）的能力，有助于提升代码的可读性和稳定性。
 </CalloutInfo>
 
 ## ExecutionContext 类
 
-`ExecutionContext` 是一个继承自 `ArgumentsHost` 的接口，在其基础上提供了更丰富的上下文信息，用于描述当前的请求处理流程。Nest 会在特定场景下自动注入 `ExecutionContext` 实例，例如在 守卫 的 `canActivate()` 方法中，或在[拦截器](/interceptors#execution-context)的 `intercept()` 方法中。
+`ExecutionContext` 是一个继承自 `ArgumentsHost` 的接口，在其基础上提供了更丰富的上下文信息，用于描述当前的请求处理流程。Nest 会在特定场景下自动注入 `ExecutionContext` 实例，例如在守卫的 `canActivate()` 方法中，或在[拦截器](/interceptors#执行上下文)的 `intercept()` 方法中。
 
 除了 `ArgumentsHost` 提供的通用参数访问能力，`ExecutionContext` 还扩展了以下两个关键方法：
 
@@ -128,14 +128,14 @@ const methodKey = ctx.getHandler().name // "create"
 const className = ctx.getClass().name // "CatsController"
 ```
 
-通过这两个方法，我们可以同时获取当前控制器类与其方法的信息，从而具备更强的上下文感知能力。这在编写守卫或拦截器时尤为有用 —— 比如，你可以配合 `Reflector` 提供的 `get()` 方法，读取通过 `@SetMetadata()` 或自定义装饰器设置的元数据，实现更灵活的逻辑控制。相关用法将在后续章节中进一步讲解。
+通过这两个方法，我们可以同时获取当前控制器类和其方法的信息，从而具备更强的上下文感知能力。这在编写守卫或拦截器时尤为有用 —— 比如，你可以配合 `Reflector` 提供的 `get()` 方法，读取通过 `@SetMetadata()` 或自定义装饰器设置的元数据，实现更灵活的逻辑控制。相关用法将在后续章节中进一步讲解。
 
 ## 反射与元数据
 
 Nest 提供了多种方式为路由处理器附加自定义元数据（Metadata），最常用的有两种：
 
-- 使用 `@SetMetadata()` 装饰器（Nest 内置）；
-- 使用 `Reflector.createDecorator()` 创建强类型的自定义装饰器。
+- 使用内置装饰器 `@SetMetadata()`。
+- 使用 `Reflector.createDecorator()` 创建类型安全的自定义装饰器。
 
 本节将对比这两种方式，并展示如何在守卫或拦截器中提取这些元数据。
 
@@ -163,7 +163,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 
 ### 在运行时提取元数据
 
-若要在守卫、拦截器或其他上下文感知组件中访问这些元数据，可以使用 `Reflector` 工具类。它可以像普通服务一样被注入使用：
+若要在守卫、拦截器或其他上下文感知组件中访问这些元数据，可以使用 `Reflector` 工具类，它可以像普通服务一样被注入使用：
 
 ```ts filename='roles.guard.ts'
 import { Reflector } from '@nestjs/core'

@@ -1,23 +1,21 @@
 # 懒加载模块
 
-在 Nest 应用中，模块默认采用**急切加载**（eager loading）策略：即应用启动时会加载**所有模块**，无论这些模块是否会立即被使用。对于大多数常规场景，这种方式不会带来明显问题。但在某些对启动时间敏感的架构中（例如无服务器架构或基于 Worker 的系统），**冷启动时间**可能成为性能瓶颈，而急切加载会放大这一影响。
+在 Nest 应用中，模块默认采用**急切加载**（eager loading）策略：即在应用启动时，无论模块是否会立即使用，都会被一次性加载进内存。对于大多数常见场景，这种方式通常不会带来明显问题。但在某些对启动时长敏感的架构中（例如无服务器架构或基于 Worker 的系统），冷启动时间可能成为性能瓶颈，而急切加载往往会放大这一问题。
 
-启用**懒加载**（lazy loading）后，Nest 只会在当前请求中真正需要某个模块时才加载它，从而显著缩短启动时间。你还可以在函数预热阶段通过异步方式预先加载其他模块（即**延迟注册**），以优化后续请求的响应效率。
+通过启用**懒加载**（lazy loading），Nest 会仅在收到请求且真正需要某个模块时才进行加载，从而有效缩短启动时间。此外，你还可以在函数预热阶段异步加载部分模块（即**延迟注册**），以优化后续请求的响应速度。
 
 <CalloutInfo>
-  如果你熟悉 [Angular](https://angular.dev/)
-  框架，可能对「[懒加载模块](https://angular.dev/guide/ngmodules/lazy-loading#lazy-loading-basics)」这个概念不陌生。需要注意的是，**Nest
-  的懒加载机制与 Angular
-  完全不同**，两者虽然名称相同，但底层原理与实现方式并不相通。
+  如果你使用过 [Angular](https://angular.dev/) 框架，可能对「[懒加载模块](https://angular.dev/guide/ngmodules/lazy-loading#lazy-loading-basics)」这一概念比较熟悉。但需要特别注意：**Nest 的懒加载机制与 Angular 完全不同**，两者虽然名字相似，但底层原理和实现方式并不相同。
 </CalloutInfo>
 
+
 <CalloutInfo type="warning">
-  请注意：启用懒加载后，[生命周期钩子方法](/fundamentals/lifecycle-events)将**不会**被触发。
+  启用懒加载后，[生命周期钩子方法](/fundamentals/lifecycle-events)将**不会被触发**。
 </CalloutInfo>
 
 ## 快速上手
 
-Nest 提供了一个名为 `LazyModuleLoader` 的工具类，用于实现模块的**按需加载**（懒加载）。你可以像注入其他依赖一样，将其注入到服务类中：
+Nest 提供了一个名为 `LazyModuleLoader` 的工具类，用于实现模块的**按需加载**（也就是懒加载）。你可以像注入其他依赖一样，将其注入到服务类中：
 
 ```ts filename='cats.service.ts'
 import { LazyModuleLoader } from '@nestjs/core'
@@ -43,7 +41,7 @@ const moduleRef = await this.lazyModuleLoader.load(() => LazyModule)
 ```
 
 <CalloutInfo>
-懒加载模块在首次通过 `LazyModuleLoader#load()` 方法加载时会被缓存。后续加载同一个模块时会直接返回缓存中的引用，几乎无需额外开销。
+懒加载模块在首次通过 `LazyModuleLoader.load()` 方法加载时会被缓存，后续加载同一个模块时会直接返回缓存中的引用，几乎无需额外开销。
 
 ```bash
 第 1 次加载 "LazyModule"
@@ -78,13 +76,13 @@ const { LazyService } = await import('./lazy.service')
 const lazyService = moduleRef.get(LazyService)
 ```
 
-<CalloutInfo type="warning">
-  需要注意的是，懒加载模块**不能声明为全局模块**，也**不能注册全局守卫、拦截器等全局增强器**。这是因为懒加载模块会在应用启动完成后才被加载，而这些全局特性的注册必须在启动阶段完成。
+<CalloutInfo type="warning" title="特别注意">
+  懒加载模块**不能声明为全局模块**，也**不能注册全局守卫、拦截器等全局增强器**。这是因为懒加载模块会在应用启动完成后才被加载，而这些全局特性的注册必须在启动阶段完成。
 </CalloutInfo>
 
 如果你的项目使用 Webpack，还需要在 `tsconfig.json` 中设置合适的编译选项，以启用动态导入功能：
 
-```json
+```json filename='tsconfig.json'
  {
    "compilerOptions": {
      "module": "esnext",
