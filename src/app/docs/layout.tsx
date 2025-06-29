@@ -28,7 +28,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
               className={
                 cn(
                   'flex relative w-full',
-                  '@lg:[--content-padding:4rem] @md:[--content-padding:3rem] @sm:[--content-padding:1.5rem] [--content-padding:1rem]',
+                  '@6xl:[--content-padding:4rem] @4xl:[--content-padding:3rem] @lg:[--content-padding:1.5rem] [--content-padding:1rem]',
                 )
               }
             >
@@ -39,7 +39,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
               <aside
                 className="w-60 sticky top-0 h-screen hidden @4xl:block @2xl:w-64"
               >
-                <div className="max-h-full w-full pt-[var(--content-padding)] pr-[var(--content-padding)] inline-flex flex-col pb-[calc(var(--content-padding)_/_2)] overflow-hidden">
+                <div className="max-h-full w-full pt-[var(--content-padding)] pr-[calc(var(--content-padding)_/_2)] @6xl:pr-[var(--content-padding)] inline-flex flex-col pb-[calc(var(--content-padding)_/_2)] overflow-hidden">
                   <ScrollGradientContainer className="pb-4" rootClassName="flex flex-col">
                     <TableOfContents />
                   </ScrollGradientContainer>

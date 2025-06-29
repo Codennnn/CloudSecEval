@@ -1,15 +1,15 @@
 # 循环依赖
 
-当两个类互相依赖时，就会形成**循环依赖**（Circular Dependency）。例如，A 类需要注入 B 类的实例，而 B 类同时也依赖 A 类。在 Nest 中，这种依赖关系既可能出现在**模块之间**，也可能发生在**提供者之间**。
+当两个类互相依赖时，就会形成**循环依赖**（Circular Dependency）。举例来说：A 类需要注入 B 类的实例，而 B 类同时也依赖 A 类的实例。在 Nest 中，这种循环依赖关系既可能出现在**模块之间**，也可能发生在**提供者之间**。
 
-尽管在日常开发中应尽量避免循环依赖的出现，但在某些复杂业务场景中，这种情况难以完全规避。为此，Nest 提供了两种常见方案，用于处理提供者之间的循环依赖：
+尽管在日常开发中应尽量避免循环依赖的出现，但在复杂的业务场景中，这种情况难以完全规避。为此，Nest 提供了两种常见方案，帮助处理提供者之间的循环依赖：
 
-1. 使用**前向引用**（forward referencing）；
+1. 使用**前向引用**（forward referencing）。
 2. 通过 **ModuleRef 类**，显式从依赖注入容器中获取实例。
 
 本章节将详细介绍这两种方式，并补充说明在模块之间出现循环依赖时的处理策略。
 
-<CalloutInfo type="warning">
+<CalloutInfo type="warning" title="特别注意">
   当你使用「barrel 文件」（即 `index.ts`
   文件）来统一导出模块内容时，**很容易**引发循环依赖问题。**强烈建议**避免通过
   barrel 文件导入模块或提供者。例如，不应在 `cats/cats.controller.ts` 中通过
@@ -21,7 +21,7 @@
 
 **前向引用**是解决提供者之间循环依赖的常见方式之一。通过 `forwardRef()`，你可以延迟对尚未定义的类的引用，从而打破循环依赖链。
 
-举例来说，假设 `CatsService` 与 `CommonService` 互相依赖，在构造函数中你可以这样注入：
+举例来说，假设 `CatsService` 和 `CommonService` 互相依赖，在构造函数中你可以这样注入：
 
 ```ts filename='cats.service.ts'
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
@@ -48,7 +48,7 @@ export class CommonService {
 ```
 
 <CalloutInfo type="warning">
-  请注意：由于 Nest
+  由于 Nest
   无法确保提供者的实例化顺序，**请避免在构造函数中编写依赖执行顺序的逻辑**。
   特别是在使用 `Scope.REQUEST`（请求作用域）时，循环依赖可能会导致注入值为
   `undefined`，使用时需格外小心。 更多说明可参考[相关
