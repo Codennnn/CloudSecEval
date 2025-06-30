@@ -61,7 +61,7 @@ const createHeadingComponent = (Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') =>
           <span
             className={
               cn(
-                'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full',
+                'absolute right-0 top-1/2 -translate-y-1/2 translate-x-full',
                 'opacity-0 group-hover:opacity-100 transition-opacity duration-200 no-underline',
                 'px-1.5 inline-flex items-center justify-center',
               )
@@ -69,10 +69,10 @@ const createHeadingComponent = (Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') =>
           >
             <Link
               aria-label={`链接到 ${typeof children === 'string' ? children : '此标题'}`}
-              className="rounded-md hover:bg-muted p-1 opacity-60 hover:opacity-100 transition-all duration-200"
+              className="rounded-[0.25em] hover:bg-muted p-[0.2em] opacity-60 hover:opacity-100 transition-all duration-200"
               href={`#${id}`}
             >
-              <HashIcon className="size-[0.7em]" />
+              <HashIcon className="size-[0.8em]" />
             </Link>
           </span>
         </span>
