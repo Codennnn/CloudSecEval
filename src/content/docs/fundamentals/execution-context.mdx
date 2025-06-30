@@ -216,7 +216,7 @@ export class CatsController {
 
 此时，Nest 提供了两个实用方法，用于合并并提取不同层级的元数据：
 
-#### `getAllAndOverride()`
+#### 方法一：`getAllAndOverride()`
 
 该方法从多个上下文中提取元数据，**优先使用靠前的值进行覆盖**。如果你希望方法上的 `@Roles()` 覆盖控制器上的默认值，可以这样写：
 
@@ -227,11 +227,11 @@ const roles = this.reflector.getAllAndOverride(Roles, [
 ])
 ```
 
-在上例中，当守卫运行于 `create()` 方法时，返回的 roles 将是 `['admin']`。
+在上例中，当守卫运行于 `create()` 方法时，返回的 `roles` 将是 `['admin']`。
 
-#### `getAllAndMerge()`
+#### 方法二：`getAllAndMerge()`
 
-若你希望**合并多个层级的元数据**（适用于数组、对象等），可以使用 `getAllAndMerge()`：
+如果你希望**合并多个层级的元数据**（适用于数组、对象等），可以使用 `getAllAndMerge()`：
 
 ```ts
 const roles = this.reflector.getAllAndMerge(Roles, [
@@ -244,11 +244,11 @@ const roles = this.reflector.getAllAndMerge(Roles, [
 
 ### 小结
 
-无论是通过 `@SetMetadata()` 还是强类型的 `createDecorator()`，Nest 都允许你以灵活的方式设置与提取自定义元数据。而 `Reflector` 提供的 `get()`、`getAllAndOverride()` 与 `getAllAndMerge()` 方法，极大地简化了这些元数据在运行时的访问与处理。
+无论是通过 `@SetMetadata()` 还是强类型的 `createDecorator()`，Nest 都允许你以灵活的方式设置和提取自定义元数据。而 `Reflector` 提供的 `get()`、`getAllAndOverride()`、`getAllAndMerge()` 方法，极大地简化了这些元数据在运行时的访问和处理。
 
 ## 底层实现方式（Low-level Approach）
 
-如前所述，除了使用 `Reflector#createDecorator` 创建自定义装饰器外，Nest 还提供了一个内置的装饰器 `@SetMetadata()`，可用于向处理器附加元数据。
+如前所述，除了使用 `Reflector.createDecorator()` 创建自定义装饰器外，Nest 还提供了一个内置的装饰器 `@SetMetadata()`，可用于向处理器附加元数据。
 
 ```ts filename='cats.controller.ts'
 import { SetMetadata } from '@nestjs/common'
@@ -270,7 +270,7 @@ import { SetMetadata } from '@nestjs/common'
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles)
 ```
 
-这种方式不仅语义更清晰、代码更简洁，也更接近使用 `Reflector#createDecorator` 创建装饰器的风格。二者的主要区别在于：`@SetMetadata()` 允许你显式指定元数据的键和值，适合需要更高自由度的场景，例如接收多个参数。
+这种方式不仅语义更清晰、代码更简洁，也更接近使用 `Reflector.createDecorator()` 创建装饰器的风格。两者的主要区别在于：`@SetMetadata()` 允许你显式指定元数据的键和值，适合需要更高自由度的场景，例如接收多个参数。
 
 有了自定义装饰器后，我们就可以更优雅地为路由方法添加角色信息：
 
@@ -299,4 +299,4 @@ export class RolesGuard {
 const roles = this.reflector.get<string[]>('roles', context.getHandler())
 ```
 
-此方法接受两个参数：第一个是元数据的键（此处为 `'roles'`），第二个是目标处理器。整体用法与 `Reflector#createDecorator` 创建的装饰器完全一致。
+此方法接受两个参数：第一个是元数据的键（此处为 `'roles'`），第二个是目标处理器。整体用法与 `Reflector.createDecorator()` 创建的装饰器完全一致。

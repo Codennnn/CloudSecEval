@@ -18,7 +18,7 @@
 要使用 TypeORM，首先需要安装相关依赖：
 
 ```bash
-$ npm install --save typeorm mysql2
+npm install typeorm mysql2
 ```
 
 第一步，我们需要实例化 `typeorm` 包中的 `DataSource` 类并调用其 `initialize()` 方法来建立数据库连接。由于 `initialize()` 方法会返回一个 `Promise`，因此我们需要创建一个[异步提供者](/fundamentals/async-components)。
