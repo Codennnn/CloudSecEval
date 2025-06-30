@@ -8,10 +8,11 @@
 - [x] 已完成
 - [!] 需要重点关注
 - [?] 需要进一步确认
+- 🔴 表示该模块下有未完成的优化项目
 
 ---
 
-## 1. 入门指南 (Getting Started)
+## 1. 入门指南 (Getting Started) ✅
 
 - [x] `/introduction` - 介绍
 - [x] `/first-steps` - 快速上手
@@ -19,7 +20,7 @@
 - [x] `/providers` - 提供者
 - [x] `/modules` - 模块
 
-## 2. 核心机制 (Core Mechanisms)
+## 2. 核心机制 (Core Mechanisms) ✅
 
 - [x] `/middleware` - 中间件
 - [x] `/exception-filters` - 异常过滤器
@@ -28,7 +29,7 @@
 - [x] `/interceptors` - 拦截器
 - [x] `/custom-decorators` - 自定义装饰器
 
-## 3. 进阶原理 (Advanced Fundamentals)
+## 3. 进阶原理 (Advanced Fundamentals) ✅
 
 - [x] `/fundamentals/custom-providers` - 自定义提供者
 - [x] `/fundamentals/async-providers` - 异步提供者
@@ -43,7 +44,7 @@
 - [x] `/fundamentals/platform-agnosticism` - 跨平台无关性
 - [x] `/fundamentals/testing` - 测试
 
-## 4. 功能扩展 (Feature Extensions)
+## 4. 功能扩展 (Feature Extensions) ✅
 
 - [x] `/techniques/configuration` - 配置
 - [x] `/techniques/validation` - 数据验证
@@ -64,12 +65,12 @@
 - [x] `/techniques/performance` - 性能优化（Fastify）
 - [x] `/techniques/server-sent-events` - 服务端推送事件
 
-## 5. 数据库集成 (Database Integration)
+## 5. 数据库集成 (Database Integration) 🔴
 
 - [x] `/techniques/database` - 数据库概述
 - [ ] `/techniques/mongodb` - MongoDB
 
-## 6. 安全实践 (Security Practices)
+## 6. 安全实践 (Security Practices) ✅
 
 - [x] `/security/authentication` - 认证
 - [x] `/security/authorization` - 授权
@@ -79,7 +80,7 @@
 - [x] `/security/csrf` - CSRF 防护
 - [x] `/security/rate-limiting` - 请求频率限制
 
-## 7. GraphQL 支持
+## 7. GraphQL 支持 🔴
 
 - [ ] `/graphql/quick-start` - 快速入门
 - [ ] `/graphql/resolvers` - 解析器
@@ -100,7 +101,7 @@
 - [ ] `/graphql/other-features` - 其他功能
 - [ ] `/graphql/federation` - 联邦
 
-## 8. WebSocket 通信
+## 8. WebSocket 通信 🔴
 
 - [ ] `/websockets/gateways` - 网关
 - [ ] `/websockets/exception-filters` - 异常过滤器
@@ -109,7 +110,7 @@
 - [ ] `/websockets/interceptors` - 拦截器
 - [ ] `/websockets/adapter` - 适配器
 
-## 9. 微服务架构
+## 9. 微服务架构 🔴
 
 - [ ] `/microservices/basics` - 概述
 - [ ] `/microservices/redis` - Redis
@@ -124,7 +125,7 @@
 - [ ] `/microservices/guards` - 守卫
 - [ ] `/microservices/interceptors` - 拦截器
 
-## 10. CLI 工具
+## 10. CLI 工具 ✅
 
 - [x] `/cli/overview` - 概述
 - [x] `/cli/monorepo` - 工作空间
@@ -132,7 +133,7 @@
 - [x] `/cli/usages` - 使用方法
 - [x] `/cli/scripts` - CLI 与构建脚本
 
-## 11. OpenAPI
+## 11. OpenAPI 🔴
 
 - [ ] `/openapi/introduction` - 介绍
 - [ ] `/openapi/types-and-parameters` - 类型和参数
@@ -143,7 +144,7 @@
 - [ ] `/openapi/cli-plugin` - CLI 插件
 - [ ] `/openapi/other-features` - 其他功能
 
-## 12. 实用案例
+## 12. 实用案例 🔴
 
 - [ ] `/recipes/repl` - REPL
 - [x] `/recipes/crud-generator` - CRUD 生成器
@@ -167,12 +168,12 @@
 - [ ] `/recipes/necord` - Necord
 - [ ] `/recipes/suites` - Suites（原 Automock）
 
-## 13. 部署与发布
+## 13. 部署与发布 🔴
 
 - [ ] `/deployment` - 部署指南
 - [x] `/standalone-applications` - 独立应用模式
 
-## 14. 常见问题
+## 14. 常见问题 ✅
 
 - [x] `/faq/serverless` - Serverless
 - [x] `/faq/http-adapter` - HTTP 适配器
@@ -184,16 +185,16 @@
 - [x] `/faq/request-lifecycle` - 请求生命周期
 - [x] `/faq/common-errors` - 常见错误排查
 
-## 15. 开发者工具
+## 15. 开发者工具 🔴
 
 - [ ] `/devtools/overview` - 概述
 - [ ] `/devtools/ci-cd-integration` - CI/CD 集成
 
-## 16. 独立页面
+## 16. 独立页面 🔴
 
 - [ ] `/migration-guide` - 迁移指南
 
-## 17. 社区与支持
+## 17. 社区与支持 ✅
 
 - [x] `/discover/companies` - 谁在使用 Nest？
 - [x] `/support` - 支持我们
@@ -213,23 +214,11 @@
 - **待优化文档**: 75 个
 - **完成进度**: 44.0%
 
-### 主要完成的模块
-
-1. 入门指南 (5/5) - 100% 完成
-2. 核心机制 (6/6) - 100% 完成
-3. 进阶原理 (12/12) - 100% 完成
-4. 功能扩展 (18/19) - 94.7% 完成
-5. 安全实践 (6/7) - 85.7% 完成
-6. CLI 工具 (5/5) - 100% 完成
-7. 常见问题 (9/9) - 100% 完成
-8. 社区与支持 (2/2) - 100% 完成
-9. 部署与发布 (1/2) - 50% 完成
-
 ## 优化重点
 
 根据访问频率和重要性，建议优先优化以下文档：
 
-### 高优先级 (P0) - 已完成
+### 高优先级 (P0) - 已完成 ✅
 
 - [x] 介绍
 - [x] 快速上手
@@ -237,7 +226,7 @@
 - [x] 提供者
 - [x] 模块
 
-### 中优先级 (P1) - 已完成
+### 中优先级 (P1) - 已完成 ✅
 
 - [x] 中间件
 - [x] 异常过滤器
@@ -245,27 +234,27 @@
 - [x] 守卫
 - [x] 拦截器
 
-### 功能扩展优先级 (P2) - 已基本完成
+### 功能扩展优先级 (P2) - 已基本完成 ✅
 
 - [x] 配置
 - [x] 验证
 - [x] 缓存
 - [x] 数据库概述
-- [ ] MongoDB
+- [ ] MongoDB 🔴
 
-### 安全实践优先级 (P3) - 已基本完成
+### 安全实践优先级 (P3) - 已基本完成 ✅
 
 - [x] 认证
 - [x] 授权
 - [x] CORS
 - [x] Helmet
 
-### 下一阶段优化重点 (P4)
+### 下一阶段优化重点 (P4) 🔴
 
 根据当前进度，建议优先完成以下模块：
 
-1. **GraphQL 支持** (0/18) - 重要功能模块
-2. **微服务架构** (0/12) - 核心架构模式
-3. **实用案例** (0/20) - 实践指导
-4. **OpenAPI** (0/8) - API 文档生成
-5. **WebSocket 通信** (0/6) - 实时通信功能
+1. **GraphQL 支持** (0/18) - 重要功能模块 🔴
+2. **微服务架构** (0/12) - 核心架构模式 🔴
+3. **实用案例** (2/20) - 实践指导 🔴
+4. **OpenAPI** (0/8) - API 文档生成 🔴
+5. **WebSocket 通信** (0/6) - 实时通信功能 🔴
