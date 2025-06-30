@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ArrowUpRightIcon } from 'lucide-react'
 
+import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from '~/components/layout/AppSidebarMenuButton'
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,8 +20,6 @@ import {
 import { RoutePath } from '~/constants'
 import type { NavMenuItem } from '~/types/nav'
 import { getDocLinkHref, isExternalLink } from '~/utils/link'
-
-import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from './AppSidebarMenuButton'
 
 interface CollapsibleNavItemProps {
   item: NavMenuItem

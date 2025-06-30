@@ -3,9 +3,8 @@
 import { usePathname } from 'next/navigation'
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react'
 
+import { SidebarMenuButton, SidebarMenuSubButton } from '~/components/ui/sidebar'
 import { RoutePath } from '~/constants'
-
-import { SidebarMenuButton, SidebarMenuSubButton } from './ui/sidebar'
 
 interface SidebarMenuItemType {
   title?: string

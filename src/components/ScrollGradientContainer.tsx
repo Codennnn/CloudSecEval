@@ -5,9 +5,8 @@ import { useEvent } from 'react-use-event-hook'
 
 import { cn } from '~/lib/utils'
 
-interface ScrollGradientContainerProps {
+interface ScrollGradientContainerProps extends Pick<React.ComponentProps<'div'>, 'id' | 'className'> {
   rootClassName?: string
-  className?: string
   gradientHeight?: string
   gradientFromColor?: string
   topGradientClass?: string
@@ -21,8 +20,9 @@ export const ScrollGradientContainer = forwardRef<
 >(function ScrollGradientContainer(props, ref) {
   const {
     children,
-    rootClassName,
+    id,
     className,
+    rootClassName,
     gradientHeight = 'h-10',
     gradientFromColor = 'from-background',
     topGradientClass,
@@ -124,6 +124,7 @@ export const ScrollGradientContainer = forwardRef<
       <div
         ref={scrollRef}
         className={cn('overflow-y-auto h-full', className)}
+        id={id}
         onScroll={handleScroll}
       >
         {children}
