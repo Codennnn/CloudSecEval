@@ -194,7 +194,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
     tr: (props: React.ComponentProps<'tr'>) => {
       return (
-        <TableRow>
+        <TableRow className="border-border">
           {props.children}
         </TableRow>
       )
