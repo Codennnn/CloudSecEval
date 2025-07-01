@@ -135,7 +135,7 @@
 
 ## 11. OpenAPI 🔴
 
-- [ ] `/openapi/introduction` - 介绍
+- [x] `/openapi/introduction` - 介绍
 - [ ] `/openapi/types-and-parameters` - 类型和参数
 - [ ] `/openapi/operations` - 操作
 - [ ] `/openapi/security` - 安全
