@@ -1,8 +1,8 @@
 import { EnglishDocLink } from '~/components/doc/EnglishDocLink'
 import { ScrollToTop } from '~/components/doc/ScrollToTop'
 import { TableOfContents } from '~/components/doc/TableOfContents'
+import { AppHeader } from '~/components/layout/AppHeader'
 import { AppSidebar } from '~/components/layout/AppSidebar'
-import { SidebarToggleButton } from '~/components/layout/SidebarToggleButton'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import {
   SidebarInset,
@@ -19,9 +19,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
       <AppSidebar />
 
       <SidebarInset>
-        <div className="p-4">
-          <SidebarToggleButton />
-        </div>
+        <AppHeader />
 
         <ScrollGradientContainer
           className="@container size-full overflow-y-auto"
