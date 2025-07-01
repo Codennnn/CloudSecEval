@@ -18,50 +18,52 @@ export default function DocsLayout(props: React.PropsWithChildren) {
     <SidebarProvider>
       <AppSidebar />
 
-      <SidebarInset>
-        <AppHeader />
-
-        <ScrollGradientContainer
-          className="@container size-full overflow-y-auto"
-          id={SCROLL_CONFIG.CONTAINER_ID}
+      <SidebarInset className="@container">
+        <div
+          className={cn(
+            'size-full flex flex-col',
+            '@6xl:[--content-padding:4rem] @4xl:[--content-padding:3rem] @lg:[--content-padding:1.5rem] [--content-padding:1rem]',
+          )}
         >
-          {/* 使用客户端组件来处理 hash 导航 */}
-          <DocsLayoutClient containerId={SCROLL_CONFIG.CONTAINER_ID}>
-            <div
-              className={
-                cn(
-                  'flex relative w-full',
-                  '@6xl:[--content-padding:4rem] @4xl:[--content-padding:3rem] @lg:[--content-padding:1.5rem] [--content-padding:1rem]',
-                )
-              }
-            >
-              <div className="flex-1 min-w-0 max-w-full px-[var(--content-padding)]">
-                {props.children}
-              </div>
+          <AppHeader />
 
-              <aside
-                className="w-60 sticky top-0 h-screen hidden @4xl:block @2xl:w-64"
+          <ScrollGradientContainer
+            className="flex-1 overflow-y-auto"
+            id={SCROLL_CONFIG.CONTAINER_ID}
+          >
+            {/* 使用客户端组件来处理 hash 导航 */}
+            <DocsLayoutClient containerId={SCROLL_CONFIG.CONTAINER_ID}>
+              <div
+                className="flex relative w-full"
               >
-                <div className="max-h-full w-full pt-[var(--content-padding)] pr-[calc(var(--content-padding)_/_2)] @6xl:pr-[var(--content-padding)] inline-flex flex-col pb-[calc(var(--content-padding)_/_2)] overflow-hidden">
-                  <ScrollGradientContainer enableFlex className="pb-4">
-                    <TableOfContents />
-                  </ScrollGradientContainer>
-
-                  <hr className="bg-border/70" />
-
-                  <div className="inline-flex flex-col items-start gap-1 pt-4">
-                    <EnglishDocLink />
-
-                    <ScrollToTop
-                      containerId={SCROLL_CONFIG.CONTAINER_ID}
-                      scrollThreshold={SCROLL_CONFIG.SCROLL_THRESHOLD}
-                    />
-                  </div>
+                <div className="flex-1 min-w-0 max-w-full px-[var(--content-padding)]">
+                  {props.children}
                 </div>
-              </aside>
-            </div>
-          </DocsLayoutClient>
-        </ScrollGradientContainer>
+
+                <aside
+                  className="w-60 sticky top-0 h-screen hidden @4xl:block @2xl:w-64"
+                >
+                  <div className="max-h-full w-full pt-[var(--content-padding)] pr-[calc(var(--content-padding)_/_2)] @6xl:pr-[var(--content-padding)] inline-flex flex-col pb-[calc(var(--content-padding)_/_2)] overflow-hidden">
+                    <ScrollGradientContainer enableFlex className="pb-4">
+                      <TableOfContents />
+                    </ScrollGradientContainer>
+
+                    <hr className="bg-border/70" />
+
+                    <div className="inline-flex flex-col items-start gap-1 pt-4">
+                      <EnglishDocLink />
+
+                      <ScrollToTop
+                        containerId={SCROLL_CONFIG.CONTAINER_ID}
+                        scrollThreshold={SCROLL_CONFIG.SCROLL_THRESHOLD}
+                      />
+                    </div>
+                  </div>
+                </aside>
+              </div>
+            </DocsLayoutClient>
+          </ScrollGradientContainer>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

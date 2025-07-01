@@ -3,7 +3,7 @@ import { SidebarToggleButton } from '~/components/layout/SidebarToggleButton'
 
 export function AppHeader() {
   return (
-    <div className="flex items-center gap-4 p-4">
+    <div className="flex items-center gap-4 px-[var(--content-padding)] py-4">
       <SidebarToggleButton />
 
       {/* 面包屑导航 */}
