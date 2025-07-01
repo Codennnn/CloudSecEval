@@ -1,6 +1,9 @@
 import { joinURL } from 'ufo'
 
-import { RoutePath } from '~/constants'
+import { RoutePath, SITE_CONFIG } from '~/constants'
+import { navMainData } from '~/lib/data/nav'
+import { normalizePath } from '~/lib/utils'
+import type { NavMenuItem } from '~/types/nav'
 
 /**
  * 判断字符串是否为有效的 URL
@@ -124,4 +127,58 @@ export function getDocLinkHref(href: string): string {
   }
 
   return joinURL(RoutePath.Docs, href)
+}
+
+// 生成完整 URL
+export function getFullUrl(path = '') {
+  const normalizedPath = normalizePath(path)
+
+  return `${SITE_CONFIG.baseUrl}${normalizedPath}`
+}
+
+/**
+ * 检查给定的文档路径是否在导航数据中存在
+ * @param docPath - 文档路径
+ * @returns 是否存在该路径
+ */
+function isValidDocPath(docPath: string): boolean {
+  const normalizedPath = normalizePath(docPath)
+
+  // 递归检查所有导航项
+  function checkNavItems(items: NavMenuItem[]): boolean {
+    for (const item of items) {
+      // 如果有 url 属性，检查是否匹配
+      if (item.url && normalizePath(item.url) === normalizedPath) {
+        return true
+      }
+
+      // 如果有子项，递归检查
+      if (item.items && Array.isArray(item.items)) {
+        if (checkNavItems(item.items)) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  return checkNavItems(navMainData)
+}
+
+// 生成文档 URL
+export function getDocsUrl(docPath = ''): string {
+  const normalizedPath = normalizePath(docPath)
+
+  // 如果路径为空，返回文档首页
+  if (!normalizedPath) {
+    return getFullUrl(RoutePath.Docs)
+  }
+
+  // 验证路径是否在导航数据中存在
+  if (!isValidDocPath(normalizedPath)) {
+    return ''
+  }
+
+  return getFullUrl(`${RoutePath.Docs}${normalizedPath}`)
 }

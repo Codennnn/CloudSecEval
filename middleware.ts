@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
     const allowedDomains = [
       'localhost',
       '127.0.0.1',
-      'nestjs-docs-cn.leoku.dev',
+      'nestjs.leoku.dev',
 
       // 允许主要搜索引擎
       'google.com',

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
-import { getDocsUrl, getFullUrl } from '~/constants'
 import { getAllDocPaths } from '~/utils/docs'
+import { getDocsUrl, getFullUrl } from '~/utils/link'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date()

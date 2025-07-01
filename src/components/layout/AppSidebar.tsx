@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
-import { SITE_CONFIG } from '~/constants'
+import { RoutePath, SITE_CONFIG } from '~/constants'
 import { navMainData } from '~/lib/data/nav'
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
@@ -24,7 +24,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
-              <Link href="/">
+              <Link href={RoutePath.Home}>
                 <div className="flex items-center gap-2">
                   <div className="flex justify-center items-center">
                     <Image

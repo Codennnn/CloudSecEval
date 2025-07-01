@@ -7,10 +7,12 @@ import { DocNavigation } from '~/components/doc/DocNavigation'
 import { ProseContainer } from '~/components/ProseContainer'
 import { StructuredData } from '~/components/StructuredData'
 import { Skeleton } from '~/components/ui/skeleton'
-import { getDocsUrl, getFullUrl, SITE_CONFIG } from '~/constants'
+import { RoutePath, SITE_CONFIG } from '~/constants'
 import type { PageProps } from '~/types/common'
 import { getPageTitle } from '~/utils/common'
-import { getAllDocPaths, getDocNavigation, getDocTitle } from '~/utils/docs'
+import { getAllDocPaths } from '~/utils/docs'
+import { getDocNavigation, getDocTitle } from '~/utils/docs.client'
+import { getDocsUrl } from '~/utils/link'
 
 type MDXContent = React.ComponentType
 
@@ -198,8 +200,8 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
 
   // 生成面包屑导航
   const breadcrumbs = [
-    { name: '首页', url: getFullUrl() },
-    { name: '文档', url: getDocsUrl() },
+    { name: '首页', url: RoutePath.Home },
+    { name: '文档', url: RoutePath.Docs },
     ...docTitle.map((segment, index) => {
       const currentPath = docTitle.slice(0, index + 1).join('/')
       const segmentTitle = getDocTitle(currentPath, [segment])

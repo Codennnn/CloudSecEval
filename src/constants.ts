@@ -1,11 +1,11 @@
 export const enum RoutePath {
+  Home = '/',
   Docs = '/docs',
 }
-
 // 网站配置常量
 export const SITE_CONFIG = {
-  // 基础 URL - 这是唯一需要修改的地方
-  baseUrl: 'https://nestjs-docs-cn.leoku.dev',
+  // 基础 URL
+  baseUrl: 'https://nestjs.leoku.dev',
 
   // 网站信息
   name: 'NestJS 中文文档',
@@ -25,17 +25,3 @@ export const SITE_CONFIG = {
   locale: 'zh-CN',
   language: 'zh_CN',
 } as const
-
-// 辅助函数：生成完整 URL
-export const getFullUrl = (path = '') => {
-  const cleanPath = path.startsWith('/') ? path : `/${path}`
-
-  return `${SITE_CONFIG.baseUrl}${cleanPath}`
-}
-
-// 辅助函数：生成文档 URL
-export const getDocsUrl = (docPath = '') => {
-  const cleanPath = docPath.startsWith('/') ? docPath.slice(1) : docPath
-
-  return getFullUrl(`/docs${cleanPath ? `/${cleanPath}` : ''}`)
-}

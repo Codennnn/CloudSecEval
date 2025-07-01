@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 
-import { getFullUrl, SITE_CONFIG } from '~/constants'
+import { SITE_CONFIG } from '~/constants'
+import { getFullUrl } from '~/utils/link'
 
 export default function robots(): MetadataRoute.Robots {
   return {
