@@ -2,8 +2,8 @@ import { EnglishDocLink } from '~/components/doc/EnglishDocLink'
 import { ScrollToTop } from '~/components/doc/ScrollToTop'
 import { TableOfContents } from '~/components/doc/TableOfContents'
 import { AppSidebar } from '~/components/layout/AppSidebar'
+import { SidebarToggleButton } from '~/components/layout/SidebarToggleButton'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
-import { SidebarToggleButton } from '~/components/SidebarToggleButton'
 import {
   SidebarInset,
   SidebarProvider,
@@ -45,7 +45,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
                 className="w-60 sticky top-0 h-screen hidden @4xl:block @2xl:w-64"
               >
                 <div className="max-h-full w-full pt-[var(--content-padding)] pr-[calc(var(--content-padding)_/_2)] @6xl:pr-[var(--content-padding)] inline-flex flex-col pb-[calc(var(--content-padding)_/_2)] overflow-hidden">
-                  <ScrollGradientContainer className="pb-4" rootClassName="flex flex-col">
+                  <ScrollGradientContainer enableFlex className="pb-4">
                     <TableOfContents />
                   </ScrollGradientContainer>
 

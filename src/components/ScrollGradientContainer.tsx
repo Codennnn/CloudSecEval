@@ -7,6 +7,7 @@ import { cn } from '~/lib/utils'
 
 interface ScrollGradientContainerProps extends Pick<React.ComponentProps<'div'>, 'id' | 'className'> {
   rootClassName?: string
+  enableFlex?: boolean
   gradientHeight?: string
   gradientFromColor?: string
   topGradientClass?: string
@@ -23,6 +24,7 @@ export const ScrollGradientContainer = forwardRef<
     id,
     className,
     rootClassName,
+    enableFlex = false,
     gradientHeight = 'h-10',
     gradientFromColor = 'from-background',
     topGradientClass,
@@ -94,7 +96,13 @@ export const ScrollGradientContainer = forwardRef<
   }, [ref])
 
   return (
-    <div className={cn('relative flex-1 overflow-hidden', rootClassName)}>
+    <div
+      className={cn(
+        'relative flex-1 overflow-hidden',
+        enableFlex && 'flex flex-col',
+        rootClassName,
+      )}
+    >
       {/* 顶部渐变遮罩 */}
       {scrollState.canScrollUp && (
         <div
