@@ -62,7 +62,7 @@ export function CodeContainer(props: CodeContainerProps) {
   const lineCount = code.split('\n').length
   const isCollapsible = lineCount > collapseThreshold
   const [isExpanded, setIsExpanded] = useState(false)
-  const label = isExpanded ? '折叠代码' : '展开代码'
+  const label = isExpanded ? '收起代码' : '展开代码'
 
   return (
     <CodeWrapper className={className}>
