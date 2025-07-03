@@ -49,9 +49,9 @@ graph TD
 
 在本示例中，`CatsController` 与 `CatsService` 同属于「猫」这一业务领域，二者职责相关、协作紧密。因此，将它们封装为一个独立的**功能模块**（Feature Module），是一种合理且被官方推荐的架构方式。
 
-功能模块的核心作用是将相关功能的代码组织在一起，从而建立清晰的模块边界，提升内聚性与可维护性。随着应用规模的扩大与协作复杂度的提升，模块化结构的优势将愈加明显，同时也契合 SOLID 原则中所强调的**高内聚**、**低耦合**的设计理念。
+功能模块的核心作用是将相关功能的代码组织在一起，从而建立清晰的模块边界，提升内聚性。随着应用规模的扩大以及协作复杂度的提升，模块化结构的优势将愈加明显，同时也契合 SOLID 原则中所强调的**高内聚**、**低耦合**的设计理念。
 
-接下来，我们将创建一个名为 `CatsModule` 的功能模块，并在其中整合控制器与服务：
+接下来，我们将创建一个名为 `CatsModule` 的功能模块，并在其中整合控制器和服务：
 
 ```ts filename='cats/cats.module.ts'
 import { Module } from '@nestjs/common'
@@ -255,7 +255,7 @@ export class CatsModule {}
 
 ## 动态模块配置
 
-Nest 提供了强大的**动态模块机制**（Dynamic Modules），允许我们在运行时灵活地配置模块的内容。它特别适用于根据传入参数或配置项**动态创建提供者**的场景，能够显著提升模块的复用性与适应性。
+Nest 提供了强大的**动态模块机制**（Dynamic Modules），允许我们在运行时灵活地配置模块的内容。它特别适用于根据传入参数或配置项**动态创建提供者**的场景，能够显著提升模块的适应性。
 
 下面将介绍其基本用法。
 
@@ -288,7 +288,7 @@ export class DatabaseModule {
 
 在上述示例中，模块通过 `@Module()` 装饰器**静态注册**了一个名为 `Connection` 的提供者。与此同时，`forRoot()` 方法会根据传入的 `entities` 和 `options` 参数**动态生成一组提供者**（例如用于数据库访问的仓储类等）。
 
-需要特别注意的是，`forRoot()` 返回的配置对象是对原始模块元数据的**扩展**，而非完全替换。这意味着，`Connection` 以及动态生成的提供者会共同作为导出成员，供其他模块引入使用。
+需要特别注意的是，`forRoot()` 返回的配置对象是对原始模块元数据的**扩展**，而非完全替换。这意味着，`Connection` 以及动态生成的提供者会**共同作为导出成员**，供其他模块引入使用。
 
 若希望将该动态模块注册为全局模块，只需在返回对象中添加 `global: true` 属性：
 
@@ -331,6 +331,6 @@ export class AppModule {}
 更多内容请参阅[动态模块](/fundamentals/dynamic-modules)一章，以及官方提供的[示例项目](https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules)。
 
 <CalloutInfo>
-  想进一步构建更具灵活性与可定制性的模块？请参考[构建可配置模块](/fundamentals/dynamic-modules#构建可配置模块configurablemodulebuilder)章节，了解如何使用
+  想进一步构建更具灵活性和可定制性的模块？请参考[构建可配置模块](/fundamentals/dynamic-modules#构建可配置模块configurablemodulebuilder)章节，了解如何使用
   `ConfigurableModuleBuilder`。
 </CalloutInfo>

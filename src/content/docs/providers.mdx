@@ -1,6 +1,6 @@
 # 提供者
 
-**提供者**（Provider）是 Nest 框架的核心概念之一。在 Nest 中，服务（Service）、仓库（Repository）、工厂（Factory）以及各种工具类（Helper）等，本质上都属于提供者。其核心理念是：**作为依赖注入的目标，实现对象之间的解耦与协作**。这种依赖关系的管理与注入，大多由 Nest 的运行时系统自动完成，无需手动组装。
+**提供者**（Provider）是 Nest 框架的核心概念之一。在 Nest 中，服务（Service）、仓库（Repository）、工厂（Factory）以及各种工具类（Helper）等，本质上都属于提供者。其核心理念是：**作为依赖注入的目标，实现对象之间的解耦与协作**。这种依赖关系的管理和注入，大多由 Nest 的运行时系统自动完成，无需手动组装。
 
 ```mermaid
 graph TB
@@ -81,7 +81,7 @@ graph TB
   由于 Nest
   天然支持面向对象的设计思想，开发者可以以清晰、优雅的方式组织和管理依赖关系。建议在设计服务或提供者时，遵循
   [SOLID
-  原则](https://zh.wikipedia.org/wiki/SOLID_(面向对象设计)))，以提升代码的可维护性与扩展性。
+  原则](https://zh.wikipedia.org/wiki/SOLID_(面向对象设计)))，以提升代码的可维护性和扩展性。
 </CalloutInfo>
 
 ## 定义与使用服务
@@ -146,11 +146,11 @@ export class CatsController {
 }
 ```
 
-在控制器中，`CatsService` 通过构造函数注入。这里使用的 `private` 关键字不仅表示 `catsService` 是一个私有属性，还能让 TypeScript 自动为我们声明并初始化该属性，简化了代码结构。
+在控制器中，`CatsService` 通过**构造函数注入**。这里使用的 `private` 关键字不仅表示 `catsService` 是一个私有属性，还能让 TypeScript 自动为我们声明并初始化该属性，简化了代码结构。
 
 ## 依赖注入机制
 
-Nest 框架的核心构建理念之一是**依赖注入**（Dependency Injection，简称 DI） —— 这是一种久经验证的软件设计模式，旨在提升模块间的解耦性与可测试性。建议参考[官方 Angular 文档](https://angular.dev/guide/di)，其中对该模式有深入且通俗的讲解。
+Nest 框架的核心构建理念之一是**依赖注入**（Dependency Injection，简称 DI） —— 这是一种久经验证的软件设计模式，旨在提升模块间的解耦性和可测试性。建议参考[官方 Angular 文档](https://angular.dev/guide/di)，其中对该模式有深入且通俗的讲解。
 
 在 Nest 中，借助 TypeScript 强大的类型系统，依赖注入的实现变得尤为简洁高效。框架会根据构造函数参数的类型自动解析并注入对应的依赖，无需显式配置。例如，Nest 会自动创建 `CatsService` 的实例（在默认的单例作用域下复用同一个实例），并将其注入至控制器中：
 
@@ -158,7 +158,7 @@ Nest 框架的核心构建理念之一是**依赖注入**（Dependency Injection
 constructor(private catsService: CatsService) {}
 ```
 
-通过这种方式，开发者可以专注于业务逻辑，而无需关心依赖的实例化细节，极大提升了开发效率与代码可维护性。
+通过这种方式，开发者可以专注于业务逻辑，而无需关心依赖的实例化细节，极大提升了开发效率和代码可维护性。
 
 ## 提供者的作用域
 
@@ -168,7 +168,7 @@ constructor(private catsService: CatsService) {}
 
 ## 自定义提供者
 
-Nest 构建在控制反转（IoC）容器之上，用于集中管理应用中的依赖关系。这一机制不仅是依赖注入的核心基础，也为开发者提供了极高的灵活性与可扩展性。
+Nest 构建在控制反转（IoC）容器之上，用于集中管理应用中的依赖关系。这一机制不仅是依赖注入的核心基础，也为开发者提供了极高的灵活性。
 
 你可以通过多种方式自定义提供者，例如：直接提供一个值、绑定到某个类、使用同步或异步的工厂函数等。具体示例和用法请参阅后续的[自定义提供者](/fundamentals/custom-providers)章节。
 
