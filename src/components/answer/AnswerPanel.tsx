@@ -4,12 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { type Interaction, OramaClient } from '@oramacloud/client'
-import { MessageCircleIcon, Trash2Icon, XIcon } from 'lucide-react'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
-import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import { useChatSessions } from '~/hooks/useChatSessions'
+import type { ChatMessage } from '~/types/chat'
 
 import { AssistantMessage } from './AssistantMessage'
 import { EmptyState } from './EmptyState'
@@ -18,13 +17,6 @@ import { UserMessage } from './UserMessage'
 
 const USER_CONTEXT = '用户正在浏览 NestJS 中文文档网站，希望获得关于 NestJS 框架的准确和详细的答案。请用中文回答问题，并保持对话的连续性和上下文理解。'
 
-interface Message {
-  role: 'user' | 'assistant'
-  content: string
-  timestamp?: number
-  interactionId?: string
-}
-
 interface AnswerSession {
   ask: (params: Record<string, unknown>) => Promise<unknown>
   clearSession: () => void
@@ -32,27 +24,43 @@ interface AnswerSession {
 }
 
 interface AnswerPanelProps {
-  isVisible?: boolean
-  onClose?: () => void
+  sessionId?: string | null
+  onSessionChange?: (sessionId: string) => void
+  onSaveStatusChange?: (status: 'saving' | 'saved' | 'error' | 'idle') => void
 }
 
 export function AnswerPanel(props: AnswerPanelProps) {
-  const { isVisible = true, onClose } = props
+  const {
+    sessionId,
+    onSessionChange,
+    onSaveStatusChange,
+  } = props
 
   const [currentQuestion, setCurrentQuestion] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [answerSession, setAnswerSession] = useState<AnswerSession | null>(null)
   const [interactions, setInteractions] = useState<Interaction[]>([])
-  const [messages, setMessages] = useState<Message[]>([])
-  const [conversationHistory, setConversationHistory] = useState<Message[]>([])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
   const [isRegenerating, setIsRegenerating] = useState(false)
   const [isUserScrolling, setIsUserScrolling] = useState(false)
   const [isNearBottom, setIsNearBottom] = useState(true)
+
+  const {
+    createSession,
+    appendMessage,
+    getSession,
+  } = useChatSessions()
+
+  // 当前会话 ID（优先使用外部传入的）
+  const [internalSessionId, setInternalSessionId] = useState<string | null>(null)
+  const currentSessionId = sessionId ?? internalSessionId
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const userScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastMessageCountRef = useRef(0)
 
   const initializeAnswerSession = useEvent(() => {
     try {
@@ -75,7 +83,7 @@ export function AnswerPanel(props: AnswerPanelProps) {
 
             setInteractions(interactions)
 
-            const allMessages = interactions.reduce<Message[]>((messages, interaction) => {
+            const allMessages = interactions.reduce<ChatMessage[]>((messages, interaction) => {
               if (interaction.query) {
                 messages.push({
                   role: 'user',
@@ -125,12 +133,57 @@ export function AnswerPanel(props: AnswerPanelProps) {
     }
   })
 
+  // 初始化会话
+  useEffect(() => {
+    if (!currentSessionId) {
+      // 创建新的聊天会话
+      const newSession = createSession()
+
+      if (sessionId === undefined) {
+        setInternalSessionId(newSession.id)
+      }
+
+      onSessionChange?.(newSession.id)
+    }
+  }, [currentSessionId, createSession, sessionId, onSessionChange])
+
+  // 当会话切换时恢复对话历史
+  useEffect(() => {
+    if (currentSessionId) {
+      const session = getSession(currentSessionId)
+
+      if (session && session.messages.length > 0) {
+        // 恢复会话消息
+        const restoredMessages: ChatMessage[] = session.messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+          timestamp: msg.timestamp,
+          interactionId: msg.interactionId,
+        }))
+
+        setMessages(restoredMessages)
+        setConversationHistory(restoredMessages)
+        lastMessageCountRef.current = restoredMessages.length
+
+        // 重新初始化 Orama 会话以包含历史消息
+        setAnswerSession(null)
+      }
+      else {
+        // 新会话，清空消息
+        setMessages([])
+        setConversationHistory([])
+        lastMessageCountRef.current = 0
+        setAnswerSession(null)
+      }
+    }
+  }, [currentSessionId, getSession])
+
   // 初始化 Answer Session
   useEffect(() => {
-    if (isVisible && !answerSession) {
+    if (!answerSession) {
       initializeAnswerSession()
     }
-  }, [isVisible, answerSession, initializeAnswerSession])
+  }, [answerSession, initializeAnswerSession])
 
   // 滚动到底部的辅助函数
   const scrollToBottom = useEvent(() => {
@@ -184,6 +237,39 @@ export function AnswerPanel(props: AnswerPanelProps) {
     smartScrollToBottom()
   }, [messages, smartScrollToBottom])
 
+  // 保存新消息到当前会话
+
+  useEffect(() => {
+    if (currentSessionId && messages.length > lastMessageCountRef.current) {
+      // 只保存新增的消息
+      const newMessages = messages.slice(lastMessageCountRef.current)
+
+      if (newMessages.length > 0) {
+        onSaveStatusChange?.('saving')
+
+        try {
+          newMessages.forEach((msg) => {
+            const chatMessage: ChatMessage = {
+              role: msg.role,
+              content: msg.content,
+              timestamp: msg.timestamp ?? Date.now(),
+              interactionId: msg.interactionId,
+            }
+
+            appendMessage(currentSessionId, chatMessage)
+          })
+
+          lastMessageCountRef.current = messages.length
+          onSaveStatusChange?.('saved')
+        }
+        catch (error) {
+          console.error('保存消息失败：', error)
+          onSaveStatusChange?.('error')
+        }
+      }
+    }
+  }, [currentSessionId, messages, appendMessage, onSaveStatusChange])
+
   // 当加载状态变化时也滚动到底部，确保用户能看到加载状态
   useEffect(() => {
     if (isLoading) {
@@ -193,7 +279,7 @@ export function AnswerPanel(props: AnswerPanelProps) {
 
   // 自动聚焦输入框
   useEffect(() => {
-    if (isVisible && !isLoading && inputRef.current) {
+    if (!isLoading && inputRef.current) {
       const timer = setTimeout(() => {
         inputRef.current?.focus()
       }, 100)
@@ -202,7 +288,7 @@ export function AnswerPanel(props: AnswerPanelProps) {
         clearTimeout(timer)
       }
     }
-  }, [isVisible, isLoading])
+  }, [isLoading])
 
   // 清理定时器
   useEffect(() => {
@@ -249,22 +335,6 @@ export function AnswerPanel(props: AnswerPanelProps) {
     }
   })
 
-  const handleClearChat = useEvent(() => {
-    if (answerSession) {
-      answerSession.clearSession()
-    }
-
-    setMessages([])
-    setInteractions([])
-    setConversationHistory([])
-    setIsRegenerating(false)
-
-    // 清除后重新聚焦输入框
-    setTimeout(() => {
-      inputRef.current?.focus()
-    }, 100)
-  })
-
   const handleRelatedQuestionClick = useEvent((query: string) => {
     setCurrentQuestion(query)
 
@@ -278,66 +348,8 @@ export function AnswerPanel(props: AnswerPanelProps) {
     }, 100)
   })
 
-  // 获取对话统计信息
-  const conversationStats = {
-    totalMessages: messages.length,
-    userMessages: messages.filter((m) => m.role === 'user').length,
-    assistantMessages: messages.filter((m) => m.role === 'assistant').length,
-  }
-
-  if (!isVisible) {
-    return null
-  }
-
   return (
     <div className="h-full flex flex-col">
-      {/* 头部 */}
-      <div className="flex items-center justify-between p-3 border-b border-border">
-        <div className="flex items-center gap-2">
-          <MessageCircleIcon className="size-4" />
-          <span className="text-sm font-medium">AI 助手</span>
-          {conversationStats.totalMessages > 0 && (
-            <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-              {conversationStats.userMessages} 问 {conversationStats.assistantMessages} 答
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-1">
-          {messages.length > 0 && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="size-7"
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => {
-                    handleClearChat()
-                  }}
-                >
-                  <Trash2Icon className="size-4" />
-                </Button>
-              </TooltipTrigger>
-
-              <TooltipContent side="bottom">
-                清除所有对话
-              </TooltipContent>
-            </Tooltip>
-          )}
-
-          <Button
-            className="size-7"
-            size="icon"
-            title="关闭 AI 助手"
-            variant="ghost"
-            onClick={() => {
-              onClose?.()
-            }}
-          >
-            <XIcon className="size-4" />
-          </Button>
-        </div>
-      </div>
-
       {/* 消息区域 */}
       <ScrollGradientContainer
         ref={scrollContainerRef}
@@ -386,7 +398,7 @@ export function AnswerPanel(props: AnswerPanelProps) {
       </ScrollGradientContainer>
 
       {/* 输入区域 */}
-      <div className="p-panel">
+      <div className="p-panel pt-0">
         <Textarea
           ref={inputRef}
           className="text-xs resize-none bg-muted"

@@ -53,6 +53,7 @@
 
   /* - */
   --spacing-panel: calc(var(--spacing) * 4);
+  --spacing-panel-sm: calc(var(--spacing) * 2);
 }
 
 :root {

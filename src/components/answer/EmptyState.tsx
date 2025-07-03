@@ -49,13 +49,12 @@ export function EmptyState(props: EmptyStateProps) {
   }, [])
 
   return (
-    <div className="p-panel h-full flex flex-col justify-center">
-      {/* 增强的头部区域 */}
+    <div className="p-panel min-h-full flex flex-col justify-center">
       <div className="flex flex-col items-center p-5">
         {/* 更大的图标和渐变效果 */}
         <div className="relative mb-4">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl" />
-          <MessageCircleIcon className="size-12 text-blue-500 relative z-10" />
+          <MessageCircleIcon className="size-12 text-blue-500" />
         </div>
 
         <div className="text-lg font-semibold mb-2">NestJS AI 助手</div>
@@ -80,8 +79,8 @@ export function EmptyState(props: EmptyStateProps) {
             }}
           >
             <div className="flex items-center gap-3 w-full">
-              <MessageCircleQuestionIcon className="size-[1.2em] shrink-0" />
-              <div className="truncate">{question}</div>
+              <MessageCircleQuestionIcon className="size-[1em] shrink-0" />
+              <div className="truncate text-xs">{question}</div>
             </div>
           </Button>
         ))}

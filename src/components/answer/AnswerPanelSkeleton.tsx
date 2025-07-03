@@ -4,7 +4,7 @@ export function AnswerPanelSkeleton() {
   return (
     <div className="h-full flex flex-col">
       {/* 头部骨架 */}
-      <div className="flex items-center justify-between p-3 border-b border-border">
+      <div className="flex items-center justify-between p-panel border-b border-border">
         <div className="flex items-center gap-2">
           <Skeleton className="size-5" />
           <Skeleton className="h-5 w-18" />
