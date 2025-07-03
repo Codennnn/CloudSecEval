@@ -2,9 +2,7 @@
 
 import { useState } from 'react'
 
-import dynamic from 'next/dynamic'
-
-import { AnswerPanelSkeleton } from '~/components/answer/AnswerPanelSkeleton'
+import { preloadAnswerPanel } from '~/components/answer/AnswerPanelSide'
 import { AnswerTrigger } from '~/components/answer/AnswerTrigger'
 import { SearchDialog } from '~/components/search/SearchDialog'
 import { SearchTrigger } from '~/components/search/SearchTrigger'
@@ -13,22 +11,10 @@ import {
   SidebarGroupContent,
 } from '~/components/ui/sidebar'
 import { useLazyComponent } from '~/hooks/useLazyComponent'
-
-// 创建预加载函数
-const preloadAnswerPanel = () => import('~/components/answer/AnswerPanel')
-
-// 使用 Next.js dynamic 懒加载 AnswerPanel
-const AnswerPanel = dynamic(
-  () => preloadAnswerPanel().then((mod) => ({ default: mod.AnswerPanel })),
-  {
-    loading: () => <AnswerPanelSkeleton />,
-    ssr: false, // 禁用服务端渲染，因为这是一个交互式组件
-  },
-)
+import { openAnswerPanel } from '~/utils/answer-events'
 
 export function SearchForm() {
   const [searchOpen, setSearchOpen] = useState(false)
-  const [answerOpen, setAnswerOpen] = useState(false)
 
   // 使用懒加载 Hook
   const { preload: handlePreloadAnswerPanel } = useLazyComponent(preloadAnswerPanel, {
@@ -51,7 +37,7 @@ export function SearchForm() {
                 handlePreloadAnswerPanel()
               }}
               onTriggerOpen={() => {
-                setAnswerOpen(true)
+                openAnswerPanel()
               }}
             />
           </div>
@@ -62,16 +48,6 @@ export function SearchForm() {
         open={searchOpen}
         onOpenChange={setSearchOpen}
       />
-
-      {/* AI 问答面板 */}
-      {answerOpen && (
-        <div className="fixed inset-y-0 right-0 w-96 bg-background border-l border-border shadow-lg z-50">
-          <AnswerPanel
-            isVisible={answerOpen}
-            onClose={() => { setAnswerOpen(false) }}
-          />
-        </div>
-      )}
     </div>
   )
 }

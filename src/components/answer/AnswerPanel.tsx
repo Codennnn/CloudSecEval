@@ -36,7 +36,9 @@ interface AnswerPanelProps {
   onClose?: () => void
 }
 
-export function AnswerPanel({ isVisible = true, onClose }: AnswerPanelProps) {
+export function AnswerPanel(props: AnswerPanelProps) {
+  const { isVisible = true, onClose } = props
+
   const [currentQuestion, setCurrentQuestion] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [answerSession, setAnswerSession] = useState<AnswerSession | null>(null)
