@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
+import dynamic from 'next/dynamic'
 import { MessageSquarePlusIcon, PanelLeftIcon, XIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
@@ -11,7 +12,13 @@ import { useChatSessions } from '~/hooks/useChatSessions'
 import type { ChatSession } from '~/types/chat'
 
 import { AnswerPanel } from './AnswerPanel'
-import { ChatHistoryPanel } from './ChatHistoryPanel'
+import { ChatHistoryPanelSkeleton } from './ChatHistoryPanelSkeleton'
+
+// 懒加载 ChatHistoryPanel
+const ChatHistoryPanel = dynamic(() => import('./ChatHistoryPanel').then((module) => ({ default: module.ChatHistoryPanel })), {
+  loading: () => <ChatHistoryPanelSkeleton />,
+  ssr: false,
+})
 
 interface AnswerPanelWithHistoryProps {
   isVisible?: boolean
@@ -44,6 +51,10 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
 
   const handleSessionChange = useEvent((newSessionId: string) => {
     setCurrentSessionId(newSessionId)
+  })
+
+  const handleToggleHistory = useEvent(() => {
+    setShowHistory(!showHistory)
   })
 
   if (!isVisible) {
@@ -85,7 +96,7 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
                   className="size-7"
                   size="icon"
                   variant="ghost"
-                  onClick={() => { setShowHistory(!showHistory) }}
+                  onClick={handleToggleHistory}
                 >
                   <PanelLeftIcon className="size-[1em]" />
                 </Button>
