@@ -183,7 +183,7 @@ export class AppModule {}
 
 在上述代码中，我们使用字符串 `'CONNECTION'` 作为注入令牌，并将其绑定到一个已有的 `connection` 对象。
 
-此前我们介绍过标准的[构造函数注入](/providers#依赖注入机制)模式，在该模式下，依赖项的令牌通常是类本身（即构造函数）。而当我们使用如 `'CONNECTION'` 这类自定义令牌时，必须通过 `@Inject()` 装饰器显式指定对应的注入令牌：
+此前我们介绍过标准的[构造函数注入](/providers#依赖注入机制)模式，在该模式下，依赖项的令牌通常是类本身（即构造函数）。而当我们使用如 `'CONNECTION'` 这类**自定义令牌**时，必须通过 `@Inject()` 装饰器显式指定对应的注入令牌：
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common'

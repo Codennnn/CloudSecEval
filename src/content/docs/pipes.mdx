@@ -174,7 +174,7 @@ export class ValidationPipe implements PipeTransform {
 ```
 
 <CalloutInfo>
-  所有自定义管道都需实现 `PipeTransform<T, R>` 接口，其中 `T` 表示输入值类型，`R` 表示 `transform()` 方法的返回类型。
+  所有自定义管道都需要实现 `PipeTransform<T, R>` 接口，其中 `T` 表示输入值类型，`R` 表示 `transform()` 方法的返回类型。
 </CalloutInfo>
 
 每个管道必须实现 `transform()` 方法，以符合 `PipeTransform` 接口规范。该方法接收两个参数：
@@ -216,7 +216,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-其中，`createCatDto` 的类型定义如下：：
+其中，`createCatDto` 的类型定义如下：
 
 ```ts filename='create-cat.dto.ts'
 export class CreateCatDto {
@@ -247,7 +247,7 @@ export class CreateCatDto {
 首先，安装 Zod：
 
 ```bash
-$ npm install zod
+npm install zod
 ```
 
 ### 构建自定义校验管道
@@ -443,6 +443,7 @@ async create(
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.useGlobalPipes(new ValidationPipe())
+
   await app.listen(process.env.PORT ?? 3000)
 }
 ```
@@ -476,16 +477,16 @@ export class AppModule {}
 
 <CalloutInfo>
   上例使用的 `useClass`
-  只是众多自定义提供者用法之一，更多高级用法可参考[自定义提供者文档](/fundamentals/custom-providers)。
+  只是众多自定义提供者用法之一，更多高级用法可参考[自定义提供者](/fundamentals/custom-providers)文档。
 </CalloutInfo>
 
 ## 内置的 `ValidationPipe`
 
-需要特别说明的是，Nest 框架已经内置了功能强大的 `ValidationPipe`，无需你手动实现通用的验证逻辑。相比本章的示例，官方提供的 `ValidationPipe` 拥有更全面的配置项与更完善的功能支持。
+需要特别说明的是，Nest 框架已经内置了功能强大的 `ValidationPipe`，无需你手动实现通用的验证逻辑。相比本章的示例，官方提供的 `ValidationPipe` 拥有更全面的配置项和更完善的功能支持。
 
 本章示例的目的仅在于演示自定义管道的实现方式与工作机制，并不用于实际项目中替代内置方案。
 
-如果你想深入了解 `ValidationPipe` 的使用方法与更多实践示例，建议阅读[验证章节](/techniques/validation)。
+如果你想深入了解 `ValidationPipe` 的使用方法与更多实践示例，建议阅读[数据验证](/techniques/validation)章节。
 
 ## 转换用例
 

@@ -1,6 +1,6 @@
 # 异常过滤器
 
-Nest 提供了完善的**异常处理机制**，用于统一捕获并处理应用中未显式处理的异常。当业务逻辑中抛出的异常未被捕获时，Nest 会自动拦截该异常，并生成格式化的响应返回给客户端，从而提高了系统的健壮性与用户体验。
+Nest 提供了完善的**异常处理机制**，用于统一捕获并处理应用中未显式处理的异常。当业务逻辑中抛出的异常未被捕获时，Nest 会自动拦截该异常，并生成格式化的响应返回给客户端，从而提高了系统的健壮性和用户体验。
 
 ```mermaid
 flowchart TD
@@ -58,7 +58,7 @@ flowchart TD
     end
 ```
 
-这一机制的默认实现由框架内置的**全局异常过滤器**（Global Exception Filter）负责。它专门处理 `HttpException` 及其所有子类的异常。如果抛出的异常不是 `HttpException` 类型，框架将退回至默认的处理策略，返回以下格式的标准 JSON 响应：
+这一机制的默认实现由框架内置的**全局异常过滤器**（Global Exception Filter）负责，它专门处理 `HttpException` 及其所有子类的异常。如果抛出的异常不是 `HttpException` 类型，框架将退回至默认的处理策略，返回以下格式的标准 JSON 响应：
 
 ```json
 {
@@ -67,7 +67,7 @@ flowchart TD
 }
 ```
 
-Nest 对第三方库 `http-errors` 提供了有限的兼容性支持。只要异常对象中包含 `statusCode` 和 `message` 属性，框架就能提取这些信息并构造对应的响应。否则，系统将回退至默认的 `InternalServerErrorException` 处理策略。
+Nest 对第三方库 `http-errors` 提供了有限的兼容性支持，只要异常对象中包含 `statusCode` 和 `message` 这两个属性，框架就能提取这些信息并构造对应的响应。否则，系统将回退至默认的 `InternalServerErrorException` 处理策略。
 
 ## 抛出标准异常
 
@@ -101,7 +101,7 @@ async findAll() {
 `HttpException` 构造函数接受两个必填参数：
 
 - `response`：定义返回给客户端的响应体内容，可以是字符串或对象。
-- `status`：HTTP 状态码，建议使用 `HttpStatus` 枚举值来增强代码的可读性与可维护性。
+- `status`：HTTP 状态码，建议使用 `HttpStatus` 枚举值来增强代码的可维护性。
 
 Nest 会基于这两个参数自动生成如下格式的响应结构：
 
@@ -153,7 +153,7 @@ async findAll() {
 
 ## 自定义异常
 
-在绝大多数场景中，Nest 提供的内置 HTTP 异常类已经能够满足常规需求。只有在需要表达更细致的业务语义，或携带额外的元数据时，才建议实现自定义异常类。
+在绝大多数场景中，Nest 提供的内置 HTTP 异常类已经能够满足常规需求，只有在需要表达更细致的业务语义，或携带额外的元数据时，才建议实现自定义异常类。
 
 为保持异常结构的一致性，建议定义一套符合业务语义的异常类体系，并统一继承自 `HttpException`。如此一来，Nest 的内建异常处理机制便可自动识别并格式化这些异常的响应内容，无需额外配置。
 
@@ -222,7 +222,7 @@ throw new BadRequestException('发生了一些错误', {
 }
 ```
 
-通过使用内置异常类，你可以更规范地表达服务中的错误状态，提升代码的可维护性和可读性。
+通过使用内置异常类，你可以更规范地表达服务中的错误状态。
 
 ## 异常过滤器
 
@@ -245,11 +245,11 @@ import type { Request, Response } from 'express'
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
-    const status = exception.getStatus()
-
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
     const request = ctx.getRequest<Request>()
+
+    const status = exception.getStatus()
 
     response.status(status).json({
       statusCode: status,
@@ -260,7 +260,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 }
 ```
 
-所有异常过滤器都需实现通用接口 `ExceptionFilter<T>`，并定义 `catch(exception: T, host: ArgumentsHost)` 方法。其中泛型参数 `T` 表示要捕获的异常类型。
+所有异常过滤器都需实现通用接口 `ExceptionFilter<T>`，并定义 `catch(exception: T, host: ArgumentsHost)` 方法，其中泛型参数 `T` 表示要捕获的异常类型。
 
 装饰器 `@Catch(HttpException)` 用于标注当前过滤器专门处理 `HttpException` 类型的异常。你也可以传入多个异常类（以逗号分隔），让过滤器支持处理多种异常类型。
 
@@ -282,7 +282,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
 ## 绑定异常过滤器
 
-要将自定义的异常过滤器应用到特定路由处理方法中，可使用 `@UseFilters()` 装饰器。例如，将自定义的 `HttpExceptionFilter` 绑定到 `CatsController` 的 `create()` 方法：
+要将自定义的异常过滤器应用到特定的路由处理方法中，可使用 `@UseFilters()` 装饰器。例如，将自定义的 `HttpExceptionFilter` 绑定到 `CatsController` 的 `create()` 方法：
 
 ```ts filename='cats.controller.ts'
 import { UseFilters } from '@nestjs/common'
