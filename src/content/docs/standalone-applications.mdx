@@ -11,9 +11,7 @@
 ```ts
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule)
-  // 应用逻辑...
 }
-bootstrap()
 ```
 
 ## 获取静态模块中的提供者
@@ -81,15 +79,16 @@ const configService = app
 
 ## 关闭应用
 
-在某些使用场景下（如执行 CRON 定时任务），你可能希望在脚本完成后自动退出 Node.js 进程。此时，需要在 `bootstrap` 函数的末尾调用 `app.close()` 方法来优雅地关闭应用上下文：
+在某些使用场景下（如执行 Cron 定时任务），你可能希望在脚本完成后自动退出 Node.js 进程。此时，需要在 `bootstrap` 函数的末尾调用 `app.close()` 方法来优雅地关闭应用上下文：
 
 ```ts
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule)
+
   // 应用逻辑...
+
   await app.close()
 }
-bootstrap()
 ```
 
 正如[生命周期事件](/fundamentals/lifecycle-events)一章所介绍的，调用 `app.close()` 会触发应用的**关闭生命周期钩子**，用于执行清理逻辑，例如关闭数据库连接、停止任务调度器等。

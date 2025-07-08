@@ -6,7 +6,7 @@ Nest 应用程序及其各个组成部分，都遵循框架统一的生命周期
 
 下图展示了从应用启动到 Node.js 进程退出期间，各个生命周期事件的调用顺序。整个生命周期可以划分为三个阶段：**初始化**（initializing）、**运行中**（running） 和**终止中**（terminating）。
 
-掌握这三个阶段的执行流程，有助于你更合理地规划服务的初始化与资源管理，例如在合适的时机建立连接或注册任务。同时，也能帮助你在接收到关闭信号时，实现应用的**优雅退出**，确保资源被正确释放，系统平稳停机。
+掌握这三个阶段的执行流程，有助于你更合理地规划服务的初始化和资源管理，例如在合适的时机建立连接或注册任务。同时，也能帮助你在接收到关闭信号时，实现应用的**优雅退出**，确保资源被正确释放，系统平稳停机。
 
 ```mermaid
 flowchart TD
@@ -56,7 +56,7 @@ flowchart TD
 - `onModuleInit`
 - `onApplicationBootstrap`
 
-而应用关闭阶段的钩子 —— 如 `onModuleDestroy`、`beforeApplicationShutdown` 和 `onApplicationShutdown` —— 则需在调用 `app.close()`，或进程接收到诸如 `SIGTERM` 等系统信号时才会生效。此外，响应系统信号还要求显式启用关闭钩子。
+而应用关闭阶段的钩子 —— 如 `onModuleDestroy`、`beforeApplicationShutdown` 和 `onApplicationShutdown`，则需在调用 `app.close()`，或进程接收到诸如 `SIGTERM` 等系统信号时才会生效。此外，响应系统信号还要求显式启用关闭钩子。
 
 ### 生命周期钩子与对应事件
 

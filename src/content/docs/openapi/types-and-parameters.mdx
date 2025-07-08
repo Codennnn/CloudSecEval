@@ -15,17 +15,18 @@ async create(@Body() createCatDto: CreateCatDto) {
 ```
 
 <CalloutInfo>
-  如果你需要显式设置请求体（Request Body）的定义，可以使用 `@ApiBody()`
-  装饰器（从 `@nestjs/swagger` 包中导入）。
+  如果需要手动指定请求体（Request Body）的结构，可以使用从 `@nestjs/swagger`
+  导入的 `@ApiBody()` 装饰器。
 </CalloutInfo>
 
 Swagger UI 将根据 `CreateCatDto` 生成以下模型定义：
 
 <DocImage src={swaggerDtoImage} alt="Swagger DTO" />
 
-如上图所示，`CreateCatDto` 类的模型定义是空的，尽管它已经声明了多个属性。
+如上图所示，尽管 `CreateCatDto` 类中已经声明了多个属性，但生成的模型定义仍然是空的。
 
-为了让 `SwaggerModule` 能够识别并展示这些属性，我们需要用 `@ApiProperty()` 装饰器来注解它们。另一个选择是使用 CLI 插件（详见[插件](/openapi/cli-plugin)章节），它会自动处理这个步骤：
+为了解决这个问题，需要为每个属性添加 `@ApiProperty()` 装饰器，这样 `SwaggerModule` 才能正确识别并展示这些字段。
+另一种更省力的方式是使用 CLI 插件（详见[插件](/openapi/cli-plugin)章节），它可以自动为你完成这些注解的生成。
 
 ```ts
 import { ApiProperty } from '@nestjs/swagger'
