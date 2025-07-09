@@ -59,8 +59,8 @@ export function SearchResultItem(props: SearchResultItemProps) {
     <button
       ref={ref}
       className={cn(
-        'flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all duration-150 hover:bg-accent/50',
-        isSelected && 'bg-accent border-accent-foreground/20 shadow-sm',
+        'flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all duration-150 hover:bg-muted/50',
+        isSelected && 'bg-muted hover:bg-muted border-accent-foreground/20 shadow-sm',
       )}
       onClick={onClick}
       onMouseEnter={onMouseEnter}

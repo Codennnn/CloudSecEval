@@ -63,7 +63,7 @@ export function highlightSearchTerm(text: string, searchTerm: string): string {
     const regex = new RegExp(`(${term})`, 'gi')
     highlightedText = highlightedText.replace(
       regex,
-      '<mark class="bg-accent rounded-xs text-current">$1</mark>',
+      '<mark class="bg-accent/15 rounded-xs text-current">$1</mark>',
     )
   })
 

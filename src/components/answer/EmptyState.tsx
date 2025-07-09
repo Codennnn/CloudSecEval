@@ -53,8 +53,8 @@ export function EmptyState(props: EmptyStateProps) {
       <div className="flex flex-col items-center p-5">
         {/* 更大的图标和渐变效果 */}
         <div className="relative mb-4">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl" />
-          <MessageCircleIcon className="size-12 text-blue-500" />
+          <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-purple-500/20 rounded-full blur-xl" />
+          <MessageCircleIcon className="size-12 text-accent" />
         </div>
 
         <div className="text-lg font-semibold mb-2">NestJS AI 助手</div>
