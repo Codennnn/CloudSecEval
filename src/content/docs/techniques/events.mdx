@@ -170,7 +170,7 @@ handleEverything(payload: any) {
 await this.eventEmitterReadinessWatcher.waitUntilReady()
 
 // 等待监听器就绪后再触发事件
-await this.eventEmitter.emit(
+this.eventEmitter.emit(
   'order.created',
   new OrderCreatedEvent({ orderId: 1, payload: {} })
 )

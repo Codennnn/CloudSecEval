@@ -209,9 +209,17 @@ class GoogleCloudPubSubClient extends ClientProxy {
   ): Function {
     console.log('message:', packet)
 
-    // 在实际应用中，应该由响应方返回数据后执行 "callback" 回调。
-    // 这里我们仅做模拟（延迟 5 秒），假设响应已返回，并传递原始 "data"。
-    setTimeout(() => callback({ response: packet.data }), 5000)
+    // 在实际应用中，应该由响应方返回数据后执行 `callback` 回调。
+    // 这里我们仅做模拟（延迟 5 秒），假设响应已返回，并传递原始 `data`。
+    // 在 WritePacket 中，`isDisposed` 布尔值表示响应方不再期望收到更多数据。如果未发送或为 `false`，则只会将数据发送到可观察流。
+    setTimeout(
+      () =>
+        callback({
+          response: packet.data,
+          isDisposed: true,
+        }),
+      5000
+    )
 
     return () => console.log('teardown')
   }

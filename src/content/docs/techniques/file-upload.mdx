@@ -41,7 +41,7 @@ uploadFile(@UploadedFile() file: Express.Multer.File) {
 
 `FileInterceptor()` 接收两个参数：
 
-- `fieldName`：字符串类型，指定表单字段名，即 `<input type="file" name="file" />` 中的 `name` 值；
+- `fieldName`：字符串类型，指定表单字段名，即 `<input type="file" name="file" />` 中的 `name` 值。
 - `options`（可选）：类型为 [`MulterOptions`](https://github.com/expressjs/multer#multeropts)，用于配置上传行为，底层与 Multer 的构造函数参数一致。
 
 <CalloutInfo type="warning">
