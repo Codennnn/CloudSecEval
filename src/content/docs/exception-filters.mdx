@@ -98,7 +98,7 @@ async findAll() {
 
 ### `HttpException` 的构造函数参数
 
-`HttpException` 构造函数接受两个必填参数：
+`HttpException` 构造函数接收两个必填参数：
 
 - `response`：定义返回给客户端的响应体内容，可以是字符串或对象。
 - `status`：HTTP 状态码，建议使用 `HttpStatus` 枚举值来增强代码的可维护性。
@@ -294,7 +294,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 }
 ```
 
-`@UseFilters()` 接受一个或多个异常过滤器的**实例**，多个实例可通过逗号分隔传入。上述示例中，我们直接传入了 `HttpExceptionFilter` 的实例。
+`@UseFilters()` 接收一个或多个异常过滤器的**实例**，多个实例可通过逗号分隔传入。上述示例中，我们直接传入了 `HttpExceptionFilter` 的实例。
 
 实际上，也可以**传入过滤器类本身**，而非其实例。此时，Nest 会自动完成实例化，并支持依赖注入：
 

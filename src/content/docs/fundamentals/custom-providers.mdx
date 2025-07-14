@@ -158,7 +158,7 @@ export class AppModule {}
 
 在这个示例中，我们通过 `useValue` 显式指定，当注入 `CatsService` 时应使用 `mockCatsService` 替代。这个 mock 对象应当与 `CatsService` 的接口结构保持兼容。
 
-由于 TypeScript 采用的是[结构化类型系统](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)，只要对象具有相同的结构，就可以视为类型兼容。因此，`useValue` 可以接受一个对象字面量，也可以传入一个类实例（例如 `new MockCatsService()`）作为其值。
+由于 TypeScript 采用的是[结构化类型系统](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)，只要对象具有相同的结构，就可以视为类型兼容。因此，`useValue` 可以接收一个对象字面量，也可以传入一个类实例（例如 `new MockCatsService()`）作为其值。
 
 ## 非类注入令牌
 

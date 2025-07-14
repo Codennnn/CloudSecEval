@@ -34,6 +34,7 @@ export class CatsModule {}
 
 ```ts
 import type { HttpService } from '@nestjs/axios'
+import type { AxiosResponse } from 'axios'
 
 @Injectable()
 export class CatsService {
@@ -56,7 +57,7 @@ export class CatsService {
 
 Axios 提供了丰富的配置选项，允许你灵活定制 `HttpService` 的行为。你可以在 [Axios 官方文档](https://github.com/axios/axios#request-config)中查看更多配置项的详细说明。
 
-在 `HttpModule` 中配置底层的 Axios 实例非常简单，只需在通过 `register()` 方法导入模块时，传入一个可选的配置对象。该对象会原样传递给 Axios 的构造函数：
+在 `HttpModule` 中配置底层的 Axios 实例非常简单，只需在通过 `register()` 方法导入模块时，传入一个可选的配置对象，该对象会原样传递给 Axios 的构造函数：
 
 ```ts
 @Module({

@@ -65,7 +65,7 @@
 - [x] `/techniques/performance` - 性能优化（Fastify）
 - [x] `/techniques/server-sent-events` - 服务端推送事件
 
-## 5. 数据库集成 (Database Integration) 🔴
+## 5. 数据库集成 (Database Integration) ⭕
 
 - [x] `/techniques/database` - 数据库概述
 - [ ] `/techniques/mongodb` - MongoDB
@@ -133,7 +133,7 @@
 - [x] `/cli/usages` - 使用方法
 - [x] `/cli/scripts` - CLI 与构建脚本
 
-## 11. OpenAPI 🔴
+## 11. OpenAPI ⭕
 
 - [x] `/openapi/introduction` - 介绍
 - [ ] `/openapi/types-and-parameters` - 类型和参数
@@ -144,7 +144,7 @@
 - [ ] `/openapi/cli-plugin` - CLI 插件
 - [ ] `/openapi/other-features` - 其他功能
 
-## 12. 实用案例 🔴
+## 12. 实用案例 ⭕
 
 - [ ] `/recipes/repl` - REPL
 - [x] `/recipes/crud-generator` - CRUD 生成器
@@ -168,7 +168,7 @@
 - [ ] `/recipes/necord` - Necord
 - [ ] `/recipes/suites` - Suites（原 Automock）
 
-## 13. 部署与发布 🔴
+## 13. 部署与发布 ✅
 
 - [x] `/deployment` - 部署指南
 - [x] `/standalone-applications` - 独立应用模式

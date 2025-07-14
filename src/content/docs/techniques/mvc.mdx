@@ -30,15 +30,15 @@ async function bootstrap() {
 
   // 设置静态资源目录
   app.useStaticAssets(join(__dirname, '..', 'public'))
+
   // 设置视图模板目录
   app.setBaseViewsDir(join(__dirname, '..', 'views'))
+
   // 指定模板引擎为 hbs
   app.setViewEngine('hbs')
 
   await app.listen(process.env.PORT ?? 3000)
 }
-
-bootstrap()
 ```
 
 上述示例中，我们将静态资源托管于 `public` 目录，将视图模板放置在 `views` 目录，并使用 `hbs` 模板引擎渲染 HTML 页面。
@@ -49,7 +49,7 @@ bootstrap()
 
 以下是一个简单的模板示例：
 
-```html
+```html title='views/index.hbs'
 <!DOCTYPE html>
 <html>
   <head>
@@ -84,8 +84,8 @@ export class AppController {
 
 在这段代码中：
 
-- 使用 `@Render('index')` 装饰器指定视图模板名称（省略扩展名）；
-- 控制器方法返回的对象将作为模板的上下文数据传入；
+- 使用 `@Render('index')` 装饰器指定视图模板名称（省略扩展名）。
+- 控制器方法返回的对象将作为模板的上下文数据传入。
 - 模板中可通过插值语法访问 `message` 属性，从而动态显示内容。
 
 现在，启动应用并访问 `http://localhost:3000`，你将看到浏览器页面成功渲染出 `Hello world!` 消息。
@@ -114,6 +114,7 @@ export class AppController {
   root(@Res() res: Response) {
     // 根据业务逻辑获取视图名称，并动态渲染模板
     const viewName = this.appService.getViewName()
+
     return res.render(viewName, {
       message: 'Hello world!',
     })

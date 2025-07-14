@@ -62,7 +62,7 @@ DATABASE_PASSWORD=test
 如果你希望在应用启动之前（例如在调用 `NestFactory.createMicroservice()` 之前）就能读取某些环境变量，可以使用 Nest CLI 提供的 `--env-file` 参数，指定要加载的 `.env` 文件路径。
 
 <CalloutInfo>
-  该参数是在 Node.js v20 中引入的，详见 [Node.js
+  `--env-file` 参数是在 Node.js v20 中引入的，详见 [Node.js
   官方文档](https://nodejs.org/dist/v20.18.1/docs/api/cli.html#--env-fileconfig)。
 </CalloutInfo>
 
@@ -240,7 +240,7 @@ export default () => {
 
 ## 使用 `ConfigService`
 
-要在应用中访问配置信息，可以通过注入 `ConfigService` 实现。和使用其他提供者类似，你需要先在模块中引入 ConfigModule。如果你在 `ConfigModule.forRoot()` 中将 `isGlobal` 设置为 `true`，那么该模块会自动注册为全局模块，无需在每个使用的模块中重复导入。但如果未设置为全局模块，需手动引入，例如：
+要在应用中访问配置信息，可以通过注入 `ConfigService` 实现。和使用其他提供者类似，你需要先在模块中引入 `ConfigModule`。如果你在 `ConfigModule.forRoot()` 中将 `isGlobal` 设置为 `true`，那么该模块会自动注册为全局模块，无需在每个使用的模块中重复导入。但如果未设置为全局模块，需手动引入，例如：
 
 ```ts filename='feature.module.ts'
 @Module({
@@ -307,7 +307,7 @@ constructor(private configService: ConfigService<EnvironmentVariables>) {
 }
 ```
 
-当 `infer: true` 时，`get()` 方法会根据接口自动推断返回值类型。上例中 PORT 是 `number` 类型，因此 port 的类型也被自动推断为 `number`（前提是未启用 `strictNullChecks`）。
+当 `infer: true` 时，`get()` 方法会根据接口自动推断返回值类型。上例中 `PORT` 是 `number` 类型，因此 `port` 的类型也被自动推断为 `number`（前提是未启用 `strictNullChecks`）。
 
 点号语法同样支持类型推断：
 
@@ -338,11 +338,11 @@ constructor(private configService: ConfigService<{ PORT: number }, true>) {
 
 ### 只从配置文件中读取值
 
-如果你希望 `ConfigService#get` 只从自定义配置文件中读取值，而不读取
+如果你希望 `ConfigService.get()` 只从自定义配置文件中读取值，而不读取
 `process.env` 中的变量，可以在 `ConfigModule.forRoot()` 中设置
 `skipProcessEnv: true`。
 
-## 配置命名空间（Configuration Namespaces）
+## 配置的命名空间
 
 `ConfigModule` 支持加载多个[自定义配置文件](#自定义配置文件)，适用于复杂或模块化的配置结构。你可以将配置定义为嵌套对象，也可以使用 `registerAs()` 函数为配置创建命名空间，从而更清晰地组织和访问不同模块的配置项。
 
@@ -438,7 +438,7 @@ export class AppModule {}
 
 ## 缓存环境变量
 
-频繁访问 `process.env` 可能会成为性能瓶颈。为了提升 `ConfigService#get` 方法读取环境变量时的执行效率，可以在调用 `ConfigModule.forRoot()` 时开启缓存功能：
+频繁访问 `process.env` 可能会成为性能瓶颈。为了提升 `ConfigService.get()` 方法读取环境变量时的执行效率，可以在调用 `ConfigModule.forRoot()` 时开启缓存功能：
 
 ```ts
 ConfigModule.forRoot({
@@ -448,7 +448,7 @@ ConfigModule.forRoot({
 
 启用后，模块会在首次读取时将环境变量缓存起来，后续访问将直接从内存中读取，避免重复解析。
 
-## 配置的局部注册（Partial Registration）
+## 配置的局部注册
 
 在常规用法中，我们通常会在应用的根模块（例如 `AppModule`）中通过 `forRoot()` 一次性加载所有配置文件。然而，当项目结构复杂、存在多个特性模块各自维护独立的配置时，集中式注册可能不够灵活。
 
@@ -471,7 +471,7 @@ export class DatabaseModule {}
 
 </CalloutInfo>
 
-## 配置校验（Schema Validation）
+## 配置校验
 
 在应用启动阶段，如果缺少必要的环境变量，或者某些变量不符合预期格式，通常应立即抛出异常，防止应用进入不确定状态。
 `@nestjs/config` 模块原生支持两种配置校验方式：
