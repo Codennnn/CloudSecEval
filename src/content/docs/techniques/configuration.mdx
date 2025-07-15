@@ -578,9 +578,9 @@ PORT=3000 node main.js
   若校验函数抛出错误，应用将在启动阶段终止，无法正常运行。
 </CalloutInfo>
 
-以下示例展示了如何结合 `class-validator` 与 `class-transformer` 两个库来实现这一功能。主要步骤如下：
+以下示例展示了如何结合 `class-validator` 与 `class-transformer` 这两个库来实现这一功能。主要步骤如下：
 
-1. 定义一个带有验证装饰器的类，用于描述配置项结构及其校验规则；
+1. 定义一个带有验证装饰器的类，用于描述配置项结构及其校验规则。
 2. 实现一个 `validate` 函数，利用 `plainToInstance` 将普通对象转换为类实例，并使用 `validateSync` 进行同步校验。
 
 ```ts filename='env.validation.ts'
@@ -670,10 +670,10 @@ export class AppService {
 
 <CalloutInfo type="success">
   使用 `getter`
-  属性封装常用或具有业务语义的配置项，有助于集中管理配置逻辑，提升代码可维护性与表达清晰度。
+  属性封装常用或具有业务语义的配置项，有助于集中管理配置逻辑，提升代码的表达清晰度。
 </CalloutInfo>
 
-## 环境变量加载钩子（Environment Variables Loaded Hook）
+## 环境变量加载钩子
 
 在某些场景下，模块的初始化过程可能依赖环境变量，而这些变量又来自 `.env` 文件。为了确保在访问 `process.env` 之前，`.env` 文件已成功加载，`ConfigModule` 提供了一个静态钩子：`ConfigModule.envVariablesLoaded`。
 
@@ -689,7 +689,7 @@ export async function getStorageModule() {
 
 通过使用 `envVariablesLoaded`，可以避免在 `.env` 尚未加载时就访问 `process.env`，从而避免潜在的初始化错误或配置缺失问题。
 
-<CalloutInfo type="success">
+<CalloutInfo>
   仅在 `ConfigModule`
   尚未完全初始化、但你又需要读取环境变量的模块加载逻辑中使用该钩子。若已通过
   `ConfigService` 注入配置，一般无需使用此钩子。
