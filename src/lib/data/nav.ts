@@ -159,7 +159,7 @@ export const navMainData: NavMenuItem[] = [
       { title: '介绍', titleEn: 'Introduction', url: '/openapi/introduction' },
       { title: '类型和参数', titleEn: 'Types and Parameters', url: '/openapi/types-and-parameters' },
       { title: '操作', titleEn: 'Operations', url: '/openapi/operations' },
-      { title: '安全', titleEn: 'Security', url: '/openapi/security' },
+      { title: '安全性', titleEn: 'Security', url: '/openapi/security' },
       { title: '映射类型', titleEn: 'Mapped Types', url: '/openapi/mapped-types' },
       { title: '装饰器', titleEn: 'Decorators', url: '/openapi/decorators' },
       { title: 'CLI 插件', titleEn: 'CLI Plugin', url: '/openapi/cli-plugin' },

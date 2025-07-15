@@ -1,29 +1,36 @@
 # CLI 插件
 
-TypeScript 的元数据反射（metadata reflection）系统存在一些限制。例如，它无法在运行时动态地判断一个类拥有哪些属性，也无法区分属性是可选还是必需。幸运的是，这些限制大多可以在编译阶段通过 **CLI 插件** 解决。Nest 正是利用这一点，提供了一个强大的插件来增强 TypeScript 的编译过程，帮你大幅减少样板代码。
+TypeScript 的元数据反射（metadata reflection）系统存在一些限制。例如，它无法在运行时动态地判断一个类拥有哪些属性，也无法区分属性是可选还是必需的。幸运的是，这些限制大多可以在编译阶段通过 **CLI 插件**解决。Nest 正是利用这一点，提供了一个强大的插件来增强 TypeScript 的编译过程，帮你大幅减少样板代码。
+
+由于 TypeScript 的元数据反射系统存在一些天然局限，例如：
+
+- 无法在运行时动态获取类中包含哪些属性。
+- 无法区分属性是可选还是必填。
+
+这些限制虽然源于运行时，但通常可以借助 **CLI 插件**在编译阶段加以弥补。Nest 官方就提供了这样一个功能强大的插件，能够在编译期自动生成必要的元数据，帮助你显著减少样板代码，让开发体验更加高效流畅。
 
 <CalloutInfo>
-  该插件是**可选的**（opt-in），你完全可以不使用它，继续手动为所有属性声明装饰器，或者仅在需要时选择性地使用。
+  该插件是**可选的**：你完全可以继续手动为每个属性添加装饰器，或者只在特定需要的地方启用插件支持。
 </CalloutInfo>
 
 ## 概述
 
-启用 Swagger 插件后，它会自动执行以下操作：
+启用 Swagger 插件后，Nest 将在编译阶段自动完成以下操作，大幅降低样板代码的数量：
 
-- 为 DTO（数据传输对象）的属性添加 `@ApiProperty()` 装饰器（除非已使用 `@ApiHideProperty()`）。
-- 根据属性是否为可选（例如 `name?: string`）来自动设置 `required: false`。
-- 根据属性的 TypeScript 类型自动设置 `type` 或 `enum`，并支持数组类型。
-- 根据属性的默认值自动设置 `default`。
-- 当 `classValidatorShim` 选项开启时，能根据 `class-validator` 装饰器自动添加校验规则（如 `minimum`、`maximum` 等）。
-- 为控制器（Controller）的每个端点自动生成响应装饰器，并附带正确的状态码和 `type`（响应模型）。
-- 当 `introspectComments` 选项开启时，根据代码注释为属性和端点生成 `description`。
-- 当 `introspectComments` 选项开启时，根据代码注释为属性生成 `example`。
+- 为 DTO 属性自动添加 `@ApiProperty()` 装饰器（除非显式使用了 `@ApiHideProperty()` 隐藏该属性）。
+- 根据属性是否可选（例如 `name?: string`），自动设置 `required: false`。
+- 根据 TypeScript 类型推断并生成正确的 `type` 或 `enum` 信息，同时支持数组类型。
+- 根据属性的默认值自动填充 `default` 字段。
+- 若开启 `classValidatorShim` 选项，可结合 `class-validator` 装饰器自动生成校验规则（如 `minimum`、`maximum` 等）。
+- 为控制器中的每个端点自动添加响应装饰器，并准确设置响应状态码及 `type`（响应模型）。
+- 若开启 `introspectComments` 选项，可根据代码注释自动生成 `description` 描述信息。
+- 同样在 `introspectComments` 开启时，可从注释中提取示例值，用于生成 `example` 字段。
 
-请注意：为了让插件能够识别并处理文件，其文件名**必须**以 `.dto.ts` 或 `.entity.ts` 结尾（例如 `create-user.dto.ts`）。
+请注意：为了让插件正确识别和处理，文件名必须以 `.dto.ts` 或 `.entity.ts` 结尾（例如：`create-user.dto.ts`）。如需使用其他后缀，可通过插件选项 `dtoFileNameSuffix`（详见下文）进行自定义。
 
-如果你希望使用其他后缀，可以通过 `dtoFileNameSuffix` 插件选项（详见下文）进行配置。
+在引入插件之前，若想让 Swagger 正确生成 API 文档，通常需要手动为 DTO 的每个属性添加 `@ApiProperty()` 装饰器。
 
-在引入插件之前，为了让 Swagger 能够正确生成 API 文档，你通常需要为 DTO 的每个属性都手动添加 `@ApiProperty()` 装饰器。例如，一个简单的 `CreateUserDto` 可能会是这样：
+例如，一个简单的 `CreateUserDto` 类可能需要写成这样：
 
 ```ts
 export class CreateUserDto {
@@ -41,9 +48,9 @@ export class CreateUserDto {
 }
 ```
 
-对于一个小型项目，这也许还能接受。但随着 DTO 数量的增长，这种手动标记的方式会变得非常冗长且难以维护。
+在小型项目中，这种方式尚可接受；但随着 DTO 数量的增加，手动编写装饰器会变得繁琐且难以维护。
 
-通过启用 [Swagger 插件](/openapi/cli-plugin#using-the-cli-plugin)，上面的 `CreateUserDto` 可以被大大简化：
+启用 [Swagger 插件](#使用 CLI 插件)后，上述 DTO 可以被大幅简化为：
 
 ```ts
 export class CreateUserDto {
@@ -54,34 +61,33 @@ export class CreateUserDto {
 }
 ```
 
-<CalloutInfo>
-  Swagger 插件的核心功能是**静态分析**。它通过读取 TypeScript 类型和 `class-validator`
-  装饰器来自动推断 `@ApiProperty()` 的内容，从而生成准确的 OpenAPI 规范。这能让你的 Swagger UI
-  页面清晰地展示 API 模型。
+这样就能在保持文档生成完整性的同时，显著减少冗余代码，让开发体验更加高效。
 
-然而，插件本身**不处理运行时校验**。因此，`IsEmail()`、`IsNumber()` 这类 `class-validator`
-装饰器依然是必需的，它们负责在程序运行时确保输入数据的有效性。
+<CalloutInfo>
+Swagger 插件的核心原理是基于**静态分析**：它通过读取 TypeScript 类型信息及 `class-validator` 装饰器，自动推断 `@ApiProperty()` 的各项配置，从而生成准确的 OpenAPI 规范，让 Swagger UI 页面能够清晰直观地展示 API 模型结构。
+
+需要注意的是，插件仅负责文档生成，并不处理运行时校验。因此，像 `IsEmail()`、`IsNumber()` 等 `class-validator` 装饰器仍然必不可少，它们用于在应用运行时校验输入数据的有效性。
 
 </CalloutInfo>
 
 <CalloutInfo>
-  当你在 DTO 中使用 `PartialType`、`OmitType`
-  等[映射类型工具](/openapi/mapped-types)时，**务必**从 `@nestjs/swagger`
-  包中导入它们，而不是从 `@nestjs/mapped-types`。只有这样，CLI
-  插件才能正确地识别和生成 OpenAPI schema。
+  当在 DTO 中使用 `PartialType`、`OmitType` 等
+  [映射类型工具](/openapi/mapped-types) 时，**务必**从 `@nestjs/swagger`
+  包中导入，而不是从 `@nestjs/mapped-types`。只有这样，CLI
+  插件才能正确识别并生成对应的 OpenAPI schema。
 </CalloutInfo>
 
-该插件基于**抽象语法树（Abstract Syntax Tree, AST）**工作，它会在编译时动态地为你的代码添加合适的装饰器。因此，你无需在源代码中手动添加 `@ApiProperty()`。
+该插件的工作原理是：基于**抽象语法树**（Abstract Syntax Tree，简称 AST），在编译阶段自动为代码添加所需的装饰器。因此，开发者无需手动在每个属性上都添加 `@ApiProperty()`。
 
 <CalloutInfo>
-  插件会自动生成所有缺失的 Swagger 属性。如果你需要覆盖自动生成的配置（例如，为
-  `string` 类型的属性指定一个 `format`），只需在代码中显式添加 `@ApiProperty()`
-  并传入你的配置即可。
+  插件会为缺失的 Swagger 属性自动生成默认配置。但如果你需要覆盖或自定义（例如为
+  `string` 类型指定 `format`），只需在属性上显式添加 `@ApiProperty()`
+  并传入自定义配置即可。
 </CalloutInfo>
 
 ## 注释自动提取
 
-启用注释自动提取功能后，CLI 插件会根据注释为属性生成描述和示例值（example）。
+开启注释自动提取功能后，CLI 插件可自动读取代码中的注释，为属性生成描述与示例（example）值，无需手动重复填写。
 
 例如，假设有如下 `roles` 属性：
 
@@ -94,20 +100,22 @@ export class CreateUserDto {
   description: `用户角色列表`,
   example: ['admin'],
 })
-roles: RoleEnum[] = [];
+roles: RoleEnum[] = []
 ```
 
-此时你需要重复填写描述和示例值。而启用 `introspectComments` 后，CLI 插件可以自动提取这些注释，并为属性自动生成描述，如果定义了 `@example` 标签，还会自动生成示例。这样，上述属性就可以简化为：
+通常需要在注释和 `@ApiProperty()` 装饰器中各写一次描述与示例。启用 `introspectComments` 后，CLI 插件会自动提取注释内容并为 `@ApiProperty()` 生成相应的描述与示例。于是代码可简化为：
 
 ```ts
 /**
  * 用户角色列表
  * @example ['admin']
  */
-roles: RoleEnum[] = [];
+roles: RoleEnum[] = []
 ```
 
-插件还提供了 `dtoKeyOfComment` 和 `controllerKeyOfComment` 选项，用于自定义插件如何将注释内容赋值给 `ApiProperty` 和 `ApiOperation` 装饰器。示例如下：
+此外，插件还提供了 `dtoKeyOfComment` 与 `controllerKeyOfComment` 配置项，可自定义注释映射到装饰器的方式，例如映射到 `@ApiProperty` 或 `@ApiOperation`。
+
+示例如下：
 
 ```ts
 export class SomeController {
@@ -119,23 +127,25 @@ export class SomeController {
 }
 ```
 
-这等价于如下写法：
+这等同于：
 
 ```ts
-@ApiOperation({ summary: "创建资源" })
+@ApiOperation({ summary: '创建资源' })
+@Post()
+create() {}
 ```
 
 <CalloutInfo>
-  <div>对于模型（model），同样的逻辑适用，但用于 `ApiProperty` 装饰器。</div>
+  <div>对于模型类，同样的注释提取机制适用于 `ApiProperty` 装饰器。</div>
 </CalloutInfo>
 
-对于控制器，你不仅可以提供摘要（summary），还可以添加详细描述（通过 `@remarks`）、`@deprecated` 标签和异常响应（通过 `@throws`）。例如：
+在控制器中，除 `summary` 外，还可以通过注释添加详细描述（`@remarks`）、标记废弃（`@deprecated`），或声明可能抛出的异常（`@throws`）。例如：
 
 ```ts
 /**
  * 创建新猫咪
  *
- * @remarks 此操作用于创建一只新猫咪。
+ * @remarks 此接口用于新增一只猫咪。
  *
  * @deprecated
  * @throws {500} 发生未知错误。
@@ -147,7 +157,9 @@ async create(): Promise<Cat> {}
 
 ## 使用 CLI 插件
 
-要启用该插件，请打开 `nest-cli.json` 文件（如果你的项目使用了 [Nest CLI](/cli/overview)），并添加如下 `plugins` 配置：
+如果你的项目使用了 [Nest CLI](/cli/overview)，可以通过配置 `nest-cli.json` 文件启用该插件。
+
+在文件中添加如下 `plugins` 配置：
 
 ```json
 {
@@ -159,7 +171,9 @@ async create(): Promise<Cat> {}
 }
 ```
 
-你可以通过 `options` 属性自定义插件的行为。
+### 自定义插件行为
+
+你还可以通过 `options` 属性灵活调整插件的行为。例如：
 
 ```json
 {
@@ -180,7 +194,7 @@ async create(): Promise<Cat> {}
 }
 ```
 
-`options` 属性需符合以下接口定义：
+`options` 对应的接口定义如下：
 
 ```ts
 export interface PluginOptions {
@@ -218,27 +232,32 @@ getCustomTransformers: (program: any) => ({
 
 ## SWC 构建器
 
-对于标准的项目结构（非 Monorepo），要在 SWC 构建器中使用 CLI 插件，你需要启用类型检查。具体方法请参考[此章节](/recipes/swc#type-checking)。
+在使用 SWC 构建器时，如果你的项目是标准结构（非 Monorepo），需要开启类型检查才能正确使用 CLI 插件。
+具体步骤可参考[类型检查支持](/recipes/swc#类型检查支持)部分的说明。
+
+对于 Monorepo 项目，请参考[多包仓库项目配置](/recipes/swc#多包仓库项目配置)章节中的指导进行设置。
 
 ```bash
 $ nest start -b swc --type-check
 ```
-
-如果你的项目是 Monorepo 结构，请遵循[此章节](/recipes/swc#monorepo-and-cli-plugins)中的指导。
 
 ```bash
 $ npx ts-node src/generate-metadata.ts
 # 或 npx ts-node apps/{YOUR_APP}/src/generate-metadata.ts
 ```
 
-接着，你需要通过 `SwaggerModule#loadPluginMetadata` 方法来加载序列化后的元数据文件，示例如下：
+### 加载插件元数据
+
+生成元数据文件后，需要在应用启动逻辑中通过 `SwaggerModule.loadPluginMetadata()` 方法加载它，例如：
 
 ```ts
-import metadata from './metadata' // <-- 该文件由 "PluginMetadataGenerator" 自动生成
+import metadata from './metadata' // <-- 此文件由 "PluginMetadataGenerator" 自动生成
 
-await SwaggerModule.loadPluginMetadata(metadata) // <-- 在这里加载
+await SwaggerModule.loadPluginMetadata(metadata) // <-- 加载元数据
 const document = SwaggerModule.createDocument(app, config)
 ```
+
+这样即可确保在 SWC 模式下也能正常生成和使用 Swagger 文档。
 
 ## 与 `ts-jest` 集成（端到端测试）
 

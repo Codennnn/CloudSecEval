@@ -2,11 +2,11 @@ import swaggerResponseTypeImage from '/public/assets/swagger-response-type.png'
 
 # 操作
 
-在 OpenAPI 中，`paths` (路径) 是指 API 暴露的端点（例如 `/users` 或 `/reports/summary`），而 `操作` (`operations`) 则是用于处理这些路径的 HTTP 方法，例如 `GET`、`POST` 或 `DELETE`。
+在 OpenAPI 中，`paths` 是指 API 暴露的端点（例如 `/users` 或 `/reports/summary`），而 `operations` 则是用于处理这些路径的 HTTP 方法，例如 `GET`、`POST` 或 `DELETE`。
 
 ## 标签
 
-若要将控制器关联到特定标签，可以使用 `@ApiTags(...tags)` 装饰器。
+如果要将控制器关联到特定标签，可以使用 `@ApiTags(...tags)` 装饰器。
 
 ```ts
 @ApiTags('cats')
@@ -29,7 +29,7 @@ export class CatsController {}
 
 ## 响应
 
-你可以使用 `@ApiResponse()` 装饰器来为端点添加响应（Response）的详细描述。
+你可以使用 `@ApiResponse()` 装饰器来为端点添加响应的详细描述。
 
 ```ts
 @Post()
@@ -82,7 +82,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 
 #### 响应模型
 
-要让 Swagger UI 展示 API 响应的数据结构，你需要先定义一个模型（Model）或 DTO（Data Transfer Object）类，并使用 `@ApiProperty()` 装饰器注解其所有属性。
+要让 Swagger UI 展示 API 响应的数据结构，你需要先定义一个模型或 DTO 类，并使用 `@ApiProperty()` 装饰器注解其所有属性。
 
 ```ts
 export class Cat {
@@ -177,7 +177,7 @@ class FilesUploadDto {
 
 ## 进阶：构建通用的 `ApiResponse`
 
-我们可以通过提供[原始定义](/openapi/types-and-parameters#raw-definitions)的方式，为 Swagger UI 定义通用（或称"泛型"）的 Schema。假设有如下一个数据传输对象（DTO）：
+我们可以通过提供[原始定义](/openapi/types-and-parameters#raw-definitions)的方式，为 Swagger UI 定义通用（或称"泛型"）的 Schema。假设有如下一个 DTO：
 
 ```ts
 export class PaginatedDto<TData> {
