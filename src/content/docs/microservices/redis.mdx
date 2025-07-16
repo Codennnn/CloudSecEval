@@ -146,7 +146,7 @@ import { RedisContext, Payload, Ctx } from '@nestjs/microservices'
 
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RedisContext) {
-  console.log(`Channel: ${context.getChannel()}`);
+  console.log(`Channel: ${context.getChannel()}`)
 }
 ```
 
@@ -187,10 +187,10 @@ this.client.status.subscribe((status: RedisStatus) => {
 同样，你也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
 ```ts
-const server = app.connectMicroservice<MicroserviceOptions>(...);
+const server = app.connectMicroservice<MicroserviceOptions>(...)
 server.status.subscribe((status: RedisStatus) => {
-  console.log(status);
-});
+  console.log(status)
+})
 ```
 
 ## 监听 Redis 事件

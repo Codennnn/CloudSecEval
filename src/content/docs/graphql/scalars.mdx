@@ -76,7 +76,7 @@ export class CommonModule {}
 
 ```ts
 @Field()
-creationDate: Date;
+creationDate: Date
 ```
 
 ## 导入自定义标量类型
@@ -108,7 +108,7 @@ export class AppModule {}
 
 ```ts
 @Field(() => GraphQLJSON)
-info: JSON;
+info: JSON
 ```
 
 如果你需要更多实用的标量类型，可以参考 [graphql-scalars](https://www.npmjs.com/package/graphql-scalars) 包。
@@ -153,7 +153,7 @@ export class AppModule {}
 
 ```ts
 @Field(() => CustomUuidScalar)
-uuid: string;
+uuid: string
 ```
 
 ## 模式优先（Schema first）

@@ -142,7 +142,7 @@ export class UsersController {
 @Throttle({ default: { limit: 3, ttl: 60000 } })
 @Get()
 findAll() {
-  return '此接口使用自定义限流策略';
+  return '此接口使用自定义限流策略'
 }
 ```
 

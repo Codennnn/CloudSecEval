@@ -86,7 +86,7 @@ Nest 提供了一套常用的内置管道，用于在请求到达处理逻辑前
 ```ts
 @Get(':id')
 async findOne(@Param('id', ParseIntPipe) id: number) {
-  return this.catsService.findOne(id);
+  return this.catsService.findOne(id)
 }
 ```
 
@@ -121,7 +121,7 @@ async findOne(
   @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }))
   id: number,
 ) {
-  return this.catsService.findOne(id);
+  return this.catsService.findOne(id)
 }
 ```
 
@@ -132,7 +132,7 @@ async findOne(
 ```ts
 @Get()
 async findOne(@Query('id', ParseIntPipe) id: number) {
-  return this.catsService.findOne(id);
+  return this.catsService.findOne(id)
 }
 ```
 
@@ -141,7 +141,7 @@ async findOne(@Query('id', ParseIntPipe) id: number) {
 ```ts
 @Get(':uuid')
 async findOne(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
-  return this.catsService.findOne(uuid);
+  return this.catsService.findOne(uuid)
 }
 ```
 
@@ -212,7 +212,7 @@ export class ValidationPipe implements PipeTransform {
 ```ts
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 
@@ -523,7 +523,7 @@ export class ParseIntPipe implements PipeTransform<string, number> {
 ```ts
 @Get(':id')
 async findOne(@Param('id', new ParseIntPipe()) id: number) {
-  return this.catsService.findOne(id);
+  return this.catsService.findOne(id)
 }
 ```
 
@@ -532,7 +532,7 @@ async findOne(@Param('id', new ParseIntPipe()) id: number) {
 ```ts
 @Get(':id')
 findOne(@Param('id', UserByIdPipe) user: UserEntity) {
-  return user;
+  return user
 }
 ```
 
@@ -550,7 +550,7 @@ async findAll(
   @Query('activeOnly', new DefaultValuePipe(false), ParseBoolPipe) activeOnly: boolean,
   @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
 ) {
-  return this.catsService.findAll({ activeOnly, page });
+  return this.catsService.findAll({ activeOnly, page })
 }
 ```
 

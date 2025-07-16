@@ -330,7 +330,7 @@ import { JOB_REF } from '@nestjs/bullmq'
 import { Job } from 'bullmq'
 
 constructor(@Inject(JOB_REF) jobRef: Job) {
-  console.log(jobRef);
+  console.log(jobRef)
 }
 ```
 
@@ -891,8 +891,8 @@ constructor(@Inject(JOB_REF) jobRef: Job) {
 事件监听器必须声明在消费者类中（即，被 `@Processor()` 装饰器标记的类）。要监听某个事件，可以使用下表中的装饰器之一，在类中声明对应的事件处理方法。例如，若要监听 `audio` 队列中任务进入 active 状态时触发的事件，可以参考如下写法：
 
 ```ts
-import { Processor, Process, OnQueueActive } from '@nestjs/bull';
-import { Job } from 'bull';
+import { Processor, Process, OnQueueActive } from '@nestjs/bull'
+import { Job } from 'bull'
 
 @Processor('audio')
 export class AudioConsumer {
@@ -901,7 +901,7 @@ export class AudioConsumer {
   onActive(job: Job) {
     console.log(
       `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
-    );
+    )
   }
   ...
 ```
@@ -932,8 +932,8 @@ export class AudioConsumer {
 ```ts
 @OnGlobalQueueCompleted()
 async onGlobalCompleted(jobId: number, result: any) {
-  const job = await this.immediateQueue.getJob(jobId);
-  console.log('(Global) on completed: job ', job.id, ' -> result: ', result);
+  const job = await this.immediateQueue.getJob(jobId)
+  console.log('(Global) on completed: job ', job.id, ' -> result: ', result)
 }
 ```
 

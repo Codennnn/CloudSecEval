@@ -15,7 +15,7 @@
 ```ts
 @Field()
 @Extensions({ role: Role.ADMIN })
-password: string;
+password: string
 ```
 
 在上面的示例中，我们为 `role` 元数据属性赋值为 `Role.ADMIN`。`Role` 是一个简单的 TypeScript 枚举，用于归类系统中所有可用的用户角色。
@@ -56,5 +56,5 @@ export const checkRoleMiddleware: FieldMiddleware = async (
 ```ts
 @Field({ middleware: [checkRoleMiddleware] })
 @Extensions({ role: Role.ADMIN })
-password: string;
+password: string
 ```

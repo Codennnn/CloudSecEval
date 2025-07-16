@@ -66,7 +66,7 @@ import { MqttContext, Payload, Ctx } from '@nestjs/microservices'
 
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: MqttContext) {
-  console.log(`Topic: ${context.getTopic()}`);
+  console.log(`Topic: ${context.getTopic()}`)
 }
 ```
 
@@ -75,7 +75,7 @@ getNotifications(@Payload() data: number[], @Ctx() context: MqttContext) {
 ```ts
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: MqttContext) {
-  console.log(context.getPacket());
+  console.log(context.getPacket())
 }
 ```
 
@@ -86,7 +86,7 @@ getNotifications(@Payload() data: number[], @Ctx() context: MqttContext) {
 ```ts
 @MessagePattern('sensors/+/temperature/+')
 getTemperature(@Ctx() context: MqttContext) {
-  console.log(`Topic: ${context.getTopic()}`);
+  console.log(`Topic: ${context.getTopic()}`)
 }
 ```
 
@@ -118,12 +118,12 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(
 ```ts
 import { MqttRecordBuilder } from '@nestjs/microservices'
 
-const userProperties = { 'x-version': '1.0.0' };
+const userProperties = { 'x-version': '1.0.0' }
 const record = new MqttRecordBuilder(':cat:')
   .setProperties({ userProperties })
   .setQoS(1)
-  .build();
-client.send('replace-emoji', record).subscribe(...);
+  .build()
+client.send('replace-emoji', record).subscribe(...)
 ```
 
 在服务端，也可以通过访问 `MqttContext` 读取这些选项。
@@ -131,8 +131,8 @@ client.send('replace-emoji', record).subscribe(...);
 ```ts
 @MessagePattern('replace-emoji')
 replaceEmoji(@Payload() data: string, @Ctx() context: MqttContext): string {
-  const { properties: { userProperties } } = context.getPacket();
-  return userProperties['x-version'] === '1.0.0' ? '🐱' : '🐈';
+  const { properties: { userProperties } } = context.getPacket()
+  return userProperties['x-version'] === '1.0.0' ? '🐱' : '🐈'
 }
 ```
 
@@ -175,10 +175,10 @@ this.client.status.subscribe((status: MqttStatus) => {
 同样，你也可以订阅服务器的 `status` 流，以接收服务器状态的通知。
 
 ```ts
-const server = app.connectMicroservice<MicroserviceOptions>(...);
+const server = app.connectMicroservice<MicroserviceOptions>(...)
 server.status.subscribe((status: MqttStatus) => {
-  console.log(status);
-});
+  console.log(status)
+})
 ```
 
 ## 监听 MQTT 事件

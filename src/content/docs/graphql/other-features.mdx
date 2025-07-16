@@ -12,7 +12,7 @@ Nest 通过其跨平台特性（如[守卫](/guards)和[拦截器](/interceptors
 @Query('author')
 @UseGuards(AuthGuard)
 async getAuthor(@Args('id', ParseIntPipe) id: number) {
-  return this.authorsService.findOneById(id);
+  return this.authorsService.findOneById(id)
 }
 ```
 
@@ -22,7 +22,7 @@ async getAuthor(@Args('id', ParseIntPipe) id: number) {
 @Mutation()
 @UseInterceptors(EventsInterceptor)
 async upvotePost(@Args('postId') postId: number) {
-  return this.postsService.upvoteById({ id: postId });
+  return this.postsService.upvoteById({ id: postId })
 }
 ```
 

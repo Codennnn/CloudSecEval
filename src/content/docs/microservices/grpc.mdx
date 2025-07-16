@@ -253,7 +253,7 @@ interface HeroesService {
 ```ts filename='heroes.controller.ts'
 @Get()
 call(): Observable<any> {
-  return this.heroesService.findOne({ id: 1 });
+  return this.heroesService.findOne({ id: 1 })
 }
 ```
 
@@ -263,10 +263,10 @@ call(): Observable<any> {
 import { Metadata } from 'grpc'
 
 call(): Observable<any> {
-  const metadata = new Metadata();
-  metadata.add('Set-Cookie', 'yummy_cookie=choco');
+  const metadata = new Metadata()
+  metadata.add('Set-Cookie', 'yummy_cookie=choco')
 
-  return this.heroesService.findOne({ id: 1 }, metadata);
+  return this.heroesService.findOne({ id: 1 }, metadata)
 }
 ```
 
@@ -372,21 +372,21 @@ interface HelloResponse {
 ```ts
 @GrpcStreamMethod()
 bidiHello(messages: Observable<any>, metadata: Metadata, call: ServerDuplexStream<any, any>): Observable<any> {
-  const subject = new Subject();
+  const subject = new Subject()
 
   const onNext = message => {
-    console.log(message);
+    console.log(message)
     subject.next({
       reply: 'Hello, world!'
-    });
-  };
-  const onComplete = () => subject.complete();
+    })
+  }
+  const onComplete = () => subject.complete()
   messages.subscribe({
     next: onNext,
     complete: onComplete,
-  });
+  })
 
-  return subject.asObservable();
+  return subject.asObservable()
 }
 ```
 
@@ -429,11 +429,11 @@ return helloService.bidiHello(helloRequest$)
 @GrpcStreamCall()
 bidiHello(requestStream: any) {
   requestStream.on('data', message => {
-    console.log(message);
+    console.log(message)
     requestStream.write({
       reply: 'Hello, world!'
-    });
-  });
+    })
+  })
 }
 ```
 
@@ -449,9 +449,9 @@ bidiHello(requestStream: any) {
 @GrpcStreamCall()
 lotsOfGreetings(requestStream: any, callback: (err: unknown, value: HelloResponse) => void) {
   requestStream.on('data', message => {
-    console.log(message);
-  });
-  requestStream.on('end', () => callback(null, { reply: 'Hello, world!' }));
+    console.log(message)
+  })
+  requestStream.on('end', () => callback(null, { reply: 'Hello, world!' }))
 }
 ```
 
@@ -470,7 +470,7 @@ npm install grpc-health-check
 然后，可以通过在 gRPC 服务器选项中的 `onLoadPackageDefinition` 钩子（hook）将其集成到 gRPC 服务中。请注意，`protoPath` 需要同时包含健康检查和 hero 包。
 
 ```ts filename='main.ts'
-import { HealthImplementation, protoPath as healthCheckProtoPath } from 'grpc-health-check';
+import { HealthImplementation, protoPath as healthCheckProtoPath } from 'grpc-health-check'
 
 const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   options: {
@@ -481,10 +481,10 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule,
     onLoadPackageDefinition: (pkg, server) => {
       const healthImpl = new HealthImplementation({
         '': 'UNKNOWN',
-      });
+      })
 
-      healthImpl.addToServer(server);
-      healthImpl.setStatus('', 'SERVING');
+      healthImpl.addToServer(server)
+      healthImpl.setStatus('', 'SERVING')
     },
   },
 })

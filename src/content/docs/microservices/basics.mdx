@@ -164,7 +164,7 @@ export class MathController {
 ```ts
 @MessagePattern({ cmd: 'sum' })
 async accumulate(data: number[]): Promise<number> {
-  return (data || []).reduce((a, b) => a + b);
+  return (data || []).reduce((a, b) => a + b)
 }
 ```
 
@@ -173,7 +173,7 @@ async accumulate(data: number[]): Promise<number> {
 ```ts
 @MessagePattern({ cmd: 'sum' })
 accumulate(data: number[]): Observable<number> {
-  return from([1, 2, 3]);
+  return from([1, 2, 3])
 }
 ```
 
@@ -211,8 +211,8 @@ import { NatsContext, Payload, Ctx } from '@nestjs/microservices'
 
 @MessagePattern('time.us.*')
 getDate(@Payload() data: number[], @Ctx() context: NatsContext) {
-  console.log(`Subject: ${context.getSubject()}`); // 例如 "time.us.east"
-  return new Date().toLocaleTimeString(...);
+  console.log(`Subject: ${context.getSubject()}`) // 例如 "time.us.east"
+  return new Date().toLocaleTimeString(...)
 }
 ```
 
@@ -287,8 +287,8 @@ import { ClientProxyFactory } from '@nestjs/microservices'
     {
       provide: 'MATH_SERVICE',
       useFactory: (configService: ConfigService) => {
-        const mathSvcOptions = configService.getMathSvcOptions();
-        return ClientProxyFactory.create(mathSvcOptions);
+        const mathSvcOptions = configService.getMathSvcOptions()
+        return ClientProxyFactory.create(mathSvcOptions)
       },
       inject: [ConfigService],
     }
@@ -303,7 +303,7 @@ import { ClientProxyFactory } from '@nestjs/microservices'
 import { Client, Transport } from '@nestjs/microservices'
 
 @Client({ transport: Transport.TCP })
-client: ClientProxy;
+client: ClientProxy
 ```
 
 不推荐使用 `@Client()` 装饰器，因为这样更难进行测试，也不便于共享客户端实例。
@@ -312,7 +312,7 @@ client: ClientProxy;
 
 ```ts
 async onApplicationBootstrap() {
-  await this.client.connect();
+  await this.client.connect()
 }
 ```
 
@@ -324,9 +324,9 @@ async onApplicationBootstrap() {
 
 ```ts
 accumulate(): Observable<number> {
-  const pattern = { cmd: 'sum' };
-  const payload = [1, 2, 3];
-  return this.client.send<number>(pattern, payload);
+  const pattern = { cmd: 'sum' }
+  const payload = [1, 2, 3]
+  return this.client.send<number>(pattern, payload)
 }
 ```
 
@@ -338,7 +338,7 @@ accumulate(): Observable<number> {
 
 ```ts
 async publish() {
-  this.client.emit<number>('user_created', new UserCreatedEvent());
+  this.client.emit<number>('user_created', new UserCreatedEvent())
 }
 ```
 
@@ -388,10 +388,10 @@ this.client.status.subscribe((status: TcpStatus) => {
 同样，你也可以订阅服务器的 `status` 流，以接收关于服务器状态的通知。
 
 ```ts
-const server = app.connectMicroservice<MicroserviceOptions>(...);
+const server = app.connectMicroservice<MicroserviceOptions>(...)
 server.status.subscribe((status: TcpStatus) => {
-  console.log(status);
-});
+  console.log(status)
+})
 ```
 
 ## 监听内部事件

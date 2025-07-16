@@ -75,7 +75,7 @@ npm install @nestjs/websockets @nestjs/platform-socket.io
 ```ts filename='events.gateway.ts'
 @SubscribeMessage('events')
 handleEvent(@MessageBody() data: string): string {
-  return data;
+  return data
 }
 ```
 
@@ -102,7 +102,7 @@ export class EventsModule {}
 @SubscribeMessage('events')
 handleEvent(@MessageBody('id') id: number): number {
   // id === messageBody.id
-  return id;
+  return id
 }
 ```
 
@@ -111,7 +111,7 @@ handleEvent(@MessageBody('id') id: number): number {
 ```ts filename='events.gateway.ts'
 @SubscribeMessage('events')
 handleEvent(client: Socket, data: string): string {
-  return data;
+  return data
 }
 ```
 
@@ -125,7 +125,7 @@ handleEvent(
   @MessageBody() data: string,
   @ConnectedSocket() client: Socket,
 ): string {
-  return data;
+  return data
 }
 ```
 
@@ -154,8 +154,8 @@ socket.emit('events', { name: 'Nest' }, (data) => console.log(data))
 ```ts filename='events.gateway.ts'
 @SubscribeMessage('events')
 handleEvent(@MessageBody() data: unknown): WsResponse<unknown> {
-  const event = 'events';
-  return { event, data };
+  const event = 'events'
+  return { event, data }
 }
 ```
 
@@ -181,12 +181,12 @@ socket.on('events', (data) => console.log(data))
 ```ts filename='events.gateway.ts'
 @SubscribeMessage('events')
 onEvent(@MessageBody() data: unknown): Observable<WsResponse<number>> {
-  const event = 'events';
-  const response = [1, 2, 3];
+  const event = 'events'
+  const response = [1, 2, 3]
 
   return from(response).pipe(
     map(data => ({ event, data })),
-  );
+  )
 }
 ```
 
@@ -212,14 +212,14 @@ NestJS 提供了 3 个非常实用的生命周期钩子。它们都有对应的�
 
 ```ts
 @WebSocketServer()
-server: Server;
+server: Server
 ```
 
 你也可以通过 `namespace` 属性获取对应的命名空间，示例如下：
 
 ```ts
 @WebSocketServer({ namespace: 'my-namespace' })
-namespace: Namespace;
+namespace: Namespace
 ```
 
 <CalloutInfo>

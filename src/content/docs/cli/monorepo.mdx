@@ -7,9 +7,9 @@ Nest 提供了两种主要的代码组织方式，分别适用于不同规模和
 
 在 Monorepo 模式中，Nest 引入了**工作空间**（Workspace）的概念，用于协调多个项目之间的关系。这一配置通过 `nest-cli.json` 文件实现。
 
-需要注意的是：Nest 的大部分核心功能与所选的组织模式无关。CLI 命令、核心模块以及大多数生态模块在两种模式下均可无缝使用。两者的**唯一差异**在于项目如何组合及其构建产物的生成方式。
+需要注意的是，Nest 的大部分核心功能与所选的组织模式无关。CLI 命令、核心模块以及大多数生态模块在两种模式下均可无缝使用。两者的**唯一差异**在于项目如何组合及其构建产物的生成方式。
 
-你也无需一开始就采用 Monorepo 模式。Nest 支持从标准模式平滑迁移到 Monorepo，因此可以根据项目的发展需求灵活切换。
+你也无需一开始就采用 Monorepo 模式，Nest 支持从标准模式平滑迁移到 Monorepo，因此可以根据项目的发展需求灵活切换。
 
 ## 标准模式
 
@@ -19,11 +19,11 @@ Nest 提供了两种主要的代码组织方式，分别适用于不同规模和
 2. 在该目录中生成一套最小化的 Nest 应用结构。你可以在官方示例项目 [typescript-starter](https://github.com/nestjs/typescript-starter) 中查看对应的目录与文件；
 3. 同时生成包括 `nest-cli.json`、`package.json` 和 `tsconfig.json` 在内的配置文件，用于支持构建、测试和开发流程。
 
-从这个基础结构出发，你可以修改默认代码、添加新模块组件、安装所需依赖（例如执行 npm install），并按照文档继续构建你的应用。
+从这个基础结构出发，你可以修改默认代码、添加新模块组件、安装所需依赖（例如执行 `npm install`），并按照文档继续构建你的应用。
 
 ## Monorepo 模式
 
-要启用 Monorepo 模式，首先需要从一个标准模式的 Nest 项目开始，然后在其基础上新增一个项目。这个新项目可以是一个完整的**应用**（Application）（通过 nest generate app 创建），也可以是一个可复用的**库**（Library）（通过 `nest generate library` 创建）。我们将在后文详细介绍这两类项目的用途与差异。
+要启用 Monorepo 模式，首先需要从一个标准模式的 Nest 项目开始，然后在其基础上新增一个项目。这个新项目可以是一个完整的**应用**（通过 `nest generate app` 创建），也可以是一个可复用的**库**（通过 `nest generate library` 创建）。我们将在后文详细介绍这两类项目的用途与差异。
 
 这里的关键在于：**一旦向标准项目中添加新项目，Nest CLI 会自动将其结构转换为 Monorepo 模式**。
 
@@ -109,7 +109,7 @@ nest generate app my-app
   ]}
 />
 
-可以看到，CLI 工具将每个应用都移动到了 `apps` 目录下，并为每个应用单独生成了一个 `tsconfig.app.json` 配置文件。原先的 `my-project` 也被归类为一个应用，和新添加的 `my-app` 并列存在，二者共同组成了 Monorepo 项目结构，其中 `my-project` 会被默认识别为默认应用（default project）。我们将在后续内容中进一步解释默认项目的含义与用途。
+可以看到，CLI 工具将每个应用都移动到了 `apps` 目录下，并为每个应用单独生成了一个 `tsconfig.app.json` 配置文件。原先的 `my-project` 也被归类为一个应用，和新添加的 `my-app` 并列存在，二者共同组成了 Monorepo 项目结构，其中 `my-project` 会被默认识别为默认项目。我们将在后续内容中进一步解释默认项目的含义和用途。
 
 <CalloutInfo type="warning">
   请注意，**只有遵循标准 Nest 项目结构的工程，才能顺利迁移至 Monorepo

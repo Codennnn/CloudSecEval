@@ -29,13 +29,13 @@ const file: Express.Multer.File
 要实现单文件上传，你只需在控制器方法中使用 `FileInterceptor()` 拦截器，并通过 `@UploadedFile()` 装饰器提取上传的文件对象：
 
 ```ts
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express'
+import { Post, UploadedFile, UseInterceptors } from '@nestjs/common'
 
 @Post('upload')
 @UseInterceptors(FileInterceptor('file'))
 uploadFile(@UploadedFile() file: Express.Multer.File) {
-  console.log(file);
+  console.log(file)
 }
 ```
 
@@ -82,7 +82,7 @@ uploadFileAndValidate(
     // 这里还可以添加其他管道
   ) file: Express.Multer.File,
 ) {
-  return file;
+  return file
 }
 ```
 
@@ -104,7 +104,7 @@ uploadFileAndPassValidation(
   return {
     body,
     file: file.buffer.toString(),
-  };
+  }
 }
 ```
 
@@ -207,7 +207,7 @@ file: Express.Multer.File,
 @Post('upload')
 @UseInterceptors(FilesInterceptor('files'))
 uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-  console.log(files);
+  console.log(files)
 }
 ```
 
@@ -236,11 +236,11 @@ uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
 uploadFile(
   @UploadedFiles()
   files: {
-    avatar?: Express.Multer.File[];
-    background?: Express.Multer.File[];
+    avatar?: Express.Multer.File[]
+    background?: Express.Multer.File[]
   },
 ) {
-  console.log(files);
+  console.log(files)
 }
 ```
 
@@ -256,7 +256,7 @@ uploadFile(
 @Post('upload')
 @UseInterceptors(AnyFilesInterceptor())
 uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-  console.log(files);
+  console.log(files)
 }
 ```
 

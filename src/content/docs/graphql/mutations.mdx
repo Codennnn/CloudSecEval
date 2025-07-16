@@ -11,7 +11,7 @@
 ```ts
 @Mutation(() => Post)
 async upvotePost(@Args({ name: 'postId', type: () => Int }) postId: number) {
-  return this.postsService.upvoteById({ id: postId });
+  return this.postsService.upvoteById({ id: postId })
 }
 ```
 
@@ -65,7 +65,7 @@ async upvotePost(
 ```ts
 @Mutation()
 async upvotePost(@Args('postId') postId: number) {
-  return this.postsService.upvoteById({ id: postId });
+  return this.postsService.upvoteById({ id: postId })
 }
 ```
 

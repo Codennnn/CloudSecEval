@@ -271,7 +271,7 @@ export class LocalAuthGuard extends AuthGuard('local') {}
 @UseGuards(LocalAuthGuard)
 @Post('auth/login')
 async login(@Request() req) {
-  return req.user;
+  return req.user
 }
 ```
 
@@ -618,7 +618,7 @@ export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
 @Public()
 @Get()
 findAll() {
-  return [];
+  return []
 }
 ```
 
@@ -653,12 +653,12 @@ Passport API 的核心机制是将策略注册为全局单例。因此，策略�
 首先，打开 `local.strategy.ts` 文件，并以常规方式注入 `ModuleRef`：
 
 ```ts
-import { ModuleRef } from '@nestjs/core';
+import { ModuleRef } from '@nestjs/core'
 
 constructor(private moduleRef: ModuleRef) {
   super({
     passReqToCallback: true,
-  });
+  })
 }
 ```
 
@@ -674,9 +674,9 @@ async validate(
   username: string,
   password: string,
 ) {
-  const contextId = ContextIdFactory.getByRequest(request);
+  const contextId = ContextIdFactory.getByRequest(request)
   // 假设 AuthService 是一个请求作用域提供者
-  const authService = await this.moduleRef.resolve(AuthService, contextId);
+  const authService = await this.moduleRef.resolve(AuthService, contextId)
   ...
 }
 ```
@@ -698,7 +698,7 @@ constructor(private authService: AuthService) {
   super({
     usernameField: 'email',
     passwordField: 'password',
-  });
+  })
 }
 ```
 
@@ -748,7 +748,7 @@ export const CurrentUser = createParamDecorator(
 @Query(() => User)
 @UseGuards(GqlAuthGuard)
 whoAmI(@CurrentUser() user: User) {
-  return this.usersService.findById(user.id);
+  return this.usersService.findById(user.id)
 }
 ```
 

@@ -112,7 +112,7 @@ await app.register(secureSession, {
 ```ts
 @Get()
 findAll(@Req() request: FastifyRequest) {
-  const visits = request.session.get('visits');
+  const visits = request.session.get('visits')
   request.session.set('visits', visits ? visits + 1 : 1)
 }
 ```
@@ -125,7 +125,7 @@ import * as secureSession from '@fastify/secure-session'
 
 @Get()
 findAll(@Session() session: secureSession.Session) {
-  const visits = session.get('visits');
+  const visits = session.get('visits')
   session.set('visits', visits ? visits + 1 : 1)
 }
 ```

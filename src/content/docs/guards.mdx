@@ -228,7 +228,7 @@ export const Roles = Reflector.createDecorator<string[]>()
 @Post()
 @Roles(['admin'])
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 

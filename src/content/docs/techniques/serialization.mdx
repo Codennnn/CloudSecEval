@@ -53,7 +53,7 @@ findOne(): UserEntity {
     firstName: 'John',
     lastName: 'Doe',
     password: 'password',
-  });
+  })
 }
 ```
 
@@ -80,7 +80,7 @@ findOne(): UserEntity {
 ```ts
 @Expose()
 get fullName(): string {
-  return `${this.firstName} ${this.lastName}`;
+  return `${this.firstName} ${this.lastName}`
 }
 ```
 
@@ -130,7 +130,7 @@ findOne(@Query() { id }: { id: number }): UserEntity {
       firstName: 'John',
       lastName: 'Doe',
       password: 'password',
-    };
+    }
   }
 
   return {
@@ -138,7 +138,7 @@ findOne(@Query() { id }: { id: number }): UserEntity {
     firstName: 'Kamil',
     lastName: 'Mysliwiec',
     password: 'password2',
-  };
+  }
 }
 ```
 

@@ -94,7 +94,7 @@ import { RmqContext, Payload, Ctx } from '@nestjs/microservices'
 
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  console.log(`Pattern: ${context.getPattern()}`);
+  console.log(`Pattern: ${context.getPattern()}`)
 }
 ```
 
@@ -103,7 +103,7 @@ getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
 ```ts
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  console.log(context.getMessage());
+  console.log(context.getMessage())
 }
 ```
 
@@ -112,7 +112,7 @@ getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
 ```ts
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  console.log(context.getChannelRef());
+  console.log(context.getChannelRef())
 }
 ```
 
@@ -138,10 +138,10 @@ options: {
 ```ts
 @MessagePattern('notifications')
 getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
-  const channel = context.getChannelRef();
-  const originalMsg = context.getMessage();
+  const channel = context.getChannelRef()
+  const originalMsg = context.getMessage()
 
-  channel.ack(originalMsg);
+  channel.ack(originalMsg)
 }
 ```
 
@@ -152,7 +152,7 @@ getNotifications(@Payload() data: number[], @Ctx() context: RmqContext) {
 ```ts
 import { RmqRecordBuilder } from '@nestjs/microservices'
 
-const message = ':cat:';
+const message = ':cat:'
 const record = new RmqRecordBuilder(message)
   .setOptions({
     headers: {
@@ -160,9 +160,9 @@ const record = new RmqRecordBuilder(message)
     },
     priority: 3,
   })
-  .build();
+  .build()
 
-this.client.send('replace-emoji', record).subscribe(...);
+this.client.send('replace-emoji', record).subscribe(...)
 ```
 
 你也可以在服务端通过访问 `RmqContext` 读取这些值，示例如下：
@@ -170,8 +170,8 @@ this.client.send('replace-emoji', record).subscribe(...);
 ```ts
 @MessagePattern('replace-emoji')
 replaceEmoji(@Payload() data: string, @Ctx() context: RmqContext): string {
-  const { properties: { headers } } = context.getMessage();
-  return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
+  const { properties: { headers } } = context.getMessage()
+  return headers['x-version'] === '1.0.0' ? '🐱' : '🐈'
 }
 ```
 
@@ -190,10 +190,10 @@ this.client.status.subscribe((status: RmqStatus) => {
 同样地，你也可以订阅服务端的 `status` 流，以便接收服务端状态的通知。
 
 ```ts
-const server = app.connectMicroservice<MicroserviceOptions>(...);
+const server = app.connectMicroservice<MicroserviceOptions>(...)
 server.status.subscribe((status: RmqStatus) => {
-  console.log(status);
-});
+  console.log(status)
+})
 ```
 
 ## 监听 RabbitMQ 事件

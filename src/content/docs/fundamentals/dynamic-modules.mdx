@@ -418,10 +418,10 @@ export class AppModule {}
 
 ```ts
 {
-  useClass?: Type<ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>>;
-  useFactory?: (...args: any[]) => ModuleOptions | Promise<ModuleOptions>;
-  inject?: FactoryProvider['inject'];
-  useExisting?: Type<ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>>;
+  useClass?: Type<ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>>
+  useFactory?: (...args: any[]) => ModuleOptions | Promise<ModuleOptions>
+  inject?: FactoryProvider['inject']
+  useExisting?: Type<ConfigurableModuleOptionsFactory<ModuleOptions, FactoryClassMethodKey>>
 }
 ```
 

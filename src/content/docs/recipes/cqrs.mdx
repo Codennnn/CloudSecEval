@@ -319,7 +319,7 @@ providers: [HeroesGameSagas]
 事件处理器是异步执行的，因此必须始终妥善处理异常，以防止应用进入不一致的状态。如果异常未被处理，`EventBus` 会创建一个 `UnhandledExceptionInfo` 对象，并将其发布到 `UnhandledExceptionBus` 这个 `Observable` 流中。之后，你便可以订阅此流来处理未捕获的异常。
 
 ```ts
-private destroy$ = new Subject<void>();
+private destroy$ = new Subject<void>()
 
 constructor(private unhandledExceptionsBus: UnhandledExceptionBus) {
   this.unhandledExceptionsBus
@@ -327,12 +327,12 @@ constructor(private unhandledExceptionsBus: UnhandledExceptionBus) {
     .subscribe((exceptionInfo) => {
       // 在此处处理异常
       // 例如：发送到外部服务、终止进程或发布新事件
-    });
+    })
 }
 
 onModuleDestroy() {
-  this.destroy$.next();
-  this.destroy$.complete();
+  this.destroy$.next()
+  this.destroy$.complete()
 }
 ```
 
@@ -374,19 +374,19 @@ export interface UnhandledExceptionInfo<
 `CommandBus`、`QueryBus` 和 `EventBus` 都是**可观察对象**。这意味着我们可以订阅整个事件流，例如处理所有事件。比如，我们可以将所有事件记录到控制台，或者保存到事件存储中。
 
 ```ts
-private destroy$ = new Subject<void>();
+private destroy$ = new Subject<void>()
 
 constructor(private eventBus: EventBus) {
   this.eventBus
     .pipe(takeUntil(this.destroy$))
     .subscribe((event) => {
       // 将事件保存到数据库
-    });
+    })
 }
 
 onModuleDestroy() {
-  this.destroy$.next();
-  this.destroy$.complete();
+  this.destroy$.next()
+  this.destroy$.complete()
 }
 ```
 
@@ -492,13 +492,13 @@ dragonKilled = (events$: Observable<any>): Observable<ICommand> => {
   return events$.pipe(
     ofType(HeroKilledDragonEvent),
     map((event) => {
-      const request = AsyncContext.of(event); // 获取请求上下文
-      const command = new DropAncientItemCommand(event.heroId, fakeItemID);
+      const request = AsyncContext.of(event) // 获取请求上下文
+      const command = new DropAncientItemCommand(event.heroId, fakeItemID)
 
-      AsyncContext.merge(request, command); // 将请求上下文合并到命令中
-      return command;
+      AsyncContext.merge(request, command) // 将请求上下文合并到命令中
+      return command
     }),
-  );
+  )
 }
 ```
 

@@ -16,7 +16,7 @@ WebSocket 守卫与[常规 HTTP 应用守卫](/guards)在本质上没有区别�
 @UseGuards(AuthGuard)
 @SubscribeMessage('events')
 handleEvent(client: Client, data: unknown): WsResponse<unknown> {
-  const event = 'events';
-  return { event, data };
+  const event = 'events'
+  return { event, data }
 }
 ```

@@ -86,7 +86,7 @@ type Subscription {
   name: 'commentAdded',
 })
 subscribeToCommentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -128,7 +128,7 @@ type Subscription {
     payload.commentAdded.title === variables.title,
 })
 commentAdded(@Args('title') title: string) {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -141,7 +141,7 @@ commentAdded(@Args('title') title: string) {
   resolve: value => value,
 })
 commentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -155,11 +155,11 @@ commentAdded() {
 @Subscription(() => Comment, {
   resolve(this: AuthorResolver, value) {
     // "this" 指向 "AuthorResolver" 的实例
-    return value;
+    return value
   }
 })
 commentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -169,11 +169,11 @@ commentAdded() {
 @Subscription(() => Comment, {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
-    return payload.commentAdded.title === variables.title;
+    return payload.commentAdded.title === variables.title
   }
 })
 commentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -202,7 +202,7 @@ export class AuthorResolver {
     payload.commentAdded.title === variables.title,
 })
 commentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -213,7 +213,7 @@ commentAdded() {
   resolve: value => value,
 })
 commentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -223,11 +223,11 @@ commentAdded() {
 @Subscription('commentAdded', {
   resolve(this: AuthorResolver, value) {
     // "this" 指向 "AuthorResolver" 的实例
-    return value;
+    return value
   }
 })
 commentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -237,11 +237,11 @@ commentAdded() {
 @Subscription('commentAdded', {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
-    return payload.commentAdded.title === variables.title;
+    return payload.commentAdded.title === variables.title
   }
 })
 commentAdded() {
-  return pubSub.asyncIterableIterator('commentAdded');
+  return pubSub.asyncIterableIterator('commentAdded')
 }
 ```
 
@@ -328,14 +328,14 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
   subscriptions: {
     'subscriptions-transport-ws': {
       onConnect: (connectionParams) => {
-        const authToken = connectionParams.authToken;
+        const authToken = connectionParams.authToken
         if (!isValid(authToken)) {
-          throw new Error('Token is not valid');
+          throw new Error('Token is not valid')
         }
         // 从令牌中提取用户信息
-        const user = parseToken(authToken);
+        const user = parseToken(authToken)
         // 返回用户信息，稍后会添加到上下文中
-        return { user };
+        return { user }
       },
     }
   },
@@ -435,7 +435,7 @@ type Subscription {
   name: 'commentAdded',
 })
 subscribeToCommentAdded(@Context('pubsub') pubSub: PubSub) {
-  return pubSub.subscribe('commentAdded');
+  return pubSub.subscribe('commentAdded')
 }
 ```
 
@@ -485,7 +485,7 @@ type Subscription {
     payload.commentAdded.title === variables.title,
 })
 commentAdded(@Args('title') title: string, @Context('pubsub') pubSub: PubSub) {
-  return pubSub.subscribe('commentAdded');
+  return pubSub.subscribe('commentAdded')
 }
 ```
 
@@ -495,11 +495,11 @@ commentAdded(@Args('title') title: string, @Context('pubsub') pubSub: PubSub) {
 @Subscription(() => Comment, {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
-    return payload.commentAdded.title === variables.title;
+    return payload.commentAdded.title === variables.title
   }
 })
 commentAdded(@Args('title') title: string, @Context('pubsub') pubSub: PubSub) {
-  return pubSub.subscribe('commentAdded');
+  return pubSub.subscribe('commentAdded')
 }
 ```
 
@@ -528,7 +528,7 @@ export class AuthorResolver {
     payload.commentAdded.title === variables.title,
 })
 commentAdded(@Context('pubsub') pubSub: PubSub) {
-  return pubSub.subscribe('commentAdded');
+  return pubSub.subscribe('commentAdded')
 }
 ```
 
@@ -538,11 +538,11 @@ commentAdded(@Context('pubsub') pubSub: PubSub) {
 @Subscription('commentAdded', {
   filter(this: AuthorResolver, payload, variables) {
     // "this" 指向 "AuthorResolver" 的实例
-    return payload.commentAdded.title === variables.title;
+    return payload.commentAdded.title === variables.title
   }
 })
 commentAdded(@Context('pubsub') pubSub: PubSub) {
-  return pubSub.subscribe('commentAdded');
+  return pubSub.subscribe('commentAdded')
 }
 ```
 
@@ -606,11 +606,11 @@ GraphQLModule.forRoot<MercuriusDriverConfig>({
   driver: MercuriusDriver,
   subscription: {
     verifyClient: (info, next) => {
-      const authorization = info.req.headers?.authorization as string;
+      const authorization = info.req.headers?.authorization as string
       if (!authorization?.startsWith('Bearer ')) {
-        return next(false);
+        return next(false)
       }
-      next(true);
+      next(true)
     },
   }
 }),

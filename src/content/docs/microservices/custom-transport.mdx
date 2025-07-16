@@ -92,7 +92,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(
 ```ts
 @MessagePattern('echo')
 echo(@Payload() data: object) {
-  return data;
+  return data
 }
 ```
 
@@ -101,8 +101,8 @@ echo(@Payload() data: object) {
 
 ```ts
 listen(callback: () => void) {
-  console.log(this.messageHandlers);
-  callback();
+  console.log(this.messageHandlers)
+  callback()
 }
 ```
 
@@ -122,9 +122,9 @@ Map { 'echo' => [AsyncFunction] { isEventHandler: false } }
 
 ```ts
 async listen(callback: () => void) {
-  const echoHandler = this.messageHandlers.get('echo');
-  console.log(await echoHandler('Hello world!'));
-  callback();
+  const echoHandler = this.messageHandlers.get('echo')
+  console.log(await echoHandler('Hello world!'))
+  callback()
 }
 ```
 
@@ -142,12 +142,12 @@ Hello world!
 
 ```ts
 async listen(callback: () => void) {
-  const echoHandler = this.messageHandlers.get('echo');
-  const streamOrResult = await echoHandler('Hello World');
+  const echoHandler = this.messageHandlers.get('echo')
+  const streamOrResult = await echoHandler('Hello World')
   if (isObservable(streamOrResult)) {
-    streamOrResult.subscribe();
+    streamOrResult.subscribe()
   }
-  callback();
+  callback()
 }
 ```
 

@@ -107,8 +107,8 @@ export class CatsService implements OnModuleInit {
 如果你需要在这种手动创建的上下文中使用 `REQUEST` 提供者，可以通过调用 `ModuleRef#registerRequestByContextId()` 方法，显式注册一个自定义的请求对象：
 
 ```ts
-const contextId = ContextIdFactory.create();
-this.moduleRef.registerRequestByContextId(/* YOUR_REQUEST_OBJECT */, contextId);
+const contextId = ContextIdFactory.create()
+this.moduleRef.registerRequestByContextId(/* YOUR_REQUEST_OBJECT */, contextId)
 ```
 
 ## 获取当前请求的上下文

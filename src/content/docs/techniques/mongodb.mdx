@@ -62,32 +62,32 @@ export const CatSchema = SchemaFactory.createForClass(Cat)
 
 ```ts
 @Prop([String])
-tags: string[];
+tags: string[]
 ```
 
 另外，`@Prop()` 装饰器也可以接收一个选项对象作为参数（[详细选项说明请参见官方文档](https://mongoosejs.com/docs/schematypes.html#schematype-options)）。通过该对象，你可以指定属性是否为必填项、设置默认值，或将其标记为不可变。示例：
 
 ```ts
 @Prop({ required: true })
-name: string;
+name: string
 ```
 
 如果你希望指定与其他模型的关联（便于后续进行数据填充），同样可以使用 `@Prop()` 装饰器。例如，假设 `Cat` 拥有一个 `Owner`，而 `Owner` 存储在名为 `owners` 的另一个集合中，则该属性应包含类型和引用。示例：
 
 ```ts
-import * as mongoose from 'mongoose';
-import { Owner } from '../owners/schemas/owner.schema';
+import * as mongoose from 'mongoose'
+import { Owner } from '../owners/schemas/owner.schema'
 
 // 在类定义内部
 @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Owner' })
-owner: Owner;
+owner: Owner
 ```
 
 如果存在多个 owner，你的属性配置应如下所示：
 
 ```ts
 @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Owner' }] })
-owners: Owner[];
+owners: Owner[]
 ```
 
 如果你并不打算每次都填充（populate）对另一个集合的引用，建议将类型声明为 `mongoose.Types.ObjectId`：
@@ -95,17 +95,17 @@ owners: Owner[];
 ```ts
 @Prop({ type: { type: mongoose.Schema.Types.ObjectId, ref: 'Owner' } })
 // 这样可以确保该字段不会与已填充的引用混淆
-owner: mongoose.Types.ObjectId;
+owner: mongoose.Types.ObjectId
 ```
 
 然后，当你需要在后续有选择性地进行关联填充时，可以使用仓库（repository）函数并指定正确的类型：
 
 ```ts
-import { Owner } from './schemas/owner.schema';
+import { Owner } from './schemas/owner.schema'
 
 // 例如，在服务（Service）或仓库中
 async findAllPopulated() {
-  return this.catModel.find().populate<{ owner: Owner }>("owner");
+  return this.catModel.find().populate<{ owner: Owner }>("owner")
 }
 ```
 
@@ -123,7 +123,7 @@ async findAllPopulated() {
   firstName: { type: String },
   lastName: { type: String }
 }))
-details: Record<string, any>;
+details: Record<string, any>
 ```
 
 另外，如果你**不想使用装饰器**，也可以手动定义模式。例如：
@@ -275,7 +275,7 @@ export class CatsService {
 {
   provide: CatsService,
   useFactory: (catsConnection: Connection) => {
-    return new CatsService(catsConnection);
+    return new CatsService(catsConnection)
   },
   inject: [getConnectionToken('cats')],
 }
@@ -324,13 +324,13 @@ export class AppModule {}
         name: Cat.name,
         imports: [ConfigModule],
         useFactory: (configService: ConfigService) => {
-          const schema = CatsSchema;
+          const schema = CatsSchema
           schema.pre('save', function() {
             console.log(
               `${configService.get('APP_NAME')}: Hello from pre save`,
             ),
-          });
-          return schema;
+          })
+          return schema
         },
         inject: [ConfigService],
       },
@@ -551,13 +551,13 @@ MongooseModule.forRootAsync({
 ```ts
 MongooseModule.forRoot('mongodb://localhost/test', {
   onConnectionCreate: (connection: Connection) => {
-    connection.on('connected', () => console.log('connected'));
-    connection.on('open', () => console.log('open'));
-    connection.on('disconnected', () => console.log('disconnected'));
-    connection.on('reconnected', () => console.log('reconnected'));
-    connection.on('disconnecting', () => console.log('disconnecting'));
+    connection.on('connected', () => console.log('connected'))
+    connection.on('open', () => console.log('open'))
+    connection.on('disconnected', () => console.log('disconnected'))
+    connection.on('reconnected', () => console.log('reconnected'))
+    connection.on('disconnecting', () => console.log('disconnecting'))
 
-    return connection;
+    return connection
   },
 }),
 ```
@@ -578,7 +578,7 @@ MongooseModule.forRootAsync({
     uri: 'mongodb://localhost/test',
     onConnectionCreate: (connection: Connection) => {
       // 在这里注册事件监听器
-      return connection;
+      return connection
     },
   }),
 }),

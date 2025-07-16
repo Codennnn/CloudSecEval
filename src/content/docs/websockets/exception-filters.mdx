@@ -29,8 +29,8 @@ WebSocket 异常过滤器的行为与 HTTP 异常过滤器完全一致。下面�
 @UseFilters(new WsExceptionFilter())
 @SubscribeMessage('events')
 onEvent(client, data: any): WsResponse<any> {
-  const event = 'events';
-  return { event, data };
+  const event = 'events'
+  return { event, data }
 }
 ```
 

@@ -99,7 +99,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     }
   }
 })
-client: ClientKafkaProxy;
+client: ClientKafkaProxy
 ```
 
 ## 消息模式（Message pattern）
@@ -127,7 +127,7 @@ Kafka 微服务的消息模式（Message pattern）会为请求和响应通道�
 
 ```ts filename='heroes.controller.ts'
 onModuleInit() {
-  this.client.subscribeToResponseOf('hero.kill.dragon');
+  this.client.subscribeToResponseOf('hero.kill.dragon')
 }
 ```
 
@@ -135,8 +135,8 @@ onModuleInit() {
 
 ```ts filename='heroes.controller.ts'
 async onModuleInit() {
-  this.client.subscribeToResponseOf('hero.kill.dragon');
-  await this.client.connect();
+  this.client.subscribeToResponseOf('hero.kill.dragon')
+  await this.client.connect()
 }
 ```
 
@@ -234,7 +234,7 @@ import { type KafkaContext, Payload, Ctx } from '@nestjs/microservices'
 
 @MessagePattern('hero.kill.dragon')
 killDragon(@Payload() message: KillDragonMessage, @Ctx() context: KafkaContext) {
-  console.log(`Topic: ${context.getTopic()}`);
+  console.log(`Topic: ${context.getTopic()}`)
 }
 ```
 
@@ -243,9 +243,9 @@ killDragon(@Payload() message: KillDragonMessage, @Ctx() context: KafkaContext) 
 ```ts
 @MessagePattern('hero.kill.dragon')
 killDragon(@Payload() message: KillDragonMessage, @Ctx() context: KafkaContext) {
-  const originalMessage = context.getMessage();
-  const partition = context.getPartition();
-  const { headers, timestamp } = originalMessage;
+  const originalMessage = context.getMessage()
+  const partition = context.getPartition()
+  const { headers, timestamp } = originalMessage
 }
 ```
 
@@ -270,16 +270,16 @@ interface IncomingMessage {
 ```ts
 @MessagePattern('hero.kill.dragon')
 async killDragon(@Payload() message: KillDragonMessage, @Ctx() context: KafkaContext) {
-  const heartbeat = context.getHeartbeat();
+  const heartbeat = context.getHeartbeat()
 
   // 执行耗时操作
-  await doWorkPart1();
+  await doWorkPart1()
 
   // 发送心跳，避免超过 sessionTimeout
-  await heartbeat();
+  await heartbeat()
 
   // 再次执行耗时操作
-  await doWorkPart2();
+  await doWorkPart2()
 }
 ```
 
@@ -320,7 +320,7 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     }
   }
 })
-client: ClientKafkaProxy;
+client: ClientKafkaProxy
 ```
 
 <CalloutInfo>
@@ -332,7 +332,7 @@ client: ClientKafkaProxy;
 
 ```ts filename='heroes.controller.ts'
 onModuleInit() {
-  this.client.subscribeToResponseOf('hero.get'); // hero.get.reply
+  this.client.subscribeToResponseOf('hero.get') // hero.get.reply
 }
 ```
 
@@ -464,10 +464,10 @@ export class MyEventHandler {
 async handleUserCreated(@Payload() data: IncomingMessage, @Ctx() context: KafkaContext) {
   // 业务逻辑
 
-  const { offset } = context.getMessage();
-  const partition = context.getPartition();
-  const topic = context.getTopic();
-  const consumer = context.getConsumer();
+  const { offset } = context.getMessage()
+  const partition = context.getPartition()
+  const topic = context.getTopic()
+  const consumer = context.getConsumer()
   await consumer.commitOffsets([{ topic, partition, offset }])
 }
 ```
@@ -506,10 +506,10 @@ this.client.status.subscribe((status: KafkaStatus) => {
 同样，你也可以订阅服务端的 `status` 流，以接收服务端状态的通知。
 
 ```ts
-const server = app.connectMicroservice<MicroserviceOptions>(...);
+const server = app.connectMicroservice<MicroserviceOptions>(...)
 server.status.subscribe((status: KafkaStatus) => {
-  console.log(status);
-});
+  console.log(status)
+})
 ```
 
 ## 底层生产者与消费者

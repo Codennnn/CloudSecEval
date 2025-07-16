@@ -48,7 +48,7 @@ export const ResultUnion = createUnionType({
 ```ts
 @Query(() => [ResultUnion])
 search(): Array<typeof ResultUnion> {
-  return [new Author(), new Book()];
+  return [new Author(), new Book()]
 }
 ```
 
@@ -173,7 +173,7 @@ registerEnumType(AllowedColor, {
 
 ```ts
 @Field(type => AllowedColor)
-favoriteColor: AllowedColor;
+favoriteColor: AllowedColor
 ```
 
 这样会在生成的 GraphQL 架构 SDL 中得到如下内容：

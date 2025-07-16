@@ -36,7 +36,7 @@ export class CatsController {}
 @ApiResponse({ status: 201, description: '资源已成功创建。' })
 @ApiResponse({ status: 403, description: '无权访问此资源。' })
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 
@@ -76,7 +76,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 @ApiCreatedResponse({ description: '资源已成功创建。' })
 @ApiForbiddenResponse({ description: '无权访问此资源。' })
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 

@@ -159,7 +159,7 @@ Nest 支持基于模式的路由匹配，你可以使用星号（`*`）作为通
 ```ts
 @Get('abcd/*')
 findAll() {
-  return '该路由使用了通配符';
+  return '该路由使用了通配符'
 }
 ```
 
@@ -185,7 +185,7 @@ import { HttpCode, Post } from '@nestjs/common'
 @Post()
 @HttpCode(204)
 create() {
-  return '该操作将添加一只新猫咪';
+  return '该操作将添加一只新猫咪'
 }
 ```
 
@@ -204,7 +204,7 @@ import { Header, Post } from '@nestjs/common'
 @Post()
 @Header('Cache-Control', 'no-store')
 create() {
-  return '该操作将添加一只新猫咪';
+  return '该操作将添加一只新猫咪'
 }
 ```
 
@@ -231,7 +231,7 @@ Nest 提供了多种方式用于实现响应重定向。你可以使用 `@Redire
 @Redirect('https://docs.nestjs.com', 302)
 getDocs(@Query('version') version) {
   if (version && version === '5') {
-    return { url: 'https://docs.nestjs.com/v5/' };
+    return { url: 'https://docs.nestjs.com/v5/' }
   }
 }
 ```
@@ -251,8 +251,8 @@ import { Param, Get } from '@nestjs/common'
 
 @Get(':id')
 findOne(@Param() params: any): string {
-  console.log(params.id);
-  return `该猫咪的 ID 为 #${params.id}`;
+  console.log(params.id)
+  return `该猫咪的 ID 为 #${params.id}`
 }
 ```
 
@@ -263,7 +263,7 @@ findOne(@Param() params: any): string {
 ```ts
 @Get(':id')
 findOne(@Param('id') id: string): string {
-  return `该猫咪的 ID 为 #${id}`;
+  return `该猫咪的 ID 为 #${id}`
 }
 ```
 
@@ -315,7 +315,7 @@ Nest 天生契合现代 JavaScript，尤其在**异步编程模型**方面提供
 ```ts filename='cats.controller.ts'
 @Get()
 async findAll(): Promise<any[]> {
-  return [];
+  return []
 }
 ```
 
@@ -324,7 +324,7 @@ async findAll(): Promise<any[]> {
 ```ts filename='cats.controller.ts'
 @Get()
 findAll(): Observable<any[]> {
-  return of([]);
+  return of([])
 }
 ```
 
@@ -355,7 +355,7 @@ export class CreateCatDto {
 ```ts filename='cats.controller.ts'
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
-  return '该操作将添加一只新猫咪';
+  return '该操作将添加一只新猫咪'
 }
 ```
 
@@ -374,7 +374,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 ```ts filename='cats.controller.ts'
 @Get()
 async findAll(@Query('age') age: number, @Query('breed') breed: string) {
-  return `该操作返回符合条件的所有猫咪（年龄：${age}，品种：${breed}）`;
+  return `该操作返回符合条件的所有猫咪（年龄：${age}，品种：${breed}）`
 }
 ```
 
@@ -534,8 +534,8 @@ export class CatsController {
 ```ts
 @Get()
 findAll(@Res({ passthrough: true }) res: Response) {
-  res.status(HttpStatus.OK);
-  return [];
+  res.status(HttpStatus.OK)
+  return []
 }
 ```
 

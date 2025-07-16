@@ -77,7 +77,7 @@ export class Author {
 @Field(() => [String], {
   description: `用户角色列表`
 })
-roles: string[];
+roles: string[]
 ```
 
 你必须手动重复填写 description 字段。当启用 `introspectComments` 功能后，CLI 插件可以自动提取这些注释，并为属性自动生成描述信息。此时，上述字段可以简化为：
@@ -86,7 +86,7 @@ roles: string[];
 /**
  * 用户角色列表
  */
-roles: string[];
+roles: string[]
 ```
 
 ## 使用命令行工具插件
@@ -163,7 +163,7 @@ $ npx ts-node src/generate-metadata.ts
 此时，序列化后的元数据文件必须通过 `GraphQLModule` 方法加载，示例如下：
 
 ```ts
-import metadata from './metadata'; // <-- 该文件由 "PluginMetadataGenerator" 自动生成
+import metadata from './metadata' // <-- 该文件由 "PluginMetadataGenerator" 自动生成
 
 GraphQLModule.forRoot<...>({
   ..., // 其他选项

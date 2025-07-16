@@ -377,21 +377,21 @@ export class UsersService {
 
 ```ts
 async createMany(users: User[]) {
-  const queryRunner = this.dataSource.createQueryRunner();
+  const queryRunner = this.dataSource.createQueryRunner()
 
-  await queryRunner.connect();
-  await queryRunner.startTransaction();
+  await queryRunner.connect()
+  await queryRunner.startTransaction()
   try {
-    await queryRunner.manager.save(users[0]);
-    await queryRunner.manager.save(users[1]);
+    await queryRunner.manager.save(users[0])
+    await queryRunner.manager.save(users[1])
 
-    await queryRunner.commitTransaction();
+    await queryRunner.commitTransaction()
   } catch (err) {
     // 如果发生错误，则回滚之前的更改
-    await queryRunner.rollbackTransaction();
+    await queryRunner.rollbackTransaction()
   } finally {
     // 手动实例化的 queryRunner 需要手动释放
-    await queryRunner.release();
+    await queryRunner.release()
   }
 }
 ```
@@ -408,9 +408,9 @@ async createMany(users: User[]) {
 ```ts
 async createMany(users: User[]) {
   await this.dataSource.transaction(async manager => {
-    await manager.save(users[0]);
-    await manager.save(users[1]);
-  });
+    await manager.save(users[0])
+    await manager.save(users[1])
+  })
 }
 ```
 
@@ -1001,17 +1001,17 @@ export class UsersService {
 async createMany() {
   try {
     await this.sequelize.transaction(async t => {
-      const transactionHost = { transaction: t };
+      const transactionHost = { transaction: t }
 
       await this.userModel.create(
         { firstName: 'Abraham', lastName: 'Lincoln' },
         transactionHost,
-      );
+      )
       await this.userModel.create(
         { firstName: 'John', lastName: 'Boothe' },
         transactionHost,
-      );
-    });
+      )
+    })
   } catch (err) {
     // 事务已回滚
     // err 为回调中 promise 链被拒绝时返回的错误

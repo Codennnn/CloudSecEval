@@ -44,7 +44,7 @@ export class ExceptionFilter implements RpcExceptionFilter<RpcException> {
 @UseFilters(new ExceptionFilter())
 @MessagePattern({ cmd: 'sum' })
 accumulate(data: number[]): number {
-  return (data || []).reduce((a, b) => a + b);
+  return (data || []).reduce((a, b) => a + b)
 }
 ```
 

@@ -33,23 +33,23 @@ CI/CD 集成功能仅对[企业版](https://enterprise.nestjs.com/)用户开放�
 
 ```ts filename='main.ts'
 async function bootstrap() {
-  const shouldPublishGraph = process.env.PUBLISH_GRAPH === "true";
+  const shouldPublishGraph = process.env.PUBLISH_GRAPH === "true"
 
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
     preview: shouldPublishGraph,
-  });
+  })
 
   if (shouldPublishGraph) {
-    await app.init();
+    await app.init()
 
     const publishOptions = { ... } // 注意：此 options 对象会根据你所用的 CI/CD 服务商而有所不同
-    const graphPublisher = new GraphPublisher(app);
-    await graphPublisher.publish(publishOptions);
+    const graphPublisher = new GraphPublisher(app)
+    await graphPublisher.publish(publishOptions)
 
-    await app.close();
+    await app.close()
   } else {
-    await app.listen(process.env.PORT ?? 3000);
+    await app.listen(process.env.PORT ?? 3000)
   }
 }
 ```

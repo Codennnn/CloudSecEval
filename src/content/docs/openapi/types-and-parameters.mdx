@@ -10,7 +10,7 @@ import enumQueryArrayImage from '/public/assets/enum_query_array.gif'
 ```ts
 @Post()
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 
@@ -60,7 +60,7 @@ export class CreateCatDto {
   minimum: 1,
   default: 1,
 })
-age: number;
+age: number
 ```
 
 <CalloutInfo>
@@ -73,7 +73,7 @@ age: number;
 @ApiProperty({
   type: Number,
 })
-age: number;
+age: number
 ```
 
 ## 数组
@@ -82,7 +82,7 @@ age: number;
 
 ```ts
 @ApiProperty({ type: [String] })
-names: string[];
+names: string[]
 ```
 
 <CalloutInfo>
@@ -97,7 +97,7 @@ names: string[];
 
 ```ts
 @ApiProperty({ type: () => Node })
-node: Node;
+node: Node
 ```
 
 <CalloutInfo>
@@ -125,7 +125,7 @@ createBulk(@Body() usersDto: CreateUserDto[])
 
 ```ts
 @ApiProperty({ enum: ['Admin', 'Moderator', 'User']})
-role: UserRole;
+role: UserRole
 ```
 
 或者，你也可以定义一个实际的 TypeScript 枚举，如下所示：
@@ -239,7 +239,7 @@ CatBreed:
 @ApiProperty({
   example: 'persian',
 })
-breed: string;
+breed: string
 ```
 
 如果希望提供多个示例，可以使用 `examples` 键并传入以下结构的对象：
@@ -253,7 +253,7 @@ breed: string;
     'Scottish Fold': { value: 'scottish_fold' },
   },
 })
-breed: string;
+breed: string
 ```
 
 ## 原始定义
@@ -270,7 +270,7 @@ breed: string;
     },
   },
 })
-coords: number[][];
+coords: number[][]
 ```
 
 你也可以像下面这样指定原始对象（raw object）模式：
@@ -290,7 +290,7 @@ coords: number[][];
   },
   required: ['name', 'status']
 })
-rawDefinition: Record<string, any>;
+rawDefinition: Record<string, any>
 ```
 
 如果你需要在控制器类中手动定义输入/输出内容，可以使用 `schema` 属性：
@@ -350,15 +350,15 @@ const documentFactory = () =>
 @ApiProperty({
   oneOf: [{ $ref: getSchemaPath(Cat) }, { $ref: getSchemaPath(Dog) }],
 })
-pet: Cat | Dog;
+pet: Cat | Dog
 ```
 
 如果你想定义一个多态数组（即一个数组的成员可以是不同类型），则需要手动配置 `items` 属性来指定其类型：
 
 ```ts
-import { getSchemaPath } from '@nestjs/swagger';
+import { getSchemaPath } from '@nestjs/swagger'
 
-type Pet = Cat | Dog;
+type Pet = Cat | Dog
 
 @ApiProperty({
   type: 'array',
@@ -369,7 +369,7 @@ type Pet = Cat | Dog;
     ],
   },
 })
-pets: Pet[];
+pets: Pet[]
 ```
 
 请注意，上例中的 `Cat` 和 `Dog` 模型都必须通过 `@ApiExtraModels()` 装饰器（在类级别应用）预先注册。

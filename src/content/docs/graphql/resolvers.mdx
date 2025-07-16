@@ -82,7 +82,7 @@ type Author {
 
 ```ts
 @Field({ description: `书名`, deprecationReason: '在 v2 模式中不再使用' })
-title: string;
+title: string
 ```
 
 <CalloutInfo>
@@ -93,7 +93,7 @@ title: string;
 
 ```ts
 @Field(type => [Post])
-posts: Post[];
+posts: Post[]
 ```
 
 <CalloutInfo>
@@ -105,7 +105,7 @@ posts: Post[];
 
 ```ts
 @Field(type => [Post], { nullable: 'items' })
-posts: Post[];
+posts: Post[]
 ```
 
 <CalloutInfo>
@@ -201,7 +201,7 @@ export class AuthorsResolver {
 ```ts
 @Query(() => Author)
 async author(@Args('id', { type: () => Int }) id: number) {
-  return this.authorsService.findOneById(id);
+  return this.authorsService.findOneById(id)
 }
 ```
 
@@ -273,7 +273,7 @@ type Query {
 ```ts
 @Query(() => Author, { name: 'author' })
 async getAuthor(@Args('id', { type: () => Int }) id: number) {
-  return this.authorsService.findOneById(id);
+  return this.authorsService.findOneById(id)
 }
 ```
 
@@ -578,8 +578,8 @@ export class AuthorsResolver {
 @Resolver('Author')
 @ResolveField()
 async posts(@Parent() author) {
-  const { id } = author;
-  return this.postsService.findAll({ authorId: id });
+  const { id } = author
+  return this.postsService.findAll({ authorId: id })
 }
 ```
 
@@ -600,7 +600,7 @@ async posts(@Parent() author) {
 ```ts
 @Query()
 async author(@Args('id') id: number) {
-  return this.authorsService.findOneById(id);
+  return this.authorsService.findOneById(id)
 }
 ```
 
@@ -646,19 +646,19 @@ export class AuthorsResolver {
 
 ```ts filename='graphql.ts'
 export (class Author {
-  id: number;
-  firstName?: string;
-  lastName?: string;
-  posts?: Post[];
+  id: number
+  firstName?: string
+  lastName?: string
+  posts?: Post[]
 })
 export class Post {
-  id: number;
-  title: string;
-  votes?: number;
+  id: number
+  title: string
+  votes?: number
 }
 
 export abstract class IQuery {
-  abstract author(id: number): Author | Promise<Author>;
+  abstract author(id: number): Author | Promise<Author>
 }
 ```
 

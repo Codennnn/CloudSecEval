@@ -65,7 +65,7 @@ GraphQLModule.forRoot({
 ```ts
 @Directive('@upper')
 @Field()
-title: string;
+title: string
 ```
 
 <CalloutInfo>
@@ -80,7 +80,7 @@ title: string;
 @Directive('@deprecated(reason: "This query will be removed in the next version")')
 @Query(() => Author, { name: 'author' })
 async getAuthor(@Args({ name: 'id', type: () => Int }) id: number) {
-  return this.authorsService.findOneById(id);
+  return this.authorsService.findOneById(id)
 }
 ```
 

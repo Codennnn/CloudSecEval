@@ -25,7 +25,7 @@ Express v5 最显著的更新之一是路径路由匹配算法的调整。以下
 findAll() {
   // 在 NestJS 11 中，这将被自动转换为有效的 Express v5 路由。
   // 虽然可能仍然可用，但在 Express v5 中已不推荐继续使用该通配符写法。
-  return 'This route should not work in Express v5';
+  return 'This route should not work in Express v5'
 }
 ```
 
@@ -34,7 +34,7 @@ findAll() {
 ```ts
 @Get('users/*splat')
 findAll() {
-  return 'This route will work in Express v5';
+  return 'This route will work in Express v5'
 }
 ```
 
@@ -129,13 +129,13 @@ NestJS 11 现已在 `@nestjs/platform-fastify` 中使用最新版的 [path-to-re
 
 ```ts
 // 在 NestJS 11 中，即使你没有更新，这段代码也会被自动转换为有效路由。
-.forRoutes('(.*)');
+.forRoutes('(.*)')
 ```
 
 你需要将其更新为使用命名通配符：
 
 ```ts
-.forRoutes('*splat');
+.forRoutes('*splat')
 ```
 
 其中 `splat` 只是通配符参数的任意名称，你可以根据需要自定义。
@@ -214,11 +214,11 @@ CacheModule.registerAsync({
         host: 'localhost',
         port: 6379,
       },
-    });
+    })
 
     return {
       store,
-    };
+    }
   },
 }),
 ```
@@ -233,7 +233,7 @@ CacheModule.registerAsync({
       stores: [
         new KeyvRedis('redis://localhost:6379'),
       ],
-    };
+    }
   },
 }),
 ```

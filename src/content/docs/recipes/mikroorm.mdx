@@ -57,7 +57,7 @@ export class AppModule {}
 然而，如果你的构建流程包含 tree shaking，这种方法可能会失效。此时，建议你将配置显式导入：
 
 ```ts
-import config from './mikro-orm.config'; // 你的 ORM 配置
+import config from './mikro-orm.config' // 你的 ORM 配置
 
 @Module({
   imports: [

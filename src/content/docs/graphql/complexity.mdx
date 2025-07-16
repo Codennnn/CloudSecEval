@@ -84,14 +84,14 @@ export class ComplexityPlugin implements ApolloServerPlugin {
 
 ```ts
 @Field({ complexity: 3 })
-title: string;
+title: string
 ```
 
 或者，你可以定义估算器函数：
 
 ```ts
 @Field({ complexity: (options: ComplexityEstimatorArgs) => ... })
-title: string;
+title: string
 ```
 
 ## 查询/变更级复杂度
@@ -101,6 +101,6 @@ title: string;
 ```ts
 @Query({ complexity: (options: ComplexityEstimatorArgs) => options.args.count * options.childComplexity })
 items(@Args('count') count: number) {
-  return this.itemsService.getItems({ count });
+  return this.itemsService.getItems({ count })
 }
 ```

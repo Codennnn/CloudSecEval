@@ -46,7 +46,7 @@ export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles)
 @Post()
 @Roles(Role.Admin)
 create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 
@@ -147,7 +147,7 @@ providers: [
 @Post()
 @RequirePermissions(Permission.CREATE_CAT)
 create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 
@@ -301,7 +301,7 @@ export class CaslModule {}
 ```ts
 constructor(private caslAbilityFactory: CaslAbilityFactory) {}
 
-const ability = this.caslAbilityFactory.createForUser(user);
+const ability = this.caslAbilityFactory.createForUser(user)
 if (ability.can(Action.Read, 'all')) {
   // 用户拥有读取权限
 }
@@ -446,7 +446,7 @@ export class PoliciesGuard implements CanActivate {
 @UseGuards(PoliciesGuard)
 @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Article))
 findAll() {
-  return this.articlesService.findAll();
+  return this.articlesService.findAll()
 }
 ```
 

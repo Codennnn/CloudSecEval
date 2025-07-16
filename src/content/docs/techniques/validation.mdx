@@ -1,6 +1,6 @@
 # 数据验证
 
-在 Web 应用开发中，**验证传入数据的合法性始终是一项基本且关键的实践**。为帮助开发者便捷地对请求数据进行自动校验，Nest 提供了一系列开箱即用的内置管道，包括：
+在 Web 应用开发中，**验证传入数据的合法性始终是一项基本且关键的实践**。为了帮助开发者便捷地对请求数据进行自动校验，Nest 提供了一系列开箱即用的内置管道，包括：
 
 - `ValidationPipe`
 - `ParseIntPipe`
@@ -24,7 +24,9 @@
 npm install class-validator class-transformer
 ```
 
-`ValidationPipe` 构建于 [`class-validator`](https://github.com/typestack/class-validator) 和 [`class-transformer`](https://github.com/typestack/class-transformer) 两个库之上，这也赋予了它高度的灵活性和丰富的配置能力。你可以通过传入配置对象来自定义其行为。以下是 `ValidationPipe` 支持的核心选项定义：
+`ValidationPipe` 构建于 [`class-validator`](https://github.com/typestack/class-validator) 和 [`class-transformer`](https://github.com/typestack/class-transformer) 两个库之上，这也赋予了它高度的灵活性和丰富的配置能力，你可以通过传入配置对象来自定义其行为。
+
+以下是 `ValidationPipe` 支持的核心选项定义：
 
 ```ts
 export interface ValidationPipeOptions extends ValidatorOptions {
@@ -68,10 +70,9 @@ export interface ValidationPipeOptions extends ValidatorOptions {
 ```ts filename='main.ts'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+
   app.useGlobalPipes(new ValidationPipe())
-  await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap()
 ```
 
 此举确保所有接收到的请求数据都会被自动验证，无需在每个控制器中显式添加验证逻辑。
@@ -81,11 +82,11 @@ bootstrap()
 ```ts
 @Post()
 create(@Body() createUserDto: CreateUserDto) {
-  return '创建一个新用户';
+  return '创建一个新用户'
 }
 ```
 
-请注意，TypeScript 在运行时不会保留泛型或接口的类型信息。因此，在数据传输对象（DTO）中使用接口或类型别名时，`ValidationPipe` 将无法执行验证，建议始终使用具体的类来定义 DTO。
+请注意，TypeScript 在运行时不会保留泛型或接口的类型信息。因此，在 DTO 中使用接口或类型别名时，`ValidationPipe` 将无法执行验证，建议始终使用具体的类来定义 DTO。
 
 <CalloutInfo type="warning">
   另一个常见陷阱是只使用 `type-only` 的导入语法（如 `import type {CreateUserDto}
@@ -93,7 +94,7 @@ create(@Body() createUserDto: CreateUserDto) {
   {CreateUserDto}`）来引入 DTO。
 </CalloutInfo>
 
-接下来，在 `CreateUserDto` 类中添加具体的验证规则。这些规则由 `class-validator` 提供的装饰器实现。详细可参考[官方文档](https://github.com/typestack/class-validator#validation-decorators)。
+接下来，在 `CreateUserDto` 类中添加具体的验证规则。这些规则由 `class-validator` 提供的装饰器实现，详细可参考[官方文档](https://github.com/typestack/class-validator#validation-decorators)。
 
 ```ts
 import { IsEmail, IsNotEmpty } from 'class-validator'
@@ -190,7 +191,7 @@ app.useGlobalPipes(
 @Post()
 @UsePipes(new ValidationPipe({ transform: true }))
 async create(@Body() createCatDto: CreateCatDto) {
-  this.catsService.create(createCatDto);
+  this.catsService.create(createCatDto)
 }
 ```
 
@@ -225,7 +226,7 @@ findOne(@Param('id') id: number) {
 示例代码如下：
 
 ```ts
-import { ParseIntPipe, ParseBoolPipe } from '@nestjs/common';
+import { ParseIntPipe, ParseBoolPipe } from '@nestjs/common'
 
 @Get(':id')
 findOne(
@@ -332,7 +333,7 @@ export class UpdateCatDto extends PartialType(
 ```ts
 @Post()
 createBulk(@Body() createUserDtos: CreateUserDto[]) {
-  return '创建一批新用户';
+  return '创建一批新用户'
 }
 ```
 
@@ -361,7 +362,7 @@ findByIds(
   @Query('ids', new ParseArrayPipe({ items: Number, separator: ',' }))
   ids: number[],
 ) {
-  return '根据提供的 ID 返回对应的用户列表';
+  return '根据提供的 ID 返回对应的用户列表'
 }
 ```
 
