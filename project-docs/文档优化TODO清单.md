@@ -130,7 +130,7 @@
 - [x] `/cli/overview` - 概述
 - [x] `/cli/monorepo` - 工作空间
 - [x] `/cli/libraries` - 库
-- [x] `/cli/usages` - 使用方法
+- [x] `/cli/usages` - CLI 命令参考
 - [x] `/cli/scripts` - CLI 与构建脚本
 
 ## 11. OpenAPI ⭕

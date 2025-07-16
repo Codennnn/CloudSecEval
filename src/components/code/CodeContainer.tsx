@@ -65,14 +65,14 @@ export function CodeContainer(props: CodeContainerProps) {
   const label = isExpanded ? '收起代码' : '展开代码'
 
   return (
-    <CodeWrapper className={className}>
+    <CodeWrapper className={cn(className, '@container/code-block')}>
       {/* 头部工具栏 */}
       {showHeader && (
-        <div className="flex items-center gap-2 text-sm border-b border-border px-4 py-2 bg-muted">
+        <div className="flex items-center gap-2 text-sm px-4 py-code-block">
           <div className="inline-flex items-center gap-2 flex-1">
             {showLanguageIcon && (
               <LanguageIcon
-                className="size-5.5"
+                className="size-5"
                 lang={lang}
               />
             )}
@@ -98,36 +98,50 @@ export function CodeContainer(props: CodeContainerProps) {
       )}
 
       {/* 内容区域 */}
-      <div className="flex flex-col flex-1">
-        {isCollapsible && !isExpanded
-          ? (
-              <div className="flex-1">
-                <ScrollGradientContainer
-                  enableFlex
-                  rootClassName={cn(maxHeightClass)}
-                >
-                  {children}
-                </ScrollGradientContainer>
-              </div>
-            )
-          : children}
-
-        {isCollapsible && (
-          <Button
-            className="h-7 rounded-none text-xs text-muted-foreground hover:bg-secondary/50 border-t border-dashed border-transparent hover:border-border"
-            size="sm"
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              setIsExpanded((prev) => !prev)
-            }}
-          >
-            {isExpanded
-              ? <ChevronUpIcon className="size-3.5" />
-              : <ChevronDownIcon className="size-3.5" />}
-            {label}
-          </Button>
+      <div
+        className={cn(
+          'flex-1',
+          '@2xl/code-block:p-code-block @2xl/code-block:pt-0',
+          'p-0',
         )}
+      >
+        <div
+          className={cn(
+            'flex flex-col overflow-hidden',
+            '@2xl/code-block:border @2xl/code-block:border-border @2xl/code-block:rounded-md @2xl/code-block:shadow-muted @2xl/code-block:shadow-xl',
+            'border-t border-border',
+          )}
+        >
+          {isCollapsible && !isExpanded
+            ? (
+                <div className="flex-1">
+                  <ScrollGradientContainer
+                    enableFlex
+                    rootClassName={cn(maxHeightClass)}
+                  >
+                    {children}
+                  </ScrollGradientContainer>
+                </div>
+              )
+            : children}
+
+          {isCollapsible && (
+            <Button
+              className="h-7 rounded-none text-xs text-muted-foreground hover:bg-secondary/50 border-t border-dashed border-transparent hover:border-border bg-background"
+              size="sm"
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setIsExpanded((prev) => !prev)
+              }}
+            >
+              {isExpanded
+                ? <ChevronUpIcon className="size-3.5" />
+                : <ChevronDownIcon className="size-3.5" />}
+              {label}
+            </Button>
+          )}
+        </div>
       </div>
     </CodeWrapper>
   )

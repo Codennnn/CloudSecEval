@@ -54,6 +54,7 @@
   /* - */
   --spacing-panel: calc(var(--spacing) * 4);
   --spacing-panel-sm: calc(var(--spacing) * 2);
+  --spacing-code-block: calc(var(--spacing) * 1.5);
 }
 
 :root {
@@ -70,7 +71,7 @@
   --secondary-foreground: oklch(20.5% 0 0deg);
   --muted: oklch(97% 0 0deg);
   --muted-foreground: oklch(55.6% 0 0deg);
-  --accent: oklch(64.5% 0.246 16.439deg);
+  --accent: oklch(58.6% 0.253 17.585deg);
   --accent-foreground: oklch(20.5% 0 0deg);
   --destructive: oklch(57.7% 0.245 27.325deg);
   --border: oklch(92.2% 0 0deg);

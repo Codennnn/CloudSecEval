@@ -148,7 +148,7 @@ export const navMainData: NavMenuItem[] = [
       { title: '概述', titleEn: 'Overview', url: '/cli/overview' },
       { title: '工作空间与代码组织', titleEn: 'Workspaces', url: '/cli/monorepo' },
       { title: '库', titleEn: 'Libraries', url: '/cli/libraries' },
-      { title: '使用方法', titleEn: 'Usage', url: '/cli/usages' },
+      { title: 'CLI 命令参考', titleEn: 'Usage', url: '/cli/usages' },
       { title: 'CLI 与构建脚本', titleEn: 'Scripts', url: '/cli/scripts' },
     ],
   },

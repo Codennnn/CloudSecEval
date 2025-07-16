@@ -56,7 +56,7 @@ export function ProseContainer(props: React.PropsWithChildren<ProseContainerProp
         // 引用块样式
         'prose-blockquote:font-normal prose-blockquote:not-italic',
         // 链接样式
-        'prose-a:font-normal prose-a:decoration-dotted prose-a:hover:decoration-solid prose-a:underline-offset-4',
+        'prose-a:font-normal prose-a:decoration-dotted prose-a:hover:decoration-solid prose-a:underline-offset-4 prose-a:hover:text-accent',
         // 图片样式
         'prose-figure:my-5',
         // 颜色继承
