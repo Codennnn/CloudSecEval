@@ -8,11 +8,13 @@ Nest 提供了 4 种版本控制方式：
 
 Nest 提供了四种版本控制策略：
 
-| 类型                                        | 描述                                |
-| ------------------------------------------- | ----------------------------------- |
-| [URI 版本控制](#uri-版本控制)               | 通过请求 URI 携带版本号（默认方式） |
-| [Header 版本控制](#header-版本控制)         | 通过自定义请求头传递版本信息        |
-| [Media Type 版本控制](#media-type-版本控制) | 通过 `Accept` 头指定版本            |
+| 类型                                        | 描述                                                                               |
+| ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [URI 版本控制](#uri-版本控制)               | 通过请求 URI 携带版本号（默认方式）                                                |
+| [Header 版本控制](#header-版本控制)         | 通过自定义请求头传递版本信息                                                       |
+| [Media Type 版本控制](#media-type-版本控制) | 通过 `Accept` 头指定版本                                                           |
+| [自定义版本控制](#自定义版本控制)           | 请求中的任意部分都可以用于指定版本，系统提供了一个自定义函数来提取对应的版本信息。 |
+|                                             |
 
 ## URI 版本控制
 
@@ -37,8 +39,6 @@ const app = await NestFactory.create(AppModule)
 app.enableVersioning({
   type: VersioningType.URI, // 使用 URI 作为版本控制方式
 })
-
-await app.listen(process.env.PORT ?? 3000)
 ```
 
 默认情况下，URI 中的版本号会自动添加 `v` 前缀（如 `/v1`）。 你可以通过设置
@@ -59,8 +59,6 @@ app.enableVersioning({
   type: VersioningType.HEADER,
   header: 'Custom-Header',
 })
-
-await app.listen(process.env.PORT ?? 3000)
 ```
 
 其中，`header` 属性用于指定版本号所放置的请求头字段名称。例如，客户端可以在请求中添加：
@@ -89,15 +87,13 @@ app.enableVersioning({
   type: VersioningType.MEDIA_TYPE,
   key: 'v=',
 })
-
-await app.listen(process.env.PORT ?? 3000)
 ```
 
 在上例中，`key` 设置为 `'v='`，表示框架会从 `Accept` 字段中提取以 `v=` 开头的参数作为版本号。
 
-## 自定义版本控制类型
+## 自定义版本控制
 
-自定义版本控制（Custom Versioning） 允许你自由决定版本号从何处提取 —— 无论是请求头、URL 参数，还是查询字符串，都可以根据业务需求灵活处理。你只需实现一个名为 `extractor` 的提取器函数，返回版本号字符串或字符串数组即可。
+自定义版本控制允许你自由决定版本号从何处提取 —— 无论是请求头、URL 参数，还是查询字符串，都可以根据业务需求灵活处理。你只需实现一个名为 `extractor` 的提取器函数，返回版本号字符串或字符串数组即可。
 
 Nest 会根据 `extractor` 返回的结果进行路由匹配。若返回多个版本（例如 `['3', '2', '1']`），则会优先匹配当前可用的最高版本路由。
 
@@ -106,10 +102,10 @@ Nest 会根据 `extractor` 返回的结果进行路由匹配。若返回多个�
 例如，客户端声明支持版本 `1`、`2`、`3`，而服务器仅注册了 `1` 和 `2`，那么版本 `3` 会被自动忽略，系统将匹配到版本 `2` 对应的路由。
 
 <CalloutInfo type="warning">
-  路由优先匹配最高版本的机制，在 **Express 适配器**
-  中存在局限。由于其内部设计，Express
+  路由优先匹配最高版本的机制，在 **Express
+  适配器**中存在局限。由于其内部设计，Express
   仅能稳定处理**单一版本**（即返回一个字符串，或只包含一个元素的数组）。
-  相比之下，**Fastify 适配器** 可正确支持多个版本，并根据优先级进行匹配。
+  相比之下，**Fastify 适配器**可正确支持多个版本，并根据优先级进行匹配。
 </CalloutInfo>
 
 ### 示例代码
@@ -131,8 +127,6 @@ app.enableVersioning({
   type: VersioningType.CUSTOM,
   extractor,
 })
-
-await app.listen(process.env.PORT ?? 3000)
 ```
 
 在上例中：

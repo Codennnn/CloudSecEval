@@ -2,17 +2,17 @@
 
 序列化（Serialization）指的是在将对象作为响应发送给客户端之前，对其内容进行转换与清理的过程。在这一阶段，我们可以对响应数据进行加工处理，例如隐藏敏感信息（如密码）或筛选部分字段进行返回。
 
-如果手动完成这些操作，不仅重复劳动、易出错，还难以维护。为此，Nest 提供了一套声明式、可扩展的解决方案，帮助你高效、安全地管理返回数据的结构与内容。
+如果手动完成这些操作，不仅重复劳动、易出错，还难以维护。为此，Nest 提供了一套声明式、可扩展的解决方案，帮助你高效、安全地管理返回数据的结构和内容。
 
 ## 核心机制
 
 Nest 内置的 `ClassSerializerInterceptor` 拦截器，基于强大的 [`class-transformer`](https://github.com/typestack/class-transformer) 库，实现了对象序列化的自动化处理。它的工作流程如下：
 
-1. 获取控制器或服务方法的返回值；
-2. 调用 `instanceToPlain()` 方法，将类实例转换为普通对象；
+1. 获取控制器或服务方法的返回值。
+2. 调用 `instanceToPlain()` 方法，将类实例转换为普通对象。
 3. 在转换过程中，自动应用你在类或 DTO 上通过装饰器（如 `@Exclude()`、`@Expose()` 等）定义的转换规则。
 
-这种方式既简洁又灵活，可以极大地提升开发效率与代码可读性。
+这种方式既简洁又灵活，可以极大地提升开发效率和代码可读性。
 
 <CalloutInfo type="warning">
   对于通过 [`StreamableFile`](/techniques/streaming-files#streamable-file-class)
@@ -115,7 +115,7 @@ findOne(): UserEntity {
 
 ## 转换普通对象为类实例
 
-你可以在控制器层统一配置序列化逻辑，通过 `@SerializeOptions` 装饰器指定返回类型，确保所有响应——无论是普通对象还是类实例——都会被自动转换为指定的类，并应用类上的装饰器（如 `@Expose()`、`@Transform()` 等）。这种做法可以大大简化代码逻辑，省去频繁手动调用 `plainToInstance()` 或显式实例化类的步骤。
+你可以在控制器层统一配置序列化逻辑，通过 `@SerializeOptions` 装饰器指定返回类型，确保所有响应 —— 无论是普通对象还是类实例 —— 都会被自动转换为指定的类，并应用类上的装饰器（如 `@Expose()`、`@Transform()` 等）。这种做法可以大大简化代码逻辑，省去频繁手动调用 `plainToInstance()` 或显式实例化类的步骤。
 
 下面的示例展示了如何自动将返回的普通 JavaScript 对象转换为 `UserEntity` 实例：
 
@@ -148,7 +148,7 @@ findOne(@Query() { id }: { id: number }): UserEntity {
   为控制器指定明确的返回类型（如上例中的 `UserEntity`）还能让 TypeScript
   发挥其类型检查优势，确保返回数据结构符合 DTO 或实体定义。相比之下，直接调用
   `plainToInstance()`
-  不会提供这类类型校验机制，可能掩盖结构不一致的问题，增加调试成本。
+  不会提供这类类型校验机制，可能会掩盖结构不一致的问题，增加调试成本。
 </CalloutInfo>
 
 ## 示例参考
