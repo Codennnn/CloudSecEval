@@ -26,9 +26,9 @@ export class AppModule {}
 
 调用 `ScheduleModule.forRoot()` 会初始化全局调度器，并自动注册应用中所有基于装饰器声明的定时任务，包括：
 
-- [Cron 定时任务](/techniques/task-scheduling#declarative-cron-jobs)
-- [延时任务（Timeouts）](/techniques/task-scheduling#declarative-timeouts)
-- [循环任务（Intervals）](/techniques/task-scheduling#declarative-intervals)
+- [声明式定时任务](#声明式定时任务)
+- [声明式延时任务](#声明式延时任务)
+- [声明式周期任务](#声明式周期任务)
 
 这些任务会在 `onApplicationBootstrap` 生命周期钩子触发时统一注册，确保所有模块和服务都已加载完毕，从而避免初始化时遗漏任何任务。
 
@@ -36,7 +36,7 @@ export class AppModule {}
 
 定时任务允许你自动化执行特定的方法，常用于实现如下场景：
 
-- 在某个指定的时间点运行一次任务；
+- 在某个指定的时间点运行一次任务。
 - 按设定周期重复执行，例如每小时、每周，或每 5 分钟执行一次。
 
 在 Nest 中，只需为方法添加 `@Cron()` 装饰器，即可将其声明为一个定时任务。该方法中的代码会在设定的时间点自动执行。
@@ -125,13 +125,13 @@ runAfterTenSeconds() {
 
 `@Cron()` 装饰器还支持传入第二个参数，用于配置任务行为：
 
-| 选项名              | 说明                                                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `name`              | 任务名称，用于在运行时引用或控制该定时任务。                                                                              |
-| `timeZone`          | 指定任务运行时使用的时区（例如 'Europe/Paris'）。支持所有 [Moment Timezone](http://momentjs.com/timezone/) 中的时区标识。 |
-| `utcOffset`         | 通过 UTC 偏移量（数字）设置时区，例如 +8 表示东八区。若设置了 `timeZone`，则此项将被忽略。                                |
-| `waitForCompletion` | 如果为 `true`，当上一次任务尚未执行完毕时，新的调度将被跳过，避免重复执行。                                               |
-| `disabled`          | 如果为 `true`，则该任务不会被注册执行。                                                                                   |
+| 选项名              | 说明                                                                                               |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
+| `name`              | 任务名称，用于在运行时引用或控制该定时任务。                                                       |
+| `timeZone`          | 指定任务运行时使用的时区。支持所有 [Moment Timezone](http://momentjs.com/timezone/) 中的时区标识。 |
+| `utcOffset`         | 通过 UTC 偏移量（数字）设置时区，例如 +8 表示东八区。若设置了 `timeZone`，则此项将被忽略。         |
+| `waitForCompletion` | 如果为 `true`，当上一次任务尚未执行完毕时，新的调度将被跳过，避免重复执行。                        |
+| `disabled`          | 如果为 `true`，则该任务不会被注册执行。                                                            |
 
 ### 示例：指定任务名称与时区
 
@@ -143,7 +143,7 @@ import { Cron } from '@nestjs/schedule'
 export class NotificationService {
   @Cron('* * 0 * * *', {
     name: 'notifications',
-    timeZone: 'Europe/Paris',
+    timeZone: 'Asia/Hong_Kong',
   })
   triggerNotifications() {
     // 执行通知逻辑
@@ -182,7 +182,7 @@ handleInterval() {}
 
 ## 声明式延时任务
 
-若希望某个方法在延迟一段时间后执行一次，可以使用 `@Timeout()` 装饰器。该装饰器接收一个以毫秒为单位的延迟时间，表示从应用启动起，等待多久后执行方法。例如：
+如果希望某个方法在延迟一段时间后执行一次，可以使用 `@Timeout()` 装饰器。该装饰器接收一个以毫秒为单位的延迟时间，表示从应用启动起，等待多久后执行方法。例如：
 
 ```ts
 @Timeout(5000)
@@ -208,13 +208,13 @@ handleTimeout() {}
 
 ## 动态调度模块 API
 
-`@nestjs/schedule` 模块不仅支持声明式的[定时任务](#声明式定时任务)、[延时任务](#声明式延时任务) 和[周期任务](#声明式周期任务)，还提供了一套灵活的 API，用于在运行时动态创建与管理这些任务。
+`@nestjs/schedule` 模块不仅支持声明式的定时任务、延时任务和周期任务，还提供了一套灵活的 API，用于在运行时动态创建和管理这些任务。
 
 通过该动态 API，你可以：
 
-- 启动或停止指定名称的任务；
-- 动态添加新的定时任务、延时任务或周期任务；
-- 查询当前正在运行的任务；
+- 启动或停止指定名称的任务。
+- 动态添加新的定时任务、延时任务或周期任务。
+- 查询当前正在运行的任务。
 - 删除不再需要的任务。
 
 这一机制为任务调度带来了更高的灵活性，适用于需要根据配置、用户行为或外部事件动态调整任务的场景。
@@ -224,14 +224,10 @@ handleTimeout() {}
 你可以通过 `SchedulerRegistry` API，在代码的任意位置按名称获取 `CronJob` 实例。首先，使用标准的依赖注入方式注入 `SchedulerRegistry`：
 
 ```ts
+import { SchedulerRegistry } from '@nestjs/schedule'
+
 constructor(private schedulerRegistry: SchedulerRegistry) {}
 ```
-
-<CalloutInfo>
-
-请从 `@nestjs/schedule` 包中导入 `SchedulerRegistry`。
-
-</CalloutInfo>
 
 假设你已经如下声明了一个定时任务：
 
@@ -258,47 +254,45 @@ console.log(job.lastDate())
 - `setTime(time: CronTime)` - 停止任务，设置新的时间后重新启动。
 - `lastDate()` - 返回该任务上一次执行的日期（`DateTime` 类型）。
 - `nextDate()` - 返回该任务下一次计划执行的日期（`DateTime` 类型）。
-- `nextDates(count: number)` - 返回一个数组（长度为 `count`），包含该任务接下来将被触发的日期（`DateTime` 类型）。`count` 默认为 0，此时返回空数组。
+- `nextDates(count: number)` - 返回一个数组（长度为 `count`），包含该任务接下来将被触发的日期（`DateTime` 类型）。`count` 默认为 `0`，此时返回空数组。
 
 <CalloutInfo>
   你可以对 `DateTime` 对象调用 `toJSDate()` 方法，将其转换为 JavaScript 的
   `Date` 类型。
 </CalloutInfo>
 
-**动态创建**新定时任务时，可以使用 `SchedulerRegistry#addCronJob` 方法，示例如下：
+动态**创建**新的定时任务时，可以使用 `SchedulerRegistry.addCronJob()` 方法，示例如下：
 
 ```ts
 addCronJob(name: string, seconds: string) {
   const job = new CronJob(`${seconds} * * * * *`, () => {
-    this.logger.warn(`time (${seconds}) for job ${name} to run!`)
+    this.logger.warn(`现在是 ${seconds} 秒，任务 ${name} 开始执行！`)
   })
 
   this.schedulerRegistry.addCronJob(name, job)
   job.start()
 
-  this.logger.warn(
-    `job ${name} added for each minute at ${seconds} seconds!`,
-  )
+  this.logger.warn(`已添加任务 ${name}，将在每分钟的第 ${seconds} 秒执行！`)
 }
 ```
 
-在上述代码中，我们使用 `cron` 包中的 `CronJob` 类来创建定时任务。`CronJob` 构造函数的第一个参数是 cron 表达式（与 `@Cron()` [装饰器](/techniques/task-scheduling#declarative-cron-jobs)用法一致），第二个参数是定时器触发时要执行的回调函数。`SchedulerRegistry#addCronJob` 方法接收两个参数：任务名称和 `CronJob` 实例。
+在上述代码中，我们使用 `cron` 包中的 `CronJob` 类来创建定时任务。`CronJob` 构造函数的第一个参数是 cron 表达式（与 `@Cron()` 装饰器用法一致），第二个参数是定时器触发时要执行的回调函数。`SchedulerRegistry.addCronJob()` 方法接收两个参数：任务名称和 `CronJob` 实例。
 
 <CalloutInfo type="warning">
   在访问 `SchedulerRegistry` 之前，务必先注入它。`CronJob` 需要从 `cron`
   包中导入。
 </CalloutInfo>
 
-**删除**指定名称的定时任务，可以使用 `SchedulerRegistry#deleteCronJob` 方法，示例如下：
+**删除**指定名称的定时任务，可以使用 `SchedulerRegistry.deleteCronJob()` 方法，示例如下：
 
 ```ts
 deleteCron(name: string) {
   this.schedulerRegistry.deleteCronJob(name)
-  this.logger.warn(`job ${name} deleted!`)
+  this.logger.warn(`任务 ${name} 已被删除！`)
 }
 ```
 
-**列出**所有定时任务，可以使用 `SchedulerRegistry#getCronJobs` 方法，示例如下：
+**列出**所有定时任务，可以使用 `SchedulerRegistry.getCronJobs()` 方法，示例如下：
 
 ```ts
 getCrons() {
@@ -306,12 +300,14 @@ getCrons() {
 
   jobs.forEach((value, key, map) => {
     let next
+
     try {
       next = value.nextDate().toJSDate()
     } catch (e) {
-      next = 'error: next fire date is in the past!'
+      next = '错误：下次执行时间已过！'
     }
-    this.logger.log(`job: ${key} -> next: ${next}`)
+
+    this.logger.log(`任务：${key} -> 下次执行时间：${next}`)
   })
 }
 ```
@@ -342,7 +338,7 @@ clearInterval(interval)
 ```ts
 addInterval(name: string, milliseconds: number) {
   const callback = () => {
-    this.logger.warn(`Interval ${name} executing at time (${milliseconds})!`)
+    this.logger.warn(`任务 ${name} 正在每隔 ${milliseconds} 毫秒执行！`)
   }
 
   const interval = setInterval(callback, milliseconds)
@@ -364,24 +360,24 @@ addInterval(name: string, milliseconds: number) {
 ```ts
 deleteInterval(name: string) {
   this.schedulerRegistry.deleteInterval(name)
-  this.logger.warn(`Interval ${name} deleted!`)
+  this.logger.warn(`Interval 任务 ${name} 已被删除！`)
 }
 ```
 
 ### 获取所有定时任务
 
-若想查看当前注册的所有定时任务，可以使用 `getIntervals` 方法，它会返回一个包含所有任务名称的字符串数组：
+如果想查看当前注册的所有定时任务，可以使用 `getIntervals` 方法，它会返回一个包含所有任务名称的字符串数组：
 
 ```ts
 getIntervals() {
   const intervals = this.schedulerRegistry.getIntervals()
-  intervals.forEach(name => this.logger.log(`Interval: ${name}`))
+  intervals.forEach(name => this.logger.log(`Interval 任务：${name}`))
 }
 ```
 
 ## 管理动态延时任务
 
-在 NestJS 中，你可以通过 `SchedulerRegistry` 对延时任务（timeout）进行动态管理，包括创建、查询、删除等操作。
+在 NestJS 中，你可以通过 `SchedulerRegistry` 对延时任务进行动态管理，包括创建、查询、删除等操作。
 
 ### 获取并清除延时任务
 
@@ -405,7 +401,7 @@ clearTimeout(timeout)
 ```ts
 addTimeout(name: string, milliseconds: number) {
   const callback = () => {
-    this.logger.warn(`延时任务 ${name} 在 ${milliseconds}ms 后执行。`)
+    this.logger.warn(`延时任务 ${name} 将在 ${milliseconds}ms 后执行！`)
   }
 
   const timeout = setTimeout(callback, milliseconds)
