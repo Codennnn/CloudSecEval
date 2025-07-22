@@ -48,7 +48,7 @@ const app = await NestFactory.create(AppModule, {
 ```ts
 const app = await NestFactory.create(AppModule, {
   logger: new ConsoleLogger({
-    prefix: 'MyApp', // 默认为 "Nest"
+    prefix: 'MyApp', // 默认为 `Nest`
   }),
 })
 ```
@@ -57,21 +57,21 @@ const app = await NestFactory.create(AppModule, {
 
 以下为 `ConsoleLogger` 支持的所有配置项：
 
-| 选项              | 描述                                                                                                                                                                                                                           | 默认值                                         |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
-| `logLevels`       | 启用的日志级别列表。                                                                                                                                                                                                           | `['log', 'error', 'warn', 'debug', 'verbose']` |
-| `timestamp`       | 是否打印每条日志与前一条日志之间的时间间隔（启用 `json` 时无效）。                                                                                                                                                             | `false`                                        |
-| `prefix`          | 日志前缀（启用 `json` 时无效）。                                                                                                                                                                                               | `'Nest'`                                       |
-| `json`            | 是否以 JSON 格式输出日志。                                                                                                                                                                                                     | `false`                                        |
-| `colors`          | 是否启用彩色输出。默认在非 JSON 模式下为 `true`，在 JSON 模式下为 `false`。                                                                                                                                                    | `true`                                         |
-| `context`         | 设置日志的上下文标签（可选）。                                                                                                                                                                                                 | `undefined`                                    |
-| `compact`         | 是否将日志压缩为单行输出。若为数字，则最多将 n 个属性合并为一行（取决于 `breakLength` 设定）。                                                                                                                                 | `true`                                         |
-| `maxArrayLength`  | 控制格式化时数组、集合等可迭代对象显示的最大元素数量。`null` 或 `Infinity` 表示显示所有元素。启用 `json` 且禁用 `colors` 且 `compact` 为 `true` 时无效。                                                                       | `100`                                          |
-| `maxStringLength` | 控制日志中字符串的最大显示长度。超过该长度将被截断。启用 `json` 且禁用 `colors` 且 `compact` 为 `true` 时无效。                                                                                                                | `10000`                                        |
-| `sorted`          | 是否对对象键进行排序。也可提供自定义排序函数。启用 `json` 且禁用 `colors` 且 `compact` 为 `true` 时无效。                                                                                                                      | `false`                                        |
-| `depth`           | 对象格式化的递归深度。用于打印大型嵌套对象时的层级控制。传入 `null` 或 `Infinity` 可遍历全部属性。启用 `json` 且禁用 `colors` 且 `compact` 为 `true` 时无效。                                                                  | `5`                                            |
-| `showHidden`      | 是否包含对象中的不可枚举属性、符号属性、WeakMap / WeakSet 内容及自定义原型属性。                                                                                                                                               | `false`                                        |
-| `breakLength`     | 当日志内容超过指定长度时，是否拆分为多行显示。设为 `Infinity` 可强制输出为单行。该设置受 `compact` 影响：若 `compact` 为 `true`，默认即为 `Infinity`，否则为 `80`。启用 `json` 且禁用 `colors` 且 `compact` 为 `true` 时无效。 | `Infinity`                                     |
+| 选项              | 描述                                                                           | 默认值                                               | 支持 JSON 模式 |
+| ----------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------- | -------------- |
+| `logLevels`       | 要启用的日志级别数组。                                                         | `['log', 'error', 'warn',`<br/>`'debug', 'verbose']` | ✅             |
+| `timestamp`       | 是否显示每条日志与上一条日志的时间间隔。                                       | `false`                                              | ❌             |
+| `prefix`          | 日志消息的前缀文本。                                                           | `'Nest'`                                             | ❌             |
+| `json`            | 是否以 JSON 格式输出日志。                                                     | `false`                                              | ✅             |
+| `colors`          | 是否启用彩色输出。非 JSON 模式默认为 `true`，JSON 模式默认为 `false`。         | `true`                                               | ✅             |
+| `context`         | 日志的上下文标签，用于标识日志来源。                                           | `undefined`                                          | ✅             |
+| `compact`         | 是否压缩日志为单行输出。设为数字时表示每行最多合并的属性数量。                 | `true`                                               | ✅             |
+| `maxArrayLength`  | 数组和集合类型对象显示的最大元素数量。设为 `null` 或 `Infinity` 显示全部元素。 | `100`                                                | ❌             |
+| `maxStringLength` | 字符串的最大显示长度，超出部分将被截断。                                       | `10000`                                              | ❌             |
+| `sorted`          | 是否对对象键进行排序，也可提供自定义排序函数。                                 | `false`                                              | ❌             |
+| `depth`           | 对象格式化的最大递归深度。设为 `null` 或 `Infinity` 可遍历所有层级。           | `5`                                                  | ❌             |
+| `showHidden`      | 是否显示对象的不可枚举属性、符号属性等隐藏内容。                               | `false`                                              | ✅             |
+| `breakLength`     | 日志内容的换行阈值。超过此长度将拆分为多行，设为 `Infinity` 强制单行输出。     | `Infinity`                                           | ❌             |
 
 ## JSON 日志记录
 
@@ -90,7 +90,7 @@ const app = await NestFactory.create(AppModule, {
 - **日志过滤**：支持按日志等级、时间戳、自定义元数据等字段进行精准筛选。
 - **搜索与分析**：结合日志查询工具，便于追踪应用行为、识别趋势与异常。
 
-如果你使用 [NestJS Mau](https://mau.nestjs.com)，启用 JSON 日志后，还可在界面中以结构化方式查看日志，更直观地进行调试与性能分析。
+如果你使用 [NestJS Mau](https://mau.nestjs.com)，启用 JSON 日志后，还可以在界面中以结构化方式查看日志，更直观地进行调试和性能分析。
 
 <CalloutInfo>
   设置 `json: true` 后，`ConsoleLogger` 会自动禁用文本着色（即将 `colors` 设为
@@ -99,7 +99,7 @@ const app = await NestFactory.create(AppModule, {
   `true`，以便在本地终端中更清晰地阅读带颜色的日志。
 </CalloutInfo>
 
-以下是启用 JSON 日志记录后的输出示例（单行展示）：
+以下是启用 JSON 日志记录后的输出示例：
 
 ```json
 {
@@ -115,9 +115,9 @@ const app = await NestFactory.create(AppModule, {
 
 ## 在应用中使用日志记录器
 
-通过前文介绍的技术手段，我们可以让 Nest 的系统日志与应用中自定义的事件日志在行为与格式上保持一致，提升整体日志的可读性与一致性。
+通过前文介绍的配置方法，我们可以确保 Nest 的系统日志与应用中的自定义日志在格式和行为上保持一致，从而提升整体日志的可读性和一致性。
 
-推荐的实践方式是：在每个服务（Service）中使用 `@nestjs/common` 提供的 `Logger` 类进行日志记录。你可以在构造函数中传入服务名称，作为日志上下文使用。例如：
+在实际开发中，推荐在每个服务（Service）中使用 `@nestjs/common` 包提供的 `Logger` 类来记录日志。通过在构造函数中传入服务名称作为日志上下文，可以更好地标识日志来源。示例如下：
 
 ```ts
 import { Logger, Injectable } from '@nestjs/common'
@@ -132,15 +132,15 @@ class MyService {
 }
 ```
 
-默认情况下，`Logger` 会在输出中使用方括号标记上下文，如下所示：
+默认情况下，`Logger` 会在日志输出中使用方括号来标记上下文信息，输出格式如下：
 
 ```bash
 [Nest] 19096   - 12/08/2019, 7:12:59 AM   [NestFactory] Starting Nest application...
 ```
 
-如果你使用 `app.useLogger()` 注册了自定义日志记录器，Nest 内部将自动使用该自定义实现。这种机制实现了日志逻辑与具体实现的解耦 —— 只需调用一次 `app.useLogger()`，就能轻松替换默认日志行为。
+当你通过 `app.useLogger()` 注册自定义日志记录器后，Nest 会自动使用该自定义实现来处理所有日志输出。这种设计实现了日志逻辑与具体实现的解耦，只需一次调用 `app.useLogger()` 即可全局替换日志行为。
 
-举例来说，若你通过如下方式注入了自定义日志记录器：
+例如，当你按以下方式注册自定义日志记录器时：
 
 ```ts
 app.useLogger(app.get(MyLogger))
@@ -177,18 +177,17 @@ class MyService {
 
 ## 自定义日志记录器
 
-你可以通过为 `logger` 属性传入一个实现了 `LoggerService` 接口的对象，为 Nest 应用提供自定义日志记录器，用于系统日志输出。
+你可以通过为 `logger` 属性传入实现了 `LoggerService` 接口的对象，来为 Nest 应用提供自定义的日志记录器。
 
-例如，直接使用全局的 JavaScript `console` 对象（其本身已符合 `LoggerService` 接口）：
+最简单的方式是直接使用全局的 JavaScript `console` 对象，因为它本身就符合 `LoggerService` 接口的要求：
 
 ```ts
 const app = await NestFactory.create(AppModule, {
   logger: console,
 })
-await app.listen(process.env.PORT ?? 3000)
 ```
 
-实现一个自定义日志记录器也非常简单：只需定义一个类，并实现 `LoggerService` 接口中的各个方法。例如：
+当然，你也可以实现一个完全自定义的日志记录器。只需创建一个类并实现 `LoggerService` 接口中的各个方法即可：
 
 ```ts
 import { LoggerService, Injectable } from '@nestjs/common'
@@ -227,7 +226,7 @@ export class MyLogger implements LoggerService {
 }
 ```
 
-然后将该日志记录器实例传入 `NestFactory.create()` 的配置项中：
+然后将自定义日志记录器实例传入 `NestFactory.create()` 的配置中：
 
 ```ts
 const app = await NestFactory.create(AppModule, {
@@ -236,11 +235,11 @@ const app = await NestFactory.create(AppModule, {
 await app.listen(process.env.PORT ?? 3000)
 ```
 
-这种方式虽然简单直接，但不支持依赖注入，因此不利于在测试中替换或复用该记录器实例。更推荐的方式是使用依赖注入，详见下文的[依赖注入](#依赖注入)部分。
+虽然这种方式简单直接，但由于不支持依赖注入，在测试环境中替换或复用日志记录器实例会比较困难。为了获得更好的灵活性，推荐使用依赖注入的方式，具体实现请参考下文的[依赖注入](#依赖注入)部分。
 
 ## 扩展内置日志记录器
 
-大多数场景下，你无需从头编写日志记录器。可以通过继承内置的 `ConsoleLogger` 类，重写部分方法来自定义日志行为：
+在大多数情况下，你无需从零开始实现日志记录器。通过继承内置的 `ConsoleLogger` 类并重写特定方法，即可轻松自定义日志行为：
 
 ```ts
 import { ConsoleLogger } from '@nestjs/common'
@@ -253,17 +252,17 @@ export class MyLogger extends ConsoleLogger {
 }
 ```
 
-你可以在功能模块中使用这个扩展类，具体用法详见下方[应用日志记录](#)。
+这个扩展类可以在功能模块中直接使用，具体用法详见下方[依赖注入](#依赖注入)部分。
 
-此外，也可以将扩展后的记录器实例传给 `logger` 配置项，或通过依赖注入机制，让 Nest 使用它来处理系统日志，如[自定义日志记录器](#自定义日志记录器)与[依赖注入](#依赖注入)部分所述。
+你还可以将扩展后的日志记录器实例传递给 `logger` 配置项，或者通过依赖注入机制让 Nest 在系统级别使用它，相关实现方式请参考[自定义日志记录器](#自定义日志记录器)和[依赖注入](#依赖注入)章节。
 
 ## 依赖注入
 
-如果你希望实现更灵活、功能更强的日志系统，建议充分利用 Nest 的依赖注入机制。举例来说，你可以将 `ConfigService` 注入自定义日志记录器，以实现配置的动态化，再将该记录器注入到其他控制器或提供者中统一使用。
+如果你希望构建更灵活、功能更强大的日志系统，建议充分利用 Nest 的依赖注入机制。例如，你可以将 `ConfigService` 注入到自定义日志记录器中实现动态配置，然后将该日志记录器注入到其他控制器或提供者中进行统一使用。
 
-要使自定义日志记录器支持依赖注入，请实现 `LoggerService` 接口，并将其注册为模块的提供者。典型做法如下：
+要让自定义日志记录器支持依赖注入，需要实现 `LoggerService` 接口并将其注册为模块的提供者。具体步骤如下：
 
-1. 创建一个 `MyLogger` 类，可以继承内置的 `ConsoleLogger`，也可以完全自定义（参考前文示例）。务必确保其实现了 LoggerService 接口。
+1. 创建一个 `MyLogger` 类，可以继承内置的 `ConsoleLogger`，也可以完全自定义（参考[前文示例](#扩展内置日志记录器)）。请确保该类实现了 `LoggerService` 接口。
 2. 创建一个 `LoggerModule` 并在其中注册 `MyLogger`：
 
 ```ts
@@ -277,13 +276,13 @@ import { MyLogger } from './my-logger.service'
 export class LoggerModule {}
 ```
 
-通过以上方式，`MyLogger` 成为模块级提供者，可被其他模块注入使用。由于其处于模块上下文中，自然可以注入其他依赖（如 `ConfigService`）以实现更复杂的日志逻辑。
+通过以上方式，`MyLogger` 成为模块级提供者，可以被其他模块注入使用。由于它处于模块上下文中，因此可以注入其他依赖（如 `ConfigService`）来实现更复杂的日志逻辑。
 
 ### 在全局启用自定义日志记录器
 
-如果你希望让 Nest 在应用引导过程及系统级日志中也使用自定义日志记录器，还需要额外配置。
+如果你希望让 Nest 在应用引导过程和系统级日志中也使用自定义日志记录器，需要进行额外配置。
 
-由于 `NestFactory.create()` 是在模块体系之外调用的，此时依赖注入尚未建立，因此必须确保 `LoggerModule` 被某个应用模块导入，这样 Nest 才能正确实例化 `MyLogger` 的单例。
+由于 `NestFactory.create()` 在模块体系之外调用，此时依赖注入尚未建立，因此必须确保 `LoggerModule` 被某个应用模块导入，这样 Nest 才能正确实例化 `MyLogger` 的单例。
 
 随后，你可以通过以下方式将该单例日志记录器传递给应用：
 
@@ -291,8 +290,8 @@ export class LoggerModule {}
 const app = await NestFactory.create(AppModule, {
   bufferLogs: true,
 })
+
 app.useLogger(app.get(MyLogger))
-await app.listen(process.env.PORT ?? 3000)
 ```
 
 <CalloutInfo>
@@ -303,17 +302,17 @@ await app.listen(process.env.PORT ?? 3000)
   `Logger.flush()`）。
 </CalloutInfo>
 
-这里通过 `app.get(MyLogger)` 获取自定义日志器的单例，这种方式相当于将其从依赖注入容器中「取出」，并交由 Nest 作为全局日志器使用。前提是 `MyLogger` 已被某个模块正确注册。
+这里通过 `app.get(MyLogger)` 获取自定义日志记录器的单例，这种方式相当于将其从依赖注入容器中「取出」，并交由 Nest 作为全局日志记录器使用，前提是 `MyLogger` 已被某个模块正确注册。
 
-此外，在控制器、服务或守卫等类中，你也可以像普通依赖一样注入 `MyLogger`，从而确保系统日志与应用日志统一使用同一个记录器实例。
+此外，在控制器、服务或守卫等类中，你也可以像注入普通依赖一样注入 `MyLogger`，从而确保系统日志与应用日志统一使用同一个记录器实例。
 
-更多细节，请参见：[应用日志记录的用法](#)与[自定义日志记录器的注入](#注入自定义日志记录器)。
+更多详细信息，请参见：[应用日志记录的用法](#)和[自定义日志记录器的注入](#注入自定义日志记录器)。
 
 ## 注入自定义日志记录器
 
-你可以通过扩展 Nest 内置的日志记录器来实现自定义日志功能。以下是一个示例：
+你可以通过扩展 Nest 内置的日志记录器来实现自定义日志功能。
 
-我们继承了 `ConsoleLogger` 并为其配置了[瞬态作用域](/fundamentals/injection-scopes)（Transient Scope），确保每个特性模块（feature module）都会获得一个独立的 `MyLogger` 实例。在这个例子中，我们没有重写 `log()`、`warn()` 等方法，但你可以根据实际需求进行拓展。
+以下有一个示例，在这个示例中，我们继承了 `ConsoleLogger` 并为其配置了[瞬态作用域](/fundamentals/injection-scopes)（Transient Scope），确保每个功能模块（feature module）都会获得一个独立的 `MyLogger` 实例。虽然这个例子中我们没有重写 `log()`、`warn()` 等方法，但你可以根据实际需求进行扩展。
 
 ```ts
 import { Injectable, Scope, ConsoleLogger } from '@nestjs/common'
@@ -321,7 +320,7 @@ import { Injectable, Scope, ConsoleLogger } from '@nestjs/common'
 @Injectable({ scope: Scope.TRANSIENT })
 export class MyLogger extends ConsoleLogger {
   customLog() {
-    this.log('Please feed the cat!')
+    this.log('记得给猫咪喂食哦！')
   }
 }
 ```
@@ -356,28 +355,29 @@ export class CatsService {
 
   findAll(): Cat[] {
     // 使用内置方法记录日志
-    this.myLogger.warn('About to return cats!')
+    this.myLogger.warn('准备返回所有猫咪信息！')
     // 调用自定义方法
-    this.myLogger.customLog()
+    this.myLogger.customLog() // 会打印：记得给猫咪喂食哦！
+
     return this.cats
   }
 }
 ```
 
-最后，在 `main.ts` 中，你可以显式地让应用使用该自定义日志记录器的实例。值得注意的是：本例中虽然我们并未重写日志方法，因此设置 `useLogger()` 并非必要。但如果你在日志方法中添加了自定义逻辑，并希望 Nest 核心框架也使用这些定制行为，则必须进行如下配置：
+最后，在 `main.ts` 中，你可以显式指定应用使用自定义日志记录器实例。需要注意的是：在本例中，由于我们没有重写日志方法，因此调用 `useLogger()` 并非必需。但是，如果你在日志方法中添加了自定义逻辑，并希望 Nest 核心框架也采用这些定制行为，则需要进行如下配置：
 
 ```ts filename='main.ts'
 const app = await NestFactory.create(AppModule, {
   bufferLogs: true,
 })
+
 app.useLogger(new MyLogger())
-await app.listen(process.env.PORT ?? 3000)
 ```
 
 <CalloutInfo title="可选提示">
-  除了使用 `bufferLogs: true` 外，你也可以通过设置 `logger: false` 来临时禁用日志记录器。但需注意：如果设置了 `logger: false`，则在调用 `useLogger()` 之前，所有日志将被静默丢弃，可能会错过关键的初始化错误信息。
+  除了使用 `bufferLogs: true` 外，你还可以通过设置 `logger: false` 来临时禁用日志记录器。但需要注意：如果设置了 `logger: false`，那么在调用 `useLogger()` 之前，所有日志都会被静默丢弃，这可能导致错过关键的初始化错误信息。
 
-如果你不介意启动阶段仍由默认日志器输出一部分信息，也可以省略 `logger: false` 配置。
+如果你不介意在启动阶段仍由默认日志记录器输出部分信息，也可以省略 `logger: false` 配置。
 
 </CalloutInfo>
 
