@@ -118,10 +118,10 @@ export default function HomePage() {
                 社区开发者维护的高质量中文文档
               </div>
 
-              <h1 className="text-3xl leading-[1.2] font-bold sm:text-4xl md:text-5xl lg:text-6xl mb-6">
+              <h1 className="text-3xl leading-[1.4] font-bold sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-accent-text">
                 NestJS 中文文档
                 <br />
-                <span className="text-primary">精校版 · 优化阅读体验</span>
+                <span>精校版 · 优化阅读体验</span>
               </h1>
 
               <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
