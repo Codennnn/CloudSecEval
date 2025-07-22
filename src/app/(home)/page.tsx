@@ -1,18 +1,47 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Check, Coffee, Gift, Lightbulb, RotateCcw, Star, Workflow } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
+import { cn } from '~/lib/utils'
 
 import logo from '/public/logos/logo-128.png'
 
 export default function HomePage() {
+  // 监听滚动位置状态
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  // 监听滚动事件
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop
+      setIsScrolled(scrollTop > 0)
+    }
+
+    // 添加滚动事件监听器
+    window.addEventListener('scroll', handleScroll)
+
+    // 组件卸载时清理事件监听器
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header
+        className={cn(
+          'fixed top-0 z-50 w-full pb-4 transition-all duration-300 ',
+          isScrolled
+            ? 'bg-gradient-to-b from-background via-background/95 to-transparent'
+            : 'bg-transparent',
+        )}
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
@@ -30,9 +59,9 @@ export default function HomePage() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8 text-sm">
+            <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
               <button
-                className="transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer"
+                className="transition-colors hover:text-foreground text-foreground/80 cursor-pointer"
                 onClick={() => {
                   document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
                 }}
@@ -40,7 +69,7 @@ export default function HomePage() {
                 特色功能
               </button>
               <button
-                className="transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer"
+                className="transition-colors hover:text-foreground text-foreground/80 cursor-pointer"
                 onClick={() => {
                   document.getElementById('audience')?.scrollIntoView({ behavior: 'smooth' })
                 }}
@@ -48,7 +77,7 @@ export default function HomePage() {
                 适用人群
               </button>
               <button
-                className="transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer"
+                className="transition-colors hover:text-foreground text-foreground/80 cursor-pointer"
                 onClick={() => {
                   document.getElementById('support')?.scrollIntoView({ behavior: 'smooth' })
                 }}
@@ -81,36 +110,38 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 lg:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium mb-6">
-              🎉 社区开发者维护的高质量中文文档
-            </div>
-            <h1 className="text-3xl leading-[1.2] font-bold sm:text-4xl md:text-5xl lg:text-6xl mb-6">
-              NestJS 中文文档
-              <br />
-              <span className="text-primary">精校版 · 优化阅读体验</span>
-            </h1>
-            <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
-              让中文开发者轻松掌握 NestJS 框架的最佳学习资源。不用翻墙、不看生涩英文，也能轻松学会 NestJS。
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button asChild className="w-full sm:w-auto" size="lg">
-                <Link href="/docs">
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  立即开始学习
-                </Link>
-              </Button>
-              <Button asChild className="w-full sm:w-auto" size="lg" variant="outline">
-                <Link href="/docs">
-                  查看目录
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+      <section className="relative pt-20">
+        <div className="py-12 sm:py-16 md:py-20 lg:py-32">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="inline-flex items-center rounded-lg bg-background/90 supports-[backdrop-filter]:bg-background/60 px-3 py-1 text-sm font-medium mb-6 backdrop-blur">
+                社区开发者维护的高质量中文文档
+              </div>
+
+              <h1 className="text-3xl leading-[1.2] font-bold sm:text-4xl md:text-5xl lg:text-6xl mb-6">
+                NestJS 中文文档
+                <br />
+                <span className="text-primary">精校版 · 优化阅读体验</span>
+              </h1>
+
+              <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
+                让中文开发者轻松掌握 NestJS 框架的最佳学习资源。不用翻墙、不看生涩英文，也能轻松学会 NestJS。
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button asChild className="w-full sm:w-auto" size="lg">
+                  <Link href="/docs">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    立即开始学习
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
+
+        <div className="color-bg" />
+        <div className="noise-bg" />
       </section>
 
       {/* Features Section */}

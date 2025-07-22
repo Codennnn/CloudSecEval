@@ -72,6 +72,7 @@
   --muted: oklch(97% 0 0deg);
   --muted-foreground: oklch(55.6% 0 0deg);
   --accent: oklch(58.6% 0.253 17.585deg);
+  --accent2: oklch(60.6% 0.25 292.717deg);
   --accent-foreground: oklch(20.5% 0 0deg);
   --destructive: oklch(57.7% 0.245 27.325deg);
   --border: oklch(92.2% 0 0deg);
@@ -110,6 +111,7 @@
     --muted: oklch(26.9% 0 0deg);
     --muted-foreground: oklch(70.8% 0 0deg);
     --accent: oklch(51.4% 0.222 16.935deg);
+    --accent2: oklch(81.1% 0.111 293.571deg);
     --accent-foreground: oklch(98.5% 0 0deg);
     --destructive: oklch(70.4% 0.191 22.216deg);
     --border: oklch(100% 0 0deg / 10%);
@@ -131,6 +133,24 @@
 
     /* 文章图片的滤镜 */
     --images-filter: invert(1) contrast(0.85);
+  }
+
+  .color-bg {
+    @apply absolute inset-0 pointer-events-none;
+
+    background: linear-gradient(
+      180deg,
+      oklch(from var(--accent) l c h / 5%) 0%,
+      oklch(from var(--accent2) l c h / 5%) 100%
+    );
+  }
+
+  .noise-bg {
+    @apply absolute inset-0 opacity-10 pointer-events-none;
+
+    background-image: url('/assets/elements/noise.webp');
+    background-repeat: repeat;
+    background-size: 200px;
   }
 }
 
