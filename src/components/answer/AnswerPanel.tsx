@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { type Interaction, OramaClient } from '@oramacloud/client'
+import { ArrowUpIcon } from 'lucide-react'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
+import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
 import { useChatSessions } from '~/hooks/useChatSessions'
 import type { ChatMessage } from '~/types/chat'
@@ -322,8 +324,8 @@ export function AnswerPanel(props: AnswerPanelProps) {
         },
       })
     }
-    catch (error) {
-      console.error('Failed to ask question:', error)
+    catch (err) {
+      console.error('问答失败：', err)
       setIsLoading(false)
     }
   })
@@ -399,21 +401,40 @@ export function AnswerPanel(props: AnswerPanelProps) {
 
       {/* 输入区域 */}
       <div className="p-panel pt-0">
-        <Textarea
-          ref={inputRef}
-          className="text-xs resize-none bg-muted"
-          disabled={isLoading}
-          placeholder={
-            messages.length === 0
-              ? '输入问题开始对话，按 Enter 发送'
-              : '继续提问...'
-          }
-          value={currentQuestion}
-          onChange={(ev: React.ChangeEvent<HTMLTextAreaElement>) => {
-            setCurrentQuestion(ev.target.value)
-          }}
-          onKeyDown={handleKeyDown}
-        />
+        {/* AI 问答渐变边框容器 */}
+        <div className="relative p-0.5 rounded-xl bg-gradient-to-r from-accent/60 to-purple-500/40">
+          <div className="rounded-[12px] overflow-hidden bg-background">
+            <Textarea
+              ref={inputRef}
+              className="!text-[13px] p-2 resize-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent disabled:opacity-100 disabled:bg-muted"
+              disabled={isLoading}
+              placeholder={
+                messages.length === 0
+                  ? '输入问题开始对话，按 Enter 发送'
+                  : '继续提问...'
+              }
+              value={currentQuestion}
+              onChange={(ev: React.ChangeEvent<HTMLTextAreaElement>) => {
+                setCurrentQuestion(ev.target.value)
+              }}
+              onKeyDown={handleKeyDown}
+            />
+
+            <div className="flex items-center justify-end p-1.5 pt-0">
+              <Button
+                className="!text-xs !py-1 !px-1.5 h-auto !gap-1"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  void handleAskQuestion()
+                }}
+              >
+                <ArrowUpIcon className="size-3.5" />
+                发送
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
