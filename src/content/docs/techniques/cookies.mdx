@@ -2,13 +2,15 @@
 
 **HTTP Cookie** 是一种由浏览器存储的小型数据片段，通常用于在客户端与服务端之间维持会话状态。当用户再次访问网站时，浏览器会自动将 Cookie 随请求一起发送给服务器，从而实现状态记忆。
 
-## 在 Express（默认）中使用
+## 在 Express中使用
 
-NestJS 默认使用 Express，因此可直接集成 [cookie-parser](https://github.com/expressjs/cookie-parser) 中间件来处理 Cookie。首先，安装相关依赖：
+NestJS 默认使用 Express，因此可直接集成 [cookie-parser](https://github.com/expressjs/cookie-parser) 中间件来处理 Cookie。
+
+首先，安装相关依赖：
 
 ```bash
 npm install cookie-parser
-npm install -D @types/cookie-parser # 如果使用 TypeScript
+npm install -D @types/cookie-parser
 ```
 
 安装完成后，可在应用入口文件（通常是 `main.ts`）中将其注册为全局中间件：
@@ -19,18 +21,18 @@ import * as cookieParser from 'cookie-parser'
 app.use(cookieParser())
 ```
 
-`cookie-parser()` 接收两个可选参数：
+`cookie-parser()` 中间件接收两个可选参数：
 
-- `secret`：用于签名 Cookie 的密钥，可以是字符串或字符串数组。如果不传该参数，则不会解析已签名的 Cookie。若传入数组，会尝试使用每个密钥依次解签。
-- `options`：会作为第二个参数传递给底层的 `cookie.parse()` 方法。具体配置可参考 cookie 模块的文档。
+- `secret`：用于签名 Cookie 的密钥，可以是字符串或字符串数组。如果不传该参数，则不会解析已签名的 Cookie；如果传入数组，中间件会依次尝试使用每个密钥进行解签。
+- `options`：传递给底层 `cookie.parse()` 方法的配置选项。详细配置请参考 [cookie 模块文档](https://www.npmjs.com/package/cookie)。
 
-中间件会自动解析请求头中的 Cookie 字段，并将解析结果挂载到 `req.cookies` 对象上。若设置了密钥，还会将已签名的 Cookie 解析到 `req.signedCookies` 中。
+该中间件会自动解析 HTTP 请求头中的 Cookie 字段，并将解析结果挂载到 `req.cookies` 对象上。如果设置了密钥参数，已签名的 Cookie 还会被解析到 `req.signedCookies` 对象中。
 
-所谓「已签名的 Cookie」，是指值以 `s`: 前缀开头的 Cookie。中间件会自动验证这些值的签名：
+**已签名的 Cookie** 是指值以 `s:` 前缀开头的 Cookie。中间件会自动验证这些 Cookie 的签名完整性：
 
-- 若验证通过，对应键值会出现在 `req.signedCookies` 中；
-- 若验证失败，该值会被设置为 `false`，而不会暴露原始（可能被篡改的）内容；
-- 无论是否签名，原始 Cookie 都会保留在 `req.cookies` 中。
+- **验证通过**：对应的键值对会出现在 `req.signedCookies` 中。
+- **验证失败**：该值会被设置为 `false`，防止暴露可能被篡改的原始内容。
+- **原始保留**：无论签名验证结果如何，原始 Cookie 都会保留在 `req.cookies` 中。
 
 ### 在控制器中访问 Cookie
 
@@ -49,7 +51,7 @@ findAll(@Req() request: Request) {
 
 ### 设置 Cookie 到响应中
 
-要在响应中写入 Cookie，可使用 Express 的 `Response#cookie()` 方法。如下所示：
+要在响应中写入 Cookie，可以使用 Express 的 `Response.cookie()` 方法。如下所示：
 
 ```ts
 import { Res } from '@nestjs/common'
@@ -64,7 +66,7 @@ findAll(@Res({ passthrough: true }) response: Response) {
 <CalloutInfo type="warning">
   如果希望保留由 Nest 自动处理响应的能力，请务必将 `@Res()` 装饰器的
   `passthrough` 选项设置为
-  `true`。更多信息请参考[响应处理方式](/controllers#library-specific-approach)。
+  `true`。更多信息请参考[响应处理方式](/controllers#使用底层框架的响应对象)。
 </CalloutInfo>
 
 ## 在 Fastify 中使用
@@ -133,6 +135,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common'
 export const Cookies = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest()
+
     // 若指定了 Cookie 名称，则返回对应的值；否则返回所有 Cookie
     return data ? request.cookies?.[data] : request.cookies
   }
@@ -140,7 +143,7 @@ export const Cookies = createParamDecorator(
 ```
 
 `@Cookies()` 装饰器的核心逻辑是从 `req.cookies` 中提取信息。
-如果你不传入参数，它会返回所有的 Cookie；若传入某个 Cookie 名称，则返回对应的值。最终结果会被注入到装饰的参数上。
+如果你不传入参数，它会返回所有的 Cookie；如果传入某个 Cookie 名称，则返回对应的值。最终结果会被注入到装饰的参数上。
 
 有了这个装饰器后，你就可以在控制器方法中像下面这样使用：
 
