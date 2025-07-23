@@ -8,7 +8,7 @@
 - [x] 已完成
 - [!] 需要重点关注
 - [?] 需要进一步确认
-- 🔴 表示该模块下有未完成的优化项目
+- 🔴/⭕ 表示该模块下有未完成的优化项目
 
 ---
 
@@ -72,7 +72,7 @@
 
 ## 6. 安全实践 (Security Practices) ✅
 
-- [x] `/security/authentication` - 认证
+- [x] `/security/authentication` - 身份验证
 - [x] `/security/authorization` - 授权
 - [x] `/security/encryption-and-hashing` - 加密与哈希
 - [x] `/security/helmet` - Helmet
@@ -244,7 +244,7 @@
 
 ### 安全实践优先级 (P3) - 已基本完成 ✅
 
-- [x] 认证
+- [x] 身份验证
 - [x] 授权
 - [x] CORS
 - [x] Helmet

@@ -78,7 +78,7 @@ export const navMainData: NavMenuItem[] = [
     title: '安全实践',
     titleEn: 'Security Practices',
     items: [
-      { title: '认证', titleEn: 'Authentication', url: '/security/authentication' },
+      { title: '身份验证', titleEn: 'Authentication', url: '/security/authentication' },
       { title: '授权', titleEn: 'Authorization', url: '/security/authorization' },
       { title: '加密与哈希', titleEn: 'Encryption and Hashing', url: '/security/encryption-and-hashing' },
       { title: 'Helmet 安全中间件', titleEn: 'Helmet', url: '/security/helmet' },
