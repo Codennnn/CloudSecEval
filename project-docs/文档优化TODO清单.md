@@ -133,16 +133,16 @@
 - [x] `/cli/usages` - CLI 命令参考
 - [x] `/cli/scripts` - CLI 与构建脚本
 
-## 11. OpenAPI ⭕
+## 11. OpenAPI ✅
 
 - [x] `/openapi/introduction` - 介绍
-- [ ] `/openapi/types-and-parameters` - 类型和参数
-- [ ] `/openapi/operations` - 操作
-- [ ] `/openapi/security` - 安全
-- [ ] `/openapi/mapped-types` - 映射类型
-- [ ] `/openapi/decorators` - 装饰器
-- [ ] `/openapi/cli-plugin` - CLI 插件
-- [ ] `/openapi/other-features` - 其他功能
+- [x] `/openapi/types-and-parameters` - 类型和参数
+- [x] `/openapi/operations` - 操作
+- [x] `/openapi/security` - 安全性
+- [x] `/openapi/mapped-types` - 映射类型
+- [x] `/openapi/decorators` - 装饰器
+- [x] `/openapi/cli-plugin` - CLI 插件
+- [x] `/openapi/other-features` - 其他功能
 
 ## 12. 实用案例 ⭕
 
