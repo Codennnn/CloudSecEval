@@ -15,7 +15,7 @@ import { createCipheriv, randomBytes, scrypt } from 'crypto'
 import { promisify } from 'util'
 
 const iv = randomBytes(16) // 初始化向量
-const password = 'Password used to generate key'
+const password = '用于生成密钥的密码'
 
 // 密钥长度取决于所使用的算法，例如 aes-256 需要 32 字节密钥
 const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer
@@ -50,7 +50,7 @@ const decryptedText = Buffer.concat([
 
 ```bash
 npm install bcrypt
-npm install -D @types/bcrypt # 如果使用 TypeScript
+npm install -D @types/bcrypt
 ```
 
 使用 `hash` 函数生成哈希值：
@@ -59,7 +59,7 @@ npm install -D @types/bcrypt # 如果使用 TypeScript
 import * as bcrypt from 'bcrypt'
 
 const saltOrRounds = 10
-const password = 'random_password'
+const password = '随机密码'
 const hash = await bcrypt.hash(password, saltOrRounds)
 ```
 

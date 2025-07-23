@@ -28,7 +28,7 @@ export enum Role {
 
 ### 创建 `@Roles()` 装饰器
 
-接下来，我们实现一个自定义装饰器 `@Roles()`，用于为控制器方法标注所需的角色：
+接下来，我们实现一个自定义装饰器 `@Roles()`，用于为控制器方法标记所需的角色：
 
 ```ts filename='roles.decorator.ts'
 import { SetMetadata } from '@nestjs/common'
@@ -71,11 +71,13 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ])
+
     if (!requiredRoles) {
       return true
     }
 
     const { user } = context.switchToHttp().getRequest()
+
     return requiredRoles.some((role) => user.roles?.includes(role))
   }
 }
@@ -119,7 +121,7 @@ providers: [
 
 当用户权限不足时，Nest 会自动返回以下响应：
 
-```ts
+```json
 {
   "statusCode": 403,
   "message": "Forbidden resource",
@@ -138,8 +140,8 @@ providers: [
 
 在 Nest 中实现基于声明的授权，整体流程可参考上文的[基于角色的访问控制](#实现基础的-rbac)。两者的核心区别在于：
 
-- **RBAC 检查用户角色是否匹配**
-- **而声明式授权则检查用户是否拥有执行某操作所需的权限**
+- RBAC 检查用户角色是否匹配
+- 而声明式授权则检查用户是否拥有执行某操作所需的权限
 
 每个用户可以拥有多个权限，而每个受保护的资源或路由端点则定义所需权限。例如，可以通过自定义的 `@RequirePermissions()` 装饰器来声明访问要求：
 
@@ -200,9 +202,9 @@ class Article {
 
 我们设定以下权限规则作为示例：
 
-- 管理员：拥有所有资源的创建、读取、更新、删除权限；
-- 普通用户：对所有内容只有只读权限；
-- 用户可以更新自己撰写的文章；
+- 管理员：拥有所有资源的创建、读取、更新、删除权限。
+- 普通用户：对所有内容只有只读权限。
+- 用户可以更新自己撰写的文章。
 - 已发布的文章不可删除。
 
 为了表示用户可以执行的操作，我们先定义一个枚举：
@@ -302,6 +304,7 @@ export class CaslModule {}
 constructor(private caslAbilityFactory: CaslAbilityFactory) {}
 
 const ability = this.caslAbilityFactory.createForUser(user)
+
 if (ability.can(Action.Read, 'all')) {
   // 用户拥有读取权限
 }
@@ -361,7 +364,7 @@ ability.can(Action.Update, article) // ❌ false
 
 我们的目标是为每个路由处理器提供一种机制，允许开发者灵活地指定访问策略。支持两种形式：
 
-- 对象式策略处理器：实现了 `IPolicyHandler` 接口的类实例；
+- 对象式策略处理器：实现了 `IPolicyHandler` 接口的类实例。
 - 函数式策略处理器：接受 `Ability` 作为参数的回调函数。
 
 ### 定义策略处理器类型
@@ -476,7 +479,7 @@ findAll() {
 
 若需要注入依赖，请改用如下方式：
 
-1. 将 `@CheckPolicies()` 装饰器传入处理器类的类型（`Type<IPolicyHandler>`），而不是其实例；
+1. 将 `@CheckPolicies()` 装饰器传入处理器类的类型（`Type<IPolicyHandler>`），而不是其实例。
 2. 在守卫中使用 `ModuleRef` 动态解析处理器实例：
 
 ```ts
@@ -489,6 +492,6 @@ const handlerInstance = await this.moduleRef.get(handlerType)
 
 </CalloutInfo>
 
-如你所见，通过策略守卫与能力工厂的结合，可以灵活地实现细粒度的权限控制，并将授权逻辑以可组合、可复用的方式解耦出来，提升整体代码结构的清晰度与可维护性。
+如你所见，通过策略守卫与能力工厂的结合，可以灵活地实现细粒度的权限控制，并将授权逻辑以可组合、可复用的方式解耦出来，提升整体代码结构的清晰度。
 
 如需进一步扩展策略守卫支持类级别配置、异步策略检查、组合策略等高级功能，也可以在此基础上演进。

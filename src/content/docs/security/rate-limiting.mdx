@@ -41,8 +41,8 @@ export class AppModule {}
 
 在某些场景下，你可能需要设置多套限流规则。例如：
 
-- 每秒最多 3 次请求；
-- 每 10 秒最多 20 次；
+- 每秒最多 3 次请求。
+- 每 10 秒最多 20 次。
 - 每分钟最多 100 次。
 
 此时可以在配置中为每套规则命名，通过装饰器按需引用，实现策略切换：
@@ -74,7 +74,7 @@ export class AppModule {}
 
 定义完成后，可以使用以下装饰器灵活控制路由限流行为：
 
-- `@Throttle('short')`：应用指定规则；
+- `@Throttle('short')`：应用指定规则。
 - `@SkipThrottle()`：跳过限流。
 
 ## 个性化定制
@@ -101,7 +101,7 @@ export class UsersController {}
 
 这在以下场景中非常实用：
 
-- 控制器中大多数路由都无需限流；
+- 控制器中大多数路由都无需限流。
 - 使用了多套限流规则（见上一节），希望根据名称排除部分策略。
 
 如果不传入参数，则默认效果等同于：
@@ -174,7 +174,6 @@ async function bootstrap() {
 
   await app.listen(3000)
 }
-bootstrap()
 ```
 
 启用后，Nest 中的 `req.ip` 将自动解析 `X-Forwarded-For` 请求头，从而获取到客户端的真实 IP 地址。这对于限流模块（如 `ThrottlerModule`）至关重要。

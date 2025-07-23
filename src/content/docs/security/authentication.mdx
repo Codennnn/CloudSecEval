@@ -1,13 +1,13 @@
 # 身份验证
 
-身份验证（Authentication）是绝大多数应用中不可或缺的基础功能。实现身份验证的方式有很多，具体采用哪种方案，通常取决于项目的业务场景与安全要求。本章将介绍一种基于 JWT（JSON Web Token）的通用身份验证流程，适用于多种实际场景。
+身份验证（Authentication）是绝大多数应用中不可或缺的基础功能。实现身份验证的方式有很多，具体采用哪种方案，通常取决于项目的业务场景和安全要求。本章将介绍一种基于 JWT（JSON Web Token）的通用身份验证流程，适用于多种实际场景。
 
 我们假设客户端通过用户名和密码进行登录，服务器验证成功后，会签发一个 JWT。客户端随后在每次请求中，将该 JWT 以 [Bearer Token](https://tools.ietf.org/html/rfc6750) 的形式附加在 HTTP 请求头中的 `Authorization` 字段中，以证明身份。服务器则负责验证该 Token，并据此决定是否允许访问某些受保护的资源（即受保护路由）。
 
 本章将分三个步骤实现这一流程：
 
-1. 处理用户身份验证；
-2. 签发 JWT；
+1. 处理用户身份验证。
+2. 签发 JWT。
 3. 创建受保护路由，验证 JWT 的有效性。
 
 ## 创建身份验证模块
@@ -22,7 +22,7 @@ nest g service auth
 
 其中：
 
-- `AuthService` 将负责处理身份验证的核心逻辑；
+- `AuthService` 将负责处理身份验证的核心逻辑。
 - `AuthController` 则提供相关的 API 接口，例如登录接口。
 
 在实现身份验证逻辑的过程中，我们需要一个用于管理用户信息的服务。为了职责清晰、结构清晰，我们将用户相关逻辑封装在一个独立的 `UsersService` 中：
@@ -82,7 +82,7 @@ export class UsersModule {}
 
 用户认证的核心逻辑由 `AuthService`（认证服务）负责。在这里，我们实现了一个 `signIn()` 方法，用于根据用户名检索用户信息并验证密码。
 
-在返回结果时，我们通过 ES6 的展开运算符（spread operator）剔除 `password` 字段，避免将敏感信息暴露给客户端。这种做法在实际开发中非常常见，属于基本的安全处理手段。
+在返回结果时，我们通过 ES6 的展开运算符（Spread Operator）剔除 `password` 字段，避免将敏感信息暴露给客户端。这种做法在实际开发中非常常见，属于基本的安全处理手段。
 
 ```ts filename='auth/auth.service.ts'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
@@ -94,10 +94,13 @@ export class AuthService {
 
   async signIn(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username)
+
     if (user?.password !== pass) {
       throw new UnauthorizedException()
     }
+
     const { password, ...result } = user
+
     // TODO: 实际开发中应返回 JWT 令牌
     // 当前仅作演示用途，直接返回用户信息
     return result
@@ -127,7 +130,7 @@ import { UsersModule } from '../users/users.module'
 export class AuthModule {}
 ```
 
-然后，打开 `AuthController`（认证控制器），添加用于处理登录请求的 `signIn()` 方法。该方法会接收客户端提交的用户名与密码，并通过认证服务进行验证，认证通过后返回结果（实际项目中应返回 JWT 令牌）。
+然后，打开 `AuthController`（认证控制器），添加用于处理登录请求的 `signIn()` 方法。该方法会接收客户端提交的用户名和密码，并通过认证服务进行验证，认证通过后返回结果。
 
 ```ts filename='auth/auth.controller.ts'
 import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common'
@@ -153,7 +156,7 @@ export class AuthController {
 
 接下来，我们将为认证系统添加对 JWT 的支持。先明确一下功能目标：
 
-- 允许用户通过用户名和密码登录，登录成功后返回一个 JWT，用于访问后续受保护的接口。我们已实现了用户验证的基础逻辑，接下来要补上 JWT 的签发。
+- 允许用户通过用户名和密码登录，登录成功后返回一个 JWT，用于访问后续受保护的接口。我们已经实现了用户验证的基础逻辑，接下来要补上 JWT 的签发。
 - 基于 JWT 实现路由保护，仅允许持有有效令牌的请求访问特定 API。
 
 为支持 JWT，我们需要额外安装相关依赖：
@@ -189,6 +192,7 @@ export class AuthService {
     pass: string
   ): Promise<{ access_token: string }> {
     const user = await this.usersService.findOne(username)
+
     if (!user || user.password !== pass) {
       throw new UnauthorizedException()
     }
@@ -196,7 +200,7 @@ export class AuthService {
     const payload = { sub: user.userId, username: user.username }
 
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload), // [!code hl]
     }
   }
 }
@@ -251,7 +255,7 @@ export class AuthModule {}
 
 ### 使用 curl 测试登录接口
 
-现在可以通过 curl 发送 POST 请求来测试登录流程。使用 UsersService 中硬编码的用户（如 `"john"` 和密码 `"changeme"`）进行验证：
+现在可以通过 curl 发送 POST 请求来测试登录流程。使用 `UsersService` 中硬编码的用户（如 `"john"` 和密码 `"changeme"`）进行验证：
 
 ```bash
 # 向 /auth/login 发送 POST 请求
@@ -382,8 +386,8 @@ $ curl http://localhost:3000/auth/profile \
 
 至此，我们已经完成了基于 JWT 的身份验证机制的实现：
 
-- 登录成功后，服务端返回一个短期有效的 `access token`；
-- 客户端在后续请求中通过 `Authorization` 头发送该令牌；
+- 登录成功后，服务端返回一个短期有效的 `access token`。
+- 客户端在后续请求中通过 `Authorization` 头发送该令牌。
 - 服务端通过身份验证守卫自动验证令牌的有效性，并将解析结果注入到请求上下文中。
 
 现在，无论你是使用 Angular、React、Vue 等前端框架，还是其他 Node.js 应用，都可以安全地与我们的 API 进行认证和通信。
@@ -422,7 +426,7 @@ export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
 
 这段代码导出了两个常量：
 
-- `IS_PUBLIC_KEY`：定义元数据的键名；
+- `IS_PUBLIC_KEY`：定义元数据的键名。
 - `Public()`：一个自定义装饰器，用于标记公开路由（你也可以命名为 `SkipAuth` 或 `AllowAnonymous`，视团队命名风格而定）。
 
 使用示例：
@@ -454,6 +458,7 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ])
+
     if (isPublic) {
       // 💡 路由被标记为公开，跳过身份验证
       return true
@@ -461,6 +466,7 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest()
     const token = this.extractTokenFromHeader(request)
+
     if (!token) {
       throw new UnauthorizedException()
     }
@@ -489,14 +495,14 @@ export class AuthGuard implements CanActivate {
 
 通过将 `AuthGuard` 注册为全局守卫，并结合自定义的 `@Public()` 装饰器，你可以实现：
 
-- 默认保护所有接口；
-- 精准声明哪些路由应跳过身份验证；
-- 简化控制器代码，避免重复声明 `@UseGuards()`；
+- 默认保护所有接口。
+- 精准声明哪些路由应跳过身份验证。
+- 简化控制器代码，避免重复声明 `@UseGuards()`。
 - 提升安全性与可维护性。
 
 [Passport](https://github.com/jaredhanson/passport) 是目前最受欢迎的 Node.js 身份验证库，广泛应用于各种生产环境中。借助 `@nestjs/passport` 模块，可以将 Passport 无缝集成到 NestJS 应用中，构建灵活、安全的认证机制。
 
-想了解集成步骤与实战用法？请参阅本章的[详细指南](/recipes/passport)。
+想了解集成步骤和实战用法？请参阅本章的[详细指南](/recipes/passport)。
 
 ## 示例项目
 
