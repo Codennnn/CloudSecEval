@@ -185,10 +185,10 @@
 - [x] `/faq/request-lifecycle` - 请求生命周期
 - [x] `/faq/common-errors` - 常见错误排查
 
-## 15. 开发者工具 🔴
+## 15. 开发者工具 ✅
 
-- [ ] `/devtools/overview` - 概述
-- [ ] `/devtools/ci-cd-integration` - CI/CD 集成
+- [x] `/devtools/overview` - 概述
+- [x] `/devtools/ci-cd-integration` - CI/CD 集成
 
 ## 16. 独立页面 🔴
 
