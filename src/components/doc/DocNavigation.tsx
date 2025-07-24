@@ -18,7 +18,7 @@ function NavigationLink(props: NavigationLinkProps) {
   return (
     <Link
       className={cn(
-        'group inline-flex items-center gap-2 p-2 rounded-lg text-sm max-w-full',
+        'group inline-flex items-center gap-2 px-2 py-1.5 rounded-md text-sm max-w-full',
         'hover:bg-muted/50 transition-colors',
       )}
       href={getDocLinkHref(url)}
@@ -26,7 +26,7 @@ function NavigationLink(props: NavigationLinkProps) {
       <div className="flex items-center gap-1.5 w-full text-muted-foreground group-hover:text-foreground transition-colors">
         {isPrev && <ArrowLeftIcon className="size-3.5 shrink-0" strokeWidth={2.8} />}
 
-        <div className="font-medium truncate leading-none">
+        <div className="font-medium truncate">
           {title}
         </div>
 
