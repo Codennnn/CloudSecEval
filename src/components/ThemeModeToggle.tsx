@@ -24,13 +24,15 @@ export function ThemeModeToggle() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        <DropdownMenuItem variant={theme === 'light' ? 'default' : 'highlight'} onClick={() => { setTheme('light') }}>
+        <DropdownMenuItem variant={theme === 'light' ? 'highlight' : 'default'} onClick={() => { setTheme('light') }}>
           亮色
         </DropdownMenuItem>
-        <DropdownMenuItem variant={theme === 'dark' ? 'default' : 'highlight'} onClick={() => { setTheme('dark') }}>
+
+        <DropdownMenuItem variant={theme === 'dark' ? 'highlight' : 'default'} onClick={() => { setTheme('dark') }}>
           暗色
         </DropdownMenuItem>
-        <DropdownMenuItem variant={theme === 'system' ? 'default' : 'highlight'} onClick={() => { setTheme('system') }}>
+
+        <DropdownMenuItem variant={theme === 'system' ? 'highlight' : 'default'} onClick={() => { setTheme('system') }}>
           跟随系统
         </DropdownMenuItem>
       </DropdownMenuContent>
