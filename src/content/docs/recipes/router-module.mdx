@@ -1,12 +1,12 @@
 # 路由模块
 
-<CalloutInfo>
-  <div>本章内容仅适用于 HTTP 应用。</div>
-</CalloutInfo>
+<CalloutInfo>本章内容仅适用于基于 HTTP 的应用。</CalloutInfo>
 
-在 HTTP 应用（如 RESTful API）中，路由的完整路径是由控制器上 `@Controller()` 装饰器所定义的前缀（可选），与方法装饰器（如 `@Get('users')`) 中指定的路径组合而成。你可以在[本章](/controllers#路由)了解更多细节。此外，你也可以为应用的所有路由设置[全局前缀](/faq/global-prefix)，或启用[版本控制](/techniques/versioning)。
+在构建如 RESTful API 等基于 HTTP 的应用时，路由的完整路径由两部分组成：控制器上的 `@Controller()` 装饰器所定义的路径前缀（可选），以及方法装饰器（如 `@Get('users')`）中指定的路径。你可以在[控制器章节](/controllers#路由)了解更多详细内容。
 
-有时，为模块内注册的所有控制器统一添加路径前缀会非常方便。例如，假设你的 REST 应用中有一组专门服务于「仪表盘（Dashboard）」功能的端点。此时，为避免在每个相关控制器中重复添加 `/dashboard` 前缀，你可以借助便捷的 `RouterModule` 来实现，示例如下：
+此外，Nest 还支持为整个应用配置[全局路由前缀](/faq/global-prefix)，或启用[路由版本控制](/techniques/versioning)功能。
+
+在某些场景下，我们希望为模块中所有控制器统一添加一个路径前缀。这在组织模块路由结构、保持命名一致性方面尤其有用。举例来说，假设你的应用中有一组服务于「仪表盘（Dashboard）」功能的端点。为了避免在每个相关控制器中手动添加 `/dashboard` 前缀，你可以使用 `RouterModule` 模块来统一配置，如下所示：
 
 ```ts filename='app.module.ts'
 import { RouterModule } from '@nestjs/core'
@@ -25,7 +25,9 @@ import { RouterModule } from '@nestjs/core'
 export class AppModule {}
 ```
 
-`RouterModule` 还支持定义层级路由。这意味着模块可以包含 `children` 属性来注册子模块，而子模块会自动继承父模块的路径前缀。在下例中，我们将 `AdminModule` 注册为 `DashboardModule` 和 `MetricsModule` 的父级。
+`RouterModule` 还支持定义嵌套路由。这意味着你可以通过设置模块的 `children` 属性，将子模块注册到某个父模块下，并自动继承父模块的路径前缀。
+
+例如，下面的示例中，我们将 `AdminModule` 作为父模块，分别挂载了 `DashboardModule` 和 `MetricsModule` 作为其子模块：
 
 ```ts
 @Module({
@@ -54,7 +56,7 @@ export class AppModule {}
 ```
 
 <CalloutInfo>
-  <div>建议谨慎使用此特性，因为过度嵌套可能会增加后续的代码维护难度。</div>
+  建议谨慎使用该功能，层级过深的路由结构可能会导致代码难以维护。
 </CalloutInfo>
 
-在上面的例子中，`DashboardModule` 中注册的所有控制器都会被添加 `/admin/dashboard` 路径前缀（因为模块路径会自顶向下递归拼接）。同理，`MetricsModule` 中的所有控制器都将应用 `/admin/metrics` 前缀。
+在上述示例中，`DashboardModule` 中注册的所有控制器都会自动带上 `/admin/dashboard` 路径前缀；同样，`MetricsModule` 中的控制器也会统一应用 `/admin/metrics` 前缀。这是因为模块路径会从顶层父模块开始，递归拼接其所有子模块的路径配置。
