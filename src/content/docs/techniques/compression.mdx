@@ -34,10 +34,26 @@ npm install @fastify/compress
 安装完成后，在应用初始化时注册该插件：
 
 ```ts filename='main.ts'
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify'
 import compression from '@fastify/compress'
 
-await app.register(compression)
+async function bootstrap() {
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter()
+  )
+
+  await app.register(compression)
+}
 ```
+
+<CalloutInfo type="warning">
+  请确保在创建应用时使用 `NestFastifyApplication` 类型，否则将无法使用
+  `register` 方法来应用压缩中间件（compression-middleware）。
+</CalloutInfo>
 
 默认配置下，`@fastify/compress` 会根据客户端支持情况优先启用 Brotli 压缩（要求 Node.js 版本 ≥ 11.7.0）。相较于 gzip，Brotli 通常具备更高的压缩比，但压缩耗时也可能略高。
 
