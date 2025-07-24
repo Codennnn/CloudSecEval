@@ -149,7 +149,7 @@
 - [ ] `/recipes/repl` - REPL
 - [x] `/recipes/crud-generator` - CRUD 生成器
 - [x] `/recipes/swc` - SWC 编译支持
-- [ ] `/recipes/passport` - Passport（认证）
+- [ ] `/recipes/passport` - Passport 身份验证
 - [ ] `/recipes/hot-reload` - 热重载
 - [ ] `/recipes/mikroorm` - MikroORM
 - [ ] `/recipes/sql-typeorm` - TypeORM
