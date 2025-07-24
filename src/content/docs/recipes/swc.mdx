@@ -1,9 +1,9 @@
 # SWC 编译支持
 
-[SWC](https://swc.rs/)（Speedy Web Compiler） 是一个基于 Rust 构建的高性能编译平台，具备良好的可扩展性，常用于代码的编译与打包。在 Nest CLI 中集成 SWC，可以显著加快项目的构建速度，是一种简单且高效的开发加速方案。
+[SWC](https://swc.rs/)（Speedy Web Compiler）是一个由 Rust 编写的高性能编译器平台，具备良好的可扩展性，常用于代码的转译与打包。将 SWC 集成至 Nest CLI 后，能够显著提升项目的构建效率，是一种简洁而高效的开发加速方案。
 
 <CalloutInfo>
-  SWC 的编译速度可达默认 TypeScript 编译器的 **20 倍**。
+  与默认的 TypeScript 编译器相比，SWC 的编译速度最高可提升至 **20 倍**。
 </CalloutInfo>
 
 ## 安装依赖
@@ -25,12 +25,12 @@ nest start -b swc
 
 <CalloutInfo>
   如果你的项目采用 Monorepo
-  架构，请参考[多包仓库结构配置](/recipes/swc#多包仓库结构)。
+  架构，请参考[多包仓库结构配置](/recipes/swc#多包仓库项目配置)。
 </CalloutInfo>
 
 除了通过 `-b` 参数指定构建器外，你也可以在 `nest-cli.json` 配置文件中设置默认构建器：
 
-```json
+```json filename='nest-cli.json'
 {
   "compilerOptions": {
     "builder": "swc"
@@ -38,9 +38,9 @@ nest start -b swc
 }
 ```
 
-如需进一步自定义构建行为，可指定一个包含 `type` 与 `options` 字段的构建器对象，例如：
+如需进一步自定义构建行为，可指定一个包含 `type` 和 `options` 字段的构建器对象，例如：
 
-```json
+```json filename='nest-cli.json'
 {
   "compilerOptions": {
     "builder": {
@@ -62,19 +62,19 @@ nest start -b swc -w
 
 ## 类型检查支持
 
-默认情况下，SWC **不执行类型检查**，这与 TypeScript 自带的编译器不同。
+与 TypeScript 官方编译器不同，SWC 默认**不会执行类型检查**。
 
-如需在开发流程中启用类型检查，可通过添加 `--type-check` 标志实现：
+如果希望在开发过程中启用类型检查，可以通过添加 `--type-check` 参数来实现：
 
 ```bash
 nest start -b swc --type-check
 ```
 
-该命令会在不生成输出文件（`noEmit`）的前提下，调用 tsc 与 SWC 并行执行，从而实现类型检查与编译任务的分离与提速。
+该命令会在不生成输出文件（即启用 `noEmit` 模式）的前提下，同时运行 tsc 和 SWC，从而实现类型检查与编译任务的并行处理，提高构建效率。
 
-你也可以在 `nest-cli.json` 中通过配置实现同样的效果：
+此外，你也可以通过修改 `nest-cli.json` 文件中的配置，实现相同的效果：
 
-```json
+```json filename='nest-cli.json'
 {
   "compilerOptions": {
     "builder": "swc",
@@ -83,13 +83,13 @@ nest start -b swc --type-check
 }
 ```
 
-## CLI 插件支持（SWC）
+## CLI 插件支持
 
-当使用 `--type-check` 标志时，Nest CLI 插件会自动启动，并生成序列化的元数据文件，供应用在运行时加载使用。
+在使用 `--type-check` 参数时，Nest CLI 会自动启用相关插件，并生成序列化的元数据文件，供应用在运行时加载和使用。
 
 ## 自定义 SWC 配置
 
-Nest 集成的 SWC 构建器已包含默认配置，能够覆盖大多数常见场景。但你也可以通过在项目根目录下创建 `.swcrc` 文件进行个性化配置，例如：
+Nest 集成的 SWC 构建器默认提供了一套通用配置，已能够覆盖大多数常见使用场景。但在某些特定需求下，你仍可以通过在项目根目录下添加 `.swcrc` 文件，来自定义构建行为。例如：
 
 ```json
 {
@@ -107,7 +107,7 @@ Nest 集成的 SWC 构建器已包含默认配置，能够覆盖大多数常见�
 }
 ```
 
-通过 `.swcrc` 文件，你可以灵活控制构建行为，如是否启用装饰器语法、是否生成 Source Map、是否压缩输出等。
+通过 `.swcrc` 文件，你可以灵活调整构建配置，例如启用或禁用装饰器语法、是否生成 Source Map、是否压缩输出等，满足不同场景下的开发或生产需求。
 
 ## 多包仓库项目配置
 

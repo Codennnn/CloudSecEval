@@ -728,8 +728,8 @@ TypeOrmModule.forRootAsync({
 要开始使用 Sequelize，需要先安装相关依赖。本章节以主流的 [MySQL](https://www.mysql.com/) 关系型数据库管理系统（Relational DBMS）为例进行演示。实际上，Sequelize 支持多种关系型数据库，例如 PostgreSQL、MySQL、Microsoft SQL Server、SQLite 和 MariaDB。无论选择哪种数据库，操作流程基本一致，只需安装对应的数据库客户端 API 库即可。
 
 ```bash
-$ npm install --save @nestjs/sequelize sequelize sequelize-typescript mysql2
-$ npm install --save-dev @types/sequelize
+$ npm install @nestjs/sequelize sequelize sequelize-typescript mysql2
+$ npm install -D @types/sequelize
 ```
 
 依赖安装完成后，可以在根模块（AppModule）中导入 `SequelizeModule`：
