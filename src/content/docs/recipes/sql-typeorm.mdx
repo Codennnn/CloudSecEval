@@ -11,7 +11,7 @@
   包来简化流程。要了解更多信息，请参阅[这篇文档](/techniques/sql)。
 </CalloutInfo>
 
-[TypeORM](https://github.com/typeorm/typeorm) 是目前 Node.js 生态中最成熟的对象关系映射（Object Relational Mapper，ORM）工具。由于其采用 TypeScript 编写，因此与 Nest 框架配合良好。
+[TypeORM](https://github.com/typeorm/typeorm) 是目前 Node.js 生态中最成熟的对象关系映射（Object Relational Mapper，简称 ORM）工具。由于其采用 TypeScript 编写，因此与 Nest 框架配合良好。
 
 ## 快速开始
 
@@ -102,7 +102,7 @@ export class Photo {
 }
 ```
 
-我们将 `Photo` 实体放置在 `photo` 目录下，该目录也用于存放与 `PhotoModule` 相关的所有文件。接下来，我们创建一个**仓储提供者 (Repository Provider)**：
+我们将 `Photo` 实体放置在 `photo` 目录下，该目录也用于存放与 `PhotoModule` 相关的所有文件。接下来，我们创建一个**仓储提供者 （Repository Provider）**：
 
 ```ts filename='photo.providers.ts'
 import { DataSource } from 'typeorm'

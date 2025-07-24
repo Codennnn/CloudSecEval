@@ -3,13 +3,13 @@
 TypeScript 编译是影响应用启动性能的主要瓶颈。幸运的是，借助 webpack 的热模块替换（Hot-Module Replacement，HMR）功能，你无需在每次代码变更后都重新编译整个项目。这可以显著缩短应用的启动时间，从而大幅提升开发效率和体验。
 
 <CalloutInfo type="warning">
-  请注意，`webpack` 不会自动将资源文件（如 `.graphql` 文件）复制到 `dist`
+  `webpack` 不会自动将资源文件（如 `.graphql` 文件）复制到 `dist`
   目录，它也不兼容静态 glob 路径（例如 `TypeOrmModule` 中的 `entities` 属性）。
 </CalloutInfo>
 
 ## 使用 CLI
 
-若你正在使用 [Nest CLI](/cli/overview)，则配置过程会非常简单。Nest CLI 封装了 `webpack`，可以让你轻松地使用 `HotModuleReplacementPlugin`。
+如果你正在使用 [Nest CLI](/cli/overview)，则配置过程会非常简单。Nest CLI 封装了 `webpack`，可以让你轻松地使用 `HotModuleReplacementPlugin`。
 
 ### 安装依赖
 
@@ -79,7 +79,6 @@ async function bootstrap() {
     module.hot.dispose(() => app.close())
   }
 }
-bootstrap()
 ```
 
 为了简化启动流程，请在 `package.json` 文件中添加如下 `start:dev` 脚本：
@@ -175,7 +174,6 @@ async function bootstrap() {
     module.hot.dispose(() => app.close())
   }
 }
-bootstrap()
 ```
 
 为了简化启动流程，请在 `package.json` 文件中添加如下 `start:dev` 脚本：
