@@ -62,8 +62,8 @@ export function SidebarMenuButtonContent({ item }: { item: SidebarMenuItemType }
       {item.items && item.items.length > 0
         ? (
             <span className="ml-auto shrink-0">
-              <ChevronRightIcon className="group-data-[state=open]/collapsible:hidden" size={14} />
-              <ChevronDownIcon className="group-data-[state=closed]/collapsible:hidden" size={14} />
+              <ChevronRightIcon className="collapsible-group-closed group-data-[state=open]/collapsible:hidden" size={14} />
+              <ChevronDownIcon className="collapsible-group-open group-data-[state=closed]/collapsible:hidden" size={14} />
             </span>
           )
         : null}

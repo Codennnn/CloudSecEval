@@ -195,3 +195,29 @@
     background-position: 200% center;
   }
 }
+
+.collapsible-group {
+  &[data-state='open'] {
+    > .menu-item-group {
+      .collapsible-group-closed {
+        @apply hidden;
+      }
+
+      .collapsible-group-open {
+        @apply block;
+      }
+    }
+  }
+
+  &[data-state='closed'] {
+    > .menu-item-group {
+      .collapsible-group-closed {
+        @apply block;
+      }
+
+      .collapsible-group-open {
+        @apply hidden;
+      }
+    }
+  }
+}

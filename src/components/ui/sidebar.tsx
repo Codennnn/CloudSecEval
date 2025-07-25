@@ -460,9 +460,9 @@ function SidebarGroupContent({
   )
 }
 
-function SidebarMenu({ className, ...props }: React.ComponentProps<'ul'>) {
+function SidebarMenu({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <ul
+    <div
       className={cn('flex w-full min-w-0 flex-col gap-1', className)}
       data-sidebar="menu"
       data-slot="sidebar-menu"
@@ -471,10 +471,10 @@ function SidebarMenu({ className, ...props }: React.ComponentProps<'ul'>) {
   )
 }
 
-function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
+function SidebarMenuItem({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <li
-      className={cn('group/menu-item relative', className)}
+    <div
+      className={cn('group/menu-item menu-item-group relative', className)}
       data-sidebar="menu-item"
       data-slot="sidebar-menu-item"
       {...props}
@@ -688,7 +688,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<'ul'>) {
   return (
     <ul
       className={cn(
-        'border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5',
+        'border-sidebar-border ml-3.5 mr-0.5 flex min-w-0 translate-x-px flex-col gap-1 border-l pl-2.5 py-0.5',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}

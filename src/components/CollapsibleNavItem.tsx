@@ -25,10 +25,11 @@ interface CollapsibleNavItemProps {
   item: NavMenuItem
   defaultOpen?: boolean
   forceOpen?: boolean
+  level?: number // 添加层级参数，用于控制渲染深度
 }
 
 export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
-  const { item, defaultOpen = false, forceOpen = false } = props
+  const { item, defaultOpen = false, forceOpen = false, level = 0 } = props
 
   const pathname = usePathname()
   const router = useRouter()
@@ -37,7 +38,20 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
   // 检查当前路径是否与该导航项或其子项匹配
   const isActiveItem = item.url && pathname === `${RoutePath.Docs}${item.url}`
 
-  const hasActiveChild = item.items?.some((subItem) => subItem.url && pathname === `${RoutePath.Docs}${subItem.url}`)
+  // 递归检查所有子项是否有激活状态
+  const checkActiveChild = (menuItem: NavMenuItem): boolean => {
+    if (menuItem.url && pathname === `${RoutePath.Docs}${menuItem.url}`) {
+      return true
+    }
+
+    if (menuItem.items) {
+      return menuItem.items.some(checkActiveChild)
+    }
+
+    return false
+  }
+
+  const hasActiveChild = item.items?.some(checkActiveChild)
 
   // 当路径变化时，自动展开包含当前页面的菜单
   useEffect(() => {
@@ -67,7 +81,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
 
   return (
     <Collapsible
-      className="group/collapsible"
+      className="group/collapsible collapsible-group"
       open={isOpen}
       onOpenChange={handleOpenChange}
     >
@@ -114,34 +128,45 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                       .filter((subItem) => !subItem.hiddenInSidebar)
                       .map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title ?? crypto.randomUUID()}>
-                          <AppSidebarMenuSubButton item={subItem}>
-                            {subItem.url
-                              ? (
-                                  <Link
-                                    href={getDocLinkHref(subItem.url)}
-                                    target={isExternalLink(subItem.url) ? '_blank' : undefined}
-                                    onMouseEnter={() => {
-                                      if (subItem.url) {
-                                        handleMouseEnter(subItem.url)
-                                      }
-                                    }}
-                                  >
-                                    <span className="flex-1 truncate min-w-0">
-                                      {subItem.title}
-                                    </span>
+                          {/* 检查子项是否有嵌套的 items */}
+                          {subItem.items && subItem.items.length > 0
+                            ? (
+                                <CollapsibleNavItem
+                                  item={subItem}
+                                  level={level + 1}
+                                />
+                              )
+                            : (
+                                // 如果没有嵌套项，渲染普通的菜单项
+                                <AppSidebarMenuSubButton item={subItem}>
+                                  {subItem.url
+                                    ? (
+                                        <Link
+                                          href={getDocLinkHref(subItem.url)}
+                                          target={isExternalLink(subItem.url) ? '_blank' : undefined}
+                                          onMouseEnter={() => {
+                                            if (subItem.url) {
+                                              handleMouseEnter(subItem.url)
+                                            }
+                                          }}
+                                        >
+                                          <span className="flex-1 truncate min-w-0">
+                                            {subItem.title}
+                                          </span>
 
-                                    {isExternalLink(subItem.url)
-                                      ? (
-                                          <ArrowUpRightIcon
-                                            className="ml-auto opacity-50"
-                                            size={14}
-                                          />
-                                        )
-                                      : null}
-                                  </Link>
-                                )
-                              : subItem.title}
-                          </AppSidebarMenuSubButton>
+                                          {isExternalLink(subItem.url)
+                                            ? (
+                                                <ArrowUpRightIcon
+                                                  className="ml-auto opacity-50"
+                                                  size={14}
+                                                />
+                                              )
+                                            : null}
+                                        </Link>
+                                      )
+                                    : subItem.title}
+                                </AppSidebarMenuSubButton>
+                              )}
                         </SidebarMenuSubItem>
                       ))}
                   </SidebarMenuSub>
