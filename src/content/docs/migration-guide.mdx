@@ -25,7 +25,7 @@ Express v5 最显著的更新之一是路径路由匹配算法的调整。以下
 findAll() {
   // 在 NestJS 11 中，这将被自动转换为有效的 Express v5 路由。
   // 虽然可能仍然可用，但在 Express v5 中已不推荐继续使用该通配符写法。
-  return 'This route should not work in Express v5'
+  return '这条路由在 Express v5 中是无效的'
 }
 ```
 
@@ -34,7 +34,7 @@ findAll() {
 ```ts
 @Get('users/*splat')
 findAll() {
-  return 'This route will work in Express v5'
+  return '这条路由在 Express v5 中是可用的'
 }
 ```
 

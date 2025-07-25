@@ -18,8 +18,8 @@
 首先，安装必要的依赖：
 
 ```bash
-$ npm install --save sequelize sequelize-typescript mysql2
-$ npm install --save-dev @types/sequelize
+npm install sequelize sequelize-typescript mysql2
+npm install -D @types/sequelize
 ```
 
 第一步是创建一个 `Sequelize` 实例，并将配置对象传递给它的构造函数。然后，将所有模型添加到该实例中（或使用 `modelPaths` 属性指定模型路径），最后调用 `sync()` 方法来同步数据库表结构。
