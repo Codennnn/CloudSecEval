@@ -110,36 +110,40 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
             ? (
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title ?? crypto.randomUUID()}>
-                        <AppSidebarMenuSubButton item={subItem}>
-                          {subItem.url
-                            ? (
-                                <Link
-                                  href={getDocLinkHref(subItem.url)}
-                                  target={isExternalLink(subItem.url) ? '_blank' : undefined}
-                                  onMouseEnter={() => {
-                                    if (subItem.url) {
-                                      handleMouseEnter(subItem.url)
-                                    }
-                                  }}
-                                >
-                                  {subItem.title}
+                    {item.items
+                      .filter((subItem) => !subItem.hiddenInSidebar)
+                      .map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title ?? crypto.randomUUID()}>
+                          <AppSidebarMenuSubButton item={subItem}>
+                            {subItem.url
+                              ? (
+                                  <Link
+                                    href={getDocLinkHref(subItem.url)}
+                                    target={isExternalLink(subItem.url) ? '_blank' : undefined}
+                                    onMouseEnter={() => {
+                                      if (subItem.url) {
+                                        handleMouseEnter(subItem.url)
+                                      }
+                                    }}
+                                  >
+                                    <span className="flex-1 truncate min-w-0">
+                                      {subItem.title}
+                                    </span>
 
-                                  {isExternalLink(subItem.url)
-                                    ? (
-                                        <ArrowUpRightIcon
-                                          className="ml-auto opacity-50"
-                                          size={14}
-                                        />
-                                      )
-                                    : null}
-                                </Link>
-                              )
-                            : subItem.title}
-                        </AppSidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                                    {isExternalLink(subItem.url)
+                                      ? (
+                                          <ArrowUpRightIcon
+                                            className="ml-auto opacity-50"
+                                            size={14}
+                                          />
+                                        )
+                                      : null}
+                                  </Link>
+                                )
+                              : subItem.title}
+                          </AppSidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               )

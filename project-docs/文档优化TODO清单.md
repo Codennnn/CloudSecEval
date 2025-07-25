@@ -156,7 +156,6 @@
 - [ ] `/recipes/mongodb` - Mongoose
 - [ ] `/recipes/sql-sequelize` - SQL（Sequelize）
 - [ ] `/recipes/router-module` - 路由模块
-- [ ] `/recipes/swagger` - Swagger
 - [ ] `/recipes/terminus` - 健康检查
 - [ ] `/recipes/cqrs` - CQRS
 - [ ] `/recipes/documentation` - Compodoc

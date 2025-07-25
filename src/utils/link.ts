@@ -175,10 +175,10 @@ export function getDocsUrl(docPath = ''): string {
     return getFullUrl(RoutePath.Docs)
   }
 
-  // 验证路径是否在导航数据中存在
-  if (!isValidDocPath(normalizedPath)) {
-    return ''
+  // 验证路径是否在导航数据中存在，存在则返回完整 URL
+  if (isValidDocPath(normalizedPath)) {
+    return getFullUrl(`${RoutePath.Docs}${normalizedPath}`)
   }
 
-  return getFullUrl(`${RoutePath.Docs}${normalizedPath}`)
+  return ''
 }

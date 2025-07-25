@@ -52,12 +52,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarContent>
           <SidebarGroup>
             <SidebarMenu>
-              {navMainData.map((item, idx) => (
-                <CollapsibleNavItem
-                  key={`${item.title ?? ''}-${idx}`}
-                  item={item}
-                />
-              ))}
+              {navMainData
+                .filter((item) => !item.hiddenInSidebar)
+                .map((item, idx) => (
+                  <CollapsibleNavItem
+                    key={`${item.title ?? ''}-${idx}`}
+                    item={item}
+                  />
+                ))}
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>

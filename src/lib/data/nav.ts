@@ -170,7 +170,7 @@ export const navMainData: NavMenuItem[] = [
     title: '实用案例',
     titleEn: 'Recipes',
     items: [
-      { title: 'REPL', titleEn: 'REPL', url: '/recipes/repl' },
+      { title: 'REPL（交互式命令行）', titleEn: 'REPL', url: '/recipes/repl' },
       { title: 'CRUD 生成器', titleEn: 'CRUD generator', url: '/recipes/crud-generator' },
       { title: 'SWC 编译支持', titleEn: 'SWC (fast compiler)', url: '/recipes/swc' },
       { title: 'Passport 身份验证', titleEn: 'Passport (auth)', url: '/recipes/passport' },
@@ -181,7 +181,7 @@ export const navMainData: NavMenuItem[] = [
       { title: 'Prisma', titleEn: 'Prisma', url: '/recipes/prisma' },
       { title: 'SQL（Sequelize）', titleEn: 'Sequelize', url: '/recipes/sql-sequelize' },
       { title: '路由模块', titleEn: 'Router module', url: '/recipes/router-module' },
-      { title: 'Swagger', titleEn: 'Swagger', url: '/recipes/swagger' },
+      { title: 'Swagger', titleEn: 'Swagger', url: '/recipes/swagger', hiddenInSidebar: true },
       { title: '健康检查', titleEn: 'Health checks', url: '/recipes/terminus' },
       { title: 'CQRS', titleEn: 'CQRS', url: '/recipes/cqrs' },
       { title: 'Compodoc', titleEn: 'Compodoc', url: '/recipes/documentation' },
