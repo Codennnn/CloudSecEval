@@ -16,6 +16,7 @@ export interface FileTreeItem {
   icon?: React.ReactNode
   type?: 'folder' | 'file'
   children?: FileTreeItem[]
+  comment?: string // 添加注释字段
 }
 
 export type FileTreeData = FileTreeItem[]
@@ -31,16 +32,25 @@ const FileTreeItemComponent = ({ item }: { item: FileTreeItem }) => {
   if (item.type === 'folder' || item.children) {
     return (
       <SidebarMenuItem key={item.name}>
-        <SidebarMenuButton>
-          {item.icon ?? <FolderOpenIcon />}
-          {item.name}
+        <SidebarMenuButton className="flex items-center justify-between w-full hover:bg-muted">
+          <div className="flex items-center gap-2">
+            {item.icon ?? <FolderOpenIcon className="size-4" />}
+            {item.name}
+          </div>
+          {item.comment && (
+            <span className="text-muted-foreground text-xs font-normal ml-2">
+              {item.comment}
+            </span>
+          )}
         </SidebarMenuButton>
 
-        <SidebarMenuSub>
-          {item.children?.map((child) => (
-            <FileTreeItemComponent key={child.name} item={child} />
-          ))}
-        </SidebarMenuSub>
+        {!!item.children && item.children.length > 0 && (
+          <SidebarMenuSub>
+            {item.children.map((child) => (
+              <FileTreeItemComponent key={child.name} item={child} />
+            ))}
+          </SidebarMenuSub>
+        )}
       </SidebarMenuItem>
     )
   }
@@ -48,13 +58,20 @@ const FileTreeItemComponent = ({ item }: { item: FileTreeItem }) => {
   // 文件
   return (
     <SidebarMenuSubItem key={item.name}>
-      <SidebarMenuSubButton>
-        {item.icon ?? (
-          <span className="size-4 inline-block">
-            <LanguageIcon lang="ts" />
+      <SidebarMenuSubButton className="flex items-center justify-between w-full hover:bg-muted">
+        <div className="flex items-center gap-2">
+          {item.icon ?? (
+            <span className="size-4 inline-block">
+              <LanguageIcon lang="ts" />
+            </span>
+          )}
+          {item.name}
+        </div>
+        {item.comment && (
+          <span className="text-muted-foreground text-xs font-normal ml-2">
+            {item.comment}
           </span>
         )}
-        {item.name}
       </SidebarMenuSubButton>
     </SidebarMenuSubItem>
   )
