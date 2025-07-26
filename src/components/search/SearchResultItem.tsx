@@ -69,13 +69,25 @@ export function SearchResultItem(props: SearchResultItemProps) {
    * 对于左键点击，使用原有的 onClick 回调
    * 对于中键点击，浏览器会自动在新标签页打开链接
    */
-  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+    // 阻止事件冒泡，避免影响 Dialog 的点击检测
+    ev.stopPropagation()
+
     // 如果是左键点击（button 0），阻止默认行为并使用自定义逻辑
-    if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
-      event.preventDefault()
+    if (ev.button === 0 && !ev.ctrlKey && !ev.metaKey) {
+      ev.preventDefault()
       onClick()
     }
     // 对于中键点击（button 1）或 Ctrl/Cmd + 左键，让浏览器处理默认行为
+  }
+
+  /**
+   * 处理鼠标悬停事件
+   */
+  const handleMouseEnter = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+    ev.stopPropagation()
+
+    onMouseEnter()
   }
 
   return (
@@ -87,7 +99,7 @@ export function SearchResultItem(props: SearchResultItemProps) {
       )}
       href={documentHref}
       onClick={handleClick}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={handleMouseEnter}
     >
       <div className="mt-0.5 shrink-0 text-muted-foreground">
         {document?.section
