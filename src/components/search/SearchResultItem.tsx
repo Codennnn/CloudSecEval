@@ -21,7 +21,7 @@ export function SearchResultItem(props: SearchResultItemProps) {
 
   const { document } = result
 
-  const ref = useRef<HTMLButtonElement>(null)
+  const ref = useRef<HTMLAnchorElement>(null)
 
   useEffect(() => {
     if (isSelected) {
@@ -55,14 +55,38 @@ export function SearchResultItem(props: SearchResultItemProps) {
     }
   }, [document?.path])
 
+  // 生成文档链接
+  const documentHref = useMemo(() => {
+    if (document?.path) {
+      return document.path
+    }
+
+    return '#'
+  }, [document?.path])
+
+  /**
+   * 处理点击事件
+   * 对于左键点击，使用原有的 onClick 回调
+   * 对于中键点击，浏览器会自动在新标签页打开链接
+   */
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    // 如果是左键点击（button 0），阻止默认行为并使用自定义逻辑
+    if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
+      event.preventDefault()
+      onClick()
+    }
+    // 对于中键点击（button 1）或 Ctrl/Cmd + 左键，让浏览器处理默认行为
+  }
+
   return (
-    <button
+    <a
       ref={ref}
       className={cn(
-        'flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all duration-150 hover:bg-muted/50',
+        'flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all duration-150 hover:bg-muted/50 no-underline',
         isSelected && 'bg-muted hover:bg-muted border-accent-foreground/20 shadow-sm',
       )}
-      onClick={onClick}
+      href={documentHref}
+      onClick={handleClick}
       onMouseEnter={onMouseEnter}
     >
       <div className="mt-0.5 shrink-0 text-muted-foreground">
@@ -97,6 +121,6 @@ export function SearchResultItem(props: SearchResultItemProps) {
           </div>
         )}
       </div>
-    </button>
+    </a>
   )
 }
