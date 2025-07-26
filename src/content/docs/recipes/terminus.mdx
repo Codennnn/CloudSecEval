@@ -1,16 +1,28 @@
 import terminusErrorLogPrettyImage from '/public/assets/Terminus_Error_Log_Pretty.png'
 import terminusErrorLogJsonImage from '/public/assets/Terminus_Error_Log_Json.png'
 
-# 健康检查
+# 健康检查（Health Check）
 
-Terminus 集成可以为你提供**就绪性/存活性（readiness/liveness）** 健康检查。在复杂的后端架构中，健康检查是不可或缺的一环。简单来说，Web 开发中的健康检查通常指一个特殊的端点（Endpoint），例如 `https://my-website.com/health/readiness`。
+什么是健康检查？简单来说，就是让你的应用能够「主动汇报自己的状态」。
 
-你的基础设施中的某个服务或组件（例如 [Kubernetes](https://kubernetes.io/)）会持续轮询此端点，当向此端点发起的 `GET` 请求返回「不健康」的 HTTP 状态码时，该服务就会采取相应的纠正措施。
+想象一下，你的应用就像一个员工，而健康检查就是定期的体检报告。通过一个特殊的 URL 地址（比如 `https://my-website.com/health/readiness`），外部系统可以随时询问：「你现在还好吗？」如果应用回复「我很好」，一切正常；如果回复「我有问题」或者干脆不回复，监控系统就知道需要采取行动了。
 
-「健康」或「不健康」的定义因服务类型而异，因此，**Terminus** 提供了一套 **健康指示器（Health Indicator）**，让你可以根据具体场景自定义健康评估逻辑。
+这在现代后端开发中非常重要。比如：
 
-例如，假设你的 Web 服务器使用 MongoDB 存储数据，那么确认 MongoDB 服务是否正常运行就至关重要。
-此时，便可以使用 `MongooseHealthIndicator`。正确配置后（下文将详细说明），你的健康检查端点就会根据 MongoDB 的运行状态返回「健康」或「不健康」的 HTTP 状态码。
+- **Docker 容器**会定期检查应用是否正常运行。
+- **Kubernetes** 会根据健康检查结果决定是否重启容器。
+- **负载均衡器**会避免将请求发送给不健康的服务。
+
+但是，什么叫「健康」或「不健康」呢？这要看具体情况：
+
+- 数据库连接正常吗？
+- 外部 API 能正常调用吗？
+- 内存使用量是否超标？
+- 磁盘空间是否充足？
+
+**Terminus** 就是 NestJS 提供的健康检查解决方案。它包含多种**健康指示器（Health Indicator）**，就像体检时的各项检查项目，帮你监控应用的各个方面。
+
+举个例子：如果你的应用依赖 MongoDB 数据库，那么数据库的运行状态就很关键。使用 `MongooseHealthIndicator`，你的健康检查端点就能实时反映 MongoDB 的状态，一旦数据库出现问题，健康检查会立即报告异常。
 
 ## 快速开始
 
