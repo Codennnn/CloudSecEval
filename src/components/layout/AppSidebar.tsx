@@ -1,5 +1,10 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import { CollapsibleNavItem } from '~/components/CollapsibleNavItem'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
@@ -18,6 +23,42 @@ import { RoutePath, SITE_CONFIG } from '~/constants'
 import { navMainData } from '~/lib/data/nav'
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * 滚动到激活的菜单项
+   * 确保当前激活的导航项在用户视野内
+   */
+  const scrollToActiveItem = () => {
+    if (!scrollContainerRef.current) {
+      return
+    }
+
+    // 查找当前激活的菜单项元素
+    const activeElement = scrollContainerRef.current.querySelector('[data-active="true"]')
+
+    if (activeElement) {
+      // 使用 scrollIntoView 将激活的菜单项滚动到视野中央
+      activeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      })
+    }
+  }
+
+  // 当路径变化时，延迟执行滚动以确保DOM更新完成
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      scrollToActiveItem()
+    }, 100) // 给一些时间让菜单展开和DOM更新
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [pathname])
+
   return (
     <Sidebar {...props}>
       <SidebarHeader className="gap-4">
@@ -48,7 +89,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SearchForm />
       </SidebarHeader>
 
-      <ScrollGradientContainer gradientFromColor="from-sidebar" gradientHeight="h-12">
+      <ScrollGradientContainer
+        ref={scrollContainerRef}
+        gradientFromColor="from-sidebar"
+        gradientHeight="h-12"
+      >
         <SidebarContent>
           <SidebarGroup>
             <SidebarMenu>
