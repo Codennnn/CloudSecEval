@@ -1,12 +1,30 @@
-# 异步本地存储（Async Local Storage）
+# 异步本地存储
 
-`AsyncLocalStorage` 是一个 [Node.js API](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage)（基于 `async_hooks` API），它为在应用中传播本地状态提供了一种替代方案，你不再需要通过函数参数来显式传递状态。该机制类似于其他编程语言中的线程本地存储（Thread-Local Storage）。
+## 什么是异步本地存储？
 
-异步本地存储的核心思想是，使用 `AsyncLocalStorage#run` 方法来*包裹*一个函数调用。这样，所有在该函数调用内部执行的代码，都能访问到同一个 `store`，并且这个 `store` 对每个调用链都是唯一的。
+想象一下，你正在开发一个网站，每当用户发起请求时，你都需要知道「这是哪个用户的请求」。通常情况下，你需要把这个用户信息一层层地传递给每个处理函数，就像传递接力棒一样。这样做不仅麻烦，还容易出错。
 
-在 NestJS 的上下文中，这意味着我们可以在请求生命周期的某个恰当位置，使用它来包裹后续的请求处理逻辑。这样，我们便能访问和修改那些仅对当前请求可见的状态。该方法为请求作用域（Request-scoped）提供者及其固有的局限性提供了一种有效的替代方案。
+异步本地存储（Async Local Storage）就是为了解决这个问题而生的。它是一个 [Node.js 内置 API](https://nodejs.org/api/async_context.html#async_context_class_asynclocalstorage)，可以帮你在一次请求的整个处理过程中，自动「记住」和共享数据，而不需要手动传递参数。
 
-此外，我们也可以只在系统的某个特定部分（例如，处理一个事务对象时）使用异步本地存储来传播上下文，而无需在服务之间显式传递它，从而提高了隔离性和封装性。
+## 工作原理
+
+异步本地存储的核心机制很简单：
+
+- **创建存储空间**：为每个请求创建一个独立的「储物柜」（我们称之为 `store`）。
+- **自动访问**：在这个请求的处理过程中，任何地方都可以直接访问这个「储物柜」。
+- **自动隔离**：不同请求的「储物柜」彼此独立，互不干扰。
+
+这就像每个用户来到餐厅时，服务员都会给他们分配一个专属的储物柜，用餐期间随时可以取用，而且不用担心和其他客人的东西弄混。
+
+## 在 NestJS 中的作用
+
+在 NestJS 应用中，异步本地存储可以帮你：
+
+- **解决数据传递难题**：不再需要把用户 ID、请求 ID 等信息一层层传递给每个服务和控制器。
+- **替代请求作用域提供者**：NestJS 的请求作用域提供者虽然能解决类似问题，但性能开销较大。异步本地存储提供了一个更轻量的解决方案。
+- **增强代码整洁性**：你的业务逻辑可以专注于核心功能，而不用被数据传递的细节干扰。
+
+比如，你可以在处理用户订单时，直接在任何地方获取当前用户的信息，而不需要把用户 ID 从控制器传递到服务，再从服务传递到数据库层。
 
 ## 自定义实现
 
@@ -19,6 +37,8 @@ NestJS 本身没有为 `AsyncLocalStorage` 提供内置抽象。下面我们以�
 1.  首先，在一个共享的源文件中创建一个 `AsyncLocalStorage` 的实例。在 NestJS 中，推荐的做法是将其封装在一个模块中，并通过自定义提供者进行注册。
 
 ```ts filename='als.module.ts'
+import { AsyncLocalStorage } from 'async_hooks'
+
 @Module({
   providers: [
     {
@@ -31,13 +51,7 @@ NestJS 本身没有为 `AsyncLocalStorage` 提供内置抽象。下面我们以�
 export class AlsModule {}
 ```
 
-<CalloutInfo>
-
-`AsyncLocalStorage` 需要从 `async_hooks` 模块导入。
-
-</CalloutInfo>
-
-2.  由于我们当前只关注 HTTP 场景，因此可以通过中间件，用 `AsyncLocalStorage#run` 来包裹 `next` 函数。中间件是处理入站请求的第一个环节，这可以确保 `store` 在所有后续处理逻辑（如增强器、守卫、拦截器等）中都可用。
+2.  由于我们当前只关注 HTTP 场景，因此可以通过中间件，用 `AsyncLocalStorage.run()` 来包裹 `next` 函数。中间件是处理入站请求的第一个环节，这可以确保 `store` 在所有后续处理逻辑（如增强器、守卫、拦截器等）中都可用。
 
 ```ts filename='app.module.ts'
 @Module({
@@ -47,19 +61,20 @@ export class AlsModule {}
 })
 export class AppModule implements NestModule {
   constructor(
-    // 注入 AsyncLocalStorage 实例
+    // 通过依赖注入获取 AsyncLocalStorage 实例
     private readonly als: AsyncLocalStorage<any>
   ) {}
 
   configure(consumer: MiddlewareConsumer) {
-    // 绑定中间件
+    // 为所有路由应用中间件
     consumer
       .apply((req, res, next) => {
-        // 根据请求初始化 store 的默认值
+        // 从请求头中提取用户信息，初始化存储对象
         const store = {
           userId: req.headers['x-user-id'],
         }
-        // 用 als.run 方法和 store 包裹 "next" 回调
+        // 使用 AsyncLocalStorage.run() 包裹后续处理流程
+        // 这样整个请求周期内都能访问到这个 store
         this.als.run(store, () => next())
       })
       .forRoutes('*path')
@@ -73,13 +88,12 @@ export class AppModule implements NestModule {
 @Injectable()
 export class CatsService {
   constructor(
-    // 注入 AsyncLocalStorage 实例
     private readonly als: AsyncLocalStorage<any>,
     private readonly catsRepository: CatsRepository
   ) {}
 
   getCatForUser() {
-    // getStore 方法始终返回与当前请求关联的 store 实例
+    // 获取当前请求的存储对象，提取用户 ID
     const userId = this.als.getStore()['userId'] as number
     return this.catsRepository.getForUser(userId)
   }
@@ -89,7 +103,7 @@ export class CatsService {
 4.  通过这种方式，我们无需注入完整的 `REQUEST` 对象，便能在同一个请求的生命周期内共享状态。
 
 <CalloutInfo type="warning">
-  尽管这项技术在许多场景下都很有用，但它本质上是通过创建隐式上下文来工作的，这可能会让数据流变得不那么明确。因此，请谨慎使用此模式，尤其要避免创建"无所不包"的上下文"[上帝对象](https://zh.wikipedia.org/wiki/上帝对象)"。
+  尽管这项技术在许多场景下都很有用，但它本质上是通过创建隐式上下文来工作的，这可能会让数据流变得不那么明确。因此，请谨慎使用此模式，尤其要避免创建「无所不包」的上下文「[上帝对象](https://zh.wikipedia.org/wiki/上帝对象)」。
 </CalloutInfo>
 
 ## NestJS CLS
@@ -109,7 +123,7 @@ export class CatsService {
 该包除了依赖 `@nestjs` 相关库外，仅使用了 Node.js 的内置 API，因此你可以像安装其他 npm 包一样安装它。
 
 ```bash
-npm i nestjs-cls
+npm install nestjs-cls
 ```
 
 ### 使用方法
@@ -121,15 +135,14 @@ npm i nestjs-cls
 ```ts filename='app.module.ts'
 @Module({
   imports: [
-    // 注册 ClsModule
+    // 注册并配置 ClsModule
     ClsModule.forRoot({
       middleware: {
-        // 自动为所有路由挂载
-        // ClsMiddleware
+        // 自动为所有路由应用 ClsMiddleware
         mount: true,
-        // 并通过 setup 方法
-        // 提供默认 store 值
+        // 在中间件中初始化存储数据
         setup: (cls, req) => {
+          // 从请求头中提取用户 ID 并存储
           cls.set('userId', req.headers['x-user-id'])
         },
       },
@@ -147,13 +160,13 @@ export class AppModule {}
 @Injectable()
 export class CatsService {
   constructor(
-    // 注入 ClsService 实例
+    // 注入 ClsService 用于访问异步本地存储
     private readonly cls: ClsService,
     private readonly catsRepository: CatsRepository
   ) {}
 
   getCatForUser() {
-    // 使用 "get" 方法获取存储的值
+    // 从当前请求的存储中获取用户 ID
     const userId = this.cls.get('userId')
     return this.catsRepository.getForUser(userId)
   }
@@ -187,39 +200,38 @@ describe('CatsService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      // 按常规方式设置测试模块
+      // 配置测试模块
       providers: [
         CatsService,
         {
-          provide: CatsRepository
-          useValue: mockCatsRepository
-        }
+          provide: CatsRepository,
+          useValue: mockCatsRepository,
+        },
       ],
       imports: [
-        // 导入 ClsModule 的静态版本，仅提供
-        // ClsService，不会设置 store
-        ClsModule
+        // 导入 ClsModule（不会自动设置中间件）
+        // 这样可以手动控制 store 的值
+        ClsModule,
       ],
     }).compile()
 
     service = module.get(CatsService)
 
-    // 获取 ClsService 以便后续使用
+    // 获取 ClsService 实例用于测试
     cls = module.get(ClsService)
   })
 
   describe('getCatForUser', () => {
-    it('根据用户 id 获取猫', async () => {
+    it('应该根据用户 ID 获取对应的猫咪信息', async () => {
       const expectedUserId = 42
-      mocksCatsRepository.getForUser.mockImplementationOnce(
-        (id) => ({ userId: id })
-      )
+      mocksCatsRepository.getForUser.mockImplementationOnce((id) => ({
+        userId: id,
+      }))
 
-      // 用 `runWith` 方法包裹测试调用
-      // 并传入自定义 store 值
-      const cat = await cls.runWith(
-        { userId: expectedUserId },
-        () => service.getCatForUser()
+      // 使用 runWith 方法创建测试上下文
+      // 手动设置 store 中的用户 ID
+      const cat = await cls.runWith({ userId: expectedUserId }, () =>
+        service.getCatForUser()
       )
 
       expect(cat.userId).toEqual(expectedUserId)
