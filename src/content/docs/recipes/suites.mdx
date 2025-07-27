@@ -1,17 +1,27 @@
 # Suites（原 Automock）
 
-Suites 是一个特征鲜明且灵活的测试元框架，旨在优化后端系统的软件测试体验。它将多种测试工具整合到统一的框架中，简化了可靠性测试的创建过程，帮助开发者保障软件质量。
+## 什么是 Suites？
+
+当你在开发 NestJS 应用时，经常需要编写测试来确保代码的正确性。Suites 是一个专门为后端系统设计的测试工具，它的作用就像一个「测试助手」，帮助你更轻松地编写和管理测试代码。
+
+想象一下，如果你要测试一个服务，但这个服务依赖了很多其他的服务（比如数据库、第三方 API 等）。传统方式下，你需要为每个依赖项手动创建「假的」实现来进行测试。而 Suites 就像一个聪明的机器人，能够自动帮你创建这些「假的」实现，让测试变得更简单。
 
 <CalloutInfo>
   `Suites` 是一个第三方软件包，并非由 NestJS
   核心团队维护。如在使用中遇到问题，请前往其[官方仓库](https://github.com/suites-dev/suites)反馈。
 </CalloutInfo>
 
-## 概述
+## 为什么需要 Suites？
 
-控制反转（Inversion of Control, IoC）是 NestJS 框架的基础性原则，也是其模块化、可测试架构的基石。尽管 NestJS 内置了用于创建测试模块（Testing Module）的工具，但 Suites 提供了一种替代方案，它更侧重于对单个单元或小规模单元簇的隔离测试。
+在 NestJS 中，所有的服务都通过「依赖注入」的方式互相连接。这就像搭积木一样，每个服务都依赖其他服务才能正常工作。
 
-Suites 采用虚拟依赖容器，自动生成模拟对象（Mock），而无需在 IoC 容器中为每个提供者手动创建和替换模拟对象。这种方法可以作为 NestJS `Test.createTestingModule` 的替代或补充，为单元测试提供更大的灵活性。
+虽然 NestJS 自带了测试工具（如 `Test.createTestingModule`），但它更适合测试整个模块的协作。而 Suites 的优势在于：
+
+- **专注单元测试**：当你只想测试某一个服务的逻辑，而不关心它依赖的其他服务时，Suites 特别有用。
+- **自动化程度高**：你不需要手动为每个依赖项创建模拟对象，Suites 会自动帮你生成。
+- **灵活性更强**：你可以选择哪些依赖使用真实实现，哪些使用模拟实现。
+
+简单来说，Suites 让你能够更专注于测试业务逻辑本身，而不是花时间在繁琐的测试环境搭建上。
 
 ## 安装
 
@@ -164,7 +174,7 @@ describe('Cats Api Service 集成测试', () => {
 
 ## 社交型测试（Sociable Testing）示例
 
-接下来，我们将测试 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`。在测试中，我们将模拟 `CatsApiService`，并保留 `CatsDAL` 的真实实现（即"暴露"它）。
+接下来，我们将测试 `CatsService`，它依赖于 `CatsApiService` 和 `CatsDAL`。在测试中，我们将模拟 `CatsApiService`，并保留 `CatsDAL` 的真实实现（即「暴露」它）。
 
 ```ts filename='cats.dal.ts'
 import { PrismaClient } from '@prisma/client'
