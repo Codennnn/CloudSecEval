@@ -44,7 +44,7 @@ export default function DocsLayout(props: React.PropsWithChildren) {
 
                   <aside
                     className={cn(
-                      'sticky top-0 h-screen z-50',
+                      'sticky top-0 h-[calc(100vh-var(--header-height))] z-50',
                       '@2xl/docs-content:[--aside-width:calc(var(--spacing)_*_64)] [--aside-width:calc(var(--spacing)_*_60)]',
                       'w-[var(--aside-width)] @2xl:w-[var(--aside-width)]',
                       'hidden @4xl/docs-content:block',

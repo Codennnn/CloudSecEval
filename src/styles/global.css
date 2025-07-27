@@ -95,6 +95,7 @@
   --sidebar-accent-foreground: oklch(20.5% 0 0deg);
   --sidebar-border: oklch(92.2% 0 0deg);
   --sidebar-ring: oklch(70.8% 0 0deg);
+  --header-height: 60px;
 
   /* 文章图片的滤镜 */
   --images-filter: unset;
