@@ -94,10 +94,9 @@ async function bootstrap() {
       transport: Transport.TCP,
     }
   )
+
   await app.listen()
 }
-
-bootstrap()
 ```
 
 <CalloutInfo>
@@ -479,7 +478,6 @@ async function bootstrap() {
 
   await app.listen()
 }
-bootstrap()
 ```
 
 客户端若要通过 TLS 安全通信，同样需要定义 `tlsOptions`，但此时应提供 CA 证书（即签署服务器证书的权威机构证书）。这样可以确保客户端信任服务器证书，从而建立安全连接。
@@ -538,5 +536,4 @@ async function bootstrap() {
 
   await app.listen()
 }
-bootstrap()
 ```

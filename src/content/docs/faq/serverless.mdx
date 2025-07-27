@@ -40,7 +40,6 @@ async function bootstrap() {
   app.get('/', (req, res) => res.send('Hello world!'))
   await new Promise<void>((resolve) => app.listen(3000, resolve))
 }
-bootstrap()
 
 // #2 使用 NestJS（基于 @nestjs/platform-express）
 import { NestFactory } from '@nestjs/core'
@@ -50,7 +49,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: ['error'] })
   await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap()
 
 // #3 使用 NestJS 的独立应用模式（不依赖 HTTP 服务）
 import { NestFactory } from '@nestjs/core'
@@ -63,13 +61,11 @@ async function bootstrap() {
   })
   console.log(app.get(AppService).getHello())
 }
-bootstrap()
 
 // #4 原生 Node.js 脚本
 async function bootstrap() {
   console.log('Hello world!')
 }
-bootstrap()
 ```
 
 上述所有脚本均使用 TypeScript 编译器（tsc）进行编译，未经过打包处理（即未使用 webpack 等工具）。因此，测试的均为未压缩的原始 TypeScript 编译结果。

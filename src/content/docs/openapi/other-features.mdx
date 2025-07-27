@@ -100,7 +100,6 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap()
 ```
 
 运行以下命令启动服务器：
@@ -209,8 +208,6 @@ async function bootstrap() {
 
   await app.listen(3000)
 }
-
-bootstrap()
 ```
 
 通过以上配置，应用将拥有一个主 API 文档和两个独立的子规范（Cats API 和 Dogs API），并且可以在 Swagger UI 的 Explorer 边栏中通过下拉菜单进行切换。

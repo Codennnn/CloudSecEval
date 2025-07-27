@@ -40,8 +40,6 @@ async function bootstrap() {
   )
   await app.listen(process.env.PORT ?? 3000)
 }
-
-bootstrap()
 ```
 
 需要注意的是，Fastify 默认仅监听本地地址 `127.0.0.1`（详见[官方文档说明](https://www.fastify.io/docs/latest/Guides/Getting-Started/#your-first-server)）。如果希望让应用可被局域网或公网访问，你需要在 `listen()` 方法中显式传入 `'0.0.0.0'`：

@@ -41,8 +41,6 @@ import { AppModule } from './app.module'
 async function bootstrap() {
   await CommandFactory.run(AppModule)
 }
-
-bootstrap()
 ```
 
 默认情况下，`CommandFactory` 会禁用 Nest 的内置日志记录器。但是，你可以向 `run()` 方法传递第二个参数来配置日志行为。此参数可以是一个自定义的日志记录器实例，也可以是一个包含你希望启用的日志级别字符串（如 `['warn', 'error']`）的数组。
@@ -58,8 +56,6 @@ async function bootstrap() {
   // 或者，只输出警告和错误日志
   await CommandFactory.run(AppModule, ['warn', 'error'])
 }
-
-bootstrap()
 ```
 
 `CommandFactory` 在底层封装了 `NestFactory` 的调用，并会在命令执行结束后自动调用 `app.close()`，因此你不必担心内存泄漏。如需处理潜在错误，你可以使用 `try/catch` 语句包裹 `CommandFactory.run()` 调用，或在其返回的 Promise 上链接 `.catch()` 方法。
@@ -162,8 +158,6 @@ export class AppModule {}
 async function bootstrap() {
   await CommandFactory.run(AppModule)
 }
-
-bootstrap()
 ```
 
 这样，你就拥有了一个功能齐全的命令行应用。

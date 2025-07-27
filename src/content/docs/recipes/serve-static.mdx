@@ -156,16 +156,12 @@ ServeStaticModule.forRoot({
 })
 ```
 
-<CalloutInfo>
-**为什么需要 exclude 配置？**
-
+<CalloutInfo title="为什么需要 exclude 配置？">
 当你同时托管前端应用和提供 API 服务时，需要明确区分哪些路径由静态文件处理，哪些由 API 控制器处理。`exclude: ['/api/(.*)']` 确保所有以 `/api/` 开头的请求都交给你的控制器处理，而不是尝试寻找对应的静态文件。
 
 </CalloutInfo>
 
-<CalloutInfo type="warning">
-**SPA 路由支持说明**
-
+<CalloutInfo type="warning" title="SPA 路由支持说明">
 默认情况下，模块会将所有未匹配到静态文件的请求都指向 `index.html`，这样前端路由（如 React Router）就能正常工作。当用户直接访问 `http://yourapp.com/products/123` 时，即使服务器上没有对应的文件，也会返回 `index.html`，然后由前端 JavaScript 处理路由跳转。
 
 如果你使用 Fastify 适配器，务必将 `fallthrough` 设置为 `true`，否则 SPA 路由将无法正常工作。

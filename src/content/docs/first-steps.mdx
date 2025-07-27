@@ -68,8 +68,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   await app.listen(process.env.PORT ?? 3000)
 }
-
-bootstrap()
 ```
 
 在这个示例中，`NestFactory` 是 Nest 提供的一个核心类，用于创建应用实例。调用 `create()` 方法会返回一个实现了 `INestApplication` 接口的对象，它封装了应用的生命周期管理与功能扩展能力。我们随后调用 `listen()` 启动 HTTP 服务器，开始接收外部请求。
