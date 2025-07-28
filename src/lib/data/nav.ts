@@ -4,6 +4,7 @@ export const navMainData: NavMenuItem[] = [
   {
     title: '入门指南',
     titleEn: 'Getting Started',
+    defaultOpen: true,
     items: [
       { title: '介绍', titleEn: 'Introduction', url: '/introduction' },
       { title: '快速上手', titleEn: 'First steps', url: '/first-steps' },
@@ -15,6 +16,7 @@ export const navMainData: NavMenuItem[] = [
   {
     title: '核心机制',
     titleEn: 'Core Mechanisms',
+    defaultOpen: true,
     items: [
       { title: '中间件', titleEn: 'Middleware', url: '/middleware' },
       { title: '异常过滤器', titleEn: 'Exception filters', url: '/exception-filters' },
@@ -27,6 +29,7 @@ export const navMainData: NavMenuItem[] = [
   {
     title: '进阶原理',
     titleEn: 'Advanced Fundamentals',
+    defaultOpen: true,
     items: [
       { title: '自定义提供者', titleEn: 'Custom providers', url: '/fundamentals/custom-providers' },
       { title: '异步提供者', titleEn: 'Asynchronous providers', url: '/fundamentals/async-providers' },

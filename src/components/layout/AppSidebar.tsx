@@ -102,6 +102,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 .map((item, idx) => (
                   <CollapsibleNavItem
                     key={`${item.title ?? ''}-${idx}`}
+                    defaultOpen={item.defaultOpen}
                     item={item}
                   />
                 ))}
