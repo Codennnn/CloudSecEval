@@ -76,7 +76,7 @@ export const metadata: Metadata = {
   description: SITE_CONFIG.description,
   icons: [
     { url: SITE_CONFIG.logoPath, sizes: '32x32', rel: 'icon' },
-    { url: SITE_CONFIG.logoPath, sizes: '192x192', rel: 'apple-touch-icon' },
+    { url: SITE_CONFIG.appTouchIconPath, sizes: '192x192', rel: 'apple-touch-icon' },
   ],
   keywords: ['NestJS', 'Node.js', 'TypeScript', '后端框架', '中文文档', 'JavaScript', 'Express', 'Fastify', '微服务', 'GraphQL', 'REST API'],
   authors: [{ name: SITE_CONFIG.author }],

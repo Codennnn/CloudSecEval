@@ -38,7 +38,7 @@ export default function HomePage() {
         className={cn(
           'fixed top-0 z-50 w-full pb-4 transition-all duration-300 ',
           isScrolled
-            ? 'bg-gradient-to-b from-background via-background/95 to-transparent'
+            ? 'bg-gradient-to-b from-background via-background/97 to-transparent'
             : 'bg-transparent',
         )}
       >

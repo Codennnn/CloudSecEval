@@ -19,6 +19,7 @@ export const SITE_CONFIG = {
   // 相关链接
   englishDocsUrl: 'https://docs.nestjs.com',
   logoPath: '/logos/logo-128.png',
+  appTouchIconPath: '/logos/apple-touch-icon.png',
   manifestPath: '/manifest.json',
 
   // 语言配置
