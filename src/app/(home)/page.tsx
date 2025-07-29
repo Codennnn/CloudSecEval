@@ -36,7 +36,7 @@ export default function HomePage() {
       {/* Header */}
       <header
         className={cn(
-          'fixed top-0 z-50 w-full pb-4 transition-all duration-300 ',
+          'fixed top-0 z-50 w-full pb-4 transition-all duration-300 text-foreground-accent',
           isScrolled
             ? 'bg-gradient-to-b from-background via-background/97 to-transparent'
             : 'bg-transparent',
@@ -58,10 +58,9 @@ export default function HomePage() {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
               <button
-                className="transition-colors hover:text-foreground text-foreground/80 cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => {
                   document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
                 }}
@@ -69,7 +68,7 @@ export default function HomePage() {
                 特色功能
               </button>
               <button
-                className="transition-colors hover:text-foreground text-foreground/80 cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => {
                   document.getElementById('audience')?.scrollIntoView({ behavior: 'smooth' })
                 }}
@@ -77,7 +76,7 @@ export default function HomePage() {
                 适用人群
               </button>
               <button
-                className="transition-colors hover:text-foreground text-foreground/80 cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => {
                   document.getElementById('support')?.scrollIntoView({ behavior: 'smooth' })
                 }}
@@ -110,15 +109,15 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-20">
-        <div className="py-12 sm:py-16 md:py-20 lg:py-32">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
+      <section className="@container relative pt-20">
+        <div className="py-16 md:py-20 lg:py-32">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
             <div className="max-w-4xl mx-auto text-center">
               <div className="inline-flex items-center rounded-lg bg-background/90 supports-[backdrop-filter]:bg-background/60 px-3 py-1 text-sm font-medium mb-6 backdrop-blur">
                 社区开发者维护的高质量中文文档
               </div>
 
-              <h1 className="text-3xl leading-[1.4] font-bold sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-accent-text">
+              <h1 className="text-3xl leading-[1.4] font-bold sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground-accent">
                 NestJS 中文文档
                 <br />
                 <span>精校版 · 优化阅读体验</span>
@@ -140,12 +139,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="color-bg" />
-        <div className="noise-bg" />
+        <div className="h-12 @md:h-16 @xl:h-20" />
+
+        <div className="color-bg">
+          <div className="noise-bg" />
+        </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-slate-50 dark:bg-transparent" id="features">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24" id="features">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-12 lg:mb-16">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
