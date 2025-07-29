@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Check, Coffee, Gift, Lightbulb, RotateCcw, Star, Workflow } from 'lucide-react'
 
+import { ThemeModeToggle } from '~/components/ThemeModeToggle'
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 
@@ -85,24 +86,19 @@ export default function HomePage() {
               </button>
             </nav>
 
-            {/* Desktop Action Buttons */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="md:flex items-center space-x-3">
               <Button asChild size="sm" variant="ghost">
                 <Link href="/docs">开始阅读</Link>
               </Button>
+
               <Button
                 size="sm"
                 onClick={() => document.getElementById('support')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 支持项目
               </Button>
-            </div>
 
-            {/* Mobile Action Button */}
-            <div className="md:hidden">
-              <Button asChild size="sm">
-                <Link href="/docs">开始阅读</Link>
-              </Button>
+              <ThemeModeToggle triggerButtonProps={{ variant: 'ghost' }} />
             </div>
           </div>
         </div>

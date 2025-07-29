@@ -11,13 +11,19 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
-export function ThemeModeToggle() {
+interface ThemeModeToggleProps {
+  triggerButtonProps?: React.ComponentProps<typeof Button>
+}
+
+export function ThemeModeToggle(props: ThemeModeToggleProps) {
+  const { triggerButtonProps } = props
+
   const { theme, setTheme } = useTheme()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="icon" title="切换主题" variant="outline">
+        <Button size="icon" title="切换主题" variant="outline" {...triggerButtonProps}>
           <SunIcon className="rotate-0 dark:-rotate-90 scale-100 dark:scale-0 transition-all" size={18} />
           <MoonIcon className="absolute rotate-90 dark:rotate-0 scale-0 dark:scale-100 transition-all" size={18} />
         </Button>
