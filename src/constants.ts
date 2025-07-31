@@ -21,6 +21,7 @@ export const SITE_CONFIG = {
   logoPath: '/logos/logo-128.png',
   appTouchIconPath: '/logos/apple-touch-icon.png',
   manifestPath: '/manifest.json',
+  ogUrl: 'https://cdn.jsdelivr.net/gh/Codennnn/assets@main/i/og/nestjs-docs.png',
 
   // 语言配置
   locale: 'zh-CN',

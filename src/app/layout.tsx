@@ -105,7 +105,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: SITE_CONFIG.logoPath,
+        url: SITE_CONFIG.ogUrl,
         width: 1200,
         height: 630,
         alt: SITE_CONFIG.name,
@@ -116,7 +116,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
-    images: [SITE_CONFIG.logoPath],
+    images: [SITE_CONFIG.ogUrl],
   },
   robots: {
     index: true,
