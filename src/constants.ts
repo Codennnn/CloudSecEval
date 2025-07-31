@@ -9,8 +9,8 @@ export const SITE_CONFIG = {
 
   // 网站信息
   name: 'NestJS 中文文档',
-  title: 'NestJS 中文文档 - 渐进式 Node.js 框架',
-  description: 'NestJS 中文文档 - 用于构建高效、可靠和可扩展的服务端应用程序的渐进式 Node.js 框架',
+  title: 'NestJS - 渐进式 Node.js 框架',
+  description: 'NestJS - 用于构建高效、可靠和可扩展的服务端应用程序的渐进式 Node.js 框架',
 
   // 作者和发布者信息
   author: 'NestJS 中文文档团队',
@@ -21,7 +21,11 @@ export const SITE_CONFIG = {
   logoPath: '/logos/logo-128.png',
   appTouchIconPath: '/logos/apple-touch-icon.png',
   manifestPath: '/manifest.json',
-  ogUrl: 'https://cdn.jsdelivr.net/gh/Codennnn/assets@main/i/og/nestjs-docs.png',
+
+  og: {
+    img: 'https://cdn.jsdelivr.net/gh/Codennnn/assets@main/i/og/nestjs-docs.png',
+    description: 'NestJS 中文文档，高质量的中文翻译版本，精准还原官方内容，助力中文开发者轻松掌握高效、可靠且可扩展的 Node.js 框架。',
+  },
 
   // 语言配置
   locale: 'zh-CN',

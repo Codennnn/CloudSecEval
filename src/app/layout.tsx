@@ -98,14 +98,14 @@ export const metadata: Metadata = {
   manifest: SITE_CONFIG.manifestPath,
   openGraph: {
     title: SITE_CONFIG.title,
-    description: SITE_CONFIG.description,
+    description: SITE_CONFIG.og.description,
     url: SITE_CONFIG.baseUrl,
     siteName: SITE_CONFIG.name,
     locale: SITE_CONFIG.language,
     type: 'website',
     images: [
       {
-        url: SITE_CONFIG.ogUrl,
+        url: SITE_CONFIG.og.img,
         width: 1200,
         height: 630,
         alt: SITE_CONFIG.name,
@@ -115,8 +115,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: SITE_CONFIG.title,
-    description: SITE_CONFIG.description,
-    images: [SITE_CONFIG.ogUrl],
+    description: SITE_CONFIG.og.description,
+    images: [SITE_CONFIG.og.img],
   },
   robots: {
     index: true,
