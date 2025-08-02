@@ -113,3 +113,30 @@ export function MaterialIconThemeWebpack(props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+export function MaterialIconThemeNodejs(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg height={32} viewBox="0 0 32 32" width={32} xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M16 20.003v2h4a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-2v-2h4v-2h-4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2v2Z" fill="#8bc34a" />
+      <path d="m16 3.003l-12 7v14l4 2h6v-13.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v11.5H8l-2-1.034V11.15l10-5.833l10 5.833v11.703l-10 5.833l-1.745-1.022L13 29.253l3 1.75l12-7v-14Z" fill="#8bc34a" />
+    </svg>
+  )
+}
+
+export function MaterialIconThemeTsconfig(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg height={32} viewBox="0 0 32 32" width={32} xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M15 2H6a2.006 2.006 0 0 0-2 2v22a2.006 2.006 0 0 0 2 2h6v-4H6v-2h6v-2H6v-2h6v-2H6v-2h6v-2h2V4l8 8h2v-1Z" fill="#757575" />
+      <path d="M12 12v18h18V12Zm8 6h-2v8h-2v-8h-2v-2h6Zm8 0h-4v2h2a2.006 2.006 0 0 1 2 2v2a2.006 2.006 0 0 1-2 2h-4v-2h4v-2h-2a2.006 2.006 0 0 1-2-2v-2a2.006 2.006 0 0 1 2-2h4Z" fill="#0288d1" />
+    </svg>
+  )
+}
+
+export function MaterialIconThemeEslint(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg height={32} viewBox="0 0 32 32" width={32} xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M22.713 4H9.287a.5.5 0 0 0-.432.248l-6.708 11.5a.5.5 0 0 0 0 .504l6.708 11.5a.5.5 0 0 0 .432.248h13.426a.5.5 0 0 0 .432-.248l6.708-11.5a.5.5 0 0 0 0-.504l-6.708-11.5A.5.5 0 0 0 22.713 4m-6.937 20.888l-7.5-3.75A.5.5 0 0 1 8 20.691v-9.382a.5.5 0 0 1 .276-.447l7.5-3.75a.5.5 0 0 1 .448 0l7.5 3.75a.5.5 0 0 1 .276.447v9.382a.5.5 0 0 1-.276.447l-7.5 3.75a.5.5 0 0 1-.448 0" fill="#3f51b5" />
+      <path d="M22 19.441v-6.882a.5.5 0 0 0-.276-.447l-5.5-2.75a.5.5 0 0 0-.448 0l-5.5 2.75a.5.5 0 0 0-.276.447v6.882a.5.5 0 0 0 .276.447l5.5 2.75a.5.5 0 0 0 .448 0l5.5-2.75a.5.5 0 0 0 .276-.447" fill="#7986cb" />
+    </svg>
+  )
+}

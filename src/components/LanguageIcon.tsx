@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react'
 
-import { MaterialIconThemeDocker, MaterialIconThemeDocument, MaterialIconThemeGraphql, MaterialIconThemeGroovy, MaterialIconThemeHtml, MaterialIconThemeJavascript, MaterialIconThemeJson, MaterialIconThemeNest, MaterialIconThemePowershell, MaterialIconThemeTypescript, MaterialIconThemeWebpack, MaterialIconThemeYaml } from '~/components/icon/file-icons'
+import { MaterialIconThemeDocker, MaterialIconThemeDocument, MaterialIconThemeEslint, MaterialIconThemeGraphql, MaterialIconThemeGroovy, MaterialIconThemeHtml, MaterialIconThemeJavascript, MaterialIconThemeJson, MaterialIconThemeNest, MaterialIconThemeNodejs, MaterialIconThemePowershell, MaterialIconThemeTsconfig, MaterialIconThemeTypescript, MaterialIconThemeWebpack, MaterialIconThemeYaml } from '~/components/icon/file-icons'
 
 interface LanguageIconProps {
   lang: string
@@ -40,6 +40,10 @@ const filenameIconMap: Record<string, IconComponent | undefined> = {
   dockerfile: MaterialIconThemeDocker,
   'docker-compose.yml': MaterialIconThemeDocker,
   'docker-compose.yaml': MaterialIconThemeDocker,
+
+  'package.json': MaterialIconThemeNodejs,
+  'tsconfig.json': MaterialIconThemeTsconfig,
+  'eslint.config.mjs': MaterialIconThemeEslint,
 }
 
 const iconMap: Record<SupportedLanguage, IconComponent> = {

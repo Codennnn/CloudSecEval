@@ -62,7 +62,7 @@ const FileTreeItemComponent = ({ item }: { item: FileTreeItem }) => {
         <div className="flex items-center gap-2">
           {item.icon ?? (
             <span className="size-4 inline-block">
-              <LanguageIcon lang="ts" />
+              <LanguageIcon filename={item.name} lang="ts" />
             </span>
           )}
           {item.name}

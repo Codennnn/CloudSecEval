@@ -116,7 +116,7 @@ nest generate app my-app
 
 可以看到，CLI 工具自动将所有应用移动至 `apps` 目录下，并为每个应用分别生成一个 `tsconfig.app.json` 配置文件。
 
-此时，原有的项目（如 `my-project`）也被视为一个独立的应用，与新添加的 `my-app` 并列存在，共同组成了 Monorepo 结构。其中，`my-project` 会被默认标记为**默认项目（default project）**，具体含义和作用我们将在后文中详细说明。
+此时，原有的项目（如 `my-project`）也被视为一个独立的应用，与新添加的 `my-app` 并列存在，共同组成了 Monorepo 结构。其中，`my-project` 会被默认标记为**默认项目**（default project），具体含义和作用我们将在后文中详细说明。
 
 <CalloutInfo type="warning">
   仅当你的项目采用标准的 Nest 项目结构时，才能顺利迁移至 Monorepo
