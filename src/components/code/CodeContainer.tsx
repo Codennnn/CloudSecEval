@@ -73,6 +73,7 @@ export function CodeContainer(props: CodeContainerProps) {
             {showLanguageIcon && (
               <LanguageIcon
                 className="size-5"
+                filename={filename}
                 lang={lang}
               />
             )}
