@@ -128,7 +128,7 @@ nest generate app my-app
 
 在 Monorepo 模式中，Nest 通过「工作空间」统一管理多个项目。每个项目通常分为两类：
 
-- **应用（Application）**：一个完整可运行的 Nest 应用，包含用于启动的 `main.ts` 文件。其功能与单项目模式下的应用完全一致，主要区别在于构建与编译方式的变化。
+- **应用（Application）**：一个完整可运行的 Nest 应用，包含用于启动的 `main.ts` 文件。其功能与单项目模式下的应用完全一致，主要区别在于构建和编译方式的变化。
 - **库（Library）**：用于封装可复用功能的代码包，例如模块、提供者、控制器等。库自身不可独立运行，通常也不会包含 `main.ts` 文件。详细介绍见[库](/cli/libraries)章节。
 
 每个工作空间必须包含一个默认项目（且必须是应用类型），由根目录下的 `nest-cli.json` 文件中的 `"root"` 属性指定该项目所在路径。通常在将现有项目迁移为 Monorepo 时，最初创建的应用会被自动设为默认项目。只要你遵循 Nest CLI 的标准项目创建流程，这部分配置将自动完成。
@@ -155,11 +155,11 @@ nest start my-app
 nest generate app <name>
 ```
 
-该命令会自动生成标准的项目结构，与官方提供的 [TypeScript Starter 模板](https://github.com/nestjs/typescript-starter) 保持一致，包含如 `src` 与 `test` 等目录。
+该命令会自动生成标准的项目结构，与官方提供的 [TypeScript Starter 模板](https://github.com/nestjs/typescript-starter)保持一致，包含如 `src`、`test` 等目录。
 
 在 Monorepo 模式下，生成的应用项目与传统模式略有区别：
 
-- 它不会单独包含依赖声明文件（如 `package.json`）或格式化/代码检查相关配置（如 `.prettierrc` 和 `eslint.config.mjs`）。
+- 它不会单独包含依赖声明文件（如 `package.json`）或格式化、代码检查相关配置（如 `.prettierrc` 和 `eslint.config.mjs`）。
 - 这些配置项由整个 Monorepo 的根目录统一管理和维护，确保一致性。
 
 不过，Nest 仍会在每个应用项目的根目录下生成一个专用的 `tsconfig.app.json` 文件，用于定义该应用的编译选项。它默认继承自 Monorepo 根目录的 `tsconfig.json`，实现统一配置与项目级定制的良好平衡，确保构建行为符合预期。
@@ -176,15 +176,15 @@ nest generate library <name>
 
 至于哪些功能适合封装为库，这涉及到系统架构层面的设计考量。例如：是否具备通用性？是否需要在多个应用之间共享？这些都决定了它是否值得抽离为独立的库。
 
-关于库的具体使用方式与设计原则，我们将在[库](/cli/libraries)章节中进一步介绍。
+关于库的具体使用方式和设计原则，我们将在[库](/cli/libraries)章节中进一步介绍。
 
 ## CLI 配置属性详解
 
-Nest 会将与项目组织、构建与部署相关的元数据，集中存放在根目录下的 `nest-cli.json` 文件中。无论是标准项目还是采用 Monorepo 架构，该文件都会在你创建或添加项目时由 CLI 自动更新，因此通常无需手动修改。但在某些需要自定义配置的场景下，了解其结构和作用仍然十分必要。
+Nest 会将与项目组织、构建和部署相关的元数据，集中存放在根目录下的 `nest-cli.json` 文件中。无论是标准项目还是采用 Monorepo 架构，该文件都会在你创建或添加项目时由 CLI 自动更新，因此通常无需手动修改。但在某些需要自定义配置的场景下，了解其结构和作用仍然十分必要。
 
 以 Monorepo 项目为例，CLI 生成的 `nest-cli.json` 文件通常包含以下结构：
 
-```json
+```json filename='nest-cli.json'
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "apps/my-project/src",
@@ -219,7 +219,7 @@ Nest 会将与项目组织、构建与部署相关的元数据，集中存放在
 
 该配置文件主要由两部分组成：
 
-- **全局配置区域**：用于控制整个工作区（包括标准项目与 Monorepo）行为的顶层属性。
+- **全局配置区域**：用于控制整个工作区（包括标准项目和 Monorepo）行为的顶层属性。
 - **`projects` 节点**：仅在 Monorepo 模式中存在，用于定义每个子项目的详细配置。
 
 下面是常见顶层属性的说明：
@@ -235,17 +235,17 @@ Nest 会将与项目组织、构建与部署相关的元数据，集中存放在
 
 本节配置用于定义全局编译参数，适用于所有构建流程。无论你使用的是 `nest build`、`nest start` 命令，还是采用 tsc 或 webpack 作为构建工具，这些选项都会生效。
 
-| 属性名              | 类型                | 说明                                                                                                                                                                                                                     |
-| ------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `webpack`           | `boolean`           | 是否启用 [webpack 编译器](https://webpack.js.org/)。设为 `true` 时使用 webpack；设为 `false` 或未配置时则使用 tsc。在 Monorepo 模式中默认启用 webpack，而标准项目中默认使用 tsc。此选项已弃用，推荐使用 `builder` 替代。 |
-| `tsConfigPath`      | `string`            | （**仅适用于 Monorepo 模式**）指定 `tsconfig.json` 所在的路径。当未通过 CLI 显式指定 `project` 参数时（如构建或启动默认项目），将使用该路径对应的配置文件。                                                              |
-| `webpackConfigPath` | `string`            | 指定 webpack 配置文件的路径。若未设置，CLI 将默认查找项目根目录下的 `webpack.config.js` 文件。                                                                                                                           |
-| `deleteOutDir`      | `boolean`           | 若为 `true`，每次编译前会清空输出目录（该目录通常在 `tsconfig.json` 中通过 `outDir` 指定，默认值为 `./dist`）。                                                                                                          |
-| `assets`            | `array`             | 用于在每次编译时自动复制非 TypeScript 资源（如静态文件）。注意：该选项在 `--watch` 模式下不会自动生效，更多说明见下文。                                                                                                  |
-| `watchAssets`       | `boolean`           | 是否在监听模式下监视非 TypeScript 类型的资源文件。设为 `true` 后，将自动监听资源文件的变动并进行同步。若需更细粒度的控制，请参见下方的[资源文件管理](#资源文件管理)部分。                                                |
-| `manualRestart`     | `boolean`           | 是否启用命令行中的 `rs` 快捷命令，用于手动重启服务器。默认值为 `false`（不启用）。                                                                                                                                       |
-| `builder`           | `string` / `object` | 指定 CLI 使用的构建器类型，可选值包括 `tsc`、`swc` 和 `webpack`。你也可以传入对象形式，包含 `type`（构建器类型）和 `options`（构建器参数）字段，用于实现更灵活的构建逻辑。                                               |
-| `typeCheck`         | `boolean`           | 当构建器设置为 `swc` 时，是否启用类型检查功能。默认值为 `false`。                                                                                                                                                        |
+| 属性名              | 类型                | 说明                                                                                                                                                                                                                              |
+| ------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `webpack`           | `boolean`           | **此选项已弃用**，推荐使用 `builder` 替代。<br/>是否启用 [webpack 编译器](https://webpack.js.org/)。设为 `true` 时使用 webpack；设为 `false` 或未配置时则使用 tsc。在 Monorepo 模式中默认启用 webpack，而标准项目中默认使用 tsc。 |
+| `tsConfigPath`      | `string`            | （**仅适用于 Monorepo 模式**）指定 `tsconfig.json` 所在的路径。当未通过 CLI 显式指定 `project` 参数时（如构建或启动默认项目），将使用该路径对应的配置文件。                                                                       |
+| `webpackConfigPath` | `string`            | 指定 webpack 配置文件的路径。若未设置，CLI 将默认查找项目根目录下的 `webpack.config.js` 文件。                                                                                                                                    |
+| `deleteOutDir`      | `boolean`           | 若为 `true`，每次编译前会清空输出目录（该目录通常在 `tsconfig.json` 中通过 `outDir` 指定，默认值为 `./dist`）。                                                                                                                   |
+| `assets`            | `array`             | 用于在每次编译时自动复制非 TypeScript 资源（如静态文件）。注意：该选项在 `--watch` 模式下不会自动生效，更多说明见下文。                                                                                                           |
+| `watchAssets`       | `boolean`           | 是否在监听模式下监视非 TypeScript 类型的资源文件。设为 `true` 后，将自动监听资源文件的变动并进行同步。若需更细粒度的控制，请参见下方的[资源文件管理](#资源文件管理)部分。                                                         |
+| `manualRestart`     | `boolean`           | 是否启用命令行中的 `rs` 快捷命令，用于手动重启服务器。默认值为 `false`（不启用）。                                                                                                                                                |
+| `builder`           | `string` / `object` | 指定 CLI 使用的构建器类型，可选值包括 `tsc`、`swc` 和 `webpack`。你也可以传入对象形式，包含 `type`（构建器类型）和 `options`（构建器参数）字段，用于实现更灵活的构建逻辑。                                                        |
+| `typeCheck`         | `boolean`           | 当构建器设置为 `swc` 时，是否启用类型检查功能。默认值为 `false`。                                                                                                                                                                 |
 
 ## 全局生成选项
 
@@ -262,7 +262,7 @@ Nest 会将与项目组织、构建与部署相关的元数据，集中存放在
 
 当存在项目级配置时，它将覆盖全局的 `generate` 设置。
 
-```json
+```json filename='nest-cli.json'
 {
   "projects": {
     "cats-project": {
@@ -295,7 +295,7 @@ Nest 会将与项目组织、构建与部署相关的元数据，集中存放在
 
 例如，Webpack 默认会将 `node_modules` 目录排除在打包之外。如果你希望将其一并打包到构建产物中，只需显式清空 `externals` 字段即可：
 
-```js
+```js filename='webpack.config.js'
 module.exports = {
   externals: [],
 }
@@ -303,7 +303,7 @@ module.exports = {
 
 由于 Webpack 配置本质上是一个 JavaScript 模块，你也可以导出一个函数形式的配置。该函数会接收默认配置作为参数，并返回一个经过自定义修改的配置对象：
 
-```js
+```js filename='webpack.config.js'
 module.exports = function (options) {
   return {
     ...options,
@@ -322,7 +322,7 @@ module.exports = function (options) {
 
 你可以通过 `assets` 配置项指定需要复制的资源文件。该字段接受一个字符串数组，支持 [glob 模式](https://github.com/isaacs/node-glob) 匹配，例如：
 
-```json
+```json filename='nest-cli.json'
 "assets": ["**/*.graphql"],
 "watchAssets": true
 ```
@@ -336,7 +336,7 @@ module.exports = function (options) {
 
 示例配置：
 
-```ts
+```json filename='nest-cli.json'
 "assets": [
   {
     "include": "**/*.graphql",

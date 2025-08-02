@@ -118,7 +118,7 @@ export class AppModule {}
 
 首先，打开你的 `main.ts` 文件，将 `bootstrap()` 函数修改如下，以便在启动失败时生成依赖图文件：
 
-```ts filename="main.ts"
+```ts filename='main.ts'
 bootstrap().catch((err) => {
   fs.writeFileSync('graph.json', PartialGraphHost.toString() ?? '')
   process.exit(1)

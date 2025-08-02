@@ -33,7 +33,7 @@ import actionsPreviewImage from '/public/assets/devtools/actions-preview.png'
 
 要在 CI/CD 流程中发布应用的依赖关系图，你需要在应用的引导文件（通常是 `main.ts`）中配置 `GraphPublisher` 类。该类可从 `@nestjs/devtools-integration` 模块导入（详见上一章节）。示例代码如下：
 
-```ts filename="main.ts"
+```ts filename='main.ts'
 async function bootstrap() {
   const shouldPublishGraph = process.env.PUBLISH_GRAPH === 'true';
 
