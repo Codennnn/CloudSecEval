@@ -58,7 +58,7 @@ findOne(): UserEntity {
 ```
 
 <CalloutInfo type="warning">
-请注意，必须返回实体类的**实例**，而不能是普通的 JavaScript 对象（如 `{{ '{ user: new UserEntity() }' }}`）。否则，序列化过程将无法正确识别并应用 `@Exclude()` 等装饰器。
+必须返回实体类的**实例**，而不能是普通的 JavaScript 对象（如 `{{ '{ user: new UserEntity() }' }}`）。否则，序列化过程将无法正确识别并应用 `@Exclude()` 等装饰器。
 </CalloutInfo>
 
 当客户端访问该接口时，收到的响应将自动排除 `password` 字段，结果如下所示：
