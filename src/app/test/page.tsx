@@ -68,33 +68,33 @@ export default function Page() {
             <div className="grid grid-cols-2 gap-3 pt-2">
               {/* 特定文件名图标 */}
               <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon lang="json" filename="nest-cli.json" className="size-5" />
+                <LanguageIcon className="size-5" filename="nest-cli.json" lang="json" />
                 <span className="text-sm font-mono">nest-cli.json</span>
               </div>
-              
+
               <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon lang="js" filename="webpack.config.js" className="size-5" />
+                <LanguageIcon className="size-5" filename="webpack.config.js" lang="js" />
                 <span className="text-sm font-mono">webpack.config.js</span>
               </div>
-              
+
               <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon lang="" filename="Dockerfile" className="size-5" />
+                <LanguageIcon className="size-5" filename="Dockerfile" lang="" />
                 <span className="text-sm font-mono">Dockerfile</span>
               </div>
-              
+
               <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon lang="yaml" filename="docker-compose.yml" className="size-5" />
+                <LanguageIcon className="size-5" filename="docker-compose.yml" lang="yaml" />
                 <span className="text-sm font-mono">docker-compose.yml</span>
               </div>
-              
+
               {/* 语言类型图标 */}
               <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon lang="typescript" className="size-5" />
+                <LanguageIcon className="size-5" lang="typescript" />
                 <span className="text-sm font-mono">TypeScript</span>
               </div>
-              
+
               <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon lang="javascript" className="size-5" />
+                <LanguageIcon className="size-5" lang="javascript" />
                 <span className="text-sm font-mono">JavaScript</span>
               </div>
             </div>

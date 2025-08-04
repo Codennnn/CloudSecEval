@@ -1,6 +1,21 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  // 后台路由保护
+  if (request.nextUrl.pathname.startsWith('/admini')) {
+    // // 检查认证状态
+    // const token = request.cookies.get('admin-token')?.value
+
+    // if (!token && !request.nextUrl.pathname.startsWith('/admini/login')) {
+    //   return NextResponse.redirect(new URL('/admini/login', request.url))
+    // }
+
+    // // 验证 token 有效性（可选）
+    // if (token && !isValidToken(token)) {
+    //   return NextResponse.redirect(new URL('/admini/login', request.url))
+    // }
+  }
+
   // 只对 /assets 路径下的静态资源进行防盗链检查
   if (request.nextUrl.pathname.startsWith('/assets/')) {
     const referer = request.headers.get('referer')
@@ -84,6 +99,10 @@ export const config = {
   matcher: [
     // 匹配所有 assets 路径下的文件
     '/assets/:path*',
+
+    // 后台路由
+    '/admini/:path*',
+
     // 排除 API 路由和 Next.js 内部路径
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
