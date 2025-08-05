@@ -106,36 +106,40 @@ export function LoginForm({
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">邮箱地址</Label>
-                <Input
-                  required
-                  className={errors.email ? 'border-red-500' : ''}
-                  disabled={loginMutation.isPending}
-                  id="email"
-                  placeholder="请输入您的邮箱地址"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange('email')}
-                />
-                {errors.email && (
-                  <span className="text-sm text-red-500">{errors.email}</span>
-                )}
+                <div>
+                  <Input
+                    required
+                    className={errors.email ? 'border-error' : ''}
+                    disabled={loginMutation.isPending}
+                    id="email"
+                    placeholder="请输入您的邮箱地址"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange('email')}
+                  />
+                  {errors.email && (
+                    <div className="text-sm text-error pt-1.5">{errors.email}</div>
+                  )}
+                </div>
               </div>
 
               <div className="grid gap-3">
                 <Label htmlFor="password">密码</Label>
-                <Input
-                  required
-                  className={errors.password ? 'border-red-500' : ''}
-                  disabled={loginMutation.isPending}
-                  id="password"
-                  placeholder="请输入您的密码"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleInputChange('password')}
-                />
-                {errors.password && (
-                  <span className="text-sm text-red-500">{errors.password}</span>
-                )}
+                <div>
+                  <Input
+                    required
+                    className={errors.password ? 'border-error' : ''}
+                    disabled={loginMutation.isPending}
+                    id="password"
+                    placeholder="请输入您的密码"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleInputChange('password')}
+                  />
+                  {errors.password && (
+                    <div className="text-sm text-error pt-1.5">{errors.password}</div>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-col gap-3">

@@ -30,14 +30,6 @@ export const ASSET_ROUTES = {
 } as const
 
 /**
- * API 相关路由
- */
-export const API_ROUTES = {
-  /** API 根路径 */
-  ROOT: '/api',
-} as const
-
-/**
  * Next.js 系统路由
  */
 export const SYSTEM_ROUTES = {

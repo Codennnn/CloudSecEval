@@ -106,6 +106,19 @@ const nextConfig: NextConfig = {
 
   // 性能优化
   poweredByHeader: false, // 移除 X-Powered-By 头
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async rewrites() {
+    const source = `${process.env.NEXT_PUBLIC_API_PROXY_SOURCE}/:path*`
+    const destination = `${process.env.NEXT_PUBLIC_API_PROXY_DESTINATION}/:path*`
+
+    return [
+      {
+        source,
+        destination,
+      },
+    ]
+  },
 }
 
 const withMDX = createMDX({

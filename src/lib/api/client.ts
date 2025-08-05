@@ -142,6 +142,21 @@ async function handleResponse<T>(response: Response): Promise<T> {
       )
     }
 
+    // 检查自定义响应码：小于 2000 表示成功，否则为业务异常
+    if (typeof result.code === 'number' && result.code >= 2000) {
+      const errorMessage = result.message ?? '业务处理异常'
+
+      // 触发 toast 通知用户
+      toast.error(errorMessage)
+
+      throw new ApiError(
+        errorMessage,
+        response.status,
+        result.code.toString(),
+        result,
+      )
+    }
+
     // 返回数据部分或整个响应
     return 'data' in result ? result.data : result
   }

@@ -4,6 +4,7 @@ import Script from 'next/script'
 
 import { StructuredData } from '~/components/StructuredData'
 import { ThemeProvider } from '~/components/ThemeProvider'
+import { Toaster } from '~/components/ui/sonner'
 import { SITE_CONFIG } from '~/constants'
 import { cn } from '~/lib/utils'
 import { QueryProvider } from '~/providers/QueryProvider'
@@ -165,6 +166,8 @@ export default function RootLayout(props: React.PropsWithChildren) {
             {props.children}
           </ThemeProvider>
         </QueryProvider>
+
+        <Toaster position="top-center" />
 
         {/*
           Umami 网站分析脚本

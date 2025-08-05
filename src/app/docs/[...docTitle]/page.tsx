@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { consola } from 'consola'
 
 import { DocNavigation } from '~/components/doc/DocNavigation'
 import { ProseContainer } from '~/components/ProseContainer'
@@ -147,7 +148,7 @@ export async function generateStaticParams() {
     }))
   }
   catch (error) {
-    console.error('生成静态参数失败:', error)
+    consola.error('生成静态参数失败:', error)
 
     return []
   }
@@ -161,8 +162,8 @@ async function DocContent({ docPath }: { docPath: string }) {
 
     return <DocComponent />
   }
-  catch (error) {
-    console.error(`无法加载文档: ${docPath}`, error)
+  catch (err) {
+    consola.error(`无法加载文档: ${docPath}`, err)
     notFound()
   }
 }

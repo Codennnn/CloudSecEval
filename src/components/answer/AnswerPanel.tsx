@@ -81,7 +81,6 @@ export function AnswerPanel(props: AnswerPanelProps) {
         events: {
           onStateChange: (state) => {
             const interactions = Array.isArray(state) ? state as Interaction[] : []
-            // console.log(interactions, 'interactions')
 
             setInteractions(interactions)
 

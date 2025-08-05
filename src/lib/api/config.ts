@@ -25,7 +25,7 @@ export interface ApiConfig {
  */
 export const API_CONFIG: ApiConfig = {
   // API 基础 URL，支持环境变量覆盖
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? '',
+  baseUrl: process.env.NEXT_PUBLIC_API_PROXY_SOURCE ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? '',
 
   // 请求超时时间（毫秒）
   timeout: 10 * 1000,

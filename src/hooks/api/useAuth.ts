@@ -35,26 +35,19 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (loginData: LoginDto): Promise<LoginResponse> => {
-      return await api.post<LoginResponse>(
+      const res = await api.post<LoginResponse>(
         authEndpoints.login(),
         loginData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: '*/*',
-          },
-        },
       )
+
+      return res
     },
     onSuccess: (data: LoginResponse) => {
       // 缓存用户信息到 React Query
       queryClient.setQueryData(authQueryKeys.profile(), data.user)
 
-      // 显示成功提示
-      toast.success('登录成功！')
-
       // 跳转到管理后台首页
-      router.push('/admini/dashboard')
+      router.replace('/admini/dashboard')
     },
     onError: (error: Error) => {
       // 错误提示已在 api client 中处理

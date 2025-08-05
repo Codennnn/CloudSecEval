@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { consola } from 'consola'
 
 import { getAllDocPaths } from '~/utils/docs'
 import { getDocsUrl, getFullUrl } from '~/utils/link'
@@ -36,8 +37,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...basePages, ...docPages]
   }
-  catch (error) {
-    console.error('生成 sitemap 失败:', error)
+  catch (err) {
+    consola.error('生成 sitemap 失败:', err)
 
     // 如果获取文档路径失败，至少返回基础页面
     return basePages

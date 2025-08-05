@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { consola } from 'consola'
 
 import {
   ADMIN_ROUTES,
@@ -75,7 +76,7 @@ export function middleware(request: NextRequest) {
       )
 
       if (!isAllowedReferer && !isAllowedHost) {
-        console.warn('🚫 Blocked hotlink attempt:', {
+        consola.warn('🚫 Blocked hotlink attempt:', {
           path: request.nextUrl.pathname,
           referer,
           userAgent: userAgent.substring(0, 100),
