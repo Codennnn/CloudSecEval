@@ -2,6 +2,8 @@
 
 import type * as React from 'react'
 
+import type { UserIcon } from 'lucide-react'
+
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -17,7 +19,7 @@ export function NavSecondary({
   items: {
     title: string
     url: string
-    icon: () => React.ReactNode
+    icon: typeof UserIcon
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (

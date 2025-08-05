@@ -1,8 +1,26 @@
+import { AdminHeader } from '~/app/admini/components/AdminHeader'
+import { ChartAreaInteractive } from '~/app/admini/components/ChartAreaInteractive'
+import { DataTable } from '~/app/admini/components/DataTable'
+import { SectionCards } from '~/app/admini/components/SectionCards'
+
+import data from './data.json'
+
 export default function AdminDashboardPage() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        123
+    <div>
+      <AdminHeader />
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+            <SectionCards />
+
+            <div className="px-4 lg:px-6">
+              <ChartAreaInteractive />
+            </div>
+
+            <DataTable data={data} />
+          </div>
+        </div>
       </div>
     </div>
   )

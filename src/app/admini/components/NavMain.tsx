@@ -11,15 +11,15 @@ import {
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
 
-export function NavMain({
-  items,
-}: {
+interface NavMainProps {
   items: {
     title: string
     url: string
-    icon?: () => React.ReactNode
+    icon?: typeof UserIcon
   }[]
-}) {
+}
+
+export function NavMain({ items }: NavMainProps) {
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -42,6 +42,7 @@ export function NavMain({
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>
+
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>

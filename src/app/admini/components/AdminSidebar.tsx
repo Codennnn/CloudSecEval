@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { UserIcon } from 'lucide-react'
 
 import { NavDocuments } from '~/app/admini/components/NavDocuments'
@@ -143,10 +144,10 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link href="/admini">
                 <UserIcon className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -154,7 +155,9 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavMain items={data.navMain} />
+
         <NavDocuments items={data.documents} />
+
         <NavSecondary className="mt-auto" items={data.navSecondary} />
       </SidebarContent>
 

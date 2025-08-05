@@ -1,4 +1,8 @@
-import { AdminSidebar } from '../components/AdminSidebar'
+import { AdminSidebar } from '~/app/admini/components/AdminSidebar'
+import {
+  SidebarInset,
+  SidebarProvider,
+} from '~/components/ui/sidebar'
 
 /**
  * 后台管理系统专用布局组件
@@ -8,12 +12,19 @@ export default function AdminLayout(props: React.PropsWithChildren) {
   const { children } = props
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminSidebar />
+    <SidebarProvider
+      style={
+        {
+          '--sidebar-width': 'calc(var(--spacing) * 72)',
+          '--header-height': 'calc(var(--spacing) * 12)',
+        } as React.CSSProperties
+      }
+    >
+      <AdminSidebar variant="inset" />
 
-      <main className="ml-64 p-8">
+      <SidebarInset>
         {children}
-      </main>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

@@ -25,7 +25,7 @@ export function NavDocuments({
   items: {
     name: string
     url: string
-    icon: () => React.ReactNode
+    icon: typeof UserIcon
   }[]
 }) {
   const { isMobile } = useSidebar()
@@ -42,11 +42,12 @@ export function NavDocuments({
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction
                   showOnHover
-                  className="data-[state=open]:bg-accent rounded-sm"
+                  className="data-[state=open]:bg-muted rounded-sm"
                 >
                   <UserIcon />
                   <span className="sr-only">More</span>
