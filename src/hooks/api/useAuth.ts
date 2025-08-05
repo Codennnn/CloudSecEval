@@ -49,10 +49,6 @@ export function useLogin() {
       // 跳转到管理后台首页
       router.replace('/admini/dashboard')
     },
-    onError: (error: Error) => {
-      // 错误提示已在 api client 中处理
-      console.error('登录失败：', error)
-    },
   })
 }
 
@@ -83,21 +79,11 @@ export function useLogout() {
       }
     },
     onSuccess: () => {
-      // HttpOnly Cookie 由后端清除，前端无需手动操作
-      // 后端登出接口应该清除 HttpOnly Cookie
-
       // 清除所有查询缓存
       queryClient.clear()
 
-      // 显示成功提示
-      toast.success('已成功登出')
-
       // 跳转到登录页
-      router.push('/admini/login')
-    },
-    onError: (error: Error) => {
-      console.error('登出失败：', error)
-      toast.error('登出失败，请重试')
+      router.replace('/admini/login')
     },
   })
 }

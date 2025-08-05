@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  LogOutIcon,
   UserIcon,
 } from 'lucide-react'
 
@@ -24,6 +25,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar'
+import { useLogout } from '~/hooks/api/useAuth'
 
 export function NavUser({
   user,
@@ -35,6 +37,14 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const logout = useLogout()
+
+  /**
+   * 处理退出登录点击事件
+   */
+  const handleLogout = () => {
+    logout.mutate()
+  }
 
   return (
     <SidebarMenu>
@@ -78,25 +88,25 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <UserIcon />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <UserIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <UserIcon />
-                Notifications
+                账号信息
               </DropdownMenuItem>
             </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <UserIcon />
-              Log out
+
+            <DropdownMenuItem
+              onClick={() => {
+                handleLogout()
+              }}
+            >
+              <LogOutIcon />
+              退出登录
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -142,8 +142,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
       )
     }
 
-    // 检查自定义响应码：小于 2000 表示成功，否则为业务异常
-    if (typeof result.code === 'number' && result.code >= 2000) {
+    // 检查自定义响应码：小于 20000 表示成功，否则为业务异常
+    if (typeof result.code === 'number' && result.code >= 20000) {
       const errorMessage = result.message ?? '业务处理异常'
 
       // 触发 toast 通知用户
