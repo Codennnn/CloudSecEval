@@ -6,6 +6,7 @@ import { StructuredData } from '~/components/StructuredData'
 import { ThemeProvider } from '~/components/ThemeProvider'
 import { SITE_CONFIG } from '~/constants'
 import { cn } from '~/lib/utils'
+import { QueryProvider } from '~/providers/QueryProvider'
 import { getPageTitle } from '~/utils/common'
 
 import '~/styles/global.css'
@@ -154,14 +155,16 @@ export default function RootLayout(props: React.PropsWithChildren) {
           url={SITE_CONFIG.baseUrl}
         />
 
-        <ThemeProvider
-          disableTransitionOnChange
-          enableSystem
-          attribute="class"
-          defaultTheme="system"
-        >
-          {props.children}
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            disableTransitionOnChange
+            enableSystem
+            attribute="class"
+            defaultTheme="system"
+          >
+            {props.children}
+          </ThemeProvider>
+        </QueryProvider>
 
         {/*
           Umami 网站分析脚本
