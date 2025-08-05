@@ -129,7 +129,25 @@ export function getDocLinkHref(href: string): string {
   return joinURL(RoutePath.Docs, href)
 }
 
-// 生成完整 URL
+/**
+ * 生成完整的绝对 URL 地址
+ *
+ * 将相对路径转换为完整的绝对 URL，主要用于：
+ * - SEO 优化（sitemap、robots.txt 等）
+ * - Open Graph 元数据
+ * - 结构化数据（JSON-LD）
+ * - 外部链接分享
+ *
+ * @param path - 相对路径，可选参数，默认为空字符串
+ * @returns 完整的绝对 URL 地址
+ *
+ * @example
+ * ```ts
+ * getFullUrl() // 'https://nestjs.leoku.dev/'
+ * getFullUrl('/docs') // 'https://nestjs.leoku.dev/docs'
+ * getFullUrl('docs/overview') // 'https://nestjs.leoku.dev/docs/overview'
+ * ```
+ */
 export function getFullUrl(path = '') {
   const normalizedPath = normalizePath(path)
 
