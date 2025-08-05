@@ -3,6 +3,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from '~/components/ui/sidebar'
+import { UserSyncProvider } from '~/components/UserSyncProvider'
 
 /**
  * 后台管理系统专用布局组件
@@ -12,19 +13,21 @@ export default function AdminLayout(props: React.PropsWithChildren) {
   const { children } = props
 
   return (
-    <SidebarProvider
-      style={
-        {
-          '--sidebar-width': 'calc(var(--spacing) * 72)',
-          '--header-height': 'calc(var(--spacing) * 12)',
-        } as React.CSSProperties
-      }
-    >
-      <AdminSidebar variant="inset" />
+    <UserSyncProvider>
+      <SidebarProvider
+        style={
+          {
+            '--sidebar-width': 'calc(var(--spacing) * 72)',
+            '--header-height': 'calc(var(--spacing) * 12)',
+          } as React.CSSProperties
+        }
+      >
+        <AdminSidebar variant="inset" />
 
-      <SidebarInset className="@container overflow-hidden">
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+        <SidebarInset className="@container overflow-hidden">
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
+    </UserSyncProvider>
   )
 }

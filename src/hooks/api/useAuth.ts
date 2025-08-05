@@ -1,10 +1,10 @@
 import { useRouter } from 'next/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
 
 import { api } from '~/lib/api/client'
 import { authEndpoints } from '~/lib/api/endpoints'
 import type { LoginDto, LoginResponse, User } from '~/lib/api/types'
+import { useUserStore } from '~/stores/useUserStore'
 
 // ==================== 查询键定义 ====================
 
@@ -32,6 +32,7 @@ export const authQueryKeys = {
 export function useLogin() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const setUser = useUserStore((state) => state.setUser)
 
   return useMutation({
     mutationFn: async (loginData: LoginDto): Promise<LoginResponse> => {
@@ -45,6 +46,9 @@ export function useLogin() {
     onSuccess: (data: LoginResponse) => {
       // 缓存用户信息到 React Query
       queryClient.setQueryData(authQueryKeys.profile(), data.user)
+
+      // 同步用户信息到 Zustand store（持久化存储）
+      setUser(data.user)
 
       // 跳转到管理后台首页
       router.replace('/admini/dashboard')
@@ -66,6 +70,7 @@ export function useLogin() {
 export function useLogout() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const clearUser = useUserStore((state) => state.clearUser)
 
   return useMutation({
     mutationFn: async (): Promise<void> => {
@@ -81,6 +86,9 @@ export function useLogout() {
     onSuccess: () => {
       // 清除所有查询缓存
       queryClient.clear()
+
+      // 清除 Zustand store 中的用户数据
+      clearUser()
 
       // 跳转到登录页
       router.replace('/admini/login')

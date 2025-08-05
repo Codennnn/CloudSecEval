@@ -18,11 +18,15 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith(ADMIN_ROUTES.ROOT)) {
     // 从 Cookie 中获取访问令牌
     const token = request.cookies.get('access_token')?.value
+    const isLoginPage = pathname.startsWith(ADMIN_ROUTES.LOGIN)
+
+    // 如果用户已经登录且正在访问登录页面，重定向到仪表板
+    if (token && isLoginPage) {
+      return NextResponse.redirect(new URL(ADMIN_ROUTES.DASHBOARD, request.url))
+    }
 
     // 如果没有访问令牌，说明用户未登录
     if (!token) {
-      const isLoginPage = pathname.startsWith(ADMIN_ROUTES.LOGIN)
-
       // 如果当前访问的不是登录页面，则重定向到登录页面
       // 避免登录页面本身也被重定向，造成无限循环
       if (!isLoginPage) {
