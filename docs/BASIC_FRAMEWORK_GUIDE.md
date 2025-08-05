@@ -1,0 +1,455 @@
+# React Query + 原生 fetch 基础框架指南
+
+## 🎯 框架概述
+
+这是一个为您的项目提供的轻量级、类型安全的 API 管理基础框架。该框架专注于提供核心功能，而不包含具体的业务接口实现。
+
+## 📁 核心文件结构
+
+```
+src/
+├── lib/api/
+│   ├── client.ts          # 核心 fetch 客户端
+│   ├── config.ts          # 环境配置管理
+│   ├── types.ts           # API 基础类型定义
+│   └── endpoints.ts       # API 端点配置框架
+├── hooks/api/
+│   └── index.ts           # API hooks 导出入口
+├── providers/
+│   └── QueryProvider.tsx  # React Query 提供者
+└── app/
+    └── layout.tsx         # 已集成 QueryProvider
+```
+
+## 🔧 核心功能
+
+### 1. HTTP 客户端 (`src/lib/api/client.ts`)
+
+提供了完整的 fetch 封装，包含：
+
+- ✅ **自动重试机制**：指数退避策略
+- ✅ **超时控制**：可配置的请求超时
+- ✅ **错误处理**：统一的错误格式和提示
+- ✅ **类型安全**：完整的 TypeScript 支持
+- ✅ **开发日志**：可配置的请求日志记录
+
+#### 基本使用
+
+```typescript
+import { api } from '~/lib/api/client'
+
+// GET 请求
+const data = await api.get<ResponseType>('/your-endpoint')
+
+// POST 请求
+const result = await api.post<ResponseType>('/your-endpoint', {
+  // 请求数据
+})
+
+// PUT 请求
+const updated = await api.put<ResponseType>('/your-endpoint/id', {
+  // 更新数据
+})
+
+// DELETE 请求
+await api.delete('/your-endpoint/id')
+```
+
+#### 配置选项
+
+```typescript
+const response = await api.get('/endpoint', {
+  timeout: 5000, // 超时时间
+  retries: 2, // 重试次数
+  showError: false, // 是否显示错误提示
+  headers: {
+    // 自定义请求头
+    Authorization: 'Bearer token',
+  },
+})
+```
+
+### 2. 环境配置 (`src/lib/api/config.ts`)
+
+支持通过环境变量进行配置覆盖：
+
+#### 配置项
+
+```typescript
+interface ApiConfig {
+  baseUrl: string // API 基础 URL
+  timeout: number // 请求超时时间
+  retries: number // 重试次数
+  retryDelay: number // 重试延迟
+  maxRetryDelay: number // 最大重试延迟
+  enableDevtools: boolean // 是否启用开发工具
+  enableLogging: boolean // 是否启用日志
+  enableCache: boolean // 是否启用缓存
+  cacheTime: number // 缓存时间
+  staleTime: number // 数据新鲜度时间
+}
+```
+
+#### 环境变量支持
+
+所有配置项都可以通过环境变量覆盖：
+
+```bash
+# API 基础配置
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api
+NEXT_PUBLIC_API_TIMEOUT=10000
+NEXT_PUBLIC_API_RETRIES=3
+NEXT_PUBLIC_API_RETRY_DELAY=1000
+NEXT_PUBLIC_API_MAX_RETRY_DELAY=30000
+
+# 功能开关
+NEXT_PUBLIC_ENABLE_REACT_QUERY_DEVTOOLS=true
+NEXT_PUBLIC_ENABLE_API_LOGGING=true
+NEXT_PUBLIC_ENABLE_CACHE=true
+
+# 缓存配置
+NEXT_PUBLIC_QUERY_CACHE_TIME=1800000  # 30分钟
+NEXT_PUBLIC_QUERY_STALE_TIME=300000   # 5分钟
+```
+
+### 3. React Query 集成 (`src/providers/QueryProvider.tsx`)
+
+提供了完整的 React Query 配置：
+
+- ✅ **智能缓存**：基于配置的缓存策略
+- ✅ **查询键工厂**：结构化的查询键管理
+- ✅ **开发工具**：可配置的 DevTools
+- ✅ **错误重试**：智能的重试机制
+
+#### 查询键工厂
+
+```typescript
+export const queryKeys = {
+  // 示例结构
+  resource: {
+    all: ['resource'] as const,
+    lists: () => [...queryKeys.resource.all, 'list'] as const,
+    list: (params?: Record<string, unknown>) =>
+      [...queryKeys.resource.lists(), params] as const,
+    details: () => [...queryKeys.resource.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.resource.details(), id] as const,
+  },
+}
+```
+
+## 🚀 如何扩展
+
+### 1. 定义业务类型
+
+在 `src/lib/api/types.ts` 中添加您的业务类型：
+
+```typescript
+// 示例：用户类型
+export interface User {
+  id: string
+  username: string
+  email: string
+  // ... 其他字段
+}
+
+// 示例：文档类型
+export interface Document {
+  id: string
+  title: string
+  content: string
+  // ... 其他字段
+}
+
+// 示例：查询参数类型
+export interface UserQueryParams extends QueryParams {
+  role?: string
+  status?: string
+}
+```
+
+### 2. 定义 API 端点
+
+在 `src/lib/api/endpoints.ts` 中添加您的端点：
+
+```typescript
+export const USER_ENDPOINTS = {
+  LIST: '/users',
+  DETAIL: (id: string) => `/users/${id}`,
+  CREATE: '/users',
+  UPDATE: (id: string) => `/users/${id}`,
+  DELETE: (id: string) => `/users/${id}`,
+} as const
+
+export const API_ENDPOINTS = {
+  USER: USER_ENDPOINTS,
+  // ... 其他端点
+} as const
+```
+
+### 3. 创建 React Query Hooks
+
+创建 `src/hooks/api/useUsers.ts`：
+
+```typescript
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { api } from '~/lib/api/client'
+import { USER_ENDPOINTS } from '~/lib/api/endpoints'
+import type { User, UserQueryParams } from '~/lib/api/types'
+
+// 定义查询键
+const queryKeys = {
+  users: {
+    all: ['users'] as const,
+    lists: () => [...queryKeys.users.all, 'list'] as const,
+    list: (params?: Record<string, unknown>) =>
+      [...queryKeys.users.lists(), params] as const,
+    details: () => [...queryKeys.users.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.users.details(), id] as const,
+  },
+}
+
+// 查询 Hook
+export function useUsers(params?: UserQueryParams) {
+  return useQuery({
+    queryKey: queryKeys.users.list(params),
+    queryFn: () =>
+      api.get<PaginatedResponse<User>>(USER_ENDPOINTS.LIST, {
+        params: new URLSearchParams(params as Record<string, string>),
+      }),
+  })
+}
+
+export function useUser(id: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.users.detail(id),
+    queryFn: () => api.get<User>(USER_ENDPOINTS.DETAIL(id)),
+    enabled: enabled && !!id,
+  })
+}
+
+// 变更 Hook
+export function useCreateUser() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (userData: CreateUserRequest) =>
+      api.post<User>(USER_ENDPOINTS.CREATE, userData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.lists(),
+      })
+    },
+  })
+}
+```
+
+### 4. 导出 Hooks
+
+在 `src/hooks/api/index.ts` 中导出：
+
+```typescript
+export { useUsers, useUser, useCreateUser } from './useUsers'
+export type { User, UserQueryParams } from '~/lib/api/types'
+```
+
+### 5. 在组件中使用
+
+```tsx
+import { useUsers, useCreateUser } from '~/hooks/api'
+
+function UserManagement() {
+  const { data: users, isLoading, error } = useUsers({ page: 1 })
+  const createUser = useCreateUser()
+
+  if (isLoading) return <div>加载中...</div>
+  if (error) return <div>加载失败：{error.message}</div>
+
+  return (
+    <div>
+      {users?.data.map((user) => (
+        <div key={user.id}>{user.username}</div>
+      ))}
+      <button
+        onClick={() =>
+          createUser.mutateAsync({
+            /* 用户数据 */
+          })
+        }
+        disabled={createUser.isPending}
+      >
+        创建用户
+      </button>
+    </div>
+  )
+}
+```
+
+## ⚙️ 环境配置
+
+### 环境变量
+
+创建 `.env.local` 文件：
+
+```bash
+# API 配置
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api
+
+# 开发工具
+NEXT_PUBLIC_ENABLE_REACT_QUERY_DEVTOOLS=true
+NEXT_PUBLIC_ENABLE_API_LOGGING=true
+
+# 缓存配置
+NEXT_PUBLIC_QUERY_CACHE_TIME=1800000  # 30分钟
+NEXT_PUBLIC_QUERY_STALE_TIME=300000   # 5分钟
+```
+
+### 配置调试
+
+在开发环境下，配置信息会自动打印到控制台：
+
+```typescript
+import { debugApiConfig } from '~/lib/api/config'
+
+// 手动打印配置信息
+debugApiConfig()
+```
+
+## 🧪 测试支持
+
+### Mock API 客户端
+
+```typescript
+// __tests__/setup.ts
+import { vi } from 'vitest'
+
+vi.mock('~/lib/api/client', () => ({
+  api: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+  },
+}))
+```
+
+### 测试 Hooks
+
+```typescript
+import { renderHook, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } }
+  })
+
+  return ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  )
+}
+
+describe('useUsers', () => {
+  it('should fetch users successfully', async () => {
+    const mockUsers = [{ id: '1', username: 'john' }]
+    api.get.mockResolvedValue({ data: mockUsers })
+
+    const { result } = renderHook(() => useUsers(), {
+      wrapper: createWrapper()
+    })
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+
+    expect(result.current.data?.data).toEqual(mockUsers)
+  })
+})
+```
+
+## 🔄 最佳实践
+
+### 1. 查询键管理
+
+```typescript
+// ✅ 推荐：使用查询键工厂
+const { data } = useQuery({
+  queryKey: queryKeys.users.detail(userId),
+  queryFn: () => api.get(`/users/${userId}`),
+})
+
+// ❌ 不推荐：硬编码查询键
+const { data } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => api.get(`/users/${userId}`),
+})
+```
+
+### 2. 错误处理
+
+```tsx
+function DataComponent() {
+  const { data, error, isError, refetch } = useCustomData()
+
+  if (isError) {
+    return (
+      <div>
+        <p>加载失败：{error?.message}</p>
+        <button onClick={() => refetch()}>重试</button>
+      </div>
+    )
+  }
+
+  return <DataDisplay data={data} />
+}
+```
+
+### 3. 缓存优化
+
+```typescript
+// 乐观更新
+const updateMutation = useMutation({
+  mutationFn: updateData,
+  onMutate: async (newData) => {
+    // 取消正在进行的查询
+    await queryClient.cancelQueries({ queryKey: queryKeys.data.detail(id) })
+
+    // 获取当前数据
+    const previousData = queryClient.getQueryData(queryKeys.data.detail(id))
+
+    // 乐观更新
+    queryClient.setQueryData(queryKeys.data.detail(id), newData)
+
+    return { previousData }
+  },
+  onError: (err, newData, context) => {
+    // 回滚
+    queryClient.setQueryData(queryKeys.data.detail(id), context?.previousData)
+  },
+  onSettled: () => {
+    // 重新获取数据
+    queryClient.invalidateQueries({ queryKey: queryKeys.data.detail(id) })
+  },
+})
+```
+
+## 📚 扩展建议
+
+1. **认证管理**：添加 JWT 令牌管理和自动刷新
+2. **文件上传**：实现文件上传相关的 hooks
+3. **实时更新**：集成 WebSocket 或 Server-Sent Events
+4. **离线支持**：添加 PWA 功能和离线缓存
+5. **性能监控**：集成性能监控和错误追踪
+
+## 🎉 总结
+
+这个基础框架为您提供了：
+
+- ✅ **完整的类型安全**：TypeScript 全面支持
+- ✅ **灵活的配置**：多环境配置支持
+- ✅ **强大的缓存**：智能的数据缓存策略
+- ✅ **优秀的开发体验**：丰富的开发工具
+- ✅ **可扩展架构**：易于添加新功能
+
+您现在可以基于这个框架快速开发您的 API 管理层，只需要添加具体的业务逻辑即可！

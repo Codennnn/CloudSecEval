@@ -130,7 +130,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get('content-type')
 
   if (contentType?.includes('application/json')) {
-    const result: ApiResponse<T> = await response.json()
+    const result = await response.json() as ApiResponse<T>
 
     // 如果后端返回的是标准格式，检查 success 字段
     if ('success' in result && !result.success) {
@@ -143,7 +143,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
     }
 
     // 返回数据部分或整个响应
-    return ('data' in result ? result.data : result)
+    return 'data' in result ? result.data : result
   }
   else if (contentType?.includes('text/')) {
     return (await response.text()) as T
@@ -198,6 +198,7 @@ export class ApiClient {
           'Content-Type': 'application/json',
           ...(config.headers as Record<string, string>),
         },
+        credentials: 'include', // 确保携带 HttpOnly Cookie
         ...config,
       })
 
@@ -231,6 +232,7 @@ export class ApiClient {
           ...(config.headers as Record<string, string>),
         },
         body: data ? JSON.stringify(data) : undefined,
+        credentials: 'include', // 确保携带 HttpOnly Cookie
         ...config,
       })
 
@@ -264,6 +266,7 @@ export class ApiClient {
           ...(config.headers as Record<string, string>),
         },
         body: data ? JSON.stringify(data) : undefined,
+        credentials: 'include', // 确保携带 HttpOnly Cookie
         ...config,
       })
 
@@ -291,6 +294,7 @@ export class ApiClient {
           'Content-Type': 'application/json',
           ...(config.headers as Record<string, string>),
         },
+        credentials: 'include', // 确保携带 HttpOnly Cookie
         ...config,
       })
 

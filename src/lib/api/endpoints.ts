@@ -16,17 +16,30 @@ export const API_VERSION = 'v1'
 export const API_BASE_PATH = `/api/${API_VERSION}`
 
 // ==================== 具体业务端点定义区域 ====================
-// 在这里定义您的具体业务端点
+
+/**
+ * 认证相关端点
+ */
+export const AUTH_ENDPOINTS = {
+  LOGIN: '/auth/login',
+  LOGOUT: '/auth/logout',
+  REFRESH: '/auth/refresh',
+  PROFILE: '/auth/profile',
+} as const
+
+/**
+ * 用户相关端点
+ */
+export const USER_ENDPOINTS = {
+  LIST: '/users',
+  DETAIL: (id: string) => `/users/${id}`,
+  CREATE: '/users',
+  UPDATE: (id: string) => `/users/${id}`,
+  DELETE: (id: string) => `/users/${id}`,
+  CURRENT: '/users/me',
+} as const
 
 // 示例：
-// export const USER_ENDPOINTS = {
-//   LIST: '/users',
-//   DETAIL: (id: string) => `/users/${id}`,
-//   CREATE: '/users',
-//   UPDATE: (id: string) => `/users/${id}`,
-//   DELETE: (id: string) => `/users/${id}`,
-// } as const
-
 // export const DOCUMENT_ENDPOINTS = {
 //   LIST: '/documents',
 //   DETAIL: (id: string) => `/documents/${id}`,
@@ -37,11 +50,11 @@ export const API_BASE_PATH = `/api/${API_VERSION}`
 // } as const
 
 // ==================== 端点集合 ====================
-// export const API_ENDPOINTS = {
-//   USER: USER_ENDPOINTS,
-//   DOCUMENT: DOCUMENT_ENDPOINTS,
-//   // ... 其他端点
-// } as const
+export const API_ENDPOINTS = {
+  AUTH: AUTH_ENDPOINTS,
+  USER: USER_ENDPOINTS,
+  // ... 其他端点
+} as const
 
 // ==================== 类型定义 ====================
 
@@ -83,10 +96,25 @@ export function buildApiUrl(
 }
 
 // ==================== 端点工具函数 ====================
-// 在这里定义您的端点工具函数
 
-// 示例：
-// export const getUserEndpoint = {
-//   list: () => buildApiUrl(USER_ENDPOINTS.LIST),
-//   detail: (id: string) => buildApiUrl(USER_ENDPOINTS.DETAIL, id),
-// }
+/**
+ * 认证端点工具函数
+ */
+export const authEndpoints = {
+  login: () => buildApiUrl(AUTH_ENDPOINTS.LOGIN),
+  logout: () => buildApiUrl(AUTH_ENDPOINTS.LOGOUT),
+  refresh: () => buildApiUrl(AUTH_ENDPOINTS.REFRESH),
+  profile: () => buildApiUrl(AUTH_ENDPOINTS.PROFILE),
+} as const
+
+/**
+ * 用户端点工具函数
+ */
+export const userEndpoints = {
+  list: () => buildApiUrl(USER_ENDPOINTS.LIST),
+  detail: (id: string) => buildApiUrl(USER_ENDPOINTS.DETAIL, id),
+  create: () => buildApiUrl(USER_ENDPOINTS.CREATE),
+  update: (id: string) => buildApiUrl(USER_ENDPOINTS.UPDATE, id),
+  delete: (id: string) => buildApiUrl(USER_ENDPOINTS.DELETE, id),
+  current: () => buildApiUrl(USER_ENDPOINTS.CURRENT),
+} as const
