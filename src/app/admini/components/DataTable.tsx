@@ -36,6 +36,15 @@ import {
   useReactTable,
   type VisibilityState } from '@tanstack/react-table'
 import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+  Columns2Icon,
+  EllipsisVerticalIcon,
+  GripVerticalIcon,
+  PlusIcon,
   UserIcon,
 } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
@@ -139,7 +148,7 @@ function DragHandle({ id }: { id: number }) {
       size="icon"
       variant="ghost"
     >
-      <UserIcon className="text-muted-foreground size-3" />
+      <GripVerticalIcon className="text-muted-foreground size-3" />
       <span className="sr-only">Drag to reorder</span>
     </Button>
   )
@@ -205,7 +214,9 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   />
                 </AreaChart>
               </ChartContainer>
+
               <Separator />
+
               <div className="grid gap-2">
                 <div className="flex gap-2 leading-none font-medium">
                   Trending up by 5.2% this month
@@ -218,6 +229,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                   and should wrap around.
                 </div>
               </div>
+
               <Separator />
             </>
           )}
@@ -466,7 +478,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
             size="icon"
             variant="ghost"
           >
-            <UserIcon />
+            <EllipsisVerticalIcon />
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
@@ -612,16 +624,18 @@ export function DataTable({
           </TabsTrigger>
           <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
         </TabsList>
+
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm" variant="outline">
-                <UserIcon />
+                <Columns2Icon />
                 <span className="hidden lg:inline">Customize Columns</span>
                 <span className="lg:hidden">Columns</span>
-                <UserIcon />
+                <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-56">
               {table
                 .getAllColumns()
@@ -644,8 +658,9 @@ export function DataTable({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
           <Button size="sm" variant="outline">
-            <UserIcon />
+            <PlusIcon />
             <span className="hidden lg:inline">Add Section</span>
           </Button>
         </div>
@@ -751,8 +766,9 @@ export function DataTable({
                 }}
               >
                 <span className="sr-only">Go to first page</span>
-                <UserIcon />
+                <ChevronsLeftIcon />
               </Button>
+
               <Button
                 className="size-8"
                 disabled={!table.getCanPreviousPage()}
@@ -763,8 +779,9 @@ export function DataTable({
                 }}
               >
                 <span className="sr-only">Go to previous page</span>
-                <UserIcon />
+                <ChevronLeftIcon />
               </Button>
+
               <Button
                 className="size-8"
                 disabled={!table.getCanNextPage()}
@@ -775,8 +792,9 @@ export function DataTable({
                 }}
               >
                 <span className="sr-only">Go to next page</span>
-                <UserIcon />
+                <ChevronRightIcon />
               </Button>
+
               <Button
                 className="hidden size-8 lg:flex"
                 disabled={!table.getCanNextPage()}
@@ -787,7 +805,7 @@ export function DataTable({
                 }}
               >
                 <span className="sr-only">Go to last page</span>
-                <UserIcon />
+                <ChevronsRightIcon />
               </Button>
             </div>
           </div>

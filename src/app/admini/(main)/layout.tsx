@@ -22,7 +22,7 @@ export default function AdminLayout(props: React.PropsWithChildren) {
     >
       <AdminSidebar variant="inset" />
 
-      <SidebarInset>
+      <SidebarInset className="@container overflow-hidden">
         {children}
       </SidebarInset>
     </SidebarProvider>

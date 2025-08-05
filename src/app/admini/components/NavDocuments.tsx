@@ -1,6 +1,6 @@
 'use client'
 
-import { UserIcon } from 'lucide-react'
+import { EllipsisIcon, UserIcon } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -49,10 +49,11 @@ export function NavDocuments({
                   showOnHover
                   className="data-[state=open]:bg-muted rounded-sm"
                 >
-                  <UserIcon />
+                  <EllipsisIcon />
                   <span className="sr-only">More</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent
                 align={isMobile ? 'end' : 'start'}
                 className="w-24 rounded-lg"
@@ -62,11 +63,14 @@ export function NavDocuments({
                   <UserIcon />
                   <span>Open</span>
                 </DropdownMenuItem>
+
                 <DropdownMenuItem>
                   <UserIcon />
                   <span>Share</span>
                 </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
+
                 <DropdownMenuItem variant="destructive">
                   <UserIcon />
                   <span>Delete</span>
