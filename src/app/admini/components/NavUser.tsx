@@ -33,7 +33,7 @@ import { useNavigation } from '~/utils/navigation'
 import { useLogout } from '~admin/hooks/api/useAuth'
 
 export function NavUser() {
-  const { navigateDoc } = useNavigation()
+  const { navigate, navigateDoc } = useNavigation()
   const { isMobile } = useSidebar()
 
   const user = useUser()
@@ -47,6 +47,10 @@ export function NavUser() {
     navigateDoc('', { external: true })
   }
 
+  const handleNavigateToProfile = () => {
+    navigate('/admini/profile')
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -56,7 +60,7 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               size="lg"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className="size-8 rounded-lg">
                 <AvatarImage alt={user?.name ?? '-'} src={user?.avatarUrl} />
                 <AvatarFallback className="rounded-lg">{user?.name?.charAt(0)}</AvatarFallback>
               </Avatar>
@@ -80,7 +84,7 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="size-8 rounded-lg">
                   <AvatarImage alt={user?.name ?? '-'} src={user?.avatarUrl} />
                   <AvatarFallback className="rounded-lg">{user?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -97,7 +101,11 @@ export function NavUser() {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleNavigateToProfile()
+                }}
+              >
                 <UserIcon />
                 账号信息
               </DropdownMenuItem>

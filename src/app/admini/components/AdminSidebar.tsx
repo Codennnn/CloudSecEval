@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { UserIcon } from 'lucide-react'
+import { GaugeIcon, UserIcon } from 'lucide-react'
 
 import {
   Sidebar,
@@ -22,13 +22,8 @@ const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
-      title: 'Analytics',
-      url: '#',
-      icon: UserIcon,
+      url: '/admini/dashboard',
+      icon: GaugeIcon,
     },
   ],
   navClouds: [

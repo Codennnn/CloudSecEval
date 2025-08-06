@@ -23,10 +23,7 @@ export function useUserSync() {
   useEffect(() => {
     // 如果 React Query 成功获取到用户数据，且与 store 中的数据不一致
     if (isSuccess) {
-      // 检查是否需要更新 store（避免不必要的更新）
-      if (!storeUser || storeUser.id !== user.id) {
-        setUser(user)
-      }
+      setUser(user)
     }
 
     // 如果 React Query 获取用户数据失败（如 401 未登录），清除 store 中的数据

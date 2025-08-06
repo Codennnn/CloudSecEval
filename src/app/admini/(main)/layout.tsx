@@ -3,6 +3,7 @@ import {
   SidebarProvider,
 } from '~/components/ui/sidebar'
 
+import { AdminHeader } from '~admin/components/AdminHeader'
 import { AdminSidebar } from '~admin/components/AdminSidebar'
 import { UserSyncProvider } from '~admin/components/UserSyncProvider'
 
@@ -26,7 +27,11 @@ export default function AdminLayout(props: React.PropsWithChildren) {
         <AdminSidebar variant="inset" />
 
         <SidebarInset className="@container overflow-hidden">
-          {children}
+          <AdminHeader />
+
+          <div className="flex-1 overflow-hidden">
+            {children}
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </UserSyncProvider>

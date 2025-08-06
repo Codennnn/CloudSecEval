@@ -98,7 +98,7 @@ export const ScrollGradientContainer = forwardRef<
   return (
     <div
       className={cn(
-        'relative flex-1 overflow-hidden',
+        'relative flex-1 size-full overflow-hidden',
         enableFlex && 'flex flex-col',
         rootClassName,
       )}

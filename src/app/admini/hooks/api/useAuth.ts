@@ -110,14 +110,18 @@ export function useProfile() {
 
   return useQuery({
     queryKey: authQueryKeys.profile(),
+
     queryFn: async (): Promise<User> => {
       return await api.get<User>(authEndpoints.profile())
     },
+
     // 只在浏览器环境且用户可能已登录时启用查询
     // 如果 store 中没有用户信息，说明用户已退出登录，不需要查询
     enabled: typeof window !== 'undefined' && user !== null,
+
     // 数据比较稳定，可以缓存长一点
     staleTime: 10 * 60 * 1000, // 10 分钟
+
     retry: (failureCount, error) => {
       // 如果是认证错误（401），不重试
       if (typeof error === 'object' && 'status' in error && error.status === 401) {
