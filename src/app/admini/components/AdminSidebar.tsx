@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { GaugeIcon, GitlabIcon, UserIcon } from 'lucide-react'
+import { GaugeIcon, KeyIcon, UserIcon } from 'lucide-react'
 
 import {
   Sidebar,
@@ -23,9 +23,14 @@ import { NavUser } from '~admin/components/NavUser'
 const data = {
   navMain: [
     {
-      title: 'Dashboard',
+      title: '仪表盘',
       url: '/admini/dashboard',
       icon: GaugeIcon,
+    },
+    {
+      title: '授权码管理',
+      url: '/admini/licenses',
+      icon: KeyIcon,
     },
   ],
   navClouds: [

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import {
   BookTextIcon,
   EllipsisVerticalIcon,
@@ -27,13 +28,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar'
+import { RoutePath } from '~/constants'
 import { useUser } from '~/stores/useUserStore'
-import { useNavigation } from '~/utils/navigation'
 
 import { useLogout } from '~admin/hooks/api/useAuth'
 
 export function NavUser() {
-  const { navigate, navigateDoc } = useNavigation()
   const { isMobile } = useSidebar()
 
   const user = useUser()
@@ -41,14 +41,6 @@ export function NavUser() {
 
   const handleLogout = () => {
     logout.mutate()
-  }
-
-  const handleNavigateToDoc = () => {
-    navigateDoc('', { external: true })
-  }
-
-  const handleNavigateToProfile = () => {
-    navigate('/admini/profile')
   }
 
   return (
@@ -101,23 +93,20 @@ export function NavUser() {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => {
-                  handleNavigateToProfile()
-                }}
-              >
-                <UserIcon />
-                账号信息
-              </DropdownMenuItem>
+              <Link href="/admini/profile">
+                <DropdownMenuItem>
+                  <UserIcon />
+                  账号信息
+                </DropdownMenuItem>
+              </Link>
 
-              <DropdownMenuItem
-                onClick={() => {
-                  handleNavigateToDoc()
-                }}
-              >
-                <BookTextIcon />
-                前往文档
-              </DropdownMenuItem>
+              <Link href={RoutePath.Docs}>
+                <DropdownMenuItem>
+                  <BookTextIcon />
+                  前往文档
+                </DropdownMenuItem>
+              </Link>
+
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />

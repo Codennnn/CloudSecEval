@@ -37,14 +37,16 @@ export function NavMain({ items }: NavMainProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  className="size-8 group-data-[collapsible=icon]:opacity-0"
-                  size="icon"
-                  variant="outline"
-                >
-                  <ListIcon />
-                  <span className="sr-only">查看授权码列表</span>
-                </Button>
+                <Link href="/admini/licenses">
+                  <Button
+                    className="size-8 group-data-[collapsible=icon]:opacity-0"
+                    size="icon"
+                    variant="outline"
+                  >
+                    <ListIcon />
+                    <span className="sr-only">查看授权码列表</span>
+                  </Button>
+                </Link>
               </TooltipTrigger>
               <TooltipContent>
                 查看授权码列表

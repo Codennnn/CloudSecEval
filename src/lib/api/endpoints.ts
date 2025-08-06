@@ -26,6 +26,17 @@ export const USER_ENDPOINTS = {
   CURRENT: '/users/me',
 } as const
 
+/**
+ * 授权码相关端点
+ */
+export const LICENSE_ENDPOINTS = {
+  LIST: '/license/list',
+  DETAIL: (id: string) => `/license/${id}`,
+  CREATE: '/license',
+  UPDATE: (id: string) => `/license/${id}`,
+  DELETE: (id: string) => `/license/${id}`,
+} as const
+
 // 示例：
 // export const DOCUMENT_ENDPOINTS = {
 //   LIST: '/documents',
@@ -40,6 +51,7 @@ export const USER_ENDPOINTS = {
 export const API_ENDPOINTS = {
   AUTH: AUTH_ENDPOINTS,
   USER: USER_ENDPOINTS,
+  LICENSE: LICENSE_ENDPOINTS,
   // ... 其他端点
 } as const
 
@@ -103,4 +115,15 @@ export const userEndpoints = {
   update: (id: string) => buildApiUrl(USER_ENDPOINTS.UPDATE, id),
   delete: (id: string) => buildApiUrl(USER_ENDPOINTS.DELETE, id),
   current: () => buildApiUrl(USER_ENDPOINTS.CURRENT),
+} as const
+
+/**
+ * 授权码端点工具函数
+ */
+export const licenseEndpoints = {
+  list: () => buildApiUrl(LICENSE_ENDPOINTS.LIST),
+  detail: (id: string) => buildApiUrl(LICENSE_ENDPOINTS.DETAIL, id),
+  create: () => buildApiUrl(LICENSE_ENDPOINTS.CREATE),
+  update: (id: string) => buildApiUrl(LICENSE_ENDPOINTS.UPDATE, id),
+  delete: (id: string) => buildApiUrl(LICENSE_ENDPOINTS.DELETE, id),
 } as const

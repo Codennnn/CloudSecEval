@@ -150,3 +150,71 @@ export interface JwtPayload {
   iat: number
   exp: number
 }
+
+// ==================== 授权码相关类型 ====================
+
+/**
+ * 授权码信息接口
+ */
+export interface License {
+  id: string
+  code: string
+  status: 'active' | 'inactive' | 'expired'
+  type?: string
+  description?: string
+  expiresAt?: string
+  createdAt?: string
+  updatedAt?: string
+  userId?: string
+  [property: string]: unknown
+}
+
+/**
+ * 授权码查询参数
+ */
+export interface LicenseQueryParams extends QueryParams {
+  status?: 'active' | 'inactive' | 'expired'
+  type?: string
+  userId?: string
+}
+
+/**
+ * 创建授权码 DTO
+ */
+export interface CreateLicenseDto {
+  code: string
+  type?: string
+  description?: string
+  expiresAt?: string
+  userId?: string
+  [property: string]: unknown
+}
+
+/**
+ * 更新授权码 DTO
+ */
+export interface UpdateLicenseDto {
+  code?: string
+  status?: 'active' | 'inactive' | 'expired'
+  type?: string
+  description?: string
+  expiresAt?: string
+  [property: string]: unknown
+}
+
+/**
+ * 授权码列表响应（根据API返回格式定义）
+ */
+export interface LicenseListResponse {
+  code: number
+  message: string
+  data: License[]
+  pagination: {
+    total: number
+    page: number
+    pageSize: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+  }
+}
