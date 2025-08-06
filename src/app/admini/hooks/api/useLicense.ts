@@ -108,7 +108,10 @@ export function useCreateLicense() {
 
   return useMutation({
     mutationFn: async (data: CreateLicenseDto): Promise<License> => {
-      return await api.post<License>(licenseEndpoints.create(), data)
+      return await api.post<License>('/license/create', {
+        email: data.email.trim(),
+        remark: data.remark?.trim(),
+      })
     },
     onSuccess: async () => {
       // 创建成功后，使所有授权码列表查询失效

@@ -50,7 +50,7 @@ export default function OpenGraphPage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'linear-gradient(180deg, oklch(from var(--accent) l c h / 8%) 0%, oklch(from var(--accent2) l c h / 7%) 70%)',
+          background: 'linear-gradient(180deg, oklch(from var(--theme) l c h / 8%) 0%, oklch(from var(--theme2) l c h / 7%) 70%)',
         }}
       >
         {/* 噪点纹理背景 */}

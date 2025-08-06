@@ -179,15 +179,13 @@ export interface LicenseQueryParams extends QueryParams {
 }
 
 /**
- * 创建授权码 DTO
+ * 创建授权码请求 DTO（用于表单提交）
  */
 export interface CreateLicenseDto {
-  code: string
-  type?: string
-  description?: string
+  email: string
+  remark?: string
+  purchaseAmount: number
   expiresAt?: string
-  userId?: string
-  [property: string]: unknown
 }
 
 /**

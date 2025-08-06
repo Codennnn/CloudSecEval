@@ -1,6 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 
 import { Button } from '~/components/ui/button'
 import {
@@ -10,90 +13,60 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
 import type { LoginDto } from '~/lib/api/types'
 import { cn } from '~/lib/utils'
 import { usePrefetch } from '~/utils/navigation'
 
 import { useLogin } from '~admin/hooks/api/useAuth'
 
+const loginFormSchema = z.object({
+  email: z.email('请输入有效的邮箱地址'),
+  password: z
+    .string()
+    .min(1, '请输入密码')
+    .min(6, '密码长度至少为 6 位'),
+})
+
+type LoginFormValues = z.infer<typeof loginFormSchema>
+
 /**
  * 登录表单组件
- * 提供用户登录功能的表单界面
+ * 提供用户登录功能的表单界面，使用 zod + react-hook-form 进行表单验证
  */
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  const [formData, setFormData] = useState<LoginDto>({
-    email: '',
-    password: '',
-  })
-
-  const [errors, setErrors] = useState<Partial<LoginDto>>({})
-
   usePrefetch({ href: '/admini/dashboard' })
 
   const loginMutation = useLogin()
 
-  /**
-   * 处理输入框值变化
-   */
-  const handleInputChange = (field: keyof LoginDto) => (
-    ev: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = ev.target.value
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-
-    // 清除对应字段的错误
-    if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: undefined,
-      }))
-    }
-  }
-
-  /**
-   * 表单验证
-   */
-  const validateForm = (): boolean => {
-    const newErrors: Partial<LoginDto> = {}
-
-    // 邮箱验证
-    if (!formData.email) {
-      newErrors.email = '请输入邮箱地址'
-    }
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = '请输入有效的邮箱地址'
-    }
-
-    // 密码验证
-    if (!formData.password) {
-      newErrors.password = '请输入密码'
-    }
-    else if (formData.password.length < 6) {
-      newErrors.password = '密码长度至少为 6 位'
-    }
-
-    setErrors(newErrors)
-
-    return Object.keys(newErrors).length === 0
-  }
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
   /**
    * 处理表单提交
    */
-  const handleSubmit = (ev: React.FormEvent) => {
-    ev.preventDefault()
-
-    if (validateForm()) {
-      loginMutation.mutate(formData)
+  const handleSubmit = (values: LoginFormValues) => {
+    const loginData: LoginDto = {
+      email: values.email,
+      password: values.password,
     }
+    loginMutation.mutate(loginData)
   }
 
   return (
@@ -107,57 +80,61 @@ export function LoginForm({
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email">邮箱地址</Label>
-                <div>
-                  <Input
-                    required
-                    className={errors.email ? 'border-error' : ''}
-                    disabled={loginMutation.isPending}
-                    id="email"
-                    placeholder="请输入您的邮箱地址"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange('email')}
-                  />
-                  {errors.email && (
-                    <div className="text-sm text-error pt-1.5">{errors.email}</div>
-                  )}
-                </div>
-              </div>
+          <Form {...form}>
+            <form
+              className="space-y-6"
+              onSubmit={(ev) => {
+                ev.preventDefault()
+                void form.handleSubmit(handleSubmit)(ev)
+              }}
+            >
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>邮箱地址</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={loginMutation.isPending}
+                        placeholder="请输入您的邮箱地址"
+                        type="email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid gap-3">
-                <Label htmlFor="password">密码</Label>
-                <div>
-                  <Input
-                    required
-                    className={errors.password ? 'border-error' : ''}
-                    disabled={loginMutation.isPending}
-                    id="password"
-                    placeholder="请输入您的密码"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange('password')}
-                  />
-                  {errors.password && (
-                    <div className="text-sm text-error pt-1.5">{errors.password}</div>
-                  )}
-                </div>
-              </div>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>密码</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={loginMutation.isPending}
+                        placeholder="请输入您的密码"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="flex flex-col gap-3">
-                <Button
-                  className="w-full"
-                  disabled={loginMutation.isPending}
-                  type="submit"
-                >
-                  {loginMutation.isPending ? '登录中...' : '立即登录'}
-                </Button>
-              </div>
-            </div>
-          </form>
+              <Button
+                className="w-full"
+                disabled={loginMutation.isPending}
+                type="submit"
+              >
+                {loginMutation.isPending ? '登录中...' : '立即登录'}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

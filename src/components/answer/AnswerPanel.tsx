@@ -401,7 +401,7 @@ export function AnswerPanel(props: AnswerPanelProps) {
       {/* 输入区域 */}
       <div className="p-panel pt-0">
         {/* AI 问答渐变边框容器 */}
-        <div className="relative p-0.5 rounded-xl bg-gradient-to-r from-accent/60 to-purple-500/40">
+        <div className="relative p-0.5 rounded-xl bg-gradient-to-r from-theme/60 to-theme2/40">
           <div className="rounded-[12px] overflow-hidden bg-background">
             <Textarea
               ref={inputRef}

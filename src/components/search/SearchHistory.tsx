@@ -78,7 +78,7 @@ export function SearchHistory({
         {displayHistory.map((item) => (
           <div
             key={`${item.term}-${item.timestamp}`}
-            className="group flex items-center gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
+            className="group flex items-center gap-3 p-2 rounded-lg hover:bg-theme/50 transition-colors cursor-pointer"
             role="button"
             tabIndex={0}
             onClick={() => { onSelectHistory(item.term) }}

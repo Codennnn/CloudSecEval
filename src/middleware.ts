@@ -10,46 +10,46 @@ import {
   SEARCH_BOT_PATTERN,
 } from '~/constants/routes.server'
 
+/**
+   * 处理管理后台路由的访问控制逻辑
+   * @param request - Next.js 请求对象
+   * @param pathname - 当前访问路径
+   * @returns 重定向响应或 undefined（继续处理）
+   */
+function handleAdminRoutes(request: NextRequest, pathname: string) {
+  const token = request.cookies.get('access_token')?.value
+  const hasLogin = !!token
+  const isRootPath = pathname === ADMIN_ROUTES.ROOT
+
+  // 情况1：访问管理后台根路径，根据登录状态重定向
+  if (isRootPath) {
+    const targetRoute = hasLogin ? ADMIN_ROUTES.DASHBOARD : ADMIN_ROUTES.LOGIN
+
+    return NextResponse.redirect(new URL(targetRoute, request.url))
+  }
+
+  const isLoginPage = pathname.startsWith(ADMIN_ROUTES.LOGIN)
+
+  // 情况2：已登录用户访问登录页，重定向到仪表板
+  if (hasLogin && isLoginPage) {
+    return NextResponse.redirect(new URL(ADMIN_ROUTES.DASHBOARD, request.url))
+  }
+
+  // 情况3：未登录用户访问非登录页面，重定向到登录页
+  if (!hasLogin && !isLoginPage) {
+    return NextResponse.redirect(new URL(ADMIN_ROUTES.LOGIN, request.url))
+  }
+
+  // 其他情况：允许继续访问（已登录访问其他页面，或未登录访问登录页）
+  return NextResponse.next()
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 管理后台路由访问控制
   if (pathname.startsWith(ADMIN_ROUTES.ROOT)) {
     return handleAdminRoutes(request, pathname)
-  }
-
-  /**
-   * 处理管理后台路由的访问控制逻辑
-   * @param request - Next.js 请求对象
-   * @param pathname - 当前访问路径
-   * @returns 重定向响应或 undefined（继续处理）
-   */
-  function handleAdminRoutes(request: NextRequest, pathname: string) {
-    const token = request.cookies.get('access_token')?.value
-    const hasLogin = !!token
-    const isRootPath = pathname === ADMIN_ROUTES.ROOT
-
-    // 情况1：访问管理后台根路径，根据登录状态重定向
-    if (isRootPath) {
-      const targetRoute = hasLogin ? ADMIN_ROUTES.DASHBOARD : ADMIN_ROUTES.LOGIN
-
-      return NextResponse.redirect(new URL(targetRoute, request.url))
-    }
-
-    const isLoginPage = pathname.startsWith(ADMIN_ROUTES.LOGIN)
-
-    // 情况2：已登录用户访问登录页，重定向到仪表板
-    if (hasLogin && isLoginPage) {
-      return NextResponse.redirect(new URL(ADMIN_ROUTES.DASHBOARD, request.url))
-    }
-
-    // 情况3：未登录用户访问非登录页面，重定向到登录页
-    if (!hasLogin && !isLoginPage) {
-      return NextResponse.redirect(new URL(ADMIN_ROUTES.LOGIN, request.url))
-    }
-
-    // 其他情况：允许继续访问（已登录访问其他页面，或未登录访问登录页）
-    return NextResponse.next()
   }
 
   // 只对 /assets 路径下的静态资源进行防盗链检查

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { useRouter } from 'next/navigation'
