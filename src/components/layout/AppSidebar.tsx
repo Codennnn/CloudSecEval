@@ -64,8 +64,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="gap-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg">
-              <Link href={RoutePath.Home}>
+            <Link href={RoutePath.Home}>
+              <SidebarMenuButton asChild size="lg">
                 <div className="flex items-center gap-2">
                   <div className="flex justify-center items-center">
                     <Image
@@ -81,8 +81,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                     <div className="text-xs text-muted-foreground font-medium">v10.0.0</div>
                   </div>
                 </div>
-              </Link>
-            </SidebarMenuButton>
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
 

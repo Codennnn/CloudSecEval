@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ListIcon, SquarePlusIcon, type UserIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
@@ -22,6 +23,8 @@ interface NavMainProps {
 }
 
 export function NavMain({ items }: NavMainProps) {
+  const pathname = usePathname()
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -56,16 +59,20 @@ export function NavMain({ items }: NavMainProps) {
         </SidebarMenu>
 
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <Link href={item.url}>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-          ))}
+          {items.map((item) => {
+            const isActive = pathname === item.url
+
+            return (
+              <SidebarMenuItem key={item.title}>
+                <Link href={item.url}>
+                  <SidebarMenuButton isActive={isActive} tooltip={item.title}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            )
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

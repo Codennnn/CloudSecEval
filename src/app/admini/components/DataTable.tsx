@@ -591,7 +591,7 @@ export function DataTable({
       className="w-full flex-col justify-start gap-6"
       defaultValue="outline"
     >
-      <div className="flex items-center justify-between px-4 lg:px-6">
+      <div className="flex items-center justify-between px-admin-content-md lg:px-admin-content">
         <Label className="sr-only" htmlFor="view-selector">
           View
         </Label>
@@ -666,7 +666,7 @@ export function DataTable({
         </div>
       </div>
       <TabsContent
-        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+        className="relative flex flex-col gap-4 overflow-auto px-admin-content-md lg:px-admin-content"
         value="outline"
       >
         <div className="overflow-hidden rounded-lg border">
@@ -812,16 +812,19 @@ export function DataTable({
         </div>
       </TabsContent>
       <TabsContent
-        className="flex flex-col px-4 lg:px-6"
+        className="flex flex-col px-admin-content-md lg:px-admin-content"
         value="past-performance"
       >
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed" />
       </TabsContent>
-      <TabsContent className="flex flex-col px-4 lg:px-6" value="key-personnel">
+      <TabsContent
+        className="flex flex-col px-admin-content-md lg:px-admin-content"
+        value="key-personnel"
+      >
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed" />
       </TabsContent>
       <TabsContent
-        className="flex flex-col px-4 lg:px-6"
+        className="flex flex-col px-admin-content-md lg:px-admin-content"
         value="focus-documents"
       >
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed" />

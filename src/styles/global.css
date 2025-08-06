@@ -3,6 +3,7 @@
 
 @import './shiki.css';
 @import './doc.css';
+@import './admin.css';
 
 @plugin '@tailwindcss/typography';
 
