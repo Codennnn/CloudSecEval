@@ -1,6 +1,6 @@
 'use client'
 
-import { EllipsisIcon, UserIcon } from 'lucide-react'
+import { EllipsisIcon, ExternalLinkIcon, type UserIcon } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -32,7 +32,8 @@ export function NavDocuments({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Documents</SidebarGroupLabel>
+      <SidebarGroupLabel>文档</SidebarGroupLabel>
+
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -50,7 +51,7 @@ export function NavDocuments({
                   className="data-[state=open]:bg-muted rounded-sm"
                 >
                   <EllipsisIcon />
-                  <span className="sr-only">More</span>
+                  <span className="sr-only">更多</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
 
@@ -60,29 +61,18 @@ export function NavDocuments({
                 side={isMobile ? 'bottom' : 'right'}
               >
                 <DropdownMenuItem>
-                  <UserIcon />
-                  <span>Open</span>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem>
-                  <UserIcon />
-                  <span>Share</span>
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem variant="destructive">
-                  <UserIcon />
-                  <span>Delete</span>
+                  <ExternalLinkIcon />
+                  <span>新标签打开</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
+
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
-            <UserIcon className="text-sidebar-foreground/70" />
-            <span>More</span>
+            <EllipsisIcon className="text-sidebar-foreground/70" />
+            <span>更多</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

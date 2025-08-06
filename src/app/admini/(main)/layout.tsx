@@ -1,9 +1,10 @@
-import { AdminSidebar } from '~/app/admini/components/AdminSidebar'
 import {
   SidebarInset,
   SidebarProvider,
 } from '~/components/ui/sidebar'
-import { UserSyncProvider } from '~/components/UserSyncProvider'
+
+import { AdminSidebar } from '~admin/components/AdminSidebar'
+import { UserSyncProvider } from '~admin/components/UserSyncProvider'
 
 /**
  * 后台管理系统专用布局组件

@@ -3,10 +3,6 @@
 import Link from 'next/link'
 import { UserIcon } from 'lucide-react'
 
-import { NavDocuments } from '~/app/admini/components/NavDocuments'
-import { NavMain } from '~/app/admini/components/NavMain'
-import { NavSecondary } from '~/app/admini/components/NavSecondary'
-import { NavUser } from '~/app/admini/components/NavUser'
 import {
   Sidebar,
   SidebarContent,
@@ -17,6 +13,11 @@ import {
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
 
+import { NavDocuments } from '~admin/components/NavDocuments'
+import { NavMain } from '~admin/components/NavMain'
+import { NavSecondary } from '~admin/components/NavSecondary'
+import { NavUser } from '~admin/components/NavUser'
+
 const data = {
   navMain: [
     {
@@ -25,22 +26,7 @@ const data = {
       icon: UserIcon,
     },
     {
-      title: 'Lifecycle',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
       title: 'Analytics',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
-      title: 'Projects',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
-      title: 'Team',
       url: '#',
       icon: UserIcon,
     },

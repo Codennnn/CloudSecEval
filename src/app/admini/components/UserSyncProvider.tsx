@@ -1,6 +1,6 @@
 'use client'
 
-import { useUserSync } from '~/hooks/useUserSync'
+import { useUserSync } from '~admin/hooks/useUserSync'
 
 /**
  * 用户同步提供者组件
@@ -18,6 +18,5 @@ export function UserSyncProvider({ children }: React.PropsWithChildren) {
   // 执行用户数据同步逻辑
   useUserSync()
 
-  // 直接渲染子组件，不添加额外的 DOM 结构
   return children
 }

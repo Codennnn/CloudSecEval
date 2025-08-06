@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 
-import { useProfile } from '~/hooks/api/useAuth'
 import { useUserStore } from '~/stores/useUserStore'
+
+import { useProfile } from '~admin/hooks/api/useAuth'
 
 /**
  * 用户数据同步 Hook

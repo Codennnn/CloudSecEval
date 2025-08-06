@@ -1,10 +1,11 @@
-import { AdminHeader } from '~/app/admini/components/AdminHeader'
-import { ChartAreaInteractive } from '~/app/admini/components/ChartAreaInteractive'
-import { DataTable } from '~/app/admini/components/DataTable'
-import { SectionCards } from '~/app/admini/components/SectionCards'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 
 import data from './data.json'
+
+import { AdminHeader } from '~admin/components/AdminHeader'
+import { ChartAreaInteractive } from '~admin/components/ChartAreaInteractive'
+import { DataTable } from '~admin/components/DataTable'
+import { SectionCards } from '~admin/components/SectionCards'
 
 export default function AdminDashboardPage() {
   return (

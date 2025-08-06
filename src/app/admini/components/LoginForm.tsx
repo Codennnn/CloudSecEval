@@ -12,8 +12,10 @@ import {
 } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { type LoginDto, useLogin } from '~/hooks/api'
+import type { LoginDto } from '~/lib/api/types'
 import { cn } from '~/lib/utils'
+
+import { useLogin } from '~admin/hooks/api/useAuth'
 
 /**
  * 登录表单组件

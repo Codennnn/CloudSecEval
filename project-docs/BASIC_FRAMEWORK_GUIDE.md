@@ -255,7 +255,7 @@ export type { User, UserQueryParams } from '~/lib/api/types'
 ### 5. 在组件中使用
 
 ```tsx
-import { useUsers, useCreateUser } from '~/hooks/api'
+import { useUsers, useCreateUser } from '~/hooks/api/useUsers'
 
 function UserManagement() {
   const { data: users, isLoading, error } = useUsers({ page: 1 })

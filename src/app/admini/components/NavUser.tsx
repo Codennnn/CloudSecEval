@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  BookTextIcon,
   EllipsisVerticalIcon,
   LogOutIcon,
   UserIcon,
@@ -26,17 +27,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar'
-import { useLogout } from '~/hooks/api/useAuth'
 import { useUser } from '~/stores/useUserStore'
+
+import { useLogout } from '~admin/hooks/api/useAuth'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const logout = useLogout()
-  const user = useUser()
 
-  /**
-   * 处理退出登录点击事件
-   */
+  const user = useUser()
+  const logout = useLogout()
+
   const handleLogout = () => {
     logout.mutate()
   }
@@ -94,6 +94,11 @@ export function NavUser() {
               <DropdownMenuItem>
                 <UserIcon />
                 账号信息
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
+                <BookTextIcon />
+                前往文档
               </DropdownMenuItem>
             </DropdownMenuGroup>
 
