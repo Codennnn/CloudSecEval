@@ -1,7 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
-import { GaugeIcon, UserIcon } from 'lucide-react'
+import { GaugeIcon, GitlabIcon, UserIcon } from 'lucide-react'
 
 import {
   Sidebar,
@@ -12,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
+import { SITE_CONFIG } from '~/constants'
 
 import { NavDocuments } from '~admin/components/NavDocuments'
 import { NavMain } from '~admin/components/NavMain'
@@ -121,8 +123,13 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/admini">
-                <UserIcon className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <Image
+                  alt="NestJS Logo"
+                  height={24}
+                  src={SITE_CONFIG.logoPath}
+                  width={24}
+                />
+                <span className="text-base font-semibold">文档服务中心</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

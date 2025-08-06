@@ -1,6 +1,7 @@
 'use client'
 
-import { UserIcon } from 'lucide-react'
+import Link from 'next/link'
+import { ListIcon, SquarePlusIcon, type UserIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import {
@@ -10,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 
 interface NavMainProps {
   items: {
@@ -27,29 +29,39 @@ export function NavMain({ items }: NavMainProps) {
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-              tooltip="Quick Create"
+              tooltip="创建授权码"
             >
-              <UserIcon />
-              <span>Quick Create</span>
+              <SquarePlusIcon />
+              <span>创建授权码</span>
             </SidebarMenuButton>
-            <Button
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              size="icon"
-              variant="outline"
-            >
-              <UserIcon />
-              <span className="sr-only">Inbox</span>
-            </Button>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="size-8 group-data-[collapsible=icon]:opacity-0"
+                  size="icon"
+                  variant="outline"
+                >
+                  <ListIcon />
+                  <span className="sr-only">查看授权码列表</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                查看授权码列表
+              </TooltipContent>
+            </Tooltip>
           </SidebarMenuItem>
         </SidebarMenu>
 
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
+              <Link href={item.url}>
+                <SidebarMenuButton tooltip={item.title}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
