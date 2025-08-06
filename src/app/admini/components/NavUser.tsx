@@ -28,10 +28,12 @@ import {
   useSidebar,
 } from '~/components/ui/sidebar'
 import { useUser } from '~/stores/useUserStore'
+import { useNavigation } from '~/utils/navigation'
 
 import { useLogout } from '~admin/hooks/api/useAuth'
 
 export function NavUser() {
+  const { navigateDoc } = useNavigation()
   const { isMobile } = useSidebar()
 
   const user = useUser()
@@ -39,6 +41,10 @@ export function NavUser() {
 
   const handleLogout = () => {
     logout.mutate()
+  }
+
+  const handleNavigateToDoc = () => {
+    navigateDoc('', { external: true })
   }
 
   return (
@@ -96,7 +102,11 @@ export function NavUser() {
                 账号信息
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleNavigateToDoc()
+                }}
+              >
                 <BookTextIcon />
                 前往文档
               </DropdownMenuItem>

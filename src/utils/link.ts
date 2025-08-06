@@ -198,5 +198,5 @@ export function getDocsUrl(docPath = ''): string {
     return getFullUrl(`${RoutePath.Docs}${normalizedPath}`)
   }
 
-  return ''
+  return RoutePath.Docs
 }

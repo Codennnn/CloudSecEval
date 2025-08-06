@@ -11,7 +11,6 @@
 export const AUTH_ENDPOINTS = {
   LOGIN: '/auth/login',
   LOGOUT: '/auth/logout',
-  REFRESH: '/auth/refresh',
   PROFILE: '/auth/profile',
 } as const
 
@@ -91,7 +90,6 @@ export function buildApiUrl(
 export const authEndpoints = {
   login: () => buildApiUrl(AUTH_ENDPOINTS.LOGIN),
   logout: () => buildApiUrl(AUTH_ENDPOINTS.LOGOUT),
-  refresh: () => buildApiUrl(AUTH_ENDPOINTS.REFRESH),
   profile: () => buildApiUrl(AUTH_ENDPOINTS.PROFILE),
 } as const
 

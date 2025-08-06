@@ -47,7 +47,7 @@ export function useLogin() {
       // 缓存用户信息到 React Query
       queryClient.setQueryData(authQueryKeys.profile(), data.user)
 
-      // 同步用户信息到 Zustand store（持久化存储）
+      // 同步用户信息到 store（持久化存储）
       setUser(data.user)
 
       // 跳转到管理后台首页
@@ -87,10 +87,8 @@ export function useLogout() {
       // 清除所有查询缓存
       queryClient.clear()
 
-      // 清除 Zustand store 中的用户数据
       clearUser()
 
-      // 跳转到登录页
       router.replace('/admini/login')
     },
   })
@@ -103,18 +101,21 @@ export function useLogout() {
  * - 获取当前登录用户的详细信息
  * - 自动缓存用户数据
  * - 支持自动重新获取
+ * - 在用户退出登录后自动禁用查询
  *
  * @returns 用户信息查询状态和数据
  */
 export function useProfile() {
+  const user = useUserStore((state) => state.user)
+
   return useQuery({
     queryKey: authQueryKeys.profile(),
     queryFn: async (): Promise<User> => {
       return await api.get<User>(authEndpoints.profile())
     },
-    // 由于使用 HttpOnly Cookie，总是尝试获取用户信息
-    // 如果未登录，后端会返回 401 错误
-    enabled: typeof window !== 'undefined',
+    // 只在浏览器环境且用户可能已登录时启用查询
+    // 如果 store 中没有用户信息，说明用户已退出登录，不需要查询
+    enabled: typeof window !== 'undefined' && user !== null,
     // 数据比较稳定，可以缓存长一点
     staleTime: 10 * 60 * 1000, // 10 分钟
     retry: (failureCount, error) => {

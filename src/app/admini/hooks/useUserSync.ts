@@ -8,7 +8,7 @@ import { useProfile } from '~admin/hooks/api/useAuth'
  * 用户数据同步 Hook
  *
  * 功能特性：
- * - 在应用启动时同步 React Query 中的用户数据到 Zustand store
+ * - 在应用启动时同步 React Query 中的用户数据到 store
  * - 确保两个状态管理系统的数据一致性
  * - 处理页面刷新后的状态恢复
  *

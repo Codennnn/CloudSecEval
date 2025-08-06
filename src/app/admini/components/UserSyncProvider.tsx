@@ -7,7 +7,7 @@ import { useUserSync } from '~admin/hooks/useUserSync'
  *
  * 功能特性：
  * - 在应用启动时自动同步用户状态
- * - 确保 React Query 和 Zustand store 的数据一致性
+ * - 确保 React Query 和 store 的数据一致性
  * - 处理页面刷新后的状态恢复
  *
  * 使用方式：

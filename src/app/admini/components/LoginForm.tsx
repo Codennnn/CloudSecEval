@@ -14,6 +14,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import type { LoginDto } from '~/lib/api/types'
 import { cn } from '~/lib/utils'
+import { usePrefetch } from '~/utils/navigation'
 
 import { useLogin } from '~admin/hooks/api/useAuth'
 
@@ -31,6 +32,8 @@ export function LoginForm({
   })
 
   const [errors, setErrors] = useState<Partial<LoginDto>>({})
+
+  usePrefetch({ href: '/admini/dashboard' })
 
   const loginMutation = useLogin()
 
