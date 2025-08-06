@@ -117,11 +117,11 @@ export const config = {
   matcher: [
     // 静态资源路径：匹配 /assets/ 下的所有文件和子目录
     // 例如：/assets/images/logo.png, /assets/css/style.css
-    ROUTE_PATTERNS.ASSETS,
+    '/assets/:path*',
 
     // 应用页面路径：匹配除以下路径外的所有页面请求
     // 排除：API 接口(/api/*)、Next.js 静态资源(_next/*)、网站图标(favicon.ico)
     // 包含：所有文档页面、首页等用户访问的页面路由
-    ROUTE_PATTERNS.PAGES,
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }

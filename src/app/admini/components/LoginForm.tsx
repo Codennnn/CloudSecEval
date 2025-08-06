@@ -82,7 +82,7 @@ export function LoginForm({
         <CardContent>
           <Form {...form}>
             <form
-              className="space-y-6"
+              className="grid gap-form-item"
               onSubmit={(ev) => {
                 ev.preventDefault()
                 void form.handleSubmit(handleSubmit)(ev)

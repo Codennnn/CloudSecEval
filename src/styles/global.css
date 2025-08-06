@@ -60,6 +60,7 @@
   --spacing-panel: calc(var(--spacing) * 4);
   --spacing-panel-sm: calc(var(--spacing) * 2);
   --spacing-code-block: calc(var(--spacing) * 1.5);
+  --spacing-form-item: calc(var(--spacing) * 6);
 }
 
 :root {

@@ -1,8 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Button } from '~/components/ui/button'
 import { Calendar } from '~/components/ui/calendar'
@@ -15,8 +18,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
 import {
   Popover,
   PopoverContent,
@@ -34,16 +44,26 @@ import type { CreateLicenseDto } from '~/lib/api/types'
 
 import { useCreateLicense } from '../hooks/api/useLicense'
 
+const createLicenseFormSchema = z.object({
+  email: z.email('请输入有效的邮箱地址'),
+  purchaseAmount: z
+    .string()
+    .min(1, '请输入购买价格')
+    .refine((val) => {
+      const num = parseFloat(val)
+
+      return !isNaN(num) && num >= 0
+    }, '请输入有效的购买价格'),
+  expiresAtType: z.enum(['preset', 'custom']),
+  expiresAtPreset: z.string().optional(),
+  expiresAt: z.string().optional(),
+  remark: z.string().optional(),
+})
+
+type CreateLicenseFormValues = z.infer<typeof createLicenseFormSchema>
+
 interface CreateLicenseDialogProps {
   children: React.ReactNode
-}
-
-interface CreateLicenseData {
-  email: string
-  remark: string
-  purchaseAmount: string
-  expiresAt: string
-  expiresAtType: 'preset' | 'custom'
 }
 
 /**
@@ -52,15 +72,21 @@ interface CreateLicenseData {
  */
 export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
   const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState<CreateLicenseData>({
-    email: '',
-    remark: '',
-    purchaseAmount: '',
-    expiresAt: '',
-    expiresAtType: 'preset',
+  const createLicenseMutation = useCreateLicense()
+
+  const form = useForm<CreateLicenseFormValues>({
+    resolver: zodResolver(createLicenseFormSchema),
+    defaultValues: {
+      email: '',
+      purchaseAmount: '',
+      expiresAtType: 'preset',
+      expiresAtPreset: '',
+      expiresAt: '',
+      remark: '',
+    },
   })
 
-  const createLicenseMutation = useCreateLicense()
+  const watchExpiresAtType = form.watch('expiresAtType')
 
   // 过期时间预设选项
   const expiresAtPresets = [
@@ -72,32 +98,13 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
   ]
 
   /**
-   * 处理表单输入变化
-   */
-  const handleInputChange = (field: keyof CreateLicenseData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      const formattedDate = date.toISOString().split('T')[0]
-      handleInputChange('expiresAt', formattedDate)
-    }
-  }
-
-  /**
    * 处理过期时间预设选择
    */
   const handleExpiresAtPresetChange = (value: string) => {
     if (value === 'custom') {
-      setFormData((prev) => ({
-        ...prev,
-        expiresAtType: 'custom',
-        expiresAt: '',
-      }))
+      form.setValue('expiresAtType', 'custom')
+      form.setValue('expiresAtPreset', '')
+      form.setValue('expiresAt', '')
     }
     else {
       let expiresAt = ''
@@ -124,11 +131,9 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
         expiresAt = now.toISOString().split('T')[0]
       }
 
-      setFormData((prev) => ({
-        ...prev,
-        expiresAtType: 'preset',
-        expiresAt,
-      }))
+      form.setValue('expiresAtType', 'preset')
+      form.setValue('expiresAtPreset', value)
+      form.setValue('expiresAt', expiresAt)
     }
   }
 
@@ -136,52 +141,16 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
    * 重置表单数据
    */
   const resetForm = () => {
-    setFormData({
-      email: '',
-      remark: '',
-      purchaseAmount: '',
-      expiresAt: '',
-      expiresAtType: 'preset',
-    })
+    form.reset()
   }
 
   /**
-   * 处理创建授权码
+   * 处理表单提交
    */
-  const handleCreateLicense = async () => {
-    if (!formData.email.trim()) {
-      toast.error('请输入邮箱地址')
-
-      return
-    }
-
-    // 简单的邮箱格式验证
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-    if (!emailRegex.test(formData.email)) {
-      toast.error('请输入有效的邮箱地址')
-
-      return
-    }
-
-    // 验证购买价格
-    if (!formData.purchaseAmount.trim()) {
-      toast.error('请输入购买价格')
-
-      return
-    }
-
-    const purchaseAmount = parseFloat(formData.purchaseAmount)
-
-    if (isNaN(purchaseAmount) || purchaseAmount < 0) {
-      toast.error('请输入有效的购买价格')
-
-      return
-    }
-
+  const handleSubmit = async (values: CreateLicenseFormValues) => {
     // 验证过期时间（如果是自定义模式）
-    if (formData.expiresAtType === 'custom' && formData.expiresAt) {
-      const expiresDate = new Date(formData.expiresAt)
+    if (values.expiresAtType === 'custom' && values.expiresAt) {
+      const expiresDate = new Date(values.expiresAt)
       const now = new Date()
 
       if (expiresDate <= now) {
@@ -192,10 +161,10 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
     }
 
     const requestData: CreateLicenseDto = {
-      email: formData.email.trim(),
-      remark: formData.remark.trim() || undefined,
-      purchaseAmount,
-      expiresAt: formData.expiresAt || undefined,
+      email: values.email.trim(),
+      remark: values.remark?.trim() ?? undefined,
+      purchaseAmount: parseFloat(values.purchaseAmount),
+      expiresAt: values.expiresAt ?? undefined,
     }
 
     try {
@@ -237,88 +206,151 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">邮箱地址</Label>
-            <Input
-              disabled={createLicenseMutation.isPending}
-              id="email"
-              placeholder="请输入邮箱地址"
-              type="email"
-              value={formData.email}
-              onChange={(ev) => { handleInputChange('email', ev.target.value) }}
+        <Form {...form}>
+          <form
+            className="grid gap-form-item py-4"
+            onSubmit={(ev) => {
+              ev.preventDefault()
+              void form.handleSubmit(handleSubmit)(ev)
+            }}
+          >
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>邮箱地址</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={createLicenseMutation.isPending}
+                      placeholder="请输入邮箱地址"
+                      type="email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="purchaseAmount">购买价格（元）</Label>
-            <Input
-              disabled={createLicenseMutation.isPending}
-              id="purchaseAmount"
-              min="0"
-              placeholder="请输入购买价格"
-              step="0.01"
-              type="number"
-              value={formData.purchaseAmount}
-              onChange={(ev) => { handleInputChange('purchaseAmount', ev.target.value) }}
+            <FormField
+              control={form.control}
+              name="purchaseAmount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>购买价格（元）</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={createLicenseMutation.isPending}
+                      min="0"
+                      placeholder="请输入购买价格"
+                      step="0.01"
+                      type="number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="expiresAt">过期时间</Label>
-            <Select
-              disabled={createLicenseMutation.isPending}
-              onValueChange={handleExpiresAtPresetChange}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="请选择过期时间" />
-              </SelectTrigger>
-              <SelectContent>
-                {expiresAtPresets.map((preset) => (
-                  <SelectItem key={preset.value} value={preset.value}>
-                    {preset.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormField
+              control={form.control}
+              name="expiresAtPreset"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>过期时间</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Select
+                        disabled={createLicenseMutation.isPending}
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          handleExpiresAtPresetChange(value)
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="请选择过期时间" />
+                        </SelectTrigger>
 
-            {formData.expiresAtType === 'custom' && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    className="w-full justify-start text-left font-normal"
-                    disabled={createLicenseMutation.isPending}
-                    variant="outline"
-                  >
-                    {formData.expiresAt
-                      ? new Date(formData.expiresAt).toLocaleDateString('zh-CN')
-                      : '请选择具体日期'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-auto p-0">
-                  <Calendar
-                    disabled={(date) => date < new Date()}
-                    mode="single"
-                    selected={formData.expiresAt ? new Date(formData.expiresAt) : undefined}
-                    onSelect={handleDateSelect}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
+                        <SelectContent>
+                          {expiresAtPresets.map((preset) => (
+                            <SelectItem key={preset.value} value={preset.value}>
+                              {preset.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
 
-          <div className="grid gap-2">
-            <Label htmlFor="remark">备注</Label>
-            <Textarea
-              disabled={createLicenseMutation.isPending}
-              id="remark"
-              placeholder="请输入备注信息（可选）"
-              rows={3}
-              value={formData.remark}
-              onChange={(e) => { handleInputChange('remark', e.target.value) }}
+                    {watchExpiresAtType === 'custom' && (
+                      <FormField
+                        control={form.control}
+                        name="expiresAt"
+                        render={({ field: dateField }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    className="flex-1 justify-start text-left font-normal"
+                                    disabled={createLicenseMutation.isPending}
+                                    variant="outline"
+                                  >
+                                    {dateField.value
+                                      ? new Date(dateField.value).toLocaleDateString('zh-CN')
+                                      : '请选择具体日期'}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent align="start" className="w-auto p-0">
+                                  <Calendar
+                                    disabled={(date) => date < new Date()}
+                                    mode="single"
+                                    selected={
+                                      dateField.value ? new Date(dateField.value) : undefined
+                                    }
+                                    onSelect={(date) => {
+                                      if (date) {
+                                        const formattedDate = date.toISOString().split('T')[0]
+                                        dateField.onChange(formattedDate)
+                                      }
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
+
+            <FormField
+              control={form.control}
+              name="remark"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>备注</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={createLicenseMutation.isPending}
+                      placeholder="请输入备注信息（可选）"
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
 
         <DialogFooter>
           <Button
@@ -334,7 +366,7 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
             disabled={createLicenseMutation.isPending}
             type="button"
             onClick={() => {
-              void handleCreateLicense()
+              void form.handleSubmit(handleSubmit)()
             }}
           >
             {createLicenseMutation.isPending ? '创建中...' : '确认创建'}
