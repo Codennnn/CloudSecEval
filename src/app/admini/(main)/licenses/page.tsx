@@ -1,17 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
+  Check,
+  Copy,
   EllipsisVerticalIcon,
-  PlusIcon,
-  SearchIcon,
+  Plus,
 } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
@@ -23,14 +26,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import { Input } from '~/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
 import {
   Table,
   TableBody,
@@ -39,20 +34,102 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import type { License, LicenseQueryParams } from '~/lib/api/types'
+import type { LicenseQueryParams } from '~/lib/api/types'
+import { copyToClipboard } from '~/utils/copy'
 
+// API实际返回的授权码数据结构
+interface ApiLicenseData {
+  id: string
+  email: string
+  code: string
+  verified: boolean
+  locked: boolean
+  warningCount: number
+  createdAt: string
+  stats: {
+    totalAccesses: number
+    commonIPs: string[]
+    riskLevel: string
+    isRisky: boolean
+  }
+}
+
+import { PageHeader } from '~admin/components/PageHeader'
 import { useLicenses } from '~admin/hooks/api/useLicense'
+
+// MARK: 数据类型
+
+/**
+ * 授权码数据类型
+ */
+interface LicenseData {
+  id: string
+  code: string
+  email?: string
+  status: 'active' | 'inactive' | 'expired'
+  type?: string
+  description?: string
+  expiresAt?: string
+  createdAt?: string
+  updatedAt?: string
+  userId?: string
+}
+
+// MARK: 辅助组件
+
+/**
+ * 复制按钮组件
+ * @param code 要复制的授权码
+ * @returns 复制按钮组件
+ */
+function CopyButton({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    const result = await copyToClipboard(code)
+
+    if (result.success) {
+      setCopied(true)
+
+      setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+    }
+  }
+
+  return (
+    <Button
+      className="size-6 text-muted-foreground hover:text-foreground"
+      size="icon"
+      variant="ghost"
+      onClick={() => {
+        void handleCopy()
+      }}
+    >
+      {copied
+        ? (
+            <Check className="size-3 text-success" />
+          )
+        : (
+            <Copy className="size-3" />
+          )}
+      <span className="sr-only">
+        {copied ? '已复制' : '复制授权码'}
+      </span>
+    </Button>
+  )
+}
 
 /**
  * 获取状态徽章样式
  * @param status 授权码状态
  * @returns 状态徽章组件
  */
-function getStatusBadge(status: License['status']) {
+function getStatusBadge(status: LicenseData['status']) {
   const statusConfig = {
-    active: { label: '有效', variant: 'default' as const, className: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
-    inactive: { label: '无效', variant: 'secondary' as const, className: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300' },
-    expired: { label: '已过期', variant: 'destructive' as const, className: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
+    active: { label: '有效', variant: 'default' as const, className: 'bg-success-background text-success' },
+    inactive: { label: '无效', variant: 'secondary' as const, className: 'bg-warning-background text-warning' },
+    expired: { label: '已过期', variant: 'destructive' as const, className: 'bg-error-background text-error' },
   }
 
   const config = statusConfig[status]
@@ -70,7 +147,9 @@ function getStatusBadge(status: License['status']) {
  * @returns 格式化后的日期
  */
 function formatDate(dateString?: string) {
-  if (!dateString) { return '-' }
+  if (!dateString) {
+    return '-'
+  }
 
   try {
     return format(new Date(dateString), 'yyyy-MM-dd HH:mm', { locale: zhCN })
@@ -80,57 +159,173 @@ function formatDate(dateString?: string) {
   }
 }
 
+// MARK: 表格列定义
+
+/**
+ * 授权码表格列定义
+ */
+const columns: ColumnDef<LicenseData>[] = [
+  {
+    accessorKey: 'email',
+    header: '邮箱',
+    cell: ({ row }) => (
+      <div className="text-sm">
+        {row.original.email ?? (
+          <span className="text-muted-foreground">-</span>
+        )}
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'code',
+    header: '授权码',
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <div className="font-mono text-sm">
+          {row.original.code}
+        </div>
+        <CopyButton code={row.original.code} />
+      </div>
+    ),
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'status',
+    header: '状态',
+    cell: ({ row }) => getStatusBadge(row.original.status),
+  },
+  {
+    accessorKey: 'description',
+    header: '描述',
+    cell: ({ row }) => (
+      <div className="max-w-xs truncate">
+        {row.original.description ?? (
+          <span className="text-muted-foreground">-</span>
+        )}
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'expiresAt',
+    header: '过期时间',
+    cell: ({ row }) => (
+      <div className="text-sm">
+        {formatDate(row.original.expiresAt)}
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: '创建时间',
+    cell: ({ row }) => (
+      <div className="text-sm">
+        {formatDate(row.original.createdAt)}
+      </div>
+    ),
+  },
+  {
+    id: 'actions',
+    header: '操作',
+    cell: ({ row }) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+            size="icon"
+            variant="ghost"
+          >
+            <EllipsisVerticalIcon className="h-4 w-4" />
+            <span className="sr-only">打开菜单</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-32">
+          <DropdownMenuItem
+            onClick={() => {
+              // TODO: 实现查看详情功能
+              // 暂时使用 row.original.id 来避免 ESLint 警告
+              void row.original.id
+            }}
+          >
+            查看详情
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              // TODO: 实现编辑功能
+              // 暂时使用 row.original.id 来避免 ESLint 警告
+              void row.original.id
+            }}
+          >
+            编辑
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="text-destructive"
+            onClick={() => {
+              // TODO: 实现删除功能
+              // 暂时使用 row.original.id 来避免 ESLint 警告
+              void row.original.id
+            }}
+          >
+            删除
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+]
+
 /**
  * 授权码管理页面
  */
 export default function LicensesPage() {
-  const [queryParams, setQueryParams] = useState<LicenseQueryParams>({
-    page: 1,
-    limit: 10,
+  const [data, setData] = useState<LicenseData[]>([])
+
+  const { data: licenseData, isLoading, error } = useLicenses({} as LicenseQueryParams)
+
+  // 使用 useMemo 来稳定 licenses 数组的引用，避免无限重渲染
+  const licenses = useMemo(() => {
+    return (licenseData?.data ?? []) as unknown as ApiLicenseData[]
+  }, [licenseData?.data])
+
+  // 更新本地数据 - 将API数据转换为页面需要的格式
+  useEffect(() => {
+    if (licenses.length > 0) {
+      setData(licenses.map((license) => {
+        // 根据API返回的字段映射到我们需要的格式
+        const mappedLicense: LicenseData = {
+          id: license.id,
+          code: license.code,
+          email: license.email,
+          // 根据verified和locked状态计算status
+          status: license.verified
+            ? (license.locked ? 'inactive' : 'active')
+            : 'expired',
+          type: undefined, // API暂时没有返回type字段
+          description: undefined, // API暂时没有返回description字段
+          expiresAt: undefined, // API暂时没有返回expiresAt字段
+          createdAt: license.createdAt,
+          updatedAt: undefined, // API暂时没有返回updatedAt字段
+          userId: undefined, // API暂时没有返回userId字段
+        }
+
+        return mappedLicense
+      }))
+    }
+    else {
+      setData([])
+    }
+  }, [licenses])
+
+  // ==================== 表格配置 ====================
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
   })
 
-  const { data: licenseData, isLoading, error } = useLicenses(queryParams)
-
-  /**
-   * 处理搜索
-   * @param value 搜索关键词
-   */
-  const handleSearch = (value: string) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      page: 1,
-      search: value || undefined,
-    }))
-  }
-
-  /**
-   * 处理状态筛选
-   * @param status 状态值
-   */
-  const handleStatusFilter = (status: string) => {
-    setQueryParams((prev) => ({
-      ...prev,
-      page: 1,
-      status: status === 'all' ? undefined : status as License['status'],
-    }))
-  }
-
-  /**
-   * 处理分页
-   * @param page 页码
-   */
-  const handlePageChange = (page: number) => {
-    setQueryParams((prev) => ({ ...prev, page }))
-  }
-
-  /**
-   * 处理每页条数变更
-   * @param limit 每页条数
-   */
-  const handleLimitChange = (limit: number) => {
-    setQueryParams((prev) => ({ ...prev, page: 1, limit }))
-  }
-
+  // ==================== 错误处理 ====================
   if (error) {
     return (
       <div className="flex h-96 items-center justify-center">
@@ -144,230 +339,81 @@ export default function LicensesPage() {
     )
   }
 
-  const licenses = licenseData?.data || []
-  const pagination = licenseData?.pagination
-
   return (
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <div className="space-y-6">
         {/* 页面标题 */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">授权码管理</h1>
-            <p className="text-muted-foreground">管理系统授权码，查看使用状态和有效期</p>
-          </div>
-          <Button>
-            <PlusIcon className="mr-2 h-4 w-4" />
-            新增授权码
-          </Button>
-        </div>
+        <PageHeader
+          actions={(
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              新增授权码
+            </Button>
+          )}
+          description="管理系统授权码，查看使用状态和有效期"
+          title="授权码管理"
+        />
 
-        {/* 筛选和搜索 */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              className="pl-9"
-              defaultValue={queryParams.search || ''}
-              placeholder="搜索授权码..."
-              onChange={(e) => {
-                const value = e.target.value
-                // 防抖处理
-                const timeoutId = setTimeout(() => { handleSearch(value) }, 300)
-
-                return () => { clearTimeout(timeoutId) }
-              }}
-            />
-          </div>
-
-          <Select
-            value={queryParams.status || 'all'}
-            onValueChange={handleStatusFilter}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="状态" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">全部状态</SelectItem>
-              <SelectItem value="active">有效</SelectItem>
-              <SelectItem value="inactive">无效</SelectItem>
-              <SelectItem value="expired">已过期</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* 数据表格 */}
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>授权码</TableHead>
-                <TableHead>状态</TableHead>
-                <TableHead>类型</TableHead>
-                <TableHead>描述</TableHead>
-                <TableHead>过期时间</TableHead>
-                <TableHead>创建时间</TableHead>
-                <TableHead className="w-16">操作</TableHead>
-              </TableRow>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    )
+                  })}
+                </TableRow>
+              ))}
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-              // 加载状态
-                Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="h-16" colSpan={7}>
-                      <div className="flex items-center justify-center">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : licenses.length === 0 ? (
-              // 空状态
-                <TableRow>
-                  <TableCell className="h-32 text-center" colSpan={7}>
-                    <div className="text-muted-foreground">
-                      {queryParams.search || queryParams.status ? '没有找到匹配的授权码' : '暂无授权码数据'}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-              // 数据行
-                licenses.map((license) => (
-                  <TableRow key={license.id}>
-                    <TableCell className="font-mono text-sm">
-                      {license.code}
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(license.status)}
-                    </TableCell>
-                    <TableCell>
-                      {license.type
-                        ? (
-                            <Badge variant="outline">{license.type}</Badge>
-                          )
-                        : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {license.description || (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(license.expiresAt)}
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(license.createdAt)}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            className="h-8 w-8"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <EllipsisVerticalIcon className="h-4 w-4" />
-                            <span className="sr-only">打开菜单</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>查看详情</DropdownMenuItem>
-                          <DropdownMenuItem>编辑</DropdownMenuItem>
-                          <DropdownMenuItem>复制授权码</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
-                            删除
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
+              {isLoading
+                ? (
+                    <TableRow>
+                      <TableCell
+                        className="h-24 text-center"
+                        colSpan={columns.length}
+                      >
+                        <div className="flex items-center justify-center space-x-2">
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          <span>加载中...</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                : table.getRowModel().rows.length
+                  ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow key={row.id}>
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    )
+                  : (
+                      <TableRow>
+                        <TableCell
+                          className="h-24 text-center"
+                          colSpan={columns.length}
+                        >
+                          暂无数据
+                        </TableCell>
+                      </TableRow>
+                    )}
             </TableBody>
           </Table>
         </div>
-
-        {/* 分页 */}
-        {pagination && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              共 {pagination.total} 条记录，第 {pagination.page} 页，共 {pagination.totalPages} 页
-            </div>
-
-            <div className="flex items-center gap-2">
-              {/* 每页条数选择 */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">每页</span>
-                <Select
-                  value={queryParams.limit?.toString() || '10'}
-                  onValueChange={(value) => { handleLimitChange(Number(value)) }}
-                >
-                  <SelectTrigger className="w-16">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span className="text-sm text-muted-foreground">条</span>
-              </div>
-
-              {/* 分页按钮 */}
-              <div className="flex items-center gap-1">
-                <Button
-                  className="h-8 w-8"
-                  disabled={!pagination.hasPrevPage}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => { handlePageChange(1) }}
-                >
-                  <ChevronsLeftIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  className="h-8 w-8"
-                  disabled={!pagination.hasPrevPage}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => { handlePageChange(pagination.page - 1) }}
-                >
-                  <ChevronLeftIcon className="h-4 w-4" />
-                </Button>
-
-                <div className="flex items-center gap-1">
-                  <span className="text-sm text-muted-foreground px-2">
-                    {pagination.page} / {pagination.totalPages}
-                  </span>
-                </div>
-
-                <Button
-                  className="h-8 w-8"
-                  disabled={!pagination.hasNextPage}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => { handlePageChange(pagination.page + 1) }}
-                >
-                  <ChevronRightIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  className="h-8 w-8"
-                  disabled={!pagination.hasNextPage}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => { handlePageChange(pagination.totalPages) }}
-                >
-                  <ChevronsRightIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

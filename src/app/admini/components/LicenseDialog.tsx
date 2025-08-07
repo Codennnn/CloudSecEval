@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -40,11 +40,20 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import { Textarea } from '~/components/ui/textarea'
-import type { CreateLicenseDto } from '~/lib/api/types'
+import type { CreateLicenseDto, License, UpdateLicenseDto } from '~/lib/api/types'
 
-import { useCreateLicense } from '../hooks/api/useLicense'
+/**
+ * 扩展的 License 类型，用于编辑表单
+ */
+interface ExtendedLicense extends License {
+  email?: string
+  purchaseAmount?: number
+  remark?: string
+}
 
-const createLicenseFormSchema = z.object({
+import { useCreateLicense, useUpdateLicense } from '../hooks/api/useLicense'
+
+const licenseFormSchema = z.object({
   email: z.email('请输入有效的邮箱地址'),
   purchaseAmount: z
     .string()
@@ -57,31 +66,72 @@ const createLicenseFormSchema = z.object({
   expiresAtType: z.enum(['preset', 'custom']),
   expiresAtPreset: z.string().optional(),
   expiresAt: z.string().optional(),
+  status: z.enum(['active', 'inactive', 'expired']).optional(),
   remark: z.string().optional(),
 })
 
-type CreateLicenseFormValues = z.infer<typeof createLicenseFormSchema>
+type LicenseFormValues = z.infer<typeof licenseFormSchema>
 
-interface CreateLicenseDialogProps {
+type LicenseDialogMode = 'create' | 'edit'
+
+/**
+ * 授权码对话框属性
+ */
+interface LicenseDialogProps {
+  /** 对话框模式 */
+  mode?: LicenseDialogMode
+  /** 编辑时的授权码数据 */
+  license?: ExtendedLicense
+  /** 触发器内容 */
   children: React.ReactNode
+  /** 对话框打开状态（外部控制） */
+  open?: boolean
+  /** 对话框打开状态变化回调 */
+  onOpenChange?: (open: boolean) => void
+  /** 成功操作后的回调 */
+  onSuccess?: (license: License) => void
 }
 
 /**
- * 创建授权码对话框组件
- * @param children - 触发对话框的子元素
+ * 授权码对话框组件 - 支持创建和编辑
  */
-export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
-  const [open, setOpen] = useState(false)
-  const createLicenseMutation = useCreateLicense()
+export function LicenseDialog(props: LicenseDialogProps) {
+  const {
+    mode = 'create',
+    license,
+    children,
+    open: externalOpen,
+    onOpenChange: externalOnOpenChange,
+    onSuccess,
+  } = props
 
-  const form = useForm<CreateLicenseFormValues>({
-    resolver: zodResolver(createLicenseFormSchema),
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlledOpen = externalOpen !== undefined
+  const open = isControlledOpen ? externalOpen : internalOpen
+  const setOpen = isControlledOpen
+    ? (externalOnOpenChange ?? (() => { /* noop */ }))
+    : setInternalOpen
+
+  const isEditMode = mode === 'edit'
+  const dialogTitle = isEditMode ? '编辑授权码' : '创建授权码'
+  const dialogDescription = isEditMode
+    ? '修改授权码的相关信息'
+    : '请填写以下信息来创建新的授权码'
+  const submitButtonText = isEditMode ? '保存修改' : '确认创建'
+  const loadingButtonText = isEditMode ? '保存中...' : '创建中...'
+
+  const createLicenseMutation = useCreateLicense()
+  const updateLicenseMutation = useUpdateLicense()
+
+  const form = useForm<LicenseFormValues>({
+    resolver: zodResolver(licenseFormSchema),
     defaultValues: {
       email: '',
       purchaseAmount: '',
       expiresAtType: 'preset',
       expiresAtPreset: '',
       expiresAt: '',
+      status: 'active',
       remark: '',
     },
   })
@@ -96,6 +146,55 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
     { label: '30天', value: '30d' },
     { label: '自定义', value: 'custom' },
   ]
+
+  /**
+   * 根据过期时间值推断预设类型
+   */
+  const inferExpiresAtPreset = (expiresAt: string | undefined): string => {
+    if (!expiresAt) {
+      return 'permanent'
+    }
+
+    const expiresDate = new Date(expiresAt)
+    const now = new Date()
+    const diffTime = expiresDate.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    // 允许一定的误差范围（±1天）
+    if (Math.abs(diffDays - 7) <= 1) {
+      return '7d'
+    }
+
+    if (Math.abs(diffDays - 15) <= 1) {
+      return '15d'
+    }
+
+    if (Math.abs(diffDays - 30) <= 1) {
+      return '30d'
+    }
+
+    return 'custom'
+  }
+
+  /**
+   * 预填充表单数据（编辑模式）
+   */
+  useEffect(() => {
+    if (isEditMode && license && open) {
+      const expiresAtPreset = inferExpiresAtPreset(license.expiresAt)
+      const expiresAtType = expiresAtPreset === 'custom' ? 'custom' : 'preset'
+
+      form.reset({
+        email: license.email ?? '',
+        purchaseAmount: license.purchaseAmount?.toString() ?? '',
+        expiresAtType,
+        expiresAtPreset: expiresAtPreset === 'custom' ? '' : expiresAtPreset,
+        expiresAt: license.expiresAt ?? '',
+        status: license.status,
+        remark: license.description ?? license.remark ?? '',
+      })
+    }
+  }, [isEditMode, license, open, form])
 
   /**
    * 处理过期时间预设选择
@@ -137,17 +236,11 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
     }
   }
 
-  /**
-   * 重置表单数据
-   */
   const resetForm = () => {
     form.reset()
   }
 
-  /**
-   * 处理表单提交
-   */
-  const handleSubmit = async (values: CreateLicenseFormValues) => {
+  const handleSubmit = async (values: LicenseFormValues) => {
     // 验证过期时间（如果是自定义模式）
     if (values.expiresAtType === 'custom' && values.expiresAt) {
       const expiresDate = new Date(values.expiresAt)
@@ -160,24 +253,47 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
       }
     }
 
-    const requestData: CreateLicenseDto = {
-      email: values.email.trim(),
-      remark: values.remark?.trim() ?? undefined,
-      purchaseAmount: parseFloat(values.purchaseAmount),
-      expiresAt: values.expiresAt ?? undefined,
-    }
-
     try {
-      await createLicenseMutation.mutateAsync(requestData)
-      toast.success('授权码创建成功')
+      let result: License
+
+      if (isEditMode && license?.id) {
+        // 编辑模式
+        const updateData: UpdateLicenseDto = {
+          status: values.status,
+          description: values.remark?.trim() ?? undefined,
+          expiresAt: values.expiresAt ?? undefined,
+        }
+
+        result = await updateLicenseMutation.mutateAsync({
+          id: license.id,
+          data: updateData,
+        })
+
+        toast.success('授权码更新成功')
+      }
+      else {
+        // 创建模式
+        const createData: CreateLicenseDto = {
+          email: values.email.trim(),
+          remark: values.remark?.trim() ?? undefined,
+          purchaseAmount: parseFloat(values.purchaseAmount),
+          expiresAt: values.expiresAt ?? undefined,
+        }
+
+        result = await createLicenseMutation.mutateAsync(createData)
+        toast.success('授权码创建成功')
+      }
+
+      // 调用成功回调
+      onSuccess?.(result)
 
       // 重置表单并关闭对话框
       resetForm()
       setOpen(false)
     }
     catch (error) {
-      console.error('创建授权码失败:', error)
-      toast.error('创建授权码失败，请稍后重试')
+      console.error(`${isEditMode ? '更新' : '创建'}授权码失败:`, error)
+      toast.error(`${isEditMode ? '更新' : '创建'}授权码失败，请稍后重试`)
     }
   }
 
@@ -200,9 +316,9 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
 
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>创建授权码</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>
-            请填写以下信息来创建新的授权码
+            {dialogDescription}
           </DialogDescription>
         </DialogHeader>
 
@@ -222,8 +338,13 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
                   <FormLabel>邮箱地址</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={createLicenseMutation.isPending}
+                      disabled={
+                        isEditMode
+                        || createLicenseMutation.isPending
+                        || updateLicenseMutation.isPending
+                      }
                       placeholder="请输入邮箱地址"
+                      readOnly={isEditMode}
                       type="email"
                       {...field}
                     />
@@ -233,26 +354,57 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="purchaseAmount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>购买价格（元）</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={createLicenseMutation.isPending}
-                      min="0"
-                      placeholder="请输入购买价格"
-                      step="0.01"
-                      type="number"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEditMode && (
+              <FormField
+                control={form.control}
+                name="purchaseAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>购买价格（元）</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={createLicenseMutation.isPending}
+                        min="0"
+                        placeholder="请输入购买价格"
+                        step="0.01"
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {isEditMode && (
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>状态</FormLabel>
+                    <FormControl>
+                      <Select
+                        disabled={updateLicenseMutation.isPending}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="请选择状态" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">激活</SelectItem>
+                          <SelectItem value="inactive">未激活</SelectItem>
+                          <SelectItem value="expired">已过期</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
@@ -263,7 +415,10 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
                   <div className="flex items-center gap-2">
                     <FormControl>
                       <Select
-                        disabled={createLicenseMutation.isPending}
+                        disabled={
+                          createLicenseMutation.isPending
+                          || updateLicenseMutation.isPending
+                        }
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value)
@@ -295,7 +450,10 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
                                 <PopoverTrigger asChild>
                                   <Button
                                     className="flex-1 justify-start text-left font-normal"
-                                    disabled={createLicenseMutation.isPending}
+                                    disabled={
+                                      createLicenseMutation.isPending
+                                      || updateLicenseMutation.isPending
+                                    }
                                     variant="outline"
                                   >
                                     {dateField.value
@@ -339,7 +497,10 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
                   <FormLabel>备注</FormLabel>
                   <FormControl>
                     <Textarea
-                      disabled={createLicenseMutation.isPending}
+                      disabled={
+                        createLicenseMutation.isPending
+                        || updateLicenseMutation.isPending
+                      }
                       placeholder="请输入备注信息（可选）"
                       rows={3}
                       {...field}
@@ -354,7 +515,10 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
 
         <DialogFooter>
           <Button
-            disabled={createLicenseMutation.isPending}
+            disabled={
+              createLicenseMutation.isPending
+              || updateLicenseMutation.isPending
+            }
             type="button"
             variant="outline"
             onClick={() => { setOpen(false) }}
@@ -363,13 +527,18 @@ export function CreateLicenseDialog({ children }: CreateLicenseDialogProps) {
           </Button>
 
           <Button
-            disabled={createLicenseMutation.isPending}
+            disabled={
+              createLicenseMutation.isPending
+              || updateLicenseMutation.isPending
+            }
             type="button"
             onClick={() => {
               void form.handleSubmit(handleSubmit)()
             }}
           >
-            {createLicenseMutation.isPending ? '创建中...' : '确认创建'}
+            {(createLicenseMutation.isPending || updateLicenseMutation.isPending)
+              ? loadingButtonText
+              : submitButtonText}
           </Button>
         </DialogFooter>
       </DialogContent>

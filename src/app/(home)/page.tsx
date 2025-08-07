@@ -155,8 +155,8 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             <div className="bg-background rounded-lg border p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <Check className="h-6 w-6 text-green-600" />
+              <div className="h-12 w-12 rounded-lg bg-success-background flex items-center justify-center mx-auto mb-4">
+                <Check className="h-6 w-6 text-success" />
               </div>
               <h3 className="font-bold text-lg mb-2">逐句校对润色</h3>
               <p className="text-sm text-muted-foreground">

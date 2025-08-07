@@ -375,7 +375,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       <Badge className="text-muted-foreground px-1.5" variant="outline">
         {row.original.status === 'Done'
           ? (
-              <UserIcon className="fill-green-500 dark:fill-green-400" />
+              <UserIcon className="fill-success" />
             )
           : (
               <UserIcon />

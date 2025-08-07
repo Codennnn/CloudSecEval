@@ -15,6 +15,7 @@ import { Separator } from '~/components/ui/separator'
 import { Textarea } from '~/components/ui/textarea'
 import { useUser } from '~/stores/useUserStore'
 
+import { PageHeader } from '~admin/components/PageHeader'
 import { useProfile } from '~admin/hooks/api/useAuth'
 
 /**
@@ -79,7 +80,7 @@ export default function ProfilePage() {
       <div className="size-full flex flex-col">
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+            <div className="animate-spin rounded-full size-8 border-b-2 border-primary mx-auto mb-4" />
             <p className="text-muted-foreground">加载用户信息中...</p>
           </div>
         </div>
@@ -106,14 +107,9 @@ export default function ProfilePage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-admin-content-md py-admin-content-md md:gap-admin-content md:py-admin-content">
           <div className="px-admin-content-md lg:px-admin-content">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight">个人资料</h1>
-                <p className="text-muted-foreground">管理您的账户信息和个人设置</p>
-              </div>
-
-              <div className="flex gap-2">
-                {isEditing
+            <PageHeader
+              actions={
+                isEditing
                   ? (
                       <>
                         <Button variant="outline" onClick={handleCancel}>
@@ -134,19 +130,22 @@ export default function ProfilePage() {
                         <EditIcon className="size-4" />
                         编辑资料
                       </Button>
-                    )}
-              </div>
-            </div>
+                    )
+              }
+              className="mb-6"
+              description="管理您的账户信息和个人设置"
+              title="个人资料"
+            />
 
             <div className="grid gap-6 md:grid-cols-3">
               {/* 头像和基本信息卡片 */}
               <Card className="md:col-span-1">
                 <CardHeader className="text-center">
                   <div className="flex justify-center mb-4">
-                    <Avatar className="w-24 h-24">
+                    <Avatar className="size-24">
                       <AvatarImage alt={userProfile.name} src={userProfile.avatarUrl} />
                       <AvatarFallback className="text-2xl">
-                        <UserIcon className="w-12 h-12" />
+                        <UserIcon className="size-12" />
                       </AvatarFallback>
                     </Avatar>
                   </div>
@@ -155,13 +154,14 @@ export default function ProfilePage() {
                     <Badge variant="secondary">{userProfile.role}</Badge>
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+
+                <CardContent className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MailIcon className="w-4 h-4" />
+                    <MailIcon className="size-4" />
                     <span>{userProfile.email}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CalendarIcon className="w-4 h-4" />
+                    <CalendarIcon className="size-4" />
                     <span>加入于 {userProfile.joinDate}</span>
                   </div>
                 </CardContent>

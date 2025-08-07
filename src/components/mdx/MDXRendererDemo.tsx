@@ -373,7 +373,7 @@ export function MDXRendererDemo() {
             当前内容长度: {content.length} / {getCurrentTestContent().length} 字符
             {isStreaming && (
               <span className="ml-2 inline-flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1" />
+                <div className="w-2 h-2 bg-success rounded-full animate-pulse mr-1" />
                 流式传输中
               </span>
             )}

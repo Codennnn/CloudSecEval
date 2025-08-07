@@ -54,7 +54,7 @@ export function CopyButton(props: CopyButtonProps) {
         >
           {copied
             ? (
-                <CheckIcon className="size-[1em] text-green-500" strokeWidth={3} />
+                <CheckIcon className="size-[1em] text-success" strokeWidth={3} />
               )
             : (
                 <CopyIcon className="size-[1em]" />

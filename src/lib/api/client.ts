@@ -7,6 +7,7 @@ export interface FetchConfig extends RequestInit {
   timeout?: number
   retries?: number
   showError?: boolean
+  raw?: boolean // 是否返回原始响应（包含分页信息等）
 }
 
 // API 响应接口
@@ -101,9 +102,10 @@ async function fetchWithRetry(
 /**
  * 处理响应结果
  * @param response Response 对象
+ * @param config 请求配置
  * @returns 解析后的数据
  */
-async function handleResponse<T>(response: Response): Promise<T> {
+async function handleResponse<T>(response: Response, config: FetchConfig = {}): Promise<T> {
   // 检查响应状态
   if (!response.ok) {
     let errorMessage = `HTTP ${response.status}: ${response.statusText}`
@@ -157,7 +159,13 @@ async function handleResponse<T>(response: Response): Promise<T> {
       )
     }
 
-    // 返回数据部分或整个响应
+    // 根据配置决定返回原始响应还是仅数据部分
+    if (config.raw) {
+      // 返回原始响应（包含分页信息等）
+      return result as T
+    }
+
+    // 默认只返回数据部分
     return 'data' in result ? result.data : result
   }
   else if (contentType?.includes('text/')) {
@@ -217,7 +225,7 @@ export class ApiClient {
         ...config,
       })
 
-      return await handleResponse<T>(response)
+      return await handleResponse<T>(response, config)
     }
     catch (error) {
       this.handleError(error, config.showError)
@@ -251,7 +259,7 @@ export class ApiClient {
         ...config,
       })
 
-      return await handleResponse<T>(response)
+      return await handleResponse<T>(response, config)
     }
     catch (error) {
       this.handleError(error, config.showError)
@@ -285,7 +293,7 @@ export class ApiClient {
         ...config,
       })
 
-      return await handleResponse<T>(response)
+      return await handleResponse<T>(response, config)
     }
     catch (error) {
       this.handleError(error, config.showError)
@@ -313,7 +321,7 @@ export class ApiClient {
         ...config,
       })
 
-      return await handleResponse<T>(response)
+      return await handleResponse<T>(response, config)
     }
     catch (error) {
       this.handleError(error, config.showError)

@@ -49,15 +49,15 @@ export function SaveStatusIndicator(props: SaveStatusIndicatorProps) {
 
       {status === 'saved' && (
         <>
-          <CheckCircleIcon className="size-3 text-green-500" />
-          <span className="text-green-600">已保存</span>
+          <CheckCircleIcon className="size-3 text-success" />
+          <span className="text-success">已保存</span>
         </>
       )}
 
       {status === 'error' && (
         <>
-          <AlertCircleIcon className="size-3 text-red-500" />
-          <span className="text-red-600">保存失败</span>
+          <AlertCircleIcon className="size-3 text-error" />
+          <span className="text-error">保存失败</span>
         </>
       )}
     </div>

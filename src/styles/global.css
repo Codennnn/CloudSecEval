@@ -40,11 +40,26 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
-  --color-error: var(--destructive);
+
+  /* - */
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* 语义化状态颜色 */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-background: var(--success-background);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-background: var(--warning-background);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-background: var(--info-background);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-background: var(--error-background);
 
   /* - */
   --radius-sm: calc(var(--radius) - 4px);
@@ -82,7 +97,7 @@
   --theme2: oklch(60.6% 0.25 292.717deg);
   --accent-foreground: oklch(20.5% 0 0deg);
   --foreground-accent: oklch(27.1% 0.105 12.094deg);
-  --destructive: oklch(57.7% 0.245 27.325deg);
+  --destructive: var(--error);
   --border: oklch(92.2% 0 0deg);
   --input: oklch(92.2% 0 0deg);
   --ring: oklch(70.8% 0 0deg);
@@ -102,6 +117,20 @@
   --sidebar-border: oklch(92.2% 0 0deg);
   --sidebar-ring: oklch(70.8% 0 0deg);
   --header-height: 60px;
+
+  /* 语义化状态颜色 */
+  --success: oklch(60.8% 0.172 155.46deg);
+  --success-foreground: oklch(98.5% 0 0deg);
+  --success-background: oklch(94.5% 0.05 155.46deg);
+  --warning: oklch(79.9% 0.176 61.695deg);
+  --warning-foreground: oklch(20.5% 0 0deg);
+  --warning-background: oklch(96.5% 0.04 61.695deg);
+  --info: oklch(70.8% 0.134 220.85deg);
+  --info-foreground: oklch(98.5% 0 0deg);
+  --info-background: oklch(95.5% 0.03 220.85deg);
+  --error: oklch(57.7% 0.245 27.325deg);
+  --error-foreground: oklch(98.5% 0 0deg);
+  --error-background: oklch(96.5% 0.04 27.325deg);
 
   /* 文章图片的滤镜 */
   --images-filter: unset;
@@ -124,7 +153,6 @@
     --theme2: oklch(81.1% 0.111 293.571deg);
     --accent-foreground: oklch(98.5% 0 0deg);
     --foreground-accent: oklch(94.1% 0.03 12.58deg);
-    --destructive: oklch(70.4% 0.191 22.216deg);
     --border: oklch(100% 0 0deg / 10%);
     --input: oklch(100% 0 0deg / 15%);
     --ring: oklch(55.6% 0 0deg);
@@ -141,6 +169,20 @@
     --sidebar-accent-foreground: oklch(98.5% 0 0deg);
     --sidebar-border: oklch(100% 0 0deg / 10%);
     --sidebar-ring: oklch(55.6% 0 0deg);
+
+    /* 语义化状态颜色 (暗色模式) */
+    --success: oklch(65.2% 0.15 162.84deg);
+    --success-foreground: oklch(20.5% 0 0deg);
+    --success-background: oklch(25.5% 0.08 162.84deg);
+    --warning: oklch(81.9% 0.15 68.25deg);
+    --warning-foreground: oklch(20.5% 0 0deg);
+    --warning-background: oklch(28.5% 0.06 68.25deg);
+    --info: oklch(74.8% 0.12 228.35deg);
+    --info-foreground: oklch(20.5% 0 0deg);
+    --info-background: oklch(26.5% 0.05 228.35deg);
+    --error: oklch(70.4% 0.191 22.216deg);
+    --error-foreground: oklch(20.5% 0 0deg);
+    --error-background: oklch(28.5% 0.06 22.216deg);
 
     /* 文章图片的滤镜 */
     --images-filter: invert(1) contrast(0.85);

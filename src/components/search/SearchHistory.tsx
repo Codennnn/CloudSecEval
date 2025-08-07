@@ -92,7 +92,7 @@ export function SearchHistory({
             <div className="shrink-0">
               {item.clicked
                 ? (
-                    <TrendingUpIcon className="size-3.5 text-green-600 dark:text-green-400" />
+                    <TrendingUpIcon className="size-3.5 text-success" />
                   )
                 : (
                     <SearchIcon className="size-3.5 text-muted-foreground" />
@@ -112,7 +112,7 @@ export function SearchHistory({
 
                 {/* 点击状态标识 */}
                 {item.clicked && (
-                  <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 px-1.5 py-0.5 rounded shrink-0">
+                  <span className="text-xs text-success bg-success-background px-1.5 py-0.5 rounded shrink-0">
                     已访问
                   </span>
                 )}

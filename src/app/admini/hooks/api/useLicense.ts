@@ -71,7 +71,7 @@ export function useLicenses(params?: LicenseQueryParams) {
         ? `${licenseEndpoints.list()}?${searchParams.toString()}`
         : licenseEndpoints.list()
 
-      return await api.get<LicenseListResponse>(url)
+      return await api.get<LicenseListResponse>(url, { raw: true })
     },
     staleTime: 5 * 60 * 1000, // 5分钟
     gcTime: 10 * 60 * 1000, // 10分钟
