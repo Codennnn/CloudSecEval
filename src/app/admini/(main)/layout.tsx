@@ -5,6 +5,7 @@ import {
 
 import { AdminHeader } from '~admin/components/AdminHeader'
 import { AdminSidebar } from '~admin/components/AdminSidebar'
+import { LicenseDialogManager } from '~admin/components/LicenseDialogManager'
 import { UserSyncProvider } from '~admin/components/UserSyncProvider'
 
 /**
@@ -34,6 +35,9 @@ export default function AdminLayout(props: React.PropsWithChildren) {
           </div>
         </SidebarInset>
       </SidebarProvider>
+
+      {/* 全局对话框管理器 */}
+      <LicenseDialogManager />
     </UserSyncProvider>
   )
 }

@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { DialogProps } from '@radix-ui/react-dialog'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -16,7 +17,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '~/components/ui/dialog'
 import {
   Form,
@@ -42,16 +42,8 @@ import {
 import { Textarea } from '~/components/ui/textarea'
 import type { CreateLicenseDto, License, UpdateLicenseDto } from '~/lib/api/types'
 
-/**
- * 扩展的 License 类型，用于编辑表单
- */
-interface ExtendedLicense extends License {
-  email?: string
-  purchaseAmount?: number
-  remark?: string
-}
-
-import { useCreateLicense, useUpdateLicense } from '../hooks/api/useLicense'
+import { useCreateLicense, useUpdateLicense } from '~admin/hooks/api/useLicense'
+import type { LicenseDialogMode, LicenseFormInitialData } from '~admin/stores/useLicenseDialogStore'
 
 const licenseFormSchema = z.object({
   email: z.email('请输入有效的邮箱地址'),
@@ -72,51 +64,125 @@ const licenseFormSchema = z.object({
 
 type LicenseFormValues = z.infer<typeof licenseFormSchema>
 
-type LicenseDialogMode = 'create' | 'edit'
-
 /**
  * 授权码对话框属性
  */
 interface LicenseDialogProps {
   /** 对话框模式 */
   mode?: LicenseDialogMode
-  /** 编辑时的授权码数据 */
-  license?: ExtendedLicense
-  /** 触发器内容 */
-  children: React.ReactNode
-  /** 对话框打开状态（外部控制） */
-  open?: boolean
+  /** 表单初始数据（创建模式为默认值，编辑模式为完整数据） */
+  formData?: LicenseFormInitialData
+  /** 对话框打开状态 */
+  open: boolean
   /** 对话框打开状态变化回调 */
-  onOpenChange?: (open: boolean) => void
+  onOpenChange: (open: boolean) => void
   /** 成功操作后的回调 */
   onSuccess?: (license: License) => void
 }
 
+const baseDefaultValues: LicenseFormValues = {
+  email: '',
+  purchaseAmount: '',
+  expiresAtType: 'preset',
+  expiresAtPreset: '',
+  expiresAt: '',
+  status: 'active',
+  remark: '',
+}
+
+/**
+ * 转换初始数据为表单值
+ * 统一处理创建和编辑模式的数据转换
+ */
+const convertToFormValues = (
+  formData?: LicenseFormInitialData,
+  mode: LicenseDialogMode = 'create',
+): LicenseFormValues => {
+  if (!formData) {
+    return baseDefaultValues
+  }
+
+  // 处理过期时间逻辑
+  const inferExpiresAtPreset = (expiresAt?: string): string => {
+    if (!expiresAt) {
+      return ''
+    }
+
+    const now = new Date()
+    const expiry = new Date(expiresAt)
+    const diffMs = expiry.getTime() - now.getTime()
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+
+    const presetMap: Record<number, string> = {
+      7: '7d',
+      30: '30d',
+      90: '90d',
+      365: '1y',
+    }
+
+    // 检查是否是永久授权（很久的未来日期）
+    if (diffDays > 36500) {
+      return 'permanent'
+    }
+
+    return presetMap[diffDays] || 'custom'
+  }
+
+  // 对于编辑模式，需要推断 expiresAtType 和 expiresAtPreset
+  if (mode === 'edit' && formData.expiresAt) {
+    const expiresAtPreset = inferExpiresAtPreset(formData.expiresAt)
+    const expiresAtType = expiresAtPreset === 'custom' ? 'custom' : 'preset'
+
+    return {
+      email: formData.email ?? baseDefaultValues.email,
+      purchaseAmount: typeof formData.purchaseAmount === 'number'
+        ? formData.purchaseAmount.toString()
+        : (formData.purchaseAmount?.toString() ?? baseDefaultValues.purchaseAmount),
+      expiresAtType,
+      expiresAtPreset: expiresAtPreset === 'custom' ? '' : expiresAtPreset,
+      expiresAt: formData.expiresAt ?? baseDefaultValues.expiresAt,
+      status: formData.status ?? baseDefaultValues.status,
+      remark: formData.description ?? formData.remark ?? baseDefaultValues.remark,
+    }
+  }
+
+  // 创建模式或无过期时间的情况
+  return {
+    ...baseDefaultValues,
+    email: formData.email ?? baseDefaultValues.email,
+    purchaseAmount: typeof formData.purchaseAmount === 'number'
+      ? formData.purchaseAmount.toString()
+      : (formData.purchaseAmount?.toString() ?? baseDefaultValues.purchaseAmount),
+    expiresAtType: formData.expiresAtType ?? baseDefaultValues.expiresAtType,
+    expiresAtPreset: formData.expiresAtPreset ?? baseDefaultValues.expiresAtPreset,
+    expiresAt: formData.expiresAt ?? baseDefaultValues.expiresAt,
+    status: formData.status ?? baseDefaultValues.status,
+    remark: formData.remark ?? baseDefaultValues.remark,
+  }
+}
+
 /**
  * 授权码对话框组件 - 支持创建和编辑
+ *
+ * 受控组件，通过 props 控制显示状态和数据传递
+ * 专注于表单逻辑，不包含触发器，由外部组件统一管理状态
  */
 export function LicenseDialog(props: LicenseDialogProps) {
   const {
     mode = 'create',
-    license,
-    children,
-    open: externalOpen,
-    onOpenChange: externalOnOpenChange,
+    formData,
+    open,
+    onOpenChange,
     onSuccess,
   } = props
 
-  const [internalOpen, setInternalOpen] = useState(false)
-  const isControlledOpen = externalOpen !== undefined
-  const open = isControlledOpen ? externalOpen : internalOpen
-  const setOpen = isControlledOpen
-    ? (externalOnOpenChange ?? (() => { /* noop */ }))
-    : setInternalOpen
-
   const isEditMode = mode === 'edit'
+
   const dialogTitle = isEditMode ? '编辑授权码' : '创建授权码'
   const dialogDescription = isEditMode
     ? '修改授权码的相关信息'
     : '请填写以下信息来创建新的授权码'
+
   const submitButtonText = isEditMode ? '保存修改' : '确认创建'
   const loadingButtonText = isEditMode ? '保存中...' : '创建中...'
 
@@ -125,15 +191,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
 
   const form = useForm<LicenseFormValues>({
     resolver: zodResolver(licenseFormSchema),
-    defaultValues: {
-      email: '',
-      purchaseAmount: '',
-      expiresAtType: 'preset',
-      expiresAtPreset: '',
-      expiresAt: '',
-      status: 'active',
-      remark: '',
-    },
+    defaultValues: convertToFormValues(formData, mode),
   })
 
   const watchExpiresAtType = form.watch('expiresAtType')
@@ -148,53 +206,13 @@ export function LicenseDialog(props: LicenseDialogProps) {
   ]
 
   /**
-   * 根据过期时间值推断预设类型
-   */
-  const inferExpiresAtPreset = (expiresAt: string | undefined): string => {
-    if (!expiresAt) {
-      return 'permanent'
-    }
-
-    const expiresDate = new Date(expiresAt)
-    const now = new Date()
-    const diffTime = expiresDate.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    // 允许一定的误差范围（±1天）
-    if (Math.abs(diffDays - 7) <= 1) {
-      return '7d'
-    }
-
-    if (Math.abs(diffDays - 15) <= 1) {
-      return '15d'
-    }
-
-    if (Math.abs(diffDays - 30) <= 1) {
-      return '30d'
-    }
-
-    return 'custom'
-  }
-
-  /**
-   * 预填充表单数据（编辑模式）
+   * 预填充表单数据
    */
   useEffect(() => {
-    if (isEditMode && license && open) {
-      const expiresAtPreset = inferExpiresAtPreset(license.expiresAt)
-      const expiresAtType = expiresAtPreset === 'custom' ? 'custom' : 'preset'
-
-      form.reset({
-        email: license.email ?? '',
-        purchaseAmount: license.purchaseAmount?.toString() ?? '',
-        expiresAtType,
-        expiresAtPreset: expiresAtPreset === 'custom' ? '' : expiresAtPreset,
-        expiresAt: license.expiresAt ?? '',
-        status: license.status,
-        remark: license.description ?? license.remark ?? '',
-      })
+    if (open) {
+      form.reset(convertToFormValues(formData, mode))
     }
-  }, [isEditMode, license, open, form])
+  }, [formData, mode, open, form])
 
   /**
    * 处理过期时间预设选择
@@ -236,8 +254,15 @@ export function LicenseDialog(props: LicenseDialogProps) {
     }
   }
 
-  const resetForm = () => {
-    form.reset()
+  /**
+   * 处理对话框关闭
+   */
+  const handleOpenChange: DialogProps['onOpenChange'] = (newOpen) => {
+    onOpenChange(newOpen)
+
+    if (!newOpen) {
+      form.reset(convertToFormValues(formData, mode))
+    }
   }
 
   const handleSubmit = async (values: LicenseFormValues) => {
@@ -256,16 +281,16 @@ export function LicenseDialog(props: LicenseDialogProps) {
     try {
       let result: License
 
-      if (isEditMode && license?.id) {
+      if (isEditMode && formData?.id) {
         // 编辑模式
         const updateData: UpdateLicenseDto = {
-          status: values.status,
+          status: values.status ?? 'active',
           description: values.remark?.trim() ?? undefined,
           expiresAt: values.expiresAt ?? undefined,
         }
 
         result = await updateLicenseMutation.mutateAsync({
-          id: license.id,
+          id: formData.id,
           data: updateData,
         })
 
@@ -287,33 +312,16 @@ export function LicenseDialog(props: LicenseDialogProps) {
       // 调用成功回调
       onSuccess?.(result)
 
-      // 重置表单并关闭对话框
-      resetForm()
-      setOpen(false)
+      handleOpenChange(false)
     }
-    catch (error) {
-      console.error(`${isEditMode ? '更新' : '创建'}授权码失败:`, error)
+    catch (err) {
+      console.error(`${isEditMode ? '更新' : '创建'}授权码失败:`, err)
       toast.error(`${isEditMode ? '更新' : '创建'}授权码失败，请稍后重试`)
-    }
-  }
-
-  /**
-   * 处理对话框关闭
-   */
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen)
-
-    if (!newOpen) {
-      resetForm()
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
-
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
@@ -521,7 +529,9 @@ export function LicenseDialog(props: LicenseDialogProps) {
             }
             type="button"
             variant="outline"
-            onClick={() => { setOpen(false) }}
+            onClick={() => {
+              handleOpenChange(false)
+            }}
           >
             取消
           </Button>

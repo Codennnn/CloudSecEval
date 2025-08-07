@@ -6,7 +6,6 @@ import {
   ALLOWED_DOMAINS,
   ASSET_ROUTES,
   PROTECTED_FILE_EXTENSIONS,
-  ROUTE_PATTERNS,
   SEARCH_BOT_PATTERN,
 } from '~/constants/routes.server'
 

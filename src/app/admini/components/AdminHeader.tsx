@@ -1,6 +1,10 @@
+import Link from 'next/link'
+import { ExternalLinkIcon } from 'lucide-react'
+
 import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { SidebarTrigger } from '~/components/ui/sidebar'
+import { RoutePath } from '~/constants'
 
 export function AdminHeader() {
   return (
@@ -16,16 +20,15 @@ export function AdminHeader() {
         <h1 className="text-base font-medium">Documents</h1>
 
         <div className="ml-auto flex items-center gap-2">
-          <Button asChild className="hidden sm:flex" size="sm" variant="ghost">
-            <a
-              className="dark:text-foreground"
-              href="https://github.com/shadcn-ui/ui/tree/main/apps/v4/app/(examples)/dashboard"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              GitHub
-            </a>
-          </Button>
+          <Link
+            href={RoutePath.Docs}
+            target="_blank"
+          >
+            <Button className="hidden sm:flex" size="sm" variant="ghost">
+              <ExternalLinkIcon />
+              文档主页
+            </Button>
+          </Link>
         </div>
       </div>
     </header>

@@ -4,7 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '~/lib/api/client'
 import { authEndpoints } from '~/lib/api/endpoints'
 import type { LoginDto, LoginResponse, User } from '~/lib/api/types'
-import { useUserStore } from '~/stores/useUserStore'
+
+import { useUserStore } from '~admin/stores/useUserStore'
 
 // ==================== 查询键定义 ====================
 

@@ -159,6 +159,9 @@ export interface JwtPayload {
 export interface License {
   id: string
   code: string
+  email: string
+  purchaseAmount: number
+  remark?: string
   status: 'active' | 'inactive' | 'expired'
   type?: string
   description?: string
@@ -166,7 +169,6 @@ export interface License {
   createdAt?: string
   updatedAt?: string
   userId?: string
-  [property: string]: unknown
 }
 
 /**
@@ -181,24 +183,12 @@ export interface LicenseQueryParams extends QueryParams {
 /**
  * 创建授权码请求 DTO（用于表单提交）
  */
-export interface CreateLicenseDto {
-  email: string
-  remark?: string
-  purchaseAmount: number
-  expiresAt?: string
-}
+export type CreateLicenseDto = Pick<License, 'email' | 'purchaseAmount' | 'remark' | 'expiresAt'>
 
 /**
  * 更新授权码 DTO
  */
-export interface UpdateLicenseDto {
-  code?: string
-  status?: 'active' | 'inactive' | 'expired'
-  type?: string
-  description?: string
-  expiresAt?: string
-  [property: string]: unknown
-}
+export type UpdateLicenseDto = Pick<License, 'status' | 'description' | 'expiresAt'>
 
 /**
  * 授权码列表响应（根据API返回格式定义）

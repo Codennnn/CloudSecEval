@@ -14,7 +14,7 @@ import {
 } from '~/components/ui/sidebar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 
-import { LicenseDialog } from './LicenseDialog'
+import { useLicenseDialog } from '../stores/useLicenseDialogStore'
 
 interface NavMainProps {
   items: {
@@ -27,20 +27,21 @@ interface NavMainProps {
 export function NavMain({ items }: NavMainProps) {
   const pathname = usePathname()
 
+  const { openCreateDialog } = useLicenseDialog()
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <LicenseDialog>
-              <SidebarMenuButton
-                className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-                tooltip="创建授权码"
-              >
-                <SquarePlusIcon />
-                <span>创建授权码</span>
-              </SidebarMenuButton>
-            </LicenseDialog>
+            <SidebarMenuButton
+              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+              tooltip="创建授权码"
+              onClick={openCreateDialog}
+            >
+              <SquarePlusIcon />
+              <span>创建授权码</span>
+            </SidebarMenuButton>
 
             <Tooltip>
               <TooltipTrigger asChild>

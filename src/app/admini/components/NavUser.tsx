@@ -29,9 +29,9 @@ import {
   useSidebar,
 } from '~/components/ui/sidebar'
 import { RoutePath } from '~/constants'
-import { useUser } from '~/stores/useUserStore'
 
 import { useLogout } from '~admin/hooks/api/useAuth'
+import { useUser } from '~admin/stores/useUserStore'
 
 export function NavUser() {
   const { isMobile } = useSidebar()

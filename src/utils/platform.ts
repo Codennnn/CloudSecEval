@@ -40,3 +40,56 @@ export function getOSType(): 'mac' | 'windows' | 'linux' | 'unknown' {
 
   return 'unknown'
 }
+
+/**
+ * 获取当前应用的运行环境
+ */
+export function getEnvironment(): 'development' | 'test' | 'production' | 'unknown' {
+  // 在服务端和客户端都可以使用 NODE_ENV
+  if (typeof process !== 'undefined' && typeof process.env === 'object' && typeof process.env.NODE_ENV === 'string') {
+    return process.env.NODE_ENV
+  }
+
+  // 如果无法获取到 process.env，则返回 unknown
+  return 'unknown'
+}
+
+/**
+ * 检查当前是否为开发环境
+ * @returns 如果是开发环境返回 true，否则返回 false
+ */
+export function isDevelopment(): boolean {
+  return getEnvironment() === 'development'
+}
+
+/**
+ * 检查当前是否为生产环境
+ * @returns 如果是生产环境返回 true，否则返回 false
+ */
+export function isProduction(): boolean {
+  return getEnvironment() === 'production'
+}
+
+/**
+ * 检查当前是否为测试环境
+ * @returns 如果是测试环境返回 true，否则返回 false
+ */
+export function isTest(): boolean {
+  return getEnvironment() === 'test'
+}
+
+/**
+ * 获取当前应用是否运行在客户端
+ * @returns 如果在客户端返回 true，否则返回 false
+ */
+export function isClient(): boolean {
+  return typeof window !== 'undefined'
+}
+
+/**
+ * 获取当前应用是否运行在服务端
+ * @returns 如果在服务端返回 true，否则返回 false
+ */
+export function isServer(): boolean {
+  return typeof window === 'undefined'
+}

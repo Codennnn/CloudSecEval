@@ -126,7 +126,7 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button asChild className="w-full sm:w-auto" size="lg">
                   <Link href="/docs">
-                    <BookOpen className="mr-2 h-4 w-4" />
+                    <BookOpen className="size-4" />
                     立即开始学习
                   </Link>
                 </Button>
@@ -326,11 +326,11 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button className="w-full sm:w-auto" size="lg">
-              <Gift className="mr-2 h-4 w-4" />
+              <Gift className="size-4" />
               赞助解锁全部内容
             </Button>
             <Button className="w-full sm:w-auto" size="lg" variant="outline">
-              <Coffee className="mr-2 h-4 w-4" />
+              <Coffee className="size-4" />
               Buy Me a Coffee
             </Button>
           </div>
@@ -349,7 +349,7 @@ export default function HomePage() {
             </p>
             <Button asChild className="w-full sm:w-auto" size="lg" variant="secondary">
               <Link href="/docs">
-                <BookOpen className="mr-2 h-4 w-4" />
+                <BookOpen className="size-4" />
                 立即开始免费阅读
               </Link>
             </Button>

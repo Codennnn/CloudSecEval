@@ -56,6 +56,7 @@ interface ApiLicenseData {
 
 import { PageHeader } from '~admin/components/PageHeader'
 import { useLicenses } from '~admin/hooks/api/useLicense'
+import { type LicenseFormData, useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 
 // MARK: 数据类型
 
@@ -65,14 +66,13 @@ import { useLicenses } from '~admin/hooks/api/useLicense'
 interface LicenseData {
   id: string
   code: string
-  email?: string
+  email: string
+  purchaseAmount: number
   status: 'active' | 'inactive' | 'expired'
-  type?: string
-  description?: string
+  remark?: string
   expiresAt?: string
   createdAt?: string
   updatedAt?: string
-  userId?: string
 }
 
 // MARK: 辅助组件
@@ -108,7 +108,7 @@ function CopyButton({ code }: { code: string }) {
     >
       {copied
         ? (
-            <Check className="size-3 text-success" />
+            <Check className="size-3 text-success" strokeWidth={3} />
           )
         : (
             <Copy className="size-3" />
@@ -162,17 +162,17 @@ function formatDate(dateString?: string) {
 // MARK: 表格列定义
 
 /**
- * 授权码表格列定义
+ * 创建授权码表格列定义
  */
-const columns: ColumnDef<LicenseData>[] = [
+const createColumns = (
+  openEditDialog: (license: LicenseFormData) => void,
+): ColumnDef<LicenseData>[] => [
   {
     accessorKey: 'email',
     header: '邮箱',
     cell: ({ row }) => (
       <div className="text-sm">
-        {row.original.email ?? (
-          <span className="text-muted-foreground">-</span>
-        )}
+        {row.original.email}
       </div>
     ),
   },
@@ -195,11 +195,11 @@ const columns: ColumnDef<LicenseData>[] = [
     cell: ({ row }) => getStatusBadge(row.original.status),
   },
   {
-    accessorKey: 'description',
-    header: '描述',
+    accessorKey: 'remark',
+    header: '备注',
     cell: ({ row }) => (
       <div className="max-w-xs truncate">
-        {row.original.description ?? (
+        {row.original.remark ?? (
           <span className="text-muted-foreground">-</span>
         )}
       </div>
@@ -238,6 +238,7 @@ const columns: ColumnDef<LicenseData>[] = [
             <span className="sr-only">打开菜单</span>
           </Button>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent align="end" className="w-32">
           <DropdownMenuItem
             onClick={() => {
@@ -248,18 +249,25 @@ const columns: ColumnDef<LicenseData>[] = [
           >
             查看详情
           </DropdownMenuItem>
+
           <DropdownMenuItem
             onClick={() => {
-              // TODO: 实现编辑功能
-              // 暂时使用 row.original.id 来避免 ESLint 警告
-              void row.original.id
+              // 转换为编辑表单需要的格式
+              const licenseForEdit = {
+                ...row.original,
+                email: row.original.email,
+                remark: row.original.remark,
+              }
+              openEditDialog(licenseForEdit)
             }}
           >
             编辑
           </DropdownMenuItem>
+
           <DropdownMenuSeparator />
+
           <DropdownMenuItem
-            className="text-destructive"
+            variant="destructive"
             onClick={() => {
               // TODO: 实现删除功能
               // 暂时使用 row.original.id 来避免 ESLint 警告
@@ -282,6 +290,8 @@ const columns: ColumnDef<LicenseData>[] = [
 export default function LicensesPage() {
   const [data, setData] = useState<LicenseData[]>([])
 
+  const { openCreateDialog, openEditDialog } = useLicenseDialog()
+
   const { data: licenseData, isLoading, error } = useLicenses({} as LicenseQueryParams)
 
   // 使用 useMemo 来稳定 licenses 数组的引用，避免无限重渲染
@@ -302,12 +312,11 @@ export default function LicensesPage() {
           status: license.verified
             ? (license.locked ? 'inactive' : 'active')
             : 'expired',
-          type: undefined, // API暂时没有返回type字段
-          description: undefined, // API暂时没有返回description字段
+          purchaseAmount: 0,
+          remark: undefined, // API暂时没有返回remark字段
           expiresAt: undefined, // API暂时没有返回expiresAt字段
           createdAt: license.createdAt,
           updatedAt: undefined, // API暂时没有返回updatedAt字段
-          userId: undefined, // API暂时没有返回userId字段
         }
 
         return mappedLicense
@@ -319,6 +328,8 @@ export default function LicensesPage() {
   }, [licenses])
 
   // ==================== 表格配置 ====================
+  const columns = useMemo(() => createColumns(openEditDialog), [openEditDialog])
+
   const table = useReactTable({
     data,
     columns,
@@ -345,8 +356,8 @@ export default function LicensesPage() {
         {/* 页面标题 */}
         <PageHeader
           actions={(
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button onClick={openCreateDialog}>
+              <Plus className="size-4" />
               新增授权码
             </Button>
           )}
@@ -356,7 +367,7 @@ export default function LicensesPage() {
 
         <div className="rounded-md border">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
