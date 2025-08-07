@@ -7,6 +7,7 @@ import { CheckIcon, CopyIcon } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
+import { copyToClipboard } from '~/utils/copy'
 
 interface CopyButtonProps {
   text: string
@@ -19,18 +20,18 @@ export function CopyButton(props: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(text)
+    await copyToClipboard(
+      text,
+      {
+        onSuccess: () => {
+          setCopied(true)
 
-      setCopied(true)
-
-      setTimeout(() => {
-        setCopied(false)
-      }, 1000)
-    }
-    catch (err) {
-      console.error('复制失败:', err)
-    }
+          setTimeout(() => {
+            setCopied(false)
+          }, 1000)
+        },
+      },
+    )
   }
 
   const shouldOpen = copied ? true : undefined
