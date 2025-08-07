@@ -16,6 +16,7 @@ import {
   EllipsisVerticalIcon,
   Plus,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -54,8 +55,9 @@ interface ApiLicenseData {
   }
 }
 
+import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { PageHeader } from '~admin/components/PageHeader'
-import { useLicenses } from '~admin/hooks/api/useLicense'
+import { useDeleteLicense, useLicenses } from '~admin/hooks/api/useLicense'
 import { type LicenseFormData, useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 
 // MARK: 数据类型
@@ -166,6 +168,7 @@ function formatDate(dateString?: string) {
  */
 const createColumns = (
   openEditDialog: (license: LicenseFormData) => void,
+  onDeleteClick: (license: LicenseData) => void,
 ): ColumnDef<LicenseData>[] => [
   {
     accessorKey: 'email',
@@ -270,9 +273,7 @@ const createColumns = (
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {
-              // TODO: 实现删除功能
-              // 暂时使用 row.original.id 来避免 ESLint 警告
-              void row.original.id
+              onDeleteClick(row.original)
             }}
           >
             删除
@@ -290,8 +291,11 @@ const createColumns = (
  */
 export default function LicensesPage() {
   const [data, setData] = useState<LicenseData[]>([])
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
 
   const { openCreateDialog, openEditDialog } = useLicenseDialog()
+  const deleteLicenseMutation = useDeleteLicense()
 
   const { data: licenseData, isLoading, error } = useLicenses({} as LicenseQueryParams)
 
@@ -328,8 +332,31 @@ export default function LicensesPage() {
     }
   }, [licenses])
 
+  // ==================== 删除处理 ====================
+  const handleDeleteClick = (license: LicenseData) => {
+    setLicenseToDelete(license)
+    setDeleteConfirmOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!licenseToDelete) {
+      return
+    }
+
+    try {
+      await deleteLicenseMutation.mutateAsync(licenseToDelete.id)
+      toast.success(`授权码 ${licenseToDelete.code} 已成功删除`)
+      setDeleteConfirmOpen(false)
+      setLicenseToDelete(null)
+    }
+    catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '删除授权码失败，请稍后重试'
+      toast.error(errorMessage)
+    }
+  }
+
   // ==================== 表格配置 ====================
-  const columns = useMemo(() => createColumns(openEditDialog), [openEditDialog])
+  const columns = useMemo(() => createColumns(openEditDialog, handleDeleteClick), [openEditDialog])
 
   const table = useReactTable({
     data,
@@ -427,6 +454,40 @@ export default function LicensesPage() {
           </Table>
         </div>
       </div>
+
+      {/* 删除确认对话框 */}
+      <DeleteConfirmDialog
+        confirmText="DELETE"
+        deleteButtonText="确认删除"
+        description={
+          licenseToDelete
+            ? (
+                <div>
+                  你即将删除：
+                  <ul className="list-disc list-inside space-y-1.5 py-2">
+                    <li>
+                      授权码：
+                      <code>
+                        {licenseToDelete.code}
+                      </code>
+                    </li>
+                    <li>
+                      邮箱：
+                      <span className="text-muted-foreground">
+                        {licenseToDelete.email}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              )
+            : null
+        }
+        isDeleting={deleteLicenseMutation.isPending}
+        open={deleteConfirmOpen}
+        title="删除授权码"
+        onConfirm={handleDeleteConfirm}
+        onOpenChange={setDeleteConfirmOpen}
+      />
     </div>
   )
 }

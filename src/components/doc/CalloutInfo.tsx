@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 
 import {
   AlertTriangleIcon,
+  BadgeAlertIcon,
   InfoIcon,
   LightbulbIcon,
-  XCircleIcon,
 } from 'lucide-react'
 
 import { SpacingWrapper } from '~/components/doc/SpacingWrapper'
@@ -83,10 +83,10 @@ export function CalloutInfo(props: React.PropsWithChildren<CalloutInfoProps>) {
         return <InfoIcon />
 
       case 'warning':
-        return <AlertTriangleIcon />
+        return <BadgeAlertIcon />
 
       case 'error':
-        return <XCircleIcon />
+        return <AlertTriangleIcon />
 
       case 'success':
         return <LightbulbIcon />

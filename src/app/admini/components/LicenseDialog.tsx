@@ -82,7 +82,7 @@ interface LicenseDialogProps {
 
 const baseDefaultValues: LicenseFormValues = {
   email: '',
-  purchaseAmount: '',
+  purchaseAmount: '5',
   expiresAtType: 'preset',
   expiresAtPreset: '',
   expiresAt: '',
@@ -115,9 +115,8 @@ const convertToFormValues = (
 
     const presetMap: Record<number, string> = {
       7: '7d',
+      15: '15d',
       30: '30d',
-      90: '90d',
-      365: '1y',
     }
 
     // 检查是否是永久授权（很久的未来日期）
@@ -332,7 +331,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
 
         <Form {...form}>
           <form
-            className="grid gap-form-item py-4"
+            className="grid gap-form-item py-form-wrapper"
             onSubmit={(ev) => {
               ev.preventDefault()
               void form.handleSubmit(handleSubmit)(ev)
