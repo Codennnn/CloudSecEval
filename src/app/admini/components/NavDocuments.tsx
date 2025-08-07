@@ -1,6 +1,6 @@
 'use client'
 
-import { EllipsisIcon, ExternalLinkIcon, type UserIcon } from 'lucide-react'
+import { EllipsisIcon, ExternalLinkIcon } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -18,14 +18,12 @@ import {
   useSidebar,
 } from '~/components/ui/sidebar'
 
+import type { AdminDocumentItem } from '~admin/lib/admin-nav'
+
 export function NavDocuments({
   items,
 }: {
-  items: {
-    name: string
-    url: string
-    icon: typeof UserIcon
-  }[]
+  items: AdminDocumentItem[]
 }) {
   const { isMobile } = useSidebar()
 
@@ -35,11 +33,11 @@ export function NavDocuments({
 
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
+                {item.icon && <item.icon />}
+                <span>{item.title}</span>
               </a>
             </SidebarMenuButton>
 

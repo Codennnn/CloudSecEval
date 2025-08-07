@@ -16,6 +16,7 @@ import { Textarea } from '~/components/ui/textarea'
 
 import { PageHeader } from '~admin/components/PageHeader'
 import { useProfile } from '~admin/hooks/api/useAuth'
+import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 import { useUser } from '~admin/stores/useUserStore'
 
 /**
@@ -27,6 +28,11 @@ export default function ProfilePage() {
   const { data: user, isLoading, error } = useProfile()
 
   const storeUser = useUser()
+
+  // 设置页面标题
+  useEffect(() => {
+    document.title = generatePageTitle(AdminRoutes.Profile)
+  }, [])
 
   // 本地编辑状态，用于表单编辑
   const [userProfile, setUserProfile] = useState({

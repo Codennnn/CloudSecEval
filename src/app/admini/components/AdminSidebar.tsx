@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { GaugeIcon, KeyIcon, UserIcon } from 'lucide-react'
 
 import {
   Sidebar,
@@ -19,55 +18,7 @@ import { NavDocuments } from '~admin/components/NavDocuments'
 import { NavMain } from '~admin/components/NavMain'
 import { NavSecondary } from '~admin/components/NavSecondary'
 import { NavUser } from '~admin/components/NavUser'
-
-const data = {
-  navMain: [
-    {
-      title: '仪表盘',
-      url: '/admini/dashboard',
-      icon: GaugeIcon,
-    },
-    {
-      title: '授权码管理',
-      url: '/admini/licenses',
-      icon: KeyIcon,
-    },
-  ],
-  navSecondary: [
-    {
-      title: 'Settings',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
-      title: 'Get Help',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
-      title: 'Search',
-      url: '#',
-      icon: UserIcon,
-    },
-  ],
-  documents: [
-    {
-      name: 'Data Library',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
-      name: 'Reports',
-      url: '#',
-      icon: UserIcon,
-    },
-    {
-      name: 'Word Assistant',
-      url: '#',
-      icon: UserIcon,
-    },
-  ],
-}
+import { adminNavDocuments, adminNavMain, adminNavSecondary, adminTitle } from '~admin/lib/admin-nav'
 
 export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -86,7 +37,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   src={SITE_CONFIG.logoPath}
                   width={24}
                 />
-                <span className="text-base font-semibold">文档服务中心</span>
+                <span className="text-base font-semibold">{adminTitle}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -94,11 +45,11 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={adminNavMain} />
 
-        <NavDocuments items={data.documents} />
+        <NavDocuments items={adminNavDocuments} />
 
-        <NavSecondary className="mt-auto" items={data.navSecondary} />
+        <NavSecondary className="mt-auto" items={adminNavSecondary} />
       </SidebarContent>
 
       <SidebarFooter>

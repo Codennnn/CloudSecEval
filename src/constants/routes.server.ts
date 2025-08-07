@@ -5,21 +5,6 @@
  */
 
 /**
- * 管理后台相关路由（敏感信息）
- * 这些路径不应暴露到前端代码中
- */
-export const ADMIN_ROUTES = {
-  /** 管理后台根路径 */
-  ROOT: '/admini',
-  /** 管理后台登录页面 */
-  LOGIN: '/admini/login',
-  /** 管理后台仪表板 */
-  DASHBOARD: '/admini/dashboard',
-  /** 用户管理 */
-  USERS: '/admini/users',
-} as const
-
-/**
  * 静态资源相关路由（服务端处理）
  */
 export const ASSET_ROUTES = {
@@ -27,30 +12,6 @@ export const ASSET_ROUTES = {
   ROOT: '/assets',
   /** 防盗链警告图片 */
   HOTLINK_WARNING: '/assets/hotlink-warning.png',
-} as const
-
-/**
- * Next.js 系统路由
- */
-export const SYSTEM_ROUTES = {
-  /** Next.js 静态资源 */
-  NEXT_STATIC: '/_next/static',
-  /** Next.js 图片优化 */
-  NEXT_IMAGE: '/_next/image',
-  /** 网站图标 */
-  FAVICON: '/favicon.ico',
-} as const
-
-/**
- * 路由匹配模式（用于 middleware 配置）
- */
-export const ROUTE_PATTERNS = {
-  /** 管理后台路径模式 */
-  ADMIN: '/admini/:path*',
-  /** 静态资源路径模式 */
-  ASSETS: '/assets/:path*',
-  /** 排除系统路由的页面路径模式 */
-  PAGES: '/((?!api|_next/static|_next/image|favicon.ico).*)',
 } as const
 
 /**

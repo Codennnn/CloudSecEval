@@ -1,9 +1,5 @@
 'use client'
 
-import type * as React from 'react'
-
-import type { UserIcon } from 'lucide-react'
-
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,15 +8,13 @@ import {
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
 
+import type { AdminSecondaryNavItem } from '~admin/lib/admin-nav'
+
 export function NavSecondary({
   items,
   ...props
 }: {
-  items: {
-    title: string
-    url: string
-    icon: typeof UserIcon
-  }[]
+  items: AdminSecondaryNavItem[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
@@ -30,7 +24,7 @@ export function NavSecondary({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
                 <a href={item.url}>
-                  <item.icon />
+                  {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>

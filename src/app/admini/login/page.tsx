@@ -1,4 +1,11 @@
 import { LoginForm } from '~admin/components/LoginForm'
+import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
+
+export function generateMetadata() {
+  return {
+    title: generatePageTitle(AdminRoutes.Login),
+  }
+}
 
 export default function AdminLoginPage() {
   return (

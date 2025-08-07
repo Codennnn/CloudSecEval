@@ -58,6 +58,7 @@ interface ApiLicenseData {
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { PageHeader } from '~admin/components/PageHeader'
 import { useDeleteLicense, useLicenses } from '~admin/hooks/api/useLicense'
+import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 import { type LicenseFormData, useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 
 // MARK: 数据类型
@@ -293,6 +294,11 @@ export default function LicensesPage() {
   const [data, setData] = useState<LicenseData[]>([])
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
+
+  // 设置页面标题
+  useEffect(() => {
+    document.title = generatePageTitle(AdminRoutes.Licenses)
+  }, [])
 
   const { openCreateDialog, openEditDialog } = useLicenseDialog()
   const deleteLicenseMutation = useDeleteLicense()

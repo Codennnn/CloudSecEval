@@ -2,12 +2,13 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { consola } from 'consola'
 
 import {
-  ADMIN_ROUTES,
   ALLOWED_DOMAINS,
   ASSET_ROUTES,
   PROTECTED_FILE_EXTENSIONS,
   SEARCH_BOT_PATTERN,
 } from '~/constants/routes.server'
+
+import { AdminRoutes } from '~admin/lib/admin-nav'
 
 /**
    * 处理管理后台路由的访问控制逻辑
@@ -18,25 +19,26 @@ import {
 function handleAdminRoutes(request: NextRequest, pathname: string) {
   const token = request.cookies.get('access_token')?.value
   const hasLogin = !!token
-  const isRootPath = pathname === ADMIN_ROUTES.ROOT
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+  const isRootPath = pathname === AdminRoutes.Root
 
   // 情况1：访问管理后台根路径，根据登录状态重定向
   if (isRootPath) {
-    const targetRoute = hasLogin ? ADMIN_ROUTES.DASHBOARD : ADMIN_ROUTES.LOGIN
+    const targetRoute = hasLogin ? AdminRoutes.Dashboard : AdminRoutes.Login
 
     return NextResponse.redirect(new URL(targetRoute, request.url))
   }
 
-  const isLoginPage = pathname.startsWith(ADMIN_ROUTES.LOGIN)
+  const isLoginPage = pathname.startsWith(AdminRoutes.Login)
 
   // 情况2：已登录用户访问登录页，重定向到仪表板
   if (hasLogin && isLoginPage) {
-    return NextResponse.redirect(new URL(ADMIN_ROUTES.DASHBOARD, request.url))
+    return NextResponse.redirect(new URL(AdminRoutes.Dashboard, request.url))
   }
 
   // 情况3：未登录用户访问非登录页面，重定向到登录页
   if (!hasLogin && !isLoginPage) {
-    return NextResponse.redirect(new URL(ADMIN_ROUTES.LOGIN, request.url))
+    return NextResponse.redirect(new URL(AdminRoutes.Login, request.url))
   }
 
   // 其他情况：允许继续访问（已登录访问其他页面，或未登录访问登录页）
@@ -47,7 +49,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 管理后台路由访问控制
-  if (pathname.startsWith(ADMIN_ROUTES.ROOT)) {
+  if (pathname.startsWith(AdminRoutes.Root)) {
     return handleAdminRoutes(request, pathname)
   }
 

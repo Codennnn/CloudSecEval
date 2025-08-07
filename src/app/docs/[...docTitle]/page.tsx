@@ -17,7 +17,6 @@ import { getDocsUrl } from '~/utils/link'
 
 type MDXContent = React.ComponentType
 
-// 生成动态 SEO 元数据
 export async function generateMetadata(
   { params }: PageProps<{ docTitle: string[] }>,
 ): Promise<Metadata> {

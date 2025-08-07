@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ExternalLinkIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
@@ -6,7 +9,12 @@ import { Separator } from '~/components/ui/separator'
 import { SidebarTrigger } from '~/components/ui/sidebar'
 import { RoutePath } from '~/constants'
 
+import { getPageNameByRoute } from '~admin/lib/admin-nav'
+
 export function AdminHeader() {
+  const pathname = usePathname()
+  const pageName = getPageNameByRoute(pathname)
+
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
@@ -17,7 +25,7 @@ export function AdminHeader() {
           orientation="vertical"
         />
 
-        <div className="text-base font-medium">Documents</div>
+        <div className="text-base font-medium">{pageName}</div>
 
         <div className="ml-auto flex items-center gap-2">
           <Link

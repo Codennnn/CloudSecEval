@@ -3,6 +3,13 @@ import data from './data.json'
 import { ChartAreaInteractive } from '~admin/components/ChartAreaInteractive'
 import { DataTable } from '~admin/components/DataTable'
 import { SectionCards } from '~admin/components/SectionCards'
+import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
+
+export function generateMetadata() {
+  return {
+    title: generatePageTitle(AdminRoutes.Dashboard),
+  }
+}
 
 export default function AdminDashboardPage() {
   return (
