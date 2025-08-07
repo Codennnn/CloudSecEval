@@ -180,10 +180,11 @@ const createColumns = (
     accessorKey: 'code',
     header: '授权码',
     cell: ({ row }) => (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <div className="font-mono text-sm">
           {row.original.code}
         </div>
+
         <CopyButton code={row.original.code} />
       </div>
     ),

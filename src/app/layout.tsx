@@ -9,6 +9,7 @@ import { SITE_CONFIG } from '~/constants'
 import { cn } from '~/lib/utils'
 import { QueryProvider } from '~/providers/QueryProvider'
 import { getPageTitle } from '~/utils/common'
+import { isProduction } from '~/utils/platform'
 
 import '~/styles/global.css'
 
@@ -178,7 +179,7 @@ export default function RootLayout(props: React.PropsWithChildren) {
           - 隐私友好的 Google Analytics 替代方案
           - 仅在生产环境中加载，避免开发环境的访问数据污染
         */}
-        {process.env.NODE_ENV === 'production' && (
+        {isProduction() && (
           <Script
             data-website-id="17a93541-f99f-43ed-8d7c-3887b4e85693"
             src="https://cloud.umami.is/script.js"

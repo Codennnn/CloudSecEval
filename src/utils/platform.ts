@@ -56,7 +56,6 @@ export function getEnvironment(): 'development' | 'test' | 'production' | 'unkno
 
 /**
  * 检查当前是否为开发环境
- * @returns 如果是开发环境返回 true，否则返回 false
  */
 export function isDevelopment(): boolean {
   return getEnvironment() === 'development'
@@ -64,7 +63,6 @@ export function isDevelopment(): boolean {
 
 /**
  * 检查当前是否为生产环境
- * @returns 如果是生产环境返回 true，否则返回 false
  */
 export function isProduction(): boolean {
   return getEnvironment() === 'production'
@@ -72,7 +70,6 @@ export function isProduction(): boolean {
 
 /**
  * 检查当前是否为测试环境
- * @returns 如果是测试环境返回 true，否则返回 false
  */
 export function isTest(): boolean {
   return getEnvironment() === 'test'
@@ -80,7 +77,6 @@ export function isTest(): boolean {
 
 /**
  * 获取当前应用是否运行在客户端
- * @returns 如果在客户端返回 true，否则返回 false
  */
 export function isClient(): boolean {
   return typeof window !== 'undefined'
@@ -88,7 +84,6 @@ export function isClient(): boolean {
 
 /**
  * 获取当前应用是否运行在服务端
- * @returns 如果在服务端返回 true，否则返回 false
  */
 export function isServer(): boolean {
   return typeof window === 'undefined'

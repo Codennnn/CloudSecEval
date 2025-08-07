@@ -3,6 +3,8 @@
  * 统一的 API 配置，支持环境变量覆盖
  */
 
+import { isDevelopment } from '~/utils/platform'
+
 /**
  * API 配置接口
  */
@@ -40,10 +42,10 @@ export const API_CONFIG: ApiConfig = {
   maxRetryDelay: 30 * 1000,
 
   // 是否启用开发工具
-  enableDevtools: process.env.NODE_ENV === 'development',
+  enableDevtools: isDevelopment(),
 
   // 是否启用 API 日志
-  enableLogging: process.env.NODE_ENV === 'development',
+  enableLogging: isDevelopment(),
 
   // 是否启用缓存
   enableCache: true,
