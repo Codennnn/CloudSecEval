@@ -389,8 +389,6 @@ export default function LicensesPage() {
               新增授权码
             </Button>
           )}
-          description="管理系统授权码，查看使用状态和有效期"
-          title="授权码管理"
         />
 
         <div className="rounded-md border">

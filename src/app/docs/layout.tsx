@@ -19,11 +19,14 @@ export default function DocsLayout(props: React.PropsWithChildren) {
     <SidebarProvider>
       <AppSidebar />
 
-      <SidebarInset className="@container">
+      <SidebarInset className="@container/docs-content">
         <div
           className={cn(
             'size-full flex flex-col',
-            '@6xl:[--content-padding:4rem] @4xl:[--content-padding:3rem] @lg:[--content-padding:1.5rem] [--content-padding:1rem]',
+            '@6xl/docs-content:[--content-padding:4rem]',
+            '@4xl/docs-content:[--content-padding:3rem]',
+            '@lg/docs-content:[--content-padding:1.5rem]',
+            '[--content-padding:1rem]',
           )}
         >
           <AppHeader />

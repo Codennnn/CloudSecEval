@@ -1,3 +1,4 @@
+import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import {
   SidebarInset,
   SidebarProvider,
@@ -27,11 +28,13 @@ export default function AdminLayout(props: React.PropsWithChildren) {
       >
         <AdminSidebar variant="inset" />
 
-        <SidebarInset className="@container overflow-hidden">
+        <SidebarInset className="overflow-hidden">
           <AdminHeader />
 
           <div className="flex-1 overflow-hidden">
-            {children}
+            <ScrollGradientContainer className="@container/admin-content">
+              {children}
+            </ScrollGradientContainer>
           </div>
         </SidebarInset>
       </SidebarProvider>

@@ -61,7 +61,7 @@ export function DeleteConfirmDialog({
     defaultValues: {
       confirmInput: '',
     },
-    mode: 'onChange',
+    mode: 'onSubmit',
   })
 
   const watchedInput = form.watch('confirmInput')
@@ -97,7 +97,7 @@ export function DeleteConfirmDialog({
           </DialogTitle>
 
           {description && (
-            <DialogDescription>
+            <DialogDescription asChild>
               {description}
             </DialogDescription>
           )}
@@ -133,9 +133,7 @@ export function DeleteConfirmDialog({
                         placeholder={`请输入 "${confirmText}"`}
                       />
                     </FormControl>
-                    {field.value && field.value !== confirmText && (
-                      <FormMessage>输入的文本不匹配</FormMessage>
-                    )}
+                    <FormMessage />
                   </FormItem>
                 )}
                 rules={{

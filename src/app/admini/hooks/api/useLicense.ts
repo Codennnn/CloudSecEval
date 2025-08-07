@@ -108,7 +108,7 @@ export function useCreateLicense() {
 
   return useMutation({
     mutationFn: async (data: CreateLicenseDto): Promise<License> => {
-      return await api.post<License>('/license/create', {
+      return await api.post<License>(licenseEndpoints.create(), {
         email: data.email.trim(),
         remark: data.remark?.trim(),
       })

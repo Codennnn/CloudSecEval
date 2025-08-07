@@ -87,12 +87,12 @@ export function LoginForm({
             />
           </div>
           <div className="flex flex-col text-left">
-            <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
+            <div className="text-xl font-semibold text-foreground sm:text-2xl">
               {SITE_CONFIG.name}
-            </h1>
-            <p className="text-sm text-muted-foreground sm:text-base">
+            </div>
+            <div className="text-sm text-muted-foreground sm:text-base">
               管理后台
-            </p>
+            </div>
           </div>
         </div>
       </div>

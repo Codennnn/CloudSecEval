@@ -5,7 +5,7 @@ import { cn } from '~/lib/utils'
  */
 interface PageHeaderProps {
   /** 页面主标题 */
-  title: string
+  title?: string
   /** 页面描述文字 */
   description?: string
   /** 标题右侧的操作按钮或内容 */
@@ -30,7 +30,7 @@ export function PageHeader({
   return (
     <div className={cn('flex items-center justify-between', className)}>
       <div>
-        <h1 className="text-xl font-semibold">{title}</h1>
+        {title && <h1 className="text-xl font-semibold">{title}</h1>}
 
         {description && (
           <p className="text-muted-foreground text-sm mt-0.5">{description}</p>

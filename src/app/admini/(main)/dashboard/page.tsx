@@ -1,5 +1,3 @@
-import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
-
 import data from './data.json'
 
 import { ChartAreaInteractive } from '~admin/components/ChartAreaInteractive'
@@ -8,18 +6,16 @@ import { SectionCards } from '~admin/components/SectionCards'
 
 export default function AdminDashboardPage() {
   return (
-    <ScrollGradientContainer>
-      <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-admin-content-md py-admin-content-md md:gap-admin-content md:py-admin-content">
-          <SectionCards />
+    <div className="flex flex-1 flex-col gap-2">
+      <div className="flex flex-col gap-admin-content-md py-admin-content-md md:gap-admin-content md:py-admin-content">
+        <SectionCards />
 
-          <div className="px-admin-content-md lg:px-admin-content">
-            <ChartAreaInteractive />
-          </div>
-
-          <DataTable data={data} />
+        <div className="px-admin-content-md lg:px-admin-content">
+          <ChartAreaInteractive />
         </div>
+
+        <DataTable data={data} />
       </div>
-    </ScrollGradientContainer>
+    </div>
   )
 }
