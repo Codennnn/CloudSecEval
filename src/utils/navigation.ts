@@ -6,6 +6,7 @@ import { useEvent } from 'react-use-event-hook'
 import { useRouter } from 'next/navigation'
 
 import { getDocsUrl, getFullUrl, isExternalLink } from '~/utils/link'
+import { isClient } from '~/utils/platform'
 
 type AppRouterInstance = ReturnType<typeof useRouter>
 
@@ -79,7 +80,7 @@ export function navigateTo(
 
   // 处理外部链接
   if (external || isExternalLink(fullUrl)) {
-    if (typeof window !== 'undefined') {
+    if (isClient()) {
       if (external) {
         window.open(fullUrl, '_blank', 'noopener,noreferrer')
       }
@@ -91,12 +92,14 @@ export function navigateTo(
     return
   }
 
+  const routerPamams = [fullUrl, { scroll }] as const
+
   // 处理内部路由导航
   if (replace) {
-    router.replace(fullUrl, { scroll })
+    router.replace(...routerPamams)
   }
   else {
-    router.push(fullUrl, { scroll })
+    router.push(...routerPamams)
   }
 }
 
@@ -119,7 +122,7 @@ export function navigateToDoc(
     navigateTo(router, path, options)
   }
   else {
-    console.warn(`Invalid doc path: ${docPath}`)
+    console.warn(`无效的文档路径: ${docPath}`)
   }
 }
 
@@ -140,7 +143,7 @@ export function navigateToHome(
  * @param router - Next.js 路由实例
  */
 export function navigateBack(router: AppRouterInstance): void {
-  if (typeof window !== 'undefined' && window.history.length > 1) {
+  if (isClient() && window.history.length > 1) {
     router.back()
   }
   else {
@@ -183,7 +186,7 @@ export function useNavigation() {
   )
 
   const navigateBack = useEvent(() => {
-    if (typeof window !== 'undefined' && window.history.length > 1) {
+    if (isClient() && window.history.length > 1) {
       router.back()
     }
     else {

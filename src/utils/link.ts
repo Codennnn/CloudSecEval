@@ -4,6 +4,7 @@ import { RoutePath, SITE_CONFIG } from '~/constants'
 import { navMainData } from '~/lib/data/nav'
 import { normalizePath } from '~/lib/utils'
 import type { NavMenuItem } from '~/types/nav'
+import { isClient } from '~/utils/platform'
 
 /**
  * 判断字符串是否为有效的 URL
@@ -73,7 +74,7 @@ export function isExternalLink(href: string, currentHost?: string): boolean {
     }
 
     // 如果在浏览器环境中，使用 window.location.hostname
-    if (typeof window !== 'undefined') {
+    if (isClient()) {
       return url.hostname.toLowerCase() !== window.location.hostname.toLowerCase()
     }
 

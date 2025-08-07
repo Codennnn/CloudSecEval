@@ -4,7 +4,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '~/lib/api/client'
 import { authEndpoints } from '~/lib/api/endpoints'
 import type { LoginDto, LoginResponse, User } from '~/lib/api/types'
+import { isClient } from '~/utils/platform'
 
+import { AdminRoutes } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
 
 // ==================== 查询键定义 ====================
@@ -27,8 +29,6 @@ export const authQueryKeys = {
  * - 自动存储 Token
  * - 登录成功后跳转
  * - 错误处理和提示
- *
- * @returns 登录相关的状态和方法
  */
 export function useLogin() {
   const router = useRouter()
@@ -51,8 +51,7 @@ export function useLogin() {
       // 同步用户信息到 store（持久化存储）
       setUser(data.user)
 
-      // 跳转到管理后台首页
-      router.replace('/admini/dashboard')
+      router.replace(AdminRoutes.Dashboard)
     },
   })
 }
@@ -65,8 +64,6 @@ export function useLogin() {
  * - 清除本地存储的认证信息
  * - 清除查询缓存
  * - 跳转到登录页
- *
- * @returns 登出相关的状态和方法
  */
 export function useLogout() {
   const router = useRouter()
@@ -90,7 +87,7 @@ export function useLogout() {
 
       clearUser()
 
-      router.replace('/admini/login')
+      router.replace(AdminRoutes.Login)
     },
   })
 }
@@ -118,7 +115,7 @@ export function useProfile() {
 
     // 只在浏览器环境且用户可能已登录时启用查询
     // 如果 store 中没有用户信息，说明用户已退出登录，不需要查询
-    enabled: typeof window !== 'undefined' && user !== null,
+    enabled: isClient() && user !== null,
 
     // 数据比较稳定，可以缓存长一点
     staleTime: 10 * 60 * 1000, // 10 分钟

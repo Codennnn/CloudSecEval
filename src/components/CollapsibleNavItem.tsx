@@ -75,6 +75,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
   const handleMouseEnter = (url: string) => {
     if (!isExternalLink(url)) {
       const fullPath = `${RoutePath.Docs}${url}`
+
       router.prefetch(fullPath)
     }
   }

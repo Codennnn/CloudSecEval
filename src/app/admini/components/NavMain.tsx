@@ -14,7 +14,8 @@ import {
 } from '~/components/ui/sidebar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 
-import { useLicenseDialog } from '../stores/useLicenseDialogStore'
+import { AdminRoutes } from '~admin/lib/admin-nav'
+import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 
 interface NavMainProps {
   items: {
@@ -45,7 +46,7 @@ export function NavMain({ items }: NavMainProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="/admini/licenses">
+                <Link href={AdminRoutes.Licenses}>
                   <Button
                     className="size-8 group-data-[collapsible=icon]:opacity-0"
                     size="icon"

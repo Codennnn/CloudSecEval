@@ -31,6 +31,7 @@ import {
 import { RoutePath } from '~/constants'
 
 import { useLogout } from '~admin/hooks/api/useAuth'
+import { AdminRoutes } from '~admin/lib/admin-nav'
 import { useUser } from '~admin/stores/useUserStore'
 
 export function NavUser() {
@@ -93,7 +94,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <Link href="/admini/profile">
+              <Link href={AdminRoutes.Profile}>
                 <DropdownMenuItem>
                   <UserIcon />
                   账号信息

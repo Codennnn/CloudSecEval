@@ -29,6 +29,7 @@ import { cn } from '~/lib/utils'
 import { usePrefetch } from '~/utils/navigation'
 
 import { useLogin } from '~admin/hooks/api/useAuth'
+import { AdminRoutes } from '~admin/lib/admin-nav'
 
 const loginFormSchema = z.object({
   email: z.email('邮箱格式不正确，请检查后重试'),
@@ -49,7 +50,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  usePrefetch({ href: '/admini/dashboard' })
+  usePrefetch({ href: AdminRoutes.Dashboard })
 
   const loginMutation = useLogin()
 
