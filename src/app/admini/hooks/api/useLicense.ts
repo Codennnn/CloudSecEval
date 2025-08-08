@@ -43,8 +43,8 @@ export function useLicenses(params?: LicenseQueryParams) {
         searchParams.append('page', params.page.toString())
       }
 
-      if (params?.pageSize || params?.limit) {
-        searchParams.append('limit', (params.pageSize ?? params.limit)!.toString())
+      if (params?.pageSize) {
+        searchParams.append('pageSize', params.pageSize.toString())
       }
 
       if (params?.status) {

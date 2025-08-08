@@ -30,7 +30,7 @@ export const USER_ENDPOINTS = {
  * 授权码相关端点
  */
 export const LICENSE_ENDPOINTS = {
-  LIST: '/license/list',
+  LIST: '/license',
   DETAIL: (id: string) => `/license/${id}`,
   CREATE: '/license',
   UPDATE: (id: string) => `/license/${id}`,

@@ -57,6 +57,7 @@ interface ApiLicenseData {
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { PageHeader } from '~admin/components/PageHeader'
+import { TablePagination } from '~admin/components/TablePagination'
 import { useDeleteLicense, useLicenses } from '~admin/hooks/api/useLicense'
 import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 import { type LicenseFormData, useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
@@ -184,12 +185,14 @@ const createColumns = (
     accessorKey: 'code',
     header: '授权码',
     cell: ({ row }) => (
-      <div className="flex items-center gap-1">
+      <div className="inline-flex items-center gap-1 group/code">
         <div className="font-mono text-sm">
           {row.original.code}
         </div>
 
-        <CopyButton code={row.original.code} />
+        <div className="group-hover/code:opacity-100 opacity-0">
+          <CopyButton code={row.original.code} />
+        </div>
       </div>
     ),
     enableHiding: false,
@@ -294,6 +297,10 @@ export default function LicensesPage() {
   const [data, setData] = useState<LicenseData[]>([])
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   // 设置页面标题
   useEffect(() => {
@@ -303,7 +310,13 @@ export default function LicensesPage() {
   const { openCreateDialog, openEditDialog } = useLicenseDialog()
   const deleteLicenseMutation = useDeleteLicense()
 
-  const { data: licenseData, isLoading, error } = useLicenses({} as LicenseQueryParams)
+  // 构建查询参数
+  const queryParams: LicenseQueryParams = {
+    page: pagination.pageIndex + 1, // API 使用从1开始的页码
+    pageSize: pagination.pageSize,
+  }
+
+  const { data: licenseData, isLoading, error } = useLicenses(queryParams)
 
   // 使用 useMemo 来稳定 licenses 数组的引用，避免无限重渲染
   const licenses = useMemo(() => {
@@ -367,7 +380,13 @@ export default function LicensesPage() {
   const table = useReactTable({
     data,
     columns,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
+    manualPagination: true, // 启用服务端分页
+    pageCount: licenseData?.pagination.totalPages ?? 0, // 设置总页数
   })
 
   // ==================== 错误处理 ====================
@@ -457,6 +476,24 @@ export default function LicensesPage() {
             </TableBody>
           </Table>
         </div>
+
+        {/* 分页组件 */}
+        <TablePagination
+          currentPage={licenseData?.pagination.page}
+          hasNextPage={licenseData?.pagination.hasNextPage}
+          hasPrevPage={licenseData?.pagination.hasPrevPage}
+          isServerSide={true}
+          showSelection={false}
+          table={table}
+          totalCount={licenseData?.pagination.total}
+          totalPages={licenseData?.pagination.totalPages}
+          onPageChange={(page) => {
+            setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
+          }}
+          onPageSizeChange={(pageSize) => {
+            setPagination((prev) => ({ ...prev, pageIndex: 0, pageSize }))
+          }}
+        />
       </div>
 
       {/* 删除确认对话框 */}
