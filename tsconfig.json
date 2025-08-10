@@ -20,7 +20,8 @@
     ],
     "paths": {
       "~/*": ["./src/*"],
-      "~admin/*": ["./src/app/admini/*"]
+      "~admin/*": ["./src/app/admini/*"],
+      "~api/*": ["./src/lib/api/generated/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

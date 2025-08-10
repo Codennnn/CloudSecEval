@@ -8,4 +8,7 @@ export default [
   ...typescriptStrict,
   ...next,
   ...jsxA11y,
+  {
+    ignores: ['src/lib/api/generated'],
+  },
 ]

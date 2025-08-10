@@ -2,6 +2,7 @@ export const enum RoutePath {
   Home = '/',
   Docs = '/docs',
 }
+
 // 网站配置常量
 export const SITE_CONFIG = {
   // 基础 URL

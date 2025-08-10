@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# OpenAPI 生成的文件
+src/lib/api/generated/
+src/lib/api/logs/
