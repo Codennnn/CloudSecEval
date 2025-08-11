@@ -1,41 +1,12 @@
+import type { LicenseControllerGetLicenseListResponses, StandardResponseDto } from '~api/types.gen'
+
 // ==================== 通用 API 类型定义 ====================
 
-import type { StandardResponseDto } from '~api/types.gen'
-
 /**
- * 分页响应数据
- */
-export interface PaginatedResponse<T> {
-  data: T[]
-  pagination: {
-    page: number
-    pageSize: number
-    total: number
-    totalPages: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-}
-
-/**
- * 通用 API 响应格式
+ * 标准的 API 响应格式
  */
 export interface ApiResponse<T = unknown> extends Omit<StandardResponseDto, 'data'> {
   data: T
-}
-
-/**
- * API 错误响应格式
- */
-export interface ApiErrorResponse {
-  success: false
-  message: string
-  code?: number | string
-  errors?: {
-    field: string
-    message: string
-  }[]
-  timestamp?: string
 }
 
 // ==================== 用户和认证相关类型 ====================
@@ -109,6 +80,9 @@ export interface JwtPayload {
 }
 
 // ==================== 授权码相关类型 ====================
+
+export type LicenseData = NonNullable<LicenseControllerGetLicenseListResponses['200']['data']>[number]
+export type LicenseFormData = Pick<LicenseData, 'id' | 'remark' | 'expiresAt' | 'email' | 'purchaseAmount'>
 
 /**
  * 授权码信息接口

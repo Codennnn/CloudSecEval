@@ -1,24 +1,21 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
+import { useQuery } from '@tanstack/react-query'
 import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
 import {
-  Check,
-  Copy,
   EllipsisVerticalIcon,
   Plus,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Badge } from '~/components/ui/badge'
+import { CopyButton } from '~/components/CopyButton'
 import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
@@ -35,132 +32,15 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import type { LicenseQueryParams } from '~/lib/api/types'
-import { copyToClipboard } from '~/utils/copy'
-
-// API实际返回的授权码数据结构
-interface ApiLicenseData {
-  id: string
-  email: string
-  code: string
-  verified: boolean
-  locked: boolean
-  warningCount: number
-  createdAt: string
-  stats: {
-    totalAccesses: number
-    commonIPs: string[]
-    riskLevel: string
-    isRisky: boolean
-  }
-}
+import type { LicenseData, LicenseFormData } from '~/lib/api/types'
+import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { PageHeader } from '~admin/components/PageHeader'
 import { TablePagination } from '~admin/components/TablePagination'
-import { useDeleteLicense, useLicenses } from '~admin/hooks/api/useLicense'
-import { type LicenseFormData, useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
-
-// MARK: 数据类型
-
-/**
- * 授权码数据类型
- */
-interface LicenseData {
-  id: string
-  code: string
-  email: string
-  purchaseAmount: number
-  status: 'active' | 'inactive' | 'expired'
-  remark?: string
-  expiresAt?: string
-  createdAt?: string
-  updatedAt?: string
-}
-
-// MARK: 辅助组件
-
-/**
- * 复制按钮组件
- * @param code 要复制的授权码
- * @returns 复制按钮组件
- */
-function CopyButton({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = async () => {
-    const result = await copyToClipboard(code)
-
-    if (result.success) {
-      setCopied(true)
-
-      setTimeout(() => {
-        setCopied(false)
-      }, 2000)
-    }
-  }
-
-  return (
-    <Button
-      className="size-6 text-muted-foreground hover:text-foreground"
-      size="icon"
-      variant="ghost"
-      onClick={() => {
-        void handleCopy()
-      }}
-    >
-      {copied
-        ? (
-            <Check className="size-3 text-success" strokeWidth={3} />
-          )
-        : (
-            <Copy className="size-3" />
-          )}
-      <span className="sr-only">
-        {copied ? '已复制' : '复制授权码'}
-      </span>
-    </Button>
-  )
-}
-
-/**
- * 获取状态徽章样式
- * @param status 授权码状态
- * @returns 状态徽章组件
- */
-function getStatusBadge(status: LicenseData['status']) {
-  const statusConfig = {
-    active: { label: '有效', variant: 'default' as const, className: 'bg-success-background text-success' },
-    inactive: { label: '无效', variant: 'secondary' as const, className: 'bg-warning-background text-warning' },
-    expired: { label: '已过期', variant: 'destructive' as const, className: 'bg-error-background text-error' },
-  }
-
-  const config = statusConfig[status]
-
-  return (
-    <Badge className={config.className} variant={config.variant}>
-      {config.label}
-    </Badge>
-  )
-}
-
-/**
- * 格式化日期
- * @param dateString 日期字符串
- * @returns 格式化后的日期
- */
-function formatDate(dateString?: string) {
-  if (!dateString) {
-    return '-'
-  }
-
-  try {
-    return format(new Date(dateString), 'yyyy-MM-dd HH:mm', { locale: zhCN })
-  }
-  catch {
-    return dateString
-  }
-}
+import { useDeleteLicense } from '~admin/hooks/api/useLicense'
+import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
+import { licenseControllerGetLicenseListOptions } from '~api/@tanstack/react-query.gen'
 
 // MARK: 表格列定义
 
@@ -190,16 +70,11 @@ const createColumns = (
         </div>
 
         <div className="group-hover/code:opacity-100 opacity-0">
-          <CopyButton code={row.original.code} />
+          <CopyButton text={row.original.code} />
         </div>
       </div>
     ),
     enableHiding: false,
-  },
-  {
-    accessorKey: 'status',
-    header: '状态',
-    cell: ({ row }) => getStatusBadge(row.original.status),
   },
   {
     accessorKey: 'remark',
@@ -293,59 +168,27 @@ const createColumns = (
  * 授权码管理页面
  */
 export function LicensesPage() {
-  const [data, setData] = useState<LicenseData[]>([])
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   })
 
   const { openCreateDialog, openEditDialog } = useLicenseDialog()
+
   const deleteLicenseMutation = useDeleteLicense()
 
-  // 构建查询参数
-  const queryParams: LicenseQueryParams = {
-    page: pagination.pageIndex + 1, // API 使用从1开始的页码
-    pageSize: pagination.pageSize,
-  }
+  const { data: dataX, isLoading } = useQuery(licenseControllerGetLicenseListOptions({
+    query: {
+      page: pagination.pageIndex + 1,
+      pageSize: pagination.pageSize,
+    },
+  }))
+  const list = dataX?.data
+  const tablePagination = dataX?.pagination
 
-  const { data: licenseData, isLoading, error } = useLicenses(queryParams)
-
-  // 使用 useMemo 来稳定 licenses 数组的引用，避免无限重渲染
-  const licenses = useMemo(() => {
-    return (licenseData?.data ?? []) as unknown as ApiLicenseData[]
-  }, [licenseData?.data])
-
-  // 更新本地数据 - 将API数据转换为页面需要的格式
-  useEffect(() => {
-    if (licenses.length > 0) {
-      setData(licenses.map((license) => {
-        // 根据API返回的字段映射到我们需要的格式
-        const mappedLicense: LicenseData = {
-          id: license.id,
-          code: license.code,
-          email: license.email,
-          // 根据verified和locked状态计算status
-          status: license.verified
-            ? (license.locked ? 'inactive' : 'active')
-            : 'expired',
-          purchaseAmount: 0,
-          remark: undefined, // API暂时没有返回remark字段
-          expiresAt: undefined, // API暂时没有返回expiresAt字段
-          createdAt: license.createdAt,
-          updatedAt: undefined, // API暂时没有返回updatedAt字段
-        }
-
-        return mappedLicense
-      }))
-    }
-    else {
-      setData([])
-    }
-  }, [licenses])
-
-  // ==================== 删除处理 ====================
   const handleDeleteClick = (license: LicenseData) => {
     setLicenseToDelete(license)
     setDeleteConfirmOpen(true)
@@ -356,23 +199,18 @@ export function LicensesPage() {
       return
     }
 
-    try {
-      await deleteLicenseMutation.mutateAsync(licenseToDelete.id)
-      toast.success(`授权码 ${licenseToDelete.code} 已成功删除`)
-      setDeleteConfirmOpen(false)
-      setLicenseToDelete(null)
-    }
-    catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '删除授权码失败，请稍后重试'
-      toast.error(errorMessage)
-    }
+    await deleteLicenseMutation.mutateAsync(licenseToDelete.id)
+    toast.success(`授权码 ${licenseToDelete.code} 已成功删除`)
+
+    setDeleteConfirmOpen(false)
+    setLicenseToDelete(null)
   }
 
   // ==================== 表格配置 ====================
   const columns = useMemo(() => createColumns(openEditDialog, handleDeleteClick), [openEditDialog])
 
   const table = useReactTable({
-    data,
+    data: list ?? [],
     columns,
     state: {
       pagination,
@@ -380,22 +218,10 @@ export function LicensesPage() {
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true, // 启用服务端分页
-    pageCount: licenseData?.pagination.totalPages ?? 0, // 设置总页数
+    pageCount: tablePagination?.totalPages ?? 0, // 设置总页数
   })
 
-  // ==================== 错误处理 ====================
-  if (error) {
-    return (
-      <div className="flex h-96 items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground">加载失败</p>
-          <p className="text-sm text-muted-foreground mt-2">
-            {error instanceof Error ? error.message : '未知错误'}
-          </p>
-        </div>
-      </div>
-    )
-  }
+  const tableRows = table.getRowModel().rows
 
   return (
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
@@ -403,7 +229,7 @@ export function LicensesPage() {
         {/* 页面标题 */}
         <PageHeader
           actions={(
-            <Button onClick={openCreateDialog}>
+            <Button onClick={() => { openCreateDialog() }}>
               <Plus className="size-4" />
               新增授权码
             </Button>
@@ -430,6 +256,7 @@ export function LicensesPage() {
                 </TableRow>
               ))}
             </TableHeader>
+
             <TableBody>
               {isLoading
                 ? (
@@ -445,9 +272,9 @@ export function LicensesPage() {
                       </TableCell>
                     </TableRow>
                   )
-                : table.getRowModel().rows.length
+                : tableRows.length > 0
                   ? (
-                      table.getRowModel().rows.map((row) => (
+                      tableRows.map((row) => (
                         <TableRow key={row.id}>
                           {row.getVisibleCells().map((cell) => (
                             <TableCell key={cell.id}>
@@ -473,14 +300,14 @@ export function LicensesPage() {
 
         {/* 分页组件 */}
         <TablePagination
-          currentPage={licenseData?.pagination.page}
-          hasNextPage={licenseData?.pagination.hasNextPage}
-          hasPrevPage={licenseData?.pagination.hasPrevPage}
+          currentPage={tablePagination?.page}
+          hasNextPage={tablePagination?.hasNextPage}
+          hasPrevPage={tablePagination?.hasPrevPage}
           isServerSide={true}
           showSelection={false}
           table={table}
-          totalCount={licenseData?.pagination.total}
-          totalPages={licenseData?.pagination.totalPages}
+          totalCount={tablePagination?.total}
+          totalPages={tablePagination?.totalPages}
           onPageChange={(page) => {
             setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
           }}

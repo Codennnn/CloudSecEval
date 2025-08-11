@@ -140,8 +140,7 @@ const convertToFormValues = (
       expiresAtType,
       expiresAtPreset: expiresAtPreset === 'custom' ? '' : expiresAtPreset,
       expiresAt: formData.expiresAt ?? baseDefaultValues.expiresAt,
-      status: formData.status ?? baseDefaultValues.status,
-      remark: formData.description ?? formData.remark ?? baseDefaultValues.remark,
+      remark: formData.remark ?? baseDefaultValues.remark,
     }
   }
 
@@ -155,7 +154,6 @@ const convertToFormValues = (
     expiresAtType: formData.expiresAtType ?? baseDefaultValues.expiresAtType,
     expiresAtPreset: formData.expiresAtPreset ?? baseDefaultValues.expiresAtPreset,
     expiresAt: formData.expiresAt ?? baseDefaultValues.expiresAt,
-    status: formData.status ?? baseDefaultValues.status,
     remark: formData.remark ?? baseDefaultValues.remark,
   }
 }

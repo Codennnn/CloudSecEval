@@ -9,12 +9,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip
 import { cn } from '~/lib/utils'
 import { copyToClipboard } from '~/utils/copy'
 
-interface CopyButtonProps {
+interface CodeCopyButtonProps {
   text: string
   className?: string
 }
 
-export function CopyButton(props: CopyButtonProps) {
+export function CodeCopyButton(props: CodeCopyButtonProps) {
   const { text, className } = props
 
   const [copied, setCopied] = useState(false)

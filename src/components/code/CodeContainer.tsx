@@ -5,8 +5,8 @@ import { useState } from 'react'
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 import type { BundledLanguage } from 'shiki'
 
+import { CodeCopyButton } from '~/components/code/CodeCopyButton'
 import { CodeWrapper } from '~/components/code/CodeWrapper'
-import { CopyButton } from '~/components/code/CopyButton'
 import { LanguageIcon } from '~/components/LanguageIcon'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Button } from '~/components/ui/button'
@@ -93,7 +93,7 @@ export function CodeContainer(props: CodeContainerProps) {
           </div>
 
           <div className="ml-auto flex items-center gap-1">
-            {showCopyButton && <CopyButton text={code} />}
+            {showCopyButton && <CodeCopyButton text={code} />}
           </div>
         </div>
       )}

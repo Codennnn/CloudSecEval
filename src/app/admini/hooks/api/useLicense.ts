@@ -5,7 +5,6 @@ import { licenseEndpoints } from '~/lib/api/endpoints'
 import type {
   CreateLicenseDto,
   License,
-  LicenseListResponse,
   LicenseQueryParams,
   UpdateLicenseDto,
 } from '~/lib/api/types'
@@ -27,56 +26,6 @@ export const licenseQueryKeys = {
 } as const
 
 // ==================== Hook 函数 ====================
-
-/**
- * 获取授权码列表
- * @param params 查询参数
- * @returns 授权码列表查询结果
- */
-export function useLicenses(params?: LicenseQueryParams) {
-  return useQuery({
-    queryKey: licenseQueryKeys.list(params),
-    queryFn: async (): Promise<LicenseListResponse> => {
-      const searchParams = new URLSearchParams()
-
-      if (params?.page) {
-        searchParams.append('page', params.page.toString())
-      }
-
-      if (params?.pageSize) {
-        searchParams.append('pageSize', params.pageSize.toString())
-      }
-
-      if (params?.status) {
-        searchParams.append('status', params.status)
-      }
-
-      if (params?.type) {
-        searchParams.append('type', params.type)
-      }
-
-      if (params?.userId) {
-        searchParams.append('userId', params.userId)
-      }
-
-      if (params?.q || params?.keyword || params?.search) {
-        const searchTerm = params.q ?? params.keyword ?? params.search
-
-        if (searchTerm) {
-          searchParams.append('search', searchTerm)
-        }
-      }
-
-      const url = searchParams.toString()
-        ? `${licenseEndpoints.list()}?${searchParams.toString()}`
-        : licenseEndpoints.list()
-
-      return await api.get<LicenseListResponse>(url, { raw: true })
-    },
-    staleTime: 5 * 60 * 1000, // 5分钟
-    gcTime: 10 * 60 * 1000, // 10分钟
-  })
-}
 
 /**
  * 获取单个授权码详情

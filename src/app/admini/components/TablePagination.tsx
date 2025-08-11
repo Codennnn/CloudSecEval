@@ -170,7 +170,7 @@ export function TablePagination<TData>({
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
           {/* 跳转到第一页 */}
           <Button
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="hidden size-8 p-0 lg:flex"
             disabled={!canPrevious}
             variant="outline"
             onClick={() => {
@@ -178,7 +178,7 @@ export function TablePagination<TData>({
             }}
           >
             <span className="sr-only">跳转到第一页</span>
-            <ChevronsLeftIcon className="h-4 w-4" />
+            <ChevronsLeftIcon className="size-4" />
           </Button>
 
           {/* 上一页 */}
@@ -192,7 +192,7 @@ export function TablePagination<TData>({
             }}
           >
             <span className="sr-only">上一页</span>
-            <ChevronLeftIcon className="h-4 w-4" />
+            <ChevronLeftIcon className="size-4" />
           </Button>
 
           {/* 下一页 */}
@@ -206,7 +206,7 @@ export function TablePagination<TData>({
             }}
           >
             <span className="sr-only">下一页</span>
-            <ChevronRightIcon className="h-4 w-4" />
+            <ChevronRightIcon className="size-4" />
           </Button>
 
           {/* 跳转到最后一页 */}
@@ -220,7 +220,7 @@ export function TablePagination<TData>({
             }}
           >
             <span className="sr-only">跳转到最后一页</span>
-            <ChevronsRightIcon className="h-4 w-4" />
+            <ChevronsRightIcon className="size-4" />
           </Button>
         </div>
       </div>

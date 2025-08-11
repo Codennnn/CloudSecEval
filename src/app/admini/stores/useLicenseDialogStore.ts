@@ -2,19 +2,12 @@
 
 import { create } from 'zustand'
 
-import type { License } from '~/lib/api/types'
+import type { License, LicenseFormData } from '~/lib/api/types'
 
 /**
  * 授权码对话框模式
  */
 export type LicenseDialogMode = 'create' | 'edit'
-
-/**
- * 许可证表单数据类型，包含基础许可证信息和表单相关字段
- */
-export type LicenseFormData = Omit<License, 'id' | 'createdAt' | 'updatedAt' | 'code'> & {
-  id?: string
-}
 
 /**
  * 许可证表单初始数据类型
