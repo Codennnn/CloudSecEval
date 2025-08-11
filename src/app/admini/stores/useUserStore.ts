@@ -7,9 +7,11 @@ interface UserState {
   // 状态
   user: User | null
 
-  // 操作
+  /** 设置用户信息 */
   setUser: (user: User | null) => void
+  /** 更新用户信息（部分更新） */
   updateUser: (updates: Partial<User>) => void
+  /** 清除用户信息 */
   clearUser: () => void
 }
 
@@ -24,18 +26,10 @@ export const useUserStore = create<UserState>()(
       // 初始状态
       user: null,
 
-      /**
-       * 设置用户信息
-       * @param user - 用户信息对象或 null
-       */
       setUser: (user) => {
         set({ user })
       },
 
-      /**
-       * 更新用户信息（部分更新）
-       * @param updates - 需要更新的用户字段
-       */
       updateUser: (updates) => {
         const currentUser = get().user
 
@@ -44,9 +38,6 @@ export const useUserStore = create<UserState>()(
         }
       },
 
-      /**
-       * 清除用户信息
-       */
       clearUser: () => {
         set({ user: null })
       },
@@ -64,20 +55,14 @@ export const useUserStore = create<UserState>()(
  * 获取当前用户信息
  * @returns 当前用户对象或 null
  */
-export const useUser = () => useUserStore((state) => state.user)
+export function useUser() {
+  return useUserStore((state) => state.user)
+}
 
 /**
  * 检查用户是否已登录
  * @returns 是否已登录的布尔值
  */
-export const useIsLoggedIn = () => useUserStore((state) => Boolean(state.user))
-
-/**
- * 获取用户操作方法
- * @returns 用户操作方法对象
- */
-export const useUserActions = () => useUserStore((state) => ({
-  setUser: state.setUser,
-  updateUser: state.updateUser,
-  clearUser: state.clearUser,
-}))
+export function useIsLoggedIn() {
+  return useUserStore((state) => Boolean(state.user))
+}

@@ -132,6 +132,8 @@ export interface License {
  * 授权码查询参数
  */
 export interface LicenseQueryParams {
+  page: number
+  pageSize: number
   status?: 'active' | 'inactive' | 'expired'
   type?: string
   userId?: string

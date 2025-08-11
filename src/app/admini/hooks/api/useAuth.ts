@@ -1,10 +1,9 @@
 import { useRouter } from 'next/navigation'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { api } from '~/lib/api/client'
 import { authEndpoints } from '~/lib/api/endpoints'
-import type { LoginDto, LoginResponse, User } from '~/lib/api/types'
-import { isClient } from '~/utils/platform'
+import type { LoginDto, LoginResponse } from '~/lib/api/types'
 
 import { AdminRoutes } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
@@ -33,7 +32,7 @@ export const authQueryKeys = {
 export function useLogin() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const setUser = useUserStore((state) => state.setUser)
+  const { setUser } = useUserStore()
 
   return useMutation({
     mutationFn: async (loginData: LoginDto): Promise<LoginResponse> => {
@@ -68,7 +67,7 @@ export function useLogin() {
 export function useLogout() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const clearUser = useUserStore((state) => state.clearUser)
+  const { clearUser } = useUserStore()
 
   return useMutation({
     mutationFn: async (): Promise<void> => {
@@ -82,76 +81,12 @@ export function useLogout() {
       }
     },
     onSuccess: () => {
+      clearUser()
+
       // 清除所有查询缓存
       queryClient.clear()
-
-      clearUser()
 
       router.replace(AdminRoutes.Login)
     },
   })
-}
-
-/**
- * 获取当前用户信息 Hook
- *
- * 功能特性：
- * - 获取当前登录用户的详细信息
- * - 自动缓存用户数据
- * - 支持自动重新获取
- * - 在用户退出登录后自动禁用查询
- *
- * @returns 用户信息查询状态和数据
- */
-export function useProfile() {
-  const user = useUserStore((state) => state.user)
-
-  return useQuery({
-    queryKey: authQueryKeys.profile(),
-
-    queryFn: async (): Promise<User> => {
-      return await api.get<User>(authEndpoints.profile())
-    },
-
-    // 只在浏览器环境且用户可能已登录时启用查询
-    // 如果 store 中没有用户信息，说明用户已退出登录，不需要查询
-    enabled: isClient() && user !== null,
-
-    // 数据比较稳定，可以缓存长一点
-    staleTime: 10 * 60 * 1000, // 10 分钟
-
-    retry: (failureCount, error) => {
-      // 如果是认证错误（401），不重试
-      if (typeof error === 'object' && 'status' in error && error.status === 401) {
-        return false
-      }
-
-      return failureCount < 2
-    },
-  })
-}
-
-/**
- * 检查用户是否已登录
- *
- * 由于使用 HttpOnly Cookie，无法通过 JavaScript 直接检查
- * 改为通过查询用户信息来判断登录状态
- *
- * @returns 登录状态查询结果
- */
-export function useIsAuthenticated() {
-  const { data: user, isError, error } = useProfile()
-
-  // 如果有用户数据，说明已登录
-  if (user) {
-    return { isAuthenticated: true, isLoading: false }
-  }
-
-  // 如果是 401 错误，说明未登录
-  if (isError && typeof error === 'object' && 'status' in error && error.status === 401) {
-    return { isAuthenticated: false, isLoading: false }
-  }
-
-  // 其他情况视为加载中
-  return { isAuthenticated: false, isLoading: true }
 }

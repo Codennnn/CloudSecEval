@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 
-import { useProfile } from '~admin/hooks/api/useAuth'
-import { useUserStore } from '~admin/stores/useUserStore'
+import { useQuery } from '@tanstack/react-query'
+
+import { useUser, useUserStore } from '~admin/stores/useUserStore'
+import { authControllerGetProfileOptions } from '~api/@tanstack/react-query.gen'
 
 /**
  * 用户数据同步 Hook
@@ -16,30 +18,34 @@ import { useUserStore } from '~admin/stores/useUserStore'
  * - 确保用户状态在整个应用中保持同步
  */
 export function useUserSync() {
-  const { data: user, isSuccess, isError } = useProfile()
-  const { user: storeUser, setUser, clearUser } = useUserStore()
+  const storeUser = useUser()
+
+  const { data, isLoading, isSuccess, isError } = useQuery({
+    ...authControllerGetProfileOptions(),
+    enabled: !storeUser,
+  })
+  const user = data?.data
+
+  const { setUser, clearUser } = useUserStore()
 
   useEffect(() => {
-    // 如果 React Query 成功获取到用户数据，且与 store 中的数据不一致
+    // 如果成功获取到用户数据，则存储到 store 中
     if (isSuccess) {
-      setUser(user)
+      if (user) {
+        setUser(user)
+      }
     }
 
-    // 如果 React Query 获取用户数据失败（如 401 未登录），清除 store 中的数据
-    if (isError && storeUser) {
+    // 如果获取用户数据失败（如 401 未登录），则清除 store 中的数据
+    if (isError) {
       clearUser()
     }
-  }, [isSuccess, isError, user, storeUser, setUser, clearUser])
+  }, [isSuccess, isError, user, setUser, clearUser])
 
   return {
     /**
      * 是否正在同步用户数据
      */
-    isSyncing: !isSuccess && !isError,
-
-    /**
-     * 同步是否完成
-     */
-    isSynced: isSuccess || isError,
+    isSyncing: isLoading,
   }
 }

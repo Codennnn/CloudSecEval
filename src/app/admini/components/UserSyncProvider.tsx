@@ -15,8 +15,11 @@ import { useUserSync } from '~admin/hooks/useUserSync'
  * - 必须在 QueryProvider 内部使用
  */
 export function UserSyncProvider({ children }: React.PropsWithChildren) {
-  // 执行用户数据同步逻辑
-  useUserSync()
+  const { isSyncing } = useUserSync()
+
+  if (isSyncing) {
+    return null
+  }
 
   return children
 }

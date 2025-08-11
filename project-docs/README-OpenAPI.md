@@ -61,7 +61,7 @@ src/app/admini/hooks/api/
 import {
   usersControllerFindAllUsersQueryOptions,
   usersControllerCreateMutation
-} from '~/lib/api/generated/@tanstack/react-query.gen'
+} from '~api/@tanstack/react-query.gen'
 
 function UserListSimple() {
   // 使用生成的查询选项
