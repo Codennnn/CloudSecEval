@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
+import { useQuery } from '@tanstack/react-query'
 import { CalendarIcon, EditIcon, MailIcon, SaveIcon, UserIcon } from 'lucide-react'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
@@ -15,9 +16,9 @@ import { Separator } from '~/components/ui/separator'
 import { Textarea } from '~/components/ui/textarea'
 
 import { PageHeader } from '~admin/components/PageHeader'
-import { useProfile } from '~admin/hooks/api/useAuth'
 import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 import { useUser } from '~admin/stores/useUserStore'
+import { authControllerGetProfileOptions } from '~api/@tanstack/react-query.gen'
 
 /**
  * 用户个人资料页面
@@ -25,7 +26,9 @@ import { useUser } from '~admin/stores/useUserStore'
  */
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
-  const { data: user, isLoading, error } = useProfile()
+
+  const { data, isLoading, error } = useQuery(authControllerGetProfileOptions())
+  const user = data?.data
 
   const storeUser = useUser()
 

@@ -11,6 +11,8 @@ import { QueryProvider } from '~/providers/QueryProvider'
 import { getPageTitle } from '~/utils/common'
 import { isProduction } from '~/utils/platform'
 
+import '~/lib/api/interceptor'
+
 import '~/styles/global.css'
 
 const harmonySansSC = localFont({

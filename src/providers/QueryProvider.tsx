@@ -94,14 +94,6 @@ export function QueryProvider({ children }: QueryProviderProps) {
 }
 
 /**
- * 导出 QueryClient 实例创建函数
- * 用于在服务端或测试环境中创建独立的客户端实例
- */
-export function createQueryClient() {
-  return new QueryClient(queryClientConfig)
-}
-
-/**
  * 查询键工厂函数示例
  * 您可以在具体的业务 hooks 文件中定义自己的查询键
  */

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import {
   BookTextIcon,
   EllipsisVerticalIcon,
+  ExternalLinkIcon,
   LogOutIcon,
   UserIcon,
 } from 'lucide-react'
@@ -105,6 +106,8 @@ export function NavUser() {
                 <DropdownMenuItem>
                   <BookTextIcon />
                   前往文档
+
+                  <ExternalLinkIcon className="ml-auto opacity-50 size-3.5" />
                 </DropdownMenuItem>
               </Link>
 

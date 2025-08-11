@@ -1,43 +1,6 @@
 // ==================== 通用 API 类型定义 ====================
 
-/**
- * 分页请求参数
- */
-export interface PaginationParams {
-  page?: number
-  pageSize?: number
-}
-
-/**
- * 排序参数
- */
-export interface SortParams {
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-}
-
-/**
- * 搜索参数
- */
-export interface SearchParams {
-  q?: string
-  keyword?: string
-  search?: string
-}
-
-/**
- * 过滤参数基础接口
- */
-export type FilterParams = Record<string, unknown>
-
-/**
- * 通用查询参数
- */
-export interface QueryParams extends
-  PaginationParams,
-  SortParams,
-  SearchParams,
-  FilterParams {}
+import type { StandardResponseDto } from '~api/types.gen'
 
 /**
  * 分页响应数据
@@ -57,12 +20,8 @@ export interface PaginatedResponse<T> {
 /**
  * 通用 API 响应格式
  */
-export interface ApiResponse<T = unknown> {
+export interface ApiResponse<T = unknown> extends Omit<StandardResponseDto, 'data'> {
   data: T
-  success: boolean
-  message?: string
-  code?: number | string
-  timestamp?: string
 }
 
 /**
@@ -172,7 +131,7 @@ export interface License {
 /**
  * 授权码查询参数
  */
-export interface LicenseQueryParams extends QueryParams {
+export interface LicenseQueryParams {
   status?: 'active' | 'inactive' | 'expired'
   type?: string
   userId?: string

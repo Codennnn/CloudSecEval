@@ -4,7 +4,7 @@ const API_URL = 'http://[::1]:8007/api-docs-json'
 const BASE_PATH = './src/lib/api'
 const OUTPUT_PATH = `${BASE_PATH}/generated`
 const LOG_PATH = `${BASE_PATH}/logs`
-const RUNTIME_CONFIG_PATH = `${BASE_PATH}/hey-api-config.ts`
+// const RUNTIME_CONFIG_PATH = `${BASE_PATH}/hey-api-config.ts`
 
 /**
  * OpenAPI-TS 配置文件
@@ -58,7 +58,9 @@ export default defineConfig({
       type: 'json', // 生成 JSON Schema
     },
 
-    '@tanstack/react-query',
+    {
+      name: '@tanstack/react-query',
+    },
   ],
 
   // 开发配置
