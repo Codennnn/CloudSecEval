@@ -3,10 +3,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { api } from '~/lib/api/client'
 import { authEndpoints } from '~/lib/api/endpoints'
-import type { LoginDto, LoginResponse } from '~/lib/api/types'
 
 import { AdminRoutes } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
+import { authControllerLoginMutation } from '~api/@tanstack/react-query.gen'
 
 // ==================== 查询键定义 ====================
 
@@ -32,23 +32,19 @@ export const authQueryKeys = {
 export function useLogin() {
   const router = useRouter()
   const queryClient = useQueryClient()
+
   const { setUser } = useUserStore()
 
   return useMutation({
-    mutationFn: async (loginData: LoginDto): Promise<LoginResponse> => {
-      const res = await api.post<LoginResponse>(
-        authEndpoints.login(),
-        loginData,
-      )
+    ...authControllerLoginMutation(),
+    onSuccess: (data) => {
+      const user = data.data?.user ?? null
 
-      return res
-    },
-    onSuccess: (data: LoginResponse) => {
       // 缓存用户信息到 React Query
-      queryClient.setQueryData(authQueryKeys.profile(), data.user)
+      queryClient.setQueryData(authQueryKeys.profile(), user)
 
       // 同步用户信息到 store（持久化存储）
-      setUser(data.user)
+      setUser(user)
 
       router.replace(AdminRoutes.Dashboard)
     },

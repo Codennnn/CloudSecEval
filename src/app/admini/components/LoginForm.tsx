@@ -24,12 +24,12 @@ import {
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { SITE_CONFIG } from '~/constants'
-import type { LoginDto } from '~/lib/api/types'
 import { cn } from '~/lib/utils'
 import { usePrefetch } from '~/utils/navigation'
 
 import { useLogin } from '~admin/hooks/api/useAuth'
 import { AdminRoutes } from '~admin/lib/admin-nav'
+import type { LoginDto } from '~api/types.gen'
 
 const loginFormSchema = z.object({
   email: z.email('邮箱格式不正确，请检查后重试'),
