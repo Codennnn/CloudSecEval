@@ -47,6 +47,7 @@ import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { TablePagination } from '~/components/table/TablePagination'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -99,8 +100,6 @@ import {
   TabsTrigger,
 } from '~/components/ui/tabs'
 import { useIsMobile } from '~/hooks/useMobile'
-
-import { TablePagination } from './TablePagination'
 
 const chartData = [
   { month: 'January', desktop: 186, mobile: 80 },

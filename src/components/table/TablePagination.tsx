@@ -30,22 +30,6 @@ export interface TablePaginationProps<TData> {
   showSelection?: boolean
   /** 每页条数选项，默认为 [10, 20, 30, 40, 50] */
   pageSizeOptions?: number[]
-  /** 是否启用服务端分页模式，默认为 false */
-  isServerSide?: boolean
-  /** 总条数（仅在服务端分页模式下使用） */
-  totalCount?: number
-  /** 当前页码（仅在服务端分页模式下使用） */
-  currentPage?: number
-  /** 总页数（仅在服务端分页模式下使用） */
-  totalPages?: number
-  /** 页码变化回调（仅在服务端分页模式下使用） */
-  onPageChange?: (page: number) => void
-  /** 每页条数变化回调（仅在服务端分页模式下使用） */
-  onPageSizeChange?: (pageSize: number) => void
-  /** 是否有下一页（仅在服务端分页模式下使用） */
-  hasNextPage?: boolean
-  /** 是否有上一页（仅在服务端分页模式下使用） */
-  hasPrevPage?: boolean
   /** 自定义样式类名 */
   className?: string
 }
@@ -53,9 +37,7 @@ export interface TablePaginationProps<TData> {
 /**
  * 表格分页组件
  *
- * 支持两种模式：
- * 1. 客户端分页（默认）：数据在前端进行分页处理
- * 2. 服务端分页：分页逻辑在服务端处理，需要传入相关分页信息和回调函数
+ * 使用 React Table 实例来获取分页信息和控制分页行为
  *
  * @param props 分页组件属性
  * @returns 分页组件
@@ -65,45 +47,23 @@ export function TablePagination<TData>({
   showPageSizeSelector = true,
   showSelection = true,
   pageSizeOptions = [10, 20, 30, 40, 50],
-  isServerSide = false,
-  totalCount,
-  currentPage,
-  totalPages,
-  onPageChange,
-  onPageSizeChange,
-  hasNextPage,
-  hasPrevPage,
   className = '',
 }: TablePaginationProps<TData>) {
-  // 客户端分页模式下的数据
-  const clientPageIndex = table.getState().pagination.pageIndex
-  const clientPageSize = table.getState().pagination.pageSize
-  const clientTotalPages = table.getPageCount()
-  const clientCanPrevious = table.getCanPreviousPage()
-  const clientCanNext = table.getCanNextPage()
-  const clientSelectedRows = table.getFilteredSelectedRowModel().rows.length
-  const clientTotalRows = table.getFilteredRowModel().rows.length
-
-  // 根据模式选择使用的数据
-  const pageIndex = isServerSide ? (currentPage ?? 1) - 1 : clientPageIndex
-  const pageSize = isServerSide ? (table.getState().pagination.pageSize || 10) : clientPageSize
-  const pageCount = isServerSide ? (totalPages ?? 1) : clientTotalPages
-  const canPrevious = isServerSide ? (hasPrevPage ?? false) : clientCanPrevious
-  const canNext = isServerSide ? (hasNextPage ?? false) : clientCanNext
-  const selectedCount = isServerSide ? 0 : clientSelectedRows
-  const totalRows = isServerSide ? (totalCount ?? 0) : clientTotalRows
+  // 从 React Table 实例获取分页信息
+  const pageIndex = table.getState().pagination.pageIndex
+  const pageSize = table.getState().pagination.pageSize
+  const pageCount = table.getPageCount()
+  const canPrevious = table.getCanPreviousPage()
+  const canNext = table.getCanNextPage()
+  const selectedCount = table.getFilteredSelectedRowModel().rows.length
+  const totalRows = table.getFilteredRowModel().rows.length
 
   /**
    * 处理页码变化
    * @param newPageIndex 新的页码索引（从 0 开始）
    */
   const handlePageIndexChange = (newPageIndex: number) => {
-    if (isServerSide && onPageChange) {
-      onPageChange(newPageIndex + 1) // 转换为从 1 开始的页码
-    }
-    else {
-      table.setPageIndex(newPageIndex)
-    }
+    table.setPageIndex(newPageIndex)
   }
 
   /**
@@ -111,25 +71,20 @@ export function TablePagination<TData>({
    * @param newPageSize 新的每页条数
    */
   const handlePageSizeChange = (newPageSize: number) => {
-    if (isServerSide && onPageSizeChange) {
-      onPageSizeChange(newPageSize)
-    }
-    else {
-      table.setPageSize(newPageSize)
-    }
+    table.setPageSize(newPageSize)
   }
 
   return (
     <div className={`flex items-center justify-between px-4 ${className}`}>
       {/* 选中行数统计 */}
-      {showSelection && !isServerSide && (
+      {showSelection && (
         <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
           已选择 {selectedCount} / {totalRows} 行
         </div>
       )}
 
       {/* 如果不显示选择统计，添加一个占位符以保持布局 */}
-      {(!showSelection || isServerSide) && (
+      {!showSelection && (
         <div className="hidden flex-1 lg:flex" />
       )}
 

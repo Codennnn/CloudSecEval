@@ -45,7 +45,7 @@ export const enum DateFormat {
  */
 export function formatDate(
   date: unknown,
-  formatStr = DateFormat.YYYY_MM_DD_HH_MM_SS,
+  formatStr = DateFormat.YYYY_MM_DD_HH_MM,
 ): string | undefined {
   if (date) {
     const dateObj = new Date(date as string | number | Date)

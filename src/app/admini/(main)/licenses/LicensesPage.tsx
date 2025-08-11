@@ -16,6 +16,9 @@ import {
 import { toast } from 'sonner'
 
 import { CopyButton } from '~/components/CopyButton'
+import { TablePagination } from '~/components/table/TablePagination'
+import { TableSkeleton } from '~/components/table/TableSkeleton'
+import { TableToolbar } from '~/components/table/TableToolbar'
 import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
@@ -32,141 +35,15 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import type { LicenseData, LicenseFormData } from '~/lib/api/types'
+import type { LicenseData } from '~/lib/api/types'
+import type { SearchField } from '~/types/advanced-search'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
-import { PageHeader } from '~admin/components/PageHeader'
-import { TablePagination } from '~admin/components/TablePagination'
 import { useDeleteLicense } from '~admin/hooks/api/useLicense'
 import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 import { licenseControllerGetLicenseListOptions } from '~api/@tanstack/react-query.gen'
 
-// MARK: 表格列定义
-
-/**
- * 创建授权码表格列定义
- */
-const createColumns = (
-  openEditDialog: (license: LicenseFormData) => void,
-  onDeleteClick: (license: LicenseData) => void,
-): ColumnDef<LicenseData>[] => [
-  {
-    accessorKey: 'email',
-    header: '邮箱',
-    cell: ({ row }) => (
-      <div className="text-sm">
-        {row.original.email}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'code',
-    header: '授权码',
-    cell: ({ row }) => (
-      <div className="inline-flex items-center gap-1 group/code">
-        <div className="font-mono text-sm">
-          {row.original.code}
-        </div>
-
-        <div className="group-hover/code:opacity-100 opacity-0">
-          <CopyButton text={row.original.code} />
-        </div>
-      </div>
-    ),
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'remark',
-    header: '备注',
-    cell: ({ row }) => (
-      <div className="max-w-xs truncate">
-        {row.original.remark ?? (
-          <span className="text-muted-foreground">-</span>
-        )}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'expiresAt',
-    header: '过期时间',
-    cell: ({ row }) => (
-      <div className="text-sm">
-        {formatDate(row.original.expiresAt)}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'createdAt',
-    header: '创建时间',
-    cell: ({ row }) => (
-      <div className="text-sm">
-        {formatDate(row.original.createdAt)}
-      </div>
-    ),
-  },
-  {
-    id: 'actions',
-    header: '操作',
-    cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-            variant="ghost"
-          >
-            <EllipsisVerticalIcon className="h-4 w-4" />
-            <span className="sr-only">打开菜单</span>
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem
-            onClick={() => {
-              // TODO: 实现查看详情功能
-              // 暂时使用 row.original.id 来避免 ESLint 警告
-              void row.original.id
-            }}
-          >
-            查看详情
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            onClick={() => {
-              // 转换为编辑表单需要的格式
-              const licenseForEdit = {
-                ...row.original,
-                email: row.original.email,
-                remark: row.original.remark,
-              }
-              openEditDialog(licenseForEdit)
-            }}
-          >
-            编辑
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => {
-              onDeleteClick(row.original)
-            }}
-          >
-            删除
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-]
-
-/**
- * 授权码管理页面
- */
 export function LicensesPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
@@ -180,8 +57,11 @@ export function LicensesPage() {
 
   const deleteLicenseMutation = useDeleteLicense()
 
+  const [queryParams, setQueryParams] = useState<Record<string, any>>()
+
   const { data: dataX, isLoading } = useQuery(licenseControllerGetLicenseListOptions({
     query: {
+      ...queryParams,
       page: pagination.pageIndex + 1,
       pageSize: pagination.pageSize,
     },
@@ -206,8 +86,159 @@ export function LicensesPage() {
     setLicenseToDelete(null)
   }
 
-  // ==================== 表格配置 ====================
-  const columns = useMemo(() => createColumns(openEditDialog, handleDeleteClick), [openEditDialog])
+  /**
+   * 根据表格列定义生成搜索字段配置
+   * @param columns 表格列定义数组
+   * @returns 搜索字段配置数组
+   */
+  const generateSearchFields = (columns: ColumnDef<LicenseData>[]): SearchField[] => {
+    const fieldTypeMap: Record<string, { type: SearchField['type'], description: string }> = {
+      email: { type: 'string', description: '用户邮箱地址' },
+      code: { type: 'string', description: '授权码标识' },
+      remark: { type: 'string', description: '授权码备注信息' },
+      expiresAt: { type: 'date', description: '授权码过期时间' },
+      createdAt: { type: 'date', description: '授权码创建时间' },
+    }
+
+    return columns
+      .filter((column): column is ColumnDef<LicenseData> & { accessorKey: string } =>
+        'accessorKey' in column
+        && typeof column.accessorKey === 'string'
+        && fieldTypeMap[column.accessorKey] !== undefined,
+      )
+      .map((column) => {
+        const key = column.accessorKey
+        const header = column.header as string
+        const fieldConfig = fieldTypeMap[key]
+
+        return {
+          key,
+          label: header,
+          type: fieldConfig.type,
+          description: fieldConfig.description,
+        }
+      })
+  }
+
+  // MARK: 表格列定义
+  const columns = useMemo<ColumnDef<LicenseData>[]>(() => {
+    return [
+      {
+        accessorKey: 'email',
+        header: '邮箱',
+        cell: ({ row }) => (
+          <div className="text-sm">
+            {row.original.email}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'code',
+        header: '授权码',
+        cell: ({ row }) => (
+          <div className="inline-flex items-center gap-1 group/code">
+            <div className="font-mono text-sm">
+              {row.original.code}
+            </div>
+
+            <div className="group-hover/code:opacity-100 opacity-0">
+              <CopyButton text={row.original.code} />
+            </div>
+          </div>
+        ),
+        enableHiding: false,
+      },
+      {
+        accessorKey: 'remark',
+        header: '备注',
+        cell: ({ row }) => (
+          <div className="max-w-xs truncate">
+            {row.original.remark ?? (
+              <span className="text-muted-foreground">-</span>
+            )}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'expiresAt',
+        header: '过期时间',
+        cell: ({ row }) => (
+          <div className="text-sm">
+            {formatDate(row.original.expiresAt)}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'createdAt',
+        header: '创建时间',
+        cell: ({ row }) => (
+          <div className="text-sm">
+            {formatDate(row.original.createdAt)}
+          </div>
+        ),
+      },
+      {
+        id: 'actions',
+        header: '操作',
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                size="icon"
+                variant="ghost"
+              >
+                <EllipsisVerticalIcon className="h-4 w-4" />
+                <span className="sr-only">打开菜单</span>
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem
+                onClick={() => {
+                  // TODO: 实现查看详情功能
+                  // 暂时使用 row.original.id 来避免 ESLint 警告
+                  void row.original.id
+                }}
+              >
+                查看详情
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  // 转换为编辑表单需要的格式
+                  const licenseForEdit = {
+                    ...row.original,
+                    email: row.original.email,
+                    remark: row.original.remark,
+                  }
+                  openEditDialog(licenseForEdit)
+                }}
+              >
+                编辑
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => {
+                  handleDeleteClick(row.original)
+                }}
+              >
+                删除
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+    ]
+  }, [openEditDialog])
+
+  // MARK: 动态生成搜索字段
+  const searchFields = useMemo(() => generateSearchFields(columns), [columns])
 
   const table = useReactTable({
     data: list ?? [],
@@ -226,17 +257,20 @@ export function LicensesPage() {
   return (
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <div className="space-y-6">
-        {/* 页面标题 */}
-        <PageHeader
-          actions={(
-            <Button onClick={() => { openCreateDialog() }}>
-              <Plus className="size-4" />
+        <TableToolbar
+          fields={searchFields}
+          right={(
+            <Button size="sm" onClick={() => { openCreateDialog() }}>
+              <Plus />
               新增授权码
             </Button>
           )}
+          onQueryParamsChange={(params) => {
+            setQueryParams(params)
+          }}
         />
 
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-hidden">
           <Table>
             <TableHeader className="bg-muted sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -258,62 +292,44 @@ export function LicensesPage() {
             </TableHeader>
 
             <TableBody>
-              {isLoading
-                ? (
-                    <TableRow>
-                      <TableCell
-                        className="h-24 text-center"
-                        colSpan={columns.length}
-                      >
-                        <div className="flex items-center justify-center space-x-2">
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                          <span>加载中...</span>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )
-                : tableRows.length > 0
+              {
+                isLoading
                   ? (
-                      tableRows.map((row) => (
-                        <TableRow key={row.id}>
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
+                      <TableSkeleton
+                        columns={columns.length}
+                        rows={pagination.pageSize}
+                      />
                     )
-                  : (
-                      <TableRow>
-                        <TableCell
-                          className="h-24 text-center"
-                          colSpan={columns.length}
-                        >
-                          暂无数据
-                        </TableCell>
-                      </TableRow>
-                    )}
+                  : tableRows.length > 0
+                    ? (
+                        tableRows.map((row) => (
+                          <TableRow key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                              <TableCell key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))
+                      )
+                    : (
+                        <TableRow>
+                          <TableCell
+                            className="h-24 text-center"
+                            colSpan={columns.length}
+                          >
+                            暂无数据
+                          </TableCell>
+                        </TableRow>
+                      )
+              }
             </TableBody>
           </Table>
         </div>
 
-        {/* 分页组件 */}
         <TablePagination
-          currentPage={tablePagination?.page}
-          hasNextPage={tablePagination?.hasNextPage}
-          hasPrevPage={tablePagination?.hasPrevPage}
-          isServerSide={true}
           showSelection={false}
           table={table}
-          totalCount={tablePagination?.total}
-          totalPages={tablePagination?.totalPages}
-          onPageChange={(page) => {
-            setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
-          }}
-          onPageSizeChange={(pageSize) => {
-            setPagination((prev) => ({ ...prev, pageIndex: 0, pageSize }))
-          }}
         />
       </div>
 
