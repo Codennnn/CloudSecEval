@@ -4,7 +4,7 @@
  * 提供操作符配置、查询参数生成、验证等功能
  */
 
-import { FieldTypeEnum } from '~/constants/form'
+import { FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
 import type {
   OperatorConfig,
   QueryParams,
@@ -19,117 +19,120 @@ import type {
  * 定义每个操作符的显示标签、描述、是否需要值等属性
  */
 const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
-  // 字符串操作符
-  eq: {
-    value: 'eq',
+  // 相等性操作符
+  [SearchOperatorEnum.EQ]: {
+    value: SearchOperatorEnum.EQ,
     label: '等于',
     description: '完全匹配指定值',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
-  neq: {
-    value: 'neq',
+  [SearchOperatorEnum.NEQ]: {
+    value: SearchOperatorEnum.NEQ,
     label: '不等于',
     description: '不匹配指定值',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
-  in: {
-    value: 'in',
+  // 包含性操作符
+  [SearchOperatorEnum.IN]: {
+    value: SearchOperatorEnum.IN,
     label: '包含于',
     description: '值在指定列表中',
     requiresValue: true,
     requiresArray: true,
     supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.ENUM],
   },
-  notIn: {
-    value: 'notIn',
+  [SearchOperatorEnum.NOT_IN]: {
+    value: SearchOperatorEnum.NOT_IN,
     label: '不包含于',
     description: '值不在指定列表中',
     requiresValue: true,
     requiresArray: true,
     supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.ENUM],
   },
-  contains: {
-    value: 'contains',
+  [SearchOperatorEnum.CONTAINS]: {
+    value: SearchOperatorEnum.CONTAINS,
     label: '包含',
     description: '包含指定子字符串',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.STRING],
   },
-  startsWith: {
-    value: 'startsWith',
+  [SearchOperatorEnum.STARTS_WITH]: {
+    value: SearchOperatorEnum.STARTS_WITH,
     label: '开始于',
     description: '以指定字符串开始',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.STRING],
   },
-  endsWith: {
-    value: 'endsWith',
+  [SearchOperatorEnum.ENDS_WITH]: {
+    value: SearchOperatorEnum.ENDS_WITH,
     label: '结束于',
     description: '以指定字符串结束',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.STRING],
   },
-  regex: {
-    value: 'regex',
+  // 模式匹配操作符
+  [SearchOperatorEnum.REGEX]: {
+    value: SearchOperatorEnum.REGEX,
     label: '正则匹配',
     description: '使用正则表达式匹配',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.STRING],
   },
-  ilike: {
-    value: 'ilike',
+  [SearchOperatorEnum.ILIKE]: {
+    value: SearchOperatorEnum.ILIKE,
     label: '模糊匹配',
     description: '不区分大小写的模糊匹配',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.STRING],
   },
-  isNull: {
-    value: 'isNull',
+  // 空值检查操作符
+  [SearchOperatorEnum.IS_NULL]: {
+    value: SearchOperatorEnum.IS_NULL,
     label: '为空',
     description: '字段值为空或未设置',
     requiresValue: false,
     supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
-  isNotNull: {
-    value: 'isNotNull',
+  [SearchOperatorEnum.IS_NOT_NULL]: {
+    value: SearchOperatorEnum.IS_NOT_NULL,
     label: '不为空',
     description: '字段值不为空且已设置',
     requiresValue: false,
     supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
-  // 数值操作符
-  gt: {
-    value: 'gt',
+  // 比较操作符
+  [SearchOperatorEnum.GT]: {
+    value: SearchOperatorEnum.GT,
     label: '大于',
     description: '大于指定值',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
-  gte: {
-    value: 'gte',
+  [SearchOperatorEnum.GTE]: {
+    value: SearchOperatorEnum.GTE,
     label: '大于等于',
     description: '大于或等于指定值',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
-  lt: {
-    value: 'lt',
+  [SearchOperatorEnum.LT]: {
+    value: SearchOperatorEnum.LT,
     label: '小于',
     description: '小于指定值',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
-  lte: {
-    value: 'lte',
+  [SearchOperatorEnum.LTE]: {
+    value: SearchOperatorEnum.LTE,
     label: '小于等于',
     description: '小于或等于指定值',
     requiresValue: true,
     supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
-  between: {
-    value: 'between',
+  [SearchOperatorEnum.BETWEEN]: {
+    value: SearchOperatorEnum.BETWEEN,
     label: '范围内',
     description: '在指定范围内（包含边界值）',
     requiresValue: true,
@@ -249,7 +252,7 @@ export function validateSearchCondition(
   }
 
   // 检查正则表达式
-  if (condition.operator === 'regex' && typeof condition.value === 'string') {
+  if (condition.operator === SearchOperatorEnum.REGEX && typeof condition.value === 'string') {
     try {
       new RegExp(condition.value)
     }
@@ -320,7 +323,7 @@ export function searchConfigToQueryParams(config: SearchConfig): QueryParams {
     // 简单值操作符（如 eq, neq）
     if (!operatorConfig.requiresArray && !operatorConfig.requiresRange) {
       if (condition.value !== null && condition.value !== undefined) {
-        if (condition.operator === 'eq') {
+        if (condition.operator === SearchOperatorEnum.EQ) {
           // 等于操作符可以简化为直接赋值
           params[fieldKey] = condition.value
         }
@@ -400,7 +403,7 @@ export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchCo
     }
     else {
       // 简单字段（默认为等于操作符）
-      conditions.push(createSearchCondition(key, 'eq', value))
+      conditions.push(createSearchCondition(key, SearchOperatorEnum.EQ, value))
     }
   })
 
@@ -428,13 +431,6 @@ export function generateQueryString(config: SearchConfig): string {
   })
 
   return searchParams.toString()
-}
-
-/**
- * 克隆搜索配置
- */
-export function cloneSearchConfig(config: SearchConfig): SearchConfig {
-  return JSON.parse(JSON.stringify(config))
 }
 
 /**

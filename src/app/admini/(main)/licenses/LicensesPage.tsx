@@ -17,6 +17,7 @@ import { toast } from 'sonner'
 import { CopyButton } from '~/components/CopyButton'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { generateSearchFields } from '~/components/table/table.util'
+import { TableEmptyState } from '~/components/table/TableEmptyState'
 import { TablePagination } from '~/components/table/TablePagination'
 import { TableSkeleton } from '~/components/table/TableSkeleton'
 import { TableToolbar } from '~/components/table/TableToolbar'
@@ -218,7 +219,7 @@ export function LicensesPage() {
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true, // 启用服务端分页
-    pageCount: tablePagination?.totalPages ?? 0, // 设置总页数
+    pageCount: tablePagination?.totalPages, // 设置总页数
   })
 
   const tableRows = table.getRowModel().rows
@@ -281,16 +282,7 @@ export function LicensesPage() {
                           </TableRow>
                         ))
                       )
-                    : (
-                        <TableRow>
-                          <TableCell
-                            className="h-24 text-center"
-                            colSpan={columns.length}
-                          >
-                            暂无数据
-                          </TableCell>
-                        </TableRow>
-                      )
+                    : <TableEmptyState columnsCount={columns.length} />
               }
             </TableBody>
           </Table>

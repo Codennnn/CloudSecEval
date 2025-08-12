@@ -4,7 +4,7 @@ import { ScaleIcon } from 'lucide-react'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Separator } from '~/components/ui/separator'
-import type { FieldTypeEnum } from '~/constants/form'
+import { type FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
 import type { SearchOperator } from '~/types/advanced-search'
 import { getOperatorConfig, getOperatorsByFieldType } from '~/utils/advanced-search/search-config'
 
@@ -14,23 +14,35 @@ import { getOperatorConfig, getOperatorsByFieldType } from '~/utils/advanced-sea
 const OPERATOR_GROUPS: Record<string, { label: string, operators: SearchOperator[] }> = {
   equality: {
     label: '相等性',
-    operators: ['eq', 'neq'],
+    operators: [SearchOperatorEnum.EQ, SearchOperatorEnum.NEQ],
   },
   inclusion: {
     label: '包含性',
-    operators: ['in', 'notIn', 'contains', 'startsWith', 'endsWith'],
+    operators: [
+      SearchOperatorEnum.IN,
+      SearchOperatorEnum.NOT_IN,
+      SearchOperatorEnum.CONTAINS,
+      SearchOperatorEnum.STARTS_WITH,
+      SearchOperatorEnum.ENDS_WITH,
+    ],
   },
   comparison: {
     label: '比较',
-    operators: ['gt', 'gte', 'lt', 'lte', 'between'],
+    operators: [
+      SearchOperatorEnum.GT,
+      SearchOperatorEnum.GTE,
+      SearchOperatorEnum.LT,
+      SearchOperatorEnum.LTE,
+      SearchOperatorEnum.BETWEEN,
+    ],
   },
   // pattern: {
   //   label: '模式匹配',
-  //   operators: ['regex', 'ilike'],
+  //   operators: [SearchOperatorEnum.REGEX, SearchOperatorEnum.ILIKE],
   // },
   nullability: {
     label: '空值检查',
-    operators: ['isNull', 'isNotNull'],
+    operators: [SearchOperatorEnum.IS_NULL, SearchOperatorEnum.IS_NOT_NULL],
   },
 }
 
@@ -104,14 +116,10 @@ export function SearchConditionOperatorSelect(props: SearchConditionOperatorSele
       value={value}
       onValueChange={(newValue) => { onChange(newValue as SearchOperator) }}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder}>
-          {selectedOperatorConfig && (
-            <div className="flex items-center gap-2">
-              <ScaleIcon />
-              <span>{selectedOperatorConfig.label}</span>
-            </div>
-          )}
+          <ScaleIcon />
+          {selectedOperatorConfig?.label ?? '选择操作符'}
         </SelectValue>
       </SelectTrigger>
 

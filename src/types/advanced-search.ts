@@ -5,38 +5,53 @@
  * 支持多种数据类型和操作符的搜索条件构建
  */
 
-import type { FieldTypeEnum } from '~/constants/form'
+import type { FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
 
 // 支持的搜索模式
-export type SearchMode = 'global' | 'exact' | 'combined' | 'advanced'
+type SearchMode = 'global' | 'exact' | 'combined' | 'advanced'
 
 // 排序方向
-export type SortOrder = 'asc' | 'desc'
+type SortOrder = 'asc' | 'desc'
 
 // 逻辑运算符
 export type LogicalOperator = 'and' | 'or'
 
 // 字符串操作符
-export type StringOperator =
-  | 'eq' | 'neq' | 'in' | 'notIn' | 'contains'
-  | 'startsWith' | 'endsWith' | 'regex' | 'ilike'
-  | 'isNull' | 'isNotNull'
+type StringOperator =
+  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+  | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
+  | SearchOperatorEnum.CONTAINS | SearchOperatorEnum.STARTS_WITH
+  | SearchOperatorEnum.ENDS_WITH | SearchOperatorEnum.REGEX
+  | SearchOperatorEnum.ILIKE | SearchOperatorEnum.IS_NULL
+  | SearchOperatorEnum.IS_NOT_NULL
 
 // 数值操作符
-export type NumberOperator =
-  | 'eq' | 'neq' | 'in' | 'notIn' | 'gt' | 'gte'
-  | 'lt' | 'lte' | 'between' | 'isNull' | 'isNotNull'
+type NumberOperator =
+  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+  | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
+  | SearchOperatorEnum.GT | SearchOperatorEnum.GTE
+  | SearchOperatorEnum.LT | SearchOperatorEnum.LTE
+  | SearchOperatorEnum.BETWEEN | SearchOperatorEnum.IS_NULL
+  | SearchOperatorEnum.IS_NOT_NULL
 
 // 日期操作符
-export type DateOperator =
-  | 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte'
-  | 'between' | 'isNull' | 'isNotNull'
+type DateOperator =
+  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+  | SearchOperatorEnum.GT | SearchOperatorEnum.GTE
+  | SearchOperatorEnum.LT | SearchOperatorEnum.LTE
+  | SearchOperatorEnum.BETWEEN | SearchOperatorEnum.IS_NULL
+  | SearchOperatorEnum.IS_NOT_NULL
 
 // 布尔操作符
-export type BooleanOperator = 'eq' | 'neq' | 'isNull' | 'isNotNull'
+type BooleanOperator =
+  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+  | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
 
 // 枚举操作符
-export type EnumOperator = 'eq' | 'neq' | 'in' | 'notIn' | 'isNull' | 'isNotNull'
+type EnumOperator =
+  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+  | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
+  | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
 
 // 所有操作符的联合类型
 export type SearchOperator =
@@ -93,8 +108,6 @@ export interface SearchCondition {
   enabled?: boolean
 }
 
-
-
 /**
  * 搜索配置
  */
@@ -109,7 +122,6 @@ export interface SearchConfig {
   sortBy?: string
   /** 排序方向 */
   sortOrder?: SortOrder
-
   /** 条件间的默认逻辑运算符 */
   defaultLogicalOperator?: LogicalOperator
 }

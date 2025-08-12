@@ -14,7 +14,7 @@ export function generateSearchFields<TData>(columns: TableColumnDef<TData>[]): S
     })
     .map<SearchField>((column) => {
       const key = column.accessorKey
-      const header = column.header as string
+      const header = typeof column.header === 'string' ? column.header : '???'
       const fieldType = column.type ?? FieldTypeEnum.STRING
 
       return {

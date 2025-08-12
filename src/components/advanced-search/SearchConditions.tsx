@@ -18,8 +18,15 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { SearchOperatorEnum } from '~/constants/form'
 import { cn } from '~/lib/utils'
-import type { LogicalOperator, SearchCondition, SearchField, SearchOperator, SearchValidationError } from '~/types/advanced-search'
+import type {
+  LogicalOperator,
+  SearchCondition,
+  SearchField,
+  SearchOperator,
+  SearchValidationError,
+} from '~/types/advanced-search'
 
 import { SearchConditionOperatorSelect } from './SearchConditionOperatorSelect'
 import { ValueInput } from './ValueInput'
@@ -49,13 +56,14 @@ function SearchConditionRow(props: SearchConditionProps) {
   const {
     condition,
     fields,
-    onUpdate,
-    onDelete,
-    onDuplicate,
     error,
     isLast = false,
     index,
     className,
+
+    onUpdate,
+    onDelete,
+    onDuplicate,
   } = props
 
   /**
@@ -75,7 +83,7 @@ function SearchConditionRow(props: SearchConditionProps) {
       // 重置操作符和值
       onUpdate?.(condition.id, {
         field: fieldKey,
-        operator: 'eq', // 默认操作符
+        operator: SearchOperatorEnum.EQ, // 默认操作符
         value: undefined,
       })
     }
@@ -270,27 +278,29 @@ interface SearchConditionsProps {
   conditions?: SearchCondition[]
   /** 可选择的字段列表 */
   fields: SearchField[]
+  /** 验证错误列表 */
+  errors?: SearchValidationError[]
+  /** 自定义样式类名 */
+  className?: string
+
   /** 条件更新回调 */
   onUpdateCondition?: (conditionId: string, updates: Partial<SearchCondition>) => void
   /** 删除条件回调 */
   onDeleteCondition?: (conditionId: string) => void
   /** 复制条件回调 */
   onDuplicateCondition?: (conditionId: string) => void
-  /** 验证错误列表 */
-  errors?: SearchValidationError[]
-  /** 自定义样式类名 */
-  className?: string
 }
 
 export function SearchConditions(props: SearchConditionsProps) {
   const {
     conditions,
     fields,
+    errors = [],
+    className,
+
     onUpdateCondition,
     onDeleteCondition,
     onDuplicateCondition,
-    errors = [],
-    className,
   } = props
 
   /**
@@ -305,19 +315,21 @@ export function SearchConditions(props: SearchConditionsProps) {
       {Array.isArray(conditions) && conditions.length > 0
         ? (
             <div className="space-y-3">
-              { conditions.map((condition, idx) => (
-                <SearchConditionRow
-                  key={condition.id}
-                  condition={condition}
-                  error={getConditionError(condition.id)}
-                  fields={fields}
-                  index={idx}
-                  isLast={idx === conditions.length - 1}
-                  onDelete={onDeleteCondition}
-                  onDuplicate={onDuplicateCondition}
-                  onUpdate={onUpdateCondition}
-                />
-              ))}
+              {
+                conditions.map((condition, idx) => (
+                  <SearchConditionRow
+                    key={condition.id}
+                    condition={condition}
+                    error={getConditionError(condition.id)}
+                    fields={fields}
+                    index={idx}
+                    isLast={idx === conditions.length - 1}
+                    onDelete={onDeleteCondition}
+                    onDuplicate={onDuplicateCondition}
+                    onUpdate={onUpdateCondition}
+                  />
+                ))
+              }
             </div>
           )
         : (

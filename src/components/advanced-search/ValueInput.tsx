@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Switch } from '~/components/ui/switch'
 import { Textarea } from '~/components/ui/textarea'
-import type { FieldTypeEnum } from '~/constants/form'
+import { FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
 import { cn } from '~/lib/utils'
 import type { SearchField, SearchOperator } from '~/types/advanced-search'
 import { getOperatorConfig } from '~/utils/advanced-search/search-config'
@@ -395,7 +395,7 @@ export function ValueInput({
 
       default:
         // 正则表达式使用 textarea
-        if (operator === 'regex') {
+        if (operator === SearchOperatorEnum.REGEX) {
           return (
             <div className="space-y-2">
               <Textarea
