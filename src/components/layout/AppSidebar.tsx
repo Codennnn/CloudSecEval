@@ -19,7 +19,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
-import { RoutePath, SITE_CONFIG } from '~/constants'
+import { SITE_CONFIG } from '~/constants/common'
+import { RoutePath } from '~/constants/routes.client'
 import { navMainData } from '~/lib/data/nav'
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {

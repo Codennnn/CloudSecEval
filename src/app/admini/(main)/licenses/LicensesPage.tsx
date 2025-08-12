@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 import {
-  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -16,6 +15,8 @@ import {
 import { toast } from 'sonner'
 
 import { CopyButton } from '~/components/CopyButton'
+import type { TableColumnDef } from '~/components/table/table.type'
+import { generateSearchFields } from '~/components/table/table.util'
 import { TablePagination } from '~/components/table/TablePagination'
 import { TableSkeleton } from '~/components/table/TableSkeleton'
 import { TableToolbar } from '~/components/table/TableToolbar'
@@ -35,8 +36,8 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
+import { FieldTypeEnum } from '~/constants/form'
 import type { LicenseData } from '~/lib/api/types'
-import type { SearchField } from '~/types/advanced-search'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
@@ -86,42 +87,8 @@ export function LicensesPage() {
     setLicenseToDelete(null)
   }
 
-  /**
-   * 根据表格列定义生成搜索字段配置
-   * @param columns 表格列定义数组
-   * @returns 搜索字段配置数组
-   */
-  const generateSearchFields = (columns: ColumnDef<LicenseData>[]): SearchField[] => {
-    const fieldTypeMap: Record<string, { type: SearchField['type'], description: string }> = {
-      email: { type: 'string', description: '用户邮箱地址' },
-      code: { type: 'string', description: '授权码标识' },
-      remark: { type: 'string', description: '授权码备注信息' },
-      expiresAt: { type: 'date', description: '授权码过期时间' },
-      createdAt: { type: 'date', description: '授权码创建时间' },
-    }
-
-    return columns
-      .filter((column): column is ColumnDef<LicenseData> & { accessorKey: string } =>
-        'accessorKey' in column
-        && typeof column.accessorKey === 'string'
-        && fieldTypeMap[column.accessorKey] !== undefined,
-      )
-      .map((column) => {
-        const key = column.accessorKey
-        const header = column.header as string
-        const fieldConfig = fieldTypeMap[key]
-
-        return {
-          key,
-          label: header,
-          type: fieldConfig.type,
-          description: fieldConfig.description,
-        }
-      })
-  }
-
   // MARK: 表格列定义
-  const columns = useMemo<ColumnDef<LicenseData>[]>(() => {
+  const columns = useMemo<TableColumnDef<LicenseData>[]>(() => {
     return [
       {
         accessorKey: 'email',
@@ -162,6 +129,7 @@ export function LicensesPage() {
       {
         accessorKey: 'expiresAt',
         header: '过期时间',
+        type: FieldTypeEnum.DATE,
         cell: ({ row }) => (
           <div className="text-sm">
             {formatDate(row.original.expiresAt)}
@@ -171,6 +139,7 @@ export function LicensesPage() {
       {
         accessorKey: 'createdAt',
         header: '创建时间',
+        type: FieldTypeEnum.DATE,
         cell: ({ row }) => (
           <div className="text-sm">
             {formatDate(row.original.createdAt)}
@@ -238,7 +207,7 @@ export function LicensesPage() {
   }, [openEditDialog])
 
   // MARK: 动态生成搜索字段
-  const searchFields = useMemo(() => generateSearchFields(columns), [columns])
+  const searchFields = useMemo(() => generateSearchFields<LicenseData>(columns), [columns])
 
   const table = useReactTable({
     data: list ?? [],

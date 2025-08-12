@@ -72,3 +72,8 @@ export const NAVIGATION = {
   /** 文档侧边栏最大深度 */
   SIDEBAR_MAX_DEPTH: 3,
 } as const
+
+export const enum RoutePath {
+  Home = '/',
+  Docs = '/docs',
+}

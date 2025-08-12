@@ -3,6 +3,7 @@ import { useEvent } from 'react-use-event-hook'
 
 import { ListFilterIcon, PlusIcon } from 'lucide-react'
 
+import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
@@ -10,7 +11,6 @@ import { useSearchBuilder } from '~/hooks/advanced-search/useSearchBuilder'
 import type { SearchConfig, SearchField } from '~/types/advanced-search'
 
 import { SearchConditions } from '../advanced-search/SearchConditions'
-import { Badge } from '../ui/badge'
 
 interface TableToolbarProps {
   /** 可搜索的字段列表 */

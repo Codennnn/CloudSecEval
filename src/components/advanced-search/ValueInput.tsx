@@ -7,11 +7,10 @@
 
 'use client'
 
-import type React from 'react';
 import { useCallback, useMemo, useState } from 'react'
 
 import { format } from 'date-fns'
-import { Calendar, CalendarClock, Check, Plus, X } from 'lucide-react'
+import { Calendar, CalendarClock, Plus, X } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -22,8 +21,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Switch } from '~/components/ui/switch'
 import { Textarea } from '~/components/ui/textarea'
+import type { FieldTypeEnum } from '~/constants/form'
 import { cn } from '~/lib/utils'
-import type { FieldType, SearchField, SearchOperator } from '~/types/advanced-search'
+import type { SearchField, SearchOperator } from '~/types/advanced-search'
 import { getOperatorConfig } from '~/utils/advanced-search/search-config'
 
 /**
@@ -35,9 +35,9 @@ interface ValueInputProps {
   /** 操作符 */
   operator: SearchOperator
   /** 当前值 */
-  value: any
+  value: unknown
   /** 值变更回调 */
-  onChange: (value: any) => void
+  onChange: (value: unknown) => void
   /** 是否禁用 */
   disabled?: boolean
   /** 占位符 */
@@ -56,7 +56,7 @@ interface TagInputProps {
   onChange: (value: string[]) => void
   placeholder?: string
   disabled?: boolean
-  fieldType?: FieldType
+  fieldType?: FieldTypeEnum
 }
 
 function TagInput({ value = [], onChange, placeholder, disabled, fieldType }: TagInputProps) {
@@ -99,9 +99,11 @@ function TagInput({ value = [], onChange, placeholder, disabled, fieldType }: Ta
    * 验证输入值
    */
   const validateInput = useCallback((input: string): boolean => {
-    if (!input.trim()) { return false }
+    if (!input.trim()) {
+      return false
+    }
 
-    if (fieldType === 'number') {
+    if (fieldType === FieldTypeEnum.NUMBER) {
       return !isNaN(Number(input))
     }
 
@@ -161,7 +163,7 @@ function TagInput({ value = [], onChange, placeholder, disabled, fieldType }: Ta
 interface RangeInputProps {
   value: [any, any]
   onChange: (value: [any, any]) => void
-  fieldType: FieldType
+  fieldType: FieldTypeEnum
   disabled?: boolean
   placeholder?: [string, string]
 }
@@ -177,7 +179,7 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
     onChange([startValue, newValue])
   }, [onChange, startValue])
 
-  if (fieldType === 'date') {
+  if (fieldType === FieldTypeEnum.DATE) {
     return (
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2">
@@ -199,7 +201,6 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
               </PopoverTrigger>
               <PopoverContent align="start" className="w-auto p-0">
                 <CalendarComponent
-                  initialFocus
                   mode="single"
                   selected={startValue ? new Date(startValue) : undefined}
                   onSelect={(date) => { handleStartChange(date?.toISOString().split('T')[0]) }}
@@ -322,7 +323,7 @@ export function ValueInput({
 
     // 根据字段类型渲染输入组件
     switch (field.type) {
-      case 'boolean':
+      case FieldTypeEnum.BOOLEAN:
         return (
           <div className="flex items-center space-x-2">
             <Switch
@@ -336,7 +337,7 @@ export function ValueInput({
           </div>
         )
 
-      case 'enum':
+      case FieldTypeEnum.ENUM:
         return (
           <Select disabled={disabled} value={value || undefined} onValueChange={onChange}>
             <SelectTrigger>
@@ -352,7 +353,7 @@ export function ValueInput({
           </Select>
         )
 
-      case 'date':
+      case FieldTypeEnum.DATE:
         return (
           <Popover>
             <PopoverTrigger asChild>
@@ -379,7 +380,7 @@ export function ValueInput({
           </Popover>
         )
 
-      case 'number':
+      case FieldTypeEnum.NUMBER:
         return (
           <Input
             disabled={disabled}
@@ -390,7 +391,7 @@ export function ValueInput({
           />
         )
 
-      case 'string':
+      case FieldTypeEnum.STRING:
 
       default:
         // 正则表达式使用 textarea

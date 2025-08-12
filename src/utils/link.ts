@@ -1,6 +1,7 @@
 import { joinURL } from 'ufo'
 
-import { RoutePath, SITE_CONFIG } from '~/constants'
+import { SITE_CONFIG } from '~/constants/common'
+import { RoutePath } from '~/constants/routes.client'
 import { navMainData } from '~/lib/data/nav'
 import { normalizePath } from '~/lib/utils'
 import type { NavMenuItem } from '~/types/nav'

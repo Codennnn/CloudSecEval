@@ -17,7 +17,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from '~/components/ui/sidebar'
-import { RoutePath } from '~/constants'
+import { RoutePath } from '~/constants/routes.client'
 import type { NavMenuItem } from '~/types/nav'
 import { getDocLinkHref, isExternalLink } from '~/utils/link'
 

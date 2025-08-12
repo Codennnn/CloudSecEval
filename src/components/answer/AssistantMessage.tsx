@@ -6,9 +6,8 @@ import { BookOpenIcon, MessageSquarePlusIcon } from 'lucide-react'
 
 import { MDXRenderer } from '~/components/mdx/MDXRenderer'
 import { ProseContainer } from '~/components/ProseContainer'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import type { SearchDocument } from '~/types/doc'
-
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 interface Source {
   document: SearchDocument

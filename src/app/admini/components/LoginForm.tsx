@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import { SITE_CONFIG } from '~/constants'
+import { SITE_CONFIG } from '~/constants/common'
 import { cn } from '~/lib/utils'
 import { usePrefetch } from '~/utils/navigation'
 

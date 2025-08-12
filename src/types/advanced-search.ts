@@ -5,8 +5,7 @@
  * 支持多种数据类型和操作符的搜索条件构建
  */
 
-// 支持的字段数据类型
-export type FieldType = 'string' | 'number' | 'date' | 'boolean' | 'enum'
+import type { FieldTypeEnum } from '~/constants/form'
 
 // 支持的搜索模式
 export type SearchMode = 'global' | 'exact' | 'combined' | 'advanced'
@@ -56,7 +55,7 @@ export interface SearchField {
   /** 字段显示标签 */
   label: string
   /** 字段数据类型 */
-  type: FieldType
+  type: FieldTypeEnum
   /** 枚举选项（仅当 type 为 'enum' 时需要） */
   options?: { value: string, label: string }[]
   /** 字段描述 */
@@ -94,15 +93,7 @@ export interface SearchCondition {
   enabled?: boolean
 }
 
-/**
- * 分页配置
- */
-export interface PaginationConfig {
-  /** 当前页码（从1开始） */
-  page: number
-  /** 每页条数（1-100） */
-  pageSize: number
-}
+
 
 /**
  * 搜索配置
@@ -118,8 +109,7 @@ export interface SearchConfig {
   sortBy?: string
   /** 排序方向 */
   sortOrder?: SortOrder
-  /** 分页配置 */
-  pagination: PaginationConfig
+
   /** 条件间的默认逻辑运算符 */
   defaultLogicalOperator?: LogicalOperator
 }
@@ -141,7 +131,7 @@ export interface OperatorConfig {
   /** 是否需要范围值 */
   requiresRange?: boolean
   /** 支持的字段类型 */
-  supportedTypes: FieldType[]
+  supportedTypes: FieldTypeEnum[]
 }
 
 /**

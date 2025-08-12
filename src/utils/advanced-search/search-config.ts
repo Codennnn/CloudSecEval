@@ -4,8 +4,8 @@
  * 提供操作符配置、查询参数生成、验证等功能
  */
 
+import { FieldTypeEnum } from '~/constants/form'
 import type {
-  FieldType,
   OperatorConfig,
   QueryParams,
   SearchCondition,
@@ -18,21 +18,21 @@ import type {
  * 操作符配置定义
  * 定义每个操作符的显示标签、描述、是否需要值等属性
  */
-export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
+const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
   // 字符串操作符
   eq: {
     value: 'eq',
     label: '等于',
     description: '完全匹配指定值',
     requiresValue: true,
-    supportedTypes: ['string', 'number', 'date', 'boolean', 'enum'],
+    supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
   neq: {
     value: 'neq',
     label: '不等于',
     description: '不匹配指定值',
     requiresValue: true,
-    supportedTypes: ['string', 'number', 'date', 'boolean', 'enum'],
+    supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
   in: {
     value: 'in',
@@ -40,7 +40,7 @@ export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
     description: '值在指定列表中',
     requiresValue: true,
     requiresArray: true,
-    supportedTypes: ['string', 'number', 'enum'],
+    supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.ENUM],
   },
   notIn: {
     value: 'notIn',
@@ -48,56 +48,56 @@ export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
     description: '值不在指定列表中',
     requiresValue: true,
     requiresArray: true,
-    supportedTypes: ['string', 'number', 'enum'],
+    supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.ENUM],
   },
   contains: {
     value: 'contains',
     label: '包含',
     description: '包含指定子字符串',
     requiresValue: true,
-    supportedTypes: ['string'],
+    supportedTypes: [FieldTypeEnum.STRING],
   },
   startsWith: {
     value: 'startsWith',
     label: '开始于',
     description: '以指定字符串开始',
     requiresValue: true,
-    supportedTypes: ['string'],
+    supportedTypes: [FieldTypeEnum.STRING],
   },
   endsWith: {
     value: 'endsWith',
     label: '结束于',
     description: '以指定字符串结束',
     requiresValue: true,
-    supportedTypes: ['string'],
+    supportedTypes: [FieldTypeEnum.STRING],
   },
   regex: {
     value: 'regex',
     label: '正则匹配',
     description: '使用正则表达式匹配',
     requiresValue: true,
-    supportedTypes: ['string'],
+    supportedTypes: [FieldTypeEnum.STRING],
   },
   ilike: {
     value: 'ilike',
     label: '模糊匹配',
     description: '不区分大小写的模糊匹配',
     requiresValue: true,
-    supportedTypes: ['string'],
+    supportedTypes: [FieldTypeEnum.STRING],
   },
   isNull: {
     value: 'isNull',
     label: '为空',
     description: '字段值为空或未设置',
     requiresValue: false,
-    supportedTypes: ['string', 'number', 'date', 'boolean', 'enum'],
+    supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
   isNotNull: {
     value: 'isNotNull',
     label: '不为空',
     description: '字段值不为空且已设置',
     requiresValue: false,
-    supportedTypes: ['string', 'number', 'date', 'boolean', 'enum'],
+    supportedTypes: [FieldTypeEnum.STRING, FieldTypeEnum.NUMBER, FieldTypeEnum.DATE, FieldTypeEnum.BOOLEAN, FieldTypeEnum.ENUM],
   },
   // 数值操作符
   gt: {
@@ -105,28 +105,28 @@ export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
     label: '大于',
     description: '大于指定值',
     requiresValue: true,
-    supportedTypes: ['number', 'date'],
+    supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
   gte: {
     value: 'gte',
     label: '大于等于',
     description: '大于或等于指定值',
     requiresValue: true,
-    supportedTypes: ['number', 'date'],
+    supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
   lt: {
     value: 'lt',
     label: '小于',
     description: '小于指定值',
     requiresValue: true,
-    supportedTypes: ['number', 'date'],
+    supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
   lte: {
     value: 'lte',
     label: '小于等于',
     description: '小于或等于指定值',
     requiresValue: true,
-    supportedTypes: ['number', 'date'],
+    supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
   between: {
     value: 'between',
@@ -134,14 +134,14 @@ export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
     description: '在指定范围内（包含边界值）',
     requiresValue: true,
     requiresRange: true,
-    supportedTypes: ['number', 'date'],
+    supportedTypes: [FieldTypeEnum.NUMBER, FieldTypeEnum.DATE],
   },
 }
 
 /**
  * 根据字段类型获取支持的操作符
  */
-export function getOperatorsByFieldType(fieldType: FieldType): OperatorConfig[] {
+export function getOperatorsByFieldType(fieldType: FieldTypeEnum): OperatorConfig[] {
   return Object.values(OPERATOR_CONFIGS).filter((config) =>
     config.supportedTypes.includes(fieldType),
   )
@@ -184,7 +184,7 @@ export function createSearchCondition(
  */
 export function validateSearchCondition(
   condition: SearchCondition,
-  fieldType: FieldType,
+  fieldType: FieldTypeEnum,
 ): SearchValidationError | null {
   const operatorConfig = getOperatorConfig(condition.operator)
 
@@ -291,10 +291,6 @@ export function searchConfigToQueryParams(config: SearchConfig): QueryParams {
     params.sortOrder = config.sortOrder
   }
 
-  // 添加分页
-  params.page = config.pagination.page
-  params.pageSize = config.pagination.pageSize
-
   // 添加逻辑运算符
   if (config.defaultLogicalOperator) {
     params.operator = config.defaultLogicalOperator
@@ -302,11 +298,15 @@ export function searchConfigToQueryParams(config: SearchConfig): QueryParams {
 
   // 处理搜索条件
   config.conditions.forEach((condition) => {
-    if (!condition.enabled) { return }
+    if (!condition.enabled) {
+      return
+    }
 
     const operatorConfig = getOperatorConfig(condition.operator)
 
-    if (!operatorConfig) { return }
+    if (!operatorConfig) {
+      return
+    }
 
     const fieldKey = condition.field
 
@@ -356,7 +356,6 @@ export function searchConfigToQueryParams(config: SearchConfig): QueryParams {
 export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchConfig> {
   const config: Partial<SearchConfig> = {
     conditions: [],
-    pagination: { page: 1, pageSize: 20 },
   }
 
   // 解析基本参数
@@ -380,29 +379,12 @@ export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchCo
     config.defaultLogicalOperator = params.operator as any
   }
 
-  // 解析分页
-  if (typeof params.page === 'number' || typeof params.page === 'string') {
-    const page = Number(params.page)
-
-    if (!isNaN(page) && page > 0) {
-      config.pagination!.page = page
-    }
-  }
-
-  if (typeof params.pageSize === 'number' || typeof params.pageSize === 'string') {
-    const pageSize = Number(params.pageSize)
-
-    if (!isNaN(pageSize) && pageSize > 0 && pageSize <= 100) {
-      config.pagination!.pageSize = pageSize
-    }
-  }
-
   // 解析搜索条件
   const conditions: SearchCondition[] = []
 
   Object.entries(params).forEach(([key, value]) => {
     // 跳过已处理的基本参数
-    if (['search', 'searchMode', 'sortBy', 'sortOrder', 'operator', 'page', 'pageSize'].includes(key)) {
+    if (['search', 'searchMode', 'sortBy', 'sortOrder', 'operator'].includes(key)) {
       return
     }
 
@@ -463,6 +445,5 @@ export function mergeSearchConfigs(base: SearchConfig, override: Partial<SearchC
     ...base,
     ...override,
     conditions: override.conditions || base.conditions,
-    pagination: { ...base.pagination, ...(override.pagination || {}) },
   }
 }

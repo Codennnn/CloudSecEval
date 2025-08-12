@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 import {
   CopyIcon,
@@ -18,9 +19,9 @@ import {
 } from '~/components/ui/dropdown-menu'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { cn } from '~/lib/utils'
-import type { LogicalOperator, SearchCondition, SearchField, SearchValidationError } from '~/types/advanced-search'
+import type { LogicalOperator, SearchCondition, SearchField, SearchOperator, SearchValidationError } from '~/types/advanced-search'
 
-import { OperatorSelect, SimpleOperatorSelect } from './OperatorSelect'
+import { SearchConditionOperatorSelect } from './SearchConditionOperatorSelect'
 import { ValueInput } from './ValueInput'
 
 interface SearchConditionProps {
@@ -67,7 +68,7 @@ function SearchConditionRow(props: SearchConditionProps) {
   /**
    * 处理字段变更
    */
-  const handleFieldChange = useCallback((fieldKey: string) => {
+  const handleFieldChange = useEvent((fieldKey: string) => {
     const field = fields.find((f) => f.key === fieldKey)
 
     if (field) {
@@ -78,45 +79,45 @@ function SearchConditionRow(props: SearchConditionProps) {
         value: undefined,
       })
     }
-  }, [fields, onUpdate, condition.id])
+  })
 
   /**
    * 处理操作符变更
    */
-  const handleOperatorChange = useCallback((operator: any) => {
+  const handleOperatorChange = useEvent((operator: SearchOperator) => {
     onUpdate?.(condition.id, {
       operator,
       value: undefined, // 重置值
     })
-  }, [onUpdate, condition.id])
+  })
 
   /**
    * 处理值变更
    */
-  const handleValueChange = useCallback((value: any) => {
-    onUpdate?.(condition.id, { value })
-  }, [onUpdate, condition.id])
+  const handleValueChange = useEvent((value: unknown) => {
+    onUpdate?.(condition.id, { value: value as SearchCondition['value'] })
+  })
 
   /**
    * 处理逻辑运算符变更
    */
-  const handleLogicalOperatorChange = useCallback((logicalOperator: LogicalOperator) => {
+  const handleLogicalOperatorChange = useEvent((logicalOperator: LogicalOperator) => {
     onUpdate?.(condition.id, { logicalOperator })
-  }, [onUpdate, condition.id])
+  })
 
   /**
    * 处理删除条件
    */
-  const handleDelete = useCallback(() => {
+  const handleDelete = useEvent(() => {
     onDelete?.(condition.id)
-  }, [onDelete, condition.id])
+  })
 
   /**
    * 处理复制条件
    */
-  const handleDuplicate = useCallback(() => {
+  const handleDuplicate = useEvent(() => {
     onDuplicate?.(condition.id)
-  }, [onDuplicate, condition.id])
+  })
 
   /**
    * 渲染字段选择器
@@ -125,12 +126,11 @@ function SearchConditionRow(props: SearchConditionProps) {
     <Select value={condition.field} onValueChange={handleFieldChange}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder="选择字段">
-          <TextSearchIcon className="size-4" />
-          {currentField && (
-            <span>{currentField.label}</span>
-          )}
+          <TextSearchIcon />
+          {currentField?.label ?? '选择字段'}
         </SelectValue>
       </SelectTrigger>
+
       <SelectContent>
         {fields.map((field) => (
           <SelectItem key={field.key} value={field.key}>
@@ -150,7 +150,7 @@ function SearchConditionRow(props: SearchConditionProps) {
     }
 
     return (
-      <SimpleOperatorSelect
+      <SearchConditionOperatorSelect
         fieldType={currentField.type}
         value={condition.operator}
         onChange={handleOperatorChange}
@@ -296,32 +296,34 @@ export function SearchConditions(props: SearchConditionsProps) {
   /**
    * 获取条件的验证错误
    */
-  const getConditionError = useCallback((conditionId: string) => {
+  const getConditionError = useEvent((conditionId: string) => {
     return errors.find((error) => error.conditionId === conditionId)
-  }, [errors])
+  })
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={className}>
       {Array.isArray(conditions) && conditions.length > 0
         ? (
-            conditions.map((condition, idx) => (
-              <SearchConditionRow
-                key={condition.id}
-                condition={condition}
-                error={getConditionError(condition.id)}
-                fields={fields}
-                index={idx}
-                isLast={idx === conditions.length - 1}
-                onDelete={onDeleteCondition}
-                onDuplicate={onDuplicateCondition}
-                onUpdate={onUpdateCondition}
-              />
-            ))
+            <div className="space-y-3">
+              { conditions.map((condition, idx) => (
+                <SearchConditionRow
+                  key={condition.id}
+                  condition={condition}
+                  error={getConditionError(condition.id)}
+                  fields={fields}
+                  index={idx}
+                  isLast={idx === conditions.length - 1}
+                  onDelete={onDeleteCondition}
+                  onDuplicate={onDuplicateCondition}
+                  onUpdate={onUpdateCondition}
+                />
+              ))}
+            </div>
           )
         : (
-            <div className="text-center py-8 text-muted-foreground">
-              <p>暂无搜索条件</p>
-              <p className="text-sm">点击"添加条件"开始构建搜索</p>
+            <div className="text-center py-8 space-y-1 text-muted-foreground">
+              <div>暂无搜索条件</div>
+              <div className="text-sm">点击「添加条件」开始构建搜索</div>
             </div>
           )}
     </div>

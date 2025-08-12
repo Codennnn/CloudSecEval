@@ -7,7 +7,7 @@ import { ExternalLinkIcon } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { SidebarTrigger } from '~/components/ui/sidebar'
-import { RoutePath } from '~/constants'
+import { RoutePath } from '~/constants/routes.client'
 
 import { getPageNameByRoute } from '~admin/lib/admin-nav'
 

@@ -1,9 +1,3 @@
-/**
- * 搜索配置器 Hook
- *
- * 提供搜索配置状态管理、条件操作、验证等功能
- */
-
 import { useEffect, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
@@ -13,14 +7,16 @@ import type {
   SearchConfig,
   SearchField,
   SearchOperator,
-  SearchValidationError } from '~/types/advanced-search'
+  SearchValidationError,
+} from '~/types/advanced-search'
 import {
   createSearchCondition,
   generateQueryString,
   mergeSearchConfigs,
   queryParamsToSearchConfig,
   searchConfigToQueryParams,
-  validateSearchCondition } from '~/utils/advanced-search/search-config'
+  validateSearchCondition,
+} from '~/utils/advanced-search/search-config'
 
 /**
  * 搜索配置器 Hook 选项
@@ -34,8 +30,7 @@ interface UseSearchBuilderOptions {
   autoValidate?: boolean
   /** 最大条件数量 */
   maxConditions?: number
-  /** 默认分页大小 */
-  defaultPageSize?: number
+
 }
 
 /**
@@ -64,8 +59,7 @@ interface UseSearchBuilderReturn {
   setGlobalSearch: (search: string) => void
   /** 设置排序 */
   setSorting: (sortBy?: string, sortOrder?: 'asc' | 'desc') => void
-  /** 设置分页 */
-  setPagination: (page: number, pageSize?: number) => void
+
   /** 设置默认逻辑运算符 */
   setDefaultLogicalOperator: (operator: LogicalOperator) => void
   /** 验证搜索配置 */
@@ -91,10 +85,6 @@ const DEFAULT_CONFIG: SearchConfig = {
   conditions: [],
   globalSearch: '',
   searchMode: 'advanced',
-  pagination: {
-    page: 1,
-    pageSize: 20,
-  },
   defaultLogicalOperator: 'and',
 }
 
@@ -107,20 +97,11 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     onChange,
     autoValidate = true,
     maxConditions = 10,
-    defaultPageSize = 20,
   } = options
 
   // 初始化配置
   const [config, setConfigState] = useState<SearchConfig>(() => {
-    const base = {
-      ...DEFAULT_CONFIG,
-      pagination: {
-        ...DEFAULT_CONFIG.pagination,
-        pageSize: defaultPageSize,
-      },
-    }
-
-    return initialConfig ? mergeSearchConfigs(base, initialConfig) : base
+    return initialConfig ? mergeSearchConfigs(DEFAULT_CONFIG, initialConfig) : DEFAULT_CONFIG
   })
 
   // 验证错误状态
@@ -263,18 +244,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     }))
   })
 
-  /**
-   * 设置分页
-   */
-  const setPagination = useEvent((page: number, pageSize?: number) => {
-    setConfig((prev) => ({
-      ...prev,
-      pagination: {
-        page: Math.max(1, page),
-        pageSize: pageSize ? Math.min(100, Math.max(1, pageSize)) : prev.pagination.pageSize,
-      },
-    }))
-  })
+
 
   /**
    * 设置默认逻辑运算符
@@ -380,7 +350,6 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     clearConditions,
     setGlobalSearch,
     setSorting,
-    setPagination,
     setDefaultLogicalOperator,
     validateConfig,
     generateQueryParams,

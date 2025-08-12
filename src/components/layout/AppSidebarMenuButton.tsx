@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react'
 
 import { SidebarMenuButton, SidebarMenuSubButton } from '~/components/ui/sidebar'
-import { RoutePath } from '~/constants'
+import { RoutePath } from '~/constants/routes.client'
 
 interface SidebarMenuItemType {
   title?: string

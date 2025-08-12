@@ -29,7 +29,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar'
-import { RoutePath } from '~/constants'
+import { RoutePath } from '~/constants/routes.client'
 
 import { useLogout } from '~admin/hooks/api/useAuth'
 import { AdminRoutes } from '~admin/lib/admin-nav'

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
-import { AdminRoutes, generatePageTitle } from '../../lib/admin-nav'
-
 import { ProfilePage } from './ProfilePage'
+
+import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 
 export const metadata: Metadata = {
   title: generatePageTitle(AdminRoutes.Profile),

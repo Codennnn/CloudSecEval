@@ -6,7 +6,7 @@ import { ExternalLinkIcon, LanguagesIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
-import { RoutePath } from '~/constants'
+import { RoutePath } from '~/constants/routes.client'
 
 /**
  * 将中文文档路径转换为英文文档路径

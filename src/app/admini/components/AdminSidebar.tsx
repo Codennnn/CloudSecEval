@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
-import { SITE_CONFIG } from '~/constants'
+import { SITE_CONFIG } from '~/constants/common'
 
 import { NavDocuments } from '~admin/components/NavDocuments'
 import { NavMain } from '~admin/components/NavMain'

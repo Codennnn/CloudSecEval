@@ -13,7 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '~/components/ui/breadcrumb'
-import { RoutePath } from '~/constants'
+import { RoutePath } from '~/constants/routes.client'
 import { navMainData } from '~/lib/data/nav'
 import type { NavMenuItem } from '~/types/nav'
 import { getDocTitle } from '~/utils/docs.client'

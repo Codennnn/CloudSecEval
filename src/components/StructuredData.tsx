@@ -18,7 +18,7 @@
  */
 import Script from 'next/script'
 
-import { SITE_CONFIG } from '~/constants'
+import { SITE_CONFIG } from '~/constants/common'
 import { getDocsUrl, getFullUrl } from '~/utils/link'
 
 interface StructuredDataProps {
