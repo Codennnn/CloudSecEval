@@ -1,12 +1,14 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 import { useQuery } from '@tanstack/react-query'
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type VisibilityState,
 } from '@tanstack/react-table'
 import {
   EllipsisVerticalIcon,
@@ -39,7 +41,7 @@ import {
 } from '~/components/ui/table'
 import { FieldTypeEnum } from '~/constants/form'
 import type { LicenseData } from '~/lib/api/types'
-import type { QueryParams } from '~/types/advanced-search'
+import type { ColumnVisibilityConfig, QueryParams } from '~/types/advanced-search'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
@@ -61,6 +63,8 @@ export function LicensesPage() {
   const deleteLicenseMutation = useDeleteLicense()
 
   const [queryParams, setQueryParams] = useState<QueryParams>()
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnOrder, setColumnOrder] = useState<string[]>([])
 
   const { data: dataX, isLoading } = useQuery(licenseControllerGetLicenseListOptions({
     query: {
@@ -209,13 +213,102 @@ export function LicensesPage() {
   // MARK: 动态生成搜索字段
   const searchFields = useMemo(() => generateSearchFields<LicenseData>(columns), [columns])
 
+  // 处理列可见性变化
+  const handleColumnVisibilityChange = useEvent((config: ColumnVisibilityConfig) => {
+    const newVisibilityState: VisibilityState = {}
+
+    // 所有字段先设为不可见
+    searchFields.forEach((field) => {
+      newVisibilityState[field.key] = false
+    })
+
+    // 设置可见字段
+    config.visibleColumns.forEach((key) => {
+      newVisibilityState[key] = true
+    })
+
+    // 对于不能隐藏的列（如操作列），强制设为可见
+    columns.forEach((column) => {
+      if ('enableHiding' in column && column.enableHiding === false) {
+        const key = 'accessorKey' in column ? column.accessorKey : column.id
+
+        if (key) {
+          newVisibilityState[key] = true
+        }
+      }
+    })
+
+    // 更新列的顺序：按照可见列的顺序，然后添加强制可见的列
+    const newColumnOrder: string[] = []
+
+    // 首先添加按顺序排列的可见列
+    config.visibleColumns.forEach((key) => {
+      newColumnOrder.push(key)
+    })
+
+    // 添加强制可见的列（如果还没有在列表中）
+    columns.forEach((column) => {
+      if ('enableHiding' in column && column.enableHiding === false) {
+        const key = 'accessorKey' in column ? column.accessorKey : column.id
+
+        if (key && !newColumnOrder.includes(key)) {
+          newColumnOrder.push(key)
+        }
+      }
+    })
+
+    setColumnVisibility(newVisibilityState)
+    setColumnOrder(newColumnOrder)
+  })
+
+  // 根据列可见性配置和顺序重新排序列
+  const orderedColumns = useMemo(() => {
+    if (columnOrder.length === 0) {
+      return columns
+    }
+
+    // 创建列的映射
+    const columnMap = new Map<string, typeof columns[0]>()
+    columns.forEach((column) => {
+      const key = 'accessorKey' in column ? column.accessorKey : column.id
+
+      if (key) {
+        columnMap.set(key, column)
+      }
+    })
+
+    // 按照 columnOrder 的顺序重新排列列
+    const orderedCols: typeof columns = []
+
+    // 首先添加按顺序排列的列
+    columnOrder.forEach((key) => {
+      const column = columnMap.get(key)
+
+      if (column) {
+        orderedCols.push(column)
+        columnMap.delete(key) // 移除已添加的列
+      }
+    })
+
+    // 添加剩余的列（如新增的列或未在 order 中的列）
+    columnMap.forEach((column) => {
+      orderedCols.push(column)
+    })
+
+    return orderedCols
+  }, [columns, columnOrder])
+
   const table = useReactTable({
     data: list ?? [],
-    columns,
+    columns: orderedColumns,
     state: {
       pagination,
+      columnVisibility,
+      columnOrder,
     },
     onPaginationChange: setPagination,
+    onColumnVisibilityChange: setColumnVisibility,
+    onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true, // 启用服务端分页
     pageCount: tablePagination?.totalPages, // 设置总页数
@@ -227,6 +320,7 @@ export function LicensesPage() {
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <div className="space-y-6">
         <TableToolbar
+          columnVisibilityStorageKey="licenses-table-columns"
           fields={searchFields}
           right={(
             <Button size="sm" onClick={() => { openCreateDialog() }}>
@@ -234,6 +328,7 @@ export function LicensesPage() {
               新增授权码
             </Button>
           )}
+          onColumnVisibilityChange={handleColumnVisibilityChange}
           onQueryParamsChange={(params) => {
             setQueryParams(params)
           }}

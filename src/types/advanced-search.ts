@@ -7,11 +7,19 @@
 
 import type { FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
 
-// 排序方向
-type SortOrder = 'asc' | 'desc'
+import type { LogicalOperator, SortOrder } from '~api/types.gen'
 
-// 逻辑运算符
-export type LogicalOperator = 'and' | 'or'
+/**
+ * 排序条件
+ */
+export interface SortCondition {
+  /** 条件唯一标识 */
+  id: string
+  /** 字段键名 */
+  field: string
+  /** 排序方向 */
+  order: SortOrder
+}
 
 // 字符串操作符
 type StringOperator =
@@ -73,12 +81,26 @@ export interface SearchField {
   description?: string
   /** 是否必填 */
   required?: boolean
+  /** 是否可排序 */
+  sortable?: boolean
+  /** 是否默认可见 */
+  visible?: boolean
+}
+
+/**
+ * 列可见性配置
+ */
+export interface ColumnVisibilityConfig {
+  /** 可见的列字段key列表（按显示顺序） */
+  visibleColumns: string[]
+  /** 隐藏的列字段key列表 */
+  hiddenColumns: string[]
 }
 
 /**
  * 搜索条件
  */
-export interface SearchCondition {
+export interface FilterCondition {
   /** 条件唯一标识 */
   id: string
   /** 字段键名 */
@@ -98,13 +120,11 @@ export interface SearchCondition {
  */
 export interface SearchConfig {
   /** 搜索条件列表 */
-  conditions: SearchCondition[]
+  filterConditions: FilterCondition[]
+  /** 排序条件列表 */
+  sortConditions: SortCondition[]
   /** 全局搜索关键词 */
   globalSearch?: string
-  /** 排序字段 */
-  sortBy?: string
-  /** 排序方向 */
-  sortOrder?: SortOrder
   /** 条件间的默认逻辑运算符 */
   defaultLogicalOperator?: LogicalOperator
 }

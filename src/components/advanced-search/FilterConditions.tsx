@@ -21,8 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { SearchOperatorEnum } from '~/constants/form'
 import { cn } from '~/lib/utils'
 import type {
-  LogicalOperator,
-  SearchCondition,
+  FilterCondition,
   SearchField,
   SearchOperator,
   SearchValidationError,
@@ -31,17 +30,19 @@ import type {
 import { SearchConditionOperatorSelect } from './SearchConditionOperatorSelect'
 import { ValueInput } from './ValueInput'
 
+import type { LogicalOperator } from '~api/types.gen'
+
 interface SearchConditionProps {
   /** 搜索条件 */
-  condition: SearchCondition
+  condition: FilterCondition
   /** 可选择的字段列表 */
   fields: SearchField[]
   /** 条件更新回调 */
-  onUpdate?: (condition: SearchCondition['id'], updates: Partial<SearchCondition>) => void
+  onUpdate?: (condition: FilterCondition['id'], updates: Partial<FilterCondition>) => void
   /** 删除条件回调 */
-  onDelete?: (condition: SearchCondition['id']) => void
+  onDelete?: (condition: FilterCondition['id']) => void
   /** 复制条件回调 */
-  onDuplicate?: (condition: SearchCondition['id']) => void
+  onDuplicate?: (condition: FilterCondition['id']) => void
   /** 验证错误 */
   error?: SearchValidationError
   /** 是否为最后一个条件 */
@@ -103,7 +104,7 @@ function SearchConditionRow(props: SearchConditionProps) {
    * 处理值变更
    */
   const handleValueChange = useEvent((value: unknown) => {
-    onUpdate?.(condition.id, { value: value as SearchCondition['value'] })
+    onUpdate?.(condition.id, { value: value as FilterCondition['value'] })
   })
 
   /**
@@ -277,9 +278,9 @@ function SearchConditionRow(props: SearchConditionProps) {
   )
 }
 
-interface SearchConditionsProps {
-  /** 搜索条件列表 */
-  conditions?: SearchCondition[]
+interface FilterConditionsProps {
+  /** 筛选条件列表 */
+  conditions?: FilterCondition[]
   /** 可选择的字段列表 */
   fields: SearchField[]
   /** 验证错误列表 */
@@ -288,14 +289,14 @@ interface SearchConditionsProps {
   className?: string
 
   /** 条件更新回调 */
-  onUpdateCondition?: (condition: SearchCondition['id'], updates: Partial<SearchCondition>) => void
+  onUpdateCondition?: (condition: FilterCondition['id'], updates: Partial<FilterCondition>) => void
   /** 删除条件回调 */
-  onDeleteCondition?: (condition: SearchCondition['id']) => void
+  onDeleteCondition?: (condition: FilterCondition['id']) => void
   /** 复制条件回调 */
-  onDuplicateCondition?: (condition: SearchCondition['id']) => void
+  onDuplicateCondition?: (condition: FilterCondition['id']) => void
 }
 
-export function SearchConditions(props: SearchConditionsProps) {
+export function FilterConditions(props: FilterConditionsProps) {
   const {
     conditions,
     fields,
@@ -310,7 +311,7 @@ export function SearchConditions(props: SearchConditionsProps) {
   /**
    * 获取条件的验证错误
    */
-  const getConditionError: (conditionId: SearchCondition['id']) => SearchValidationError | undefined
+  const getConditionError: (conditionId: FilterCondition['id']) => SearchValidationError | undefined
   = (conditionId) => {
     return errors.find((error) => error.conditionId === conditionId)
   }
@@ -339,8 +340,8 @@ export function SearchConditions(props: SearchConditionsProps) {
           )
         : (
             <div className="text-center py-8 space-y-1 text-muted-foreground">
-              <div>暂无搜索条件</div>
-              <div className="text-sm">点击「添加条件」开始构建搜索</div>
+              <div>暂无筛选条件</div>
+              <div className="text-sm">点击「添加条件」开始构建筛选</div>
             </div>
           )}
     </div>

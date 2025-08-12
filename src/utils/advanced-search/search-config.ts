@@ -2,16 +2,17 @@ import { nanoid } from 'nanoid'
 
 import { type FieldTypeEnum, OPERATOR_CONFIGS, SearchOperatorEnum } from '~/constants/form'
 import type {
+  FilterCondition,
   OperatorConfig,
   QueryParams,
   QueryParamsValue,
-  SearchCondition,
   SearchConfig,
   SearchOperator,
   SearchValidationError,
+  SortCondition,
 } from '~/types/advanced-search'
 
-import type { LogicalOperator, SortOrder } from '~api/types.gen'
+import { LogicalOperator, SortOrder } from '~api/types.gen'
 
 /**
  * 根据字段类型获取支持的操作符
@@ -59,13 +60,13 @@ export function createSearchCondition(
   field: string,
   operator: SearchOperator,
   value?: QueryParamsValue,
-): SearchCondition {
+): FilterCondition {
   return {
     id: generateConditionId(),
     field,
     operator,
     value,
-    logicalOperator: 'and',
+    logicalOperator: LogicalOperator.AND,
     enabled: true,
   }
 }
@@ -74,7 +75,7 @@ export function createSearchCondition(
  * 验证搜索条件
  */
 export function validateSearchCondition(
-  condition: SearchCondition,
+  condition: FilterCondition,
   fieldType: FieldTypeEnum,
 ): SearchValidationError | null {
   const operatorConfig = getOperatorConfig(condition.operator)
@@ -147,13 +148,13 @@ export function generateQueryParams(config: SearchConfig): QueryParams {
     params.search = config.globalSearch
   }
 
-  // 添加排序
-  if (config.sortBy) {
-    params.sortBy = config.sortBy
-  }
-
-  if (config.sortOrder) {
-    params.sortOrder = config.sortOrder
+  // 添加多字段排序
+  if (config.sortConditions && config.sortConditions.length > 0) {
+    const sortArray = config.sortConditions.map((condition) => ({
+      field: condition.field,
+      order: condition.order,
+    }))
+    params.sortBy = JSON.stringify(sortArray)
   }
 
   // 添加逻辑运算符
@@ -162,7 +163,7 @@ export function generateQueryParams(config: SearchConfig): QueryParams {
   }
 
   // 处理搜索条件
-  config.conditions.forEach((condition) => {
+  config.filterConditions.forEach((condition) => {
     if (!condition.enabled) {
       return
     }
@@ -218,7 +219,8 @@ export function generateQueryParams(config: SearchConfig): QueryParams {
  */
 export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchConfig> {
   const config: Partial<SearchConfig> = {
-    conditions: [],
+    filterConditions: [],
+    sortConditions: [],
   }
 
   // 解析基本参数
@@ -226,12 +228,25 @@ export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchCo
     config.globalSearch = params.search
   }
 
+  // 解析排序参数
   if (typeof params.sortBy === 'string') {
-    config.sortBy = params.sortBy
-  }
+    try {
+      // 解析JSON格式的多字段排序
+      const sortArray = JSON.parse(params.sortBy) as { field: string, order: SortOrder }[]
 
-  if (typeof params.sortOrder === 'string' && ['asc', 'desc'].includes(params.sortOrder)) {
-    config.sortOrder = params.sortOrder as SortOrder
+      if (Array.isArray(sortArray)) {
+        const sortConditions: SortCondition[] = sortArray.map((item) => ({
+          id: generateSortId(),
+          field: item.field,
+          order: item.order,
+        }))
+        config.sortConditions = sortConditions
+      }
+    }
+    catch {
+      // 如果解析失败，忽略排序参数
+      console.warn('Failed to parse sortBy parameter:', params.sortBy)
+    }
   }
 
   if (typeof params.operator === 'string' && ['and', 'or'].includes(params.operator)) {
@@ -239,11 +254,11 @@ export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchCo
   }
 
   // 解析搜索条件
-  const conditions: SearchCondition[] = []
+  const conditions: FilterCondition[] = []
 
   Object.entries(params).forEach(([key, value]) => {
     // 跳过已处理的基本参数
-    if (['search', 'sortBy', 'sortOrder', 'operator'].includes(key)) {
+    if (['search', 'sortBy', 'operator'].includes(key)) {
       return
     }
 
@@ -265,7 +280,7 @@ export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchCo
     }
   })
 
-  config.conditions = conditions
+  config.filterConditions = conditions
 
   return config
 }
@@ -303,6 +318,30 @@ export function mergeSearchConfigs(
   return {
     ...base,
     ...override,
-    conditions: override.conditions ?? base.conditions,
+    filterConditions: override.filterConditions ?? base.filterConditions,
+    sortConditions: override.sortConditions ?? base.sortConditions,
+  }
+}
+
+// ========================= 排序相关工具函数 =========================
+
+/**
+ * 生成唯一的排序条件ID
+ */
+export function generateSortId(): string {
+  return `sort_${nanoid(4)}`
+}
+
+/**
+ * 创建新的排序条件
+ */
+export function createSortCondition(
+  field: string,
+  order: SortOrder = SortOrder.ASC,
+): SortCondition {
+  return {
+    id: generateSortId(),
+    field,
+    order,
   }
 }

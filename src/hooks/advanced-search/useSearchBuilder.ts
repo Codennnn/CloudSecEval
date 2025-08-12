@@ -2,24 +2,25 @@ import { useEffect, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import type {
-  LogicalOperator,
+  FilterCondition,
   QueryParams,
   QueryParamsValue,
-  SearchCondition,
   SearchConfig,
   SearchField,
   SearchOperator,
   SearchValidationError,
+  SortCondition,
 } from '~/types/advanced-search'
 import {
   createSearchCondition,
+  createSortCondition,
   generateQueryString,
   mergeSearchConfigs,
   queryParamsToSearchConfig,
   validateSearchCondition,
 } from '~/utils/advanced-search/search-config'
 
-import type { SortOrder } from '~api/types.gen'
+import { LogicalOperator, SortOrder } from '~api/types.gen'
 
 /**
  * 搜索配置器 Hook 选项
@@ -44,21 +45,33 @@ interface UseSearchBuilderReturn {
   /** 添加搜索条件 */
   addCondition: (field: SearchField['key'], operator: SearchOperator, value?: QueryParamsValue) => void
   /** 更新搜索条件 */
-  updateCondition: (conditionId: SearchCondition['id'], updates: Partial<SearchCondition>) => void
+  updateCondition: (conditionId: FilterCondition['id'], updates: Partial<FilterCondition>) => void
   /** 删除搜索条件 */
-  removeCondition: (conditionId: SearchCondition['id']) => void
+  removeCondition: (conditionId: FilterCondition['id']) => void
   /** 移动搜索条件 */
   moveCondition: (fromIndex: number, toIndex: number) => void
   /** 切换条件启用状态 */
-  toggleCondition: (conditionId: SearchCondition['id']) => void
+  toggleCondition: (conditionId: FilterCondition['id']) => void
   /** 复制搜索条件 */
-  duplicateCondition: (conditionId: SearchCondition['id']) => void
+  duplicateCondition: (conditionId: FilterCondition['id']) => void
   /** 清除所有条件 */
   clearConditions: () => void
   /** 设置全局搜索 */
   setGlobalSearch: (search: string) => void
-  /** 设置排序 */
-  setSorting: (sortBy?: string, sortOrder?: SortOrder) => void
+
+  // 排序相关功能
+  /** 添加排序条件 */
+  addSortCondition: (field: SearchField['key'], order?: SortOrder) => void
+  /** 更新排序条件 */
+  updateSortCondition: (conditionId: SortCondition['id'], updates: Partial<SortCondition>) => void
+  /** 删除排序条件 */
+  removeSortCondition: (conditionId: SortCondition['id']) => void
+  /** 移动排序条件 */
+  moveSortCondition: (fromIndex: number, toIndex: number) => void
+  /** 复制排序条件 */
+  duplicateSortCondition: (conditionId: SortCondition['id']) => void
+  /** 清除所有排序条件 */
+  clearSortConditions: () => void
 
   /** 设置默认逻辑运算符 */
   setDefaultLogicalOperator: (operator: LogicalOperator) => void
@@ -74,15 +87,17 @@ interface UseSearchBuilderReturn {
   isValid: boolean
   /** 验证错误 */
   errors: SearchValidationError[]
+
 }
 
 /**
  * 默认搜索配置
  */
 const DEFAULT_CONFIG: SearchConfig = {
-  conditions: [],
+  filterConditions: [],
+  sortConditions: [],
   globalSearch: '',
-  defaultLogicalOperator: 'and',
+  defaultLogicalOperator: LogicalOperator.AND,
 }
 
 /**
@@ -130,7 +145,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
 
         return {
           ...prev,
-          conditions: [...prev.conditions, newCondition],
+          filterConditions: [...prev.filterConditions, newCondition],
         }
       })
     },
@@ -139,10 +154,10 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   /**
    * 更新搜索条件
    */
-  const updateCondition = useEvent((conditionId: string, updates: Partial<SearchCondition>) => {
+  const updateCondition = useEvent((conditionId: string, updates: Partial<FilterCondition>) => {
     setConfig((prev) => ({
       ...prev,
-      conditions: prev.conditions.map((condition) =>
+      filterConditions: prev.filterConditions.map((condition) =>
         condition.id === conditionId
           ? { ...condition, ...updates }
           : condition,
@@ -156,7 +171,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   const removeCondition = useEvent((conditionId: string) => {
     setConfig((prev) => ({
       ...prev,
-      conditions: prev.conditions.filter((condition) => condition.id !== conditionId),
+      filterConditions: prev.filterConditions.filter((condition) => condition.id !== conditionId),
     }))
   })
 
@@ -165,13 +180,13 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
    */
   const moveCondition = useEvent((fromIndex: number, toIndex: number) => {
     setConfig((prev) => {
-      const newConditions = [...prev.conditions]
+      const newConditions = [...prev.filterConditions]
       const [movedCondition] = newConditions.splice(fromIndex, 1)
       newConditions.splice(toIndex, 0, movedCondition)
 
       return {
         ...prev,
-        conditions: newConditions,
+        filterConditions: newConditions,
       }
     })
   })
@@ -181,7 +196,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
    */
   const toggleCondition = useEvent((conditionId: string) => {
     updateCondition(conditionId, {
-      enabled: !config.conditions.find((c) => c.id === conditionId)?.enabled,
+      enabled: !config.filterConditions.find((c) => c.id === conditionId)?.enabled,
     })
   })
 
@@ -189,7 +204,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
    * 复制搜索条件
    */
   const duplicateCondition = useEvent((conditionId: string) => {
-    const condition = config.conditions.find((c) => c.id === conditionId)
+    const condition = config.filterConditions.find((c) => c.id === conditionId)
 
     if (condition) {
       const newCondition = createSearchCondition(
@@ -202,7 +217,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
 
       setConfig((prev) => ({
         ...prev,
-        conditions: [...prev.conditions, newCondition],
+        filterConditions: [...prev.filterConditions, newCondition],
       }))
     }
   })
@@ -213,7 +228,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   const clearConditions = useEvent(() => {
     setConfig((prev) => ({
       ...prev,
-      conditions: [],
+      filterConditions: [],
     }))
   })
 
@@ -228,23 +243,99 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   })
 
   /**
-   * 设置排序
-   */
-  const setSorting = useEvent((sortBy?: string, sortOrder?: SortOrder) => {
-    setConfig((prev) => ({
-      ...prev,
-      sortBy,
-      sortOrder,
-    }))
-  })
-
-  /**
    * 设置默认逻辑运算符
    */
   const setDefaultLogicalOperator = useEvent((operator: LogicalOperator) => {
     setConfig((prev) => ({
       ...prev,
       defaultLogicalOperator: operator,
+    }))
+  })
+
+  // ========================= 排序相关功能 =========================
+
+  /**
+   * 添加排序条件
+   */
+  const addSortCondition = useEvent(
+    (field: string, order: SortOrder = SortOrder.ASC) => {
+      setConfig((prev) => {
+        const newCondition = createSortCondition(field, order)
+
+        return {
+          ...prev,
+          sortConditions: [...prev.sortConditions, newCondition],
+        }
+      })
+    },
+  )
+
+  /**
+   * 更新排序条件
+   */
+  const updateSortCondition = useEvent((conditionId: string, updates: Partial<SortCondition>) => {
+    setConfig((prev) => ({
+      ...prev,
+      sortConditions: prev.sortConditions.map((condition) =>
+        condition.id === conditionId
+          ? { ...condition, ...updates }
+          : condition,
+      ),
+    }))
+  })
+
+  /**
+   * 删除排序条件
+   */
+  const removeSortCondition = useEvent((conditionId: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      sortConditions: prev.sortConditions.filter((condition) => condition.id !== conditionId),
+    }))
+  })
+
+  /**
+   * 移动排序条件
+   */
+  const moveSortCondition = useEvent((fromIndex: number, toIndex: number) => {
+    setConfig((prev) => {
+      const newConditions = [...prev.sortConditions]
+      const [movedCondition] = newConditions.splice(fromIndex, 1)
+      newConditions.splice(toIndex, 0, movedCondition)
+
+      return {
+        ...prev,
+        sortConditions: newConditions,
+      }
+    })
+  })
+
+  /**
+   * 复制排序条件
+   */
+  const duplicateSortCondition = useEvent((conditionId: string) => {
+    const condition = config.sortConditions.find((c) => c.id === conditionId)
+
+    if (condition) {
+      const newCondition = createSortCondition(
+        condition.field,
+        condition.order,
+      )
+
+      setConfig((prev) => ({
+        ...prev,
+        sortConditions: [...prev.sortConditions, newCondition],
+      }))
+    }
+  })
+
+  /**
+   * 清除所有排序条件
+   */
+  const clearSortConditions = useEvent(() => {
+    setConfig((prev) => ({
+      ...prev,
+      sortConditions: [],
     }))
   })
 
@@ -255,7 +346,8 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     const fieldMap = new Map(fields.map((field) => [field.key, field]))
     const validationErrors: SearchValidationError[] = []
 
-    config.conditions.forEach((condition) => {
+    // 验证搜索条件
+    config.filterConditions.forEach((condition) => {
       if (!condition.enabled) {
         return
       }
@@ -336,7 +428,12 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     duplicateCondition,
     clearConditions,
     setGlobalSearch,
-    setSorting,
+    addSortCondition,
+    updateSortCondition,
+    removeSortCondition,
+    moveSortCondition,
+    duplicateSortCondition,
+    clearSortConditions,
     setDefaultLogicalOperator,
     validateConfig,
     generateQueryString: generateQueryStringFn,
@@ -344,5 +441,6 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     reset,
     isValid,
     errors,
+
   }
 }
