@@ -7,9 +7,6 @@
 
 import type { FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
 
-// 支持的搜索模式
-type SearchMode = 'global' | 'exact' | 'combined' | 'advanced'
-
 // 排序方向
 type SortOrder = 'asc' | 'desc'
 
@@ -21,9 +18,8 @@ type StringOperator =
   | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
   | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
   | SearchOperatorEnum.CONTAINS | SearchOperatorEnum.STARTS_WITH
-  | SearchOperatorEnum.ENDS_WITH | SearchOperatorEnum.REGEX
-  | SearchOperatorEnum.ILIKE | SearchOperatorEnum.IS_NULL
-  | SearchOperatorEnum.IS_NOT_NULL
+  | SearchOperatorEnum.ENDS_WITH | SearchOperatorEnum.ILIKE
+  | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
 
 // 数值操作符
 type NumberOperator =
@@ -77,8 +73,6 @@ export interface SearchField {
   description?: string
   /** 是否必填 */
   required?: boolean
-  /** 字段分组 */
-  group?: string
 }
 
 /**
@@ -92,16 +86,7 @@ export interface SearchCondition {
   /** 操作符 */
   operator: SearchOperator
   /** 搜索值 */
-  value:
-    | string
-    | number
-    | boolean
-    | Date
-    | string[]
-    | number[]
-    | [string | number, string | number]
-    | null
-    | undefined
+  value: QueryParamsValue
   /** 与下一个条件的逻辑运算符 */
   logicalOperator?: LogicalOperator
   /** 是否启用该条件 */
@@ -116,8 +101,6 @@ export interface SearchConfig {
   conditions: SearchCondition[]
   /** 全局搜索关键词 */
   globalSearch?: string
-  /** 搜索模式 */
-  searchMode?: SearchMode
   /** 排序字段 */
   sortBy?: string
   /** 排序方向 */
@@ -146,10 +129,7 @@ export interface OperatorConfig {
   supportedTypes: FieldTypeEnum[]
 }
 
-/**
- * 查询参数接口
- */
-export type QueryParams = Record<string,
+export type QueryParamsValue =
   | string
   | string[]
   | number
@@ -159,47 +139,17 @@ export type QueryParams = Record<string,
   | [string | number, string | number]
   | null
   | undefined
->
 
 /**
- * 搜索历史记录
+ * 查询参数接口
  */
-export interface SearchHistory {
-  /** 历史记录ID */
-  id: string
-  /** 搜索配置 */
-  config: SearchConfig
-  /** 创建时间 */
-  createdAt: Date
-  /** 搜索名称 */
-  name?: string
-  /** 搜索描述 */
-  description?: string
-}
-
-/**
- * 快速模板
- */
-export interface SearchTemplate {
-  /** 模板ID */
-  id: string
-  /** 模板名称 */
-  name: string
-  /** 模板描述 */
-  description?: string
-  /** 模板配置 */
-  config: Partial<SearchConfig>
-  /** 模板分类 */
-  category?: string
-  /** 是否为系统模板 */
-  isSystem?: boolean
-}
+export type QueryParams = Record<string, QueryParamsValue>
 
 /**
  * 搜索验证错误
  */
 export interface SearchValidationError {
-  /** 条件ID */
+  /** 条件 ID */
   conditionId: string
   /** 字段名 */
   field: string

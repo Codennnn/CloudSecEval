@@ -39,6 +39,7 @@ import {
 } from '~/components/ui/table'
 import { FieldTypeEnum } from '~/constants/form'
 import type { LicenseData } from '~/lib/api/types'
+import type { QueryParams } from '~/types/advanced-search'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
@@ -59,7 +60,7 @@ export function LicensesPage() {
 
   const deleteLicenseMutation = useDeleteLicense()
 
-  const [queryParams, setQueryParams] = useState<Record<string, any>>()
+  const [queryParams, setQueryParams] = useState<QueryParams>()
 
   const { data: dataX, isLoading } = useQuery(licenseControllerGetLicenseListOptions({
     query: {
@@ -158,8 +159,7 @@ export function LicensesPage() {
                 size="icon"
                 variant="ghost"
               >
-                <EllipsisVerticalIcon className="h-4 w-4" />
-                <span className="sr-only">打开菜单</span>
+                <EllipsisVerticalIcon />
               </Button>
             </DropdownMenuTrigger>
 
@@ -176,7 +176,6 @@ export function LicensesPage() {
 
               <DropdownMenuItem
                 onClick={() => {
-                  // 转换为编辑表单需要的格式
                   const licenseForEdit = {
                     ...row.original,
                     email: row.original.email,

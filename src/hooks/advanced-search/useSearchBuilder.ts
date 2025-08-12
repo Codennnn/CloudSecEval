@@ -3,6 +3,8 @@ import { useEvent } from 'react-use-event-hook'
 
 import type {
   LogicalOperator,
+  QueryParams,
+  QueryParamsValue,
   SearchCondition,
   SearchConfig,
   SearchField,
@@ -14,9 +16,10 @@ import {
   generateQueryString,
   mergeSearchConfigs,
   queryParamsToSearchConfig,
-  searchConfigToQueryParams,
   validateSearchCondition,
 } from '~/utils/advanced-search/search-config'
+
+import type { SortOrder } from '~api/types.gen'
 
 /**
  * 搜索配置器 Hook 选项
@@ -28,9 +31,6 @@ interface UseSearchBuilderOptions {
   onChange?: (config: SearchConfig) => void
   /** 自动验证 */
   autoValidate?: boolean
-  /** 最大条件数量 */
-  maxConditions?: number
-
 }
 
 /**
@@ -42,34 +42,32 @@ interface UseSearchBuilderReturn {
   /** 设置搜索配置 */
   setConfig: (config: SearchConfig | ((prev: SearchConfig) => SearchConfig)) => void
   /** 添加搜索条件 */
-  addCondition: (field: string, operator: SearchOperator, value?: any) => void
+  addCondition: (field: SearchField['key'], operator: SearchOperator, value?: QueryParamsValue) => void
   /** 更新搜索条件 */
-  updateCondition: (conditionId: string, updates: Partial<SearchCondition>) => void
+  updateCondition: (conditionId: SearchCondition['id'], updates: Partial<SearchCondition>) => void
   /** 删除搜索条件 */
-  removeCondition: (conditionId: string) => void
+  removeCondition: (conditionId: SearchCondition['id']) => void
   /** 移动搜索条件 */
   moveCondition: (fromIndex: number, toIndex: number) => void
   /** 切换条件启用状态 */
-  toggleCondition: (conditionId: string) => void
+  toggleCondition: (conditionId: SearchCondition['id']) => void
   /** 复制搜索条件 */
-  duplicateCondition: (conditionId: string) => void
+  duplicateCondition: (conditionId: SearchCondition['id']) => void
   /** 清除所有条件 */
   clearConditions: () => void
   /** 设置全局搜索 */
   setGlobalSearch: (search: string) => void
   /** 设置排序 */
-  setSorting: (sortBy?: string, sortOrder?: 'asc' | 'desc') => void
+  setSorting: (sortBy?: string, sortOrder?: SortOrder) => void
 
   /** 设置默认逻辑运算符 */
   setDefaultLogicalOperator: (operator: LogicalOperator) => void
   /** 验证搜索配置 */
   validateConfig: (fields: SearchField[]) => SearchValidationError[]
-  /** 生成查询参数 */
-  generateQueryParams: () => Record<string, any>
   /** 生成查询字符串 */
   generateQueryString: () => string
   /** 从查询参数导入配置 */
-  importFromQueryParams: (params: Record<string, any>) => void
+  importFromQueryParams: (params: QueryParams) => void
   /** 重置配置 */
   reset: () => void
   /** 是否有效 */
@@ -84,7 +82,6 @@ interface UseSearchBuilderReturn {
 const DEFAULT_CONFIG: SearchConfig = {
   conditions: [],
   globalSearch: '',
-  searchMode: 'advanced',
   defaultLogicalOperator: 'and',
 }
 
@@ -94,9 +91,8 @@ const DEFAULT_CONFIG: SearchConfig = {
 export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSearchBuilderReturn {
   const {
     initialConfig,
-    onChange,
     autoValidate = true,
-    maxConditions = 10,
+    onChange,
   } = options
 
   // 初始化配置
@@ -117,12 +113,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
           ? configOrUpdater(prev)
           : configOrUpdater
 
-        // 触发 onChange 回调
-        if (onChange) {
-          setTimeout(() => {
-            onChange(newConfig)
-          }, 0)
-        }
+        onChange?.(newConfig)
 
         return newConfig
       })
@@ -132,20 +123,18 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   /**
    * 添加搜索条件
    */
-  const addCondition = useEvent((field: string, operator: SearchOperator, value?: any) => {
-    setConfig((prev) => {
-      if (prev.conditions.length >= maxConditions) {
-        return prev
-      }
+  const addCondition = useEvent(
+    (field: string, operator: SearchOperator, value?: QueryParamsValue) => {
+      setConfig((prev) => {
+        const newCondition = createSearchCondition(field, operator, value)
 
-      const newCondition = createSearchCondition(field, operator, value)
-
-      return {
-        ...prev,
-        conditions: [...prev.conditions, newCondition],
-      }
-    })
-  })
+        return {
+          ...prev,
+          conditions: [...prev.conditions, newCondition],
+        }
+      })
+    },
+  )
 
   /**
    * 更新搜索条件
@@ -202,8 +191,13 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   const duplicateCondition = useEvent((conditionId: string) => {
     const condition = config.conditions.find((c) => c.id === conditionId)
 
-    if (condition && config.conditions.length < maxConditions) {
-      const newCondition = createSearchCondition(condition.field, condition.operator, condition.value)
+    if (condition) {
+      const newCondition = createSearchCondition(
+        condition.field,
+        condition.operator,
+        condition.value,
+      )
+
       newCondition.logicalOperator = condition.logicalOperator
 
       setConfig((prev) => ({
@@ -236,15 +230,13 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   /**
    * 设置排序
    */
-  const setSorting = useEvent((sortBy?: string, sortOrder?: 'asc' | 'desc') => {
+  const setSorting = useEvent((sortBy?: string, sortOrder?: SortOrder) => {
     setConfig((prev) => ({
       ...prev,
       sortBy,
       sortOrder,
     }))
   })
-
-
 
   /**
    * 设置默认逻辑运算符
@@ -264,7 +256,9 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     const validationErrors: SearchValidationError[] = []
 
     config.conditions.forEach((condition) => {
-      if (!condition.enabled) { return }
+      if (!condition.enabled) {
+        return
+      }
 
       const field = fieldMap.get(condition.field)
 
@@ -292,13 +286,6 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   })
 
   /**
-   * 生成查询参数
-   */
-  const generateQueryParams = useEvent(() => {
-    return searchConfigToQueryParams(config)
-  })
-
-  /**
    * 生成查询字符串
    */
   const generateQueryStringFn = useEvent(() => {
@@ -308,7 +295,7 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   /**
    * 从查询参数导入配置
    */
-  const importFromQueryParams = useEvent((params: Record<string, any>) => {
+  const importFromQueryParams = useEvent((params: QueryParams) => {
     const importedConfig = queryParamsToSearchConfig(params)
     setConfig((prev) => mergeSearchConfigs(prev, importedConfig))
   })
@@ -352,7 +339,6 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     setSorting,
     setDefaultLogicalOperator,
     validateConfig,
-    generateQueryParams,
     generateQueryString: generateQueryStringFn,
     importFromQueryParams,
     reset,

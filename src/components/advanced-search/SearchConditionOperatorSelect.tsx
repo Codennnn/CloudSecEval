@@ -1,62 +1,29 @@
 import { useMemo } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
+import type { SelectProps } from '@radix-ui/react-select'
 import { ScaleIcon } from 'lucide-react'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Separator } from '~/components/ui/separator'
-import { type FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
+import { type FieldTypeEnum, OPERATOR_GROUPS } from '~/constants/form'
 import type { SearchOperator } from '~/types/advanced-search'
 import { getOperatorConfig, getOperatorsByFieldType } from '~/utils/advanced-search/search-config'
 
-/**
- * 操作符分组配置
- */
-const OPERATOR_GROUPS: Record<string, { label: string, operators: SearchOperator[] }> = {
-  equality: {
-    label: '相等性',
-    operators: [SearchOperatorEnum.EQ, SearchOperatorEnum.NEQ],
-  },
-  inclusion: {
-    label: '包含性',
-    operators: [
-      SearchOperatorEnum.IN,
-      SearchOperatorEnum.NOT_IN,
-      SearchOperatorEnum.CONTAINS,
-      SearchOperatorEnum.STARTS_WITH,
-      SearchOperatorEnum.ENDS_WITH,
-    ],
-  },
-  comparison: {
-    label: '比较',
-    operators: [
-      SearchOperatorEnum.GT,
-      SearchOperatorEnum.GTE,
-      SearchOperatorEnum.LT,
-      SearchOperatorEnum.LTE,
-      SearchOperatorEnum.BETWEEN,
-    ],
-  },
-  // pattern: {
-  //   label: '模式匹配',
-  //   operators: [SearchOperatorEnum.REGEX, SearchOperatorEnum.ILIKE],
-  // },
-  nullability: {
-    label: '空值检查',
-    operators: [SearchOperatorEnum.IS_NULL, SearchOperatorEnum.IS_NOT_NULL],
-  },
-}
+type OnChange = (operator: SearchOperator) => void
 
 interface SearchConditionOperatorSelectProps {
   /** 字段类型 */
   fieldType: FieldTypeEnum
   /** 当前选中的操作符 */
-  value: SearchOperator | undefined
-  /** 操作符变更回调 */
-  onChange: (operator: SearchOperator) => void
+  value?: SearchOperator
   /** 是否禁用 */
-  disabled?: boolean
+  disabled?: SelectProps['disabled']
   /** 占位符 */
   placeholder?: string
+
+  /** 操作符变更回调 */
+  onChange?: OnChange
 }
 
 /**
@@ -69,9 +36,10 @@ export function SearchConditionOperatorSelect(props: SearchConditionOperatorSele
   const {
     fieldType,
     value,
-    onChange,
     disabled = false,
     placeholder = '选择操作符',
+
+    onChange,
   } = props
 
   /**
@@ -110,11 +78,15 @@ export function SearchConditionOperatorSelect(props: SearchConditionOperatorSele
     return value ? getOperatorConfig(value) : undefined
   }, [value])
 
+  const handleChange = useEvent<OnChange>((newValue) => {
+    onChange?.(newValue)
+  })
+
   return (
     <Select
       disabled={disabled}
       value={value}
-      onValueChange={(newValue) => { onChange(newValue as SearchOperator) }}
+      onValueChange={handleChange}
     >
       <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder}>

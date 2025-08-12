@@ -37,11 +37,11 @@ interface SearchConditionProps {
   /** 可选择的字段列表 */
   fields: SearchField[]
   /** 条件更新回调 */
-  onUpdate?: (conditionId: string, updates: Partial<SearchCondition>) => void
+  onUpdate?: (condition: SearchCondition['id'], updates: Partial<SearchCondition>) => void
   /** 删除条件回调 */
-  onDelete?: (conditionId: string) => void
+  onDelete?: (condition: SearchCondition['id']) => void
   /** 复制条件回调 */
-  onDuplicate?: (conditionId: string) => void
+  onDuplicate?: (condition: SearchCondition['id']) => void
   /** 验证错误 */
   error?: SearchValidationError
   /** 是否为最后一个条件 */
@@ -131,7 +131,10 @@ function SearchConditionRow(props: SearchConditionProps) {
    * 渲染字段选择器
    */
   const renderFieldSelect = () => (
-    <Select value={condition.field} onValueChange={handleFieldChange}>
+    <Select
+      value={condition.field}
+      onValueChange={handleFieldChange}
+    >
       <SelectTrigger className="w-full">
         <SelectValue placeholder="选择字段">
           <TextSearchIcon />
@@ -210,7 +213,8 @@ function SearchConditionRow(props: SearchConditionProps) {
       {/* 条件行 */}
       <div
         className={cn(
-          'grid grid-cols-4 gap-3',
+          'grid gap-3',
+          'grid-cols-[1fr_130px_1fr_auto]',
         )}
       >
         {/* 逻辑运算符（前置） */}
@@ -236,7 +240,7 @@ function SearchConditionRow(props: SearchConditionProps) {
         </div>
 
         {/* 操作按钮 */}
-        <div className="flex items-center">
+        <div className="pt-0.5">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -284,11 +288,11 @@ interface SearchConditionsProps {
   className?: string
 
   /** 条件更新回调 */
-  onUpdateCondition?: (conditionId: string, updates: Partial<SearchCondition>) => void
+  onUpdateCondition?: (condition: SearchCondition['id'], updates: Partial<SearchCondition>) => void
   /** 删除条件回调 */
-  onDeleteCondition?: (conditionId: string) => void
+  onDeleteCondition?: (condition: SearchCondition['id']) => void
   /** 复制条件回调 */
-  onDuplicateCondition?: (conditionId: string) => void
+  onDuplicateCondition?: (condition: SearchCondition['id']) => void
 }
 
 export function SearchConditions(props: SearchConditionsProps) {
@@ -306,9 +310,10 @@ export function SearchConditions(props: SearchConditionsProps) {
   /**
    * 获取条件的验证错误
    */
-  const getConditionError = useEvent((conditionId: string) => {
+  const getConditionError: (conditionId: SearchCondition['id']) => SearchValidationError | undefined
+  = (conditionId) => {
     return errors.find((error) => error.conditionId === conditionId)
-  })
+  }
 
   return (
     <div className={className}>

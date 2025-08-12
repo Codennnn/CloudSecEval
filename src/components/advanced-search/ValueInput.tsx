@@ -339,7 +339,7 @@ export function ValueInput({
 
       case FieldTypeEnum.ENUM:
         return (
-          <Select disabled={disabled} value={value || undefined} onValueChange={onChange}>
+          <Select disabled={disabled} value={String(value || '')} onValueChange={onChange}>
             <SelectTrigger>
               <SelectValue placeholder={placeholder || '请选择'} />
             </SelectTrigger>
@@ -366,14 +366,14 @@ export function ValueInput({
                 variant="outline"
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {value ? format(new Date(value), 'yyyy-MM-dd') : (placeholder || '选择日期')}
+                {value ? format(new Date(String(value)), 'yyyy-MM-dd') : (placeholder || '选择日期')}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto p-0">
               <CalendarComponent
                 initialFocus
                 mode="single"
-                selected={value ? new Date(value) : undefined}
+                selected={value ? new Date(String(value)) : undefined}
                 onSelect={(date) => { onChange(date?.toISOString().split('T')[0]) }}
               />
             </PopoverContent>
@@ -386,7 +386,7 @@ export function ValueInput({
             disabled={disabled}
             placeholder={placeholder || '输入数值'}
             type="number"
-            value={value || ''}
+            value={String(value || '')}
             onChange={(e) => { onChange(e.target.value ? Number(e.target.value) : undefined) }}
           />
         )
@@ -394,30 +394,12 @@ export function ValueInput({
       case FieldTypeEnum.STRING:
 
       default:
-        // 正则表达式使用 textarea
-        if (operator === SearchOperatorEnum.REGEX) {
-          return (
-            <div className="space-y-2">
-              <Textarea
-                disabled={disabled}
-                placeholder={placeholder || '输入正则表达式'}
-                rows={3}
-                value={value || ''}
-                onChange={(e) => { onChange(e.target.value) }}
-              />
-              <div className="text-xs text-muted-foreground">
-                示例：^[a-zA-Z0-9]+$，.*@gmail\\.com$
-              </div>
-            </div>
-          )
-        }
-
         return (
           <Input
             disabled={disabled}
             placeholder={placeholder || '输入文本'}
             type="text"
-            value={value || ''}
+            value={String(value || '')}
             onChange={(e) => { onChange(e.target.value) }}
           />
         )
