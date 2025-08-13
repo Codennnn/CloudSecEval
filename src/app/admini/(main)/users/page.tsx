@@ -1,5 +1,5 @@
-import { UserTable } from './UserTable'
+import { UsersTable } from './UsersTable'
 
 export default function UserPage() {
-  return <UserTable />
+  return <UsersTable />
 }

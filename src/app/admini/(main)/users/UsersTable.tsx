@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 
+import { type QueryKey, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   EllipsisVerticalIcon,
   Plus,
@@ -24,13 +25,21 @@ import type { UserData } from '~/lib/api/types'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
-import { useDeleteUser } from '~admin/hooks/api/useUser'
-import { usersControllerFindAllUsersOptions, usersControllerFindAllUsersQueryKey } from '~api/@tanstack/react-query.gen'
+import { usersControllerFindAllUsersOptions, usersControllerFindAllUsersQueryKey, usersControllerRemoveUserMutation } from '~api/@tanstack/react-query.gen'
 
-export function UserTable() {
+export function UsersTable() {
+  const queryClient = useQueryClient()
+
+  const [queryKey, setQueryKey] = useState<QueryKey>()
+
   const [userToDelete, setUserToDelete] = useState<UserData | null>(null)
 
-  const deleteUserMutation = useDeleteUser()
+  const deleteUserMutation = useMutation({
+    ...usersControllerRemoveUserMutation(),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey })
+    },
+  })
 
   const handleDeleteClick = (user: UserData) => {
     setUserToDelete(user)
@@ -38,7 +47,11 @@ export function UserTable() {
 
   const handleDeleteConfirm = async () => {
     if (userToDelete) {
-      await deleteUserMutation.mutateAsync(userToDelete.id)
+      await deleteUserMutation.mutateAsync({
+        path: {
+          id: userToDelete.id,
+        },
+      })
       toast.success(`用户 ${userToDelete.email} 已成功删除`)
       setUserToDelete(null)
     }
@@ -173,6 +186,7 @@ export function UserTable() {
             </Button>
           ),
         }}
+        onQueryKeyChange={setQueryKey}
       />
 
       {/* MARK: 删除确认对话框 */}

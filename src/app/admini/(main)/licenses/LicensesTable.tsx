@@ -30,13 +30,13 @@ import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 import { licenseControllerGetLicenseListOptions, licenseControllerGetLicenseListQueryKey } from '~api/@tanstack/react-query.gen'
 
 export function LicensesTable() {
-  const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
-
-  const { openCreateDialog, openEditDialog } = useLicenseDialog()
-
   const queryClient = useQueryClient()
 
   const [queryKey, setQueryKey] = useState<QueryKey>()
+
+  const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
+
+  const { openCreateDialog, openEditDialog } = useLicenseDialog()
 
   const deleteLicenseMutation = useDeleteLicense({
     onSuccess: () => {
