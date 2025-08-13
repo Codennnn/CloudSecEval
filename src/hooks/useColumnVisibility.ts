@@ -143,7 +143,7 @@ export function useColumnVisibility(
       const field = fields.find((f) => f.key === fieldKey)
 
       // 如果字段设置了强制可见，不允许隐藏
-      if (isCurrentlyVisible && field?.visible === true) {
+      if (isCurrentlyVisible && field?.enableHiding === false) {
         return prev
       }
 
