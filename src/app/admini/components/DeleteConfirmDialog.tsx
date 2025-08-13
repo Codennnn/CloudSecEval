@@ -47,16 +47,18 @@ interface DeleteConfirmDialogProps {
  * 提供完善的二次确认功能，用户需要输入指定文本才能确认删除
  * 适用于危险的删除操作，如删除授权码等重要数据
  */
-export function DeleteConfirmDialog({
-  open,
-  onOpenChange,
-  title,
-  description,
-  confirmText,
-  deleteButtonText = '确认删除',
-  isDeleting = false,
-  onConfirm,
-}: DeleteConfirmDialogProps) {
+export function DeleteConfirmDialog(props: DeleteConfirmDialogProps) {
+  const {
+    open,
+    onOpenChange,
+    title,
+    description,
+    confirmText,
+    deleteButtonText = '确认删除',
+    isDeleting = false,
+    onConfirm,
+  } = props
+
   const form = useForm<{ confirmInput: string }>({
     defaultValues: {
       confirmInput: '',

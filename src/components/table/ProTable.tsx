@@ -43,16 +43,14 @@ export interface ProTableProps<TData> {
   /** 表格列定义 */
   columns: TableColumnDef<TData>[]
 
-  // ==================== 外部控制模式 ====================
-  /** 表格数据（外部控制模式） */
+  /** 表格数据 */
   data?: TData[]
-  /** 加载状态（外部控制模式） */
+  /** 加载状态 */
   loading?: boolean
-  /** 分页配置（外部控制模式） */
+  /** 分页配置 */
   pagination?: PaginationMetaDto
 
-  // ==================== 内置请求模式 ====================
-  /** 查询配置生成函数（内置请求模式） */
+  /** 查询配置生成函数 */
   queryOptions?: QueryOptions<TData>
 
   /** 工具栏配置 */
@@ -129,7 +127,6 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnOrder, setColumnOrder] = useState<string[]>([])
 
-  // 判断使用模式
   const isExternalMode = !!externalData
 
   // 内置查询（仅在内置模式下使用）
@@ -145,7 +142,6 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
         }),
   )
 
-  // 确定使用的数据源
   const data = (isExternalMode ? externalData : internalQuery.data?.data) ?? []
   const loading = isExternalMode
     ? externalLoading
@@ -251,7 +247,6 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     return orderedCols
   }, [columns, columnOrder])
 
-  // 创建表格实例
   const table = useReactTable({
     data,
     columns: orderedColumns,
@@ -272,7 +267,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
 
   return (
     <div className={cn('space-y-6', className)}>
-      {/* 工具栏 */}
+      {/* MARK: 工具栏 */}
       {(showSearch || showColumnControl || rightContent) && (
         <TableToolbar
           columnVisibilityStorageKey={columnVisibilityStorageKey}
@@ -283,7 +278,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
         />
       )}
 
-      {/* 表格 */}
+      {/* MARK: 表格 */}
       <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader className="bg-muted sticky top-0 z-10">
@@ -332,7 +327,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
         </Table>
       </div>
 
-      {/* 分页 */}
+      {/* MARK: 分页 */}
       <TablePagination
         pageSizeOptions={pageSizeOptions}
         showPageSizeSelector={showPageSizeSelector}

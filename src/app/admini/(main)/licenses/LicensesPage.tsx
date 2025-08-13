@@ -167,12 +167,16 @@ export function LicensesPage() {
   return (
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <ProTable<LicenseData>
-        columnVisibilityStorageKey="licenses-table-columns"
         columns={columns}
         queryOptions={licenseControllerGetLicenseListOptions as QueryOptions<LicenseData>}
         toolbar={{
           rightContent: (
-            <Button size="sm" onClick={() => { openCreateDialog() }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                openCreateDialog()
+              }}
+            >
               <Plus />
               新增授权码
             </Button>
@@ -180,7 +184,7 @@ export function LicensesPage() {
         }}
       />
 
-      {/* 删除确认对话框 */}
+      {/* MARK: 删除确认对话框 */}
       <DeleteConfirmDialog
         confirmText="DELETE"
         deleteButtonText="确认删除"

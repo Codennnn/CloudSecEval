@@ -29,16 +29,16 @@ interface TableToolbarProps {
   fields: SearchField[]
   /** 初始搜索配置 */
   initialConfig?: Partial<SearchConfig>
+  /** 列可见性存储键名，用于 localStorage 持久化 */
+  columnVisibilityStorageKey?: string
+  /** 初始列可见性配置 */
+  initialColumnVisibility?: Partial<ColumnVisibilityConfig>
   /** 右侧内容 */
   right?: React.ReactNode
 
   /** 查询参数变更回调 */
   onQueryParamsChange?: (queryParams: QueryParams) => void
 
-  /** 列可见性存储键名，用于 localStorage 持久化 */
-  columnVisibilityStorageKey?: string
-  /** 初始列可见性配置 */
-  initialColumnVisibility?: Partial<ColumnVisibilityConfig>
   /** 列可见性变化回调 */
   onColumnVisibilityChange?: (config: ColumnVisibilityConfig) => void
 }
@@ -48,9 +48,9 @@ export function TableToolbar(props: TableToolbarProps) {
     fields,
     initialConfig,
     right,
-
     columnVisibilityStorageKey,
     initialColumnVisibility,
+
     onQueryParamsChange,
     onColumnVisibilityChange,
   } = props
