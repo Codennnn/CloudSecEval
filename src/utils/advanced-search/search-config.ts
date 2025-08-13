@@ -149,7 +149,7 @@ export function generateQueryParams(config: SearchConfig): QueryParams {
   }
 
   // 添加多字段排序
-  if (config.sortConditions && config.sortConditions.length > 0) {
+  if (config.sortConditions.length > 0) {
     const sortArray = config.sortConditions.map((condition) => ({
       field: condition.field,
       order: condition.order,
@@ -231,12 +231,12 @@ export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchCo
   // 解析排序参数
   if (typeof params.sortBy === 'string') {
     try {
-      // 解析JSON格式的多字段排序
+      // 解析 JSON 格式的多字段排序
       const sortArray = JSON.parse(params.sortBy) as { field: string, order: SortOrder }[]
 
       if (Array.isArray(sortArray)) {
         const sortConditions: SortCondition[] = sortArray.map((item) => ({
-          id: generateSortId(),
+          id: generateConditionId(),
           field: item.field,
           order: item.order,
         }))
@@ -323,15 +323,6 @@ export function mergeSearchConfigs(
   }
 }
 
-// ========================= 排序相关工具函数 =========================
-
-/**
- * 生成唯一的排序条件ID
- */
-export function generateSortId(): string {
-  return `sort_${nanoid(4)}`
-}
-
 /**
  * 创建新的排序条件
  */
@@ -340,7 +331,7 @@ export function createSortCondition(
   order: SortOrder = SortOrder.ASC,
 ): SortCondition {
   return {
-    id: generateSortId(),
+    id: generateConditionId(),
     field,
     order,
   }

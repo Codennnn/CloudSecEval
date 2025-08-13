@@ -1,4 +1,4 @@
-import type { LicenseControllerGetLicenseListResponses, PaginationMetaDto, StandardResponseDto, UsersControllerCreateResponses, UsersControllerFindAllUsersResponses } from '~/lib/api/generated/types.gen'
+import type { LicenseControllerGetLicenseListResponses, PaginationMetaDto, StandardResponseDto, UsersControllerCreateResponses } from '~/lib/api/generated/types.gen'
 
 // ==================== 通用 API 类型定义 ====================
 

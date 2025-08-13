@@ -5,18 +5,6 @@ import { AdminRoutes } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
 import { authControllerLoginMutation, authControllerLogoutMutation } from '~api/@tanstack/react-query.gen'
 
-// ==================== 查询键定义 ====================
-
-/**
- * 认证相关查询键
- */
-export const authQueryKeys = {
-  all: ['auth'] as const,
-  profile: () => [...authQueryKeys.all, 'profile'] as const,
-} as const
-
-// ==================== Hook 函数 ====================
-
 /**
  * 登录 Hook
  *

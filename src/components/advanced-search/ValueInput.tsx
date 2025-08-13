@@ -20,8 +20,7 @@ import { Label } from '~/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Switch } from '~/components/ui/switch'
-import { Textarea } from '~/components/ui/textarea'
-import { FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
+import { FieldTypeEnum } from '~/constants/form'
 import { cn } from '~/lib/utils'
 import type { SearchField, SearchOperator } from '~/types/advanced-search'
 import { getOperatorConfig } from '~/utils/advanced-search/search-config'
@@ -226,7 +225,6 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
               </PopoverTrigger>
               <PopoverContent align="start" className="w-auto p-0">
                 <CalendarComponent
-                  initialFocus
                   mode="single"
                   selected={endValue ? new Date(endValue) : undefined}
                   onSelect={(date) => { handleEndChange(date?.toISOString().split('T')[0]) }}
@@ -246,9 +244,9 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
           <Label className="text-sm text-muted-foreground">最小值</Label>
           <Input
             disabled={disabled}
-            placeholder={placeholder?.[0] || '最小值'}
+            placeholder={placeholder?.[0] ?? '最小值'}
             type="number"
-            value={startValue || ''}
+            value={startValue ?? ''}
             onChange={(e) => { handleStartChange(e.target.value ? Number(e.target.value) : undefined) }}
           />
         </div>
@@ -256,9 +254,9 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
           <Label className="text-sm text-muted-foreground">最大值</Label>
           <Input
             disabled={disabled}
-            placeholder={placeholder?.[1] || '最大值'}
+            placeholder={placeholder?.[1] ?? '最大值'}
             type="number"
-            value={endValue || ''}
+            value={endValue ?? ''}
             onChange={(e) => { handleEndChange(e.target.value ? Number(e.target.value) : undefined) }}
           />
         </div>
@@ -301,7 +299,7 @@ export function ValueInput({
         <TagInput
           disabled={disabled}
           fieldType={field.type}
-          placeholder={placeholder || '输入值，按 Enter 或逗号分隔'}
+          placeholder={placeholder ?? '输入值，按 Enter 或逗号分隔'}
           value={Array.isArray(value) ? value : []}
           onChange={onChange}
         />
@@ -314,8 +312,10 @@ export function ValueInput({
         <RangeInput
           disabled={disabled}
           fieldType={field.type}
-          placeholder={[placeholder || '最小值', '最大值']}
-          value={Array.isArray(value) && value.length === 2 ? value as [any, any] : [undefined, undefined]}
+          placeholder={[placeholder ?? '最小值', '最大值']}
+          value={Array.isArray(value) && value.length === 2
+            ? (value as [any, any])
+            : [undefined, undefined]}
           onChange={onChange}
         />
       )
@@ -339,9 +339,9 @@ export function ValueInput({
 
       case FieldTypeEnum.ENUM:
         return (
-          <Select disabled={disabled} value={String(value || '')} onValueChange={onChange}>
+          <Select disabled={disabled} value={String(value ?? '')} onValueChange={onChange}>
             <SelectTrigger>
-              <SelectValue placeholder={placeholder || '请选择'} />
+              <SelectValue placeholder={placeholder ?? '请选择'} />
             </SelectTrigger>
             <SelectContent>
               {field.options?.map((option) => (
@@ -365,13 +365,12 @@ export function ValueInput({
                 disabled={disabled}
                 variant="outline"
               >
-                <Calendar className="mr-2 h-4 w-4" />
-                {value ? format(new Date(String(value)), 'yyyy-MM-dd') : (placeholder || '选择日期')}
+                <Calendar className="mr-2" />
+                {value ? format(new Date(String(value)), 'yyyy-MM-dd') : (placeholder ?? '选择日期')}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto p-0">
               <CalendarComponent
-                initialFocus
                 mode="single"
                 selected={value ? new Date(String(value)) : undefined}
                 onSelect={(date) => { onChange(date?.toISOString().split('T')[0]) }}
@@ -384,27 +383,25 @@ export function ValueInput({
         return (
           <Input
             disabled={disabled}
-            placeholder={placeholder || '输入数值'}
+            placeholder={placeholder ?? '输入数值'}
             type="number"
-            value={String(value || '')}
+            value={String(value ?? '')}
             onChange={(e) => { onChange(e.target.value ? Number(e.target.value) : undefined) }}
           />
         )
-
-      case FieldTypeEnum.STRING:
 
       default:
         return (
           <Input
             disabled={disabled}
-            placeholder={placeholder || '输入文本'}
+            placeholder={placeholder ?? '输入文本'}
             type="text"
-            value={String(value || '')}
+            value={String(value ?? '')}
             onChange={(e) => { onChange(e.target.value) }}
           />
         )
     }
-  }, [field, operator, operatorConfig, value, onChange, disabled, placeholder])
+  }, [field, operatorConfig, value, onChange, disabled, placeholder])
 
   return (
     <div className={cn('space-y-1', className)}>

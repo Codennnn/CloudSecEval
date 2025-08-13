@@ -241,7 +241,7 @@ export function TableToolbar(props: TableToolbarProps) {
             </div>
           </PopoverTrigger>
 
-          <PopoverContent align="end" className="w-auto min-w-[400px]">
+          <PopoverContent align="center" className="w-auto min-w-[400px]">
             <div>
               <div className="flex items-center pb-4">
                 <h4 className="text-sm font-medium">排序条件</h4>
