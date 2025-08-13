@@ -3,5 +3,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { FieldTypeEnum } from '~/constants/form'
 
 export type TableColumnDef<TData> = ColumnDef<TData> & {
+  /** 字段类型 */
   type?: FieldTypeEnum
+  /** 是否在表格中隐藏 */
+  hiddenInTable?: boolean
 }

@@ -1,6 +1,6 @@
 import { useEvent } from 'react-use-event-hook'
 
-import { ArrowUpDownIcon, ColumnsIcon, ListFilterIcon, PlusIcon, TrashIcon } from 'lucide-react'
+import { ArrowUpDownIcon, Columns3CogIcon, ListFilterIcon, PlusIcon, TrashIcon } from 'lucide-react'
 
 import { ColumnVisibilityControls } from '~/components/advanced-search/ColumnVisibilityControls'
 import { FilterConditions } from '~/components/advanced-search/FilterConditions'
@@ -120,230 +120,232 @@ export function TableToolbar(props: TableToolbarProps) {
 
   return (
     <div className="flex items-center justify-end gap-2">
-      {/* MARK: 筛选功能 */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <div className="relative">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="sm" variant="secondary">
-                  <ListFilterIcon />
+      <div className="flex items-center gap-1">
+        {/* MARK: 筛选功能 */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="relative">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" variant={hasFilterConditions ? 'secondary' : 'ghost'}>
+                    <ListFilterIcon />
+                    {hasFilterConditions && (
+                      <Badge className="text-xs rounded-full">
+                        {config.filterConditions.length}
+                      </Badge>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+
+                <TooltipContent>
+                  条件筛选 {hasFilterConditions && `（${config.filterConditions.length} 个条件）`}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </PopoverTrigger>
+
+          <PopoverContent align="start" className="w-auto min-w-[400px]">
+            <div>
+              <div className="flex items-center pb-4">
+                <h4 className="text-sm font-medium">筛选条件</h4>
+
+                <div className="flex items-center gap-2 ml-auto">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <PlusIcon />
+                        添加条件
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>选择字段</DropdownMenuLabel>
+
+                      <DropdownMenuSeparator />
+
+                      {fields.map((field) => (
+                        <DropdownMenuItem
+                          key={field.key}
+                          className="px-3 py-2"
+                          onClick={() => {
+                            handleAddCondition(field.key)
+                          }}
+                        >
+                          {field.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
                   {hasFilterConditions && (
-                    <Badge className="text-xs rounded-full">
-                      {config.filterConditions.length}
-                    </Badge>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            clearConditions()
+                          }}
+                        >
+                          <TrashIcon />
+                        </Button>
+
+                      </TooltipTrigger>
+
+                      <TooltipContent>
+                        清除所有条件
+                      </TooltipContent>
+                    </Tooltip>
                   )}
-                </Button>
-              </TooltipTrigger>
-
-              <TooltipContent>
-                条件筛选 {hasFilterConditions && `（${config.filterConditions.length} 个条件）`}
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </PopoverTrigger>
-
-        <PopoverContent align="start" className="w-auto min-w-[400px]">
-          <div>
-            <div className="flex items-center pb-4">
-              <h4 className="text-sm font-medium">筛选条件</h4>
-
-              <div className="flex items-center gap-2 ml-auto">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="sm" variant="outline">
-                      <PlusIcon />
-                      添加条件
-                    </Button>
-                  </DropdownMenuTrigger>
-
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>选择字段</DropdownMenuLabel>
-
-                    <DropdownMenuSeparator />
-
-                    {fields.map((field) => (
-                      <DropdownMenuItem
-                        key={field.key}
-                        className="px-3 py-2"
-                        onClick={() => {
-                          handleAddCondition(field.key)
-                        }}
-                      >
-                        {field.label}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {hasFilterConditions && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          clearConditions()
-                        }}
-                      >
-                        <TrashIcon />
-                      </Button>
-
-                    </TooltipTrigger>
-
-                    <TooltipContent>
-                      清除所有条件
-                    </TooltipContent>
-                  </Tooltip>
-                )}
+                </div>
               </div>
+
+              <FilterConditions
+                conditions={config.filterConditions}
+                errors={errors}
+                fields={fields}
+                onDeleteCondition={removeCondition}
+                onDuplicateCondition={duplicateCondition}
+                onUpdateCondition={updateCondition}
+              />
             </div>
+          </PopoverContent>
+        </Popover>
 
-            <FilterConditions
-              conditions={config.filterConditions}
-              errors={errors}
-              fields={fields}
-              onDeleteCondition={removeCondition}
-              onDuplicateCondition={duplicateCondition}
-              onUpdateCondition={updateCondition}
-            />
-          </div>
-        </PopoverContent>
-      </Popover>
+        {/* MARK: 排序功能 */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="relative">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" variant={hasSortConditions ? 'secondary' : 'ghost'}>
+                    <ArrowUpDownIcon />
+                    {hasSortConditions && (
+                      <Badge className="text-xs rounded-full">
+                        {config.sortConditions.length}
+                      </Badge>
+                    )}
+                  </Button>
+                </TooltipTrigger>
 
-      {/* MARK: 排序功能 */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <div className="relative">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="sm" variant="secondary">
-                  <ArrowUpDownIcon />
+                <TooltipContent>
+                  列表排序 {hasSortConditions && `（${config.sortConditions.length} 项排序）`}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </PopoverTrigger>
+
+          <PopoverContent align="start" className="w-auto min-w-[400px]">
+            <div>
+              <div className="flex items-center pb-4">
+                <h4 className="text-sm font-medium">排序条件</h4>
+
+                <div className="flex items-center gap-2 ml-auto">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <PlusIcon />
+                        添加排序
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>选择字段</DropdownMenuLabel>
+
+                      <DropdownMenuSeparator />
+
+                      {sortableFields.map((field) => (
+                        <DropdownMenuItem
+                          key={field.key}
+                          className="px-3 py-2"
+                          onClick={() => {
+                            handleAddSortCondition(field.key)
+                          }}
+                        >
+                          {field.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
                   {hasSortConditions && (
-                    <Badge className="text-xs rounded-full">
-                      {config.sortConditions.length}
-                    </Badge>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            clearSortConditions()
+                          }}
+                        >
+                          <TrashIcon />
+                        </Button>
+
+                      </TooltipTrigger>
+
+                      <TooltipContent>
+                        清除所有排序
+                      </TooltipContent>
+                    </Tooltip>
                   )}
-                </Button>
-              </TooltipTrigger>
-
-              <TooltipContent>
-                列表排序 {hasSortConditions && `（${config.sortConditions.length} 项排序）`}
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </PopoverTrigger>
-
-        <PopoverContent align="start" className="w-auto min-w-[400px]">
-          <div>
-            <div className="flex items-center pb-4">
-              <h4 className="text-sm font-medium">排序条件</h4>
-
-              <div className="flex items-center gap-2 ml-auto">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="sm" variant="outline">
-                      <PlusIcon />
-                      添加排序
-                    </Button>
-                  </DropdownMenuTrigger>
-
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>选择字段</DropdownMenuLabel>
-
-                    <DropdownMenuSeparator />
-
-                    {sortableFields.map((field) => (
-                      <DropdownMenuItem
-                        key={field.key}
-                        className="px-3 py-2"
-                        onClick={() => {
-                          handleAddSortCondition(field.key)
-                        }}
-                      >
-                        {field.label}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {hasSortConditions && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          clearSortConditions()
-                        }}
-                      >
-                        <TrashIcon />
-                      </Button>
-
-                    </TooltipTrigger>
-
-                    <TooltipContent>
-                      清除所有排序
-                    </TooltipContent>
-                  </Tooltip>
-                )}
+                </div>
               </div>
+
+              <SortConditions
+                conditions={config.sortConditions}
+                fields={sortableFields}
+                onConditionsChange={(newConditions) => {
+                  setConfig((prev) => ({
+                    ...prev,
+                    sortConditions: newConditions,
+                  }))
+                }}
+                onDeleteCondition={removeSortCondition}
+                onDuplicateCondition={duplicateSortCondition}
+                onUpdateCondition={updateSortCondition}
+              />
             </div>
+          </PopoverContent>
+        </Popover>
 
-            <SortConditions
-              conditions={config.sortConditions}
-              fields={sortableFields}
-              onConditionsChange={(newConditions) => {
-                setConfig((prev) => ({
-                  ...prev,
-                  sortConditions: newConditions,
-                }))
-              }}
-              onDeleteCondition={removeSortCondition}
-              onDuplicateCondition={duplicateSortCondition}
-              onUpdateCondition={updateSortCondition}
-            />
-          </div>
-        </PopoverContent>
-      </Popover>
+        {/* MARK: 列设置功能 */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="relative">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" variant={hasHiddenColumns ? 'secondary' : 'ghost'}>
+                    <Columns3CogIcon />
+                  </Button>
+                </TooltipTrigger>
 
-      {/* MARK: 列控制功能 */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <div className="relative">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="sm" variant="secondary">
-                  <ColumnsIcon />
-                </Button>
-              </TooltipTrigger>
-
-              <TooltipContent>
-                列控制 {hasHiddenColumns && `（显示 ${visibleFields.length} / ${fields.length} 列）`}
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </PopoverTrigger>
-
-        <PopoverContent align="start" className="w-auto min-w-[350px]">
-          <div>
-            <div className="flex items-center pb-4">
-              <h4 className="text-sm font-medium">列控制</h4>
+                <TooltipContent>
+                  列设置 {hasHiddenColumns && `（显示 ${visibleFields.length} / ${fields.length} 列）`}
+                </TooltipContent>
+              </Tooltip>
             </div>
+          </PopoverTrigger>
 
-            <ColumnVisibilityControls
-              allFields={fields}
-              canHideField={canHideField}
-              hiddenFields={hiddenFields}
-              visibleFields={visibleFields}
-              onReorder={reorderVisibleColumns}
-              onReset={resetColumnVisibility}
-              onShowAll={showAllColumns}
-              onToggleVisibility={toggleFieldVisibility}
-            />
-          </div>
-        </PopoverContent>
-      </Popover>
+          <PopoverContent align="start" className="w-auto min-w-[350px]">
+            <div>
+              <div className="flex items-center pb-4">
+                <h4 className="text-sm font-medium">列设置</h4>
+              </div>
+
+              <ColumnVisibilityControls
+                allFields={fields}
+                canHideField={canHideField}
+                hiddenFields={hiddenFields}
+                visibleFields={visibleFields}
+                onReorder={reorderVisibleColumns}
+                onReset={resetColumnVisibility}
+                onShowAll={showAllColumns}
+                onToggleVisibility={toggleFieldVisibility}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
 
       {right}
     </div>

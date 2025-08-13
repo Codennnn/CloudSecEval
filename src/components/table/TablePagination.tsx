@@ -75,10 +75,10 @@ export function TablePagination<TData>({
   }
 
   return (
-    <div className={`flex items-center justify-between px-4 ${className}`}>
+    <div className={`flex items-center justify-between ${className}`}>
       {/* 选中行数统计 */}
       {showSelection && (
-        <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+        <div className="px-1 text-muted-foreground hidden flex-1 text-sm lg:flex">
           已选择 {selectedCount} / {totalRows} 行
         </div>
       )}

@@ -50,7 +50,6 @@ import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 import { licenseControllerGetLicenseListOptions } from '~api/@tanstack/react-query.gen'
 
 export function LicensesPage() {
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
 
   const [pagination, setPagination] = useState({
@@ -66,31 +65,26 @@ export function LicensesPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnOrder, setColumnOrder] = useState<string[]>([])
 
-  const { data: dataX, isLoading } = useQuery(licenseControllerGetLicenseListOptions({
+  const { data, isLoading } = useQuery(licenseControllerGetLicenseListOptions({
     query: {
       ...queryParams,
       page: pagination.pageIndex + 1,
       pageSize: pagination.pageSize,
     },
   }))
-  const list = dataX?.data
-  const tablePagination = dataX?.pagination
+  const list = data?.data
+  const tablePagination = data?.pagination
 
   const handleDeleteClick = (license: LicenseData) => {
     setLicenseToDelete(license)
-    setDeleteConfirmOpen(true)
   }
 
   const handleDeleteConfirm = async () => {
-    if (!licenseToDelete) {
-      return
+    if (licenseToDelete) {
+      await deleteLicenseMutation.mutateAsync(licenseToDelete.id)
+      toast.success(`授权码 ${licenseToDelete.code} 已成功删除`)
+      setLicenseToDelete(null)
     }
-
-    await deleteLicenseMutation.mutateAsync(licenseToDelete.id)
-    toast.success(`授权码 ${licenseToDelete.code} 已成功删除`)
-
-    setDeleteConfirmOpen(false)
-    setLicenseToDelete(null)
   }
 
   // MARK: 表格列定义
@@ -104,6 +98,7 @@ export function LicensesPage() {
             {row.original.email}
           </div>
         ),
+        enableHiding: false,
       },
       {
         accessorKey: 'code',
@@ -119,7 +114,6 @@ export function LicensesPage() {
             </div>
           </div>
         ),
-        enableHiding: false,
       },
       {
         accessorKey: 'remark',
@@ -229,7 +223,7 @@ export function LicensesPage() {
 
     // 对于不能隐藏的列（如操作列），强制设为可见
     columns.forEach((column) => {
-      if ('enableHiding' in column && column.enableHiding === false) {
+      if (column.enableHiding === false) {
         const key = 'accessorKey' in column ? column.accessorKey : column.id
 
         if (key) {
@@ -248,7 +242,7 @@ export function LicensesPage() {
 
     // 添加强制可见的列（如果还没有在列表中）
     columns.forEach((column) => {
-      if ('enableHiding' in column && column.enableHiding === false) {
+      if (column.enableHiding === false) {
         const key = 'accessorKey' in column ? column.accessorKey : column.id
 
         if (key && !newColumnOrder.includes(key)) {
@@ -416,10 +410,14 @@ export function LicensesPage() {
             : null
         }
         isDeleting={deleteLicenseMutation.isPending}
-        open={deleteConfirmOpen}
+        open={!!licenseToDelete}
         title="删除授权码"
         onConfirm={handleDeleteConfirm}
-        onOpenChange={setDeleteConfirmOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setLicenseToDelete(null)
+          }
+        }}
       />
     </div>
   )
