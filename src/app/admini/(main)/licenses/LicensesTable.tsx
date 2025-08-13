@@ -25,6 +25,7 @@ import type { LicenseData } from '~/lib/api/types'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
+import { LicenseDetailDrawer } from '~admin/components/LicenseDetailDrawer'
 import { useDeleteLicense } from '~admin/hooks/api/useLicense'
 import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 import { licenseControllerGetLicenseListOptions, licenseControllerGetLicenseListQueryKey } from '~api/@tanstack/react-query.gen'
@@ -35,6 +36,7 @@ export function LicensesTable() {
   const [queryKey, setQueryKey] = useState<QueryKey>()
 
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
+  const [selectedLicenseId, setSelectedLicenseId] = useState<string | null>(null)
 
   const { openCreateDialog, openEditDialog } = useLicenseDialog()
 
@@ -48,6 +50,10 @@ export function LicensesTable() {
 
   const handleDeleteClick = (license: LicenseData) => {
     setLicenseToDelete(license)
+  }
+
+  const handleViewDetail = (licenseId: string) => {
+    setSelectedLicenseId(licenseId)
   }
 
   const handleDeleteConfirm = async () => {
@@ -139,9 +145,7 @@ export function LicensesTable() {
             <DropdownMenuContent align="end" className="w-32">
               <DropdownMenuItem
                 onClick={() => {
-                  // TODO: 实现查看详情功能
-                  // 暂时使用 row.original.id 来避免 ESLint 警告
-                  void row.original.id
+                  handleViewDetail(row.original.id)
                 }}
               >
                 查看详情
@@ -236,6 +240,15 @@ export function LicensesTable() {
           if (!open) {
             setLicenseToDelete(null)
           }
+        }}
+      />
+
+      {/* MARK: 授权码详情抽屉 */}
+      <LicenseDetailDrawer
+        licenseId={selectedLicenseId}
+        open={!!selectedLicenseId}
+        onOpenChange={() => {
+          setSelectedLicenseId(null)
         }}
       />
     </div>
