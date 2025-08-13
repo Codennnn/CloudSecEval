@@ -9,6 +9,8 @@ import type {
   UpdateLicenseDto,
 } from '~/lib/api/types'
 
+import { licenseControllerDeleteLicenseMutation } from '~api/@tanstack/react-query.gen'
+
 // ==================== 查询键定义 ====================
 
 /**
@@ -108,17 +110,16 @@ export function useDeleteLicense() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: string): Promise<void> => {
-      await api.delete(licenseEndpoints.delete(id))
-    },
+    ...licenseControllerDeleteLicenseMutation(),
     onSuccess: async (_, id) => {
-      // 删除成功后，使相关查询失效
-      await queryClient.invalidateQueries({
-        queryKey: licenseQueryKeys.detail(id),
-      })
-      await queryClient.invalidateQueries({
-        queryKey: licenseQueryKeys.lists(),
-      })
+      console.log('delete license', id)
+      // // 删除成功后，使相关查询失效
+      // await queryClient.invalidateQueries({
+      //   queryKey: licenseQueryKeys.detail(id),
+      // })
+      // await queryClient.invalidateQueries({
+      //   queryKey: licenseQueryKeys.lists(),
+      // })
     },
   })
 }

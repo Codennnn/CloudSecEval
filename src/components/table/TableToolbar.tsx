@@ -144,7 +144,7 @@ export function TableToolbar(props: TableToolbarProps) {
             </div>
           </PopoverTrigger>
 
-          <PopoverContent align="start" className="w-auto min-w-[400px]">
+          <PopoverContent align="end" className="w-auto min-w-[400px]">
             <div>
               <div className="flex items-center pb-4">
                 <h4 className="text-sm font-medium">筛选条件</h4>
@@ -235,7 +235,7 @@ export function TableToolbar(props: TableToolbarProps) {
             </div>
           </PopoverTrigger>
 
-          <PopoverContent align="start" className="w-auto min-w-[400px]">
+          <PopoverContent align="end" className="w-auto min-w-[400px]">
             <div>
               <div className="flex items-center pb-4">
                 <h4 className="text-sm font-medium">排序条件</h4>
@@ -326,7 +326,7 @@ export function TableToolbar(props: TableToolbarProps) {
             </div>
           </PopoverTrigger>
 
-          <PopoverContent align="start" className="w-auto min-w-[350px]">
+          <PopoverContent align="end" className="w-auto min-w-[350px]">
             <div>
               <div className="flex items-center pb-4">
                 <h4 className="text-sm font-medium">列设置</h4>

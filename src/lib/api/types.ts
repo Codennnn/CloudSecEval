@@ -1,4 +1,4 @@
-import type { LicenseControllerGetLicenseListResponses, PaginationMetaDto, StandardResponseDto, UsersControllerCreateResponses } from '~api/types.gen'
+import type { LicenseControllerGetLicenseListResponses, PaginationMetaDto, StandardResponseDto, UsersControllerCreateResponses, UsersControllerFindAllUsersResponses } from '~/lib/api/generated/types.gen'
 
 // ==================== 通用 API 类型定义 ====================
 
@@ -15,6 +15,20 @@ export interface ApiResponse<T = unknown> extends Omit<StandardResponseDto, 'dat
  * 用户信息接口
  */
 export type User = NonNullable<UsersControllerCreateResponses['200']>['data']
+
+/**
+ * 用户列表数据类型
+ */
+export interface UserData {
+  id: string
+  email: string
+  name?: string
+  phone?: string
+  avatarUrl?: string
+  isActive: boolean
+  createdAt: string
+  updatedAt?: string
+}
 
 /**
  * 创建用户 DTO

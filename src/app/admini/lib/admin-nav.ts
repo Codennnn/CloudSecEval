@@ -100,9 +100,13 @@ const createAdminNavItem = (adminRoute: AdminRoutes) => ({
   icon: adminNavConfig[adminRoute].icon,
 })
 
+/**
+ * MARK: 主导航栏
+ */
 export const adminNavMain = [
   createAdminNavItem(AdminRoutes.Dashboard),
   createAdminNavItem(AdminRoutes.Licenses),
+  createAdminNavItem(AdminRoutes.Users),
 ]
 
 export const adminNavSecondary = [

@@ -11,14 +11,32 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
+export function ThemeDropdownMenuItems() {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <>
+      <DropdownMenuItem variant={theme === 'light' ? 'highlight' : 'default'} onClick={() => { setTheme('light') }}>
+        亮色
+      </DropdownMenuItem>
+
+      <DropdownMenuItem variant={theme === 'dark' ? 'highlight' : 'default'} onClick={() => { setTheme('dark') }}>
+        暗色
+      </DropdownMenuItem>
+
+      <DropdownMenuItem variant={theme === 'system' ? 'highlight' : 'default'} onClick={() => { setTheme('system') }}>
+        跟随系统
+      </DropdownMenuItem>
+    </>
+  )
+}
+
 interface ThemeModeToggleProps {
   triggerButtonProps?: React.ComponentProps<typeof Button>
 }
 
 export function ThemeModeToggle(props: ThemeModeToggleProps) {
   const { triggerButtonProps } = props
-
-  const { theme, setTheme } = useTheme()
 
   return (
     <DropdownMenu>
@@ -30,17 +48,7 @@ export function ThemeModeToggle(props: ThemeModeToggleProps) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        <DropdownMenuItem variant={theme === 'light' ? 'highlight' : 'default'} onClick={() => { setTheme('light') }}>
-          亮色
-        </DropdownMenuItem>
-
-        <DropdownMenuItem variant={theme === 'dark' ? 'highlight' : 'default'} onClick={() => { setTheme('dark') }}>
-          暗色
-        </DropdownMenuItem>
-
-        <DropdownMenuItem variant={theme === 'system' ? 'highlight' : 'default'} onClick={() => { setTheme('system') }}>
-          跟随系统
-        </DropdownMenuItem>
+        <ThemeDropdownMenuItems />
       </DropdownMenuContent>
     </DropdownMenu>
   )

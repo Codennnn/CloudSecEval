@@ -6,9 +6,11 @@ import {
   EllipsisVerticalIcon,
   ExternalLinkIcon,
   LogOutIcon,
+  PaletteIcon,
   UserIcon,
 } from 'lucide-react'
 
+import { ThemeDropdownMenuItems } from '~/components/ThemeModeToggle'
 import {
   Avatar,
   AvatarFallback,
@@ -21,6 +23,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import {
@@ -71,7 +76,6 @@ export function NavUser() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
-            align="end"
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
@@ -93,6 +97,19 @@ export function NavUser() {
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
+
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <div className="flex items-center gap-2">
+                  <PaletteIcon className="size-4" />
+                  颜色主题
+                </div>
+              </DropdownMenuSubTrigger>
+
+              <DropdownMenuSubContent>
+                <ThemeDropdownMenuItems />
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
 
             <DropdownMenuGroup>
               <Link href={AdminRoutes.Profile}>

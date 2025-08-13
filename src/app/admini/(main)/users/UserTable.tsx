@@ -8,9 +8,9 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { CopyButton } from '~/components/CopyButton'
 import { ProTable, type QueryOptions } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
+import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
@@ -20,39 +20,32 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import { FieldTypeEnum } from '~/constants/form'
-import type { LicenseData } from '~/lib/api/types'
+import type { UserData } from '~/lib/api/types'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
-import { useDeleteLicense } from '~admin/hooks/api/useLicense'
-import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
-import { licenseControllerGetLicenseListOptions } from '~api/@tanstack/react-query.gen'
+import { useDeleteUser } from '~admin/hooks/api/useUser'
+import { usersControllerFindAllUsersOptions } from '~api/@tanstack/react-query.gen'
 
-export function LicensesPage() {
-  const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
+export function UserTable() {
+  const [userToDelete, setUserToDelete] = useState<UserData | null>(null)
 
-  const { openCreateDialog, openEditDialog } = useLicenseDialog()
+  const deleteUserMutation = useDeleteUser()
 
-  const deleteLicenseMutation = useDeleteLicense()
-
-  const handleDeleteClick = (license: LicenseData) => {
-    setLicenseToDelete(license)
+  const handleDeleteClick = (user: UserData) => {
+    setUserToDelete(user)
   }
 
   const handleDeleteConfirm = async () => {
-    if (licenseToDelete) {
-      await deleteLicenseMutation.mutateAsync({
-        path: {
-          id: licenseToDelete.id,
-        },
-      })
-      toast.success(`授权码 ${licenseToDelete.code} 已成功删除`)
-      setLicenseToDelete(null)
+    if (userToDelete) {
+      await deleteUserMutation.mutateAsync(userToDelete.id)
+      toast.success(`用户 ${userToDelete.email} 已成功删除`)
+      setUserToDelete(null)
     }
   }
 
   // MARK: 表格列定义
-  const columns = useMemo<TableColumnDef<LicenseData>[]>(() => {
+  const columns = useMemo<TableColumnDef<UserData>[]>(() => {
     return [
       {
         accessorKey: 'email',
@@ -65,39 +58,34 @@ export function LicensesPage() {
         enableHiding: false,
       },
       {
-        accessorKey: 'code',
-        header: '授权码',
+        accessorKey: 'name',
+        header: '姓名',
         cell: ({ row }) => (
-          <div className="inline-flex items-center gap-1 group/code">
-            <div className="font-mono text-sm">
-              {row.original.code}
-            </div>
-
-            <div className="group-hover/code:opacity-100 opacity-0">
-              <CopyButton text={row.original.code} />
-            </div>
-          </div>
-        ),
-      },
-      {
-        accessorKey: 'remark',
-        header: '备注',
-        cell: ({ row }) => (
-          <div className="max-w-xs truncate">
-            {row.original.remark ?? (
+          <div className="text-sm">
+            {row.original.name ?? (
               <span className="text-muted-foreground">-</span>
             )}
           </div>
         ),
       },
       {
-        accessorKey: 'expiresAt',
-        header: '过期时间',
-        type: FieldTypeEnum.DATE,
+        accessorKey: 'phone',
+        header: '手机号',
         cell: ({ row }) => (
           <div className="text-sm">
-            {formatDate(row.original.expiresAt)}
+            {row.original.phone ?? (
+              <span className="text-muted-foreground">-</span>
+            )}
           </div>
+        ),
+      },
+      {
+        accessorKey: 'isActive',
+        header: '状态',
+        cell: ({ row }) => (
+          <Badge variant={row.original.isActive ? 'default' : 'secondary'}>
+            {row.original.isActive ? '激活' : '未激活'}
+          </Badge>
         ),
       },
       {
@@ -138,12 +126,9 @@ export function LicensesPage() {
 
               <DropdownMenuItem
                 onClick={() => {
-                  const licenseForEdit = {
-                    ...row.original,
-                    email: row.original.email,
-                    remark: row.original.remark,
-                  }
-                  openEditDialog(licenseForEdit)
+                  // TODO: 实现编辑功能
+                  // 暂时使用 row.original.id 来避免 ESLint 警告
+                  void row.original.id
                 }}
               >
                 编辑
@@ -166,23 +151,24 @@ export function LicensesPage() {
         enableHiding: false,
       },
     ]
-  }, [openEditDialog])
+  }, [])
 
   return (
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
-      <ProTable<LicenseData>
+      <ProTable<UserData>
         columns={columns}
-        queryOptions={licenseControllerGetLicenseListOptions as QueryOptions<LicenseData>}
+        queryOptions={usersControllerFindAllUsersOptions as QueryOptions<UserData>}
         toolbar={{
           rightContent: (
             <Button
               size="sm"
               onClick={() => {
-                openCreateDialog()
+                // TODO: 实现新增用户功能
+                toast.info('新增用户功能开发中...')
               }}
             >
               <Plus />
-              新增授权码
+              新增用户
             </Button>
           ),
         }}
@@ -193,35 +179,37 @@ export function LicensesPage() {
         confirmText="DELETE"
         deleteButtonText="确认删除"
         description={
-          licenseToDelete
+          userToDelete
             ? (
                 <div>
                   你即将删除：
                   <ul className="list-disc list-inside space-y-1.5 py-2">
                     <li>
-                      授权码：
-                      <code>
-                        {licenseToDelete.code}
-                      </code>
-                    </li>
-                    <li>
                       邮箱：
                       <span className="text-muted-foreground">
-                        {licenseToDelete.email}
+                        {userToDelete.email}
                       </span>
                     </li>
+                    {userToDelete.name && (
+                      <li>
+                        姓名：
+                        <span className="text-muted-foreground">
+                          {userToDelete.name}
+                        </span>
+                      </li>
+                    )}
                   </ul>
                 </div>
               )
             : null
         }
-        isDeleting={deleteLicenseMutation.isPending}
-        open={!!licenseToDelete}
-        title="删除授权码"
+        isDeleting={deleteUserMutation.isPending}
+        open={!!userToDelete}
+        title="删除用户"
         onConfirm={handleDeleteConfirm}
         onOpenChange={(open) => {
           if (!open) {
-            setLicenseToDelete(null)
+            setUserToDelete(null)
           }
         }}
       />
