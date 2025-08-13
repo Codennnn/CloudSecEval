@@ -1,12 +1,9 @@
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { api } from '~/lib/api/client'
-import { authEndpoints } from '~/lib/api/endpoints'
-
 import { AdminRoutes } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
-import { authControllerLoginMutation } from '~api/@tanstack/react-query.gen'
+import { authControllerLoginMutation, authControllerLogoutMutation } from '~api/@tanstack/react-query.gen'
 
 // ==================== 查询键定义 ====================
 
@@ -31,7 +28,6 @@ export const authQueryKeys = {
  */
 export function useLogin() {
   const router = useRouter()
-  const queryClient = useQueryClient()
 
   const { setUser } = useUserStore()
 
@@ -39,9 +35,6 @@ export function useLogin() {
     ...authControllerLoginMutation(),
     onSuccess: (data) => {
       const user = data.data?.user ?? null
-
-      // 缓存用户信息到 React Query
-      queryClient.setQueryData(authQueryKeys.profile(), user)
 
       // 同步用户信息到 store（持久化存储）
       setUser(user)
@@ -66,16 +59,7 @@ export function useLogout() {
   const { clearUser } = useUserStore()
 
   return useMutation({
-    mutationFn: async (): Promise<void> => {
-      try {
-        // 调用后端登出接口
-        await api.post(authEndpoints.logout())
-      }
-      catch (error) {
-        // 即使后端登出失败，也继续清除本地状态
-        console.warn('后端登出请求失败，继续清除本地状态', error)
-      }
-    },
+    ...authControllerLogoutMutation(),
     onSuccess: () => {
       clearUser()
 

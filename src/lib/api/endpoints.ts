@@ -97,27 +97,6 @@ export function buildApiUrl(
 // ==================== 端点工具函数 ====================
 
 /**
- * 认证端点工具函数
- */
-export const authEndpoints = {
-  login: () => buildApiUrl(AUTH_ENDPOINTS.LOGIN),
-  logout: () => buildApiUrl(AUTH_ENDPOINTS.LOGOUT),
-  profile: () => buildApiUrl(AUTH_ENDPOINTS.PROFILE),
-} as const
-
-/**
- * 用户端点工具函数
- */
-export const userEndpoints = {
-  list: () => buildApiUrl(USER_ENDPOINTS.LIST),
-  detail: (id: string) => buildApiUrl(USER_ENDPOINTS.DETAIL, id),
-  create: () => buildApiUrl(USER_ENDPOINTS.CREATE),
-  update: (id: string) => buildApiUrl(USER_ENDPOINTS.UPDATE, id),
-  delete: (id: string) => buildApiUrl(USER_ENDPOINTS.DELETE, id),
-  current: () => buildApiUrl(USER_ENDPOINTS.CURRENT),
-} as const
-
-/**
  * 授权码端点工具函数
  */
 export const licenseEndpoints = {

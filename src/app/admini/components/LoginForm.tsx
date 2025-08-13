@@ -70,7 +70,7 @@ export function LoginForm({
       email: values.email,
       password: values.password,
     }
-    loginMutation.mutate(loginData)
+    loginMutation.mutate({ body: loginData })
   }
 
   return (
