@@ -78,7 +78,7 @@ function FieldItem(props: FieldItemProps) {
   const {
     field,
     isVisible,
-    canHide,
+    canHide = true,
     onToggleVisibility,
   } = props
 
@@ -99,20 +99,23 @@ function FieldItem(props: FieldItemProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            disabled={isVisible && !canHide}
+            disabled={!canHide}
             size="sm"
             variant="ghost"
-            onClick={handleToggleClick}
+            onClick={() => {
+              handleToggleClick()
+            }}
           >
             {isVisible
               ? (
-                  <EyeIcon className="w-4 h-4" />
+                  <EyeIcon />
                 )
               : (
-                  <EyeOffIcon className="w-4 h-4" />
+                  <EyeOffIcon />
                 )}
           </Button>
         </TooltipTrigger>
+
         <TooltipContent>
           {isVisible
             ? (canHide ? '隐藏此列' : '至少需要显示一列')
@@ -128,6 +131,7 @@ function FieldItem(props: FieldItemProps) {
  */
 function DraggableFieldItem(props: FieldItemProps) {
   const { field } = props
+
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: field.key,
   })
@@ -241,9 +245,9 @@ export function ColumnVisibilityControls(props: ColumnVisibilityControlsProps) {
                     return (
                       <DraggableFieldItem
                         key={field.key}
+                        isVisible
                         canHide={canHide}
                         field={field}
-                        isVisible={true}
                         onToggleVisibility={onToggleVisibility}
                       />
                     )
@@ -265,7 +269,7 @@ export function ColumnVisibilityControls(props: ColumnVisibilityControlsProps) {
                 .map((field) => (
                   <FieldItem
                     key={field.key}
-                    canHide={true}
+                    canHide
                     field={field}
                     isVisible={false}
                     onToggleVisibility={onToggleVisibility}

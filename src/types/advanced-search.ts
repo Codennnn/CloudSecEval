@@ -85,6 +85,8 @@ export interface SearchField {
   sortable?: boolean
   /** 是否默认可见 */
   visible?: boolean
+  /** 是否可隐藏 */
+  enableHiding?: boolean
 }
 
 /**

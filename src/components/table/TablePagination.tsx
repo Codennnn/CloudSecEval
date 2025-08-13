@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
+import { cn } from '~/lib/utils'
 
 /**
  * 分页组件属性接口
@@ -30,17 +31,14 @@ export interface TablePaginationProps<TData> {
   showSelection?: boolean
   /** 每页条数选项，默认为 [10, 20, 30, 40, 50] */
   pageSizeOptions?: number[]
-  /** 自定义样式类名 */
   className?: string
 }
 
 /**
  * 表格分页组件
  *
- * 使用 React Table 实例来获取分页信息和控制分页行为
- *
- * @param props 分页组件属性
- * @returns 分页组件
+ * 提供页码导航、每页条数设置、选中行数统计等功能
+ * 基于 TanStack Table，支持响应式设计
  */
 export function TablePagination<TData>({
   table,
@@ -60,7 +58,6 @@ export function TablePagination<TData>({
 
   /**
    * 处理页码变化
-   * @param newPageIndex 新的页码索引（从 0 开始）
    */
   const handlePageIndexChange = (newPageIndex: number) => {
     table.setPageIndex(newPageIndex)
@@ -68,27 +65,21 @@ export function TablePagination<TData>({
 
   /**
    * 处理每页条数变化
-   * @param newPageSize 新的每页条数
    */
   const handlePageSizeChange = (newPageSize: number) => {
     table.setPageSize(newPageSize)
   }
 
   return (
-    <div className={`flex items-center justify-between ${className}`}>
+    <div className={cn('flex items-center', className)}>
       {/* 选中行数统计 */}
       {showSelection && (
-        <div className="px-1 text-muted-foreground hidden flex-1 text-sm lg:flex">
+        <div className="px-1 text-muted-foreground hidden text-sm lg:flex">
           已选择 {selectedCount} / {totalRows} 行
         </div>
       )}
 
-      {/* 如果不显示选择统计，添加一个占位符以保持布局 */}
-      {!showSelection && (
-        <div className="hidden flex-1 lg:flex" />
-      )}
-
-      <div className="flex w-full items-center gap-8 lg:w-fit">
+      <div className="flex items-center gap-8 ml-auto lg:w-fit">
         {/* 每页条数选择器 */}
         {showPageSizeSelector && (
           <div className="hidden items-center gap-2 lg:flex">

@@ -1,4 +1,4 @@
-import type { LicenseControllerGetLicenseListResponses, StandardResponseDto, UsersControllerCreateResponses } from '~api/types.gen'
+import type { LicenseControllerGetLicenseListResponses, PaginationMetaDto, StandardResponseDto, UsersControllerCreateResponses } from '~api/types.gen'
 
 // ==================== 通用 API 类型定义 ====================
 
@@ -108,18 +108,11 @@ export type CreateLicenseDto = Pick<License, 'email' | 'purchaseAmount' | 'remar
 export type UpdateLicenseDto = Pick<License, 'status' | 'description' | 'expiresAt'>
 
 /**
- * 授权码列表响应（根据API返回格式定义）
+ * 通用列表响应接口
  */
-export interface LicenseListResponse {
+export interface ListResponse<T = unknown> {
   code: number
   message: string
-  data: License[]
-  pagination: {
-    total: number
-    page: number
-    pageSize: number
-    totalPages: number
-    hasNextPage: boolean
-    hasPrevPage: boolean
-  }
+  data: T[]
+  pagination: PaginationMetaDto
 }

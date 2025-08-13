@@ -275,11 +275,9 @@ export function useColumnVisibility(
 
   // 检查是否可以隐藏某个字段
   const canHideField = useCallback((fieldKey: string): boolean => {
-    // 找到对应的字段
     const field = fields.find((f) => f.key === fieldKey)
 
-    // 如果字段设置了 visible: true（表示强制可见），则不能隐藏
-    if (field?.visible === true) {
+    if (field?.enableHiding === false) {
       return false
     }
 
