@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { api } from '~/lib/api/client'
 import { licenseEndpoints } from '~/lib/api/endpoints'
@@ -28,27 +28,6 @@ export const licenseQueryKeys = {
 } as const
 
 // ==================== Hook 函数 ====================
-
-/**
- * 获取单个授权码详情
- * @param id 授权码ID
- * @returns 授权码详情查询结果
- */
-export function useLicense(id: string) {
-  return useQuery({
-    queryKey: licenseQueryKeys.detail(id),
-    queryFn: async (): Promise<License> => {
-      if (!id) {
-        throw new Error('License ID is required')
-      }
-
-      return await api.get<License>(licenseEndpoints.detail(id))
-    },
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000, // 5分钟
-    gcTime: 10 * 60 * 1000, // 10分钟
-  })
-}
 
 /**
  * 创建授权码
@@ -106,20 +85,11 @@ export function useUpdateLicense() {
  * 删除授权码
  * @returns 删除授权码的mutation
  */
-export function useDeleteLicense() {
-  const queryClient = useQueryClient()
-
+export function useDeleteLicense(
+  options?: ReturnType<typeof licenseControllerDeleteLicenseMutation>,
+) {
   return useMutation({
     ...licenseControllerDeleteLicenseMutation(),
-    onSuccess: async (_, id) => {
-      console.log('delete license', id)
-      // // 删除成功后，使相关查询失效
-      // await queryClient.invalidateQueries({
-      //   queryKey: licenseQueryKeys.detail(id),
-      // })
-      // await queryClient.invalidateQueries({
-      //   queryKey: licenseQueryKeys.lists(),
-      // })
-    },
+    ...options,
   })
 }

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 
+import { type QueryKey, useQueryClient } from '@tanstack/react-query'
 import {
   EllipsisVerticalIcon,
   Plus,
@@ -9,7 +10,7 @@ import {
 import { toast } from 'sonner'
 
 import { CopyButton } from '~/components/CopyButton'
-import { ProTable, type QueryOptions } from '~/components/table/ProTable'
+import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Button } from '~/components/ui/button'
 import {
@@ -26,14 +27,24 @@ import { formatDate } from '~/utils/date'
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { useDeleteLicense } from '~admin/hooks/api/useLicense'
 import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
-import { licenseControllerGetLicenseListOptions } from '~api/@tanstack/react-query.gen'
+import { licenseControllerGetLicenseListOptions, licenseControllerGetLicenseListQueryKey } from '~api/@tanstack/react-query.gen'
 
 export function LicensesPage() {
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
 
   const { openCreateDialog, openEditDialog } = useLicenseDialog()
 
-  const deleteLicenseMutation = useDeleteLicense()
+  const queryClient = useQueryClient()
+
+  const [queryKey, setQueryKey] = useState<QueryKey>()
+
+  const deleteLicenseMutation = useDeleteLicense({
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey,
+      })
+    },
+  })
 
   const handleDeleteClick = (license: LicenseData) => {
     setLicenseToDelete(license)
@@ -172,7 +183,8 @@ export function LicensesPage() {
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <ProTable<LicenseData>
         columns={columns}
-        queryOptions={licenseControllerGetLicenseListOptions as QueryOptions<LicenseData>}
+        queryKeyFn={licenseControllerGetLicenseListQueryKey as QueryKeyFn}
+        queryOptionsFn={licenseControllerGetLicenseListOptions as QueryOptionsFn<LicenseData>}
         toolbar={{
           rightContent: (
             <Button
@@ -186,6 +198,7 @@ export function LicensesPage() {
             </Button>
           ),
         }}
+        onQueryKeyChange={setQueryKey}
       />
 
       {/* MARK: 删除确认对话框 */}

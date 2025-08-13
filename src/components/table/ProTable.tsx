@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
+import { type QueryKey, useQuery, useQueryClient, type UseQueryOptions } from '@tanstack/react-query'
 import {
   flexRender,
   getCoreRowModel,
@@ -11,6 +11,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
+import { consola } from 'consola'
 
 import type { TableColumnDef } from '~/components/table/table.type'
 import { generateSearchFields, getColumnKey } from '~/components/table/table.util'
@@ -33,8 +34,10 @@ import type { ColumnVisibilityConfig, QueryParams } from '~/types/advanced-searc
 import type { Options } from '~api/sdk.gen'
 import type { PaginationMetaDto } from '~api/types.gen'
 
-export type QueryOptions<TData> = (options: Options) =>
+export type QueryOptionsFn<TData> = (options: Options) =>
 UseQueryOptions<ListResponse<TData>, Error, ListResponse<TData>, unknown[]>
+
+export type QueryKeyFn = (options: Options) => QueryKey
 
 /**
  * ProTable 组件属性接口
@@ -51,7 +54,8 @@ export interface ProTableProps<TData> {
   pagination?: PaginationMetaDto
 
   /** 查询配置生成函数 */
-  queryOptions?: QueryOptions<TData>
+  queryOptionsFn?: QueryOptionsFn<TData>
+  queryKeyFn?: QueryKeyFn
 
   /** 工具栏配置 */
   toolbar?: {
@@ -59,6 +63,8 @@ export interface ProTableProps<TData> {
     showSearch?: boolean
     /** 是否显示列控制功能，默认 true */
     showColumnControl?: boolean
+    /** 是否显示刷新按钮，默认 true */
+    showRefresh?: boolean
     /** 右侧自定义内容 */
     rightContent?: React.ReactNode
   }
@@ -83,6 +89,10 @@ export interface ProTableProps<TData> {
   onPaginationChange?: (pagination: PaginationState) => void
   /** 查询参数变化回调 */
   onQueryParamsChange?: (params: QueryParams) => void
+  /** 查询键变化回调 */
+  onQueryKeyChange?: (queryKey?: QueryKey) => void
+  /** 刷新回调 */
+  onRefresh?: () => void | Promise<void>
 }
 
 /**
@@ -97,18 +107,22 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     data: externalData,
     loading: externalLoading = false,
     pagination: externalPagination,
-    queryOptions,
+    queryOptionsFn,
+    queryKeyFn,
     toolbar = {},
     columnVisibilityStorageKey,
     className,
     paginationConfig = {},
     onPaginationChange,
     onQueryParamsChange,
+    onQueryKeyChange,
+    onRefresh,
   } = props
 
   const {
     showSearch = true,
     showColumnControl = true,
+    showRefresh = true,
     rightContent,
   } = toolbar
 
@@ -129,18 +143,45 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
 
   const isExternalMode = !!externalData
 
+  const queryClient = useQueryClient()
+
+  const queryOptions = useMemo(() => {
+    return {
+      query: {
+        ...queryParams,
+        page: internalPagination.pageIndex + 1,
+        pageSize: internalPagination.pageSize,
+      },
+    }
+  }, [queryParams, internalPagination])
+
+  const queryKey = useMemo(() => queryKeyFn?.(queryOptions), [queryKeyFn, queryOptions])
+
+  useEffect(() => {
+    onQueryKeyChange?.(queryKey)
+  }, [queryKey, onQueryKeyChange])
+
   // 内置查询（仅在内置模式下使用）
   const internalQuery = useQuery(
-    isExternalMode || !queryOptions
+    isExternalMode || typeof queryOptionsFn !== 'function'
       ? { enabled: false, queryKey: ['disabled'] }
-      : queryOptions({
-          query: {
-            ...queryParams,
-            page: internalPagination.pageIndex + 1,
-            pageSize: internalPagination.pageSize,
-          },
-        }),
+      : queryOptionsFn(queryOptions),
   )
+
+  const handleRefresh = useEvent(async () => {
+    void onRefresh?.()
+
+    if (!isExternalMode) {
+      if (queryKey) {
+        await queryClient.invalidateQueries({
+          queryKey,
+        })
+      }
+      else {
+        consola.warn('找不到 queryKey！')
+      }
+    }
+  })
 
   const data = (isExternalMode ? externalData : internalQuery.data?.data) ?? []
   const loading = isExternalMode
@@ -268,13 +309,17 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
   return (
     <div className={cn('space-y-6', className)}>
       {/* MARK: 工具栏 */}
-      {(showSearch || showColumnControl || rightContent) && (
+      {(showSearch || showColumnControl || showRefresh || rightContent) && (
         <TableToolbar
           columnVisibilityStorageKey={columnVisibilityStorageKey}
           fields={searchFields}
           right={rightContent}
+          showRefresh={showRefresh}
           onColumnVisibilityChange={showColumnControl ? handleColumnVisibilityChange : undefined}
           onQueryParamsChange={showSearch ? handleQueryParamsChange : undefined}
+          onRefresh={() => {
+            void handleRefresh()
+          }}
         />
       )}
 

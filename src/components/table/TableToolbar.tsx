@@ -1,6 +1,6 @@
 import { useEvent } from 'react-use-event-hook'
 
-import { ArrowUpDownIcon, Columns3CogIcon, ListFilterIcon, PlusIcon, TrashIcon } from 'lucide-react'
+import { ArrowUpDownIcon, Columns3CogIcon, ListFilterIcon, PlusIcon, RefreshCwIcon, TrashIcon } from 'lucide-react'
 
 import { ColumnVisibilityControls } from '~/components/advanced-search/ColumnVisibilityControls'
 import { FilterConditions } from '~/components/advanced-search/FilterConditions'
@@ -33,6 +33,8 @@ interface TableToolbarProps {
   columnVisibilityStorageKey?: string
   /** 初始列可见性配置 */
   initialColumnVisibility?: Partial<ColumnVisibilityConfig>
+  /** 是否显示刷新按钮 */
+  showRefresh?: boolean
   /** 右侧内容 */
   right?: React.ReactNode
 
@@ -41,18 +43,22 @@ interface TableToolbarProps {
 
   /** 列可见性变化回调 */
   onColumnVisibilityChange?: (config: ColumnVisibilityConfig) => void
+  /** 刷新回调 */
+  onRefresh?: () => void
 }
 
 export function TableToolbar(props: TableToolbarProps) {
   const {
     fields,
     initialConfig,
+    showRefresh = false,
     right,
     columnVisibilityStorageKey,
     initialColumnVisibility,
 
     onQueryParamsChange,
     onColumnVisibilityChange,
+    onRefresh,
   } = props
 
   const {
@@ -345,6 +351,27 @@ export function TableToolbar(props: TableToolbarProps) {
             </div>
           </PopoverContent>
         </Popover>
+
+        {/* MARK: 刷新功能 */}
+        {showRefresh && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  onRefresh?.()
+                }}
+              >
+                <RefreshCwIcon />
+              </Button>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              刷新数据
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
 
       {right}

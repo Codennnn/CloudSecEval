@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { ProTable, type QueryOptions } from '~/components/table/ProTable'
+import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -25,7 +25,7 @@ import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { useDeleteUser } from '~admin/hooks/api/useUser'
-import { usersControllerFindAllUsersOptions } from '~api/@tanstack/react-query.gen'
+import { usersControllerFindAllUsersOptions, usersControllerFindAllUsersQueryKey } from '~api/@tanstack/react-query.gen'
 
 export function UserTable() {
   const [userToDelete, setUserToDelete] = useState<UserData | null>(null)
@@ -157,7 +157,8 @@ export function UserTable() {
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <ProTable<UserData>
         columns={columns}
-        queryOptions={usersControllerFindAllUsersOptions as QueryOptions<UserData>}
+        queryKeyFn={usersControllerFindAllUsersQueryKey as QueryKeyFn}
+        queryOptionsFn={usersControllerFindAllUsersOptions as QueryOptionsFn<UserData>}
         toolbar={{
           rightContent: (
             <Button

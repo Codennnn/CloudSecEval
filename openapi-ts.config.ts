@@ -60,6 +60,8 @@ export default defineConfig({
 
     {
       name: '@tanstack/react-query',
+      queryOptions: true,
+      queryKeys: true,
     },
   ],
 
