@@ -83,45 +83,6 @@ export type LicenseData = NonNullable<LicenseControllerGetLicenseListResponses['
 export type LicenseFormData = Pick<LicenseData, 'id' | 'remark' | 'expiresAt' | 'email' | 'purchaseAmount'>
 
 /**
- * 授权码信息接口
- */
-export interface License {
-  id: string
-  code: string
-  email: string
-  purchaseAmount: number
-  remark?: string
-  status: 'active' | 'inactive' | 'expired'
-  type?: string
-  description?: string
-  expiresAt?: string
-  createdAt?: string
-  updatedAt?: string
-  userId?: string
-}
-
-/**
- * 授权码查询参数
- */
-export interface LicenseQueryParams {
-  page: number
-  pageSize: number
-  status?: 'active' | 'inactive' | 'expired'
-  type?: string
-  userId?: string
-}
-
-/**
- * 创建授权码请求 DTO（用于表单提交）
- */
-export type CreateLicenseDto = Pick<License, 'email' | 'purchaseAmount' | 'remark' | 'expiresAt'>
-
-/**
- * 更新授权码 DTO
- */
-export type UpdateLicenseDto = Pick<License, 'status' | 'description' | 'expiresAt'>
-
-/**
  * 通用列表响应接口
  */
 export interface ListResponse<T = unknown> {

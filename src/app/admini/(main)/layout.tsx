@@ -39,7 +39,6 @@ export default function AdminLayout(props: React.PropsWithChildren) {
         </SidebarInset>
       </SidebarProvider>
 
-      {/* 全局对话框管理器 */}
       <LicenseDialogManager />
     </UserSyncProvider>
   )

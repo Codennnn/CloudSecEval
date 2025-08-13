@@ -1,6 +1,6 @@
 'use client'
 
-import type { License } from '~/lib/api/types'
+import type { LicenseData } from '~/lib/api/types'
 
 import { LicenseDialog } from './LicenseDialog'
 
@@ -17,15 +17,13 @@ export function LicenseDialogManager() {
     isOpen,
     mode,
     formData,
-    onSuccess,
     closeDialog,
   } = useLicenseDialogStore()
 
   /**
    * 处理对话框成功操作
    */
-  const handleSuccess = (result: License) => {
-    onSuccess?.(result)
+  const handleSuccess = () => {
     closeDialog()
   }
 
@@ -39,7 +37,9 @@ export function LicenseDialogManager() {
           closeDialog()
         }
       }}
-      onSuccess={handleSuccess}
+      onSuccess={() => {
+        handleSuccess()
+      }}
     />
   )
 }

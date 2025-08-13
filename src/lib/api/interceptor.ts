@@ -7,7 +7,7 @@ import type { ApiResponse } from './types'
 
 import { client } from '~api/client.gen'
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,

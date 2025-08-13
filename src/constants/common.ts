@@ -1,3 +1,5 @@
+import mitt from 'mitt'
+
 const SITE_DESCRIPTION = 'NestJS 中文文档，高质量的中文翻译版本，精准还原官方内容，助力中文开发者轻松掌握高效、可靠且可扩展的 Node.js 框架。'
 
 // 网站配置常量
@@ -29,3 +31,12 @@ export const SITE_CONFIG = {
   locale: 'zh-CN',
   language: 'zh_CN',
 } as const
+
+export const enum EVENT_KEY {
+  REFRESH_TABLE = 'refresh_table',
+}
+
+/**
+ * 全局事件发射器，用于在组件之间传递事件
+ */
+export const emitter = mitt()

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import { API_CONFIG, isDevtoolsEnabled } from '~/lib/api/config'
+import { ApiError } from '~/lib/api/interceptor'
 
 // React Query 配置
 const queryClientConfig = {
@@ -17,11 +18,15 @@ const queryClientConfig = {
       gcTime: API_CONFIG.cacheTime,
       // 重试配置
       retry: (failureCount: number, error: unknown) => {
+        if (error instanceof ApiError) {
+          return false
+        }
+
         // 对于 4xx 错误不重试
         if (error && typeof error === 'object' && 'status' in error) {
-          const status = error.status as number
+          const status = error.status
 
-          if (status >= 400 && status < 500) {
+          if (typeof status === 'number' && status >= 400 && status < 500) {
             return false
           }
         }

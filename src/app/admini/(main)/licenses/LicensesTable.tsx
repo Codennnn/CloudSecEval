@@ -1,8 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
-import { type QueryKey, useQueryClient } from '@tanstack/react-query'
+import { type QueryKey, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   EllipsisVerticalIcon,
   Plus,
@@ -20,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import { emitter, EVENT_KEY } from '~/constants/common'
 import { FieldTypeEnum } from '~/constants/form'
 import type { LicenseData } from '~/lib/api/types'
 import { formatDate } from '~/utils/date'
@@ -28,7 +30,7 @@ import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { LicenseDetailDrawer } from '~admin/components/LicenseDetailDrawer'
 import { useDeleteLicense } from '~admin/hooks/api/useLicense'
 import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
-import { licenseControllerGetLicenseListOptions, licenseControllerGetLicenseListQueryKey } from '~api/@tanstack/react-query.gen'
+import { licenseControllerAdminCheckLicenseMutation, licenseControllerGetLicenseListOptions, licenseControllerGetLicenseListQueryKey } from '~api/@tanstack/react-query.gen'
 
 export function LicensesTable() {
   const queryClient = useQueryClient()
@@ -40,13 +42,29 @@ export function LicensesTable() {
 
   const { openCreateDialog, openEditDialog } = useLicenseDialog()
 
+  const handleRefreshTable = useEvent(() => {
+    void queryClient.invalidateQueries({
+      queryKey,
+    })
+  })
+
+  useEffect(() => {
+    emitter.on(EVENT_KEY.REFRESH_TABLE, handleRefreshTable)
+
+    return () => {
+      emitter.off(EVENT_KEY.REFRESH_TABLE, handleRefreshTable)
+    }
+  }, [handleRefreshTable])
+
   const deleteLicenseMutation = useDeleteLicense({
     onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey,
-      })
+      handleRefreshTable()
     },
   })
+
+  // 检测授权码有效性的 mutation
+
+  const checkLicenseValidityMutation = useMutation(licenseControllerAdminCheckLicenseMutation())
 
   const handleDeleteClick = (license: LicenseData) => {
     setLicenseToDelete(license)
@@ -55,6 +73,69 @@ export function LicensesTable() {
   const handleViewDetail = (licenseId: string) => {
     setSelectedLicenseId(licenseId)
   }
+
+  // 处理检测授权码有效性
+  const handleCheckValidity = useEvent(async (license: LicenseData) => {
+    try {
+      const result = await checkLicenseValidityMutation.mutateAsync({
+        body: {
+          id: license.id,
+          email: license.email,
+          code: license.code,
+        },
+      })
+
+      // 处理响应数据
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const responseData = (result as any)?.data
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const valid = responseData?.valid
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const message = responseData?.message
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const details = responseData?.details
+
+      if (valid) {
+        toast.success(`授权码 ${license.code} 检测完成：${message ?? '有效'}`, {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          description: details?.expiresAt ? `过期时间：${details.expiresAt}` : undefined,
+        })
+      }
+      else {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        let description = message
+
+        if (details) {
+          const status = []
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          if (details.expired) {
+            status.push('已过期')
+          }
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          if (details.locked) {
+            status.push('已锁定')
+          }
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          if (details.isUsed) {
+            status.push('已使用')
+          }
+
+          if (status.length > 0) {
+            description = `${message ?? '无效'} (${status.join('、')})`
+          }
+        }
+
+        toast.error(`授权码 ${license.code} 检测完成：${description ?? '无效'}`)
+      }
+    }
+    catch (error) {
+      toast.error(`检测授权码 ${license.code} 时发生错误`)
+      console.error('License validity check error:', error)
+    }
+  })
 
   const handleDeleteConfirm = async () => {
     if (licenseToDelete) {
@@ -164,6 +245,15 @@ export function LicensesTable() {
                 编辑
               </DropdownMenuItem>
 
+              <DropdownMenuItem
+                disabled={checkLicenseValidityMutation.isPending}
+                onClick={() => {
+                  void handleCheckValidity(row.original)
+                }}
+              >
+                {checkLicenseValidityMutation.isPending ? '检测中...' : '检测有效性'}
+              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
               <DropdownMenuItem
@@ -181,7 +271,7 @@ export function LicensesTable() {
         enableHiding: false,
       },
     ]
-  }, [openEditDialog])
+  }, [openEditDialog, checkLicenseValidityMutation.isPending, handleCheckValidity])
 
   return (
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">

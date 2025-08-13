@@ -40,10 +40,11 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import { Textarea } from '~/components/ui/textarea'
-import type { CreateLicenseDto, License, UpdateLicenseDto } from '~/lib/api/types'
+import { emitter, EVENT_KEY } from '~/constants/common'
 
 import { useCreateLicense, useUpdateLicense } from '~admin/hooks/api/useLicense'
 import type { LicenseDialogMode, LicenseFormInitialData } from '~admin/stores/useLicenseDialogStore'
+import type { CreateLicenseDto, UpdateLicenseDto } from '~api/types.gen'
 
 const licenseFormSchema = z.object({
   email: z.email('请输入有效的邮箱地址'),
@@ -77,7 +78,7 @@ interface LicenseDialogProps {
   /** 对话框打开状态变化回调 */
   onOpenChange: (open: boolean) => void
   /** 成功操作后的回调 */
-  onSuccess?: (license: License) => void
+  onSuccess?: () => void
 }
 
 const baseDefaultValues: LicenseFormValues = {
@@ -176,6 +177,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
   const isEditMode = mode === 'edit'
 
   const dialogTitle = isEditMode ? '编辑授权码' : '创建授权码'
+
   const dialogDescription = isEditMode
     ? '修改授权码的相关信息'
     : '请填写以下信息来创建新的授权码'
@@ -276,19 +278,18 @@ export function LicenseDialog(props: LicenseDialogProps) {
     }
 
     try {
-      let result: License
-
       if (isEditMode && formData?.id) {
         // 编辑模式
         const updateData: UpdateLicenseDto = {
-          status: values.status ?? 'active',
-          description: values.remark?.trim() ?? undefined,
           expiresAt: values.expiresAt ?? undefined,
+          remark: values.remark?.trim() ?? undefined,
         }
 
-        result = await updateLicenseMutation.mutateAsync({
-          id: formData.id,
-          data: updateData,
+        await updateLicenseMutation.mutateAsync({
+          path: {
+            id: formData.id,
+          },
+          body: updateData,
         })
 
         toast.success('授权码更新成功')
@@ -302,17 +303,19 @@ export function LicenseDialog(props: LicenseDialogProps) {
           expiresAt: values.expiresAt ?? undefined,
         }
 
-        result = await createLicenseMutation.mutateAsync(createData)
+        await createLicenseMutation.mutateAsync({
+          body: createData,
+        })
+
         toast.success('授权码创建成功')
       }
 
-      // 调用成功回调
-      onSuccess?.(result)
+      onSuccess?.()
+      emitter.emit(EVENT_KEY.REFRESH_TABLE)
 
       handleOpenChange(false)
     }
-    catch (err) {
-      console.error(`${isEditMode ? '更新' : '创建'}授权码失败:`, err)
+    catch {
       toast.error(`${isEditMode ? '更新' : '创建'}授权码失败，请稍后重试`)
     }
   }

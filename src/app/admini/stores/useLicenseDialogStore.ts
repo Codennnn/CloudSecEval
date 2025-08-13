@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 
-import type { License, LicenseFormData } from '~/lib/api/types'
+import type { LicenseData, LicenseFormData } from '~/lib/api/types'
 
 /**
  * 授权码对话框模式
@@ -33,7 +33,7 @@ interface LicenseDialogState {
   /** 表单初始数据（创建模式为默认值，编辑模式为完整数据） */
   formData?: LicenseFormInitialData
   /** 成功回调函数 */
-  onSuccess?: (license: License) => void
+  onSuccess?: (license: LicenseData) => void
 }
 
 /**
@@ -46,8 +46,6 @@ interface LicenseDialogActions {
   openEditDialog: (license: LicenseFormData) => void
   /** 关闭对话框 */
   closeDialog: () => void
-  /** 设置成功回调 */
-  setOnSuccess: (callback?: (license: License) => void) => void
   /** 重置状态 */
   reset: () => void
 }
@@ -102,10 +100,6 @@ export const useLicenseDialogStore = create<LicenseDialogStore>((set) => ({
     })
   },
 
-  setOnSuccess: (callback?: (license: License) => void) => {
-    set({ onSuccess: callback })
-  },
-
   reset: () => {
     set(initialState)
   },
@@ -141,7 +135,6 @@ export function useLicenseDialog() {
     openCreateDialog,
     openEditDialog,
     closeDialog,
-    setOnSuccess,
     reset,
   } = useLicenseDialogStore()
 
@@ -149,7 +142,6 @@ export function useLicenseDialog() {
     openCreateDialog,
     openEditDialog,
     closeDialog,
-    setOnSuccess,
     reset,
   }
 }

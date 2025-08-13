@@ -170,7 +170,7 @@ export default function RootLayout(props: React.PropsWithChildren) {
           </ThemeProvider>
         </QueryProvider>
 
-        <Toaster position="top-center" />
+        <Toaster richColors position="top-center" />
 
         {/*
           Umami 网站分析脚本
