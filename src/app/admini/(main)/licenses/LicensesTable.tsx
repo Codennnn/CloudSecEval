@@ -29,7 +29,7 @@ import { useDeleteLicense } from '~admin/hooks/api/useLicense'
 import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 import { licenseControllerGetLicenseListOptions, licenseControllerGetLicenseListQueryKey } from '~api/@tanstack/react-query.gen'
 
-export function LicensesPage() {
+export function LicensesTable() {
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
 
   const { openCreateDialog, openEditDialog } = useLicenseDialog()

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { LicensesPage } from './LicensesPage'
+import { LicensesTable } from './LicensesTable'
 
 import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 }
 
 export default function AdminLicensesPage() {
-  return <LicensesPage />
+  return <LicensesTable />
 }
