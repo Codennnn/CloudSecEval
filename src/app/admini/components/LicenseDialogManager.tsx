@@ -1,7 +1,5 @@
 'use client'
 
-import type { LicenseData } from '~/lib/api/types'
-
 import { LicenseDialog } from './LicenseDialog'
 
 import { useLicenseDialogStore } from '~admin/stores/useLicenseDialogStore'

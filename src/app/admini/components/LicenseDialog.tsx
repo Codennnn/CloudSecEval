@@ -188,6 +188,8 @@ export function LicenseDialog(props: LicenseDialogProps) {
   const createLicenseMutation = useCreateLicense()
   const updateLicenseMutation = useUpdateLicense()
 
+  const isPending = createLicenseMutation.isPending || updateLicenseMutation.isPending
+
   const form = useForm<LicenseFormValues>({
     resolver: zodResolver(licenseFormSchema),
     defaultValues: convertToFormValues(formData, mode),
@@ -310,9 +312,8 @@ export function LicenseDialog(props: LicenseDialogProps) {
         toast.success('授权码创建成功')
       }
 
-      onSuccess?.()
       emitter.emit(EVENT_KEY.REFRESH_TABLE)
-
+      onSuccess?.()
       handleOpenChange(false)
     }
     catch {
@@ -346,11 +347,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
                   <FormLabel>邮箱地址</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={
-                        isEditMode
-                        || createLicenseMutation.isPending
-                        || updateLicenseMutation.isPending
-                      }
+                      disabled={isEditMode || isPending}
                       placeholder="请输入邮箱地址"
                       readOnly={isEditMode}
                       type="email"
@@ -371,7 +368,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
                     <FormLabel>购买价格（元）</FormLabel>
                     <FormControl>
                       <Input
-                        disabled={createLicenseMutation.isPending}
+                        disabled={isPending}
                         min="0"
                         placeholder="请输入购买价格"
                         step="0.01"
@@ -423,10 +420,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
                   <div className="flex items-center gap-2">
                     <FormControl>
                       <Select
-                        disabled={
-                          createLicenseMutation.isPending
-                          || updateLicenseMutation.isPending
-                        }
+                        disabled={isPending}
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value)
@@ -458,10 +452,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
                                 <PopoverTrigger asChild>
                                   <Button
                                     className="flex-1 justify-start text-left font-normal"
-                                    disabled={
-                                      createLicenseMutation.isPending
-                                      || updateLicenseMutation.isPending
-                                    }
+                                    disabled={isPending}
                                     variant="outline"
                                   >
                                     {dateField.value
@@ -505,10 +496,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
                   <FormLabel>备注</FormLabel>
                   <FormControl>
                     <Textarea
-                      disabled={
-                        createLicenseMutation.isPending
-                        || updateLicenseMutation.isPending
-                      }
+                      disabled={isPending}
                       placeholder="请输入备注信息（可选）"
                       rows={3}
                       {...field}
@@ -523,10 +511,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
 
         <DialogFooter>
           <Button
-            disabled={
-              createLicenseMutation.isPending
-              || updateLicenseMutation.isPending
-            }
+            disabled={isPending}
             type="button"
             variant="outline"
             onClick={() => {
@@ -537,16 +522,13 @@ export function LicenseDialog(props: LicenseDialogProps) {
           </Button>
 
           <Button
-            disabled={
-              createLicenseMutation.isPending
-              || updateLicenseMutation.isPending
-            }
+            disabled={isPending}
             type="button"
             onClick={() => {
               void form.handleSubmit(handleSubmit)()
             }}
           >
-            {(createLicenseMutation.isPending || updateLicenseMutation.isPending)
+            {isPending
               ? loadingButtonText
               : submitButtonText}
           </Button>
