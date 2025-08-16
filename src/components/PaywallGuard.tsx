@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+'use client'
 
 import { useQuery } from '@tanstack/react-query'
 
@@ -10,7 +10,7 @@ interface PaywallGuardProps {
   /**
    * 自定义的 fallback 内容，当用户无访问权限时显示
    */
-  fallback?: ReactNode
+  fallback?: React.ReactNode
 }
 
 /**
@@ -51,7 +51,7 @@ function useUserAccessCheck() {
   })
 
   return {
-    hasAccess: Boolean(data?.data?.authorized),
+    hasAccess: Boolean(data?.data.authorized),
     isLoading: shouldCheck && isLoading,
     isError,
     error,
@@ -67,7 +67,8 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
   const { children, fallback } = props
 
   const isPaidMode = usePaidContentMode()
-  // 获取用户访问权限校验结果（Hook 必须在顶层调用）
+
+  // 获取用户访问权限校验结果
   const { hasAccess, isLoading, isError, hasLicenseInfo } = useUserAccessCheck()
 
   // 如果未启用付费模式，直接显示内容

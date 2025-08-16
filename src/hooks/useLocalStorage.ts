@@ -3,7 +3,7 @@ import { useEvent } from 'react-use-event-hook'
 
 type Operation = 'read' | 'write' | 'remove'
 
-export interface UseLocalStorageOptions<T> {
+interface UseLocalStorageOptions<T> {
   /** 默认值 */
   defaultValue?: T
   /** 序列化函数 */
