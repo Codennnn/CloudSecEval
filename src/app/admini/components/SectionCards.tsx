@@ -1,110 +1,48 @@
-import { UserIcon } from 'lucide-react'
+import { CrownIcon, DollarSignIcon, ShieldAlertIcon } from 'lucide-react'
 
-import { Badge } from '~/components/ui/badge'
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card'
+import { StatCard, type StatCardData, StatCardsContainer } from './StatCard'
 
+/**
+ * 管理后台核心数据统计卡片组件
+ * 展示付费用户数量、收入统计和安全事件统计三个核心指标
+ */
 export function SectionCards() {
+  // 统计卡片数据配置
+  const statsData: StatCardData[] = [
+    {
+      title: '付费用户数量',
+      value: 892,
+      changePercent: '12.8%',
+      primaryText: '本月新增付费用户稳步增长',
+      secondaryText: '付费转化率达到预期目标',
+      icon: CrownIcon,
+      trendType: 'positive',
+    },
+    {
+      title: '总收入统计',
+      value: '¥28,560',
+      changePercent: '18.5%',
+      primaryText: '收入增长趋势良好',
+      secondaryText: '较上月同期增长显著',
+      icon: DollarSignIcon,
+      trendType: 'positive',
+    },
+    {
+      title: '安全事件统计',
+      value: 3,
+      changePercent: '25%',
+      primaryText: '安全事件数量持续下降',
+      secondaryText: '系统安全状况良好',
+      icon: ShieldAlertIcon,
+      trendType: 'positive', // 安全事件减少是正面趋势
+    },
+  ]
+
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/admin-content:grid-cols-2 @5xl/admin-content:grid-cols-4">
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <UserIcon />
-              +12.5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month
-            {' '}
-            <UserIcon className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
-          </div>
-        </CardFooter>
-      </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <UserIcon />
-              -20%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period
-            {' '}
-            <UserIcon className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Acquisition needs attention
-          </div>
-        </CardFooter>
-      </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <UserIcon />
-              +12.5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention
-            {' '}
-            <UserIcon className="size-4" />
-          </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
-        </CardFooter>
-      </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <UserIcon />
-              +4.5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase
-            {' '}
-            <UserIcon className="size-4" />
-          </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
-        </CardFooter>
-      </Card>
-    </div>
+    <StatCardsContainer>
+      {statsData.map((data, idx) => (
+        <StatCard key={idx} data={data} />
+      ))}
+    </StatCardsContainer>
   )
 }
