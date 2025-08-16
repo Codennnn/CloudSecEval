@@ -30,7 +30,7 @@ export function generateSearchFields<TData>(columns: TableColumnDef<TData>[]): S
       const key = column.accessorKey
       const header = typeof column.header === 'string' ? column.header : '???'
       const fieldType = column.type ?? FieldTypeEnum.STRING
-      const visible = column.hiddenInTable !== false
+      const visible = column.hiddenInTable !== true
 
       return {
         key,

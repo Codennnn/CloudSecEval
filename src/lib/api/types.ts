@@ -1,4 +1,4 @@
-import type { LicenseControllerGetLicenseListResponses, PaginationMetaDto, StandardResponseDto, UserResponseDto } from '~/lib/api/generated/types.gen'
+import type { LicenseListItemDto, PaginationMetaDto, StandardResponseDto, UserResponseDto } from '~api/types.gen'
 
 // ==================== 通用 API 类型定义 ====================
 
@@ -79,7 +79,7 @@ export interface JwtPayload {
 
 // ==================== 授权码相关类型 ====================
 
-export type LicenseData = NonNullable<LicenseControllerGetLicenseListResponses['200']['data']>[number]
+export type LicenseData = LicenseListItemDto
 export type LicenseFormData = Pick<LicenseData, 'id' | 'remark' | 'expiresAt' | 'email' | 'purchaseAmount'>
 
 /**

@@ -209,6 +209,12 @@ export function LicensesTable() {
         ),
       },
       {
+        accessorKey: 'updatedAt',
+        header: '更新时间',
+        type: FieldTypeEnum.DATE,
+        hiddenInTable: true,
+      },
+      {
         id: 'actions',
         header: '操作',
         cell: ({ row }) => (
