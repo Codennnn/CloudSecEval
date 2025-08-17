@@ -1,10 +1,9 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-
 import { DocLoadingSkeleton } from '~/components/ui/doc-loading-skeleton'
+import { useLicenseVerification } from '~/hooks/useLicenseVerification'
 import { usePaidContentMode } from '~/hooks/usePaidContentMode'
-import { licenseControllerCheckLicenseOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
+import { useOpenAuthDialog } from '~/stores/useAuthDialogStore'
 import { useHasValidLicense, useLicenseInfo } from '~/stores/useLicenseStore'
 import { isPaidContent } from '~/utils/free-content-config'
 
@@ -27,32 +26,24 @@ function useUserAccessCheck() {
   const licenseInfo = useLicenseInfo()
   const hasValidLicense = useHasValidLicense()
 
-  // 当有邮箱和授权码信息时才进行授权验证
-  const shouldCheck = hasValidLicense
-
   const {
-    data,
+    hasAccess,
     isLoading,
     isError,
     error,
-  } = useQuery({
-    ...licenseControllerCheckLicenseOptions({
-      body: {
-        email: licenseInfo?.email ?? '',
-        code: licenseInfo?.code ?? '',
-      },
-    }),
-    enabled: shouldCheck,
+  } = useLicenseVerification({
+    credentials: licenseInfo,
+    enabled: hasValidLicense,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 分钟内不重新验证
   })
 
   return {
-    hasAccess: Boolean(data?.data.authorized),
-    isLoading: shouldCheck && isLoading,
+    hasAccess,
+    isLoading,
     isError,
     error,
-    hasLicenseInfo: shouldCheck,
+    hasLicenseInfo: hasValidLicense,
   }
 }
 
@@ -63,10 +54,25 @@ function useUserAccessCheck() {
 export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) {
   const { children, fallback, docPath } = props
 
+  const openAuthDialog = useOpenAuthDialog()
   const isPaidMode = usePaidContentMode()
   const needsPayment = isPaidContent(docPath)
 
   const { hasAccess, isLoading, isError, hasLicenseInfo } = useUserAccessCheck()
+
+  /**
+   * 处理授权按钮点击事件
+   */
+  const handleAuthClick = (title?: string, description?: string) => {
+    openAuthDialog({
+      title,
+      description,
+      onSuccess: () => {
+        // 授权成功后，组件会自动重新渲染并显示内容
+        // 这里可以添加额外的成功处理逻辑，比如显示成功提示
+      },
+    })
+  }
 
   // 如果未启用付费模式或当前内容不需要付费，直接显示内容
   if (!isPaidMode || !needsPayment) {
@@ -97,7 +103,10 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
             支持我们继续提供高质量的中文技术文档。
           </p>
           <div className="space-y-3">
-            <button className="bg-info hover:bg-info/90 text-info-foreground px-8 py-3 rounded-lg transition-colors font-medium">
+            <button
+              className="bg-info hover:bg-info/90 text-info-foreground px-8 py-3 rounded-lg transition-colors font-medium"
+              onClick={() => { handleAuthClick('输入授权信息', '请输入您的邮箱和授权码来解锁付费内容') }}
+            >
               输入授权码
             </button>
             <p className="text-sm text-info">
@@ -122,7 +131,10 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
             如有问题请联系客服。
           </p>
           <div className="space-y-3">
-            <button className="bg-error hover:bg-error/90 text-error-foreground px-8 py-3 rounded-lg transition-colors font-medium">
+            <button
+              className="bg-error hover:bg-error/90 text-error-foreground px-8 py-3 rounded-lg transition-colors font-medium"
+              onClick={() => { handleAuthClick('更新授权信息', '请更新您的邮箱和授权码') }}
+            >
               更新授权码
             </button>
             <p className="text-sm text-error">
@@ -159,5 +171,5 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
     )
   }
 
-  return <>{fallback ?? getDefaultFallback()}</>
+  return fallback ?? getDefaultFallback()
 }

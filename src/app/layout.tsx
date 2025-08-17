@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import Script from 'next/script'
 
+import { GlobalAuthDialog } from '~/components/GlobalAuthDialog'
 import { StructuredData } from '~/components/StructuredData'
 import { ThemeProvider } from '~/components/ThemeProvider'
 import { Toaster } from '~/components/ui/sonner'
@@ -167,6 +168,8 @@ export default function RootLayout(props: React.PropsWithChildren) {
             defaultTheme="system"
           >
             {props.children}
+
+            <GlobalAuthDialog />
           </ThemeProvider>
         </QueryProvider>
 
