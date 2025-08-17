@@ -46,6 +46,18 @@ export default function Page() {
           </div>
 
           <div className="border rounded-lg p-4 space-y-3">
+            <h3 className="font-semibold">CalloutInfo 组件测试</h3>
+            <p className="text-sm text-muted-foreground">
+              交互式测试 CalloutInfo 组件的各种样式变体和属性配置
+            </p>
+            <Link href="/test/callout-info">
+              <Button className="w-full" variant="outline">
+                查看测试
+              </Button>
+            </Link>
+          </div>
+
+          <div className="border rounded-lg p-4 space-y-3">
             <h3 className="font-semibold">Shiki 代码高亮测试</h3>
             <p className="text-sm text-muted-foreground">
               测试 Shiki 代码高亮和 Twoslash 类型提示功能
