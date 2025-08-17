@@ -124,8 +124,8 @@ export function LicenseTrendChart() {
 
   return (
     <Card className="@container/card">
-      <CardHeader className="flex items-center gap-2 space-y-0 sm:flex-row">
-        <div className="grid flex-1 gap-1 text-center sm:text-left">
+      <CardHeader className="flex items-center gap-2 space-y-0 @[480px]/card:flex-row">
+        <div className="grid flex-1 gap-1 text-center @[480px]/card:text-left">
           <CardTitle>每日新增授权码趋势</CardTitle>
           <CardDescription>
             展示指定时间范围内每日新增授权码的变化趋势
@@ -174,7 +174,7 @@ export function LicenseTrendChart() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="px-2 pt-4 @[480px]/card:px-6 @[480px]/card:pt-6">
         {isLoading
           ? (
               <div className="space-y-3">
@@ -248,7 +248,7 @@ export function LicenseTrendChart() {
 
         {/* 统计信息 */}
         {data?.data && (
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="pt-4 grid grid-cols-2 gap-4 @[640px]/card:grid-cols-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
                 {data.data.totalNewLicenses || 0}
