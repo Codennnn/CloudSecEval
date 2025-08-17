@@ -62,8 +62,6 @@ export function LicensesTable() {
     },
   })
 
-  // 检测授权码有效性的 mutation
-
   const checkLicenseValidityMutation = useMutation(licenseControllerAdminCheckLicenseMutation())
 
   const handleDeleteClick = (license: LicenseData) => {
@@ -77,7 +75,7 @@ export function LicensesTable() {
   // 处理检测授权码有效性
   const handleCheckValidity = useEvent(async (license: LicenseData) => {
     try {
-      const result = await checkLicenseValidityMutation.mutateAsync({
+      const { data } = await checkLicenseValidityMutation.mutateAsync({
         body: {
           id: license.id,
           email: license.email,
@@ -85,50 +83,40 @@ export function LicensesTable() {
         },
       })
 
-      // 处理响应数据
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      const responseData = (result as any)?.data
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      const valid = responseData?.valid
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      const message = responseData?.message
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      const details = responseData?.details
+      const valid = data.valid
+      const message = data.message
+      const details = data.details
 
       if (valid) {
-        toast.success(`授权码 ${license.code} 检测完成：${message ?? '有效'}`, {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        toast.success(`授权码 ${license.code} 检测完成：${message}`, {
+
           description: details?.expiresAt ? `过期时间：${details.expiresAt}` : undefined,
         })
       }
       else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         let description = message
 
         if (details) {
           const status = []
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           if (details.expired) {
             status.push('已过期')
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           if (details.locked) {
             status.push('已锁定')
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           if (details.isUsed) {
             status.push('已使用')
           }
 
           if (status.length > 0) {
-            description = `${message ?? '无效'} (${status.join('、')})`
+            description = `${message} (${status.join('、')})`
           }
         }
 
-        toast.error(`授权码 ${license.code} 检测完成：${description ?? '无效'}`)
+        toast.error(`授权码 ${license.code} 检测完成：${description}`)
       }
     }
     catch (error) {

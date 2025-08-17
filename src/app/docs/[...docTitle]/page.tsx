@@ -15,7 +15,6 @@ import type { PageProps } from '~/types/common'
 import { getPageTitle } from '~/utils/common'
 import { getAllDocPaths } from '~/utils/docs'
 import { getDocNavigation, getDocTitle } from '~/utils/docs.client'
-import { isPaidContent } from '~/utils/free-content-config'
 import { getDocsUrl } from '~/utils/link'
 
 type MDXContent = React.ComponentType
@@ -198,9 +197,6 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
   // 优先从导航数据中获取中文标题，如果找不到则使用默认逻辑
   const pageTitle = getDocTitle(docPath, docTitle)
 
-  // 检查当前页面是否需要付费
-  const needsPayment = isPaidContent(docPath)
-
   // 获取导航信息
   const navigation = getDocNavigation(`/${docPath}`)
 
@@ -267,19 +263,11 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
 
       <div className="max-w-[80ch] mx-auto py-[var(--content-padding)]">
         <ProseContainer as="article">
-          {needsPayment
-            ? (
-                <PaywallGuard>
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <DocContent docPath={docPath} />
-                  </Suspense>
-                </PaywallGuard>
-              )
-            : (
-                <Suspense fallback={<LoadingSpinner />}>
-                  <DocContent docPath={docPath} />
-                </Suspense>
-              )}
+          <PaywallGuard docPath={docPath}>
+            <Suspense fallback={<LoadingSpinner />}>
+              <DocContent docPath={docPath} />
+            </Suspense>
+          </PaywallGuard>
         </ProseContainer>
 
         <DocNavigation

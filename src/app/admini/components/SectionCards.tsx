@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { CrownIcon, DollarSignIcon, ShieldAlertIcon } from 'lucide-react'
+import { CrownIcon, JapaneseYenIcon, ShieldAlertIcon } from 'lucide-react'
 
 import { Skeleton } from '~/components/ui/skeleton'
 
@@ -104,7 +104,7 @@ export function SectionCards() {
       secondaryText: dashboardData.revenueGrowthRate >= 0
         ? '业务发展稳健'
         : '需要优化收入策略',
-      icon: DollarSignIcon,
+      icon: JapaneseYenIcon,
       trendType: getTrendType(dashboardData.revenueGrowthRate),
     },
     {

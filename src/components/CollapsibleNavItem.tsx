@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { ArrowUpRightIcon } from 'lucide-react'
+import { ArrowUpRightIcon, LockKeyholeIcon } from 'lucide-react'
 
 import { AppSidebarMenuButton, AppSidebarMenuSubButton, SidebarMenuButtonContent } from '~/components/layout/AppSidebarMenuButton'
 import {
@@ -19,6 +19,7 @@ import {
 } from '~/components/ui/sidebar'
 import { RoutePath } from '~/constants/routes.client'
 import type { NavMenuItem } from '~/types/nav'
+import { isPaidContent } from '~/utils/free-content-config'
 import { getDocLinkHref, isExternalLink } from '~/utils/link'
 
 interface CollapsibleNavItemProps {
@@ -154,6 +155,14 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                                           <span className="flex-1 truncate min-w-0">
                                             {subItem.title}
                                           </span>
+
+                                          {/* 付费提示图标 */}
+                                          {subItem.url && isPaidContent(subItem.url) && (
+                                            <LockKeyholeIcon
+                                              className="shrink-0 opacity-25"
+                                              size={8}
+                                            />
+                                          )}
 
                                           {isExternalLink(subItem.url)
                                             ? (

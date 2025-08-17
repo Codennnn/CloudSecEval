@@ -42,7 +42,7 @@ export function isFreeContent(docPath: string): boolean {
     }
 
     // 前缀匹配（支持目录级别的免费内容）
-    if (docPath.startsWith(`${freePath}/`)) {
+    if (docPath.startsWith(`/${freePath}`)) {
       return true
     }
 

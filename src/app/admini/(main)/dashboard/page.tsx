@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
 
-import data from './data.json'
+import { LicensesTable } from '../licenses/LicensesTable'
 
-import { ChartAreaInteractive } from '~admin/components/ChartAreaInteractive'
-import { DataTable } from '~admin/components/DataTable'
 import { LicenseTrendChart } from '~admin/components/LicenseTrendChart'
 import { SectionCards } from '~admin/components/SectionCards'
 import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
@@ -22,11 +20,7 @@ export default function AdminDashboardPage() {
           <LicenseTrendChart />
         </div>
 
-        <div className="px-admin-content-md lg:px-admin-content">
-          <ChartAreaInteractive />
-        </div>
-
-        <DataTable data={data} />
+        <LicensesTable />
       </div>
     </div>
   )

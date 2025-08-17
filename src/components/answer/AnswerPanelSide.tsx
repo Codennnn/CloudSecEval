@@ -23,7 +23,7 @@ export function AnswerPanelSide() {
   if (isOpen) {
     return (
       <div className="sticky top-0 h-full w-96 bg-background z-50 p-4 pl-2">
-        <div className="border border-border shadow-lg size-full rounded-md overflow-hidden">
+        <div className="border border-border shadow-lg size-full rounded-xl overflow-hidden">
           <AnswerPanelWithHistory
             isVisible={isOpen}
             onClose={close}
