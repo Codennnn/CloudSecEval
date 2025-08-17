@@ -8,7 +8,7 @@ import { DocNavigation } from '~/components/doc/DocNavigation'
 import { PaywallGuard } from '~/components/PaywallGuard'
 import { ProseContainer } from '~/components/ProseContainer'
 import { StructuredData } from '~/components/StructuredData'
-import { Skeleton } from '~/components/ui/skeleton'
+import { DocLoadingSkeleton } from '~/components/ui/doc-loading-skeleton'
 import { SITE_CONFIG } from '~/constants/common'
 import { RoutePath } from '~/constants/routes.client'
 import type { PageProps } from '~/types/common'
@@ -155,7 +155,6 @@ export async function generateStaticParams() {
   }
 }
 
-// 内容加载组件
 async function DocContent({ docPath }: { docPath: string }) {
   try {
     // 动态导入 MDX 内容
@@ -169,21 +168,7 @@ async function DocContent({ docPath }: { docPath: string }) {
   }
 }
 
-// 加载指示器组件
-function LoadingSpinner() {
-  return (
-    <div className="flex flex-col space-y-8">
-      <Skeleton className="h-12 w-1/3" />
 
-      <div className="space-y-4">
-        <Skeleton className="h-5" />
-        <Skeleton className="h-5" />
-        <Skeleton className="h-5" />
-        <Skeleton className="h-5 w-2/3" />
-      </div>
-    </div>
-  )
-}
 
 export default async function DocsPage({ params }: PageProps<{ docTitle: string[] }>) {
   const { docTitle } = await params
@@ -264,7 +249,7 @@ export default async function DocsPage({ params }: PageProps<{ docTitle: string[
       <div className="max-w-[80ch] mx-auto py-[var(--content-padding)]">
         <ProseContainer as="article">
           <PaywallGuard docPath={docPath}>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<DocLoadingSkeleton />}>
               <DocContent docPath={docPath} />
             </Suspense>
           </PaywallGuard>

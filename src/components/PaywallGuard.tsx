@@ -2,9 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { useLocalStorage } from '~/hooks/useLocalStorage'
+import { DocLoadingSkeleton } from '~/components/ui/doc-loading-skeleton'
 import { usePaidContentMode } from '~/hooks/usePaidContentMode'
 import { licenseControllerCheckLicenseOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
+import { useHasValidLicense, useLicenseInfo } from '~/stores/useLicenseStore'
 import { isPaidContent } from '~/utils/free-content-config'
 
 interface PaywallGuardProps {
@@ -19,24 +20,15 @@ interface PaywallGuardProps {
 }
 
 /**
- * 用户授权信息
- */
-interface UserLicenseInfo {
-  email: string
-  code: string
-  licenseId?: string
-}
-
-/**
  * 使用授权信息校验用户访问权限的 Hook
  * @returns 权限校验结果和状态
  */
 function useUserAccessCheck() {
-  // 从本地存储获取用户授权信息
-  const [licenseInfo] = useLocalStorage<UserLicenseInfo>('user-license-info')
+  const licenseInfo = useLicenseInfo()
+  const hasValidLicense = useHasValidLicense()
 
   // 当有邮箱和授权码信息时才进行授权验证
-  const shouldCheck = Boolean(licenseInfo?.email) && Boolean(licenseInfo?.code)
+  const shouldCheck = hasValidLicense
 
   const {
     data,
@@ -74,7 +66,6 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
   const isPaidMode = usePaidContentMode()
   const needsPayment = isPaidContent(docPath)
 
-  // 获取用户访问权限校验结果
   const { hasAccess, isLoading, isError, hasLicenseInfo } = useUserAccessCheck()
 
   // 如果未启用付费模式或当前内容不需要付费，直接显示内容
@@ -84,12 +75,7 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
 
   // 如果正在校验权限，显示加载状态
   if (isLoading) {
-    return (
-      <div className="bg-muted border border-border rounded-lg p-6 text-center">
-        <div className="text-2xl mb-3">⏳</div>
-        <p className="text-muted-foreground">正在验证授权信息...</p>
-      </div>
-    )
+    return <DocLoadingSkeleton />
   }
 
   // 如果用户有访问权限，显示内容
