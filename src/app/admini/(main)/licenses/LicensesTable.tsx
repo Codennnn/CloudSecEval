@@ -144,8 +144,14 @@ export function LicensesTable() {
         accessorKey: 'email',
         header: '邮箱',
         cell: ({ row }) => (
-          <div className="text-sm">
-            {row.original.email}
+          <div className="inline-flex items-center gap-1 group/email">
+            <div className="text-sm">
+              {row.original.email}
+            </div>
+
+            <div className="group-hover/email:opacity-100 opacity-0">
+              <CopyButton text={row.original.email} />
+            </div>
           </div>
         ),
         enableHiding: false,
@@ -154,14 +160,8 @@ export function LicensesTable() {
         accessorKey: 'code',
         header: '授权码',
         cell: ({ row }) => (
-          <div className="inline-flex items-center gap-1 group/code">
-            <div className="font-mono text-sm">
-              {row.original.code}
-            </div>
-
-            <div className="group-hover/code:opacity-100 opacity-0">
-              <CopyButton text={row.original.code} />
-            </div>
+          <div className="font-mono text-sm">
+            {row.original.code}
           </div>
         ),
       },
@@ -271,6 +271,7 @@ export function LicensesTable() {
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <ProTable<LicenseData>
         columns={columns}
+        headerTitle="授权码列表"
         queryKeyFn={licenseControllerGetLicenseListQueryKey as QueryKeyFn}
         queryOptionsFn={licenseControllerGetLicenseListOptions as QueryOptionsFn<LicenseData>}
         toolbar={{

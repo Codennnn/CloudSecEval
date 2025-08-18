@@ -33,10 +33,9 @@ export function AppHeader() {
       {!hasValidLicense && (
         <Button
           size="sm"
-          variant="outline"
-          onClick={handleAuthClick}
+          onClick={() => { handleAuthClick() }}
         >
-          授权解锁
+          立即授权
         </Button>
       )}
     </div>

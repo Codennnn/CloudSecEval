@@ -170,6 +170,7 @@ export function UsersTable() {
     <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
       <ProTable<UserData>
         columns={columns}
+        headerTitle="用户列表"
         queryKeyFn={usersControllerFindAllUsersQueryKey as QueryKeyFn}
         queryOptionsFn={usersControllerFindAllUsersOptions as QueryOptionsFn<UserData>}
         toolbar={{

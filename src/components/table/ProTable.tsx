@@ -50,6 +50,8 @@ export interface ProTableProps<TData> {
   data?: TData[]
   /** 加载状态 */
   loading?: boolean
+  /** 表格标题 */
+  headerTitle?: string
   /** 分页配置 */
   pagination?: PaginationMetaDto
 
@@ -109,6 +111,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     pagination: externalPagination,
     queryOptionsFn,
     queryKeyFn,
+    headerTitle,
     toolbar = {},
     columnVisibilityStorageKey,
     className,
@@ -308,20 +311,25 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
 
   return (
     <div className={cn('space-y-6', className)}>
-      {/* MARK: 工具栏 */}
-      {(showSearch || showColumnControl || showRefresh || rightContent) && (
-        <TableToolbar
-          columnVisibilityStorageKey={columnVisibilityStorageKey}
-          fields={searchFields}
-          right={rightContent}
-          showRefresh={showRefresh}
-          onColumnVisibilityChange={showColumnControl ? handleColumnVisibilityChange : undefined}
-          onQueryParamsChange={showSearch ? handleQueryParamsChange : undefined}
-          onRefresh={() => {
-            void handleRefresh()
-          }}
-        />
-      )}
+      <div className="flex items-center gap-2">
+        {!!headerTitle && <h2 className="font-bold">{headerTitle}</h2>}
+
+        {/* MARK: 工具栏 */}
+        {(showSearch || showColumnControl || showRefresh || rightContent) && (
+          <TableToolbar
+            className="ml-auto"
+            columnVisibilityStorageKey={columnVisibilityStorageKey}
+            fields={searchFields}
+            right={rightContent}
+            showRefresh={showRefresh}
+            onColumnVisibilityChange={showColumnControl ? handleColumnVisibilityChange : undefined}
+            onQueryParamsChange={showSearch ? handleQueryParamsChange : undefined}
+            onRefresh={() => {
+              void handleRefresh()
+            }}
+          />
+        )}
+      </div>
 
       {/* MARK: 表格 */}
       <div className="rounded-md border overflow-hidden">

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { CollapsibleNavItem } from '~/components/CollapsibleNavItem'
+import { LicenseInfoPopover } from '~/components/LicenseInfoPopover'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { SearchForm } from '~/components/SearchForm'
 import { ThemeModeToggle } from '~/components/ThemeModeToggle'
@@ -22,10 +23,12 @@ import {
 import { SITE_CONFIG } from '~/constants/common'
 import { RoutePath } from '~/constants/routes.client'
 import { navMainData } from '~/lib/data/nav'
+import { useHasValidLicense } from '~/stores/useLicenseStore'
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const hasValidLicense = useHasValidLicense()
 
   /**
    * 滚动到激活的菜单项
@@ -49,11 +52,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     }
   }
 
-  // 当路径变化时，延迟执行滚动以确保DOM更新完成
+  // 当路径变化时，延迟执行滚动以确保 DOM 更新完成
   useEffect(() => {
     const timer = setTimeout(() => {
       scrollToActiveItem()
-    }, 100) // 给一些时间让菜单展开和DOM更新
+    }, 100) // 给一些时间让菜单展开和 DOM 更新
 
     return () => {
       clearTimeout(timer)
@@ -114,6 +117,8 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
       <div className="flex items-center gap-2 p-4 border-t border-border">
         <ThemeModeToggle />
+
+        {hasValidLicense && <LicenseInfoPopover />}
       </div>
     </Sidebar>
   )

@@ -19,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { useSearchBuilder } from '~/hooks/advanced-search/useSearchBuilder'
 import { useColumnVisibility } from '~/hooks/useColumnVisibility'
+import { cn } from '~/lib/utils'
 import type { ColumnVisibilityConfig, QueryParams, SearchConfig, SearchField } from '~/types/advanced-search'
 import { generateQueryParams, getDefaultOperatorByFieldType } from '~/utils/advanced-search/search-config'
 
@@ -37,10 +38,11 @@ interface TableToolbarProps {
   showRefresh?: boolean
   /** 右侧内容 */
   right?: React.ReactNode
+  /** 样式类名 */
+  className?: string
 
   /** 查询参数变更回调 */
   onQueryParamsChange?: (queryParams: QueryParams) => void
-
   /** 列可见性变化回调 */
   onColumnVisibilityChange?: (config: ColumnVisibilityConfig) => void
   /** 刷新回调 */
@@ -55,6 +57,7 @@ export function TableToolbar(props: TableToolbarProps) {
     right,
     columnVisibilityStorageKey,
     initialColumnVisibility,
+    className,
 
     onQueryParamsChange,
     onColumnVisibilityChange,
@@ -125,7 +128,7 @@ export function TableToolbar(props: TableToolbarProps) {
   const sortableFields = fields.filter((field) => field.sortable !== false)
 
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className={cn('flex items-center justify-end gap-2', className)}>
       <div className="flex items-center gap-1">
         {/* MARK: 筛选功能 */}
         <Popover>
