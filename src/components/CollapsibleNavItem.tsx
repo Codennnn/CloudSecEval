@@ -159,8 +159,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                                           {/* 付费提示图标 */}
                                           {subItem.url && isPaidContent(subItem.url) && (
                                             <LockKeyholeIcon
-                                              className="shrink-0 opacity-25"
-                                              size={8}
+                                              className="shrink-0 opacity-25 !size-3"
                                             />
                                           )}
 

@@ -22,7 +22,7 @@ export function useLogin() {
   return useMutation({
     ...authControllerLoginMutation(),
     onSuccess: (data) => {
-      const user = data.data?.user ?? null
+      const user = data.data.user
 
       // 同步用户信息到 store（持久化存储）
       setUser(user)

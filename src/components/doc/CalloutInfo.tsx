@@ -11,7 +11,7 @@ import { SpacingWrapper } from '~/components/doc/SpacingWrapper'
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert'
 import { cn } from '~/lib/utils'
 
-interface CalloutInfoProps {
+export interface CalloutInfoProps {
   type?: 'secondary' | 'info' | 'warning' | 'error' | 'success'
   title?: React.ReactNode
   description?: string

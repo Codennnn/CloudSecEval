@@ -168,8 +168,6 @@ async function DocContent({ docPath }: { docPath: string }) {
   }
 }
 
-
-
 export default async function DocsPage({ params }: PageProps<{ docTitle: string[] }>) {
   const { docTitle } = await params
 

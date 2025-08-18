@@ -160,21 +160,21 @@ function TagInput({ value = [], onChange, placeholder, disabled, fieldType }: Ta
  * 范围输入组件（用于 between 操作符）
  */
 interface RangeInputProps {
-  value: [any, any]
-  onChange: (value: [any, any]) => void
+  value: [string | number | undefined, string | number | undefined]
+  onChange: (value: [string | number | undefined, string | number | undefined]) => void
   fieldType: FieldTypeEnum
   disabled?: boolean
   placeholder?: [string, string]
 }
 
 function RangeInput({ value, onChange, fieldType, disabled, placeholder }: RangeInputProps) {
-  const [startValue, endValue] = value || [undefined, undefined]
+  const [startValue, endValue] = value
 
-  const handleStartChange = useCallback((newValue: any) => {
+  const handleStartChange = useCallback((newValue: string | number | undefined) => {
     onChange([newValue, endValue])
   }, [onChange, endValue])
 
-  const handleEndChange = useCallback((newValue: any) => {
+  const handleEndChange = useCallback((newValue: string | number | undefined) => {
     onChange([startValue, newValue])
   }, [onChange, startValue])
 
@@ -202,7 +202,9 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
                 <CalendarComponent
                   mode="single"
                   selected={startValue ? new Date(startValue) : undefined}
-                  onSelect={(date) => { handleStartChange(date?.toISOString().split('T')[0]) }}
+                  onSelect={(date) => {
+                    handleStartChange(date?.toISOString().split('T')[0])
+                  }}
                 />
               </PopoverContent>
             </Popover>
@@ -227,7 +229,9 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
                 <CalendarComponent
                   mode="single"
                   selected={endValue ? new Date(endValue) : undefined}
-                  onSelect={(date) => { handleEndChange(date?.toISOString().split('T')[0]) }}
+                  onSelect={(date) => {
+                    handleEndChange(date?.toISOString().split('T')[0])
+                  }}
                 />
               </PopoverContent>
             </Popover>
@@ -247,7 +251,9 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
             placeholder={placeholder?.[0] ?? '最小值'}
             type="number"
             value={startValue ?? ''}
-            onChange={(e) => { handleStartChange(e.target.value ? Number(e.target.value) : undefined) }}
+            onChange={(e) => {
+              handleStartChange(e.target.value ? Number(e.target.value) : undefined)
+            }}
           />
         </div>
         <div>
@@ -257,7 +263,9 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
             placeholder={placeholder?.[1] ?? '最大值'}
             type="number"
             value={endValue ?? ''}
-            onChange={(e) => { handleEndChange(e.target.value ? Number(e.target.value) : undefined) }}
+            onChange={(e) => {
+              handleEndChange(e.target.value ? Number(e.target.value) : undefined)
+            }}
           />
         </div>
       </div>
@@ -268,6 +276,25 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
 /**
  * 值输入组件主体
  */
+/**
+ * 安全地将值转换为字符串
+ */
+function safeStringify(val: unknown): string {
+  if (val === null || val === undefined) {
+    return ''
+  }
+
+  if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') {
+    return String(val)
+  }
+
+  if (val instanceof Date) {
+    return val.toISOString().split('T')[0]
+  }
+
+  return ''
+}
+
 export function ValueInput({
   field,
   operator,
@@ -314,7 +341,7 @@ export function ValueInput({
           fieldType={field.type}
           placeholder={[placeholder ?? '最小值', '最大值']}
           value={Array.isArray(value) && value.length === 2
-            ? (value as [any, any])
+            ? (value as [string | number | undefined, string | number | undefined])
             : [undefined, undefined]}
           onChange={onChange}
         />
@@ -339,7 +366,11 @@ export function ValueInput({
 
       case FieldTypeEnum.ENUM:
         return (
-          <Select disabled={disabled} value={String(value ?? '')} onValueChange={onChange}>
+          <Select
+            disabled={disabled}
+            value={safeStringify(value)}
+            onValueChange={onChange}
+          >
             <SelectTrigger>
               <SelectValue placeholder={placeholder ?? '请选择'} />
             </SelectTrigger>
@@ -366,14 +397,22 @@ export function ValueInput({
                 variant="outline"
               >
                 <Calendar className="mr-2" />
-                {value ? format(new Date(String(value)), 'yyyy-MM-dd') : (placeholder ?? '选择日期')}
+                {value !== null && value !== undefined
+                  ? format(new Date(safeStringify(value)), 'yyyy-MM-dd')
+                  : (placeholder ?? '选择日期')}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto p-0">
               <CalendarComponent
                 mode="single"
-                selected={value ? new Date(String(value)) : undefined}
-                onSelect={(date) => { onChange(date?.toISOString().split('T')[0]) }}
+                selected={
+                  value !== null && value !== undefined
+                    ? new Date(safeStringify(value))
+                    : undefined
+                }
+                onSelect={(date) => {
+                  onChange(date?.toISOString().split('T')[0])
+                }}
               />
             </PopoverContent>
           </Popover>
@@ -385,8 +424,10 @@ export function ValueInput({
             disabled={disabled}
             placeholder={placeholder ?? '输入数值'}
             type="number"
-            value={String(value ?? '')}
-            onChange={(e) => { onChange(e.target.value ? Number(e.target.value) : undefined) }}
+            value={safeStringify(value)}
+            onChange={(e) => {
+              onChange(e.target.value ? Number(e.target.value) : undefined)
+            }}
           />
         )
 
@@ -396,7 +437,7 @@ export function ValueInput({
             disabled={disabled}
             placeholder={placeholder ?? '输入文本'}
             type="text"
-            value={String(value ?? '')}
+            value={safeStringify(value)}
             onChange={(e) => { onChange(e.target.value) }}
           />
         )

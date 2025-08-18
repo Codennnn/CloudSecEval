@@ -2,12 +2,11 @@
 
 import { useState } from 'react'
 
-import { CalloutInfo } from '~/components/doc/CalloutInfo'
+import { CalloutInfo, type CalloutInfoProps } from '~/components/doc/CalloutInfo'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-// import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
 import { Textarea } from '~/components/ui/textarea'
 
 type CalloutType = 'secondary' | 'info' | 'warning' | 'error' | 'success'
@@ -79,7 +78,7 @@ export default function CalloutInfoTestPage() {
     setConfig(defaultConfigs[type])
   }
 
-  const handleConfigChange = (key: keyof CalloutConfig, value: any) => {
+  const handleConfigChange = (key: keyof CalloutConfig, value: unknown) => {
     setConfig((prev) => ({ ...prev, [key]: value }))
   }
 
@@ -88,7 +87,7 @@ export default function CalloutInfoTestPage() {
   }
 
   const renderCallout = () => {
-    const props: any = {
+    const props: CalloutInfoProps = {
       type: config.type,
     }
 

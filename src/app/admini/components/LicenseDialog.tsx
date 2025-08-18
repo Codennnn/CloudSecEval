@@ -285,6 +285,7 @@ export function LicenseDialog(props: LicenseDialogProps) {
         const updateData: UpdateLicenseDto = {
           expiresAt: values.expiresAt ?? undefined,
           remark: values.remark?.trim() ?? undefined,
+          purchaseAmount: parseFloat(values.purchaseAmount),
         }
 
         await updateLicenseMutation.mutateAsync({
