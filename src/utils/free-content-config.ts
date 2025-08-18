@@ -17,16 +17,11 @@ const FREE_CONTENT_PATHS = [
   'providers',
   'modules',
 
-  // FAQ 和帮助
-  'faq',
+  // 社区帮助
   'support',
 
   // 发现页面
-  'discover',
-
-  // 可以根据需要添加更多免费路径
-  // 'fundamentals/dependency-injection',
-  // 'cli/overview',
+  'discover/companies',
 ]
 
 /**

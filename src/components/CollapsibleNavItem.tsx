@@ -22,15 +22,39 @@ import type { NavMenuItem } from '~/types/nav'
 import { isPaidContent } from '~/utils/free-content-config'
 import { getDocLinkHref, isExternalLink } from '~/utils/link'
 
+interface LockIconProps {
+  url?: string
+  hasValidLicense: boolean | null
+}
+
+/* 付费提示图标 */
+function LockIcon(props: LockIconProps) {
+  const { url, hasValidLicense } = props
+
+  if (url && isPaidContent(url)
+    && hasValidLicense === false
+    && !isExternalLink(url)
+  ) {
+    return (
+      <LockKeyholeIcon
+        className="shrink-0 opacity-25 !size-3"
+      />
+    )
+  }
+
+  return null
+}
+
 interface CollapsibleNavItemProps {
   item: NavMenuItem
   defaultOpen?: boolean
   forceOpen?: boolean
   level?: number // 添加层级参数，用于控制渲染深度
+  hasValidLicense: boolean | null
 }
 
 export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
-  const { item, defaultOpen = false, forceOpen = false, level = 0 } = props
+  const { item, defaultOpen = false, forceOpen = false, level = 0, hasValidLicense } = props
 
   const pathname = usePathname()
   const router = useRouter()
@@ -103,6 +127,11 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                   >
                     <SidebarMenuButtonContent item={item} />
 
+                    <LockIcon
+                      hasValidLicense={hasValidLicense}
+                      url={item.url}
+                    />
+
                     {isExternalLink(item.url)
                       ? (
                           <ArrowUpRightIcon
@@ -134,6 +163,7 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                           {subItem.items && subItem.items.length > 0
                             ? (
                                 <CollapsibleNavItem
+                                  hasValidLicense={hasValidLicense}
                                   item={subItem}
                                   level={level + 1}
                                 />
@@ -156,12 +186,10 @@ export function CollapsibleNavItem(props: CollapsibleNavItemProps) {
                                             {subItem.title}
                                           </span>
 
-                                          {/* 付费提示图标 */}
-                                          {subItem.url && isPaidContent(subItem.url) && (
-                                            <LockKeyholeIcon
-                                              className="shrink-0 opacity-25 !size-3"
-                                            />
-                                          )}
+                                          <LockIcon
+                                            hasValidLicense={hasValidLicense}
+                                            url={subItem.url}
+                                          />
 
                                           {isExternalLink(subItem.url)
                                             ? (
