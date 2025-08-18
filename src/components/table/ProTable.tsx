@@ -8,6 +8,7 @@ import {
   flexRender,
   getCoreRowModel,
   type PaginationState,
+  type RowSelectionState,
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
@@ -19,6 +20,7 @@ import { TableEmptyState } from '~/components/table/TableEmptyState'
 import { TablePagination } from '~/components/table/TablePagination'
 import { TableSkeleton } from '~/components/table/TableSkeleton'
 import { TableToolbar } from '~/components/table/TableToolbar'
+import { Checkbox } from '~/components/ui/checkbox'
 import {
   Table,
   TableBody,
@@ -87,6 +89,18 @@ export interface ProTableProps<TData> {
     pageSizeOptions?: number[]
   }
 
+  /** 行选择配置 */
+  rowSelection?: {
+    /** 是否启用行选择功能，默认 false */
+    enabled?: boolean
+    /** 初始选中的行 */
+    initialSelection?: RowSelectionState
+    /** 行选择变化回调 */
+    onSelectionChange?: (selection: RowSelectionState) => void
+    /** 获取行 ID 的函数，默认使用 'id' 字段 */
+    getRowId?: (row: TData) => string
+  }
+
   /** 分页变化回调 */
   onPaginationChange?: (pagination: PaginationState) => void
   /** 查询参数变化回调 */
@@ -116,6 +130,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     columnVisibilityStorageKey,
     className,
     paginationConfig = {},
+    rowSelection: rowSelectionConfig = {},
     onPaginationChange,
     onQueryParamsChange,
     onQueryKeyChange,
@@ -135,6 +150,13 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     pageSizeOptions = [10, 20, 30, 40, 50],
   } = paginationConfig
 
+  const {
+    enabled: rowSelectionEnabled = false,
+    initialSelection = {},
+    onSelectionChange,
+    getRowId,
+  } = rowSelectionConfig
+
   // 内部状态管理
   const [internalPagination, setInternalPagination] = useState<PaginationState>({
     pageIndex: (externalPagination?.page ?? 1) - 1,
@@ -143,6 +165,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
   const [queryParams, setQueryParams] = useState<QueryParams>()
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnOrder, setColumnOrder] = useState<string[]>([])
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>(initialSelection)
 
   const isExternalMode = !!externalData
 
@@ -203,65 +226,137 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     onQueryParamsChange?.(params)
   })
 
+  /**
+   * 处理行选择状态变化
+   * 统一处理函数式更新和直接赋值两种情况
+   */
+  const handleRowSelectionChange = useEvent(
+    (updaterOrValue: RowSelectionState | ((old: RowSelectionState) => RowSelectionState)) => {
+      const newSelection = typeof updaterOrValue === 'function'
+        ? updaterOrValue(rowSelection)
+        : updaterOrValue
+
+      setRowSelection(newSelection)
+      onSelectionChange?.(newSelection)
+    },
+  )
+
   // 动态生成搜索字段
   const searchFields = useMemo(() => generateSearchFields<TData>(columns), [columns])
 
-  // 处理列可见性变化
-  const handleColumnVisibilityChange = useEvent((config: ColumnVisibilityConfig) => {
-    const newVisibilityState: VisibilityState = {}
+  /**
+   * 获取强制可见的列键名
+   * 这些列不能被隐藏（如操作列、选择列等）
+   */
+  const getForceVisibleColumnKeys = useMemo(() => {
+    const keys: string[] = []
 
-    // 所有字段先设为不可见
-    searchFields.forEach((field) => {
-      newVisibilityState[field.key] = false
-    })
+    // 添加选择列
+    if (rowSelectionEnabled) {
+      keys.push('select')
+    }
 
-    // 设置可见字段
-    config.visibleColumns.forEach((key) => {
-      newVisibilityState[key] = true
-    })
-
-    // 对于不能隐藏的列（如操作列），强制设为可见
+    // 添加其他强制可见的列
     columns.forEach((column) => {
       if (column.enableHiding === false) {
         const key = getColumnKey(column)
 
         if (key) {
-          newVisibilityState[key] = true
+          keys.push(key)
         }
       }
     })
 
-    // 更新列的顺序：按照可见列的顺序，然后添加强制可见的列
-    const newColumnOrder: string[] = []
+    return keys
+  }, [columns, rowSelectionEnabled])
 
-    // 首先添加按顺序排列的可见列
+  /**
+   * 处理列可见性变化
+   * 重构后的逻辑更清晰，职责分离
+   */
+  const handleColumnVisibilityChange = useEvent((config: ColumnVisibilityConfig) => {
+    // 1. 构建新的可见性状态
+    const newVisibilityState: VisibilityState = {}
+
+    // 初始化所有搜索字段为不可见
+    searchFields.forEach((field) => {
+      newVisibilityState[field.key] = false
+    })
+
+    // 设置用户选择的可见列
     config.visibleColumns.forEach((key) => {
-      newColumnOrder.push(key)
+      newVisibilityState[key] = true
     })
 
-    // 添加强制可见的列（如果还没有在列表中）
-    columns.forEach((column) => {
-      if (column.enableHiding === false) {
-        const key = getColumnKey(column)
-
-        if (key && !newColumnOrder.includes(key)) {
-          newColumnOrder.push(key)
-        }
-      }
+    // 强制显示不能隐藏的列
+    getForceVisibleColumnKeys.forEach((key) => {
+      newVisibilityState[key] = true
     })
 
+    // 2. 构建新的列顺序
+    const newColumnOrder = [
+      ...config.visibleColumns,
+      // 添加强制可见但不在用户选择中的列
+      ...getForceVisibleColumnKeys.filter((key) =>
+        !config.visibleColumns.includes(key),
+      ),
+    ]
+
+    // 3. 更新状态
     setColumnVisibility(newVisibilityState)
     setColumnOrder(newColumnOrder)
   })
 
-  // 根据列可见性配置和顺序重新排序列
-  const orderedColumns = useMemo(() => {
-    if (columnOrder.length === 0) {
-      return columns
+  // 创建选择列定义
+  const selectionColumn = useMemo<TableColumnDef<TData> | null>(() => {
+    if (!rowSelectionEnabled) {
+      return null
     }
 
-    // 创建列的映射
-    const columnMap = new Map<string, typeof columns[0]>()
+    return {
+      id: 'select',
+      header: ({ table }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            aria-label="Select all"
+            checked={
+              table.getIsAllPageRowsSelected()
+              || (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => { table.toggleAllPageRowsSelected(!!value) }}
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            aria-label="Select row"
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => { row.toggleSelected(!!value) }}
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    }
+  }, [rowSelectionEnabled])
+
+  /**
+   * 获取最终的列配置
+   * 整合了选择列、用户列和排序逻辑
+   * 确保选择列始终排在第一列
+   */
+  const finalColumns = useMemo(() => {
+    // 1. 如果没有自定义排序，返回默认顺序（选择列在前）
+    if (columnOrder.length === 0) {
+      return [
+        ...(selectionColumn ? [selectionColumn] : []),
+        ...columns,
+      ]
+    }
+
+    // 2. 创建非选择列的映射表
+    const columnMap = new Map<string, TableColumnDef<TData>>()
     columns.forEach((column) => {
       const key = getColumnKey(column)
 
@@ -270,38 +365,55 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
       }
     })
 
-    // 按照 columnOrder 的顺序重新排列列
-    const orderedCols: typeof columns = []
+    // 3. 按照排序顺序重新组织列，但排除选择列
+    const sortedColumns: TableColumnDef<TData>[] = []
+    const usedKeys = new Set<string>()
 
-    // 首先添加按顺序排列的列
+    // 按顺序添加非选择列
     columnOrder.forEach((key) => {
+      // 跳过选择列，它会在最后统一处理
+      if (key === 'select') {
+        return
+      }
+
       const column = columnMap.get(key)
 
       if (column) {
-        orderedCols.push(column)
-        columnMap.delete(key) // 移除已添加的列
+        sortedColumns.push(column)
+        usedKeys.add(key)
       }
     })
 
-    // 添加剩余的列（如新增的列或未在 order 中的列）
-    columnMap.forEach((column) => {
-      orderedCols.push(column)
+    // 添加未排序的剩余列（排除选择列）
+    columns.forEach((column) => {
+      const key = getColumnKey(column)
+
+      if (key && !usedKeys.has(key)) {
+        sortedColumns.push(column)
+      }
     })
 
-    return orderedCols
-  }, [columns, columnOrder])
+    // 4. 最终组合：选择列始终在最前面
+    return [
+      ...(selectionColumn ? [selectionColumn] : []),
+      ...sortedColumns,
+    ]
+  }, [columns, columnOrder, selectionColumn])
 
   const table = useReactTable({
     data,
-    columns: orderedColumns,
+    columns: finalColumns,
     state: {
       pagination: internalPagination,
       columnVisibility,
-      columnOrder,
+      ...(rowSelectionEnabled && { rowSelection }),
     },
+    getRowId: getRowId ? (row) => getRowId(row) : undefined,
+    enableRowSelection: rowSelectionEnabled,
     onPaginationChange: setInternalPagination,
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
+    ...(rowSelectionEnabled && { onRowSelectionChange: handleRowSelectionChange }),
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
     pageCount,
@@ -358,7 +470,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
               loading
                 ? (
                     <TableSkeleton
-                      columns={orderedColumns.length}
+                      columns={finalColumns.length}
                       rows={internalPagination.pageSize}
                     />
                   )
@@ -374,7 +486,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
                         </TableRow>
                       ))
                     )
-                  : <TableEmptyState columnsCount={orderedColumns.length} />
+                  : <TableEmptyState columnsCount={finalColumns.length} />
             }
           </TableBody>
         </Table>
