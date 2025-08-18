@@ -89,31 +89,28 @@ export function LicensesTable() {
 
       if (valid) {
         toast.success(`授权码 ${license.code} 检测完成：${message}`, {
-
-          description: details?.expiresAt ? `过期时间：${details.expiresAt}` : undefined,
+          description: details.expiresAt ? `过期时间：${details.expiresAt}` : undefined,
         })
       }
       else {
         let description = message
 
-        if (details) {
-          const status = []
+        const status: string[] = []
 
-          if (details.expired) {
-            status.push('已过期')
-          }
+        if (details.expired) {
+          status.push('已过期')
+        }
 
-          if (details.locked) {
-            status.push('已锁定')
-          }
+        if (details.locked) {
+          status.push('已锁定')
+        }
 
-          if (details.isUsed) {
-            status.push('已使用')
-          }
+        if (details.isUsed) {
+          status.push('已使用')
+        }
 
-          if (status.length > 0) {
-            description = `${message} (${status.join('、')})`
-          }
+        if (status.length > 0) {
+          description = `${message} (${status.join('、')})`
         }
 
         toast.error(`授权码 ${license.code} 检测完成：${description}`)
