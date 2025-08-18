@@ -42,7 +42,8 @@ const harmonySansSC = localFont({
   display: 'swap',
   preload: true,
   variable: '--font-harmony-os-sans-sc',
-  adjustFontFallback: false,
+  fallback: ['system-ui', 'sans-serif'],
+  adjustFontFallback: 'Arial',
 })
 
 const mapleMono = localFont({

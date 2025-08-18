@@ -1,6 +1,6 @@
 'use client'
 
-import { ShieldOffIcon } from 'lucide-react'
+import { CheckIcon, ShieldOffIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
@@ -24,15 +24,14 @@ export function LicenseInfoPopover() {
         <Button
           className="flex items-center gap-2"
           size="sm"
-          variant="outline"
-          onClick={() => { handleClearLicense() }}
+          variant="secondary"
         >
-          <ShieldOffIcon className="size-4" />
-          注销授权
+          <CheckIcon className="size-4" />
+          已完成授权
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-64">
+      <PopoverContent align="start" className="w-64">
         <div className="space-y-2">
           <h4 className="font-medium">授权信息</h4>
           <div className="space-y-1 text-sm text-muted-foreground">
@@ -44,12 +43,19 @@ export function LicenseInfoPopover() {
               <span className="font-medium">授权码：</span>
               {licenseInfo?.code ? `${licenseInfo.code.slice(0, 8)}...` : '--'}
             </div>
-            {licenseInfo?.licenseId && (
-              <div>
-                <span className="font-medium">许可ID：</span>
-                {licenseInfo.licenseId}
-              </div>
-            )}
+            <div>
+              <Button
+                className="flex items-center gap-2"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  handleClearLicense()
+                }}
+              >
+                <ShieldOffIcon className="size-4" />
+                清除授权
+              </Button>
+            </div>
           </div>
         </div>
       </PopoverContent>

@@ -1,6 +1,8 @@
 'use client'
 
-import { DocLoadingSkeleton } from '~/components/ui/doc-loading-skeleton'
+import { toast } from 'sonner'
+
+import { DocLoadingSkeleton } from '~/components/DocLoadingSkeleton'
 import { useLicenseVerification } from '~/hooks/useLicenseVerification'
 import { usePaidContentMode } from '~/hooks/usePaidContentMode'
 import { useOpenAuthDialog } from '~/stores/useAuthDialogStore'
@@ -22,7 +24,7 @@ interface PaywallGuardProps {
  * 使用授权信息校验用户访问权限的 Hook
  * @returns 权限校验结果和状态
  */
-function useUserAccessCheck() {
+function usePaywallAccess() {
   const licenseInfo = useLicenseInfo()
   const hasValidLicense = useHasValidLicense()
 
@@ -33,7 +35,7 @@ function useUserAccessCheck() {
     error,
   } = useLicenseVerification({
     credentials: licenseInfo,
-    enabled: hasValidLicense,
+    enabled: hasValidLicense === true,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 分钟内不重新验证
   })
@@ -43,7 +45,7 @@ function useUserAccessCheck() {
     isLoading,
     isError,
     error,
-    hasLicenseInfo: hasValidLicense,
+    hasValidLicense,
   }
 }
 
@@ -55,44 +57,35 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
   const { children, fallback, docPath } = props
 
   const openAuthDialog = useOpenAuthDialog()
+
   const isPaidMode = usePaidContentMode()
   const needsPayment = isPaidContent(docPath)
 
-  const { hasAccess, isLoading, isError, hasLicenseInfo } = useUserAccessCheck()
+  const { hasAccess, isLoading, isError, hasValidLicense } = usePaywallAccess()
 
-  /**
-   * 处理授权按钮点击事件
-   */
   const handleAuthClick = (title?: string, description?: string) => {
     openAuthDialog({
       title,
       description,
       onSuccess: () => {
-        // 授权成功后，组件会自动重新渲染并显示内容
-        // 这里可以添加额外的成功处理逻辑，比如显示成功提示
+        toast.success('授权成功')
       },
     })
   }
 
-  // 如果未启用付费模式或当前内容不需要付费，直接显示内容
-  if (!isPaidMode || !needsPayment) {
+  if (!isPaidMode || !needsPayment || hasAccess) {
     return <>{children}</>
   }
 
   // 如果正在校验权限，显示加载状态
-  if (isLoading) {
+  if (isLoading || hasValidLicense === null) {
     return <DocLoadingSkeleton />
-  }
-
-  // 如果用户有访问权限，显示内容
-  if (hasAccess) {
-    return <>{children}</>
   }
 
   // 根据不同状态显示不同的提示信息
   const getDefaultFallback = () => {
     // 如果没有授权信息，提示用户输入
-    if (!hasLicenseInfo) {
+    if (!hasValidLicense) {
       return (
         <div className="bg-info-background border border-info rounded-lg p-6 text-center shadow-sm">
           <div className="text-3xl mb-3">🔐</div>

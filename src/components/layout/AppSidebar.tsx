@@ -118,7 +118,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <div className="flex items-center gap-2 p-4 border-t border-border">
         <ThemeModeToggle />
 
-        {hasValidLicense && <LicenseInfoPopover />}
+        {hasValidLicense === true && <LicenseInfoPopover />}
       </div>
     </Sidebar>
   )

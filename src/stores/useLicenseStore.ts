@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -76,6 +78,18 @@ export function useLicenseInfo() {
  * 检查是否有有效的授权信息
  * @returns 是否有有效授权信息的布尔值
  */
-export function useHasValidLicense() {
-  return useLicenseStore((state) => state.hasValidLicenseInfo())
+export function useHasValidLicense(): boolean | null {
+  const hasValidLicense = useLicenseStore((state) => state.hasValidLicenseInfo())
+
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if (isClient) {
+    return hasValidLicense
+  }
+
+  return null
 }

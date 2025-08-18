@@ -30,7 +30,7 @@ export function AppHeader() {
       {/* 面包屑导航 */}
       <DocBreadcrumbs className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap" />
 
-      {!hasValidLicense && (
+      {hasValidLicense === false && (
         <Button
           size="sm"
           onClick={() => { handleAuthClick() }}
