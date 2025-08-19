@@ -24,6 +24,8 @@ import { FieldTypeEnum } from '~/constants/form'
 import type { UserData } from '~/lib/api/types'
 import { formatDate } from '~/utils/date'
 
+import { UserAvatar } from '../../../../components/UserAvatar'
+
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { usersControllerFindAllUsersOptions, usersControllerFindAllUsersQueryKey, usersControllerRemoveUserMutation } from '~api/@tanstack/react-query.gen'
 
@@ -61,25 +63,25 @@ export function UsersTable() {
   const columns = useMemo<TableColumnDef<UserData>[]>(() => {
     return [
       {
-        accessorKey: 'email',
-        header: '邮箱',
+        id: 'user',
+        accessorKey: 'user',
+        header: '用户',
         cell: ({ row }) => (
-          <div className="text-sm">
-            {row.original.email}
+          <div className="flex items-center gap-2">
+            <UserAvatar avatarUrl={row.original.avatarUrl} />
+
+            <div className="flex flex-col gap-0.5">
+              <div className="font-medium">
+                {row.original.name ?? '-'}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {row.original.email}
+              </div>
+            </div>
           </div>
         ),
+        enableSorting: false,
         enableHiding: false,
-      },
-      {
-        accessorKey: 'name',
-        header: '姓名',
-        cell: ({ row }) => (
-          <div className="text-sm">
-            {row.original.name ?? (
-              <span className="text-muted-foreground">-</span>
-            )}
-          </div>
-        ),
       },
       {
         accessorKey: 'phone',

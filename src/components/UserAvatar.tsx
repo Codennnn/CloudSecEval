@@ -18,7 +18,7 @@ export interface UserAvatarProps {
   /** 自定义样式类名 */
   className?: string
   /** 是否显示圆角边框 */
-  rounded?: boolean
+  roundedFull?: boolean
   /** 自定义 fallback 内容，如果不提供则使用默认的用户图标或首字母 */
   fallback?: React.ReactNode
   /** 是否显示首字母 fallback（当没有头像时） */
@@ -60,7 +60,7 @@ export function UserAvatar({
   avatarUrl,
   size = 'md',
   className,
-  rounded = false,
+  roundedFull = false,
   fallback,
   showInitials = true,
 }: UserAvatarProps) {
@@ -68,11 +68,13 @@ export function UserAvatar({
   const initials = getInitials(name)
   const displayName = name ?? '-'
 
+  const roundedClassName = roundedFull ? 'rounded-full' : 'rounded-lg'
+
   return (
     <Avatar
       className={cn(
         sizeClassName,
-        rounded && 'rounded-lg',
+        roundedClassName,
         className,
       )}
     >
@@ -83,7 +85,7 @@ export function UserAvatar({
 
       <AvatarFallback
         className={cn(
-          rounded && 'rounded-lg',
+          roundedClassName,
           // 根据尺寸调整文字大小
           size === 'sm' && 'text-xs',
           size === 'md' && 'text-sm',

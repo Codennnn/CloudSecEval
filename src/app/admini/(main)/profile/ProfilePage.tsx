@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { CalendarIcon, EditIcon, MailIcon, SaveIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Badge } from '~/components/ui/badge'
@@ -15,7 +16,9 @@ import { Textarea } from '~/components/ui/textarea'
 import { UserAvatar } from '~/components/UserAvatar'
 
 import { PageHeader } from '~admin/components/PageHeader'
+import { useUpdateProfile } from '~admin/hooks/api/useUpdateProfile'
 import { useUser } from '~admin/stores/useUserStore'
+import type { UpdateProfileDto } from '~api/types.gen'
 
 /**
  * 用户个人资料页面
@@ -25,6 +28,7 @@ export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
 
   const storeUser = useUser()
+  const updateProfileMutation = useUpdateProfile()
 
   // 本地编辑状态，用于表单编辑
   const [userProfile, setUserProfile] = useState({
@@ -54,14 +58,44 @@ export function ProfilePage() {
     }
   }, [storeUser])
 
-  const handleSave = () => {
-    // TODO: 实现保存逻辑
-    setIsEditing(false)
+  const handleSave = async () => {
+    try {
+      const updateData: UpdateProfileDto = {
+        name: userProfile.name,
+        email: userProfile.email,
+      }
+
+      await updateProfileMutation.mutateAsync({
+        body: updateData,
+      })
+
+      toast.success('保存成功', {
+        description: '你的个人资料已更新',
+      })
+
+      setIsEditing(false)
+    }
+    catch {
+      toast.error('保存失败', {
+        description: '更新个人资料时发生错误，请重试',
+      })
+    }
   }
 
   const handleCancel = () => {
     setIsEditing(false)
-    // TODO: 重置表单数据
+
+    // 重置表单数据为原始用户数据
+    if (storeUser) {
+      setUserProfile({
+        name: storeUser.name ?? '',
+        email: storeUser.email || '',
+        bio: '', // API 中没有 bio 字段，保持为空
+        joinDate: storeUser.createdAt ? new Date(storeUser.createdAt).toLocaleDateString('zh-CN') : '',
+        role: '管理员', // API 中没有 role 字段，使用默认值
+        avatarUrl: storeUser.avatarUrl ?? '',
+      })
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -85,18 +119,19 @@ export function ProfilePage() {
                           取消
                         </Button>
                         <Button
+                          disabled={updateProfileMutation.isPending}
                           onClick={() => {
-                            handleSave()
+                            void handleSave()
                           }}
                         >
-                          <SaveIcon className="size-4" />
-                          保存
+                          <SaveIcon />
+                          {updateProfileMutation.isPending ? '保存中...' : '保存'}
                         </Button>
                       </>
                     )
                   : (
                       <Button onClick={() => { setIsEditing(true) }}>
-                        <EditIcon className="size-4" />
+                        <EditIcon />
                         编辑资料
                       </Button>
                     )
