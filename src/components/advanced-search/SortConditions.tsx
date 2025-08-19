@@ -74,6 +74,8 @@ interface SortConditionProps {
   condition: SortCondition
   /** 可选择的字段列表 */
   fields: SearchField[]
+  /** 已使用的字段列表 */
+  usedFields?: string[]
   /** 自定义样式类名 */
   className?: string
 
@@ -89,6 +91,7 @@ function SortConditionRow(props: SortConditionProps) {
   const {
     condition,
     fields,
+    usedFields = [],
     className,
 
     onUpdate,
@@ -151,11 +154,29 @@ function SortConditionRow(props: SortConditionProps) {
       </SelectTrigger>
 
       <SelectContent>
-        {fields.map((field) => (
-          <SelectItem key={field.key} value={field.key}>
-            {field.label}
-          </SelectItem>
-        ))}
+        {fields.map((field) => {
+          const isUsed = usedFields.includes(field.key) && field.key !== condition.field
+
+          return (
+            <SelectItem
+              key={field.key}
+              disabled={isUsed}
+              value={field.key}
+            >
+              <div
+                className={cn(
+                  'flex items-center justify-between w-full',
+                  isUsed && 'text-muted-foreground',
+                )}
+              >
+                <span>{field.label}</span>
+                {isUsed && (
+                  <span className="text-xs ml-2">(已使用)</span>
+                )}
+              </div>
+            </SelectItem>
+          )
+        })}
       </SelectContent>
     </Select>
   )
@@ -314,6 +335,11 @@ export function SortConditions(props: SortConditionsProps) {
     useSensor(KeyboardSensor, {}),
   )
 
+  // 计算已使用的字段列表
+  const usedFields = useMemo(() => {
+    return conditions.map((condition) => condition.field)
+  }, [conditions])
+
   /**
    * 处理拖拽结束
    */
@@ -359,6 +385,7 @@ export function SortConditions(props: SortConditionsProps) {
                         key={condition.id}
                         condition={condition}
                         fields={fields}
+                        usedFields={usedFields}
                         onDelete={onDeleteCondition}
                         onDuplicate={onDuplicateCondition}
                         onUpdate={onUpdateCondition}

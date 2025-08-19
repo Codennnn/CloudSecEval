@@ -20,11 +20,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import { UserAvatar } from '~/components/UserAvatar'
 import { FieldTypeEnum } from '~/constants/form'
 import type { UserData } from '~/lib/api/types'
 import { formatDate } from '~/utils/date'
-
-import { UserAvatar } from '../../../../components/UserAvatar'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { usersControllerFindAllUsersOptions, usersControllerFindAllUsersQueryKey, usersControllerRemoveUserMutation } from '~api/@tanstack/react-query.gen'

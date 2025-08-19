@@ -127,6 +127,10 @@ export function TableToolbar(props: TableToolbarProps) {
   // 获取可排序的字段
   const sortableFields = fields.filter((field) => field.sortable !== false)
 
+  // 获取未使用的可排序字段（排除已添加排序条件的字段）
+  const usedSortFields = config.sortConditions.map((condition) => condition.field)
+  const availableSortFields = sortableFields.filter((field) => !usedSortFields.includes(field.key))
+
   return (
     <div className={cn('flex items-center justify-end gap-2', className)}>
       <div className="flex items-center gap-1">
@@ -263,17 +267,23 @@ export function TableToolbar(props: TableToolbarProps) {
 
                       <DropdownMenuSeparator />
 
-                      {sortableFields.map((field) => (
-                        <DropdownMenuItem
-                          key={field.key}
-                          className="px-3 py-2"
-                          onClick={() => {
-                            handleAddSortCondition(field.key)
-                          }}
-                        >
-                          {field.label}
-                        </DropdownMenuItem>
-                      ))}
+                      {availableSortFields.length > 0
+                        ? availableSortFields.map((field) => (
+                            <DropdownMenuItem
+                              key={field.key}
+                              className="px-3 py-2"
+                              onClick={() => {
+                                handleAddSortCondition(field.key)
+                              }}
+                            >
+                              {field.label}
+                            </DropdownMenuItem>
+                          ))
+                        : (
+                            <div className="px-3 py-2 text-sm text-muted-foreground">
+                              所有可排序字段已添加
+                            </div>
+                          )}
                     </DropdownMenuContent>
                   </DropdownMenu>
 

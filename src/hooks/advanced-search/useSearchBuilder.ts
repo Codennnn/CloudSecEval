@@ -260,6 +260,22 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   const addSortCondition = useEvent(
     (field: string, order: SortOrder = SortOrder.ASC) => {
       setConfig((prev) => {
+        // 检查字段是否已存在排序条件
+        const existingCondition = prev.sortConditions.find((condition) => condition.field === field)
+
+        if (existingCondition) {
+          // 如果字段已存在，更新现有条件的排序方向
+          return {
+            ...prev,
+            sortConditions: prev.sortConditions.map((condition) =>
+              condition.field === field
+                ? { ...condition, order }
+                : condition,
+            ),
+          }
+        }
+
+        // 如果字段不存在，添加新的排序条件
         const newCondition = createSortCondition(field, order)
 
         return {
@@ -317,6 +333,18 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     const condition = config.sortConditions.find((c) => c.id === conditionId)
 
     if (condition) {
+      // 检查是否已存在相同字段的排序条件
+      const hasExistingField = config.sortConditions.some((c) =>
+        c.id !== conditionId && c.field === condition.field,
+      )
+
+      // 如果字段已存在，不进行复制，避免重复
+      if (hasExistingField) {
+        console.warn(`字段 "${condition.field}" 已存在排序条件，无法复制`)
+
+        return
+      }
+
       const newCondition = createSortCondition(
         condition.field,
         condition.order,

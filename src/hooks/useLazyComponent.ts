@@ -1,4 +1,5 @@
-import { useCallback, useRef } from 'react'
+import { useRef } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 interface UseLazyComponentOptions {
   /**
@@ -31,7 +32,7 @@ export function useLazyComponent<T = unknown>(
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const preload = useCallback(() => {
+  const preload = useEvent(() => {
     if (!enablePreload || preloadedRef.current) {
       return
     }
@@ -51,14 +52,14 @@ export function useLazyComponent<T = unknown>(
           console.warn('预加载组件失败:', error)
         })
     }, preloadDelay)
-  }, [importFn, preloadDelay, enablePreload])
+  })
 
-  const cancelPreload = useCallback(() => {
+  const cancelPreload = useEvent(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
     }
-  }, [])
+  })
 
   return {
     preload,
