@@ -128,7 +128,9 @@ export class KillDragonCommand extends Command<{
   constructor(
     public readonly heroId: string,
     public readonly dragonId: string
-  ) {}
+  ) {
+    super()
+  }
 }
 ```
 
@@ -354,7 +356,9 @@ export class HeroKilledDragonEvent {
   constructor(
     public readonly heroId: string,
     public readonly dragonId: string
-  ) {}
+  ) {
+    super()
+  }
 }
 ```
 
