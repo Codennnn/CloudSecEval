@@ -96,8 +96,8 @@ export function UsersTable() {
         accessorKey: 'isActive',
         header: '状态',
         cell: ({ row }) => (
-          <Badge variant={row.original.isActive ? 'default' : 'secondary'}>
-            {row.original.isActive ? '激活' : '未激活'}
+          <Badge variant={row.original.isActive ? 'secondary' : 'default'}>
+            {row.original.isActive ? '已启用' : '已禁用'}
           </Badge>
         ),
       },

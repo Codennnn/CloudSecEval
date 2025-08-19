@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react'
 
-import { CalendarIcon, EditIcon, MailIcon, SaveIcon, UserIcon } from 'lucide-react'
+import { CalendarIcon, EditIcon, MailIcon, SaveIcon } from 'lucide-react'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
@@ -13,6 +12,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Separator } from '~/components/ui/separator'
 import { Textarea } from '~/components/ui/textarea'
+import { UserAvatar } from '~/components/UserAvatar'
 
 import { PageHeader } from '~admin/components/PageHeader'
 import { useUser } from '~admin/stores/useUserStore'
@@ -111,12 +111,11 @@ export function ProfilePage() {
               <Card className="md:col-span-1">
                 <CardHeader className="text-center">
                   <div className="flex justify-center mb-4">
-                    <Avatar className="size-24">
-                      <AvatarImage alt={userProfile.name} src={userProfile.avatarUrl} />
-                      <AvatarFallback className="text-2xl">
-                        <UserIcon className="size-12" />
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                      avatarUrl={userProfile.avatarUrl}
+                      name={userProfile.name}
+                      size="2xl"
+                    />
                   </div>
                   <CardTitle className="text-xl">{userProfile.name}</CardTitle>
                   <CardDescription>
