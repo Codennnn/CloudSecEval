@@ -55,9 +55,19 @@ export interface DepartmentTreeItemProps {
   node: DepartmentTreeNode
   /** 是否可选择 */
   selectable: SelectMode
+  /** 组织 ID */
+  orgId: DepartmentTreeNodeDto['orgId']
+  /** 原始树形数据（用于多选时的父子联动） */
+  treeData: DepartmentTreeNode[]
 
   /** 自定义节点渲染函数 */
   renderNode?: (node: DepartmentTreeNode) => React.ReactNode
+  /** 删除节点回调 */
+  onDelete?: (nodeId: string) => void
+  /** 编辑节点回调 */
+  onEdit?: (nodeId: string) => void
+  /** 添加子节点回调 */
+  onAddChild?: (nodeId: string) => void
 }
 
 /**

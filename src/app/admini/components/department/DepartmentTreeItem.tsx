@@ -29,24 +29,16 @@ import { cn } from '~/lib/utils'
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import { DepartmentDialog } from './DepartmentDialog'
-import type { DepartmentTreeItemProps, DepartmentTreeNode } from './types'
+import type { DepartmentTreeItemProps } from './types'
 
-import type { DepartmentTreeNodeDto } from '~api/types.gen'
-
-interface DepartmentTreeItemComponentProps extends DepartmentTreeItemProps {
-  /** 组织 ID */
-  orgId: DepartmentTreeNodeDto['orgId']
-  /** 原始树形数据（用于多选时的父子联动） */
-  treeData: DepartmentTreeNode[]
-}
-
-export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
+export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
   const {
     node,
     selectable,
     orgId,
     treeData,
     renderNode,
+    onDelete,
   } = props
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -65,9 +57,6 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
   const isExpanded = expandedKeys.has(node.id)
   const isSelected = selectedKeys.has(node.id)
 
-  /**
-   * 处理展开/收起切换
-   */
   const handleToggleExpanded = useEvent((ev: React.MouseEvent<HTMLDivElement>) => {
     ev.stopPropagation()
 
@@ -76,18 +65,12 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
     }
   })
 
-  /**
-   * 处理选中状态切换
-   */
   const handleToggleSelected = useEvent(() => {
     if (selectable) {
       toggleSelected(node.id)
     }
   })
 
-  /**
-   * 处理复选框变化
-   */
   const handleCheckboxChange = useEvent(() => {
     if (selectable === 'multiple') {
       toggleSelected(node.id)
@@ -130,7 +113,6 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
 
           <DropdownMenuContent
             align="end"
-            className="w-24 rounded-lg"
             side="right"
             onClick={(ev) => {
               ev.stopPropagation()
@@ -154,7 +136,12 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
               <span>编辑</span>
             </DropdownMenuItem>
 
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => {
+                onDelete?.(node.id)
+              }}
+            >
               <TrashIcon />
               <span>删除</span>
             </DropdownMenuItem>
@@ -213,26 +200,27 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
             </SidebarMenuButton>
           </CollapsibleTrigger>
         </div>
-
-        {/* 子节点 */}
-        {hasChildren && (
-          <CollapsibleContent>
-            <SidebarMenuSub>
-              {node.children!.map((childNode) => (
-                <SidebarMenuSubItem key={childNode.id}>
-                  <DepartmentTreeItem
-                    node={childNode}
-                    orgId={orgId}
-                    renderNode={renderNode}
-                    selectable={selectable}
-                    treeData={treeData}
-                  />
-                </SidebarMenuSubItem>
-              ))}
-            </SidebarMenuSub>
-          </CollapsibleContent>
-        )}
       </SidebarMenuItem>
+
+      {/* 子节点 */}
+      {hasChildren && (
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {node.children!.map((childNode) => (
+              <SidebarMenuSubItem key={childNode.id}>
+                <DepartmentTreeItem
+                  node={childNode}
+                  orgId={orgId}
+                  renderNode={renderNode}
+                  selectable={selectable}
+                  treeData={treeData}
+                  onDelete={onDelete}
+                />
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      )}
 
       {/* 创建子部门对话框 */}
       <DepartmentDialog

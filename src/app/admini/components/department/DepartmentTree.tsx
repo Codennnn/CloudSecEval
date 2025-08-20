@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
+import { useMutation } from '@tanstack/react-query'
 import { PlusIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Button } from '~/components/ui/button'
 import {
@@ -19,7 +22,9 @@ import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import { DepartmentDialog } from './DepartmentDialog'
 import { DepartmentTreeItem } from './DepartmentTreeItem'
 import { DepartmentTreeSearch } from './DepartmentTreeSearch'
-import type { DepartmentTreeNode, DepartmentTreeProps } from './types'
+import type { DepartmentTreeItemProps, DepartmentTreeNode, DepartmentTreeProps } from './types'
+
+import { departmentsControllerRemoveDepartmentMutation } from '~api/@tanstack/react-query.gen'
 
 /**
  * 部门架构树组件
@@ -159,6 +164,18 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     return treeData
   }, [filteredTreeData, searchKeyword, treeData])
 
+  const deleteDepartment = useMutation({
+    ...departmentsControllerRemoveDepartmentMutation(),
+    onSuccess: () => {
+      toast.success('删除部门成功')
+      void refetch()
+    },
+  })
+
+  const handleDeleteDepartment = useEvent<NonNullable<DepartmentTreeItemProps['onDelete']>>((nodeId) => {
+    deleteDepartment.mutate({ path: { id: nodeId } })
+  })
+
   return (
     <div
       className="[--sidebar-accent:var(--secondary)] [--sidebar-accent-foreground:var(--secondary-foreground)]"
@@ -217,6 +234,7 @@ export function DepartmentTree(props: DepartmentTreeProps) {
                           renderNode={renderNode}
                           selectable={selectable}
                           treeData={treeData}
+                          onDelete={handleDeleteDepartment}
                         />
                       ))}
                     </SidebarMenu>
