@@ -86,6 +86,7 @@ export function TablePagination<TData>({
             <Label className="text-sm font-medium" htmlFor="rows-per-page">
               每页显示
             </Label>
+
             <Select
               value={`${pageSize}`}
               onValueChange={(value) => {
@@ -95,6 +96,7 @@ export function TablePagination<TData>({
               <SelectTrigger className="w-20" id="rows-per-page" size="sm">
                 <SelectValue placeholder={pageSize} />
               </SelectTrigger>
+
               <SelectContent side="top">
                 {pageSizeOptions.map((size) => (
                   <SelectItem key={size} value={`${size}`}>
@@ -103,6 +105,7 @@ export function TablePagination<TData>({
                 ))}
               </SelectContent>
             </Select>
+
             <span className="text-sm text-muted-foreground">条</span>
           </div>
         )}

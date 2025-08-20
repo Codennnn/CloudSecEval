@@ -8,10 +8,8 @@ import { filterDepartmentTree, findNodeById, getChildrenIds, getParentPath } fro
 
 /**
  * 创建部门树状态管理 Store
- * @param orgId - 组织 ID，用于区分不同组织的状态
- * @returns Zustand Store Hook
  */
-export function createDepartmentTreeStore(orgId: string) {
+function createDepartmentTreeStore(orgId: User['orgId']) {
   return create<DepartmentTreeStore>()(
     devtools(
       (set) => ({
@@ -125,18 +123,15 @@ export function createDepartmentTreeStore(orgId: string) {
         /**
          * 设置搜索关键词并过滤数据
          * @param keyword - 搜索关键词
-         * @param originalTreeData - 原始树形数据
          */
-        setSearchKeyword: (keyword: string, originalTreeData?: DepartmentTreeNode[]) => {
+        setSearchKeyword: (keyword: string) => {
           set((state) => {
             // 如果关键词没有变化，直接返回当前状态
             if (state.searchKeyword === keyword) {
               return state
             }
 
-            const filteredData = originalTreeData
-              ? filterDepartmentTree(originalTreeData, keyword)
-              : state.filteredTreeData
+            const filteredData = filterDepartmentTree(state.filteredTreeData, keyword)
 
             return {
               searchKeyword: keyword,
@@ -147,7 +142,6 @@ export function createDepartmentTreeStore(orgId: string) {
 
         /**
          * 设置过滤后的树形数据
-         * @param data - 树形数据
          */
         setFilteredTreeData: (data: DepartmentTreeNode[]) => {
           set((state) => {
@@ -186,11 +180,6 @@ export function createDepartmentTreeStore(orgId: string) {
  */
 const storeCache = new Map<string, ReturnType<typeof createDepartmentTreeStore>>()
 
-/**
- * 获取部门树 Store Hook
- * @param orgId - 组织 ID
- * @returns Zustand Store Hook
- */
 export function useDepartmentTreeStore(orgId: User['orgId']) {
   // 从缓存中获取或创建新的 Store 实例
   if (!storeCache.has(orgId)) {
@@ -204,7 +193,6 @@ export function useDepartmentTreeStore(orgId: User['orgId']) {
 
 /**
  * 清理指定组织的 Store 缓存
- * @param orgId - 组织 ID
  */
 export function clearDepartmentTreeStore(orgId: User['orgId']) {
   storeCache.delete(orgId)

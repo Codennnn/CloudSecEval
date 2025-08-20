@@ -1,15 +1,16 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
-import { type QueryKey, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   EllipsisVerticalIcon,
   Plus,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
+import { ProTable, type ProTableProps } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -22,27 +23,68 @@ import {
 } from '~/components/ui/dropdown-menu'
 import { UserAvatar } from '~/components/UserAvatar'
 import { FieldTypeEnum } from '~/constants/form'
-import type { UserData } from '~/lib/api/types'
+import type { DepartmentsControllerGetDepartmentMembersData, UserListItemDto } from '~/lib/api/generated/types.gen'
 import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
-import { usersControllerFindAllUsersOptions, usersControllerFindAllUsersQueryKey, usersControllerRemoveUserMutation } from '~api/@tanstack/react-query.gen'
+import { departmentsControllerGetDepartmentMembersOptions, departmentsControllerGetDepartmentMembersQueryKey, usersControllerRemoveUserMutation } from '~api/@tanstack/react-query.gen'
+import type { Options } from '~api/sdk.gen'
 
-export function UsersTable() {
+interface DepartmentMembersTableProps {
+  departmentId: string
+  includeChildren?: boolean
+}
+
+export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
+  const {
+    departmentId,
+    includeChildren = false,
+  } = props
+
   const queryClient = useQueryClient()
 
-  const [queryKey, setQueryKey] = useState<QueryKey>()
+  const [userToDelete, setUserToDelete] = useState<UserListItemDto | null>(null)
 
-  const [userToDelete, setUserToDelete] = useState<UserData | null>(null)
+  const [queryOptions, setQueryOptions]
+  = useState<Options<DepartmentsControllerGetDepartmentMembersData>>()
+
+  useEffect(() => {
+    if (departmentId) {
+      setQueryOptions((prev) => ({
+        ...prev,
+        path: { departmentId },
+        query: {
+          page: 1,
+          pageSize: 10,
+          ...prev?.query,
+          includeChildren,
+        },
+      }))
+    }
+  }, [departmentId, includeChildren])
+
+  const membersQuery = useQuery({
+    ...departmentsControllerGetDepartmentMembersOptions(queryOptions!),
+    enabled: Boolean(queryOptions),
+  })
+
+  const handleRefresh = useEvent(() => {
+    if (queryOptions) {
+      const queryKey = departmentsControllerGetDepartmentMembersQueryKey(queryOptions)
+      void queryClient.invalidateQueries({
+        queryKey,
+      })
+    }
+  })
 
   const deleteUserMutation = useMutation({
     ...usersControllerRemoveUserMutation(),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey })
+      handleRefresh()
     },
   })
 
-  const handleDeleteClick = (user: UserData) => {
+  const handleDeleteClick = (user: UserListItemDto) => {
     setUserToDelete(user)
   }
 
@@ -53,13 +95,15 @@ export function UsersTable() {
           id: userToDelete.id,
         },
       })
+
       toast.success(`用户 ${userToDelete.email} 已成功删除`)
+
       setUserToDelete(null)
     }
   }
 
   // MARK: 表格列定义
-  const columns = useMemo<TableColumnDef<UserData>[]>(() => {
+  const columns = useMemo<TableColumnDef<UserListItemDto>[]>(() => {
     return [
       {
         id: 'user',
@@ -167,28 +211,52 @@ export function UsersTable() {
     ]
   }, [])
 
+  const handlePaginationChange = useEvent<
+    NonNullable<ProTableProps<UserListItemDto>['onPaginationChange']>
+  >(
+    (pagination) => {
+      setQueryOptions((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            query: {
+              ...prev.query,
+              page: pagination.pageIndex + 1,
+              pageSize: pagination.pageSize,
+            },
+          }
+        }
+
+        return prev
+      })
+    },
+  )
+
   return (
     <div className="py-admin-content pr-admin-content">
-      <ProTable<UserData>
+      <ProTable<UserListItemDto>
         columns={columns}
-        headerTitle="用户列表"
-        queryKeyFn={usersControllerFindAllUsersQueryKey as QueryKeyFn}
-        queryOptionsFn={usersControllerFindAllUsersOptions as QueryOptionsFn<UserData>}
+        data={membersQuery.data?.data ?? []}
+        headerTitle={`部门成员${includeChildren ? '（含子部门）' : ''}`}
+        loading={membersQuery.isLoading}
+        pagination={membersQuery.data?.pagination}
         toolbar={{
           rightContent: (
             <Button
               size="sm"
               onClick={() => {
-                // TODO: 实现新增用户功能
-                toast.info('新增用户功能开发中...')
+                // TODO: 实现添加成员功能
+                toast.info('添加成员功能开发中...')
               }}
             >
               <Plus />
-              新增用户
+              添加成员
             </Button>
           ),
+          showSearch: false, // 禁用搜索，因为使用外部数据
         }}
-        onQueryKeyChange={setQueryKey}
+        onPaginationChange={handlePaginationChange}
+        onRefresh={handleRefresh}
       />
 
       {/* MARK: 删除确认对话框 */}

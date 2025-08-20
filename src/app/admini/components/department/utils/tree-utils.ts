@@ -1,22 +1,8 @@
-/**
- * 部门树数据处理工具函数
- * 提供平铺数据转树形结构、搜索过滤等功能
- */
-
 import arrayToTree from 'array-to-tree'
 
-import type { DepartmentTreeNode, TreeOptions } from '../types'
+import type { DepartmentTreeNode } from '../types'
 
-import type { DepartmentListItemDto } from '~api/types.gen'
-
-/**
- * array-to-tree 默认配置
- */
-const DEFAULT_TREE_OPTIONS: TreeOptions = {
-  id: 'id',
-  parentId: 'parentId',
-  children: 'children',
-}
+import type { DepartmentListItemDto, DepartmentTreeNodeDto } from '~api/types.gen'
 
 /**
  * 将平铺的部门列表转换为树形结构
@@ -24,25 +10,19 @@ const DEFAULT_TREE_OPTIONS: TreeOptions = {
  * @returns 树形结构的部门数据
  */
 export function buildDepartmentTree(departments: DepartmentListItemDto[]): DepartmentTreeNode[] {
-  if (!departments || departments.length === 0) {
+  if (departments.length === 0) {
     return []
   }
 
-  // 预处理数据：确保 parentId 为 null 的项能正确作为根节点
-  const processedDepartments = departments.map((dept) => ({
-    ...dept,
-    parentId: dept.parentId || null, // 确保空值统一为 null
-  }))
-
-  // 使用 array-to-tree 转换为树形结构
-  const treeData = arrayToTree(processedDepartments, {
-    ...DEFAULT_TREE_OPTIONS,
-    rootParentId: null, // 根节点的 parentId 值
-  }) as DepartmentTreeNode[]
+  const treeData: DepartmentTreeNodeDto[] = arrayToTree(departments, {
+    customID: 'id',
+    parentProperty: 'parent.id',
+    childrenProperty: 'children',
+  })
 
   // 递归添加层级信息和初始状态
-  const addTreeMetadata = (nodes: DepartmentTreeNode[], level = 0): DepartmentTreeNode[] => {
-    return nodes.map((node) => ({
+  const addTreeMetadata = (nodes: DepartmentTreeNodeDto[], level = 0): DepartmentTreeNode[] => {
+    return nodes.map<DepartmentTreeNode>((node) => ({
       ...node,
       level,
       isExpanded: false,
@@ -183,7 +163,11 @@ export function getChildrenIds(node: DepartmentTreeNode): string[] {
 export function getParentPath(treeData: DepartmentTreeNode[], nodeId: string): string[] {
   const path: string[] = []
 
-  const findPath = (nodes: DepartmentTreeNode[], targetId: string, currentPath: string[]): boolean => {
+  const findPath = (
+    nodes: DepartmentTreeNode[],
+    targetId: string,
+    currentPath: string[],
+  ): boolean => {
     for (const node of nodes) {
       const newPath = [...currentPath, node.id]
 

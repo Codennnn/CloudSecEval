@@ -1,21 +1,14 @@
-/**
- * 部门架构树组件
- * 基于 Sidebar 组件实现的可嵌套部门树，支持展开/收起、选中、搜索等功能
- */
-
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { AlertCircleIcon, LoaderIcon } from 'lucide-react'
-
-import { Alert, AlertDescription } from '~/components/ui/alert'
 import {
   SidebarContent,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
 } from '~/components/ui/sidebar'
+import { Skeleton } from '~/components/ui/skeleton'
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
@@ -23,12 +16,16 @@ import { DepartmentTreeItem } from './DepartmentTreeItem'
 import { DepartmentTreeSearch } from './DepartmentTreeSearch'
 import type { DepartmentTreeNode, DepartmentTreeProps } from './types'
 
+/**
+ * 部门架构树组件
+ */
 export function DepartmentTree(props: DepartmentTreeProps) {
   const {
     orgId,
     selectable = false,
     defaultExpandedKeys = [],
     defaultSelectedKeys = [],
+    defaultSelectFirstNode = true,
     showSearch = true,
 
     onSelect,
@@ -36,7 +33,9 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     renderNode,
   } = props
 
-  const { treeData, isLoading, error, isSuccess } = useDepartmentData({ orgId })
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  const { treeData, isLoading, isSuccess } = useDepartmentData({ orgId })
 
   const {
     expandedKeys,
@@ -55,29 +54,35 @@ export function DepartmentTree(props: DepartmentTreeProps) {
   const memoizedDefaultExpandedKeys = useMemo(() => defaultExpandedKeys, [defaultExpandedKeys])
   const memoizedDefaultSelectedKeys = useMemo(() => defaultSelectedKeys, [defaultSelectedKeys])
 
-  /**
-   * 初始化默认状态
-   */
   useEffect(() => {
-    if (isSuccess && treeData.length > 0) {
-      // 设置默认展开的节点
-      if (memoizedDefaultExpandedKeys.length > 0) {
-        setExpandedKeys(memoizedDefaultExpandedKeys)
+    if (isSuccess) {
+      // 当成功获取数据后，如果初始数据为空，则初始化默认状态
+      if (!isInitialized) {
+        if (defaultSelectFirstNode) {
+          const firstNode = treeData.at(0)
+
+          if (firstNode) {
+            setSelectedKeys([firstNode.id])
+          }
+        }
+        else if (memoizedDefaultSelectedKeys.length > 0) {
+          setSelectedKeys(memoizedDefaultSelectedKeys)
+        }
+
+        if (memoizedDefaultExpandedKeys.length > 0) {
+          setExpandedKeys(memoizedDefaultExpandedKeys)
+        }
       }
 
-      // 设置默认选中的节点
-      if (memoizedDefaultSelectedKeys.length > 0) {
-        setSelectedKeys(memoizedDefaultSelectedKeys)
-      }
-
-      // 初始化过滤数据
-      setFilteredTreeData(treeData)
+      setIsInitialized(true)
     }
   }, [
     isSuccess,
     treeData,
     memoizedDefaultExpandedKeys,
     memoizedDefaultSelectedKeys,
+    isInitialized,
+    defaultSelectFirstNode,
     setExpandedKeys,
     setSelectedKeys,
     setFilteredTreeData,
@@ -87,17 +92,10 @@ export function DepartmentTree(props: DepartmentTreeProps) {
    * 当原始数据变化时更新过滤数据
    */
   useEffect(() => {
-    if (treeData.length > 0 && !searchKeyword) {
+    if (treeData.length > 0) {
       setFilteredTreeData(treeData)
     }
-  }, [treeData, searchKeyword, setFilteredTreeData])
-
-  /**
-   * 获取当前显示的树形数据
-   */
-  const displayTreeData = useMemo(() => {
-    return searchKeyword ? filteredTreeData : treeData
-  }, [searchKeyword, filteredTreeData, treeData])
+  }, [treeData, setFilteredTreeData])
 
   /**
    * 获取选中的节点数据
@@ -126,8 +124,8 @@ export function DepartmentTree(props: DepartmentTreeProps) {
    * 处理选中状态变化回调
    */
   useEffect(() => {
-    if (onSelect && selectedNodes.length >= 0) {
-      onSelect(Array.from(selectedKeys), selectedNodes)
+    if (selectedNodes.length >= 0) {
+      onSelect?.(Array.from(selectedKeys), selectedNodes)
     }
   }, [selectedKeys, selectedNodes, onSelect])
 
@@ -135,9 +133,7 @@ export function DepartmentTree(props: DepartmentTreeProps) {
    * 处理展开状态变化回调
    */
   useEffect(() => {
-    if (onExpand) {
-      onExpand(Array.from(expandedKeys))
-    }
+    onExpand?.(Array.from(expandedKeys))
   }, [expandedKeys, onExpand])
 
   /**
@@ -149,73 +145,18 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     }
   }, [reset])
 
-  /**
-   * 渲染加载状态
-   */
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <LoaderIcon className="size-4 animate-spin" />
-          <span>加载部门数据中...</span>
-        </div>
-      </div>
-    )
-  }
+  const displayTreeData = useMemo(() => {
+    if (searchKeyword) {
+      return filteredTreeData
+    }
 
-  /**
-   * 渲染错误状态
-   */
-  if (error) {
-    return (
-      <Alert className="m-4" variant="destructive">
-        <AlertCircleIcon className="size-4" />
-        <AlertDescription>
-          加载部门数据失败: {error.message}
-        </AlertDescription>
-      </Alert>
-    )
-  }
-
-  /**
-   * 渲染空数据状态
-   */
-  if (displayTreeData.length === 0 && !searchKeyword) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center text-muted-foreground">
-          <div className="text-sm">暂无部门数据</div>
-        </div>
-      </div>
-    )
-  }
-
-  /**
-   * 渲染搜索无结果状态
-   */
-  if (displayTreeData.length === 0 && searchKeyword) {
-    return (
-      <div className="flex flex-col gap-4">
-        {showSearch && (
-          <div className="p-4 pb-0">
-            <DepartmentTreeSearch
-              orgId={orgId}
-              treeData={treeData}
-            />
-          </div>
-        )}
-        <div className="flex items-center justify-center p-8">
-          <div className="text-center text-muted-foreground">
-            <div className="text-sm">未找到匹配的部门</div>
-            <div className="text-xs mt-1">尝试使用其他关键词搜索</div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+    return treeData
+  }, [filteredTreeData, searchKeyword, treeData])
 
   return (
-    <div>
+    <div
+      className="[--sidebar-accent:var(--secondary)] [--sidebar-accent-foreground:var(--secondary-foreground)]"
+    >
       {/* 搜索区域 */}
       {showSearch && (
         <SidebarHeader className="p-admin-content">
@@ -226,22 +167,54 @@ export function DepartmentTree(props: DepartmentTreeProps) {
         </SidebarHeader>
       )}
 
-      {/* 树形内容区域 */}
       <SidebarContent className="px-admin-content py-0">
-        <SidebarGroup>
-          <SidebarMenu>
-            {displayTreeData.map((node) => (
-              <DepartmentTreeItem
-                key={node.id}
-                node={node}
-                orgId={orgId}
-                renderNode={renderNode}
-                selectable={selectable}
-                treeData={treeData}
-              />
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+        {
+          isLoading
+            ? (
+                <div className="flex flex-col items-end gap-4">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-2/3" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-2/3" />
+                </div>
+              )
+            : displayTreeData.length > 0
+              ? (
+                  <SidebarGroup className="p-0">
+                    <SidebarMenu>
+                      {/* 树形内容区域 */}
+                      {displayTreeData.map((node) => (
+                        <DepartmentTreeItem
+                          key={node.id}
+                          node={node}
+                          orgId={orgId}
+                          renderNode={renderNode}
+                          selectable={selectable}
+                          treeData={treeData}
+                        />
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroup>
+                )
+              : searchKeyword
+                ? (
+                    <div className="flex items-center justify-center p-8">
+                      <div className="text-center text-muted-foreground">
+                        <div className="text-sm">未找到匹配的部门</div>
+                        <div className="text-xs mt-1">尝试使用其他关键词搜索</div>
+                      </div>
+                    </div>
+                  )
+                : (
+                    <div className="flex items-center justify-center p-8">
+                      <div className="text-center text-muted-foreground">
+                        <div className="text-sm">暂无部门数据</div>
+                      </div>
+                    </div>
+                  )
+        }
       </SidebarContent>
     </div>
   )

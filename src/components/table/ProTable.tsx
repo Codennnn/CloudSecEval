@@ -32,6 +32,7 @@ import {
 import type { ListResponse } from '~/lib/api/types'
 import { cn } from '~/lib/utils'
 import type { ColumnVisibilityConfig, QueryParams } from '~/types/advanced-search'
+import type { AnyType } from '~/types/common'
 
 import type { Options } from '~api/sdk.gen'
 import type { PaginationMetaDto } from '~api/types.gen'
@@ -190,7 +191,11 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
   // 内置查询（仅在内置模式下使用）
   const internalQuery = useQuery(
     isExternalMode || typeof queryOptionsFn !== 'function'
-      ? { enabled: false, queryKey: ['disabled'] }
+      ? {
+          enabled: false,
+          queryKey: ['disabled'],
+          queryFn: () => Promise.resolve(null as AnyType),
+        }
       : queryOptionsFn(queryOptions),
   )
 
@@ -217,9 +222,14 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     ? externalPagination?.totalPages
     : internalQuery.data?.pagination.totalPages
 
+  const { pageIndex, pageSize } = internalPagination
+
   useEffect(() => {
-    onPaginationChange?.(internalPagination)
-  }, [onPaginationChange, internalPagination])
+    onPaginationChange?.({
+      pageIndex,
+      pageSize,
+    })
+  }, [onPaginationChange, pageIndex, pageSize])
 
   const handleQueryParamsChange = useEvent((params: QueryParams) => {
     setQueryParams(params)

@@ -1,23 +1,17 @@
-/**
- * 部门树搜索组件
- * 提供搜索功能，支持按部门名称和备注进行过滤
- */
-
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 import { SearchIcon, XIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
+import { cn } from '~/lib/utils'
 
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import type { DepartmentTreeNode } from './types'
 
-/**
- * 部门树搜索组件属性接口
- */
 interface DepartmentTreeSearchProps {
   /** 组织 ID */
   orgId: string
@@ -31,13 +25,10 @@ interface DepartmentTreeSearchProps {
 
 /**
  * 部门树搜索组件
- * @param props - 组件属性
- * @returns JSX 元素
  */
 export function DepartmentTreeSearch(props: DepartmentTreeSearchProps) {
   const {
     orgId,
-    treeData,
     placeholder = '搜索部门...',
     className,
   } = props
@@ -45,71 +36,75 @@ export function DepartmentTreeSearch(props: DepartmentTreeSearchProps) {
   // 本地搜索输入状态
   const [inputValue, setInputValue] = useState('')
 
-  // 从 store 中获取搜索状态和操作方法
   const { searchKeyword, setSearchKeyword } = useDepartmentTreeStore(orgId)
 
   /**
    * 处理搜索输入变化
    */
-  const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setInputValue(value)
-  }, [])
+  const handleInputChange = useEvent(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      const value = ev.target.value
+      setInputValue(value)
+    },
+  )
 
   /**
    * 处理搜索提交
    */
-  const handleSearch = useCallback(() => {
-    setSearchKeyword(inputValue.trim(), treeData)
-  }, [inputValue, setSearchKeyword, treeData])
+  const handleSearch = useEvent(() => {
+    setSearchKeyword(inputValue.trim())
+  })
 
   /**
    * 处理清空搜索
    */
-  const handleClear = useCallback(() => {
+  const handleClear = useEvent(() => {
     setInputValue('')
-    setSearchKeyword('', treeData)
-  }, [setSearchKeyword, treeData])
+    setSearchKeyword('')
+  })
 
   /**
    * 处理键盘事件
    */
-  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      handleSearch()
-    }
-    else if (event.key === 'Escape') {
-      event.preventDefault()
-      handleClear()
-    }
-  }, [handleSearch, handleClear])
+  const handleKeyDown = useEvent(
+    (ev: React.KeyboardEvent<HTMLInputElement>) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault()
+        handleSearch()
+      }
+      else if (ev.key === 'Escape') {
+        ev.preventDefault()
+        handleClear()
+      }
+    },
+  )
 
   // 同步 store 中的搜索关键词到本地输入状态
   useEffect(() => {
-    if (searchKeyword !== inputValue) {
+    if (searchKeyword) {
       setInputValue(searchKeyword)
     }
-  }, [searchKeyword]) // 注意：这里不包含 inputValue，避免循环依赖
+  }, [searchKeyword])
 
   // 实时搜索：当输入值变化时自动触发搜索
   useEffect(() => {
     const timer = setTimeout(() => {
       if (inputValue !== searchKeyword) {
-        setSearchKeyword(inputValue.trim(), treeData)
+        setSearchKeyword(inputValue.trim())
       }
-    }, 300) // 300ms 防抖
+    }, 500)
 
     return () => {
       clearTimeout(timer)
     }
-  }, [inputValue, searchKeyword, setSearchKeyword, treeData])
+  }, [inputValue, searchKeyword, setSearchKeyword])
 
   return (
-    <div className={`relative flex items-center gap-2 ${className || ''}`}>
+    <div className={cn(className)}>
       {/* 搜索输入框 */}
       <div className="relative flex-1">
         <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground" />
+
         <Input
           className="pl-9 pr-9"
           placeholder={placeholder}
@@ -131,13 +126,6 @@ export function DepartmentTreeSearch(props: DepartmentTreeSearchProps) {
           </Button>
         )}
       </div>
-
-      {/* 搜索结果提示 */}
-      {searchKeyword && (
-        <div className="text-xs text-muted-foreground whitespace-nowrap">
-          搜索: "{searchKeyword}"
-        </div>
-      )}
     </div>
   )
 }

@@ -50,7 +50,6 @@ interface UseDepartmentDataReturn {
 export function useDepartmentData(options: UseDepartmentDataOptions): UseDepartmentDataReturn {
   const { orgId, enabled = true } = options
 
-  // 获取部门列表数据
   const {
     data,
     isLoading,

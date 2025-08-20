@@ -38,8 +38,6 @@ interface DepartmentTreeItemComponentProps extends DepartmentTreeItemProps {
 
 /**
  * 部门树节点组件
- * @param props - 组件属性
- * @returns JSX 元素
  */
 export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
   const {
