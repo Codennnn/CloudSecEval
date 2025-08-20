@@ -98,3 +98,58 @@ export interface DepartmentTreeActions {
  * 部门树 Store 接口
  */
 export interface DepartmentTreeStore extends DepartmentTreeState, DepartmentTreeActions {}
+
+// ==================== 部门对话框相关类型 ====================
+
+/**
+ * 部门对话框模式
+ */
+export type DepartmentDialogMode = 'create' | 'edit'
+
+/**
+ * 部门表单验证模式
+ */
+export interface DepartmentFormValues {
+  /** 部门名称 */
+  name: string
+  /** 部门描述 */
+  remark?: string
+  /** 父部门 ID */
+  parentId?: string
+  /** 是否启用 */
+  isActive: boolean
+}
+
+/**
+ * 部门表单初始数据
+ */
+export interface DepartmentFormInitialData {
+  /** 部门 ID（编辑模式必需） */
+  id?: string
+  /** 部门名称 */
+  name?: string
+  /** 部门描述 */
+  remark?: string
+  /** 父部门 ID */
+  parentId?: string
+  /** 是否启用 */
+  isActive?: boolean
+}
+
+/**
+ * 部门对话框属性接口
+ */
+export interface DepartmentDialogProps {
+  /** 对话框模式 */
+  mode?: DepartmentDialogMode
+  /** 表单初始数据 */
+  formData?: DepartmentFormInitialData
+  /** 对话框打开状态 */
+  open: boolean
+  /** 对话框打开状态变化回调 */
+  onOpenChange: (open: boolean) => void
+  /** 成功操作后的回调 */
+  onSuccess?: () => void
+  /** 组织 ID */
+  orgId: string
+}

@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 import { ChevronDownIcon, ChevronRightIcon, EditIcon, EllipsisVerticalIcon, FolderIcon, PlusIcon, TrashIcon } from 'lucide-react'
 
@@ -25,7 +26,9 @@ import {
 } from '~/components/ui/sidebar'
 import { cn } from '~/lib/utils'
 
+import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
+import { DepartmentDialog } from './DepartmentDialog'
 import type { DepartmentTreeItemProps, DepartmentTreeNode } from './types'
 
 import type { DepartmentTreeNodeDto } from '~api/types.gen'
@@ -46,12 +49,17 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
     renderNode,
   } = props
 
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+
   const {
     expandedKeys,
     selectedKeys,
     toggleExpanded,
     toggleSelected,
   } = useDepartmentTreeStore(orgId)
+
+  const { refetch } = useDepartmentData({ orgId })
 
   const hasChildren = node.children && node.children.length > 0
   const isExpanded = expandedKeys.has(node.id)
@@ -60,29 +68,31 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
   /**
    * 处理展开/收起切换
    */
-  const handleToggleExpanded = useCallback(() => {
+  const handleToggleExpanded = useEvent((ev: React.MouseEvent<HTMLDivElement>) => {
+    ev.stopPropagation()
+
     if (hasChildren) {
       toggleExpanded(node.id)
     }
-  }, [hasChildren, node.id, toggleExpanded])
+  })
 
   /**
    * 处理选中状态切换
    */
-  const handleToggleSelected = useCallback(() => {
+  const handleToggleSelected = useEvent(() => {
     if (selectable) {
       toggleSelected(node.id)
     }
-  }, [selectable, node.id, toggleSelected])
+  })
 
   /**
    * 处理复选框变化
    */
-  const handleCheckboxChange = useCallback(() => {
+  const handleCheckboxChange = useEvent(() => {
     if (selectable === 'multiple') {
       toggleSelected(node.id)
     }
-  }, [selectable, node.id, toggleSelected])
+  })
 
   /**
    * 渲染节点内容
@@ -126,12 +136,20 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
               ev.stopPropagation()
             }}
           >
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setCreateDialogOpen(true)
+              }}
+            >
               <PlusIcon />
               <span>添加子部门</span>
             </DropdownMenuItem>
 
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setEditDialogOpen(true)
+              }}
+            >
               <EditIcon />
               <span>编辑</span>
             </DropdownMenuItem>
@@ -147,7 +165,7 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
   }
 
   return (
-    <Collapsible open={isExpanded} onOpenChange={handleToggleExpanded}>
+    <Collapsible open={isExpanded}>
       <SidebarMenuItem>
         <div className="flex items-center gap-2 w-full">
           {/* 多选模式下的复选框 */}
@@ -170,16 +188,19 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
               )}
               onClick={selectable === 'single' ? handleToggleSelected : undefined}
             >
-              {/* 展开/收起图标 */}
-              <div className="shrink-0 w-4 flex justify-center">
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+              <div
+                className="shrink-0 size-5 flex justify-center items-center rounded-sm hover:bg-background"
+                onClick={handleToggleExpanded}
+              >
                 {
                   hasChildren
                     ? (
                         <>
                           {
                             isExpanded
-                              ? <ChevronDownIcon />
-                              : <ChevronRightIcon />
+                              ? <ChevronDownIcon className="!size-4" />
+                              : <ChevronRightIcon className="!size-4" />
                           }
                         </>
                       )
@@ -212,6 +233,36 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
           </CollapsibleContent>
         )}
       </SidebarMenuItem>
+
+      {/* 创建子部门对话框 */}
+      <DepartmentDialog
+        formData={{ parentId: node.id }}
+        mode="create"
+        open={createDialogOpen}
+        orgId={orgId}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={() => {
+          void refetch()
+        }}
+      />
+
+      {/* 编辑部门对话框 */}
+      <DepartmentDialog
+        formData={{
+          id: node.id,
+          name: node.name,
+          remark: node.remark,
+          parentId: node.parent?.id,
+          isActive: node.isActive,
+        }}
+        mode="edit"
+        open={editDialogOpen}
+        orgId={orgId}
+        onOpenChange={setEditDialogOpen}
+        onSuccess={() => {
+          void refetch()
+        }}
+      />
     </Collapsible>
   )
 }

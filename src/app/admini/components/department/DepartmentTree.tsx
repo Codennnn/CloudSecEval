@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
+import { DepartmentDialog } from './DepartmentDialog'
 import { DepartmentTreeItem } from './DepartmentTreeItem'
 import { DepartmentTreeSearch } from './DepartmentTreeSearch'
 import type { DepartmentTreeNode, DepartmentTreeProps } from './types'
@@ -38,8 +39,9 @@ export function DepartmentTree(props: DepartmentTreeProps) {
   } = props
 
   const [isInitialized, setIsInitialized] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
-  const { treeData, isLoading, isSuccess } = useDepartmentData({ orgId })
+  const { treeData, isLoading, isSuccess, refetch } = useDepartmentData({ orgId })
 
   const {
     expandedKeys,
@@ -172,7 +174,11 @@ export function DepartmentTree(props: DepartmentTreeProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="icon" variant="outline">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => { setCreateDialogOpen(true) }}
+                >
                   <PlusIcon />
                 </Button>
               </TooltipTrigger>
@@ -234,6 +240,17 @@ export function DepartmentTree(props: DepartmentTreeProps) {
                   )
         }
       </SidebarContent>
+
+      {/* 创建部门对话框 */}
+      <DepartmentDialog
+        mode="create"
+        open={createDialogOpen}
+        orgId={orgId}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={() => {
+          void refetch()
+        }}
+      />
     </div>
   )
 }
