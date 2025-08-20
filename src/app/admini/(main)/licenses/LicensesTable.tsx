@@ -299,7 +299,7 @@ export function LicensesTable() {
   const selectedCount = Object.keys(selectedRows).filter((key) => selectedRows[key]).length
 
   return (
-    <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
+    <div className="p-admin-content">
       {/* 选中信息显示 */}
       {selectedCount > 0 && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">

@@ -1,5 +1,11 @@
+import { UsersSide } from './UsersSide'
 import { UsersTable } from './UsersTable'
 
 export default function UserPage() {
-  return <UsersTable />
+  return (
+    <div className="flex gap-4">
+      <UsersSide />
+      <UsersTable />
+    </div>
+  )
 }

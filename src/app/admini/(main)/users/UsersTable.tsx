@@ -168,7 +168,7 @@ export function UsersTable() {
   }, [])
 
   return (
-    <div className="px-admin-content-md lg:px-admin-content py-admin-content-md md:py-admin-content">
+    <div className="p-admin-content">
       <ProTable<UserData>
         columns={columns}
         headerTitle="用户列表"

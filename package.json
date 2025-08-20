@@ -48,6 +48,7 @@
     "@radix-ui/react-tooltip": "^1.2.6",
     "@tanstack/react-query": "^5.84.1",
     "@tanstack/react-table": "^8.21.3",
+    "array-to-tree": "^3.3.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "consola": "^3.4.2",

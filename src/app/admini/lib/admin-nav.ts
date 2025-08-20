@@ -1,4 +1,4 @@
-import { GaugeIcon, KeyIcon, type LucideIcon, UserIcon } from 'lucide-react'
+import { GaugeIcon, KeyIcon, type LucideIcon, UserIcon, UsersIcon } from 'lucide-react'
 
 /**
  * 管理后台相关路由（敏感信息）
@@ -31,12 +31,10 @@ export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.Root]: {
     title: adminTitle,
     url: AdminRoutes.Root,
-    icon: UserIcon,
   },
   [AdminRoutes.Login]: {
     title: '登录',
     url: AdminRoutes.Login,
-    icon: UserIcon,
   },
   [AdminRoutes.Dashboard]: {
     title: '仪表盘',
@@ -56,7 +54,7 @@ export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.Users]: {
     title: '用户管理',
     url: AdminRoutes.Users,
-    icon: UserIcon,
+    icon: UsersIcon,
   },
 }
 

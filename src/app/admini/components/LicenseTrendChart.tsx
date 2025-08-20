@@ -64,9 +64,6 @@ function getToday(): string {
   return new Date().toISOString().split('T')[0]
 }
 
-/**
- * 每日新增授权码趋势图表组件
- */
 export function LicenseTrendChart() {
   const [timeRange, setTimeRange] = useState('30d')
 
@@ -124,17 +121,17 @@ export function LicenseTrendChart() {
 
   return (
     <Card className="@container/card">
-      <CardHeader className="flex items-center gap-2 space-y-0 @[480px]/card:flex-row">
-        <div className="grid flex-1 gap-1 text-center @[480px]/card:text-left">
+      <CardHeader className="flex items-center gap-2 space-y-0">
+        <div className="grid flex-1 gap-1">
           <CardTitle>每日新增授权码趋势</CardTitle>
-          <CardDescription>
+          <CardDescription className="@xl/card:block hidden">
             展示指定时间范围内每日新增授权码的变化趋势
           </CardDescription>
         </div>
 
         <CardAction className="flex items-center gap-2">
           <ToggleGroup
-            className="hidden @[767px]/card:flex"
+            className="hidden @xl/card:flex"
             type="single"
             value={timeRange}
             variant="outline"
@@ -158,7 +155,7 @@ export function LicenseTrendChart() {
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
               aria-label="选择时间范围"
-              className="@[767px]/card:hidden"
+              className="@xl/card:hidden"
             >
               <SelectValue placeholder={currentRange.label} />
             </SelectTrigger>
@@ -174,12 +171,13 @@ export function LicenseTrendChart() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="px-2 pt-4 @[480px]/card:px-6 @[480px]/card:pt-6">
+      <CardContent className="px-2 pt-4 @xl/card:px-6 @xl/card:pt-6">
         {isLoading
           ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Skeleton className="h-[250px] w-full" />
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
+                  <Skeleton className="h-4 w-20" />
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="h-4 w-20" />
@@ -248,7 +246,7 @@ export function LicenseTrendChart() {
 
         {/* 统计信息 */}
         {data?.data && (
-          <div className="pt-4 grid grid-cols-2 gap-4 @[640px]/card:grid-cols-4">
+          <div className="pt-4 grid grid-cols-2 gap-4 @xl/card:grid-cols-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
                 {data.data.totalNewLicenses || 0}
