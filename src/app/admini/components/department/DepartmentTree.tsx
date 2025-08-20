@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
+import { PlusIcon } from 'lucide-react'
+
+import { Button } from '~/components/ui/button'
 import {
   SidebarContent,
   SidebarGroup,
@@ -9,6 +12,7 @@ import {
   SidebarMenu,
 } from '~/components/ui/sidebar'
 import { Skeleton } from '~/components/ui/skeleton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
@@ -160,10 +164,24 @@ export function DepartmentTree(props: DepartmentTreeProps) {
       {/* 搜索区域 */}
       {showSearch && (
         <SidebarHeader className="p-admin-content">
-          <DepartmentTreeSearch
-            orgId={orgId}
-            treeData={treeData}
-          />
+          <div className="flex items-center gap-2">
+            <DepartmentTreeSearch
+              orgId={orgId}
+              treeData={treeData}
+            />
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="icon" variant="outline">
+                  <PlusIcon />
+                </Button>
+              </TooltipTrigger>
+
+              <TooltipContent>
+                添加新部门
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </SidebarHeader>
       )}
 

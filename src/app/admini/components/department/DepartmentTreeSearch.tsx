@@ -100,32 +100,29 @@ export function DepartmentTreeSearch(props: DepartmentTreeSearchProps) {
   }, [inputValue, searchKeyword, setSearchKeyword])
 
   return (
-    <div className={cn(className)}>
-      {/* 搜索输入框 */}
-      <div className="relative flex-1">
-        <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground" />
+    <div className={cn('relative flex-1', className)}>
+      <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground" />
 
-        <Input
-          className="pl-9 pr-9"
-          placeholder={placeholder}
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-        />
+      <Input
+        className="pl-9 pr-9"
+        placeholder={placeholder}
+        value={inputValue}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+      />
 
-        {/* 清空按钮 */}
-        {inputValue && (
-          <Button
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 size-7"
-            size="icon"
-            variant="ghost"
-            onClick={handleClear}
-          >
-            <XIcon className="size-3" />
-            <span className="sr-only">清空搜索</span>
-          </Button>
-        )}
-      </div>
+      {/* 清空按钮 */}
+      {inputValue && (
+        <Button
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 size-7"
+          size="icon"
+          variant="ghost"
+          onClick={handleClear}
+        >
+          <XIcon className="size-3" />
+          <span className="sr-only">清空搜索</span>
+        </Button>
+      )}
     </div>
   )
 }

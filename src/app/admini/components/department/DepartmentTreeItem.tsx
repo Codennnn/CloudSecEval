@@ -1,13 +1,8 @@
-/**
- * 部门树节点组件
- * 可递归渲染的部门树节点，支持展开/收起和选中状态
- */
-
 'use client'
 
 import { useCallback } from 'react'
 
-import { ChevronRightIcon, FolderIcon, UsersIcon } from 'lucide-react'
+import { ChevronDownIcon, ChevronRightIcon, EditIcon, EllipsisVerticalIcon, FolderIcon, PlusIcon, TrashIcon } from 'lucide-react'
 
 import { Checkbox } from '~/components/ui/checkbox'
 import {
@@ -16,6 +11,13 @@ import {
   CollapsibleTrigger,
 } from '~/components/ui/collapsible'
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import {
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -26,19 +28,15 @@ import { cn } from '~/lib/utils'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import type { DepartmentTreeItemProps, DepartmentTreeNode } from './types'
 
-/**
- * 部门树节点组件属性接口
- */
+import type { DepartmentTreeNodeDto } from '~api/types.gen'
+
 interface DepartmentTreeItemComponentProps extends DepartmentTreeItemProps {
   /** 组织 ID */
-  orgId: string
+  orgId: DepartmentTreeNodeDto['orgId']
   /** 原始树形数据（用于多选时的父子联动） */
   treeData: DepartmentTreeNode[]
 }
 
-/**
- * 部门树节点组件
- */
 export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
   const {
     node,
@@ -98,13 +96,7 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {/* 部门图标 */}
         <div className="shrink-0">
-          {hasChildren
-            ? (
-                <FolderIcon className="size-4 text-blue-500" />
-              )
-            : (
-                <UsersIcon className="size-4 text-gray-500" />
-              )}
+          <FolderIcon className="size-4" />
         </div>
 
         {/* 部门名称 */}
@@ -112,21 +104,44 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
           {node.name}
         </span>
 
-        {/* 统计信息 */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground shrink-0">
-          {typeof node.userCount === 'number' && (
-            <span className="flex items-center gap-1">
-              <UsersIcon className="size-3" />
-              {node.userCount}
-            </span>
-          )}
-          {typeof node.childrenCount === 'number' && node.childrenCount > 0 && (
-            <span className="flex items-center gap-1">
-              <FolderIcon className="size-3" />
-              {node.childrenCount}
-            </span>
-          )}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuAction
+              asChild
+              showOnHover
+              className="data-[state=open]:bg-muted rounded-sm"
+            >
+              <div>
+                <EllipsisVerticalIcon className="!size-3.5" />
+                <span className="sr-only">更多</span>
+              </div>
+            </SidebarMenuAction>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent
+            align="end"
+            className="w-24 rounded-lg"
+            side="right"
+            onClick={(ev) => {
+              ev.stopPropagation()
+            }}
+          >
+            <DropdownMenuItem>
+              <PlusIcon />
+              <span>添加子部门</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem>
+              <EditIcon />
+              <span>编辑</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem variant="destructive">
+              <TrashIcon />
+              <span>删除</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     )
   }
@@ -161,15 +176,14 @@ export function DepartmentTreeItem(props: DepartmentTreeItemComponentProps) {
                   hasChildren
                     ? (
                         <>
-                          <ChevronRightIcon
-                            className={cn(
-                              'size-4 transition-transform duration-200',
-                              isExpanded && 'rotate-90',
-                            )}
-                          />
+                          {
+                            isExpanded
+                              ? <ChevronDownIcon />
+                              : <ChevronRightIcon />
+                          }
                         </>
                       )
-                    : <div className="w-4" /> // 占位符，保持对齐
+                    : null
                 }
               </div>
 
