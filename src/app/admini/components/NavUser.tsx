@@ -118,7 +118,7 @@ export function NavUser() {
                 </DropdownMenuItem>
               </Link>
 
-              <Link href={RoutePath.Docs}>
+              <Link href={RoutePath.Docs} target="_blank">
                 <DropdownMenuItem>
                   <BookTextIcon />
                   前往文档

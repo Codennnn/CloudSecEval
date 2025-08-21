@@ -36,8 +36,7 @@ const authFormSchema = z.object({
   email: z.email('邮箱格式不正确，请检查后重试'),
   code: z
     .string()
-    .min(1, '授权码不能为空')
-    .min(6, '授权码长度不能少于6位'),
+    .min(1, '授权码不能为空'),
 })
 
 type AuthFormValues = z.infer<typeof authFormSchema>
@@ -68,11 +67,9 @@ export function GlobalAuthDialog() {
     code: string
   } | null>(null)
 
-  // 授权验证 hook
   const verificationResult = useLicenseVerification({
     credentials: verificationData,
     enabled: shouldVerify,
-    retry: false,
   })
 
   const {
@@ -159,9 +156,6 @@ export function GlobalAuthDialog() {
     setShouldVerify(true)
   }
 
-  /**
-   * 处理对话框关闭
-   */
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       form.reset()
