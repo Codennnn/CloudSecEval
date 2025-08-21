@@ -1,6 +1,8 @@
 'use client'
 
-import { EllipsisIcon, ExternalLinkIcon } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { BookOpenIcon, EllipsisIcon, ExternalLinkIcon } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -15,7 +17,6 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from '~/components/ui/sidebar'
 
 import type { AdminDocumentItem } from '~admin/lib/admin-nav'
@@ -25,52 +26,59 @@ export function NavDocuments({
 }: {
   items: AdminDocumentItem[]
 }) {
-  const { isMobile } = useSidebar()
+  const pathname = usePathname()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>文档</SidebarGroupLabel>
 
       <SidebarMenu>
-        {items.map((item) => (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </a>
-            </SidebarMenuButton>
+        {items.map((item) => {
+          const url = `/admini/docs/${item.url}`
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction
-                  showOnHover
-                  className="data-[state=open]:bg-muted rounded-sm"
+          return (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild isActive={decodeURIComponent(pathname) === url}>
+                <Link href={url}>
+                  {item.icon ? <item.icon /> : <BookOpenIcon />}
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuAction
+                    showOnHover
+                    className="data-[state=open]:bg-muted rounded-sm"
+                  >
+                    <EllipsisIcon />
+                    <span className="sr-only">更多</span>
+                  </SidebarMenuAction>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align="start"
+                  className="w-24 rounded-lg"
                 >
-                  <EllipsisIcon />
-                  <span className="sr-only">更多</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent
-                align={isMobile ? 'end' : 'start'}
-                className="w-24 rounded-lg"
-                side={isMobile ? 'bottom' : 'right'}
-              >
-                <DropdownMenuItem>
-                  <ExternalLinkIcon />
-                  <span>新标签打开</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        ))}
+                  <DropdownMenuItem asChild>
+                    <Link href={`/admini/docs/${item.url}`} target="_blank">
+                      <ExternalLinkIcon />
+                      <span>新标签打开</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          )
+        })}
 
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <EllipsisIcon className="text-sidebar-foreground/70" />
-            <span>更多</span>
-          </SidebarMenuButton>
+          <Link href="/admini/docs/">
+            <SidebarMenuButton className="text-sidebar-foreground/70">
+              <EllipsisIcon className="text-sidebar-foreground/70" />
+              <span>更多</span>
+            </SidebarMenuButton>
+          </Link>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>

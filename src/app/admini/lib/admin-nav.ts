@@ -127,18 +127,15 @@ export const adminNavSecondary = [
 
 export const adminNavDocuments = [
   {
-    title: 'Data Library',
-    url: '#',
-    icon: UserIcon,
+    title: '项目介绍文案',
+    url: '项目介绍文案',
   },
   {
-    title: 'Reports',
-    url: '#',
-    icon: UserIcon,
+    title: '收费逻辑说明话术',
+    url: '收费逻辑说明话术',
   },
   {
-    title: 'Word Assistant',
-    url: '#',
-    icon: UserIcon,
+    title: '文档搜索',
+    url: '文档搜索',
   },
 ]
