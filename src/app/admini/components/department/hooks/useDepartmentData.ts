@@ -19,7 +19,7 @@ import { buildDepartmentTree } from '../utils/tree-utils'
  */
 interface UseDepartmentDataOptions {
   /** 组织 ID */
-  orgId: User['orgId']
+  orgId?: User['orgId']
   /** 是否启用查询 */
   enabled?: boolean
 }

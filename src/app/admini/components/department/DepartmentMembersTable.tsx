@@ -23,11 +23,20 @@ import {
 } from '~/components/ui/dropdown-menu'
 import { UserAvatar } from '~/components/UserAvatar'
 import { FieldTypeEnum } from '~/constants/form'
-import type { DepartmentsControllerGetDepartmentMembersData, UserListItemDto } from '~/lib/api/generated/types.gen'
+import type {
+  DepartmentsControllerGetDepartmentMembersData,
+  UserListItemDto,
+} from '~/lib/api/generated/types.gen'
 import { formatDate } from '~/utils/date'
 
+import { MemberDialog, type MemberDialogMode } from './MemberDialog'
+
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
-import { departmentsControllerGetDepartmentMembersOptions, departmentsControllerGetDepartmentMembersQueryKey, usersControllerRemoveUserMutation } from '~api/@tanstack/react-query.gen'
+import {
+  departmentsControllerGetDepartmentMembersOptions,
+  departmentsControllerGetDepartmentMembersQueryKey,
+  usersControllerRemoveUserMutation,
+} from '~api/@tanstack/react-query.gen'
 import type { Options } from '~api/sdk.gen'
 
 interface DepartmentMembersTableProps {
@@ -44,6 +53,10 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
   const queryClient = useQueryClient()
 
   const [userToDelete, setUserToDelete] = useState<UserListItemDto | null>(null)
+
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogMode, setDialogMode] = useState<MemberDialogMode>('create')
+  const [editingUser, setEditingUser] = useState<UserListItemDto | null>(null)
 
   const [queryOptions, setQueryOptions]
   = useState<Options<DepartmentsControllerGetDepartmentMembersData>>()
@@ -184,9 +197,9 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
 
               <DropdownMenuItem
                 onClick={() => {
-                  // TODO: 实现编辑功能
-                  // 暂时使用 row.original.id 来避免 ESLint 警告
-                  void row.original.id
+                  setDialogMode('edit')
+                  setEditingUser(row.original)
+                  setDialogOpen(true)
                 }}
               >
                 编辑
@@ -245,8 +258,9 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
             <Button
               size="sm"
               onClick={() => {
-                // TODO: 实现添加成员功能
-                toast.info('添加成员功能开发中...')
+                setDialogMode('create')
+                setEditingUser(null)
+                setDialogOpen(true)
               }}
             >
               <Plus />
@@ -296,6 +310,21 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
           if (!open) {
             setUserToDelete(null)
           }
+        }}
+      />
+
+      {/* MARK: 成员创建/编辑对话框 */}
+      <MemberDialog
+        departmentId={departmentId}
+        mode={dialogMode}
+        open={dialogOpen}
+        user={editingUser}
+        onClose={() => {
+          setDialogOpen(false)
+          setEditingUser(null)
+        }}
+        onSuccess={() => {
+          handleRefresh()
         }}
       />
     </div>
