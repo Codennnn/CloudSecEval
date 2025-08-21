@@ -1,35 +1,15 @@
-'use client'
+import type { Metadata } from 'next'
 
-import { useState } from 'react'
+import { UserPage } from './UsersPage'
 
-import { UsersSide, type UsersSideProps } from './UsersSide'
+import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 
-import { DepartmentMembersTable } from '~admin/components/department/DepartmentMembersTable'
+export const metadata: Metadata = {
+  title: generatePageTitle(AdminRoutes.Users),
+}
 
-export default function UserPage() {
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null)
-
-  const handleDepartmentSelect: UsersSideProps['onDepartmentSelect'] = (departmentIds) => {
-    const departmentId = departmentIds.at(0)
-
-    if (departmentId) {
-      setSelectedDepartmentId(departmentId)
-    }
-  }
-
+export default function AdminUserPage() {
   return (
-    <div className="flex gap-admin-content">
-      <UsersSide onDepartmentSelect={handleDepartmentSelect} />
-
-      <div className="flex-1">
-        {selectedDepartmentId
-          && (
-            <DepartmentMembersTable
-              departmentId={selectedDepartmentId}
-              includeChildren={false}
-            />
-          )}
-      </div>
-    </div>
+    <UserPage />
   )
 }
