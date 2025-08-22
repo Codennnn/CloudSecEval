@@ -9,7 +9,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query'
 
 import { departmentsControllerFindAllDepartmentsOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
 import type { DepartmentListItemDto } from '~/lib/api/generated/types.gen'
-import type { User } from '~/lib/api/types'
+import type { OrganizationId } from '~/lib/api/types'
 
 import type { DepartmentTreeNode } from '../types'
 import { buildDepartmentTree } from '../utils/tree-utils'
@@ -19,7 +19,7 @@ import { buildDepartmentTree } from '../utils/tree-utils'
  */
 interface UseDepartmentDataOptions {
   /** 组织 ID */
-  orgId?: User['orgId']
+  orgId?: OrganizationId
   /** 是否启用查询 */
   enabled?: boolean
 }

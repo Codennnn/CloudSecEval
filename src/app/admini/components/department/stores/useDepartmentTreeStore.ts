@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
-import type { User } from '~/lib/api/types'
+import type { OrganizationId } from '~/lib/api/types'
 
 import type { DepartmentTreeNode, DepartmentTreeStore, SelectMode } from '../types'
 import { filterDepartmentTree, findNodeById, getChildrenIds, getParentPath } from '../utils/tree-utils'
@@ -9,7 +9,7 @@ import { filterDepartmentTree, findNodeById, getChildrenIds, getParentPath } fro
 /**
  * 创建部门树状态管理 Store
  */
-function createDepartmentTreeStore(orgId: User['orgId']) {
+function createDepartmentTreeStore(orgId: OrganizationId) {
   return create<DepartmentTreeStore>()(
     devtools(
       (set) => ({
@@ -180,7 +180,7 @@ function createDepartmentTreeStore(orgId: User['orgId']) {
  */
 const storeCache = new Map<string, ReturnType<typeof createDepartmentTreeStore>>()
 
-export function useDepartmentTreeStore(orgId: User['orgId']) {
+export function useDepartmentTreeStore(orgId: OrganizationId) {
   // 从缓存中获取或创建新的 Store 实例
   if (!storeCache.has(orgId)) {
     storeCache.set(orgId, createDepartmentTreeStore(orgId))
@@ -194,7 +194,7 @@ export function useDepartmentTreeStore(orgId: User['orgId']) {
 /**
  * 清理指定组织的 Store 缓存
  */
-export function clearDepartmentTreeStore(orgId: User['orgId']) {
+export function clearDepartmentTreeStore(orgId: OrganizationId) {
   storeCache.delete(orgId)
 }
 

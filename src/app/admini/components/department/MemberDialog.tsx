@@ -36,6 +36,7 @@ import type {
   UsersControllerUpdateData,
   UsersControllerUpdateResponse,
 } from '~/lib/api/generated/types.gen'
+import type { DepartmentId } from '~/lib/api/types'
 
 import { convertDepartmentValue, convertToDepartmentSelectorValue, DepartmentSelector } from './DepartmentSelector'
 
@@ -70,7 +71,7 @@ export type MemberDialogMode = 'create' | 'edit'
 
 interface MemberDialogProps {
   /** 当前所在部门 ID（创建用户时使用） */
-  departmentId: string
+  departmentId: DepartmentId
   /** 对话框模式 */
   mode: MemberDialogMode
   /** 对话框是否打开 */
@@ -92,7 +93,7 @@ interface MemberFormValues {
   name?: string
   phone?: string
   isActive?: boolean
-  departmentId?: string
+  departmentId?: DepartmentId
 }
 
 // ==================== 主组件 ====================
@@ -173,7 +174,7 @@ export function MemberDialog(props: MemberDialogProps) {
     if (open) {
       if (dialogMode === 'edit') {
         const detail = userDetailQuery.data?.data
-        const currentDepartmentValue = convertToDepartmentSelectorValue(detail?.departmentId)
+        const currentDepartmentValue = convertToDepartmentSelectorValue(detail?.department?.id)
 
         form.reset({
           email: user?.email ?? '',

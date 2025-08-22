@@ -7,6 +7,7 @@ import { SearchIcon, XIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
+import type { OrganizationId } from '~/lib/api/types'
 import { cn } from '~/lib/utils'
 
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
@@ -14,7 +15,7 @@ import type { DepartmentTreeNode } from './types'
 
 interface DepartmentTreeSearchProps {
   /** 组织 ID */
-  orgId: string
+  orgId: OrganizationId
   /** 原始树形数据 */
   treeData: DepartmentTreeNode[]
   /** 搜索框占位符文本 */

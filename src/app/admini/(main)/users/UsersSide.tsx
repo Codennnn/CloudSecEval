@@ -1,10 +1,12 @@
 'use client'
 
+import type { DepartmentId } from '~/lib/api/types'
+
 import { DepartmentTree } from '~admin/components/department/DepartmentTree'
 import { useUser } from '~admin/stores/useUserStore'
 
 export interface UsersSideProps {
-  onDepartmentSelect?: (departmentIds: string[]) => void
+  onDepartmentSelect?: (departmentIds: DepartmentId[]) => void
 }
 
 export function UsersSide(props: UsersSideProps) {
@@ -15,7 +17,7 @@ export function UsersSide(props: UsersSideProps) {
   if (user) {
     return (
       <DepartmentTree
-        orgId={user.orgId}
+        orgId={user.organization.id}
         selectable="single"
         onSelect={(selectedIds) => {
           // 当选中部门时，调用回调函数

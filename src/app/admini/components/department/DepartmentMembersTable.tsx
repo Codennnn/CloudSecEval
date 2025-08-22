@@ -27,6 +27,7 @@ import type {
   DepartmentsControllerGetDepartmentMembersData,
   UserListItemDto,
 } from '~/lib/api/generated/types.gen'
+import type { DepartmentId } from '~/lib/api/types'
 import { formatDate } from '~/utils/date'
 
 import { MemberDialog, type MemberDialogMode } from './MemberDialog'
@@ -40,7 +41,7 @@ import {
 import type { Options } from '~api/sdk.gen'
 
 interface DepartmentMembersTableProps {
-  departmentId: string
+  departmentId: DepartmentId
   includeChildren?: boolean
 }
 

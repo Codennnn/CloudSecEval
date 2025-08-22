@@ -172,6 +172,44 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     },
   })
 
+  // 删除后如果没有选中项或选中项已不存在，则自动选中第一个部门，提升体验
+  useEffect(() => {
+    if (isInitialized && defaultSelectFirstNode) {
+      // 收集当前树中所有有效的 id
+      const validIds = new Set<string>()
+
+      const collectIds = (nodes: DepartmentTreeNode[]) => {
+        for (const n of nodes) {
+          validIds.add(n.id)
+
+          if (n.children && n.children.length > 0) {
+            collectIds(n.children)
+          }
+        }
+      }
+
+      collectIds(treeData)
+
+      // 判断当前选中项在新树中是否仍然有效
+      let hasValidSelection = false
+
+      for (const id of selectedKeys) {
+        if (validIds.has(id)) {
+          hasValidSelection = true
+          break
+        }
+      }
+
+      if (!hasValidSelection && treeData.length > 0) {
+        const firstNode = treeData.at(0)
+
+        if (firstNode) {
+          setSelectedKeys([firstNode.id])
+        }
+      }
+    }
+  }, [isInitialized, defaultSelectFirstNode, selectedKeys, treeData, setSelectedKeys])
+
   const handleDeleteDepartment = useEvent<NonNullable<DepartmentTreeItemProps['onDelete']>>((nodeId) => {
     deleteDepartment.mutate({ path: { id: nodeId } })
   })

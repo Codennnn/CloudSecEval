@@ -91,3 +91,6 @@ export interface ListResponse<T = unknown> {
   data: T[]
   pagination: PaginationMetaDto
 }
+
+export type OrganizationId = User['organization']['id']
+export type DepartmentId = NonNullable<User['department']>['id']

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
-import type { User } from '~/lib/api/types'
+import type { OrganizationId } from '~/lib/api/types'
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import type { DepartmentTreeNode } from './types'
@@ -26,7 +26,7 @@ export interface DepartmentOption {
 
 export interface DepartmentSelectorProps {
   /** 组织 ID */
-  orgId?: User['orgId']
+  orgId?: OrganizationId
   /** 当前选中的部门 ID */
   value?: string
   /** 选择变化回调 */
@@ -173,7 +173,7 @@ export function DepartmentSelector(props: DepartmentSelectorProps) {
   const user = useUser()
 
   // 获取部门数据
-  const { treeData, isLoading } = useDepartmentData({ orgId: user?.orgId ?? orgId })
+  const { treeData, isLoading } = useDepartmentData({ orgId: user?.organization.id ?? orgId })
 
   // 过滤可选的父部门列表
   const availableParents = useMemo(() => {

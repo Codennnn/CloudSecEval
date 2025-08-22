@@ -1,3 +1,5 @@
+import type { OrganizationId } from '~/lib/api/types'
+
 import type { DepartmentTreeNodeDto } from '~api/types.gen'
 
 /**
@@ -25,7 +27,7 @@ export type SelectMode = 'single' | 'multiple' | false
  */
 export interface DepartmentTreeProps {
   /** 组织 ID，用于获取部门数据 */
-  orgId: string
+  orgId: OrganizationId
   /** 选择模式：single-单选，multiple-多选，false-不可选 */
   selectable?: SelectMode
   /** 默认展开的部门 ID 列表 */
@@ -56,7 +58,7 @@ export interface DepartmentTreeItemProps {
   /** 是否可选择 */
   selectable: SelectMode
   /** 组织 ID */
-  orgId: DepartmentTreeNodeDto['orgId']
+  orgId: DepartmentTreeNodeDto['organization']['id']
   /** 原始树形数据（用于多选时的父子联动） */
   treeData: DepartmentTreeNode[]
 
@@ -161,5 +163,5 @@ export interface DepartmentDialogProps {
   /** 成功操作后的回调 */
   onSuccess?: () => void
   /** 组织 ID */
-  orgId: string
+  orgId: OrganizationId
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { CalendarIcon, EditIcon, MailIcon, SaveIcon } from 'lucide-react'
+import { CalendarIcon, EditIcon, HouseIcon, MailIcon, SaveIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
@@ -14,6 +14,7 @@ import { Label } from '~/components/ui/label'
 import { Separator } from '~/components/ui/separator'
 import { Textarea } from '~/components/ui/textarea'
 import { UserAvatar } from '~/components/UserAvatar'
+import { formatDate } from '~/utils/date'
 
 import { PageHeader } from '~admin/components/PageHeader'
 import { useUpdateProfile } from '~admin/hooks/api/useUpdateProfile'
@@ -158,16 +159,24 @@ export function ProfilePage() {
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MailIcon className="size-4" />
-                    <span>{userProfile.email}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CalendarIcon className="size-4" />
-                    <span>加入于 {userProfile.joinDate}</span>
-                  </div>
-                </CardContent>
+                {storeUser && (
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <MailIcon className="size-4" />
+                      <span>{storeUser.email}</span>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <HouseIcon className="size-4" />
+                      <span>{storeUser.organization.name} / {storeUser.department?.name ?? '无部门'}</span>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <CalendarIcon className="size-4" />
+                      <span>加入于 {formatDate(storeUser.createdAt)}</span>
+                    </div>
+                  </CardContent>
+                )}
               </Card>
 
               {/* 详细信息编辑卡片 */}
