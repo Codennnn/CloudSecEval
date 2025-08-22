@@ -5,6 +5,7 @@ import { ArrowUpDownIcon, Columns3CogIcon, ListFilterIcon, PlusIcon, RefreshCwIc
 import { ColumnVisibilityControls } from '~/components/advanced-search/ColumnVisibilityControls'
 import { FilterConditions } from '~/components/advanced-search/FilterConditions'
 import { SortConditions } from '~/components/advanced-search/SortConditions'
+import { ToolbarSearch } from '~/components/table/ToolbarSearch'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -134,6 +135,15 @@ export function TableToolbar(props: TableToolbarProps) {
   return (
     <div className={cn('flex items-center justify-end gap-2', className)}>
       <div className="flex items-center gap-1">
+        {/* MARK: 全局搜索 */}
+        <ToolbarSearch
+          debounceMs={450}
+          value={typeof config.globalSearch === 'string' ? config.globalSearch : ''}
+          onCommit={(val) => {
+            setConfig((prev) => ({ ...prev, globalSearch: val }))
+          }}
+        />
+
         {/* MARK: 筛选功能 */}
         <Popover>
           <PopoverTrigger asChild>
