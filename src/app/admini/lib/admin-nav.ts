@@ -52,7 +52,7 @@ export const adminNavConfig: AdminNavConfig = {
     icon: UserIcon,
   },
   [AdminRoutes.Users]: {
-    title: '用户管理',
+    title: '部门与成员',
     url: AdminRoutes.Users,
     icon: UsersIcon,
   },

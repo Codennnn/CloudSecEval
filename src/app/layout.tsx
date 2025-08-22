@@ -41,7 +41,7 @@ const harmonySansSC = localFont({
   ],
   display: 'swap',
   preload: true,
-  variable: '--font-harmony-os-sans-sc',
+  variable: '--font-vivo-sans',
   fallback: ['system-ui', 'sans-serif'],
   adjustFontFallback: 'Arial',
 })

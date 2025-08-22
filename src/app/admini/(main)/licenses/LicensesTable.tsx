@@ -7,6 +7,7 @@ import { type QueryKey, useMutation, useQueryClient } from '@tanstack/react-quer
 import type { RowSelectionState } from '@tanstack/react-table'
 import {
   EllipsisVerticalIcon,
+  JapaneseYenIcon,
   Plus,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -190,11 +191,21 @@ export function LicensesTable() {
         ),
       },
       {
+        accessorKey: 'purchaseAmount',
+        header: '购买金额',
+        cell: ({ row }) => (
+          <div className="text-sm tabular-nums flex items-center gap-0.5">
+            <JapaneseYenIcon className="size-3.5" />
+            {row.original.purchaseAmount}
+          </div>
+        ),
+      },
+      {
         accessorKey: 'expiresAt',
         header: '过期时间',
         type: FieldTypeEnum.DATE,
         cell: ({ row }) => (
-          <div className="text-sm">
+          <div className="text-xs">
             {formatDate(row.original.expiresAt)}
           </div>
         ),
@@ -204,7 +215,7 @@ export function LicensesTable() {
         header: '创建时间',
         type: FieldTypeEnum.DATE,
         cell: ({ row }) => (
-          <div className="text-sm">
+          <div className="text-xs">
             {formatDate(row.original.createdAt)}
           </div>
         ),

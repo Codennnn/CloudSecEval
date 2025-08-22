@@ -68,7 +68,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   /* - */
-  --font-sans: var(--font-harmony-os-sans-sc);
+  --font-sans: var(--font-vivo-sans);
   --font-mono: var(--font-maple-mono);
 
   /* - */

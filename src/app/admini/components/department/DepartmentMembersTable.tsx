@@ -121,7 +121,7 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
       {
         id: 'user',
         accessorKey: 'user',
-        header: '用户',
+        header: '成员',
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <UserAvatar avatarUrl={row.original.avatarUrl} />

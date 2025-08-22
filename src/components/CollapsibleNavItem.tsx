@@ -36,9 +36,11 @@ function LockIcon(props: LockIconProps) {
     && !isExternalLink(url)
   ) {
     return (
-      <LockKeyholeIcon
-        className="shrink-0 opacity-25 !size-3"
-      />
+      <span title="付费内容">
+        <LockKeyholeIcon
+          className="shrink-0 opacity-25 !size-3"
+        />
+      </span>
     )
   }
 
