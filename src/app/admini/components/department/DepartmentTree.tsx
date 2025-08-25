@@ -23,7 +23,13 @@ import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import { DepartmentDialog } from './DepartmentDialog'
 import { DepartmentTreeItem } from './DepartmentTreeItem'
 import { DepartmentTreeSearch } from './DepartmentTreeSearch'
-import type { DepartmentTreeItemProps, DepartmentTreeNode, DepartmentTreeProps } from './types'
+import type {
+  DepartmentDialogMode,
+  DepartmentFormInitialData,
+  DepartmentTreeItemProps,
+  DepartmentTreeNode,
+  DepartmentTreeProps,
+} from './types'
 
 import { departmentsControllerRemoveDepartmentMutation } from '~api/@tanstack/react-query.gen'
 
@@ -45,7 +51,6 @@ export function DepartmentTree(props: DepartmentTreeProps) {
   } = props
 
   const [isInitialized, setIsInitialized] = useState(false)
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const { treeData, isLoading, isSuccess, refetch } = useDepartmentData({ orgId })
 
@@ -215,6 +220,80 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     deleteDepartment.mutate({ path: { id: nodeId } })
   })
 
+  const [dialogState, setDialogState] = useState<{
+    mode: DepartmentDialogMode | null
+    open: boolean
+    formData?: DepartmentFormInitialData
+  }>({
+    mode: null,
+    open: false,
+    formData: undefined,
+  })
+
+  const openCreateDialog = useEvent((formData?: DepartmentFormInitialData) => {
+    setDialogState({
+      mode: 'create',
+      open: true,
+      formData,
+    })
+  })
+
+  const openEditDialog = useEvent((formData: DepartmentFormInitialData) => {
+    setDialogState({
+      mode: 'edit',
+      open: true,
+      formData,
+    })
+  })
+
+  const handleDialogOpenChange = useEvent((open: boolean) => {
+    setDialogState((prev) => {
+      return {
+        ...prev,
+        open,
+      }
+    })
+  })
+
+  const findNodeById = (
+    nodes: DepartmentTreeNode[],
+    id: string,
+  ): DepartmentTreeNode | undefined => {
+    for (const n of nodes) {
+      if (n.id === id) {
+        return n
+      }
+
+      if (n.children && n.children.length > 0) {
+        const found = findNodeById(n.children, id)
+
+        if (found) {
+          return found
+        }
+      }
+    }
+
+    return undefined
+  }
+
+  const handleAddChild = useEvent<NonNullable<DepartmentTreeItemProps['onAddChild']>>((nodeId) => {
+    openCreateDialog({ parentId: nodeId })
+  })
+
+  const handleEdit = useEvent<NonNullable<DepartmentTreeItemProps['onEdit']>>((nodeId) => {
+    const node = findNodeById(treeData, nodeId)
+
+    if (node) {
+      openEditDialog({
+        id: node.id,
+        name: node.name,
+        remark: node.remark,
+        parentId: node.parent?.id,
+        isActive: node.isActive,
+      })
+    }
+  })
+
   return (
     <div
       className={cn(
@@ -236,7 +315,9 @@ export function DepartmentTree(props: DepartmentTreeProps) {
                 <Button
                   size="icon"
                   variant="outline"
-                  onClick={() => { setCreateDialogOpen(true) }}
+                  onClick={() => {
+                    openCreateDialog()
+                  }}
                 >
                   <PlusIcon />
                 </Button>
@@ -276,7 +357,9 @@ export function DepartmentTree(props: DepartmentTreeProps) {
                           renderNode={renderNode}
                           selectable={selectable}
                           treeData={treeData}
+                          onAddChild={handleAddChild}
                           onDelete={handleDeleteDepartment}
+                          onEdit={handleEdit}
                         />
                       ))}
                     </SidebarMenu>
@@ -301,16 +384,20 @@ export function DepartmentTree(props: DepartmentTreeProps) {
         }
       </SidebarContent>
 
-      {/* 创建部门对话框 */}
-      <DepartmentDialog
-        mode="create"
-        open={createDialogOpen}
-        orgId={orgId}
-        onOpenChange={setCreateDialogOpen}
-        onSuccess={() => {
-          void refetch()
-        }}
-      />
+      {/* 统一的部门对话框，仅此一个实例 */}
+      {dialogState.mode && (
+        <DepartmentDialog
+          formData={dialogState.formData}
+          mode={dialogState.mode}
+          open={dialogState.open}
+          orgId={orgId}
+          onOpenChange={handleDialogOpenChange}
+          onSuccess={() => {
+            handleDialogOpenChange(false)
+            void refetch()
+          }}
+        />
+      )}
     </div>
   )
 }

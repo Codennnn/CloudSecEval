@@ -15,6 +15,7 @@ import { toast } from 'sonner'
 import { CopyButton } from '~/components/CopyButton'
 import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
+import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -27,7 +28,6 @@ import {
 import { emitter, EVENT_KEY } from '~/constants/common'
 import { FieldTypeEnum } from '~/constants/form'
 import type { LicenseData } from '~/lib/api/types'
-import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { LicenseDetailDrawer } from '~admin/components/LicenseDetailDrawer'
@@ -153,6 +153,18 @@ export function LicensesTable() {
 
   // MARK: 表格列定义
   const columns = useMemo<TableColumnDef<LicenseData>[]>(() => {
+    const cellExpiresAt = createDateColumn<LicenseData>({
+      accessorKey: 'expiresAt',
+      header: '过期时间',
+      type: FieldTypeEnum.DATE,
+    })
+
+    const cellCreatedAt = createDateColumn<LicenseData>({
+      accessorKey: 'createdAt',
+      header: '创建时间',
+      type: FieldTypeEnum.DATE,
+    })
+
     return [
       {
         accessorKey: 'email',
@@ -200,26 +212,8 @@ export function LicensesTable() {
           </div>
         ),
       },
-      {
-        accessorKey: 'expiresAt',
-        header: '过期时间',
-        type: FieldTypeEnum.DATE,
-        cell: ({ row }) => (
-          <div className="text-xs">
-            {formatDate(row.original.expiresAt)}
-          </div>
-        ),
-      },
-      {
-        accessorKey: 'createdAt',
-        header: '创建时间',
-        type: FieldTypeEnum.DATE,
-        cell: ({ row }) => (
-          <div className="text-xs">
-            {formatDate(row.original.createdAt)}
-          </div>
-        ),
-      },
+      cellExpiresAt,
+      cellCreatedAt,
       {
         accessorKey: 'updatedAt',
         header: '更新时间',

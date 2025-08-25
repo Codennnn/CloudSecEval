@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { ChevronDownIcon, ChevronRightIcon, EditIcon, EllipsisVerticalIcon, FolderIcon, PlusIcon, TrashIcon } from 'lucide-react'
@@ -26,9 +25,7 @@ import {
 } from '~/components/ui/sidebar'
 import { cn } from '~/lib/utils'
 
-import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
-import { DepartmentDialog } from './DepartmentDialog'
 import type { DepartmentTreeItemProps } from './types'
 
 export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
@@ -38,11 +35,10 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
     orgId,
     treeData,
     renderNode,
+    onAddChild,
+    onEdit,
     onDelete,
   } = props
-
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
 
   const {
     expandedKeys,
@@ -50,8 +46,6 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
     toggleExpanded,
     toggleSelected,
   } = useDepartmentTreeStore(orgId)
-
-  const { refetch } = useDepartmentData({ orgId })
 
   const hasChildren = node.children && node.children.length > 0
   const isExpanded = expandedKeys.has(node.id)
@@ -112,7 +106,7 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
-            align="end"
+            align="start"
             side="right"
             onClick={(ev) => {
               ev.stopPropagation()
@@ -120,7 +114,7 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
           >
             <DropdownMenuItem
               onClick={() => {
-                setCreateDialogOpen(true)
+                onAddChild?.(node.id)
               }}
             >
               <PlusIcon />
@@ -129,7 +123,7 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
 
             <DropdownMenuItem
               onClick={() => {
-                setEditDialogOpen(true)
+                onEdit?.(node.id)
               }}
             >
               <EditIcon />
@@ -221,36 +215,6 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
           </SidebarMenuSub>
         </CollapsibleContent>
       )}
-
-      {/* 创建子部门对话框 */}
-      <DepartmentDialog
-        formData={{ parentId: node.id }}
-        mode="create"
-        open={createDialogOpen}
-        orgId={orgId}
-        onOpenChange={setCreateDialogOpen}
-        onSuccess={() => {
-          void refetch()
-        }}
-      />
-
-      {/* 编辑部门对话框 */}
-      <DepartmentDialog
-        formData={{
-          id: node.id,
-          name: node.name,
-          remark: node.remark,
-          parentId: node.parent?.id,
-          isActive: node.isActive,
-        }}
-        mode="edit"
-        open={editDialogOpen}
-        orgId={orgId}
-        onOpenChange={setEditDialogOpen}
-        onSuccess={() => {
-          void refetch()
-        }}
-      />
     </Collapsible>
   )
 }

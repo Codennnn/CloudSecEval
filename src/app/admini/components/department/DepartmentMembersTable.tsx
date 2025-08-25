@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 
 import { ProTable, type ProTableProps } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
-import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
@@ -21,18 +20,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import { UserAvatar } from '~/components/UserAvatar'
-import { FieldTypeEnum } from '~/constants/form'
 import type {
   DepartmentsControllerGetDepartmentMembersData,
   UserListItemDto,
 } from '~/lib/api/generated/types.gen'
 import type { DepartmentId } from '~/lib/api/types'
-import { formatDate } from '~/utils/date'
 
 import { MemberDialog, type MemberDialogMode } from './MemberDialog'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
+import { createUserColumns } from '~admin/components/members/userTableColumns'
 import {
   departmentsControllerGetDepartmentMembersOptions,
   departmentsControllerGetDepartmentMembersQueryKey,
@@ -118,58 +115,10 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
 
   // MARK: 表格列定义
   const columns = useMemo<TableColumnDef<UserListItemDto>[]>(() => {
-    return [
-      {
-        id: 'user',
-        accessorKey: 'user',
-        header: '成员',
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <UserAvatar avatarUrl={row.original.avatarUrl} />
+    const base = createUserColumns()
 
-            <div className="flex flex-col gap-0.5">
-              <div className="font-medium">
-                {row.original.name ?? '-'}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {row.original.email}
-              </div>
-            </div>
-          </div>
-        ),
-        enableSorting: false,
-        enableHiding: false,
-      },
-      {
-        accessorKey: 'phone',
-        header: '手机号',
-        cell: ({ row }) => (
-          <div className="text-sm">
-            {row.original.phone ?? (
-              <span className="text-muted-foreground">-</span>
-            )}
-          </div>
-        ),
-      },
-      {
-        accessorKey: 'isActive',
-        header: '状态',
-        cell: ({ row }) => (
-          <Badge variant={row.original.isActive ? 'secondary' : 'default'}>
-            {row.original.isActive ? '已启用' : '已禁用'}
-          </Badge>
-        ),
-      },
-      {
-        accessorKey: 'createdAt',
-        header: '创建时间',
-        type: FieldTypeEnum.DATE,
-        cell: ({ row }) => (
-          <div className="text-sm">
-            {formatDate(row.original.createdAt)}
-          </div>
-        ),
-      },
+    return [
+      ...base,
       {
         id: 'actions',
         header: '操作',
