@@ -160,6 +160,13 @@ export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
   // ========================================
   // 包含性操作符配置
   // ========================================
+  [SearchOperatorEnum.CONTAINS]: {
+    value: SearchOperatorEnum.CONTAINS,
+    label: '包含',
+    description: '包含指定子字符串',
+    requiresValue: true,
+    supportedTypes: TYPE_COMBINATIONS.STRING_ONLY,
+  },
   [SearchOperatorEnum.IN]: {
     value: SearchOperatorEnum.IN,
     label: '包含于',
@@ -175,13 +182,6 @@ export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
     requiresValue: true,
     requiresArray: true,
     supportedTypes: TYPE_COMBINATIONS.STRING_NUMERIC_ENUM,
-  },
-  [SearchOperatorEnum.CONTAINS]: {
-    value: SearchOperatorEnum.CONTAINS,
-    label: '包含',
-    description: '包含指定子字符串',
-    requiresValue: true,
-    supportedTypes: TYPE_COMBINATIONS.STRING_ONLY,
   },
   [SearchOperatorEnum.STARTS_WITH]: {
     value: SearchOperatorEnum.STARTS_WITH,

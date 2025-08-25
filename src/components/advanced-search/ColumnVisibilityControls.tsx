@@ -238,7 +238,7 @@ export function ColumnVisibilityControls(props: ColumnVisibilityControlsProps) {
                 items={visibleFields.map((f) => f.key)}
                 strategy={verticalListSortingStrategy}
               >
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {visibleFields.map((field) => {
                     const canHide = canHideField(field.key)
 
@@ -263,7 +263,7 @@ export function ColumnVisibilityControls(props: ColumnVisibilityControlsProps) {
           <div className="space-y-2 text-muted-foreground">
             <Separator />
             <div className="pt-1 text-sm font-medium">隐藏列</div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {hiddenFields
                 .sort((a, b) => a.label.localeCompare(b.label))
                 .map((field) => (

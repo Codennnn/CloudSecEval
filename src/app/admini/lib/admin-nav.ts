@@ -1,4 +1,4 @@
-import { GaugeIcon, KeyIcon, type LucideIcon, UserIcon, UsersIcon } from 'lucide-react'
+import { GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
 
 /**
  * 管理后台相关路由（敏感信息）
@@ -9,6 +9,7 @@ export const enum AdminRoutes {
   Login = '/admini/login',
   Dashboard = '/admini/dashboard',
   Users = '/admini/users',
+  Roles = '/admini/roles',
   Profile = '/admini/profile',
   Licenses = '/admini/licenses',
 }
@@ -27,6 +28,9 @@ type AdminNavConfig = Record<AdminRoutes, AdminNavItem>
 
 export const adminTitle = 'NestJS 文档管理后台'
 
+/**
+ * MARK: 管理后台导航配置
+ */
 export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.Root]: {
     title: adminTitle,
@@ -55,6 +59,11 @@ export const adminNavConfig: AdminNavConfig = {
     title: '部门与成员',
     url: AdminRoutes.Users,
     icon: UsersIcon,
+  },
+  [AdminRoutes.Roles]: {
+    title: '角色管理',
+    url: AdminRoutes.Roles,
+    icon: SquareUserRoundIcon,
   },
 }
 
@@ -105,6 +114,7 @@ export const adminNavMain = [
   createAdminNavItem(AdminRoutes.Dashboard),
   createAdminNavItem(AdminRoutes.Licenses),
   createAdminNavItem(AdminRoutes.Users),
+  createAdminNavItem(AdminRoutes.Roles),
 ]
 
 export const adminNavSecondary = [

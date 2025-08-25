@@ -16,6 +16,7 @@ import {
 } from '~/components/ui/sidebar'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import { cn } from '~/lib/utils'
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
@@ -216,7 +217,10 @@ export function DepartmentTree(props: DepartmentTreeProps) {
 
   return (
     <div
-      className="[--sidebar-accent:var(--secondary)] [--sidebar-accent-foreground:var(--secondary-foreground)]"
+      className={cn(
+        '[--sidebar-accent:var(--secondary)] [--sidebar-accent-foreground:var(--secondary-foreground)]',
+        'flex flex-col h-full',
+      )}
     >
       {/* 搜索区域 */}
       {showSearch && (
