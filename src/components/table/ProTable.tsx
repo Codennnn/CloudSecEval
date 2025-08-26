@@ -19,7 +19,7 @@ import { generateSearchFields, getColumnKey } from '~/components/table/table.uti
 import { TableEmptyState } from '~/components/table/TableEmptyState'
 import { TablePagination } from '~/components/table/TablePagination'
 import { TableSkeleton } from '~/components/table/TableSkeleton'
-import { TableToolbar } from '~/components/table/TableToolbar'
+import { TableToolbar, type TableToolbarProps } from '~/components/table/TableToolbar'
 import { Checkbox } from '~/components/ui/checkbox'
 import {
   Table,
@@ -64,14 +64,14 @@ export interface ProTableProps<TData> {
 
   /** 工具栏配置 */
   toolbar?: {
-    /** 是否显示搜索功能，默认 true */
-    showSearch?: boolean
     /** 是否显示列控制功能，默认 true */
     showColumnControl?: boolean
-    /** 是否显示刷新按钮，默认 true */
-    showRefresh?: boolean
     /** 右侧自定义内容 */
     rightContent?: React.ReactNode
+    /** 搜索组件配置 */
+    search?: Partial<TableToolbarProps['search']>
+    /** 刷新按钮配置 */
+    refresh?: Partial<TableToolbarProps['refresh']>
   }
 
   /** 列可见性存储键名，用于 localStorage 持久化 */
@@ -132,6 +132,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     className,
     paginationConfig = {},
     rowSelection: rowSelectionConfig = {},
+
     onPaginationChange,
     onQueryParamsChange,
     onQueryKeyChange,
@@ -139,10 +140,9 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
   } = props
 
   const {
-    showSearch = true,
-    showColumnControl = true,
-    showRefresh = true,
     rightContent,
+    search,
+    refresh,
   } = toolbar
 
   const {
@@ -437,20 +437,22 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
         {!!headerTitle && <h2 className="font-bold">{headerTitle}</h2>}
 
         {/* MARK: 工具栏 */}
-        {(showSearch || showColumnControl || showRefresh || rightContent) && (
-          <TableToolbar
-            className="ml-auto"
-            columnVisibilityStorageKey={columnVisibilityStorageKey}
-            fields={searchFields}
-            right={rightContent}
-            showRefresh={showRefresh}
-            onColumnVisibilityChange={showColumnControl ? handleColumnVisibilityChange : undefined}
-            onQueryParamsChange={showSearch ? handleQueryParamsChange : undefined}
-            onRefresh={() => {
+        <TableToolbar
+          className="ml-auto"
+          columnVisibilityStorageKey={columnVisibilityStorageKey}
+          fields={searchFields}
+          refresh={{
+            show: true,
+            ...refresh,
+            onRefresh: () => {
               void handleRefresh()
-            }}
-          />
-        )}
+            },
+          }}
+          right={rightContent}
+          search={search}
+          onColumnVisibilityChange={handleColumnVisibilityChange}
+          onQueryParamsChange={handleQueryParamsChange}
+        />
       </div>
 
       {/* MARK: 表格 */}

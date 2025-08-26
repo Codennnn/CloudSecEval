@@ -115,12 +115,12 @@ export function DepartmentTreeSearch(props: DepartmentTreeSearchProps) {
       {/* 清空按钮 */}
       {inputValue && (
         <Button
-          className="absolute right-1 top-1/2 transform -translate-y-1/2 size-7"
-          size="icon"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2"
+          size="iconSm"
           variant="ghost"
           onClick={handleClear}
         >
-          <XIcon className="size-3" />
+          <XIcon className="!size-3.5" />
           <span className="sr-only">清空搜索</span>
         </Button>
       )}

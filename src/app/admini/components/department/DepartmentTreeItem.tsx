@@ -23,7 +23,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from '~/components/ui/sidebar'
-import { cn } from '~/lib/utils'
 
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import type { DepartmentTreeItemProps } from './types'
@@ -161,12 +160,8 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
           {/* 节点按钮 */}
           <CollapsibleTrigger asChild className="flex-1">
             <SidebarMenuButton
-              className={cn(
-                'w-full justify-start',
-                selectable === 'single' && isSelected && 'bg-sidebar-accent text-sidebar-accent-foreground',
-                selectable === 'single' && 'cursor-pointer',
-                !hasChildren && 'cursor-default',
-              )}
+              className="w-full justify-start"
+              isActive={isSelected}
               onClick={selectable === 'single' ? handleToggleSelected : undefined}
             >
               {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}

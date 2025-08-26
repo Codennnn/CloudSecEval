@@ -9,7 +9,7 @@ import { ProTable, type ProTableProps } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import type { RolesControllerGetRoleMembersData, UserListItemDto } from '~/lib/api/generated/types.gen'
 
-import { createUserColumns } from '~admin/components/members/userTableColumns'
+import { createUserColumns } from '~admin/components/member/userTableColumns'
 import { rolesControllerGetRoleMembersOptions, rolesControllerGetRoleMembersQueryKey } from '~api/@tanstack/react-query.gen'
 import type { Options } from '~api/sdk.gen'
 
@@ -85,7 +85,11 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
         loading={membersQuery.isLoading}
         pagination={membersQuery.data?.pagination}
         toolbar={{
-          showSearch: false,
+          search: {
+            inputProps: {
+              placeholder: '搜索邮箱、姓名',
+            },
+          },
         }}
         onPaginationChange={handlePaginationChange}
         onRefresh={handleRefresh}

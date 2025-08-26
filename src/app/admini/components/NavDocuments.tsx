@@ -27,6 +27,7 @@ export function NavDocuments({
   items: AdminDocumentItem[]
 }) {
   const pathname = usePathname()
+  const decodedPathname = decodeURIComponent(pathname)
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -38,7 +39,7 @@ export function NavDocuments({
 
           return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={decodeURIComponent(pathname) === url}>
+              <SidebarMenuButton asChild isActive={decodedPathname === url}>
                 <Link href={url}>
                   {item.icon ? <item.icon /> : <BookOpenIcon />}
                   <span>{item.title}</span>
@@ -74,9 +75,12 @@ export function NavDocuments({
 
         <SidebarMenuItem>
           <Link href="/admini/docs/">
-            <SidebarMenuButton className="text-sidebar-foreground/70">
+            <SidebarMenuButton
+              className="text-sidebar-foreground/70"
+              isActive={decodedPathname === '/admini/docs'}
+            >
               <EllipsisIcon className="text-sidebar-foreground/70" />
-              <span>更多</span>
+              <span>更多文档</span>
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>

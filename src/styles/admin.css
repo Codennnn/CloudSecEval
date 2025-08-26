@@ -4,4 +4,5 @@
 
 @theme inline {
   --spacing-admin-content: var(--sp-admin-content);
+  --spacing-admin-content-half: calc(var(--sp-admin-content) / 2);
 }

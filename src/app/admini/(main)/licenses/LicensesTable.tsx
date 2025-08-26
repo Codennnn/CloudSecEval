@@ -8,6 +8,7 @@ import type { RowSelectionState } from '@tanstack/react-table'
 import {
   EllipsisVerticalIcon,
   JapaneseYenIcon,
+  MoveDiagonal,
   Plus,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -72,7 +73,7 @@ export function LicensesTable() {
     setLicenseToDelete(license)
   }
 
-  const handleViewDetail = (licenseId: string) => {
+  const handleViewDetail = (licenseId: LicenseData['id']) => {
     setSelectedLicenseId(licenseId)
   }
 
@@ -239,60 +240,73 @@ export function LicensesTable() {
         id: 'actions',
         header: '操作',
         cell: ({ row }) => (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-                size="icon"
-                variant="ghost"
-              >
-                <EllipsisVerticalIcon />
-              </Button>
-            </DropdownMenuTrigger>
+          <div className="flex items-center gap-0.5">
+            <Button
+              className="text-muted-foreground"
+              size="iconNormal"
+              variant="ghost"
+              onClick={() => {
+                handleViewDetail(row.original.id)
+              }}
+            >
+              <MoveDiagonal />
+            </Button>
 
-            <DropdownMenuContent align="end" className="w-32">
-              <DropdownMenuItem
-                onClick={() => {
-                  handleViewDetail(row.original.id)
-                }}
-              >
-                查看详情
-              </DropdownMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="data-[state=open]:bg-muted text-muted-foreground"
+                  size="iconNormal"
+                  variant="ghost"
+                >
+                  <EllipsisVerticalIcon />
+                </Button>
+              </DropdownMenuTrigger>
 
-              <DropdownMenuItem
-                onClick={() => {
-                  const licenseForEdit = {
-                    ...row.original,
-                    email: row.original.email,
-                    remark: row.original.remark,
-                  }
-                  openEditDialog(licenseForEdit)
-                }}
-              >
-                编辑
-              </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-32">
+                <DropdownMenuItem
+                  onClick={() => {
+                    handleViewDetail(row.original.id)
+                  }}
+                >
+                  查看详情
+                </DropdownMenuItem>
 
-              <DropdownMenuItem
-                disabled={checkLicenseValidityMutation.isPending}
-                onClick={() => {
-                  void handleCheckValidity(row.original)
-                }}
-              >
-                {checkLicenseValidityMutation.isPending ? '检测中...' : '检测有效性'}
-              </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    const licenseForEdit = {
+                      ...row.original,
+                      email: row.original.email,
+                      remark: row.original.remark,
+                    }
+                    openEditDialog(licenseForEdit)
+                  }}
+                >
+                  编辑
+                </DropdownMenuItem>
 
-              <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  disabled={checkLicenseValidityMutation.isPending}
+                  onClick={() => {
+                    void handleCheckValidity(row.original)
+                  }}
+                >
+                  {checkLicenseValidityMutation.isPending ? '检测中...' : '检测有效性'}
+                </DropdownMenuItem>
 
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={() => {
-                  handleDeleteClick(row.original)
-                }}
-              >
-                删除
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => {
+                    handleDeleteClick(row.original)
+                  }}
+                >
+                  删除
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         ),
         enableSorting: false,
         enableHiding: false,
@@ -355,6 +369,11 @@ export function LicensesTable() {
           getRowId: (row) => row.id,
         }}
         toolbar={{
+          search: {
+            inputProps: {
+              placeholder: '搜索邮箱、授权码、备注',
+            },
+          },
           rightContent: (
             <Button
               size="sm"

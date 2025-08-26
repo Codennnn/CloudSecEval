@@ -24,8 +24,8 @@ function ControlButton(props: ControlButtonProps) {
       <TooltipTrigger asChild>
         <Button
           aria-label={label}
-          className="size-6 rounded-[0.2rem]"
-          size="icon"
+          className="rounded-[0.2rem]"
+          size="iconSm"
           variant="ghost"
           onClick={onClick}
         >

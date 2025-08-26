@@ -46,9 +46,8 @@ export function CopyButton(props: CopyButtonProps) {
 
   return (
     <Button
-      className="size-6 text-muted-foreground hover:text-foreground"
       disabled={!text}
-      size="icon"
+      size="iconSm"
       variant="ghost"
       onClick={() => {
         void handleCopy()

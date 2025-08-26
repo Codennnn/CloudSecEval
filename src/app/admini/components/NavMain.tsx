@@ -48,8 +48,8 @@ export function NavMain({ items }: NavMainProps) {
               <TooltipTrigger asChild>
                 <Link href={AdminRoutes.Licenses}>
                   <Button
-                    className="size-8 group-data-[collapsible=icon]:opacity-0"
-                    size="icon"
+                    className="group-data-[collapsible=icon]:opacity-0"
+                    size="iconNormal"
                     variant="outline"
                   >
                     <ListIcon />

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
-import { RoleList } from '~admin/components/roles/RoleList'
-import { RoleMembersTable } from '~admin/components/roles/RoleMembersTable'
+import { RoleList } from '~admin/components/role/RoleList'
+import { RoleMembersTable } from '~admin/components/role/RoleMembersTable'
 
 export function RolesPage() {
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null)

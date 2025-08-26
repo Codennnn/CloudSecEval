@@ -60,10 +60,10 @@ function DragHandle({ id }: { id: string }) {
       {...attributes}
       {...listeners}
       className="cursor-grab active:cursor-grabbing"
-      size="icon"
+      size="iconSm"
       variant="ghost"
     >
-      <GripVerticalIcon className="text-muted-foreground size-4" />
+      <GripVerticalIcon className="text-muted-foreground" />
       <span className="sr-only">拖拽排序</span>
     </Button>
   )
@@ -240,8 +240,8 @@ function SortConditionRow(props: SortConditionProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-                size="icon"
+                className="data-[state=open]:bg-muted text-muted-foreground"
+                size="iconNormal"
                 variant="ghost"
               >
                 <EllipsisVerticalIcon />

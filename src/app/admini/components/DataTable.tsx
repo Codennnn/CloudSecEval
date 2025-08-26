@@ -141,8 +141,8 @@ function DragHandle({ id }: { id: number }) {
     <Button
       {...attributes}
       {...listeners}
-      className="text-muted-foreground size-7 hover:bg-transparent"
-      size="icon"
+      className="text-muted-foreground hover:bg-transparent"
+      size="iconNormal"
       variant="ghost"
     >
       <GripVerticalIcon className="text-muted-foreground size-3" />
@@ -471,8 +471,8 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
+            className="data-[state=open]:bg-muted text-muted-foreground"
+            size="iconNormal"
             variant="ghost"
           >
             <EllipsisVerticalIcon />

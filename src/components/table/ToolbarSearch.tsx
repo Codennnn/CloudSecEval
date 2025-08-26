@@ -8,14 +8,17 @@ import { SearchIcon } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import { cn } from '~/lib/utils'
 
 export interface ToolbarSearchProps {
   /** 当前的全局搜索值（受控） */
   value?: string
   /** 提交搜索回调（会在防抖延迟后触发） */
-  onCommit: (value: string) => void
+  onCommit?: (value: string) => void
   /** 防抖时间（毫秒） */
   debounceMs?: number
+  /** 输入框属性 */
+  inputProps?: Omit<React.ComponentProps<'input'>, 'value'>
 }
 
 /**
@@ -26,7 +29,12 @@ export interface ToolbarSearchProps {
  * - 失焦时若输入为空则关闭输入框
  */
 export function ToolbarSearch(props: ToolbarSearchProps) {
-  const { value, onCommit, debounceMs = 450 } = props
+  const {
+    value,
+    onCommit,
+    debounceMs = 450,
+    inputProps,
+  } = props
 
   const [isActive, setIsActive] = useState<boolean>(false)
   const [inputValue, setInputValue] = useState<string>('')
@@ -51,7 +59,7 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
     }
 
     const timer = window.setTimeout(() => {
-      onCommit(next)
+      onCommit?.(next)
     }, debounceMs)
 
     debounceTimerRef.current = timer
@@ -60,34 +68,26 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
   /**
    * 输入变化：更新本地状态并安排提交
    */
-  const handleChange = useEvent((e: React.ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value
+  const handleChange = useEvent((ev: React.ChangeEvent<HTMLInputElement>) => {
+    const next = ev.target.value
     setInputValue(next)
     scheduleCommit(next)
   })
 
-  /**
-   * 键盘交互：Esc 清空并关闭
-   */
-  const handleKeyDown = useEvent((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
+  const handleKeyDown = useEvent((ev: React.KeyboardEvent<HTMLInputElement>) => {
+    // 键盘交互：Esc 清空并关闭
+    if (ev.key === 'Escape') {
       if (debounceTimerRef.current !== null) {
         window.clearTimeout(debounceTimerRef.current)
         debounceTimerRef.current = null
       }
 
       setInputValue('')
-      onCommit('')
+      onCommit?.('')
       setIsActive(false)
-    }
-    else {
-      // 其他按键不处理
     }
   })
 
-  /**
-   * 失焦：若空值则关闭
-   */
   const handleBlur = useEvent(() => {
     if (debounceTimerRef.current !== null) {
       window.clearTimeout(debounceTimerRef.current)
@@ -96,9 +96,6 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
 
     if (inputValue === '') {
       setIsActive(false)
-    }
-    else {
-      // 有值则保持开启
     }
   })
 
@@ -152,10 +149,10 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
 
       {isActive && (
         <Input
-          ref={inputRef}
-          aria-label="搜索输入"
-          className="h-8 w-[240px]"
           placeholder="搜索"
+          {...inputProps}
+          ref={inputRef}
+          className={cn('h-8 w-[240px]', inputProps?.className)}
           value={inputValue}
           onBlur={handleBlur}
           onChange={handleChange}

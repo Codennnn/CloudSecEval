@@ -22,6 +22,12 @@ import { RoleDialog, type RoleDialogMode } from './RoleDialog'
 
 import { rolesControllerFindAllOptions, rolesControllerFindAllQueryKey, rolesControllerRemoveMutation } from '~api/@tanstack/react-query.gen'
 
+interface RoleDialogState {
+  open: boolean
+  mode: RoleDialogMode
+  role: RoleListItemDto | null
+}
+
 interface RoleListProps {
   readonly onSelect: (roleId: string) => void
   readonly selectedRoleId?: string | null
@@ -32,10 +38,12 @@ export function RoleList(props: RoleListProps) {
 
   const queryClient = useQueryClient()
 
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogMode, setDialogMode] = useState<RoleDialogMode>('create')
-  const [editingRole, setEditingRole] = useState<RoleListItemDto | null>(null)
-  // 删除操作不再需要二次确认，直接执行删除
+  // 统一管理角色对话框状态，便于维护和传递
+  const [roleDialogState, setRoleDialogState] = useState<RoleDialogState>({
+    open: false,
+    mode: 'create',
+    role: null,
+  })
 
   const queryOptions = useMemo(() => ({
     page: 1,
@@ -82,9 +90,11 @@ export function RoleList(props: RoleListProps) {
   }, [rolesQuery.isSuccess, roles, selectedRoleId, onSelect])
 
   const handleCreate = () => {
-    setDialogMode('create')
-    setEditingRole(null)
-    setDialogOpen(true)
+    setRoleDialogState({
+      open: true,
+      mode: 'create',
+      role: null,
+    })
   }
 
   const handleEdit = (role: RoleListItemDto) => {
@@ -92,9 +102,11 @@ export function RoleList(props: RoleListProps) {
       return
     }
 
-    setDialogMode('edit')
-    setEditingRole(role)
-    setDialogOpen(true)
+    setRoleDialogState({
+      open: true,
+      mode: 'edit',
+      role,
+    })
   }
 
   const handleDelete = async (role: RoleListItemDto) => {
@@ -132,8 +144,8 @@ export function RoleList(props: RoleListProps) {
   }
 
   return (
-    <div className="w-72 shrink-0 overflow-y-auto border-r">
-      <div className="flex items-center justify-between p-admin-content">
+    <div className="w-72 flex flex-col shrink-0 border-r">
+      <div className="flex items-center justify-between p-admin-content pb-admin-content-half">
         <div className="font-medium">角色列表</div>
 
         <Button size="sm" onClick={handleCreate}>
@@ -145,101 +157,104 @@ export function RoleList(props: RoleListProps) {
       <div
         className={cn(
           '[--sidebar-accent:var(--secondary)] [--sidebar-accent-foreground:var(--secondary-foreground)]',
-          'space-y-1 p-admin-content pt-0',
+          'p-admin-content pt-admin-content-half flex-1 overflow-y-auto',
         )}
       >
         {rolesQuery.isLoading
           ? (
-              <div className="space-y-2">
+              <div className="space-y-list-item">
                 {Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="flex items-center gap-3 rounded-md border p-3">
-                    <Skeleton className="h-9 w-9 rounded" />
+                  <div key={index} className="flex items-center gap-3 rounded-md border border-muted p-3">
                     <div className="min-w-0 flex-1 space-y-2">
                       <Skeleton className="h-4 w-2/3" />
-                      <Skeleton className="h-3 w-1/3" />
+                      <Skeleton className="h-2 w-1/3" />
                     </div>
-                    <Skeleton className="h-6 w-6 rounded" />
+                    <Skeleton className="size-4 rounded" />
                   </div>
                 ))}
               </div>
             )
           : (
-              roles.map((role) => (
-                <SidebarMenuItem key={role.id}>
-                  <SidebarMenuButton
-                    asChild
-                    className="h-auto"
-                    isActive={selectedRoleId === role.id}
-                    onClick={() => {
-                      handleItemClick(role.id)
-                    }}
-                  >
-                    <div>
-                      <div className="min-w-0 flex-1">
+              <div className="space-y-list-item">
+                {roles.map((role) => (
+                  <SidebarMenuItem key={role.id}>
+                    <SidebarMenuButton
+                      asChild
+                      className="h-auto"
+                      isActive={selectedRoleId === role.id}
+                      onClick={() => {
+                        handleItemClick(role.id)
+                      }}
+                    >
+                      <div>
+                        <div className="min-w-0 flex-1">
 
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                          {role.name}
-                          {renderBadge(role)}
+                          <div className="flex items-center gap-2 text-sm font-medium">
+                            {role.name}
+                            {renderBadge(role)}
+                          </div>
+
+                          <div className="truncate text-xs text-muted-foreground">{role.slug}</div>
                         </div>
 
-                        <div className="truncate text-xs text-muted-foreground">{role.slug}</div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <SidebarMenuAction
+                              asChild
+                              showOnHover
+                              className="data-[state=open]:bg-muted rounded-sm"
+                            >
+                              <div>
+                                <EllipsisVerticalIcon className="!size-3.5" />
+                                <span className="sr-only">更多</span>
+                              </div>
+                            </SidebarMenuAction>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent
+                            align="start"
+                            side="right"
+                            onClick={(ev) => {
+                              ev.stopPropagation()
+                            }}
+                          >
+                            <DropdownMenuItem
+                              disabled={role.system}
+                              onClick={() => {
+                                handleEdit(role)
+                              }}
+                            >
+                              编辑
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              disabled={role.system}
+                              variant="destructive"
+                              onClick={() => {
+                                void handleDelete(role)
+                              }}
+                            >
+                              删除
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <SidebarMenuAction
-                            asChild
-                            showOnHover
-                            className="data-[state=open]:bg-muted rounded-sm"
-                          >
-                            <div>
-                              <EllipsisVerticalIcon className="!size-3.5" />
-                              <span className="sr-only">更多</span>
-                            </div>
-                          </SidebarMenuAction>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent
-                          align="start"
-                          side="right"
-                          onClick={(ev) => {
-                            ev.stopPropagation()
-                          }}
-                        >
-                          <DropdownMenuItem
-                            disabled={role.system}
-                            onClick={() => {
-                              handleEdit(role)
-                            }}
-                          >
-                            编辑
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            disabled={role.system}
-                            variant="destructive"
-                            onClick={() => {
-                              void handleDelete(role)
-                            }}
-                          >
-                            删除
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </div>
             )}
       </div>
 
-      {/* 角色创建/编辑 */}
       <RoleDialog
-        mode={dialogMode}
-        open={dialogOpen}
-        role={editingRole}
+        mode={roleDialogState.mode}
+        open={roleDialogState.open}
+        role={roleDialogState.role}
         onClose={() => {
-          setDialogOpen(false)
-          setEditingRole(null)
+          setRoleDialogState((prev) => ({
+            ...prev,
+            open: false,
+            role: null,
+          }))
         }}
         onSuccess={handleSuccess}
       />

@@ -5,10 +5,6 @@ import {
   TableRow,
 } from '~/components/ui/table'
 
-interface TableEmptyStateProps {
-  columnsCount: number
-}
-
 function BackgroundPattern() {
   const opacity = 0.08
 
@@ -80,11 +76,15 @@ function BackgroundPattern() {
   )
 }
 
+interface TableEmptyStateProps {
+  columnsCount: number
+}
+
 export function TableEmptyState(props: TableEmptyStateProps) {
   const { columnsCount } = props
 
   return (
-    <TableRow>
+    <TableRow className="hover:bg-transparent">
       <TableCell
         colSpan={columnsCount}
       >

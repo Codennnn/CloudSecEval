@@ -29,7 +29,7 @@ import type { DepartmentId } from '~/lib/api/types'
 import { MemberDialog, type MemberDialogMode } from './MemberDialog'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
-import { createUserColumns } from '~admin/components/members/userTableColumns'
+import { createUserColumns } from '~admin/components/member/userTableColumns'
 import {
   departmentsControllerGetDepartmentMembersOptions,
   departmentsControllerGetDepartmentMembersQueryKey,
@@ -126,8 +126,8 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-                size="icon"
+                className="data-[state=open]:bg-muted text-muted-foreground"
+                size="iconNormal"
                 variant="ghost"
               >
                 <EllipsisVerticalIcon />
@@ -204,6 +204,11 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
         loading={membersQuery.isLoading}
         pagination={membersQuery.data?.pagination}
         toolbar={{
+          search: {
+            inputProps: {
+              placeholder: '搜索邮箱、姓名',
+            },
+          },
           rightContent: (
             <Button
               size="sm"
@@ -214,10 +219,9 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
               }}
             >
               <Plus />
-              添加成员
+              创建成员
             </Button>
           ),
-          showSearch: false, // 禁用搜索，因为使用外部数据
         }}
         onPaginationChange={handlePaginationChange}
         onRefresh={handleRefresh}

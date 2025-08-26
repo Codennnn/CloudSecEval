@@ -5,7 +5,7 @@ import { ArrowUpDownIcon, Columns3CogIcon, ListFilterIcon, PlusIcon, RefreshCwIc
 import { ColumnVisibilityControls } from '~/components/advanced-search/ColumnVisibilityControls'
 import { FilterConditions } from '~/components/advanced-search/FilterConditions'
 import { SortConditions } from '~/components/advanced-search/SortConditions'
-import { ToolbarSearch } from '~/components/table/ToolbarSearch'
+import { ToolbarSearch, type ToolbarSearchProps } from '~/components/table/ToolbarSearch'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -26,7 +26,7 @@ import { generateQueryParams, getDefaultOperatorByFieldType } from '~/utils/adva
 
 import { SortOrder } from '~api/types.gen'
 
-interface TableToolbarProps {
+export interface TableToolbarProps {
   /** 可搜索的字段列表（带有 sortable 属性的字段同时支持排序） */
   fields: SearchField[]
   /** 初始搜索配置 */
@@ -35,34 +35,45 @@ interface TableToolbarProps {
   columnVisibilityStorageKey?: string
   /** 初始列可见性配置 */
   initialColumnVisibility?: Partial<ColumnVisibilityConfig>
-  /** 是否显示刷新按钮 */
-  showRefresh?: boolean
-  /** 右侧内容 */
+  /** 工具栏右侧内容 */
   right?: React.ReactNode
   /** 样式类名 */
   className?: string
+
+  /** 搜索组件配置 */
+  search?: ToolbarSearchProps & {
+    /** 是否显示搜索组件 */
+    show?: boolean
+  }
+
+  /** 刷新按钮配置 */
+  refresh?: {
+    /** 是否显示刷新按钮 */
+    show?: boolean
+    /** 刷新回调 */
+    onRefresh?: () => void
+  }
 
   /** 查询参数变更回调 */
   onQueryParamsChange?: (queryParams: QueryParams) => void
   /** 列可见性变化回调 */
   onColumnVisibilityChange?: (config: ColumnVisibilityConfig) => void
-  /** 刷新回调 */
-  onRefresh?: () => void
 }
 
 export function TableToolbar(props: TableToolbarProps) {
   const {
     fields,
     initialConfig,
-    showRefresh = false,
     right,
     columnVisibilityStorageKey,
     initialColumnVisibility,
     className,
 
+    search,
+    refresh,
+
     onQueryParamsChange,
     onColumnVisibilityChange,
-    onRefresh,
   } = props
 
   const {
@@ -136,13 +147,16 @@ export function TableToolbar(props: TableToolbarProps) {
     <div className={cn('flex items-center justify-end gap-2', className)}>
       <div className="flex items-center gap-1">
         {/* MARK: 全局搜索 */}
-        <ToolbarSearch
-          debounceMs={450}
-          value={typeof config.globalSearch === 'string' ? config.globalSearch : ''}
-          onCommit={(val) => {
-            setConfig((prev) => ({ ...prev, globalSearch: val }))
-          }}
-        />
+        {search?.show !== false && (
+          <ToolbarSearch
+            debounceMs={450}
+            {...search}
+            value={typeof config.globalSearch === 'string' ? config.globalSearch : ''}
+            onCommit={(val) => {
+              setConfig((prev) => ({ ...prev, globalSearch: val }))
+            }}
+          />
+        )}
 
         {/* MARK: 筛选功能 */}
         <Popover>
@@ -376,14 +390,14 @@ export function TableToolbar(props: TableToolbarProps) {
         </Popover>
 
         {/* MARK: 刷新功能 */}
-        {showRefresh && (
+        {refresh?.show !== false && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => {
-                  onRefresh?.()
+                  refresh?.onRefresh?.()
                 }}
               >
                 <RefreshCwIcon />

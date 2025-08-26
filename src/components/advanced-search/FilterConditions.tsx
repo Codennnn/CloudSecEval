@@ -245,8 +245,8 @@ function SearchConditionRow(props: SearchConditionProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-                size="icon"
+                className="data-[state=open]:bg-muted text-muted-foreground"
+                size="iconNormal"
                 variant="ghost"
               >
                 <EllipsisVerticalIcon className="h-4 w-4" />

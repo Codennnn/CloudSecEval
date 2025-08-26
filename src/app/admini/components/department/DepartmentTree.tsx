@@ -298,12 +298,12 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     <div
       className={cn(
         '[--sidebar-accent:var(--secondary)] [--sidebar-accent-foreground:var(--secondary-foreground)]',
-        'flex flex-col h-full',
+        'flex flex-col',
       )}
     >
       {/* 搜索区域 */}
       {showSearch && (
-        <SidebarHeader className="p-admin-content">
+        <SidebarHeader className="p-admin-content pb-admin-content-half">
           <div className="flex items-center gap-2">
             <DepartmentTreeSearch
               orgId={orgId}
@@ -331,7 +331,7 @@ export function DepartmentTree(props: DepartmentTreeProps) {
         </SidebarHeader>
       )}
 
-      <SidebarContent className="px-admin-content py-0">
+      <SidebarContent className="p-admin-content pt-admin-content-half">
         {
           isLoading
             ? (
@@ -347,7 +347,7 @@ export function DepartmentTree(props: DepartmentTreeProps) {
             : displayTreeData.length > 0
               ? (
                   <SidebarGroup className="p-0">
-                    <SidebarMenu>
+                    <SidebarMenu className="gap-list-item">
                       {/* 树形内容区域 */}
                       {displayTreeData.map((node) => (
                         <DepartmentTreeItem

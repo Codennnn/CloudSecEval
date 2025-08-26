@@ -119,8 +119,8 @@ export function UsersTable() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-                size="icon"
+                className="data-[state=open]:bg-muted text-muted-foreground"
+                size="iconNormal"
                 variant="ghost"
               >
                 <EllipsisVerticalIcon />
