@@ -148,7 +148,7 @@ export function RoleList(props: RoleListProps) {
       <div className="flex items-center justify-between p-admin-content pb-admin-content-half">
         <div className="font-medium">角色列表</div>
 
-        <Button size="sm" onClick={handleCreate}>
+        <Button size="sm" variant="outline" onClick={handleCreate}>
           <Plus />
           新增角色
         </Button>
@@ -188,7 +188,6 @@ export function RoleList(props: RoleListProps) {
                     >
                       <div>
                         <div className="min-w-0 flex-1">
-
                           <div className="flex items-center gap-2 text-sm font-medium">
                             {role.name}
                             {renderBadge(role)}
