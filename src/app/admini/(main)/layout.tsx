@@ -31,7 +31,7 @@ export default function AdminLayout(props: React.PropsWithChildren) {
         <SidebarInset className="overflow-hidden">
           <AdminHeader />
 
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden perspective-distant">
             <ScrollGradientContainer className="@container/admin-content">
               {children}
             </ScrollGradientContainer>

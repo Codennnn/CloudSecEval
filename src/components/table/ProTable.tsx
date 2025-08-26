@@ -18,6 +18,7 @@ import type { TableColumnDef } from '~/components/table/table.type'
 import { generateSearchFields, getColumnKey } from '~/components/table/table.util'
 import { TableEmptyState } from '~/components/table/TableEmptyState'
 import { TablePagination } from '~/components/table/TablePagination'
+import { type SelectionToolbarContext as SelectionToolbarContextType, TableSelectionToolbar } from '~/components/table/TableSelectionToolbar'
 import { TableSkeleton } from '~/components/table/TableSkeleton'
 import { TableToolbar, type TableToolbarProps } from '~/components/table/TableToolbar'
 import { Checkbox } from '~/components/ui/checkbox'
@@ -74,6 +75,18 @@ export interface ProTableProps<TData> {
     refresh?: Partial<TableToolbarProps['refresh']>
   }
 
+  /** 选择工具栏配置（选中行时显示的固定工具栏） */
+  selectionToolbar?: {
+    /** 是否启用，默认 true（仅在 rowSelection.enabled 为 true 时生效） */
+    enabled?: boolean
+    /** 固定位置，默认 'bottom' */
+    position?: 'top' | 'bottom'
+    /** 自定义容器样式类 */
+    className?: string
+    /** 自定义渲染函数 */
+    render?: (ctx: SelectionToolbarContext<TData>) => React.ReactNode
+  }
+
   /** 列可见性存储键名，用于 localStorage 持久化 */
   columnVisibilityStorageKey?: string
 
@@ -112,6 +125,9 @@ export interface ProTableProps<TData> {
   onRefresh?: () => void | Promise<void>
 }
 
+/** 选择工具栏的渲染上下文 */
+export type SelectionToolbarContext<TData> = SelectionToolbarContextType<TData>
+
 /**
  * ProTable - 高级表格组件
  *
@@ -128,6 +144,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     queryKeyFn,
     headerTitle,
     toolbar = {},
+    selectionToolbar,
     columnVisibilityStorageKey,
     className,
     paginationConfig = {},
@@ -157,6 +174,13 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     onSelectionChange,
     getRowId,
   } = rowSelectionConfig
+
+  const {
+    enabled: selectionToolbarEnabled = true,
+    position: selectionToolbarPosition = 'bottom',
+    className: selectionToolbarClassName,
+    render: selectionToolbarRender,
+  } = selectionToolbar ?? {}
 
   // 内部状态管理
   const [internalPagination, setInternalPagination] = useState<PaginationState>({
@@ -511,6 +535,19 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
         showSelection={showSelection}
         table={table}
       />
+
+      {/* MARK: 选中工具栏 */}
+      {rowSelectionEnabled && selectionToolbarEnabled
+        ? (
+            <TableSelectionToolbar
+              className={selectionToolbarClassName}
+              enabled={selectionToolbarEnabled}
+              position={selectionToolbarPosition}
+              render={selectionToolbarRender}
+              table={table}
+            />
+          )
+        : null}
     </div>
   )
 }

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { type QueryKey, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { RowSelectionState } from '@tanstack/react-table'
 import {
   EllipsisVerticalIcon,
   JapaneseYenIcon,
@@ -40,7 +39,6 @@ export function LicensesTable() {
   const queryClient = useQueryClient()
 
   const [queryKey, setQueryKey] = useState<QueryKey>()
-  const [selectedRows, setSelectedRows] = useState<RowSelectionState>({})
 
   const [licenseToDelete, setLicenseToDelete] = useState<LicenseData | null>(null)
   const [selectedLicenseId, setSelectedLicenseId] = useState<string | null>(null)
@@ -76,19 +74,6 @@ export function LicensesTable() {
   const handleViewDetail = (licenseId: LicenseData['id']) => {
     setSelectedLicenseId(licenseId)
   }
-
-  // 处理行选择变化
-  const handleRowSelectionChange = useEvent((selection: RowSelectionState) => {
-    setSelectedRows(selection)
-    console.log('选中的授权码:', selection)
-
-    // 获取选中行的数量
-    const selectedCount = Object.keys(selection).filter((key) => selection[key]).length
-
-    if (selectedCount > 0) {
-      console.log(`已选择 ${selectedCount} 个授权码`)
-    }
-  })
 
   // 处理检测授权码有效性
   const handleCheckValidity = useEvent(async (license: LicenseData) => {
@@ -314,44 +299,8 @@ export function LicensesTable() {
     ]
   }, [openEditDialog, checkLicenseValidityMutation.isPending, handleCheckValidity])
 
-  // 获取选中的授权码数量
-  const selectedCount = Object.keys(selectedRows).filter((key) => selectedRows[key]).length
-
   return (
     <div className="p-admin-content">
-      {/* 选中信息显示 */}
-      {selectedCount > 0 && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-blue-800">
-              已选择
-              {' '}
-              <span className="font-medium">{selectedCount}</span>
-              {' '}
-              个授权码
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => { setSelectedRows({}) }}
-              >
-                清除选择
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => {
-                  // 这里可以添加批量删除逻辑
-                  toast.info('批量删除功能待实现')
-                }}
-              >
-                批量删除
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <ProTable<LicenseData>
         columns={columns}
@@ -364,9 +313,39 @@ export function LicensesTable() {
         queryOptionsFn={licenseControllerGetLicenseListOptions as QueryOptionsFn<LicenseData>}
         rowSelection={{
           enabled: true,
-          initialSelection: {},
-          onSelectionChange: handleRowSelectionChange,
           getRowId: (row) => row.id,
+        }}
+        selectionToolbar={{
+          render: ({ selectedCount, clearSelection }) => (
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground flex items-center gap-1">
+                <span>已选择</span>
+                <span className="font-medium tabular-nums">{selectedCount}</span>
+                <span>个授权码</span>
+              </div>
+
+              <div className="ml-auto flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => { clearSelection() }}
+                >
+                  清除选择
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => {
+                    // 这里可以添加批量删除逻辑
+                    toast.info('批量删除功能待实现')
+                  }}
+                >
+                  批量删除
+                </Button>
+              </div>
+            </div>
+          ),
         }}
         toolbar={{
           search: {
