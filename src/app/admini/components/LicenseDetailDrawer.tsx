@@ -90,15 +90,6 @@ export function LicenseDetailDrawer({
             </div>
           )}
 
-          {error && (
-            <div className="flex items-center justify-center py-8">
-              <div className="text-destructive text-center">
-                <div className="text-lg font-semibold">加载失败</div>
-                <div className="text-sm">无法获取授权码详情</div>
-              </div>
-            </div>
-          )}
-
           {license && !isLoading && !error && (
             <div className="space-y-1">
               {/* 基本信息 */}

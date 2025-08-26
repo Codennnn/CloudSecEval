@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, TrashIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ProTable, type ProTableProps } from '~/components/table/ProTable'
@@ -56,10 +56,6 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
     }
   })
 
-  const columns = useMemo<TableColumnDef<UserListItemDto>[]>(() => {
-    return createUserColumns()
-  }, [])
-
   const handlePaginationChange = useEvent<
     NonNullable<ProTableProps<UserListItemDto>['onPaginationChange']>
   >(
@@ -88,12 +84,20 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
       handleRefresh()
     },
   })
-  const removeMembersMutation = useMutation({
+
+  const { isPending: isRemovingMembers, ...removeMembersMutation } = useMutation({
     ...rolesControllerRemoveRoleMembersMutation(),
     onSuccess: () => {
       toast.success('已从角色中移除所选成员')
       handleRefresh()
     },
+  })
+
+  const handleRemoveMember = useEvent(async (userIds: string[]) => {
+    await removeMembersMutation.mutateAsync({
+      body: { userIds },
+      path: { id: roleId },
+    })
   })
 
   const handleAddMember = useEvent(async () => {
@@ -119,6 +123,34 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
       }
     }
   })
+
+  const columns = useMemo<TableColumnDef<UserListItemDto>[]>(() => {
+    return [
+      ...createUserColumns(),
+      {
+        id: 'actions',
+        header: '操作',
+        cell: ({ row }) => {
+          const user = row.original
+
+          return (
+            <div className="flex items-center gap-1.5">
+              <Button
+                disabled={isRemovingMembers}
+                size="iconNormal"
+                variant="secondary"
+                onClick={() => {
+                  void handleRemoveMember([user.id])
+                }}
+              >
+                <TrashIcon />
+              </Button>
+            </div>
+          )
+        },
+      },
+    ]
+  }, [handleRemoveMember, isRemovingMembers])
 
   return (
     <div className="py-admin-content pr-admin-content">
@@ -155,7 +187,7 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
                 </Button>
 
                 <Button
-                  disabled={removeMembersMutation.isPending}
+                  disabled={isRemovingMembers}
                   size="sm"
                   variant="destructive"
                   onClick={() => {
@@ -164,10 +196,7 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
 
                       if (userIds.length > 0) {
                         try {
-                          await removeMembersMutation.mutateAsync({
-                            body: { userIds },
-                            path: { id: roleId },
-                          })
+                          await handleRemoveMember(userIds)
                           clearSelection()
                         }
                         catch {

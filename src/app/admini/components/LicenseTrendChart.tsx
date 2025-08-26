@@ -79,6 +79,7 @@ export function LicenseTrendChart() {
   const {
     data,
     isLoading,
+    isError,
     error,
   } = useQuery({
     ...statisticsControllerGetLicenseTrendOptions({
@@ -172,7 +173,7 @@ export function LicenseTrendChart() {
       </CardHeader>
 
       <CardContent className="px-2 pt-4 @xl/card:px-6 @xl/card:pt-6">
-        {isLoading
+        {isLoading || isError
           ? (
               <div className="space-y-4">
                 <Skeleton className="h-[250px] w-full" />
@@ -184,65 +185,59 @@ export function LicenseTrendChart() {
                 </div>
               </div>
             )
-          : error
+          : chartData.length === 0
             ? (
                 <div className="flex h-[250px] items-center justify-center text-muted-foreground">
-                  加载数据时出现错误，请稍后重试
+                  暂无数据
                 </div>
               )
-            : chartData.length === 0
-              ? (
-                  <div className="flex h-[250px] items-center justify-center text-muted-foreground">
-                    暂无数据
-                  </div>
-                )
-              : (
-                  <ChartContainer
-                    className="aspect-auto h-[250px] w-full"
-                    config={chartConfig}
-                  >
-                    <AreaChart data={chartData}>
-                      <defs>
-                        <linearGradient id="fillDailyNew" x1="0" x2="0" y1="0" y2="1">
-                          <stop
-                            offset="5%"
-                            stopColor="var(--color-dailyNew)"
-                            stopOpacity={1.0}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="var(--color-dailyNew)"
-                            stopOpacity={0.1}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        axisLine={false}
-                        dataKey="date"
-                        minTickGap={32}
-                        tickFormatter={formatDate}
-                        tickLine={false}
-                        tickMargin={8}
-                      />
-                      <ChartTooltip
-                        content={(
-                          <ChartTooltipContent
-                            indicator="dot"
-                            labelFormatter={formatTooltipDate}
-                          />
-                        )}
-                        cursor={false}
-                      />
-                      <Area
-                        dataKey="dailyNew"
-                        fill="url(#fillDailyNew)"
-                        stroke="var(--color-dailyNew)"
-                        type="natural"
-                      />
-                    </AreaChart>
-                  </ChartContainer>
-                )}
+            : (
+                <ChartContainer
+                  className="aspect-auto h-[250px] w-full"
+                  config={chartConfig}
+                >
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="fillDailyNew" x1="0" x2="0" y1="0" y2="1">
+                        <stop
+                          offset="5%"
+                          stopColor="var(--color-dailyNew)"
+                          stopOpacity={1.0}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="var(--color-dailyNew)"
+                          stopOpacity={0.1}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      axisLine={false}
+                      dataKey="date"
+                      minTickGap={32}
+                      tickFormatter={formatDate}
+                      tickLine={false}
+                      tickMargin={8}
+                    />
+                    <ChartTooltip
+                      content={(
+                        <ChartTooltipContent
+                          indicator="dot"
+                          labelFormatter={formatTooltipDate}
+                        />
+                      )}
+                      cursor={false}
+                    />
+                    <Area
+                      dataKey="dailyNew"
+                      fill="url(#fillDailyNew)"
+                      stroke="var(--color-dailyNew)"
+                      type="natural"
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              )}
 
         {/* 统计信息 */}
         {data?.data && (

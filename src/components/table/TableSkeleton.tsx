@@ -9,19 +9,33 @@ interface TableSkeletonProps {
 }
 
 /**
- * 计算 clamp 值，类似 CSS clamp(min, preferred, max)
+ * 计算 clamp 数值，语义等同于 CSS 的 clamp(min, preferred, max)。
+ *
+ * 约定：
+ * - 当传入 `value` 为单个数字时，将其视为 preferred，并使用 `fallbackClamp` 的
+ *   min / max 进行约束，避免极端值导致骨架行/列渲染过多。
+ * - 当传入 `value` 为三元数组时，按其定义的 [min, preferred, max] 进行约束。
  */
 function calculateClampValue(
   value: number | [number, number, number],
+  fallbackClamp: [number, number, number],
 ): number {
-  if (typeof value === 'number') {
-    return value
+  let min = fallbackClamp[0]
+  let preferred = fallbackClamp[1]
+  let max = fallbackClamp[2]
+
+  if (Array.isArray(value)) {
+    min = value[0]
+    preferred = value[1]
+    max = value[2]
+  }
+  else {
+    preferred = value
   }
 
-  const [min, preferred, max] = value
+  const clampedValue = Math.max(min, Math.min(preferred, max))
 
-  // 简单的 clamp 实现：取 preferred 值，但确保在 min 和 max 范围内
-  return Math.max(min, Math.min(preferred, max))
+  return clampedValue
 }
 
 /**
@@ -32,13 +46,17 @@ function calculateClampValue(
 export function TableSkeleton(props: TableSkeletonProps) {
   const { columns = [3, 5, 7], rows = [5, 10, 15] } = props
 
-  const actualColumns = calculateClampValue(columns)
-  const actualRows = calculateClampValue(rows)
+  // 为数值型入参提供默认的 clamp 边界，避免出现超大值时渲染过多骨架元素
+  const defaultColumnsClamp: [number, number, number] = [3, 5, 7]
+  const defaultRowsClamp: [number, number, number] = [5, 10, 15]
+
+  const actualColumns = calculateClampValue(columns, defaultColumnsClamp)
+  const actualRows = calculateClampValue(rows, defaultRowsClamp)
 
   return (
     <>
       {Array.from({ length: actualRows }).map((_, rowIndex) => (
-        <TableRow key={rowIndex}>
+        <TableRow key={rowIndex} className="pointer-events-none">
           {Array.from({ length: actualColumns }).map((_, colIndex) => (
             <TableCell key={colIndex}>
               <div className="py-2">

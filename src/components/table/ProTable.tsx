@@ -503,7 +503,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
 
           <TableBody>
             {
-              loading
+              loading || internalQuery.isError
                 ? (
                     <TableSkeleton
                       columns={finalColumns.length}

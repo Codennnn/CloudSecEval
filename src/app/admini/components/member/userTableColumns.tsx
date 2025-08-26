@@ -7,14 +7,10 @@ import { FieldTypeEnum } from '~/constants/form'
 import type { UserListItemDto } from '~/lib/api/generated/types.gen'
 import { formatDate } from '~/utils/date'
 
-/**
- * 生成通用的用户列表列定义
- * - 可选操作列，通过回调注入编辑/删除行为
- */
-export interface CreateUserColumnsOptions {
-  readonly withActions?: boolean
-  readonly onEdit?: (user: UserListItemDto) => void
-  readonly onDelete?: (user: UserListItemDto) => void
+interface CreateUserColumnsOptions {
+  withActions?: boolean
+  onEdit?: (user: UserListItemDto) => void
+  onDelete?: (user: UserListItemDto) => void
 }
 
 export function createUserColumns(

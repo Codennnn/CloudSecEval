@@ -3,11 +3,48 @@
 import { useQuery } from '@tanstack/react-query'
 import { CrownIcon, JapaneseYenIcon, ShieldAlertIcon } from 'lucide-react'
 
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
 
 import { StatCard, type StatCardData, StatCardsContainer } from './StatCard'
 
 import { statisticsControllerGetDashboardOverviewOptions } from '~api/@tanstack/react-query.gen'
+
+function StatCardSkeleton() {
+  return (
+    <StatCardsContainer>
+      {Array.from({ length: 3 }).map((_, idx) => (
+        <Card key={idx} className="overflow-hidden">
+          <CardHeader>
+            <CardDescription>
+              <div className="flex items-center gap-2">
+                <Skeleton className="size-4 rounded-full" />
+                <Skeleton className="h-4 w-[120px]" />
+              </div>
+            </CardDescription>
+
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              <Skeleton className="h-8 w-[140px] rounded-md" />
+            </CardTitle>
+
+            <CardAction>
+              <Skeleton className="h-6 w-[80px] rounded-full" />
+            </CardAction>
+          </CardHeader>
+
+          <CardFooter className="flex-col items-start gap-1.5 text-sm">
+            <div className="line-clamp-1 flex gap-2 font-medium w-full">
+              <Skeleton className="h-4 w-[70%]" />
+            </div>
+            <div className="text-muted-foreground w-full">
+              <Skeleton className="h-3 w-[55%]" />
+            </div>
+          </CardFooter>
+        </Card>
+      ))}
+    </StatCardsContainer>
+  )
+}
 
 /**
  * 管理后台核心数据统计卡片组件
@@ -17,44 +54,17 @@ export function SectionCards() {
   const {
     data,
     isLoading,
-    error,
+    isError,
   } = useQuery({
     ...statisticsControllerGetDashboardOverviewOptions(),
   })
 
   const dashboardData = data?.data
 
-  // 处理加载状态
-  if (isLoading) {
-    return (
-      <StatCardsContainer>
-        {Array.from({ length: 3 }).map((_, idx) => (
-          <div key={idx} className="space-y-3">
-            <Skeleton className="h-4 w-[100px]" />
-            <Skeleton className="h-8 w-[120px]" />
-            <Skeleton className="h-4 w-[80px]" />
-            <div className="space-y-2">
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-[80%]" />
-            </div>
-          </div>
-        ))}
-      </StatCardsContainer>
-    )
+  if (isLoading || isError || !dashboardData) {
+    return <StatCardSkeleton />
   }
 
-  // 处理错误状态
-  if (error || !dashboardData) {
-    return (
-      <StatCardsContainer>
-        <div className="col-span-full text-center text-muted-foreground">
-          数据加载失败，请稍后重试
-        </div>
-      </StatCardsContainer>
-    )
-  }
-
-  // 格式化收入显示
   const formatRevenue = (revenue: number) => {
     return `¥${revenue.toLocaleString()}`
   }
