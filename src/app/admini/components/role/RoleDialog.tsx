@@ -33,11 +33,11 @@ import { rolesControllerCreateMutation, rolesControllerUpdateMutation } from '~a
 export type RoleDialogMode = 'create' | 'edit'
 
 interface RoleDialogProps {
-  readonly mode: RoleDialogMode
-  readonly open: boolean
-  readonly role?: RoleListItemDto | null
-  readonly onClose: () => void
-  readonly onSuccess: () => void
+  mode: RoleDialogMode
+  open?: boolean
+  role?: RoleListItemDto | null
+  onClose?: () => void
+  onSuccess?: () => void
 }
 
 /**
@@ -103,8 +103,8 @@ export function RoleDialog(props: RoleDialogProps) {
     ...rolesControllerCreateMutation(),
     onSuccess: () => {
       toast.success('角色创建成功')
-      onSuccess()
-      onClose()
+      onSuccess?.()
+      onClose?.()
     },
   })
 
@@ -112,8 +112,8 @@ export function RoleDialog(props: RoleDialogProps) {
     ...rolesControllerUpdateMutation(),
     onSuccess: () => {
       toast.success('角色更新成功')
-      onSuccess()
-      onClose()
+      onSuccess?.()
+      onClose?.()
     },
   })
 
@@ -163,7 +163,7 @@ export function RoleDialog(props: RoleDialogProps) {
       open={open}
       onOpenChange={(o) => {
         if (!o) {
-          onClose()
+          onClose?.()
         }
       }}
     >
@@ -246,8 +246,21 @@ export function RoleDialog(props: RoleDialogProps) {
         </Form>
 
         <DialogFooter className="gap-2">
-          <Button disabled={isPending} type="button" variant="outline" onClick={() => { onClose() }}>取消</Button>
-          <Button className="min-w-[100px]" disabled={isPending} type="button" onClick={() => { void form.handleSubmit(handleSubmit)() }}>
+          <Button
+            disabled={isPending}
+            type="button"
+            variant="outline"
+            onClick={() => { onClose?.() }}
+          >
+            取消
+          </Button>
+
+          <Button
+            className="min-w-[100px]"
+            disabled={isPending}
+            type="button"
+            onClick={() => { void form.handleSubmit(handleSubmit)() }}
+          >
             {isEdit ? '保存' : '创建'}
           </Button>
         </DialogFooter>

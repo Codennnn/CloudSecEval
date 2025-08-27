@@ -29,8 +29,8 @@ interface RoleDialogState {
 }
 
 interface RoleListProps {
-  readonly onSelect: (roleId: string) => void
-  readonly selectedRoleId?: string | null
+  onSelect: (roleId: string) => void
+  selectedRoleId?: string | null
 }
 
 export function RoleList(props: RoleListProps) {
@@ -98,25 +98,21 @@ export function RoleList(props: RoleListProps) {
   }
 
   const handleEdit = (role: RoleListItemDto) => {
-    if (role.system) {
-      return
+    if (!role.system) {
+      setRoleDialogState({
+        open: true,
+        mode: 'edit',
+        role,
+      })
     }
-
-    setRoleDialogState({
-      open: true,
-      mode: 'edit',
-      role,
-    })
   }
 
   const handleDelete = async (role: RoleListItemDto) => {
-    if (role.system) {
-      return
+    if (!role.system) {
+      await deleteMutation.mutateAsync({
+        path: { id: role.id },
+      })
     }
-
-    await deleteMutation.mutateAsync({
-      path: { id: role.id },
-    })
   }
 
   const handleSuccess = () => {
@@ -160,7 +156,7 @@ export function RoleList(props: RoleListProps) {
           'p-admin-content pt-admin-content-half flex-1 overflow-y-auto',
         )}
       >
-        {rolesQuery.isLoading
+        {rolesQuery.isLoading || rolesQuery.isError
           ? (
               <div className="space-y-list-item">
                 {Array.from({ length: 6 }).map((_, index) => (
