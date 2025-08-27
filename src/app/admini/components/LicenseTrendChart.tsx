@@ -80,7 +80,6 @@ export function LicenseTrendChart() {
     data,
     isLoading,
     isError,
-    error,
   } = useQuery({
     ...statisticsControllerGetLicenseTrendOptions({
       query: {

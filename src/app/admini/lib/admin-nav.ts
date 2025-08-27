@@ -1,4 +1,4 @@
-import { GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
+import { FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
 
 /**
  * 管理后台相关路由（敏感信息）
@@ -10,6 +10,7 @@ export const enum AdminRoutes {
   Dashboard = '/admini/dashboard',
   Users = '/admini/users',
   Roles = '/admini/roles',
+  Permissions = '/admini/permissions',
   Profile = '/admini/profile',
   Licenses = '/admini/licenses',
 }
@@ -65,6 +66,11 @@ export const adminNavConfig: AdminNavConfig = {
     url: AdminRoutes.Roles,
     icon: SquareUserRoundIcon,
   },
+  [AdminRoutes.Permissions]: {
+    title: '权限管理',
+    url: AdminRoutes.Permissions,
+    icon: FingerprintIcon,
+  },
 }
 
 export function getPageNameByRoute(pathname: string): string {
@@ -115,6 +121,7 @@ export const adminNavMain = [
   createAdminNavItem(AdminRoutes.Licenses),
   createAdminNavItem(AdminRoutes.Users),
   createAdminNavItem(AdminRoutes.Roles),
+  createAdminNavItem(AdminRoutes.Permissions),
 ]
 
 export const adminNavSecondary = [

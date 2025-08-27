@@ -38,7 +38,9 @@ export function NavMain({ items }: NavMainProps) {
             <SidebarMenuButton
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
               tooltip="创建授权码"
-              onClick={() => { openCreateDialog() }}
+              onClick={() => {
+                openCreateDialog()
+              }}
             >
               <SquarePlusIcon />
               <span>创建授权码</span>
@@ -57,6 +59,7 @@ export function NavMain({ items }: NavMainProps) {
                   </Button>
                 </Link>
               </TooltipTrigger>
+
               <TooltipContent>
                 查看授权码列表
               </TooltipContent>
