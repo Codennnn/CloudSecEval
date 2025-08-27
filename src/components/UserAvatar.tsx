@@ -70,6 +70,12 @@ export function UserAvatar({
 
   const roundedClassName = roundedFull ? 'rounded-full' : 'rounded-lg'
 
+  const finalAvatarUrl = avatarUrl
+    ? avatarUrl.startsWith('http')
+      ? avatarUrl
+      : `${process.env.NEXT_PUBLIC_API_BASE_URL}${avatarUrl}`
+    : undefined
+
   return (
     <Avatar
       className={cn(
@@ -80,7 +86,7 @@ export function UserAvatar({
     >
       <AvatarImage
         alt={displayName}
-        src={avatarUrl ?? undefined}
+        src={finalAvatarUrl}
       />
 
       <AvatarFallback

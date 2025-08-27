@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { CalendarIcon, EditIcon, HouseIcon, MailIcon, SaveIcon } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { CalendarIcon, EditIcon, HouseIcon, MailIcon, SaveIcon, UploadIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
@@ -18,7 +19,9 @@ import { formatDate } from '~/utils/date'
 
 import { PageHeader } from '~admin/components/PageHeader'
 import { useUpdateProfile } from '~admin/hooks/api/useUpdateProfile'
-import { useUser } from '~admin/stores/useUserStore'
+import { useUser, useUserStore } from '~admin/stores/useUserStore'
+import { authControllerGetProfileQueryKey, usersControllerUpdateAvatarMutation } from '~api/@tanstack/react-query.gen'
+import { formDataBodySerializer } from '~api/client'
 import type { UpdateProfileDto } from '~api/types.gen'
 
 /**
@@ -30,6 +33,10 @@ export function ProfilePage() {
 
   const storeUser = useUser()
   const updateProfileMutation = useUpdateProfile()
+  const queryClient = useQueryClient()
+  const { updateUser } = useUserStore()
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 本地编辑状态，用于表单编辑
   const [userProfile, setUserProfile] = useState({
@@ -39,6 +46,23 @@ export function ProfilePage() {
     joinDate: '',
     role: '管理员',
     avatarUrl: storeUser?.avatarUrl,
+  })
+
+  const updateAvatarMutation = useMutation({
+    ...usersControllerUpdateAvatarMutation(),
+    onSuccess: async (res) => {
+      const updated = res.data
+      updateUser(updated)
+      setUserProfile((prev) => ({
+        ...prev,
+        avatarUrl: updated.avatarUrl ?? prev.avatarUrl,
+      }))
+      await queryClient.invalidateQueries({ queryKey: authControllerGetProfileQueryKey() })
+      toast.success('头像已更新')
+    },
+    onError: () => {
+      toast.error('上传失败，请重试')
+    },
   })
 
   /**
@@ -104,6 +128,53 @@ export function ProfilePage() {
       ...prev,
       [field]: value,
     }))
+  }
+
+  const handleOpenAvatarPicker = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
+    }
+  }
+
+  const handleAvatarFileChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const files = ev.target.files
+    const hasFile = Boolean(files && files.length > 0)
+
+    if (hasFile) {
+      const file = files![0]
+      const isImage = file.type ? file.type.startsWith('image/') : true
+      const withinLimit = file.size <= 2 * 1024 * 1024
+
+      if (isImage) {
+        if (withinLimit) {
+          if (storeUser) {
+            try {
+              await updateAvatarMutation.mutateAsync({
+                path: { id: storeUser.id },
+                headers: { 'Content-Type': null },
+                bodySerializer: formDataBodySerializer.bodySerializer,
+                body: { file },
+              })
+            }
+            catch {
+              // 错误提示由 onError 统一处理
+            }
+          }
+          else {
+            toast.error('未获取到当前用户信息')
+          }
+        }
+        else {
+          toast.error('图片大小不能超过 2 MB')
+        }
+      }
+      else {
+        toast.error('请选择图片文件')
+      }
+    }
+
+    // 重置 input，允许选择同一文件再次触发
+    ev.target.value = ''
   }
 
   return (
@@ -243,6 +314,24 @@ export function ProfilePage() {
                             {userProfile.bio}
                           </div>
                         )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <input
+                      ref={fileInputRef}
+                      accept="image/*"
+                      className="hidden"
+                      type="file"
+                      onChange={(ev) => { void handleAvatarFileChange(ev) }}
+                    />
+                    <Button
+                      disabled={updateAvatarMutation.isPending}
+                      variant="outline"
+                      onClick={handleOpenAvatarPicker}
+                    >
+                      <UploadIcon />
+                      {updateAvatarMutation.isPending ? '上传中...' : '更换头像'}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
