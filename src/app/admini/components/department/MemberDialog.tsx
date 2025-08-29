@@ -27,15 +27,6 @@ import {
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Switch } from '~/components/ui/switch'
-import type {
-  CreateUserInDepartmentDto,
-  DepartmentsControllerCreateUserInDepartmentData,
-  DepartmentsControllerCreateUserInDepartmentResponse,
-  UpdateUserDto,
-  UserListItemDto,
-  UsersControllerUpdateData,
-  UsersControllerUpdateResponse,
-} from '~/lib/api/generated/types.gen'
 import type { DepartmentId } from '~/lib/api/types'
 
 import { convertDepartmentValue, convertToDepartmentSelectorValue, DepartmentSelector } from './DepartmentSelector'
@@ -46,6 +37,15 @@ import {
   usersControllerUpdateMutation,
 } from '~api/@tanstack/react-query.gen'
 import type { Options } from '~api/sdk.gen'
+import type {
+  CreateUserInDepartmentDto,
+  DepartmentsControllerCreateUserInDepartmentData,
+  DepartmentsControllerCreateUserInDepartmentResponse,
+  UpdateUserDto,
+  UserListItemDto,
+  UsersControllerUpdateData,
+  UsersControllerUpdateResponse,
+} from '~api/types.gen'
 
 // MARK: 表单验证（按模式区分）
 const createSchema = z.object({

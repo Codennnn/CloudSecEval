@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { departmentsControllerCreateMutation, departmentsControllerUpdateMutation } from '~/lib/api/generated/@tanstack/react-query.gen'
+import { departmentsControllerCreateMutation, departmentsControllerUpdateMutation } from '~api/@tanstack/react-query.gen'
 
 // ==================== Hook 函数 ====================
 

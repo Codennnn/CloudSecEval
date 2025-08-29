@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 
-import { licenseControllerCheckLicenseOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
-
+import { licenseControllerCheckLicenseMutation } from '~api/@tanstack/react-query.gen'
 import type { CheckLicenseApiResponseDto } from '~api/types.gen'
 
 interface LicenseCredentials {
@@ -45,31 +44,26 @@ interface LicenseVerificationResult {
 export function useLicenseVerification({
   credentials,
   enabled = true,
-  retry = false,
-  staleTime = 0,
 }: UseLicenseVerificationOptions = {}): LicenseVerificationResult {
   const shouldVerify = enabled && credentials !== null && credentials !== undefined
 
   const {
     data,
-    isLoading,
+    status,
     isError,
     error,
-  } = useQuery({
-    ...licenseControllerCheckLicenseOptions({
+  } = useMutation({
+    ...licenseControllerCheckLicenseMutation({
       body: {
         email: credentials?.email ?? '',
         code: credentials?.code ?? '',
       },
     }),
-    enabled: shouldVerify,
-    retry,
-    staleTime,
   })
 
   return {
     hasAccess: Boolean(data?.data.authorized),
-    isLoading: shouldVerify && isLoading,
+    isLoading: shouldVerify && status === 'pending',
     isError,
     error,
     data,

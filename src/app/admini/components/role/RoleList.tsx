@@ -15,12 +15,12 @@ import {
 } from '~/components/ui/dropdown-menu'
 import { SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from '~/components/ui/sidebar'
 import { Skeleton } from '~/components/ui/skeleton'
-import type { RoleListItemDto } from '~/lib/api/generated/types.gen'
 import { cn } from '~/lib/utils'
 
 import { RoleDialog, type RoleDialogMode } from './RoleDialog'
 
 import { rolesControllerFindAllOptions, rolesControllerFindAllQueryKey, rolesControllerRemoveMutation } from '~api/@tanstack/react-query.gen'
+import type { RoleListItemDto } from '~api/types.gen'
 
 interface RoleDialogState {
   open: boolean

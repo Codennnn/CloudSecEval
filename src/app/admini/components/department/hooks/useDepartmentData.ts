@@ -7,12 +7,13 @@ import { useMemo } from 'react'
 
 import { useQuery, type UseQueryResult } from '@tanstack/react-query'
 
-import { departmentsControllerFindAllDepartmentsOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
-import type { DepartmentListItemDto } from '~/lib/api/generated/types.gen'
 import type { OrganizationId } from '~/lib/api/types'
 
 import type { DepartmentTreeNode } from '../types'
 import { buildDepartmentTree } from '../utils/tree-utils'
+
+import { departmentsControllerFindAllDepartmentsOptions } from '~api/@tanstack/react-query.gen'
+import type { DepartmentListItemDto } from '~api/types.gen'
 
 /**
  * 部门数据获取 Hook 参数接口

@@ -10,13 +10,13 @@ import { toast } from 'sonner'
 import { ProTable, type ProTableProps } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Button } from '~/components/ui/button'
-import type { RolesControllerGetRoleMembersData, UserListItemDto } from '~/lib/api/generated/types.gen'
 
 import { openMemberSelectDialog } from '../member-select/MemberSelectDialog'
 
 import { createUserColumns } from '~admin/components/member/userTableColumns'
 import { rolesControllerAddRoleMembersMutation, rolesControllerGetRoleMembersOptions, rolesControllerGetRoleMembersQueryKey, rolesControllerRemoveRoleMembersMutation } from '~api/@tanstack/react-query.gen'
 import type { Options } from '~api/sdk.gen'
+import type { RolesControllerGetRoleMembersData, UserListItemDto } from '~api/types.gen'
 
 interface RoleMembersTableProps {
   readonly roleId: string

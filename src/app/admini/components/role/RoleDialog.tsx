@@ -26,9 +26,9 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import type { CreateRoleDto, RoleListItemDto, UpdateRoleDto } from '~/lib/api/generated/types.gen'
 
 import { rolesControllerCreateMutation, rolesControllerUpdateMutation } from '~api/@tanstack/react-query.gen'
+import type { CreateRoleDto, RoleListItemDto, UpdateRoleDto } from '~api/types.gen'
 
 export type RoleDialogMode = 'create' | 'edit'
 

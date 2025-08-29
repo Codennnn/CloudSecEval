@@ -4,8 +4,9 @@ import type { TableColumnDef } from '~/components/table/table.type'
 import { Badge } from '~/components/ui/badge'
 import { UserAvatar } from '~/components/UserAvatar'
 import { FieldTypeEnum } from '~/constants/form'
-import type { UserListItemDto } from '~/lib/api/generated/types.gen'
 import { formatDate } from '~/utils/date'
+
+import type { UserListItemDto } from '~api/types.gen'
 
 interface CreateUserColumnsOptions {
   withActions?: boolean

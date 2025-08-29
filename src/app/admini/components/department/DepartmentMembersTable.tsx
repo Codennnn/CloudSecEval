@@ -20,10 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import type {
-  DepartmentsControllerGetDepartmentMembersData,
-  UserListItemDto,
-} from '~/lib/api/generated/types.gen'
 import type { DepartmentId } from '~/lib/api/types'
 
 import { MemberDialog, type MemberDialogMode } from './MemberDialog'
@@ -36,6 +32,10 @@ import {
   usersControllerRemoveUserMutation,
 } from '~api/@tanstack/react-query.gen'
 import type { Options } from '~api/sdk.gen'
+import type {
+  DepartmentsControllerGetDepartmentMembersData,
+  UserListItemDto,
+} from '~api/types.gen'
 
 interface DepartmentMembersTableProps {
   departmentId: DepartmentId
