@@ -1,4 +1,4 @@
-import { FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
+import { BarChartIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
 
 /**
  * 管理后台相关路由（敏感信息）
@@ -107,7 +107,7 @@ export function generatePageTitle(pathname?: string): string {
   return `${pageName} - ${adminTitle}`
 }
 
-const createAdminNavItem = (adminRoute: AdminRoutes) => ({
+const createAdminNavItem = (adminRoute: AdminRoutes): AdminNavItem => ({
   title: adminNavConfig[adminRoute].title,
   url: adminNavConfig[adminRoute].url,
   icon: adminNavConfig[adminRoute].icon,
@@ -124,21 +124,11 @@ export const adminNavMain = [
   createAdminNavItem(AdminRoutes.Permissions),
 ]
 
-export const adminNavSecondary = [
+export const adminNavSecondary: AdminSecondaryNavItem[] = [
   {
-    title: 'Settings',
-    url: '#',
-    icon: UserIcon,
-  },
-  {
-    title: 'Get Help',
-    url: '#',
-    icon: UserIcon,
-  },
-  {
-    title: 'Search',
-    url: '#',
-    icon: UserIcon,
+    title: '流量分析',
+    url: 'https://us.umami.is/websites/17a93541-f99f-43ed-8d7c-3887b4e85693',
+    icon: BarChartIcon,
   },
 ]
 

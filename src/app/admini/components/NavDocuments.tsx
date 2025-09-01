@@ -50,7 +50,7 @@ export function NavDocuments({
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuAction
                     showOnHover
-                    className="data-[state=open]:bg-muted rounded-sm"
+                    className="data-[state=open]:bg-muted rounded-sm !text-muted-foreground"
                   >
                     <EllipsisIcon />
                     <span className="sr-only">更多</span>
