@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 
 import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
+import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -18,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import { FieldTypeEnum } from '~/constants/form'
-import { formatDate } from '~/utils/date'
 
 import { PermissionFormDialog } from './PermissionFormDialog'
 
@@ -112,14 +112,11 @@ export function PermissionsTable() {
           </Badge>
         ),
       },
-      {
+      createDateColumn<PermissionListItemDto>({
         accessorKey: 'createdAt',
         header: '创建时间',
         type: FieldTypeEnum.DATE,
-        cell: ({ row }) => (
-          <div className="text-sm">{formatDate(row.original.createdAt)}</div>
-        ),
-      },
+      }),
       {
         id: 'actions',
         header: '操作',
