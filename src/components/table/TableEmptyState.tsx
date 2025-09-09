@@ -106,7 +106,7 @@ export function TableEmptyState(props: TableEmptyStateProps) {
               </slot>
             </div>
 
-            <div>请调整查询条件或添加新的数据</div>
+            <div className="text-muted-foreground">请调整查询条件或添加新的数据</div>
           </div>
         </div>
       </TableCell>
