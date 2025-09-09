@@ -203,8 +203,8 @@ export function MemberSelectDialog(props: MemberSelectDialogProps) {
         )}
       >
         <DialogHeader>
-          {!!title && <DialogTitle>{title}</DialogTitle>}
-          {!!description && <DialogDescription>{description}</DialogDescription>}
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <div className="flex gap-4 flex-1 min-h-0">
@@ -301,7 +301,7 @@ export function openMemberSelectDialog(
       const [isOpen, setIsOpen] = useState(true)
       const settledRef = useRef(false)
 
-      function handleOpenChange(nextOpen: boolean): void {
+      const handleOpenChange = useEvent((nextOpen: boolean): void => {
         setIsOpen(nextOpen)
 
         if (!nextOpen) {
@@ -312,16 +312,16 @@ export function openMemberSelectDialog(
 
           cleanup()
         }
-      }
+      })
 
-      function handleConfirm(list: UserListItemDto[]): void {
+      const handleConfirm = useEvent((list: UserListItemDto[]): void => {
         if (!settledRef.current) {
           settledRef.current = true
           resolve(list)
         }
 
         setIsOpen(false)
-      }
+      })
 
       return (
         <MemberSelectDialog

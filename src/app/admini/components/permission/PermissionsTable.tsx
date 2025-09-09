@@ -85,9 +85,11 @@ export function PermissionsTable() {
       },
       {
         accessorKey: 'slug',
-        header: '标识',
+        header: '权限标识',
         cell: ({ row }) => (
-          <div className="text-sm font-mono">{row.original.slug}</div>
+          <Badge className="font-mono" variant="outline">
+            {row.original.slug}
+          </Badge>
         ),
       },
       {
