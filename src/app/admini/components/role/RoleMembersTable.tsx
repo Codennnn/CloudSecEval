@@ -1,20 +1,19 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { PlusIcon, TrashIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { ProTable, type ProTableProps } from '~/components/table/ProTable'
+import { ProTable, type ProTableProps, type ProTableRef } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Button } from '~/components/ui/button'
 
-import { openMemberSelectDialog } from '../member-select/MemberSelectDialog'
-
-import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { createUserColumns } from '~admin/components/member/userTableColumns'
+import { openMemberSelectDialog } from '~admin/components/member-select/MemberSelectDialog'
+import { useSimpleConfirmDialog } from '~admin/stores/useSimpleConfirmDialogStore'
 import { rolesControllerAddRoleMembersMutation, rolesControllerGetRoleMembersOptions, rolesControllerGetRoleMembersQueryKey, rolesControllerRemoveRoleMembersMutation } from '~api/@tanstack/react-query.gen'
 import type { Options } from '~api/sdk.gen'
 import type { RolesControllerGetRoleMembersData, UserListItemDto } from '~api/types.gen'
@@ -23,27 +22,17 @@ interface RoleMembersTableProps {
   readonly roleId: string
 }
 
-// 删除确认弹框状态
-interface RemoveConfirmState {
-  open: boolean
-  userIds: string[]
-  description?: React.ReactNode
-  afterConfirm?: () => void
-}
-
 export function RoleMembersTable(props: RoleMembersTableProps) {
   const { roleId } = props
 
   const queryClient = useQueryClient()
 
+  const tableRef = useRef<ProTableRef<UserListItemDto>>(null)
+
   const [queryOptions, setQueryOptions]
   = useState<Options<RolesControllerGetRoleMembersData>>()
 
-  // 二次确认弹框本地状态
-  const [removeConfirmState, setRemoveConfirmState] = useState<RemoveConfirmState>({
-    open: false,
-    userIds: [],
-  })
+  const { showConfirmDialog } = useSimpleConfirmDialog()
 
   useEffect(() => {
     if (roleId) {
@@ -108,115 +97,74 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
     },
   })
 
-  /**
-   * 执行后端移除成员请求
-   * - 接收用户 ID 列表
-   * - 请求成功后触发列表刷新由 onSuccess 统一处理
-   */
   const handleRemoveMember = useEvent(async (userIds: string[]) => {
     await removeMembersMutation.mutateAsync({
       body: { userIds },
       path: { id: roleId },
     })
+
+    // 移除成功后清除表格选择
+    tableRef.current?.clearSelection()
   })
 
-  /**
-   * 打开单个成员移除的二次确认弹框
-   * - 生成用户信息描述，提升操作可理解性
-   */
-  const handleOpenRemoveConfirm = useEvent((user: UserListItemDto) => {
-    const description = (
-      <div>
-        你即将把以下成员从当前角色中移除：
-        <ul className="list-disc list-inside space-y-1.5 py-2">
-          <li>
-            邮箱：
-            <span className="text-muted-foreground">{user.email}</span>
-          </li>
-          {user.name && (
-            <li>
-              姓名：
-              <span className="text-muted-foreground">{user.name}</span>
-            </li>
+  const handleOpenRemoveConfirm = useEvent(
+    (users: UserListItemDto | UserListItemDto[], after?: () => void) => {
+      // 统一处理为数组格式
+      const userList = Array.isArray(users) ? users : [users]
+      const isMultiple = userList.length > 1
+
+      // 根据用户数量生成相应的描述内容
+      const description = (
+        <div>
+          你即将把以下
+          {isMultiple && (
+            <>
+              {' '}
+              <span className="font-medium">{userList.length}</span>
+              {' '}
+            </>
           )}
-        </ul>
-        移除后，该成员将不再继承该角色的权限。
-      </div>
-    )
+          {isMultiple ? '个成员' : '成员'}
+          从当前角色中移除：
+          <ul className="list-disc list-inside space-y-1.5 py-2 max-h-48 overflow-auto">
+            {userList.map((user) => (
+              <li key={user.id}>
+                邮箱：
+                <span className="text-muted-foreground">{user.email}</span>
+                {user.name && (
+                  <>
+                    {' '}
+                    · 姓名：
+                    <span className="text-muted-foreground">{user.name}</span>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+          移除后，
+          {isMultiple ? '这些成员' : '该成员'}
+          将不再继承该角色的权限。
+        </div>
+      )
 
-    setRemoveConfirmState({
-      open: true,
-      userIds: [user.id],
-      description,
-    })
-  })
+      const userIds = userList.map((user) => user.id)
+      const title = isMultiple ? '批量移除成员' : '移除成员'
+      const warningMessage = `移除后，${isMultiple ? '这些成员' : '该成员'}将不再继承该角色的权限，请确认是否继续？`
 
-  /**
-   * 打开批量成员移除的二次确认弹框
-   * - 显示被移除的成员数量与关键信息列表
-   * - 支持在确认后执行额外操作（例如清空选择）
-   */
-  const handleOpenRemoveConfirmForMany = useEvent((users: UserListItemDto[], after?: () => void) => {
-    const description = (
-      <div>
-        你即将把以下
-        {' '}
-        {users.length}
-        {' '}
-        个成员从当前角色中移除：
-        <ul className="list-disc list-inside space-y-1.5 py-2 max-h-48 overflow-auto">
-          {users.map((u) => (
-            <li key={u.id}>
-              <span className="text-muted-foreground">{u.email}</span>
-              {u.name
-                ? (
-                    <>
-                      {' '}
-                      · 姓名：
-                      <span className="text-muted-foreground">{u.name}</span>
-                    </>
-                  )
-                : null}
-            </li>
-          ))}
-        </ul>
-        移除后，这些成员将不再继承该角色的权限。
-      </div>
-    )
-
-    const userIds = users.map((u) => u.id)
-
-    setRemoveConfirmState({
-      open: true,
-      userIds,
-      description,
-      afterConfirm: after,
-    })
-  })
-
-  /**
-   * 确认移除：仅在用户点击确认后执行
-   * - 调用后端接口移除成员
-   * - 成功后执行 afterConfirm（如清空选择）并关闭弹框
-   * - 失败时提示错误信息
-   */
-  const handleConfirmRemove = useEvent(async () => {
-    if (removeConfirmState.open) {
-      try {
-        await handleRemoveMember(removeConfirmState.userIds)
-
-        if (removeConfirmState.afterConfirm) {
-          removeConfirmState.afterConfirm()
-        }
-      }
-      catch {
-        toast.error('移除成员失败，请稍后重试')
-      }
-      finally {
-        setRemoveConfirmState({ open: false, userIds: [] })
-      }
-    }
-  })
+      showConfirmDialog({
+        title,
+        description,
+        confirmButtonText: '确认移除',
+        variant: 'destructive',
+        showWarning: true,
+        warningMessage,
+        onConfirm: async () => {
+          await handleRemoveMember(userIds)
+          after?.()
+        },
+      })
+    },
+  )
 
   const handleAddMember = useEvent(async () => {
     const disabledIds = (membersQuery.data?.data ?? []).map((u) => u.id)
@@ -310,9 +258,7 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
                   variant="destructive"
                   onClick={() => {
                     if (selectedRows.length > 0) {
-                      handleOpenRemoveConfirmForMany(selectedRows, () => {
-                        clearSelection()
-                      })
+                      handleOpenRemoveConfirm(selectedRows)
                     }
                   }}
                 >
@@ -322,6 +268,7 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
             </div>
           ),
         }}
+        tableRef={tableRef}
         toolbar={{
           rightContent: (
             <>
@@ -343,25 +290,6 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
         }}
         onPaginationChange={handlePaginationChange}
         onRefresh={handleRefresh}
-      />
-
-      {/* 二次确认弹框：仅在用户点击确认后执行实际删除 */}
-      <DeleteConfirmDialog
-        confirmText="DELETE"
-        deleteButtonText="确认移除"
-        description={removeConfirmState.description}
-        isDeleting={isRemovingMembers}
-        open={removeConfirmState.open}
-        title="移除成员"
-        onConfirm={handleConfirmRemove}
-        onOpenChange={(open) => {
-          if (!open) {
-            setRemoveConfirmState({ open: false, userIds: [] })
-          }
-          else {
-            setRemoveConfirmState((prev) => ({ ...prev, open }))
-          }
-        }}
       />
     </div>
   )

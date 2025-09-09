@@ -6,6 +6,7 @@ import {
 
 import { AdminHeader } from '~admin/components/AdminHeader'
 import { AdminSidebar } from '~admin/components/AdminSidebar'
+import { GlobalSimpleConfirmDialog } from '~admin/components/GlobalSimpleConfirmDialog'
 import { LicenseDialogManager } from '~admin/components/LicenseDialogManager'
 import { UserSyncProvider } from '~admin/components/UserSyncProvider'
 
@@ -39,6 +40,7 @@ export default function AdminLayout(props: React.PropsWithChildren) {
         </SidebarInset>
       </SidebarProvider>
 
+      <GlobalSimpleConfirmDialog />
       <LicenseDialogManager />
     </UserSyncProvider>
   )

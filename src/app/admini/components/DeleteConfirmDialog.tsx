@@ -150,6 +150,7 @@ export function DeleteConfirmDialog(props: DeleteConfirmDialogProps) {
         <DialogFooter className="gap-2">
           <Button
             disabled={isDeleting}
+            size="sm"
             type="button"
             variant="outline"
             onClick={() => { handleOpenChange(false) }}
@@ -159,6 +160,7 @@ export function DeleteConfirmDialog(props: DeleteConfirmDialogProps) {
           <Button
             className="min-w-[100px]"
             disabled={isConfirmDisabled}
+            size="sm"
             type="button"
             variant="destructive"
             onClick={() => {

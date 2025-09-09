@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { type RefObject, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { type QueryKey, useQuery, useQueryClient, type UseQueryOptions } from '@tanstack/react-query'
@@ -9,6 +9,7 @@ import {
   getCoreRowModel,
   type PaginationState,
   type RowSelectionState,
+  type Table as ReactTable,
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
@@ -44,9 +45,23 @@ UseQueryOptions<ListResponse<TData>, Error, ListResponse<TData>, unknown[]>
 export type QueryKeyFn = (options: Options) => QueryKey
 
 /**
+ * ProTable 组件暴露的方法接口
+ */
+export interface ProTableRef<TData> {
+  /** 获取 table 实例 */
+  getTable: () => ReactTable<TData>
+  /** 清除行选择 */
+  clearSelection: () => void
+  /** 刷新表格数据 */
+  refresh: () => void | Promise<void>
+}
+
+/**
  * ProTable 组件属性接口
  */
 export interface ProTableProps<TData> {
+  /** 外部传入的 table ref，用于访问 table 实例和方法 */
+  tableRef?: RefObject<ProTableRef<TData> | null>
   /** 表格列定义 */
   columns: TableColumnDef<TData>[]
 
@@ -149,6 +164,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     className,
     paginationConfig = {},
     rowSelection: rowSelectionConfig = {},
+    tableRef,
 
     onPaginationChange,
     onQueryParamsChange,
@@ -452,6 +468,17 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
     manualPagination: true,
     pageCount,
   })
+
+  useImperativeHandle(tableRef, () => ({
+    getTable: () => table,
+    clearSelection: () => {
+      if (rowSelectionEnabled) {
+        setRowSelection({})
+        onSelectionChange?.({})
+      }
+    },
+    refresh: handleRefresh,
+  }), [table, rowSelectionEnabled, handleRefresh, onSelectionChange])
 
   const tableRows = table.getRowModel().rows
 
