@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 
-import { useIsLoggedIn, useUserStore } from '~admin/stores/useUserStore'
+import { useUserStore } from '~admin/stores/useUserStore'
 import { authControllerGetProfileOptions } from '~api/@tanstack/react-query.gen'
 
 /**
@@ -18,11 +18,8 @@ import { authControllerGetProfileOptions } from '~api/@tanstack/react-query.gen'
  * - 确保用户状态在整个应用中保持同步
  */
 export function useUserSync() {
-  const isLoggedIn = useIsLoggedIn()
-
   const { data, isLoading, isSuccess, isError } = useQuery({
     ...authControllerGetProfileOptions(),
-    enabled: isLoggedIn,
   })
   const user = data?.data
 
@@ -43,9 +40,6 @@ export function useUserSync() {
   }, [isSuccess, isError, user, setUser, clearUser])
 
   return {
-    /**
-     * 是否正在同步用户数据
-     */
     isSyncing: isLoading,
   }
 }

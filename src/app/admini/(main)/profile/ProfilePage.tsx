@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarIcon, EditIcon, HouseIcon, MailIcon, SaveIcon, UploadIcon } from 'lucide-react'
+import { CalendarIcon, EditIcon, HouseIcon, MailIcon, UploadIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
@@ -187,22 +187,29 @@ export function ProfilePage() {
                 isEditing
                   ? (
                       <>
-                        <Button variant="outline" onClick={handleCancel}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCancel}
+                        >
                           取消
                         </Button>
                         <Button
                           disabled={updateProfileMutation.isPending}
+                          size="sm"
                           onClick={() => {
                             void handleSave()
                           }}
                         >
-                          <SaveIcon />
-                          {updateProfileMutation.isPending ? '保存中...' : '保存'}
+                          {updateProfileMutation.isPending ? '保存中...' : '保存更改'}
                         </Button>
                       </>
                     )
                   : (
-                      <Button onClick={() => { setIsEditing(true) }}>
+                      <Button
+                        size="sm"
+                        onClick={() => { setIsEditing(true) }}
+                      >
                         <EditIcon />
                         编辑资料
                       </Button>
@@ -326,6 +333,7 @@ export function ProfilePage() {
                     />
                     <Button
                       disabled={updateAvatarMutation.isPending}
+                      size="sm"
                       variant="outline"
                       onClick={handleOpenAvatarPicker}
                     >
