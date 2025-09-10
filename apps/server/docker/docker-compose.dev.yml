@@ -1,0 +1,91 @@
+# 本地开发环境 Docker Compose 配置
+# 使用方式：docker compose -f docker-compose.dev.yml up -d
+
+services:
+  # 本地开发用的 PostgreSQL 数据库
+  postgres:
+    image: postgres:17-alpine # 使用最新稳定版 PostgreSQL 17
+    container_name: nest_postgres_dev
+    restart: unless-stopped
+    env_file:
+      - ../.env.development
+    environment:
+      # 设置时区
+      TZ: ${TIMEZONE:-Asia/Shanghai}
+      # 启用数据校验和（PostgreSQL 默认未启用；仅首次初始化数据目录时生效）
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432" # 使用 5433 避免与系统 PostgreSQL 冲突
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d # 可选：数据库初始化脚本目录
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nest_api_dev}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # 性能优化配置
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+
+  # 可选：PostgreSQL 管理工具 pgAdmin（仅在需要时启动）
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: nest_pgadmin_dev
+    restart: unless-stopped
+    env_file:
+      - ../.env.development
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - admin # 使用 profile，可选启动
+
+  # 可选：Redis 用于缓存和会话存储（如果项目需要）
+  redis:
+    image: redis:7-alpine
+    container_name: nest_redis_dev
+    restart: unless-stopped
+    env_file:
+      - ../.env.development
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_dev_data:/data
+    command: redis-server --appendonly yes
+    profiles:
+      - cache # 使用 profile，可选启动
+
+# 数据卷定义
+volumes:
+  postgres_dev_data:
+    driver: local
+  pgadmin_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local

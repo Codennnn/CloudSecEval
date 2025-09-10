@@ -73,3 +73,12 @@ yarn-error.log*
 # -----------------------------
 apps/web/src/lib/api/generated/
 apps/web/src/lib/api/logs/
+
+# -----------------------------
+# 后端应用特有文件
+# -----------------------------
+# Prisma 生成的客户端
+apps/server/generated/
+
+# 上传文件存储目录
+storage/

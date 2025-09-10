@@ -1,0 +1,26 @@
+services:
+  # Nest 应用服务
+  app:
+    # 开发环境使用本地构建
+    build:
+      context: ../../.. # 从 monorepo 根目录开始构建
+      dockerfile: apps/server/docker/Dockerfile
+      # 指定目标平台架构（可通过环境变量覆盖）
+      # 可选值：linux/amd64, linux/arm64, linux/arm/v7
+      # 使用方法：DOCKER_PLATFORM=linux/arm64 docker compose up --build
+      # platforms:
+      #   - ${DOCKER_PLATFORM:-linux/amd64}
+
+    # 如果要在生产环境使用发布的镜像（取消以下注释，并注释掉 build 部分）
+    # image: leokuchon/nest-api:latest
+
+    image: nest-api:latest
+    container_name: nest_api
+    restart: always
+    env_file:
+      - ../.env # 使用后端应用的 .env 文件
+    environment:
+      # 可以在这里覆盖或设置默认值（但不包含敏感信息）
+      NODE_ENV: ${NODE_ENV:-production}
+    ports:
+      - "${PORT:-8000}:8000"

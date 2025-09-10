@@ -1,0 +1,224 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 组织模型
+model Organization {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String   @unique
+  code      String   @unique // 组织编码，用于对接外部系统
+  remark    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  departments Department[]
+  users       User[]
+  roles       Role[]
+
+  @@map("organizations")
+}
+
+// 部门模型
+model Department {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId     String   @db.Uuid
+  parentId  String?  @db.Uuid
+  name      String
+  remark    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  parent       Department?  @relation("DepartmentToChildren", fields: [parentId], references: [id], onDelete: Restrict)
+  children     Department[] @relation("DepartmentToChildren")
+  users        User[]
+
+  @@unique([orgId, parentId, name]) // 同一父级下名称唯一
+  @@index([orgId])
+  @@index([parentId])
+  @@map("departments")
+}
+
+// 用户模型
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  name         String?
+  avatarUrl    String?
+  isActive     Boolean  @default(true)
+  orgId        String   @db.Uuid // 用户必须属于某个组织
+  departmentId String?  @db.Uuid // 用户可选择属于某个部门
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // 关联
+  organization        Organization         @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  department          Department?          @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  passwordResetTokens PasswordResetToken[]
+  refreshTokens       RefreshToken[]
+  userRoles           UserRole[]
+
+  @@index([orgId])
+  @@index([departmentId])
+  @@map("users")
+}
+
+// 密码重置令牌
+model PasswordResetToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token     String   @unique
+  userId    String   @db.Uuid
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  used      Boolean  @default(false)
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+// 刷新令牌
+model RefreshToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token     String   @unique
+  userId    String   @db.Uuid
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// 授权码模型 - 用于付费内容访问控制
+model License {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email          String
+  code           String    @unique // 授权码格式: 支持多段格式，如 ABCD-EFGH-IJKL-MNOP 或 ABC-DEF-GHI
+  isUsed         Boolean   @default(false) // 授权码是否已被使用过
+  lastIP         String? // 最近使用的IP地址
+  locked         Boolean   @default(false) // 是否被锁定
+  warningCount   Int       @default(0) // 风控警告次数
+  purchaseAmount Decimal?  @db.Decimal(10, 2) // 购买金额（单位：元），支持两位小数
+  expiresAt      DateTime? // 过期时间（可空，null 表示永久授权）
+  isExpired      Boolean   @default(false) // 是否已过期（冗余字段，便于查询优化）
+  remark         String? // 备注信息（可选，用于标记授权码的额外信息）
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // 关联
+  accessLogs AccessLog[]
+
+  @@map("licenses")
+}
+
+// 访问日志模型 - 用于记录授权码使用情况和风控分析
+model AccessLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  licenseId  String   @db.Uuid
+  email      String
+  ip         String // 访问IP地址
+  isRisky    Boolean  @default(false) // 是否为风险访问
+  accessedAt DateTime @default(now())
+
+  // 关联
+  license License @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@map("access_logs")
+}
+
+// 角色模型 - 用于权限管理和用户标签
+model Role {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId       String?  @db.Uuid // null 表示系统级角色
+  name        String // 角色显示名称，如 "组织管理员"
+  slug        String // 角色标识符，如 "org_admin"
+  description String? // 角色描述
+  system      Boolean  @default(false) // 系统内置角色，不允许删除
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  organization    Organization?    @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@unique([orgId, slug]) // 同组织内角色标识符唯一，系统级独立
+  @@index([orgId])
+  @@index([slug])
+  @@map("roles")
+}
+
+// 权限模型 - 定义系统中所有可用权限
+model Permission {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  resource    String // 资源名称，如 "users", "departments"
+  action      String // 操作类型，如 "read", "create", "update", "delete", "*"
+  slug        String   @unique // 权限标识符: resource:action，如 "users:read"
+  description String? // 权限描述
+  system      Boolean  @default(true) // 系统权限，一般不允许删除
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  rolePermissions RolePermission[]
+
+  @@index([resource])
+  @@index([action])
+  @@map("permissions")
+}
+
+// 角色权限关联表
+model RolePermission {
+  roleId       String   @db.Uuid
+  permissionId String   @db.Uuid
+  createdAt    DateTime @default(now())
+
+  // 关联
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// 用户角色关联表 - 支持组织级别的角色分配
+model UserRole {
+  userId    String    @db.Uuid
+  roleId    String    @db.Uuid
+  orgId     String    @db.Uuid // 冗余字段，用于快速按组织过滤
+  expiresAt DateTime? // 角色过期时间，null 表示永久
+  note      String? // 分配备注
+  createdAt DateTime  @default(now())
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId, orgId])
+  @@index([orgId])
+  @@index([expiresAt])
+  @@map("user_roles")
+}

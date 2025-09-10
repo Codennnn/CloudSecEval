@@ -1,0 +1,44 @@
+services:
+  # Nest 应用服务 - 生产环境
+  app:
+    image: leokuchon/nest-api:latest
+    container_name: nest_api_prod
+    restart: always
+    env_file:
+      - ../.env.production
+    environment:
+      NODE_ENV: production
+      # 设置时区
+      TZ: ${TIMEZONE:-Asia/Shanghai}
+      # 启用数据校验和（PostgreSQL 默认未启用；仅首次初始化数据目录时生效）
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    ports:
+      - "${PORT:-8000}:8000"
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # 资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - app_storage:/app/storage
+
+volumes:
+  app_storage:
+    driver: local

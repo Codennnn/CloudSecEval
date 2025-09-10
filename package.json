@@ -8,10 +8,19 @@
   "workspaces": [
     "apps/*"
   ],
+  "dependencies": {
+    "consola": "^3.4.2",
+    "date-fns": "^4.1.0",
+    "nanoid": "^5.1.5",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "prefer-code-style": "^3.9.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  },
   "scripts": {
-    "dev": "pnpm --filter nest-js-docs-cn dev",
-    "build": "pnpm --filter nest-js-docs-cn build",
-    "start": "pnpm --filter nest-js-docs-cn start",
-    "lint": "pnpm --filter nest-js-docs-cn lint"
+    "clean": "pnpm --parallel --filter @mono/web --filter @mono/api clean && rimraf node_modules"
   }
 }

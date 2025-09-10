@@ -1,5 +1,10 @@
 import { defineConfig } from '@hey-api/openapi-ts'
 
+/**
+ * 此处使用硬编码 API_URL 的简要原因：
+ * - 本配置由 openapi-ts CLI 在 Node 进程执行，Next 对 .env 的自动注入在此不生效，CLI 默认也不加载 .env。
+ * - NEXT_PUBLIC_* 面向浏览器运行时；生成器需要的是 Swagger JSON（/api-docs-json），而非业务 API 基地址（/api）。
+ */
 const API_URL = 'http://[::1]:8007/api-docs-json'
 const BASE_PATH = './src/lib/api'
 const OUTPUT_PATH = `${BASE_PATH}/generated`
