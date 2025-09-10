@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 
-import { useUserPermissions } from '~/lib/permissions/hooks'
+import { useUserPermissions } from '~/app/admini/stores/useUserStore'
 import { matchPermission, type PermissionFlag } from '~/lib/permissions/matcher'
 import { resolveRequiredPermissionByPath } from '~/lib/permissions/route-permissions'
 import { cn } from '~/lib/utils'

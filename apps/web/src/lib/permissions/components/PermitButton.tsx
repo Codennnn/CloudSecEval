@@ -3,7 +3,7 @@
 import type { VariantProps } from 'class-variance-authority'
 
 import { Button, type buttonVariants } from '~/components/ui/button'
-import { PermissionMode, useHasPermission, useHasPermissions } from '~/lib/permissions/hooks'
+import { PermissionMode, useHasPermissions } from '~/lib/permissions/hooks'
 import type { PermissionFlag } from '~/lib/permissions/matcher'
 
 type PermitButtonProps
@@ -28,10 +28,7 @@ export function PermitButton(props: PermitButtonProps) {
     ...restProps
   } = props
 
-  // 根据权限类型选择合适的 hook
-  const allowed = typeof required === 'string'
-    ? useHasPermission(required)
-    : useHasPermissions(required, mode)
+  const allowed = useHasPermissions(required, mode)
 
   if (!allowed && hideIfDenied) {
     return null

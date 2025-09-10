@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import type { User } from '~/lib/api/types'
+import type { PermissionFlag } from '~/lib/permissions/matcher'
 
 interface UserState {
   // 状态
@@ -65,4 +66,14 @@ export function useUser() {
  */
 export function useIsLoggedIn() {
   return useUserStore((state) => Boolean(state.user))
+}
+/**
+ * Hook：获取当前用户权限列表
+ * @returns 权限标识字符串数组（如 ["users:read", "users:*"]）
+ */
+
+export function useUserPermissions(): PermissionFlag[] {
+  const perms = useUserStore((s) => s.user?.permissions ?? [])
+
+  return perms
 }
