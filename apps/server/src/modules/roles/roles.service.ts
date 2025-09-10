@@ -24,9 +24,6 @@ export class RolesService {
     private readonly prisma: PrismaService,
   ) {}
 
-  /**
-   * 创建角色
-   */
   async create(orgId: Organization['id'], createRoleDto: CreateRoleDto) {
     // 检查角色标识符是否已存在
     const exists = await this.rolesRepository.existsBySlug(createRoleDto.slug, orgId)
@@ -61,16 +58,10 @@ export class RolesService {
     return this.findById(role.id, orgId)
   }
 
-  /**
-   * 获取角色列表
-   */
   async findAll(orgId: string, includeSystem = true) {
     return this.rolesRepository.findAll(orgId, includeSystem)
   }
 
-  /**
-   * 获取角色详情
-   */
   async findById(id: string, orgId?: string) {
     const role = await this.rolesRepository.findById(id, orgId)
 
@@ -81,9 +72,6 @@ export class RolesService {
     return role
   }
 
-  /**
-   * 更新角色
-   */
   async update(id: string, orgId: string, updateRoleDto: UpdateRoleDto) {
     // 检查角色是否存在且属于该组织
     const existingRole = await this.rolesRepository.findById(id, orgId)
@@ -132,9 +120,6 @@ export class RolesService {
     return this.findById(id, orgId)
   }
 
-  /**
-   * 删除角色
-   */
   async remove(id: string, orgId: string) {
     const role = await this.rolesRepository.findById(id, orgId)
 
@@ -157,9 +142,6 @@ export class RolesService {
     await this.rolesRepository.delete(id, orgId)
   }
 
-  /**
-   * 获取角色权限
-   */
   async getRolePermissions(id: string, orgId?: string) {
     const role = await this.rolesRepository.findById(id, orgId)
 

@@ -19,7 +19,7 @@ import type { Options } from '~api/sdk.gen'
 import type { RolesControllerGetRoleMembersData, UserListItemDto } from '~api/types.gen'
 
 interface RoleMembersTableProps {
-  readonly roleId: string
+  roleId: string
 }
 
 export function RoleMembersTable(props: RoleMembersTableProps) {

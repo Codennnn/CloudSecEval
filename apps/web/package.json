@@ -11,7 +11,6 @@
     "lint": "run-p lint:ts lint:es lint:css",
     "lint:css": "stylelint \"src/**/*.css\"",
     "lint:es": "eslint \"**/*.{ts,tsx}\"",
-    "update-deps": "pnpm up --interactive --latest",
     "lint:ts": "tsc --noEmit --skipLibCheck",
     "format:docs": "prettier --write \"src/content/docs/**/*.mdx\"",
     "api:generate": "openapi-ts",

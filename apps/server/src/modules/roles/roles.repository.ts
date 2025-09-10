@@ -35,9 +35,6 @@ export class RolesRepository {
     })
   }
 
-  /**
-   * 查找所有角色（按组织）
-   */
   async findAll(orgId: string, includeSystem = true) {
     const where: Prisma.RoleWhereInput = {
       OR: [
@@ -66,9 +63,6 @@ export class RolesRepository {
     })
   }
 
-  /**
-   * 通过ID查找角色
-   */
   async findById(id: string, orgId?: string) {
     const where: Prisma.RoleWhereInput = { id }
 
@@ -100,9 +94,6 @@ export class RolesRepository {
     })
   }
 
-  /**
-   * 通过slug查找角色
-   */
   async findBySlug(slug: string, orgId?: string) {
     const where: Prisma.RoleWhereInput = { slug }
 
@@ -128,9 +119,6 @@ export class RolesRepository {
     })
   }
 
-  /**
-   * 更新角色
-   */
   async update(id: string, orgId: string, data: UpdateRoleDto) {
     return this.prisma.role.update({
       where: {
@@ -158,9 +146,6 @@ export class RolesRepository {
     })
   }
 
-  /**
-   * 删除角色
-   */
   async delete(id: string, orgId: string) {
     return this.prisma.role.delete({
       where: {
@@ -171,9 +156,6 @@ export class RolesRepository {
     })
   }
 
-  /**
-   * 检查角色是否存在（按slug）
-   */
   async existsBySlug(slug: string, orgId: string, excludeId?: string) {
     const where: Prisma.RoleWhereInput = {
       slug,
@@ -195,9 +177,6 @@ export class RolesRepository {
     return Boolean(role)
   }
 
-  /**
-   * 获取角色的权限列表
-   */
   async getRolePermissions(roleId: string) {
     const rolePermissions = await this.prisma.rolePermission.findMany({
       where: { roleId },

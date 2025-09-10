@@ -79,6 +79,7 @@ apps/web/src/lib/api/logs/
 # -----------------------------
 # Prisma 生成的客户端
 apps/server/generated/
+apps/server/src/metadata.ts
 
 # 上传文件存储目录
 storage/
