@@ -18,6 +18,7 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
       "~admin/*": ["./src/app/admini/*"],
