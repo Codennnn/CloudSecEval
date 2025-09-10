@@ -303,9 +303,9 @@ export class LicenseService {
         valid: !license.locked && !isExpired,
         message: this.getAdminCheckMessage(plainToInstance(BaseLicenseDto, license), isExpired),
         details: {
-          isUsed: Boolean(license.isUsed),
-          locked: Boolean(license.locked),
-          expired: Boolean(isExpired),
+          isUsed: license.isUsed,
+          locked: license.locked,
+          expired: isExpired,
           expiresAt: license.expiresAt,
         },
       }

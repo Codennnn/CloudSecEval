@@ -57,7 +57,7 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
   const [editingUser, setEditingUser] = useState<UserListItemDto | null>(null)
 
   const [queryOptions, setQueryOptions]
-  = useState<Options<DepartmentsControllerGetDepartmentMembersData>>()
+    = useState<Options<DepartmentsControllerGetDepartmentMembersData>>()
 
   useEffect(() => {
     if (departmentId) {

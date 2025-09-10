@@ -25,10 +25,10 @@ import { IS_PUBLIC_KEY } from '~/modules/auth/decorators/public.decorator'
  * ```
  */
 export function isPublicRoute(reflector: Reflector, context: ExecutionContext): boolean {
-  return Boolean(reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+  return reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
     context.getHandler(),
     context.getClass(),
-  ]))
+  ])
 }
 
 /**

@@ -9,14 +9,14 @@ interface LanguageIconProps {
 }
 
 // 定义支持的语言类型
-type SupportedLanguage =
-  | 'typescript' | 'ts'
-  | 'javascript' | 'js'
-  | 'html'
-  | 'json'
-  | 'yaml' | 'yml'
-  | 'shell' | 'sh' | 'bash' | 'groovy' | 'graphql'
-  | 'docker' | 'dockerfile'
+type SupportedLanguage
+  = | 'typescript' | 'ts'
+    | 'javascript' | 'js'
+    | 'html'
+    | 'json'
+    | 'yaml' | 'yml'
+    | 'shell' | 'sh' | 'bash' | 'groovy' | 'graphql'
+    | 'docker' | 'dockerfile'
 
 // 图标组件类型
 type IconComponent = (props: SVGProps<SVGSVGElement>) => React.ReactElement

@@ -34,7 +34,7 @@ export function useTableOfContents(): TableOfContentsHook {
 
       headings.forEach((heading) => {
         const id = heading.id
-        const text = heading.textContent ?? ''
+        const text = heading.textContent || ''
         const level = parseInt(heading.tagName.charAt(1))
 
         if (id && text) {

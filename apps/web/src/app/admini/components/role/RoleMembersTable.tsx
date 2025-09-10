@@ -30,7 +30,7 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
   const tableRef = useRef<ProTableRef<UserListItemDto>>(null)
 
   const [queryOptions, setQueryOptions]
-  = useState<Options<RolesControllerGetRoleMembersData>>()
+    = useState<Options<RolesControllerGetRoleMembersData>>()
 
   const { showConfirmDialog } = useSimpleConfirmDialog()
 

@@ -647,7 +647,9 @@ export function DataTable({
                       key={column.id}
                       checked={column.getIsVisible()}
                       className="capitalize"
-                      onCheckedChange={(value) => { column.toggleVisibility(!!value) }}
+                      onCheckedChange={(value) => {
+                        column.toggleVisibility(value)
+                      }}
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>

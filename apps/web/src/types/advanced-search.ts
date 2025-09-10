@@ -22,48 +22,48 @@ export interface SortCondition {
 }
 
 // 字符串操作符
-type StringOperator =
-  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
-  | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
-  | SearchOperatorEnum.CONTAINS | SearchOperatorEnum.STARTS_WITH
-  | SearchOperatorEnum.ENDS_WITH | SearchOperatorEnum.ILIKE
-  | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
+type StringOperator
+  = | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+    | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
+    | SearchOperatorEnum.CONTAINS | SearchOperatorEnum.STARTS_WITH
+    | SearchOperatorEnum.ENDS_WITH | SearchOperatorEnum.ILIKE
+    | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
 
 // 数值操作符
-type NumberOperator =
-  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
-  | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
-  | SearchOperatorEnum.GT | SearchOperatorEnum.GTE
-  | SearchOperatorEnum.LT | SearchOperatorEnum.LTE
-  | SearchOperatorEnum.BETWEEN | SearchOperatorEnum.IS_NULL
-  | SearchOperatorEnum.IS_NOT_NULL
+type NumberOperator
+  = | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+    | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
+    | SearchOperatorEnum.GT | SearchOperatorEnum.GTE
+    | SearchOperatorEnum.LT | SearchOperatorEnum.LTE
+    | SearchOperatorEnum.BETWEEN | SearchOperatorEnum.IS_NULL
+    | SearchOperatorEnum.IS_NOT_NULL
 
 // 日期操作符
-type DateOperator =
-  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
-  | SearchOperatorEnum.GT | SearchOperatorEnum.GTE
-  | SearchOperatorEnum.LT | SearchOperatorEnum.LTE
-  | SearchOperatorEnum.BETWEEN | SearchOperatorEnum.IS_NULL
-  | SearchOperatorEnum.IS_NOT_NULL
+type DateOperator
+  = | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+    | SearchOperatorEnum.GT | SearchOperatorEnum.GTE
+    | SearchOperatorEnum.LT | SearchOperatorEnum.LTE
+    | SearchOperatorEnum.BETWEEN | SearchOperatorEnum.IS_NULL
+    | SearchOperatorEnum.IS_NOT_NULL
 
 // 布尔操作符
-type BooleanOperator =
-  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
-  | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
+type BooleanOperator
+  = | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+    | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
 
 // 枚举操作符
-type EnumOperator =
-  | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
-  | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
-  | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
+type EnumOperator
+  = | SearchOperatorEnum.EQ | SearchOperatorEnum.NEQ
+    | SearchOperatorEnum.IN | SearchOperatorEnum.NOT_IN
+    | SearchOperatorEnum.IS_NULL | SearchOperatorEnum.IS_NOT_NULL
 
 // 所有操作符的联合类型
-export type SearchOperator =
-  | StringOperator
-  | NumberOperator
-  | DateOperator
-  | BooleanOperator
-  | EnumOperator
+export type SearchOperator
+  = | StringOperator
+    | NumberOperator
+    | DateOperator
+    | BooleanOperator
+    | EnumOperator
 
 /**
  * 搜索字段定义
@@ -151,16 +151,16 @@ export interface OperatorConfig {
   supportedTypes: FieldTypeEnum[]
 }
 
-export type QueryParamsValue =
-  | string
-  | string[]
-  | number
-  | number[]
-  | boolean
-  | Date
-  | [string | number, string | number]
-  | null
-  | undefined
+export type QueryParamsValue
+  = | string
+    | string[]
+    | number
+    | number[]
+    | boolean
+    | Date
+    | [string | number, string | number]
+    | null
+    | undefined
 
 /**
  * 查询参数接口

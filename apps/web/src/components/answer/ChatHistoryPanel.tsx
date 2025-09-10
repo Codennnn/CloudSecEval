@@ -71,7 +71,7 @@ export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
   })
 
   const formatDate = useEvent((timestamp: number) => {
-    const date = new Date(Number(timestamp))
+    const date = new Date(timestamp)
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))

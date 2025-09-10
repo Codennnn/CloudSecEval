@@ -312,9 +312,9 @@ export function FilterConditions(props: FilterConditionsProps) {
    * 获取条件的验证错误
    */
   const getConditionError: (conditionId: FilterCondition['id']) => SearchValidationError | undefined
-  = (conditionId) => {
-    return errors.find((error) => error.conditionId === conditionId)
-  }
+    = (conditionId) => {
+      return errors.find((error) => error.conditionId === conditionId)
+    }
 
   return (
     <div className={className}>
