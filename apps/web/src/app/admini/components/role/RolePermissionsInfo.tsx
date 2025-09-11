@@ -1,22 +1,27 @@
 import { Badge } from '~/components/ui/badge'
 import { Label } from '~/components/ui/label'
-import { formatDate } from '~/utils/date'
 
 import type { RoleDetailResponseDto } from '~api/types.gen'
 
+/**
+ * 角色权限信息组件
+ * 展示角色的权限列表，按资源分组显示
+ */
 export function RolePermissionsInfo({ role }: { role: RoleDetailResponseDto }) {
   const permissions = role.rolePermissions
 
   if (permissions.length === 0) {
     return (
-      <div className="text-center py-8">
-        <div className="text-sm text-muted-foreground">
-          该角色暂无权限
-        </div>
+      <div className="flex flex-col items-center justify-center py-12 px-6">
+        <h3 className="font-medium text-foreground mb-1">暂无权限</h3>
+        <p className="text-sm text-muted-foreground text-center max-w-sm">
+          该角色尚未分配任何权限，请联系管理员进行权限配置
+        </p>
       </div>
     )
   }
 
+  // 按资源分组权限
   const groupedPermissions = permissions.reduce<Record<string, typeof permissions[0]['permission'][] | undefined>>((acc, rolePermission) => {
     const { permission } = rolePermission
     const resource = permission.resource
@@ -28,56 +33,37 @@ export function RolePermissionsInfo({ role }: { role: RoleDetailResponseDto }) {
   }, {})
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Label className="text-base font-medium">权限列表</Label>
-        <Badge variant="secondary">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4 pb-4 border-b border-border">
+        <Label className="font-semibold">权限列表</Label>
+
+        <Badge className="font-medium" variant="secondary">
           共 {permissions.length} 个权限
         </Badge>
       </div>
 
+      {/* 权限分组列表 */}
       <div className="space-y-4">
         {Object.entries(groupedPermissions).map(([resource, resourcePermissions]) => (
-          <div key={resource} className="border rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Label className="font-medium">{resource}</Label>
-              <Badge className="text-xs" variant="outline">
-                {resourcePermissions?.length} 个权限
-              </Badge>
-            </div>
+          <div key={resource} className="group">
+            {/* 资源组标题 */}
+            <Label className="text-base font-semibold text-foreground mb-2">{resource}</Label>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* 权限卡片网格 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {resourcePermissions?.map((permission) => (
                 <div
                   key={permission.id}
-                  className="border border-gray-200 rounded-md p-3 bg-gray-50"
+                  className="bg-card border border-border rounded-md p-2"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge
-                      className="text-xs"
-                      variant={permission.system ? 'default' : 'secondary'}
-                    >
-                      {permission.action}
-                    </Badge>
-                    {permission.system && (
-                      <Badge className="text-xs" variant="destructive">
-                        系统
-                      </Badge>
-                    )}
-                  </div>
+                  {permission.description && (
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      {permission.description}
+                    </p>
+                  )}
 
-                  <div className="space-y-1">
-                    <div className="text-xs">
-                      <Label className="text-xs">标识符:</Label>
-                      <span className="ml-1 font-mono">{permission.slug}</span>
-                    </div>
-
-                    {permission.description && (
-                      <div className="text-xs">
-                        <Label className="text-xs">描述:</Label>
-                        <span className="ml-1">{permission.description}</span>
-                      </div>
-                    )}
+                  <div className="text-xs font-mono text-muted-foreground">
+                    {permission.slug}
                   </div>
                 </div>
               ))}

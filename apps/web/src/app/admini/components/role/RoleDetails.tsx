@@ -3,12 +3,12 @@
 import { useState } from 'react'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Edit, Shield, Users } from 'lucide-react'
+import { Edit } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
+import { CardBox, CardBoxContent, CardBoxHeader, CardBoxTitle } from '~/components/ui-common/CardBox'
 
 import { RoleBasicInfo } from './RoleBasicInfo'
 import { RoleDialog } from './RoleDialog'
@@ -16,54 +16,20 @@ import { RolePermissionsInfo } from './RolePermissionsInfo'
 
 import { rolesControllerFindOneOptions, rolesControllerFindOneQueryKey } from '~api/@tanstack/react-query.gen'
 
-function RoleDetailsSkeleton() {
-  return (
-    <div className="space-y-6" data-testid="role-details-skeleton">
-      {/* 基础信息卡片骨架 */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="space-y-2">
-            <Skeleton className="h-6 w-24" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-          <Skeleton className="h-9 w-16" />
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="space-y-2">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-32" />
-                </div>
-              ))}
-            </div>
-            <div className="space-y-4">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="space-y-2">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+function RoleInfoSkeleton() {
+  const SkeletonItem = () => (
+    <div className="space-y-2.5">
+      <Skeleton className="h-5 w-1/2" />
+      <Skeleton className="h-6 w-full" />
+    </div>
+  )
 
-      {/* 权限信息卡片骨架 */}
-      <Card>
-        <CardHeader>
-          <div className="space-y-2">
-            <Skeleton className="h-6 w-24" />
-            <Skeleton className="h-4 w-36" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </CardContent>
-      </Card>
+  return (
+    <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+      <SkeletonItem />
+      <SkeletonItem />
+      <SkeletonItem />
+      <SkeletonItem />
     </div>
   )
 }
@@ -94,54 +60,49 @@ export function RoleDetails(props: RoleDetailsProps) {
     toast.success('角色信息已更新')
   }
 
-  if (isLoading || !roleData) {
-    return <RoleDetailsSkeleton />
-  }
+  const isLoaded = !isLoading && roleData
 
   return (
-    <div className="space-y-admin-content" data-testid="role-details-content">
-      {/* 基础信息卡片 */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="flex flex-col gap-1.5">
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="size-5" />
-              角色信息
-            </CardTitle>
-            <CardDescription>
-              查看和管理角色的基础信息
-            </CardDescription>
-          </div>
+    <div className="space-y-admin-content">
+      <CardBox>
+        <CardBoxHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardBoxTitle className="flex items-center gap-2">
+            角色信息
+          </CardBoxTitle>
           <Button
-            disabled={roleData.system}
+            disabled={roleData?.system}
             size="sm"
             variant="outline"
             onClick={() => { setEditDialogOpen(true) }}
           >
-            <Edit className="size-4 mr-2" />
             编辑
           </Button>
-        </CardHeader>
-        <CardContent>
-          <RoleBasicInfo role={roleData} />
-        </CardContent>
-      </Card>
+        </CardBoxHeader>
 
-      {/* 权限信息卡片 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="size-5" />
+        <CardBoxContent>
+          {
+            isLoaded
+              ? <RoleBasicInfo role={roleData} />
+              : <RoleInfoSkeleton />
+          }
+        </CardBoxContent>
+      </CardBox>
+
+      <CardBox>
+        <CardBoxHeader className="gap-0">
+          <CardBoxTitle className="flex items-center gap-2">
             权限信息
-          </CardTitle>
-          <CardDescription>
-            该角色拥有的权限列表
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RolePermissionsInfo role={roleData} />
-        </CardContent>
-      </Card>
+          </CardBoxTitle>
+        </CardBoxHeader>
+
+        <CardBoxContent>
+          {
+            isLoaded
+              ? <RolePermissionsInfo role={roleData} />
+              : <RoleInfoSkeleton />
+          }
+        </CardBoxContent>
+      </CardBox>
 
       {/* 编辑对话框 */}
       <RoleDialog
