@@ -3,7 +3,6 @@
 import { useState } from 'react'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Edit } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '~/components/ui/button'
@@ -104,7 +103,6 @@ export function RoleDetails(props: RoleDetailsProps) {
         </CardBoxContent>
       </CardBox>
 
-      {/* 编辑对话框 */}
       <RoleDialog
         mode="edit"
         open={editDialogOpen}

@@ -62,7 +62,7 @@ function CardBoxAction({ className, ...props }: React.ComponentProps<'div'>) {
 function CardBoxContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('p-6 bg-card rounded-lg border border-border shadow-xs', className)}
+      className={cn('@container/card-content p-6 bg-card rounded-lg border border-border shadow-xs', className)}
       data-slot="card-content"
       {...props}
     />

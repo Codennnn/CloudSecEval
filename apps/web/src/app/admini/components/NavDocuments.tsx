@@ -19,7 +19,7 @@ import {
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
 
-import type { AdminDocumentItem } from '~admin/lib/admin-nav'
+import { type AdminDocumentItem, AdminRoutes } from '~admin/lib/admin-nav'
 
 export function NavDocuments({
   items,
@@ -35,7 +35,7 @@ export function NavDocuments({
 
       <SidebarMenu>
         {items.map((item) => {
-          const url = `/admini/docs/${item.url}`
+          const url = `${AdminRoutes.Docs}/${item.url}`
 
           return (
             <SidebarMenuItem key={item.title}>
@@ -62,7 +62,7 @@ export function NavDocuments({
                   className="w-24 rounded-lg"
                 >
                   <DropdownMenuItem asChild>
-                    <Link href={`/admini/docs/${item.url}`} target="_blank">
+                    <Link href={`${AdminRoutes.Docs}/${item.url}`} target="_blank">
                       <ExternalLinkIcon />
                       <span>新标签打开</span>
                     </Link>
@@ -74,10 +74,11 @@ export function NavDocuments({
         })}
 
         <SidebarMenuItem>
-          <Link href="/admini/docs/">
+          <Link href={AdminRoutes.Docs}>
             <SidebarMenuButton
               className="text-sidebar-foreground/70"
-              isActive={decodedPathname === '/admini/docs'}
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+              isActive={decodedPathname === AdminRoutes.Docs}
             >
               <EllipsisIcon className="text-sidebar-foreground/70" />
               <span>更多文档</span>

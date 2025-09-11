@@ -3,6 +3,8 @@ import { ChevronRightIcon, FileTextIcon, FolderIcon } from 'lucide-react'
 
 import manifest from '~/content/project-docs/_manifest.json'
 
+import { AdminRoutes } from '~admin/lib/admin-nav'
+
 /**
  * Admin 文档索引页：列出 `src/content/project-docs` 目录下的所有 MDX 文档，
  * 基于构建期生成的 JSON 清单 `_manifest.json` 渲染列表，
@@ -29,7 +31,7 @@ export default function AdminDocsPage() {
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {sortedDocPaths.map((relativePath) => {
             const segments = relativePath.split('/')
-            const href = `/admini/docs/${segments.map((s) => encodeURIComponent(s)).join('/')}`
+            const href = `${AdminRoutes.Docs}/${segments.map((s) => encodeURIComponent(s)).join('/')}`
             const title = segments[segments.length - 1]
             const dirPath = segments.length > 1 ? segments.slice(0, -1).join('/') : null
 
