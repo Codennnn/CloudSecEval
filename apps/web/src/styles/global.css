@@ -80,6 +80,9 @@
   --spacing-list-item: calc(var(--spacing) * 1.5);
   --spacing-icon-button: calc(var(--spacing) * 8);
   --spacing-icon-button-sm: calc(var(--spacing) * 6);
+  --spacing-card-box: calc(var(--spacing) * 1);
+  --spacing-card-box-header: calc(var(--spacing) * 3);
+  --spacing-card-box-content: calc(var(--spacing) * 6);
 }
 
 :root {

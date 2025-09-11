@@ -1,5 +1,10 @@
 import { BarChartIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
 
+import { adminPermission } from '~/constants/permission'
+import { matchPermission, type PermissionFlag } from '~/lib/permissions/matcher'
+
+import { useUserPermissions } from '~admin/stores/useUserStore'
+
 /**
  * 管理后台相关路由（敏感信息）
  * 这些路径不应暴露到前端代码中
@@ -13,12 +18,15 @@ export const enum AdminRoutes {
   Permissions = '/admini/permissions',
   Profile = '/admini/profile',
   Licenses = '/admini/licenses',
+  Docs = '/admini/docs',
 }
 
 interface AdminNavItem {
   title: string
   url: string
   icon?: LucideIcon
+  /** 访问该导航项所需的权限 */
+  requiredPermission?: PermissionFlag[]
 }
 
 export type AdminSecondaryNavItem = AdminNavItem
@@ -29,9 +37,7 @@ type AdminNavConfig = Record<AdminRoutes, AdminNavItem>
 
 export const adminTitle = 'NestJS 文档管理后台'
 
-/**
- * MARK: 管理后台导航配置
- */
+// MARK: 管理后台导航配置
 export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.Root]: {
     title: adminTitle,
@@ -45,11 +51,13 @@ export const adminNavConfig: AdminNavConfig = {
     title: '仪表盘',
     url: AdminRoutes.Dashboard,
     icon: GaugeIcon,
+    requiredPermission: [adminPermission.statistics.read],
   },
   [AdminRoutes.Licenses]: {
     title: '授权码管理',
     url: AdminRoutes.Licenses,
     icon: KeyIcon,
+    requiredPermission: [adminPermission.licenses.read],
   },
   [AdminRoutes.Profile]: {
     title: '个人资料',
@@ -60,16 +68,23 @@ export const adminNavConfig: AdminNavConfig = {
     title: '部门与成员',
     url: AdminRoutes.Users,
     icon: UsersIcon,
+    requiredPermission: [adminPermission.users.read],
   },
   [AdminRoutes.Roles]: {
     title: '角色管理',
     url: AdminRoutes.Roles,
     icon: SquareUserRoundIcon,
+    requiredPermission: [adminPermission.roles.read],
   },
   [AdminRoutes.Permissions]: {
     title: '权限管理',
     url: AdminRoutes.Permissions,
     icon: FingerprintIcon,
+    requiredPermission: [adminPermission.permissions.read],
+  },
+  [AdminRoutes.Docs]: {
+    title: '项目文档',
+    url: AdminRoutes.Docs,
   },
 }
 
@@ -111,12 +126,11 @@ const createAdminNavItem = (adminRoute: AdminRoutes): AdminNavItem => ({
   title: adminNavConfig[adminRoute].title,
   url: adminNavConfig[adminRoute].url,
   icon: adminNavConfig[adminRoute].icon,
+  requiredPermission: adminNavConfig[adminRoute].requiredPermission,
 })
 
-/**
- * MARK: 主导航栏
- */
-export const adminNavMain = [
+// MARK: 主导航栏
+const adminNavMain = [
   createAdminNavItem(AdminRoutes.Dashboard),
   createAdminNavItem(AdminRoutes.Licenses),
   createAdminNavItem(AdminRoutes.Users),
@@ -124,7 +138,7 @@ export const adminNavMain = [
   createAdminNavItem(AdminRoutes.Permissions),
 ]
 
-export const adminNavSecondary: AdminSecondaryNavItem[] = [
+const adminNavSecondary: AdminSecondaryNavItem[] = [
   {
     title: '流量分析',
     url: 'https://us.umami.is/websites/17a93541-f99f-43ed-8d7c-3887b4e85693',
@@ -132,7 +146,8 @@ export const adminNavSecondary: AdminSecondaryNavItem[] = [
   },
 ]
 
-export const adminNavDocuments = [
+// MARK: 文档导航栏
+const adminNavDocuments: AdminDocumentItem[] = [
   {
     title: '项目介绍文案',
     url: '项目介绍文案',
@@ -146,3 +161,28 @@ export const adminNavDocuments = [
     url: '文档搜索',
   },
 ]
+
+export function useAdminNav() {
+  const userPermissions = useUserPermissions()
+
+  const filterNavItemsByPermissions = (navItems: AdminNavItem[]) => {
+    return navItems.filter((item) => {
+      // 如果导航项没有权限要求，则显示
+      if (!item.requiredPermission) {
+        return true
+      }
+
+      return matchPermission(userPermissions, item.requiredPermission)
+    })
+  }
+
+  const navMain = filterNavItemsByPermissions(adminNavMain)
+  const navSecondary = filterNavItemsByPermissions(adminNavSecondary)
+  const navDocuments = filterNavItemsByPermissions(adminNavDocuments)
+
+  return {
+    navMain,
+    navSecondary,
+    navDocuments,
+  }
+}

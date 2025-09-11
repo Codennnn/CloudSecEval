@@ -18,9 +18,15 @@ import { NavDocuments } from '~admin/components/NavDocuments'
 import { NavMain } from '~admin/components/NavMain'
 import { NavSecondary } from '~admin/components/NavSecondary'
 import { NavUser } from '~admin/components/NavUser'
-import { adminNavDocuments, adminNavMain, adminNavSecondary, AdminRoutes, adminTitle } from '~admin/lib/admin-nav'
+import {
+  AdminRoutes,
+  adminTitle,
+  useAdminNav,
+} from '~admin/lib/admin-nav'
 
 export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const { navMain, navSecondary, navDocuments } = useAdminNav()
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -45,11 +51,11 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={adminNavMain} />
+        <NavMain items={navMain} />
 
-        <NavDocuments items={adminNavDocuments} />
+        <NavDocuments items={navDocuments} />
 
-        <NavSecondary className="mt-auto" items={adminNavSecondary} />
+        <NavSecondary className="mt-auto" items={navSecondary} />
       </SidebarContent>
 
       <SidebarFooter>

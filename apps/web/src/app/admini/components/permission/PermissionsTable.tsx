@@ -32,6 +32,19 @@ import {
 import type { CreatePermissionDto, PermissionListItemDto } from '~api/types.gen'
 
 /**
+ * 权限表单状态接口
+ * 用于管理权限表单的打开状态、模式和当前编辑的权限数据
+ */
+interface PermissionFormState {
+  /** 表单是否打开 */
+  open: boolean
+  /** 表单模式：创建或编辑 */
+  mode: 'create' | 'edit'
+  /** 当前编辑的权限数据，创建模式时为 null */
+  current: PermissionListItemDto | null
+}
+
+/**
  * 权限列表表格
  * - 使用 ProTable + React Query 拉取数据
  * - 支持新增、删除；编辑 UI 预置（当前缺后端更新接口）
@@ -39,16 +52,32 @@ import type { CreatePermissionDto, PermissionListItemDto } from '~api/types.gen'
 export function PermissionsTable() {
   const queryClient = useQueryClient()
 
-  // 说明：维护当前查询 key，供变更后刷新列表
   const [queryKey, setQueryKey] = useState<QueryKey>()
 
-  // 表单与删除对话框状态
-  const [formOpen, setFormOpen] = useState(false)
-  const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
-  const [current, setCurrent] = useState<PermissionListItemDto | null>(null)
+  const [formState, setFormState] = useState<PermissionFormState>({
+    open: false,
+    mode: 'create',
+    current: null,
+  })
+
+  const handleOpenForm = (mode: 'create' | 'edit', current: PermissionListItemDto | null = null) => {
+    setFormState({
+      open: true,
+      mode,
+      current,
+    })
+  }
+
+  const handleCloseForm = () => {
+    setFormState({
+      open: false,
+      mode: 'create',
+      current: null,
+    })
+  }
+
   const [deleteTarget, setDeleteTarget] = useState<PermissionListItemDto | null>(null)
 
-  // 新增权限
   const createMutation = useMutation({
     ...permissionsControllerCreateMutation(),
     onSuccess: () => {
@@ -57,7 +86,6 @@ export function PermissionsTable() {
     },
   })
 
-  // 删除权限
   const removeMutation = useMutation({
     ...permissionsControllerRemoveMutation(),
     onSuccess: () => {
@@ -66,7 +94,6 @@ export function PermissionsTable() {
     },
   })
 
-  // 列定义
   const columns = useMemo<TableColumnDef<PermissionListItemDto>[]>(() => {
     return [
       {
@@ -139,11 +166,7 @@ export function PermissionsTable() {
               <DropdownMenuContent align="end" className="w-36">
                 <DropdownMenuItem
                   disabled={disabled}
-                  onClick={() => {
-                    setFormMode('edit')
-                    setCurrent(row.original)
-                    setFormOpen(true)
-                  }}
+                  onClick={() => { handleOpenForm('edit', row.original) }}
                 >
                   编辑
                 </DropdownMenuItem>
@@ -178,11 +201,7 @@ export function PermissionsTable() {
           rightContent: (
             <Button
               size="sm"
-              onClick={() => {
-                setFormMode('create')
-                setCurrent(null)
-                setFormOpen(true)
-              }}
+              onClick={() => { handleOpenForm('create') }}
             >
               <Plus />
               新增权限
@@ -194,26 +213,22 @@ export function PermissionsTable() {
 
       {/* 权限表单对话框 */}
       <PermissionFormDialog
-        initialData={current ?? undefined}
-        mode={formMode}
-        open={formOpen}
+        initialData={formState.current ?? undefined}
+        mode={formState.mode}
+        open={formState.open}
         onOpenChange={(open) => {
           if (!open) {
-            setFormOpen(false)
-            setCurrent(null)
-          }
-          else {
-            setFormOpen(true)
+            handleCloseForm()
           }
         }}
         onSubmit={async (values: CreatePermissionDto) => {
           // 编辑模式暂缺更新接口：给出提示，保留 UI 流程
-          if (formMode === 'edit') {
+          if (formState.mode === 'edit') {
             toast.warning('当前暂不支持更新接口，请先在后端补充更新 API')
           }
           else {
             await createMutation.mutateAsync({ body: values })
-            setFormOpen(false)
+            handleCloseForm()
           }
         }}
       />

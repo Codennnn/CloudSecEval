@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { PermissionSelect } from '~/components/permission/PermissionSelect'
 import { Button } from '~/components/ui/button'
+import { Label } from '~/components/ui/label'
 import { Skeleton } from '~/components/ui/skeleton'
 import { CardBox, CardBoxContent, CardBoxHeader, CardBoxTitle } from '~/components/ui-common/CardBox'
 
@@ -13,7 +15,7 @@ import { RoleBasicInfo } from './RoleBasicInfo'
 import { RoleDialog } from './RoleDialog'
 import { RolePermissionsInfo } from './RolePermissionsInfo'
 
-import { rolesControllerFindOneOptions, rolesControllerFindOneQueryKey } from '~api/@tanstack/react-query.gen'
+import { rolesControllerFindOneOptions, rolesControllerFindOneQueryKey, rolesControllerUpdateMutation } from '~api/@tanstack/react-query.gen'
 
 function RoleInfoSkeleton() {
   const SkeletonItem = () => (
@@ -43,20 +45,52 @@ export function RoleDetails(props: RoleDetailsProps) {
   const queryClient = useQueryClient()
   const [editDialogOpen, setEditDialogOpen] = useState(false)
 
-  const roleQuery = useQuery({
-    ...rolesControllerFindOneOptions({
-      path: { id: roleId },
-    }),
+  const queryOptions = useMemo(() => ({
+    path: { id: roleId },
+  }), [roleId])
+
+  const { data, isLoading } = useQuery({
+    ...rolesControllerFindOneOptions(queryOptions),
   })
 
-  const { data, isLoading } = roleQuery
   const roleData = data?.data
 
-  const handleEditSuccess = () => {
-    void queryClient.invalidateQueries({
-      queryKey: rolesControllerFindOneQueryKey({ path: { id: roleId } }),
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: rolesControllerFindOneQueryKey(queryOptions),
     })
+  }
+
+  const updateRolePermissionsMutation = useMutation({
+    ...rolesControllerUpdateMutation(),
+    onSuccess: () => {
+      void handleRefresh()
+      toast.success('角色权限已更新')
+    },
+  })
+
+  const currentPermissionIds = useMemo(() => {
+    if (!roleData?.rolePermissions) {
+      return []
+    }
+
+    return roleData.rolePermissions.map((rp) => rp.permission.id)
+  }, [roleData?.rolePermissions])
+
+  const handleEditSuccess = () => {
+    void handleRefresh()
     toast.success('角色信息已更新')
+  }
+
+  const handlePermissionChange = (permissionIds: string[]) => {
+    if (roleData) {
+      updateRolePermissionsMutation.mutate({
+        path: { id: roleId },
+        body: {
+          permissionIds,
+        },
+      })
+    }
   }
 
   const isLoaded = !isLoading && roleData
@@ -97,7 +131,25 @@ export function RoleDetails(props: RoleDetailsProps) {
         <CardBoxContent>
           {
             isLoaded
-              ? <RolePermissionsInfo role={roleData} />
+              ? (
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">权限配置</Label>
+
+                      <PermissionSelect
+                        groupByResource
+                        showDescription
+                        disabled={updateRolePermissionsMutation.isPending}
+                        mode="multiple"
+                        placeholder="请选择权限"
+                        value={currentPermissionIds}
+                        onChange={handlePermissionChange}
+                      />
+                    </div>
+
+                    <RolePermissionsInfo role={roleData} />
+                  </div>
+                )
               : <RoleInfoSkeleton />
           }
         </CardBoxContent>

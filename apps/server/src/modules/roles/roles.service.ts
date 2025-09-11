@@ -135,7 +135,7 @@ export class RolesService {
     if (typeof role._count.userRoles === 'number' && role._count.userRoles > 0) {
       throw BusinessException.badRequest(
         BUSINESS_CODES.VALIDATION_ERROR,
-        `角色 "${role.name}" 正在被 ${role._count.userRoles} 个用户使用，无法删除`,
+        `角色「${role.name}」正在被 ${role._count.userRoles} 个用户使用，无法删除`,
       )
     }
 

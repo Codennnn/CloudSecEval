@@ -11,11 +11,11 @@ import {
 import { AdminRoutes } from '~admin/lib/admin-nav'
 
 /**
-   * 处理管理后台路由的访问控制逻辑
-   * @param request - Next.js 请求对象
-   * @param pathname - 当前访问路径
-   * @returns 重定向响应或 undefined（继续处理）
-   */
+ * 处理管理后台路由的访问控制逻辑
+ * @param request - Next.js 请求对象
+ * @param pathname - 当前访问路径
+ * @returns 重定向响应或 undefined（继续处理）
+ */
 function handleAdminRoutes(request: NextRequest, pathname: string) {
   const token = request.cookies.get('access_token')?.value
   const hasLogin = !!token

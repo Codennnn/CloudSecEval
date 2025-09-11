@@ -3,8 +3,9 @@
 import type { VariantProps } from 'class-variance-authority'
 
 import { Button, type buttonVariants } from '~/components/ui/button'
-import { PermissionMode, useHasPermissions } from '~/lib/permissions/hooks'
-import type { PermissionFlag } from '~/lib/permissions/matcher'
+import { PermissionMode } from '~/constants/permission'
+import { useHasPermissions } from '~/lib/permissions/hooks'
+import { type PermissionFlag } from '~/lib/permissions/matcher'
 
 type PermitButtonProps
   = React.ComponentProps<typeof Button>

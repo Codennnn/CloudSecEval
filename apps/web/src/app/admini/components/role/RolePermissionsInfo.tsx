@@ -1,21 +1,25 @@
 import { Badge } from '~/components/ui/badge'
 import { Label } from '~/components/ui/label'
+import { Separator } from '~/components/ui/separator'
 
 import type { RoleDetailResponseDto } from '~api/types.gen'
+
+interface RolePermissionsInfoProps {
+  role: RoleDetailResponseDto
+}
 
 /**
  * 角色权限信息组件
  * 展示角色的权限列表，按资源分组显示
  */
-export function RolePermissionsInfo({ role }: { role: RoleDetailResponseDto }) {
+export function RolePermissionsInfo({ role }: RolePermissionsInfoProps) {
   const permissions = role.rolePermissions
 
   if (permissions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-6">
-        <h3 className="font-medium text-foreground mb-1">暂无权限</h3>
         <p className="text-sm text-muted-foreground text-center max-w-sm">
-          该角色尚未分配任何权限，请联系管理员进行权限配置
+          该角色尚未分配任何权限
         </p>
       </div>
     )
@@ -33,14 +37,16 @@ export function RolePermissionsInfo({ role }: { role: RoleDetailResponseDto }) {
   }, {})
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4 pb-4 border-b border-border">
-        <Label className="font-semibold">权限列表</Label>
+    <div>
+      <div className="flex items-center justify-between gap-4">
+        <Label>当前权限</Label>
 
         <Badge className="font-medium" variant="secondary">
           共 {permissions.length} 个权限
         </Badge>
       </div>
+
+      <Separator className="my-2.5" />
 
       {/* 权限分组列表 */}
       <div className="space-y-4">
