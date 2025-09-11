@@ -9,7 +9,7 @@ import { resp, respWithPagination } from '~/common/utils/response.util'
 import { USERS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
-import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
+import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 import { AvatarValidationPipe } from '~/modules/uploads/pipes/file-validation.pipe'
 
@@ -29,7 +29,7 @@ export class UsersController {
   ) {}
 
   @Post()
-  @RequirePermissions('users:create')
+  @RequirePermissions(PERMISSIONS.users.create)
   @ApiDocs(USERS_API_CONFIG.create)
   async create(@Body() createUserDto: CreateUserDto): Promise<UserApiResponseDto> {
     const user = await this.usersService.create(createUserDto)
@@ -41,7 +41,7 @@ export class UsersController {
   }
 
   @Get()
-  @RequirePermissions('users:read')
+  @RequirePermissions(PERMISSIONS.users.read)
   @ApiDocs(USERS_API_CONFIG.findAllUsers)
   async findAllUsers(@Query() query: FindUsersDto): Promise<UserListApiResponseDto> {
     const result = await this.usersService.findAll(query)
@@ -59,7 +59,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @RequirePermissions('users:read')
+  @RequirePermissions(PERMISSIONS.users.read)
   @ApiDocs(USERS_API_CONFIG.findUser)
   async findUser(@Param('id') id: string): Promise<UserApiResponseDto> {
     const user = await this.usersService.findOneDetail(id)
@@ -71,7 +71,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @RequirePermissions('users:update')
+  @RequirePermissions(PERMISSIONS.users.update)
   @ApiDocs(USERS_API_CONFIG.update)
   async update(
     @Param('id') id: string,
@@ -88,7 +88,7 @@ export class UsersController {
 
   @DisabledApi('用户删除功能暂时禁用，等待安全审核')
   @Delete(':id')
-  @RequirePermissions('users:delete')
+  @RequirePermissions(PERMISSIONS.users.delete)
   @ApiDocs(USERS_API_CONFIG.removeUser)
   async removeUser(
     @Param('id') id: string,
@@ -104,7 +104,7 @@ export class UsersController {
 
   @Patch(':id/avatar')
   @UseInterceptors(FileInterceptor('file'))
-  @RequirePermissions('users:update')
+  @RequirePermissions(PERMISSIONS.users.update)
   @ApiDocs(USERS_API_CONFIG.updateAvatar)
   async updateAvatar(
     @Param('id') id: string,
@@ -119,7 +119,7 @@ export class UsersController {
   }
 
   @Get('export')
-  @RequirePermissions('users:export')
+  @RequirePermissions(PERMISSIONS.users.export)
   @ApiOperation({ summary: '导出用户列表（Excel）' })
   @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
   async exportUsers(

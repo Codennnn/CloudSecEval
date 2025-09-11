@@ -16,7 +16,7 @@ import { resp, respWithPagination } from '~/common/utils/response.util'
 import { ROLES_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
-import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
+import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 import { SafeUserDto } from '~/modules/users/dto/base-user.dto'
 
@@ -32,7 +32,7 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  @RequirePermissions('roles:create')
+  @RequirePermissions(PERMISSIONS.roles.create)
   @ApiDocs(ROLES_API_CONFIG.createRole)
   async create(
     @CurrentUser() user: SafeUserDto,
@@ -47,7 +47,7 @@ export class RolesController {
   }
 
   @Get()
-  @RequirePermissions('roles:read')
+  @RequirePermissions(PERMISSIONS.roles.read)
   @ApiDocs(ROLES_API_CONFIG.getRoles)
   async findAll(
     @CurrentUser() user: SafeUserDto,
@@ -63,7 +63,7 @@ export class RolesController {
   }
 
   @Get(':id')
-  @RequirePermissions('roles:read')
+  @RequirePermissions(PERMISSIONS.roles.read)
   @ApiDocs(ROLES_API_CONFIG.getRoleById)
   async findOne(
     @CurrentUser() user: SafeUserDto,
@@ -78,7 +78,7 @@ export class RolesController {
   }
 
   @Patch(':id')
-  @RequirePermissions('roles:update')
+  @RequirePermissions(PERMISSIONS.roles.update)
   @ApiDocs(ROLES_API_CONFIG.updateRole)
   async update(
     @CurrentUser() user: SafeUserDto,
@@ -94,7 +94,7 @@ export class RolesController {
   }
 
   @Delete(':id')
-  @RequirePermissions('roles:delete')
+  @RequirePermissions(PERMISSIONS.roles.delete)
   @ApiDocs(ROLES_API_CONFIG.deleteRole)
   async remove(
     @CurrentUser() user: SafeUserDto,
@@ -108,7 +108,7 @@ export class RolesController {
   }
 
   @Get(':id/permissions')
-  @RequirePermissions('roles:read')
+  @RequirePermissions(PERMISSIONS.roles.read)
   @ApiDocs(ROLES_API_CONFIG.getRolePermissions)
   async getRolePermissions(
     @CurrentUser() user: SafeUserDto,
@@ -123,7 +123,7 @@ export class RolesController {
   }
 
   @Get(':id/members')
-  @RequirePermissions('roles:read')
+  @RequirePermissions(PERMISSIONS.roles.read)
   @ApiDocs(ROLES_API_CONFIG.getRoleMembers)
   async getRoleMembers(
     @CurrentUser() user: SafeUserDto,
@@ -149,7 +149,7 @@ export class RolesController {
   }
 
   @Post(':id/members')
-  @RequirePermissions('roles:update')
+  @RequirePermissions(PERMISSIONS.roles.update)
   @ApiDocs(ROLES_API_CONFIG.addRoleMembers)
   async addRoleMembers(
     @CurrentUser() user: SafeUserDto,
@@ -167,7 +167,7 @@ export class RolesController {
   }
 
   @Delete(':id/members')
-  @RequirePermissions('roles:update')
+  @RequirePermissions(PERMISSIONS.roles.update)
   @ApiDocs(ROLES_API_CONFIG.removeRoleMembers)
   async removeRoleMembers(
     @CurrentUser() user: SafeUserDto,

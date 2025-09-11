@@ -21,9 +21,6 @@ export class PermissionsService {
     private readonly permissionsRepository: PermissionsRepository,
   ) {}
 
-  /**
-   * 创建权限
-   */
   async create(createPermissionDto: CreatePermissionDto) {
     const slug = `${createPermissionDto.resource}:${createPermissionDto.action}`
 

@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
 import { UuidDto } from '~/common/dto/common.dto'
@@ -15,7 +6,7 @@ import { resp, respWithPagination } from '~/common/utils/response.util'
 import { PERMISSIONS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 
-import { RequirePermissions } from './decorators/require-permissions.decorator'
+import { PERMISSIONS, RequirePermissions } from './decorators/require-permissions.decorator'
 import { FindPermissionsDto } from './dto/find-permissions.dto'
 import { CreatePermissionDto } from './dto/permission.dto'
 import { PermissionListApiResponseDto } from './dto/permission-response.dto'
@@ -29,7 +20,7 @@ export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
   @Post()
-  @RequirePermissions('permissions:create')
+  @RequirePermissions(PERMISSIONS.permissions.create)
   @ApiDocs(PERMISSIONS_API_CONFIG.createPermission)
   async create(@Body() createPermissionDto: CreatePermissionDto) {
     const permission = await this.permissionsService.create(createPermissionDto)
@@ -41,7 +32,7 @@ export class PermissionsController {
   }
 
   @Get()
-  @RequirePermissions('permissions:read')
+  @RequirePermissions(PERMISSIONS.permissions.read)
   @ApiDocs(PERMISSIONS_API_CONFIG.getPermissions)
   async findAll(
     @Query() query: FindPermissionsDto,
@@ -60,7 +51,7 @@ export class PermissionsController {
   }
 
   @Get('groups')
-  @RequirePermissions('permissions:read')
+  @RequirePermissions(PERMISSIONS.permissions.read)
   @ApiDocs(PERMISSIONS_API_CONFIG.getPermissionGroups)
   async getPermissionGroups() {
     const groups = await this.permissionsService.getPermissionGroups()
@@ -72,7 +63,7 @@ export class PermissionsController {
   }
 
   @Get(':id')
-  @RequirePermissions('permissions:read')
+  @RequirePermissions(PERMISSIONS.permissions.read)
   @ApiDocs(PERMISSIONS_API_CONFIG.getPermissionById)
   async findOne(@Param() params: UuidDto) {
     const permission = await this.permissionsService.findById(params.id)
@@ -84,7 +75,7 @@ export class PermissionsController {
   }
 
   @Delete(':id')
-  @RequirePermissions('permissions:delete')
+  @RequirePermissions(PERMISSIONS.permissions.delete)
   @ApiDocs(PERMISSIONS_API_CONFIG.deletePermission)
   async remove(@Param() params: UuidDto) {
     await this.permissionsService.remove(params.id)

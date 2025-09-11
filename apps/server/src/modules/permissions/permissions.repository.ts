@@ -59,9 +59,6 @@ export class PermissionsRepository {
     return { permissions, total }
   }
 
-  /**
-   * 高级搜索 + 分页
-   */
   async findWithAdvancedSearch(searchDto?: FindPermissionsDto): Promise<{
     permissions: Permission[]
     total: number
