@@ -11,12 +11,12 @@ import {
 import { ApiTags } from '@nestjs/swagger'
 
 import { UuidDto } from '~/common/dto/common.dto'
-import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { PERMISSIONS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 
 import { RequirePermissions } from './decorators/require-permissions.decorator'
+import { FindPermissionsDto } from './dto/find-permissions.dto'
 import { CreatePermissionDto } from './dto/permission.dto'
 import { PermissionListApiResponseDto } from './dto/permission-response.dto'
 import { PermissionsGuard } from './guards/permissions.guard'
@@ -44,18 +44,15 @@ export class PermissionsController {
   @RequirePermissions('permissions:read')
   @ApiDocs(PERMISSIONS_API_CONFIG.getPermissions)
   async findAll(
-    @Query() query: PaginationQueryDto,
+    @Query() query: FindPermissionsDto,
   ): Promise<PermissionListApiResponseDto> {
-    const { permissions, total } = await this.permissionsService.findAllWithPagination({
-      page: query.page,
-      pageSize: query.pageSize,
-    })
+    const result = await this.permissionsService.findWithAdvancedSearch(query)
 
     return respWithPagination({
       msg: '获取权限列表成功',
-      data: permissions,
+      data: result.permissions,
       pageOptions: {
-        total,
+        total: result.total,
         page: query.page,
         pageSize: query.pageSize,
       },

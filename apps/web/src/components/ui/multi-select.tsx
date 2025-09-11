@@ -1,6 +1,7 @@
 import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
 import { cva, type VariantProps } from 'class-variance-authority'
+import { consola } from 'consola'
 import { ChevronDownIcon, XIcon } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
@@ -13,7 +14,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from '~/components/ui/command'
 import {
   Popover,
@@ -22,22 +22,6 @@ import {
 } from '~/components/ui/popover'
 import { Separator } from '~/components/ui/separator'
 import { cn } from '~/lib/utils'
-
-/**
- * Animation types and configurations
- */
-export interface AnimationConfig {
-  /** Badge animation type */
-  badgeAnimation?: 'bounce' | 'pulse' | 'wiggle' | 'fade' | 'slide' | 'none'
-  /** Popover animation type */
-  popoverAnimation?: 'scale' | 'slide' | 'fade' | 'flip' | 'none'
-  /** Option hover animation type */
-  optionHoverAnimation?: 'highlight' | 'scale' | 'glow' | 'none'
-  /** Animation duration in seconds */
-  duration?: number
-  /** Animation delay in seconds */
-  delay?: number
-}
 
 /**
  * Variants for the multi-select component to handle different styles.
@@ -96,10 +80,7 @@ interface MultiSelectGroup {
  * Props for MultiSelect component
  */
 interface MultiSelectProps
-  extends Omit<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    'animationConfig'
-  >,
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
   VariantProps<typeof multiSelectVariants> {
   /**
    * An array of option objects or groups to be displayed in the multi-select component.
@@ -126,11 +107,7 @@ interface MultiSelectProps
    */
   animation?: number
 
-  /**
-   * 不同组件部分的高级动画配置
-   * 可选，允许对各种动画效果进行微调
-   */
-  animationConfig?: AnimationConfig
+  // animationConfig prop removed
 
   /**
    * 显示的最大项目数。超出的已选项目将被汇总显示
@@ -263,6 +240,32 @@ interface MultiSelectProps
    * 可选，默认为 false
    */
   closeOnSelect?: boolean
+
+  /**
+   * 自定义搜索回调：仅通知外层搜索词变化（防抖后）。
+   * 外层负责据此更新 options（本组件不再内部管理远程结果）。
+   */
+  onSearch?: (
+    term: string,
+  ) => void | Promise<void>
+
+  /**
+   * 外部控制的搜索加载状态。为 true 时在弹出层中展示“正在搜索…”。
+   */
+  isSearching?: boolean
+
+  /**
+   * 触发 onSearch 的最小字符数，默认 2。
+   */
+  minSearchChars?: number
+
+  /**
+   * 搜索防抖毫秒数，默认 300ms。
+   */
+  searchDebounceMs?: number
+
+  /** 自定义“正在搜索…”指示 UI。 */
+  renderSearchingIndicator?: React.ReactNode
 }
 
 /**
@@ -315,6 +318,11 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
       deduplicateOptions = false,
       resetOnDefaultValueChange = true,
       closeOnSelect = false,
+      onSearch,
+      minSearchChars = 2,
+      searchDebounceMs = 300,
+      renderSearchingIndicator,
+      isSearching,
       ...props
     },
     ref,
@@ -355,6 +363,14 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
     const selectedCountId = `${multiSelectId}-count`
 
     const prevDefaultValueRef = useRef<string[]>(defaultValue)
+
+    /** 搜索防抖定时器 */
+    const searchTimerRef = useRef<number | null>(null)
+
+    /**
+     * 选项字典，确保当远程结果消失时仍能根据 value 正确渲染已选中的标签文案
+     */
+    const knownOptionsMapRef = useRef<Map<string, MultiSelectOption>>(new Map())
 
     const isGroupedOptions = useCallback(
       (
@@ -488,14 +504,31 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
 
     const responsiveSettings = getResponsiveSettings()
 
-    const getBadgeAnimationClass = () => {
-      return ''
-    }
+    /**
+     * 将分组或扁平化的选项统一转为扁平数组
+     */
+    const flattenOptions = useCallback(
+      (input: MultiSelectOption[] | MultiSelectGroup[]): MultiSelectOption[] => {
+        let result: MultiSelectOption[]
 
-    const getPopoverAnimationClass = () => {
-      return ''
-    }
+        if (input.length === 0) {
+          result = []
+        }
+        else if (isGroupedOptions(input)) {
+          result = input.flatMap((g) => g.options)
+        }
+        else {
+          result = input
+        }
 
+        return result
+      },
+      [isGroupedOptions],
+    )
+
+    /**
+     * 本地（props）全部可见选项（不含远程）
+     */
     const getAllOptions = useCallback((): MultiSelectOption[] => {
       if (options.length === 0) {
         return []
@@ -531,7 +564,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
         const action = deduplicateOptions
           ? 'automatically removed'
           : 'detected'
-        console.warn(
+        consola.warn(
           `MultiSelect: 重复的选项值 ${action === 'automatically removed' ? '已自动移除' : '已检测到'}: ${duplicates.join(
             ', ',
           )}. `
@@ -546,20 +579,19 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
 
     const getOptionByValue = useCallback(
       (value: string): MultiSelectOption | undefined => {
-        const option = getAllOptions().find((option) => option.value === value)
+        // 先从已知字典中获取（包含远程与初始）
+        const fromKnown = knownOptionsMapRef.current.get(value)
+        let option = fromKnown
 
-        if (!option && process.env.NODE_ENV === 'development') {
-          console.warn(
-            `MultiSelect: 在选项列表中未找到值为 "${value}" 的选项`,
-          )
-        }
+        option ??= getAllOptions().find((op) => op.value === value)
 
         return option
       },
       [getAllOptions],
     )
 
-    const filteredOptions = useMemo(() => {
+    /** 本地过滤（当未提供 onSearch 时使用） */
+    const locallyFilteredOptions = useMemo(() => {
       if (!searchable || !searchValue) {
         return options
       }
@@ -572,23 +604,101 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
         return options
           .map((group) => ({
             ...group,
-            options: group.options.filter(
-              (option) =>
-                option.label
-                  .toLowerCase()
-                  .includes(searchValue.toLowerCase())
-                  || option.value.toLowerCase().includes(searchValue.toLowerCase()),
-            ),
+            options: group.options.filter((option) => {
+              const text = searchValue.toLowerCase()
+
+              return (
+                option.label.toLowerCase().includes(text)
+                || option.value.toLowerCase().includes(text)
+              )
+            }),
           }))
           .filter((group) => group.options.length > 0)
       }
 
-      return options.filter(
-        (option) =>
-          option.label.toLowerCase().includes(searchValue.toLowerCase())
-          || option.value.toLowerCase().includes(searchValue.toLowerCase()),
-      )
+      const text = searchValue.toLowerCase()
+
+      return options.filter((option) => {
+        return (
+          option.label.toLowerCase().includes(text)
+          || option.value.toLowerCase().includes(text)
+        )
+      })
     }, [options, searchValue, searchable, isGroupedOptions])
+
+    /** 选项字典以 props 为基更新（用于保持徽章文案） */
+    useEffect(() => {
+      const all = getAllOptions()
+
+      if (all.length > 0) {
+        const map = knownOptionsMapRef.current
+        all.forEach((op) => {
+          if (!map.has(op.value)) {
+            map.set(op.value, op)
+          }
+        })
+      }
+    }, [getAllOptions])
+
+    /** 仅通知外部搜索词变化（带防抖）。外部据此更新 options */
+    useEffect(() => {
+      if (!onSearch || !searchable) {
+        return
+      }
+
+      if (searchTimerRef.current) {
+        window.clearTimeout(searchTimerRef.current)
+        searchTimerRef.current = null
+      }
+
+      searchTimerRef.current = window.setTimeout(() => {
+        const term = searchValue && searchValue.length >= minSearchChars ? searchValue : ''
+
+        try {
+          const maybePromise = onSearch(term)
+
+          if (maybePromise && typeof (maybePromise as Promise<unknown>).then === 'function') {
+            ;(maybePromise as Promise<unknown>).catch((err: unknown) => {
+              if (process.env.NODE_ENV === 'development') {
+                consola.error('MultiSelect: 外部搜索回调出错', err)
+              }
+            })
+          }
+        }
+        catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            consola.error('MultiSelect: 外部搜索回调出错', error)
+          }
+        }
+      }, searchDebounceMs)
+
+      return () => {
+        if (searchTimerRef.current) {
+          window.clearTimeout(searchTimerRef.current)
+          searchTimerRef.current = null
+        }
+      }
+    }, [onSearch, searchable, searchValue, minSearchChars, searchDebounceMs])
+
+    /** 最终展示：有 onSearch 时信任外部传入的 options；否则使用本地过滤 */
+    const displayedOptions = useMemo(() => {
+      if (onSearch) {
+        return options
+      }
+
+      return locallyFilteredOptions
+    }, [onSearch, options, locallyFilteredOptions])
+
+    /** 是否存在可展示的选项（用于避免错误显示空状态） */
+    const hasItems = useMemo(() => {
+      const current = displayedOptions
+
+      if (isGroupedOptions(current)) {
+        return current.some((g) => g.options.length > 0)
+      }
+
+      return (current).length > 0
+    }, [displayedOptions, isGroupedOptions])
 
     const handleInputKeyDown = (
       event: React.KeyboardEvent<HTMLInputElement>,
@@ -749,24 +859,34 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
         prevIsOpen.current = isPopoverOpen
       }
 
-      if (
-        searchValue !== prevSearchValue.current
-      ) {
+      if (searchValue !== prevSearchValue.current) {
         if (searchValue && isPopoverOpen) {
-          const filteredCount = allOptions.filter(
-            (opt) =>
-              opt.label.toLowerCase().includes(searchValue.toLowerCase())
-              || opt.value.toLowerCase().includes(searchValue.toLowerCase()),
-          ).length
+          let filteredCount = 0
 
-          announce(
-            `搜索 "${searchValue}" 找到 ${filteredCount} 个选项`,
-          )
+          const current = displayedOptions
+
+          if (isGroupedOptions(current)) {
+            filteredCount = current.reduce((sum, g) => sum + g.options.length, 0)
+          }
+          else {
+            filteredCount = (current).length
+          }
+
+          announce(`搜索 "${searchValue}" 找到 ${filteredCount} 个选项`)
         }
 
         prevSearchValue.current = searchValue
       }
-    }, [selectedValues, isPopoverOpen, searchValue, announce, getAllOptions])
+    }, [
+      selectedValues,
+      isPopoverOpen,
+      searchValue,
+      announce,
+      getAllOptions,
+      displayedOptions,
+      isGroupedOptions,
+      flattenOptions,
+    ])
 
     return (
       <>
@@ -862,7 +982,6 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                                 key={value}
                                 className={cn(
                                   '!m-0',
-                                  getBadgeAnimationClass(),
                                   multiSelectVariants({ variant }),
                                   customStyle?.gradient
                                   && 'text-white border-transparent',
@@ -899,12 +1018,25 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                                   {option.label}
                                 </span>
 
-                                <Button
-                                  className="-mr-1 size-4 !p-0 rounded-xs"
-                                  variant="ghost"
+                                {/**
+                                 * 使用可聚焦的 span 充当移除控件，避免在触发器 Button 内部再嵌套 Button
+                                 * （button 嵌套 button 会导致无效的 HTML 结构及 Next.js hydration 报错）。
+                                 */}
+                                <span
+                                  aria-label={`移除 ${option.label}`}
+                                  className="-mr-1 size-4 !p-0 rounded-sm inline-flex items-center justify-center cursor-pointer hover:bg-muted"
+                                  role="button"
+                                  tabIndex={0}
                                   onClick={(event) => {
                                     event.stopPropagation()
                                     toggleOption(value)
+                                  }}
+                                  onKeyDown={(event) => {
+                                    if (event.key === 'Enter' || event.key === ' ') {
+                                      event.preventDefault()
+                                      event.stopPropagation()
+                                      toggleOption(value)
+                                    }
                                   }}
                                 >
                                   <XIcon
@@ -914,7 +1046,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                                       && 'size-2.5',
                                     )}
                                   />
-                                </Button>
+                                </span>
                               </Badge>
                             )
                           })
@@ -923,7 +1055,6 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                           <Badge
                             className={cn(
                               '!m-0 bg-transparent text-foreground border-foreground/1',
-                              getBadgeAnimationClass(),
                               multiSelectVariants({ variant }),
                               responsiveSettings.compactMode
                               && 'text-xs px-1.5 py-0.5',
@@ -985,7 +1116,6 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
             aria-multiselectable="true"
             className={cn(
               'w-auto p-0 border border-border bg-popover text-popover-foreground shadow-sm rounded-md',
-              getPopoverAnimationClass(),
               screenSize === 'mobile' && 'w-[85vw] max-w-[280px]',
               screenSize === 'tablet' && 'w-[70vw] max-w-md',
               screenSize === 'desktop' && 'min-w-[300px]',
@@ -1000,7 +1130,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
             }}
             onEscapeKeyDown={() => { setIsPopoverOpen(false) }}
           >
-            <Command>
+            <Command shouldFilter={!onSearch}>
               {searchable && (
                 <CommandInput
                   aria-describedby={`${multiSelectId}-search-help`}
@@ -1016,6 +1146,11 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                   输入以筛选选项。使用方向键导航结果。
                 </div>
               )}
+              {isSearching && (
+                <div className="px-3 py-2 text-sm text-muted-foreground">
+                  {renderSearchingIndicator ?? '正在搜索...'}
+                </div>
+              )}
               <CommandList
                 className={cn(
                   'max-h-[40vh] overflow-y-auto multiselect-scrollbar',
@@ -1023,10 +1158,12 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                   'overscroll-behavior-y-contain',
                 )}
               >
-                <CommandEmpty>
-                  {emptyIndicator ?? '未找到结果。'}
-                </CommandEmpty>
-                {' '}
+                {!hasItems && (
+                  <CommandEmpty>
+                    {emptyIndicator ?? '未找到结果。'}
+                  </CommandEmpty>
+                )}
+
                 {!hideSelectAll && !searchValue && (
                   <CommandGroup>
                     <CommandItem
@@ -1061,9 +1198,10 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                     </CommandItem>
                   </CommandGroup>
                 )}
-                {isGroupedOptions(filteredOptions)
+
+                {isGroupedOptions(displayedOptions)
                   ? (
-                      filteredOptions.map((group) => (
+                      displayedOptions.map((group) => (
                         <CommandGroup key={group.heading} heading={group.heading}>
                           {group.options.map((option) => {
                             const isSelected = selectedValues.includes(
@@ -1108,7 +1246,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                     )
                   : (
                       <CommandGroup>
-                        {filteredOptions.map((option) => {
+                        {displayedOptions.map((option) => {
                           const isSelected = selectedValues.includes(option.value)
 
                           return (
@@ -1146,31 +1284,6 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                         })}
                       </CommandGroup>
                     )}
-                <CommandSeparator />
-                <CommandGroup>
-                  <div className="flex items-center justify-between">
-                    {selectedValues.length > 0 && (
-                      <>
-                        <CommandItem
-                          className="flex-1 justify-center cursor-pointer"
-                          onSelect={handleClear}
-                        >
-                          清空
-                        </CommandItem>
-                        <Separator
-                          className="flex min-h-6 h-full"
-                          orientation="vertical"
-                        />
-                      </>
-                    )}
-                    <CommandItem
-                      className="flex-1 justify-center cursor-pointer max-w-full"
-                      onSelect={() => { setIsPopoverOpen(false) }}
-                    >
-                      关闭
-                    </CommandItem>
-                  </div>
-                </CommandGroup>
               </CommandList>
             </Command>
           </PopoverContent>

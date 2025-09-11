@@ -138,7 +138,6 @@ export function RoleDetails(props: RoleDetailsProps) {
 
                       <PermissionSelect
                         groupByResource
-                        showDescription
                         disabled={updateRolePermissionsMutation.isPending}
                         mode="multiple"
                         placeholder="请选择权限"

@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
-import { SearchIcon } from 'lucide-react'
+import { SearchIcon, XIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
@@ -40,6 +40,7 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
   const [inputValue, setInputValue] = useState<string>('')
   const inputRef = useRef<HTMLInputElement>(null)
   const debounceTimerRef = useRef<number | null>(null)
+  const [, startTransition] = useTransition()
 
   /**
    * 打开输入框并同步当前外部值
@@ -59,7 +60,9 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
     }
 
     const timer = window.setTimeout(() => {
-      onCommit?.(next)
+      startTransition(() => {
+        onCommit?.(next)
+      })
     }, debounceMs)
 
     debounceTimerRef.current = timer
@@ -99,20 +102,45 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
     }
   })
 
-  // 打开时自动聚焦并与受控值对齐
+  /**
+   * 一键清空：立刻清空输入并提交空值，保持输入框焦点与激活状态
+   */
+  const handleClear = useEvent(() => {
+    if (debounceTimerRef.current !== null) {
+      window.clearTimeout(debounceTimerRef.current)
+      debounceTimerRef.current = null
+    }
+
+    setInputValue('')
+
+    startTransition(() => {
+      onCommit?.('')
+    })
+
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  })
+
+  // 打开时自动聚焦
   useEffect(() => {
     if (isActive) {
-      const current = typeof value === 'string' ? value : ''
-
-      if (current !== inputValue) {
-        setInputValue(current)
-      }
-
       window.setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus()
         }
       }, 0)
+    }
+  }, [isActive])
+
+  // 外部受控值变化时，仅在未激活（未输入）时同步输入框，避免打字被反写
+  useEffect(() => {
+    if (!isActive) {
+      const current = typeof value === 'string' ? value : ''
+
+      if (current !== inputValue) {
+        setInputValue(current)
+      }
     }
   }, [isActive, value, inputValue])
 
@@ -148,16 +176,33 @@ export function ToolbarSearch(props: ToolbarSearchProps) {
       )}
 
       {isActive && (
-        <Input
-          placeholder="搜索"
-          {...inputProps}
-          ref={inputRef}
-          className={cn('h-8 w-[240px]', inputProps?.className)}
-          value={inputValue}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
+        <div className="relative">
+          <Input
+            placeholder="搜索"
+            {...inputProps}
+            ref={inputRef}
+            className={cn('h-8 w-[240px] pr-8', inputProps?.className)}
+            value={inputValue}
+            onBlur={handleBlur}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+          />
+
+          {inputValue !== '' && (
+            <button
+              aria-label="清空搜索"
+              className="absolute right-1 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
+              type="button"
+              onClick={handleClear}
+              onMouseDown={(e) => {
+                // 防止触发输入框 blur
+                e.preventDefault()
+              }}
+            >
+              <XIcon className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       )}
     </>
   )

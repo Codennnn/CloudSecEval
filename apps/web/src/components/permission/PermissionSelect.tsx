@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import { MultiSelect, type MultiSelectGroup, type MultiSelectOption } from '~/components/ui/multi-select'
-import { cn } from '~/lib/utils'
 
 import {
   permissionsControllerFindAllOptions,
@@ -65,11 +64,15 @@ export function PermissionSelect(props: PermissionSelectProps) {
   const isSingle = mode === 'single'
   const maxAllowed = isSingle ? 1 : (maxSelect ?? Number.POSITIVE_INFINITY)
 
+  // 搜索关键词（由 MultiSelect 的 onSearch 通知）
+  const [searchTerm, setSearchTerm] = useState('')
+
   const permissionsQuery = useQuery({
     ...permissionsControllerFindAllOptions({
       query: {
         page: 1,
-        pageSize: 100,
+        pageSize: 10,
+        ...(searchTerm ? { search: searchTerm } : {}),
       },
     }),
   })
@@ -133,7 +136,7 @@ export function PermissionSelect(props: PermissionSelectProps) {
   }
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={className}>
       <MultiSelect
         deduplicateOptions
         resetOnDefaultValueChange
@@ -143,9 +146,13 @@ export function PermissionSelect(props: PermissionSelectProps) {
         defaultValue={currentValue}
         disabled={disabled || permissionsQuery.isLoading}
         hideSelectAll={isSingle}
+        isSearching={permissionsQuery.isFetching}
+        minSearchChars={2}
         options={multiSelectOptions}
         placeholder={permissionsQuery.isLoading ? '加载中...' : placeholder}
         popoverClassName="min-w-[400px]"
+        searchDebounceMs={300}
+        onSearch={(term) => { setSearchTerm(term) }}
         onValueChange={handleMultiSelectChange}
       />
 

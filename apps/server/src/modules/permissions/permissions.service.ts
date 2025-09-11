@@ -5,6 +5,7 @@ import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 
 import { PermissionFlag, PermissionMode, RoleMode } from './decorators/require-permissions.decorator'
+import { FindPermissionsDto } from './dto/find-permissions.dto'
 import { BasePermissionDto, CreatePermissionDto, PermissionGroupDto } from './dto/permission.dto'
 import { PermissionsRepository } from './permissions.repository'
 import { PermissionCheckResult, UserEffectivePermissions } from './types/role.type'
@@ -39,8 +40,8 @@ export class PermissionsService {
     return this.permissionsRepository.create(createPermissionDto)
   }
 
-  async findAllWithPagination(options?: { page?: number, pageSize?: number }) {
-    return this.permissionsRepository.findAllWithPagination(options)
+  async findWithAdvancedSearch(searchDto?: FindPermissionsDto) {
+    return this.permissionsRepository.findWithAdvancedSearch(searchDto)
   }
 
   /**

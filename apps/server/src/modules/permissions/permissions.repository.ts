@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common'
 
-import { Prisma } from '#prisma/client'
+import { type Permission, Prisma } from '#prisma/client'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
+import { FindPermissionsDto } from './dto/find-permissions.dto'
 import { CreatePermissionDto } from './dto/permission.dto'
+import { AdvancedPermissionSearchBuilder } from './utils/advanced-permission-search-builder.util'
 
 /**
  * 权限数据访问层
@@ -55,6 +57,46 @@ export class PermissionsRepository {
     ])
 
     return { permissions, total }
+  }
+
+  /**
+   * 高级搜索 + 分页
+   */
+  async findWithAdvancedSearch(searchDto?: FindPermissionsDto): Promise<{
+    permissions: Permission[]
+    total: number
+    pagination: { page?: number, pageSize?: number }
+  }> {
+    const builder = new AdvancedPermissionSearchBuilder(searchDto ?? ({} as FindPermissionsDto))
+
+    const whereCondition = builder.buildWhere()
+    let orderBy = builder.buildOrderBy()
+
+    if (orderBy.length === 0) {
+      orderBy = [{ resource: 'asc' }, { action: 'asc' }]
+    }
+    else if (orderBy.length === 1 && 'resource' in orderBy[0]) {
+      orderBy = [...orderBy, { action: 'asc' }]
+    }
+
+    const { skip, take } = getPaginationParams({
+      page: searchDto?.page,
+      pageSize: searchDto?.pageSize,
+    })
+
+    const [permissions, total] = await Promise.all([
+      this.prisma.permission.findMany({ where: whereCondition, orderBy, skip, take }),
+      this.prisma.permission.count({ where: whereCondition }),
+    ])
+
+    return {
+      permissions,
+      total,
+      pagination: {
+        page: searchDto?.page,
+        pageSize: searchDto?.pageSize,
+      },
+    }
   }
 
   /**
