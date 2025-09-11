@@ -19,6 +19,7 @@ export const enum AdminRoutes {
   Profile = '/admini/profile',
   Licenses = '/admini/licenses',
   Docs = '/admini/docs',
+  Unauthorized = '/admini/unauthorized',
 }
 
 interface AdminNavItem {
@@ -85,6 +86,10 @@ export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.Docs]: {
     title: '项目文档',
     url: AdminRoutes.Docs,
+  },
+  [AdminRoutes.Unauthorized]: {
+    title: '访问被拒绝',
+    url: AdminRoutes.Unauthorized,
   },
 }
 
@@ -185,4 +190,21 @@ export function useAdminNav() {
     navSecondary,
     navDocuments,
   }
+}
+
+/**
+ * 根据路径获取页面权限要求
+ * 用于页面级权限校验
+ */
+export function getPagePermissionByRoute(pathname: string): PermissionFlag[] | undefined {
+  // 按路径长度降序排序，确保更具体的路径优先匹配
+  const routes = Object.keys(adminNavConfig).sort((a, b) => b.length - a.length)
+
+  for (const route of routes) {
+    if (pathname.startsWith(route)) {
+      return adminNavConfig[route as AdminRoutes].requiredPermission
+    }
+  }
+
+  return undefined
 }

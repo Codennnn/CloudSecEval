@@ -8,12 +8,11 @@ import { AdminHeader } from '~admin/components/AdminHeader'
 import { AdminSidebar } from '~admin/components/AdminSidebar'
 import { GlobalSimpleConfirmDialog } from '~admin/components/GlobalSimpleConfirmDialog'
 import { LicenseDialogManager } from '~admin/components/LicenseDialogManager'
-import { PagePermissionGuard } from '~admin/components/PagePermissionGuard'
 import { UserSyncProvider } from '~admin/components/UserSyncProvider'
 
 /**
  * 后台管理系统专用布局组件
- * 提供独立的样式和导航结构，集成页面级权限控制
+ * 提供独立的样式和导航结构
  */
 export default function AdminLayout(props: React.PropsWithChildren) {
   const { children } = props
@@ -35,9 +34,7 @@ export default function AdminLayout(props: React.PropsWithChildren) {
 
           <div className="flex-1 overflow-hidden perspective-distant">
             <ScrollGradientContainer className="@container/admin-content">
-              <PagePermissionGuard>
-                {children}
-              </PagePermissionGuard>
+              {children}
             </ScrollGradientContainer>
           </div>
         </SidebarInset>

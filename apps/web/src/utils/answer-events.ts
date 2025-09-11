@@ -1,5 +1,5 @@
-// 自定义事件类型
-export type AnswerPanelEvent = 'open' | 'close' | 'toggle'
+/** 自定义事件类型 */
+type AnswerPanelEvent = 'open' | 'close' | 'toggle'
 
 // 事件管理器
 class AnswerPanelEventManager {
@@ -48,7 +48,6 @@ class AnswerPanelEventManager {
 // 导出单例实例
 export const answerPanelEvents = new AnswerPanelEventManager()
 
-// 便捷函数
 export const openAnswerPanel = () => {
   answerPanelEvents.dispatchEvent('open')
 }

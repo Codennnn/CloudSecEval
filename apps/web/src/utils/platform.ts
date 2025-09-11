@@ -88,3 +88,10 @@ export function isClient(): boolean {
 export function isServer(): boolean {
   return typeof window === 'undefined'
 }
+
+/**
+ * 获取当前应用是否为 crowd-test 项目
+ */
+export function isCrowdTest(): boolean {
+  return process.env.NEXT_PUBLIC_PROJECT_FLAG === 'crowd-test'
+}
