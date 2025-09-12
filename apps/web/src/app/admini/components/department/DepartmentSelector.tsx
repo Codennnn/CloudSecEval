@@ -166,7 +166,7 @@ export function DepartmentSelector(props: DepartmentSelectorProps) {
     excludeDepartmentId,
     showRootOption = true,
     rootValue = 'ROOT',
-    rootLabel = '无（作为顶级部门）',
+    rootLabel = '无（作为一级部门）',
     className,
   } = props
 

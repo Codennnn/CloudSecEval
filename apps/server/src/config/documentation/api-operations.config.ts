@@ -661,6 +661,15 @@ export const ORGANIZATIONS_API_CONFIG = {
     }),
     requireAdmin: true,
   },
+  getOrganizationMembers: {
+    summary: '获取组织成员列表',
+    description: '获取当前组织下的成员列表，支持分页、搜索、状态筛选与部门筛选（可选包含子部门）',
+    successResponse: createSuccessResponse({
+      description: '获取组织成员列表成功',
+      type: UserListApiResponseDto,
+    }),
+    requireAdmin: true,
+  },
 } satisfies Record<string, ApiOperationConfig>
 
 // ================================

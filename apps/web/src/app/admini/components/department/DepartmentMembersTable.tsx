@@ -30,16 +30,24 @@ import { createUserColumns } from '~admin/components/member/userTableColumns'
 import {
   departmentsControllerGetDepartmentMembersOptions,
   departmentsControllerGetDepartmentMembersQueryKey,
+  organizationsControllerGetOrganizationMembersOptions,
+  organizationsControllerGetOrganizationMembersQueryKey,
   usersControllerRemoveUserMutation,
 } from '~api/@tanstack/react-query.gen'
 import type { Options } from '~api/sdk.gen'
 import type {
   DepartmentsControllerGetDepartmentMembersData,
+  OrganizationsControllerGetOrganizationMembersData,
   UserListItemDto,
 } from '~api/types.gen'
 
+/**
+ * 成员表格组件
+ * - 当传入 `departmentId` 时：查询指定部门（可选包含子部门）成员
+ * - 未传入 `departmentId` 时：查询当前组织的成员
+ */
 interface DepartmentMembersTableProps {
-  departmentId: DepartmentId
+  departmentId?: DepartmentId
   includeChildren?: boolean
 }
 
@@ -57,12 +65,19 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
   const [dialogMode, setDialogMode] = useState<MemberDialogMode>('create')
   const [editingUser, setEditingUser] = useState<UserListItemDto | null>(null)
 
-  const [queryOptions, setQueryOptions]
+  // 部门成员查询参数（当有 departmentId 时启用）
+  const [departmentQueryOptions, setDepartmentQueryOptions]
     = useState<Options<DepartmentsControllerGetDepartmentMembersData>>()
+
+  // 组织成员查询参数（当无 departmentId 时启用）
+  const [organizationQueryOptions, setOrganizationQueryOptions]
+    = useState<Options<OrganizationsControllerGetOrganizationMembersData>>()
 
   useEffect(() => {
     if (departmentId) {
-      setQueryOptions((prev) => ({
+      // 切换到部门查询
+      setOrganizationQueryOptions(undefined)
+      setDepartmentQueryOptions((prev) => ({
         ...prev,
         path: { departmentId },
         query: {
@@ -73,19 +88,62 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
         },
       }))
     }
+    else {
+      // 切换到组织查询
+      setDepartmentQueryOptions(undefined)
+      setOrganizationQueryOptions((prev) => ({
+        ...prev,
+        query: {
+          page: 1,
+          pageSize: 10,
+          ...prev?.query,
+        },
+      }))
+    }
   }, [departmentId, includeChildren])
 
-  const membersQuery = useQuery({
-    ...departmentsControllerGetDepartmentMembersOptions(queryOptions!),
-    enabled: Boolean(queryOptions),
+  // 部门成员查询
+  const departmentMembersQuery = useQuery({
+    ...departmentsControllerGetDepartmentMembersOptions(
+      (departmentQueryOptions
+        ?? ({
+          path: { departmentId: '' as DepartmentId },
+          query: { page: 1, pageSize: 10 },
+        } as Options<DepartmentsControllerGetDepartmentMembersData>)
+      ),
+    ),
+    enabled: Boolean(departmentQueryOptions),
   })
 
+  // 组织成员查询
+  const organizationMembersQuery = useQuery({
+    ...organizationsControllerGetOrganizationMembersOptions(organizationQueryOptions),
+    enabled: Boolean(organizationQueryOptions),
+  })
+
+  // 统一表格所需的数据源
+  const tableData = departmentId
+    ? (departmentMembersQuery.data?.data ?? [])
+    : (organizationMembersQuery.data?.data ?? [])
+
+  const tablePagination = departmentId
+    ? departmentMembersQuery.data?.pagination
+    : organizationMembersQuery.data?.pagination
+
+  const tableLoading = departmentId
+    ? departmentMembersQuery.isLoading
+    : organizationMembersQuery.isLoading
+
   const handleRefresh = useEvent(() => {
-    if (queryOptions) {
-      const queryKey = departmentsControllerGetDepartmentMembersQueryKey(queryOptions)
-      void queryClient.invalidateQueries({
-        queryKey,
-      })
+    if (departmentId && departmentQueryOptions) {
+      const queryKey
+        = departmentsControllerGetDepartmentMembersQueryKey(departmentQueryOptions)
+      void queryClient.invalidateQueries({ queryKey })
+    }
+    else if (!departmentId && organizationQueryOptions) {
+      const queryKey
+        = organizationsControllerGetOrganizationMembersQueryKey(organizationQueryOptions)
+      void queryClient.invalidateQueries({ queryKey })
     }
   })
 
@@ -179,20 +237,38 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
     NonNullable<ProTableProps<UserListItemDto>['onPaginationChange']>
   >(
     (pagination) => {
-      setQueryOptions((prev) => {
-        if (prev) {
-          return {
-            ...prev,
-            query: {
-              ...prev.query,
-              page: pagination.pageIndex + 1,
-              pageSize: pagination.pageSize,
-            },
+      if (departmentId) {
+        setDepartmentQueryOptions((prev) => {
+          if (prev) {
+            return {
+              ...prev,
+              query: {
+                ...prev.query,
+                page: pagination.pageIndex + 1,
+                pageSize: pagination.pageSize,
+              },
+            }
           }
-        }
 
-        return prev
-      })
+          return prev
+        })
+      }
+      else {
+        setOrganizationQueryOptions((prev) => {
+          if (prev) {
+            return {
+              ...prev,
+              query: {
+                ...prev.query,
+                page: pagination.pageIndex + 1,
+                pageSize: pagination.pageSize,
+              },
+            }
+          }
+
+          return prev
+        })
+      }
     },
   )
 
@@ -200,29 +276,35 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
     <div>
       <ProTable<UserListItemDto>
         columns={columns}
-        data={membersQuery.data?.data ?? []}
-        headerTitle={`${isCrowdTest() ? '团队' : '部门'}成员${includeChildren ? `（含子${isCrowdTest() ? '团队' : '部门'}）` : ''}`}
-        loading={membersQuery.isLoading}
-        pagination={membersQuery.data?.pagination}
+        data={tableData}
+        headerTitle={
+          departmentId
+            ? `${isCrowdTest() ? '团队' : '部门'}成员${includeChildren ? `（含子${isCrowdTest() ? '团队' : '部门'}）` : ''}`
+            : '组织成员'
+        }
+        loading={tableLoading}
+        pagination={tablePagination}
         toolbar={{
           search: {
             inputProps: {
               placeholder: '搜索邮箱、姓名',
             },
           },
-          rightContent: (
-            <Button
-              size="sm"
-              onClick={() => {
-                setDialogMode('create')
-                setEditingUser(null)
-                setDialogOpen(true)
-              }}
-            >
-              <Plus />
-              创建成员
-            </Button>
-          ),
+          rightContent: departmentId
+            ? (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setDialogMode('create')
+                    setEditingUser(null)
+                    setDialogOpen(true)
+                  }}
+                >
+                  <Plus />
+                  创建成员
+                </Button>
+              )
+            : null,
         }}
         onPaginationChange={handlePaginationChange}
         onRefresh={handleRefresh}

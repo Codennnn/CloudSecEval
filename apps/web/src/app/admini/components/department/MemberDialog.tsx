@@ -72,7 +72,7 @@ export type MemberDialogMode = 'create' | 'edit'
 
 interface MemberDialogProps {
   /** 当前所在部门 ID（创建用户时使用） */
-  departmentId: DepartmentId
+  departmentId?: DepartmentId
   /** 对话框模式 */
   mode: MemberDialogMode
   /** 对话框是否打开 */

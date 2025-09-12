@@ -5,9 +5,12 @@ import { AdminGuard } from '~/common/guards/admin.guard'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { ORGANIZATIONS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
+import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
+import { UserListApiResponseDto, UserListItemDto } from '~/modules/users/dto/user-response.dto'
 
 import { CreateOrganizationDto } from './dto/create-organization.dto'
 import { FindOrganizationsDto } from './dto/find-organizations.dto'
+import { GetOrganizationMembersQueryDto } from './dto/get-organization-members.dto'
 import {
   OrganizationApiResponseDto,
   OrganizationListApiResponseDto,
@@ -54,6 +57,29 @@ export class OrganizationsController {
         pageSize: query.pageSize,
       },
       dto: OrganizationListItemDto,
+    })
+  }
+
+  @Get('members')
+  @ApiDocs(ORGANIZATIONS_API_CONFIG.getOrganizationMembers)
+  async getOrganizationMembers(
+    @CurrentUser() user: unknown,
+    @Query() query: GetOrganizationMembersQueryDto,
+  ): Promise<UserListApiResponseDto> {
+    const u = user as { organization?: { id?: string }, orgId?: string }
+    const orgId = u.organization?.id ?? u.orgId ?? ''
+
+    const { users, total } = await this.orgService.getMembers(orgId, query)
+
+    return respWithPagination({
+      msg: '获取组织成员列表成功',
+      data: users,
+      pageOptions: {
+        total,
+        page: query.page,
+        pageSize: query.pageSize,
+      },
+      dto: UserListItemDto,
     })
   }
 

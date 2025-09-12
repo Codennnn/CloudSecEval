@@ -10,7 +10,7 @@ import type { DepartmentTreeProps } from '~admin/components/department/types'
 import { useUser } from '~admin/stores/useUserStore'
 
 export function UserPage() {
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null)
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>()
 
   const user = useUser()
 
@@ -19,6 +19,9 @@ export function UserPage() {
 
     if (departmentId) {
       setSelectedDepartmentId(departmentId)
+    }
+    else {
+      setSelectedDepartmentId(undefined)
     }
   }
 
@@ -37,13 +40,10 @@ export function UserPage() {
       />
 
       <div className="flex-1 overflow-y-auto p-admin-content">
-        {selectedDepartmentId
-          && (
-            <DepartmentMembersTable
-              departmentId={selectedDepartmentId}
-              includeChildren={false}
-            />
-          )}
+        <DepartmentMembersTable
+          departmentId={selectedDepartmentId}
+          includeChildren={false}
+        />
       </div>
     </div>
   )

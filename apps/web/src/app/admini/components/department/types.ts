@@ -42,7 +42,7 @@ export interface DepartmentTreeProps {
   className?: string
 
   /** 选中状态变化回调 */
-  onSelect?: (selectedKeys: string[], selectedNodes: DepartmentTreeNode[]) => void
+  onSelect?: (selectedKeys: string[]) => void
   /** 展开状态变化回调 */
   onExpand?: (expandedKeys: string[]) => void
   /** 自定义节点渲染函数 */

@@ -255,7 +255,6 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
                       excludeDepartmentId={formData?.id}
                       orgId={orgId}
                       placeholder={`请选择上级${noun}`}
-                      rootLabel={`无（作为顶级${noun}）`}
                       value={field.value}
                       onValueChange={field.onChange}
                     />
