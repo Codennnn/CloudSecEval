@@ -22,6 +22,7 @@
     "paths": {
       "~/*": ["./src/*"],
       "~admin/*": ["./src/app/admini/*"],
+      "~crowd-test/*": ["./src/app/crowd-test/*"],
       "~api/*": ["./src/lib/api/generated/*"]
     }
   },

@@ -8,6 +8,7 @@ import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { SidebarTrigger } from '~/components/ui/sidebar'
 import { RoutePath } from '~/constants/routes.client'
+import { isCrowdTest } from '~/utils/platform'
 
 import { getPageNameByRoute } from '~admin/lib/admin-nav'
 
@@ -27,17 +28,19 @@ export function AdminHeader() {
 
         <div className="text-base font-medium">{pageName}</div>
 
-        <div className="ml-auto flex items-center gap-2">
-          <Link
-            href={RoutePath.Docs}
-            target="_blank"
-          >
-            <Button className="hidden sm:flex" size="sm" variant="ghost">
-              <ExternalLinkIcon />
-              文档主页
-            </Button>
-          </Link>
-        </div>
+        {!isCrowdTest() && (
+          <div className="ml-auto flex items-center gap-2">
+            <Link
+              href={RoutePath.Docs}
+              target="_blank"
+            >
+              <Button className="hidden sm:flex" size="sm" variant="ghost">
+                <ExternalLinkIcon />
+                文档主页
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   )

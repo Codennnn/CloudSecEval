@@ -1,5 +1,6 @@
 import { BarChartIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
 
+import { SITE_CONFIG } from '~/constants/common'
 import { adminPermission } from '~/constants/permission'
 import { matchPermission, type PermissionFlag } from '~/lib/permissions/matcher'
 
@@ -36,12 +37,10 @@ export type AdminDocumentItem = AdminNavItem
 
 type AdminNavConfig = Record<AdminRoutes, AdminNavItem>
 
-export const adminTitle = 'NestJS 文档管理后台'
-
 // MARK: 管理后台导航配置
 export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.Root]: {
-    title: adminTitle,
+    title: SITE_CONFIG.adminTitle,
     url: AdminRoutes.Root,
   },
   [AdminRoutes.Login]: {
@@ -113,18 +112,18 @@ export function getPageNameByRoute(pathname: string): string {
  */
 export function generatePageTitle(pathname?: string): string {
   if (!pathname) {
-    return adminTitle
+    return SITE_CONFIG.adminTitle
   }
 
   const pageName = getPageNameByRoute(pathname)
 
   // 如果页面名称就是网站名称，只返回网站名称
-  if (pageName === adminTitle) {
-    return adminTitle
+  if (pageName === SITE_CONFIG.adminTitle) {
+    return SITE_CONFIG.adminTitle
   }
 
   // 否则返回 "页面名称 - 网站名称" 的格式
-  return `${pageName} - ${adminTitle}`
+  return `${pageName} - ${SITE_CONFIG.adminTitle}`
 }
 
 const createAdminNavItem = (adminRoute: AdminRoutes): AdminNavItem => ({

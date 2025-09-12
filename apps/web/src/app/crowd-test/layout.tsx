@@ -10,11 +10,7 @@ import { GlobalSimpleConfirmDialog } from '~admin/components/GlobalSimpleConfirm
 import { LicenseDialogManager } from '~admin/components/LicenseDialogManager'
 import { UserSyncProvider } from '~admin/components/UserSyncProvider'
 
-/**
- * 后台管理系统专用布局组件
- * 提供独立的样式和导航结构
- */
-export default function AdminLayout(props: React.PropsWithChildren) {
+export default function AdminCrowdTestLayout(props: React.PropsWithChildren) {
   const { children } = props
 
   return (

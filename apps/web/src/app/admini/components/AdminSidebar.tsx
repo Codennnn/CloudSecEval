@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
 import { SITE_CONFIG } from '~/constants/common'
+import { isCrowdTest } from '~/utils/platform'
 
 import { NavDocuments } from '~admin/components/NavDocuments'
 import { NavMain } from '~admin/components/NavMain'
@@ -53,9 +54,12 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={navMain} />
 
-        <NavDocuments items={navDocuments} />
-
-        <NavSecondary className="mt-auto" items={navSecondary} />
+        {!isCrowdTest() && (
+          <>
+            <NavDocuments items={navDocuments} />
+            <NavSecondary className="mt-auto" items={navSecondary} />
+          </>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
