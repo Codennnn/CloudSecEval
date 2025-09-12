@@ -21,7 +21,6 @@ import { NavSecondary } from '~admin/components/NavSecondary'
 import { NavUser } from '~admin/components/NavUser'
 import {
   AdminRoutes,
-  adminTitle,
   useAdminNav,
 } from '~admin/lib/admin-nav'
 
@@ -44,7 +43,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   src={SITE_CONFIG.logoPath}
                   width={24}
                 />
-                <span className="text-base font-semibold">{adminTitle}</span>
+                <span className="text-base font-semibold">{SITE_CONFIG.adminTitle}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

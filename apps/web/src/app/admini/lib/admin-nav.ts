@@ -3,6 +3,7 @@ import { BarChartIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, Squ
 import { SITE_CONFIG } from '~/constants/common'
 import { adminPermission } from '~/constants/permission'
 import { matchPermission, type PermissionFlag } from '~/lib/permissions/matcher'
+import { isCrowdTest } from '~/utils/platform'
 
 import { useUserPermissions } from '~admin/stores/useUserStore'
 
@@ -21,6 +22,10 @@ export const enum AdminRoutes {
   Licenses = '/admini/licenses',
   Docs = '/admini/docs',
   Unauthorized = '/admini/unauthorized',
+
+  // 网安众测平台
+  Bugs = '/crowd-test/bugs',
+  MyBugs = '/crowd-test/my-bugs',
 }
 
 interface AdminNavItem {
@@ -90,6 +95,16 @@ export const adminNavConfig: AdminNavConfig = {
     title: '访问被拒绝',
     url: AdminRoutes.Unauthorized,
   },
+
+  // 网安众测平台
+  [AdminRoutes.Bugs]: {
+    title: '漏洞管理',
+    url: AdminRoutes.Bugs,
+  },
+  [AdminRoutes.MyBugs]: {
+    title: '我的漏洞',
+    url: AdminRoutes.MyBugs,
+  },
 }
 
 export function getPageNameByRoute(pathname: string): string {
@@ -134,13 +149,18 @@ const createAdminNavItem = (adminRoute: AdminRoutes): AdminNavItem => ({
 })
 
 // MARK: 主导航栏
-const adminNavMain = [
-  createAdminNavItem(AdminRoutes.Dashboard),
-  createAdminNavItem(AdminRoutes.Licenses),
-  createAdminNavItem(AdminRoutes.Users),
-  createAdminNavItem(AdminRoutes.Roles),
-  createAdminNavItem(AdminRoutes.Permissions),
-]
+const adminNavMain = isCrowdTest()
+  ? [
+      createAdminNavItem(AdminRoutes.Bugs),
+      createAdminNavItem(AdminRoutes.MyBugs),
+    ]
+  : [
+      createAdminNavItem(AdminRoutes.Dashboard),
+      createAdminNavItem(AdminRoutes.Licenses),
+      createAdminNavItem(AdminRoutes.Users),
+      createAdminNavItem(AdminRoutes.Roles),
+      createAdminNavItem(AdminRoutes.Permissions),
+    ]
 
 const adminNavSecondary: AdminSecondaryNavItem[] = [
   {
