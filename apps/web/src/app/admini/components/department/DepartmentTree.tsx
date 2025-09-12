@@ -22,6 +22,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip
 import { cn } from '~/lib/utils'
 import { isCrowdTest } from '~/utils/platform'
 
+import { ScrollGradientContainer } from '../../../../components/ScrollGradientContainer'
+
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import { DepartmentDialog } from './DepartmentDialog'
@@ -335,69 +337,71 @@ export function DepartmentTree(props: DepartmentTreeProps) {
         </SidebarHeader>
       )}
 
-      <SidebarContent className="p-admin-content pt-admin-content-half">
-        {
-          isLoading
-            ? <TreeLoadingSkeleton />
-            : displayTreeData.length > 0
-              ? (
-                  <SidebarGroup className="p-0">
-                    <SidebarMenu className="gap-list-item">
-
-                      <SidebarMenuItem>
-                        <SidebarMenuButton
-                          isActive={selectedKeys.size === 0}
-                          onClick={() => {
-                            suppressNextAutoSelectRef.current = true
-                            setSelectedKeys([])
-                          }}
-                        >
-                          <div className="shrink-0 ml-7">
-                            <UsersRoundIcon className="size-4" />
-                          </div>
-
-                          {`所有${noun}成员`}
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-
-                      <div className="py-1.5">
-                        <Separator />
-                      </div>
-
-                      {/* 树形内容区域 */}
-                      {displayTreeData.map((node) => (
-                        <DepartmentTreeItem
-                          key={node.id}
-                          node={node}
-                          orgId={orgId}
-                          renderNode={renderNode}
-                          selectable={selectable}
-                          treeData={treeData}
-                          onAddChild={handleAddChild}
-                          onDelete={handleDeleteDepartment}
-                          onEdit={handleEdit}
-                        />
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroup>
-                )
-              : searchKeyword
+      <SidebarContent>
+        <ScrollGradientContainer className="p-admin-content pt-admin-content-half">
+          {
+            isLoading
+              ? <TreeLoadingSkeleton />
+              : displayTreeData.length > 0
                 ? (
-                    <div className="flex items-center justify-center p-8">
-                      <div className="text-center text-muted-foreground">
-                        <div>{`未找到匹配的${noun}`}</div>
-                        <div className="text-sm mt-1">尝试使用其他关键词搜索</div>
-                      </div>
-                    </div>
+                    <SidebarGroup className="p-0">
+                      <SidebarMenu className="gap-list-item">
+
+                        <SidebarMenuItem>
+                          <SidebarMenuButton
+                            isActive={selectedKeys.size === 0}
+                            onClick={() => {
+                              suppressNextAutoSelectRef.current = true
+                              setSelectedKeys([])
+                            }}
+                          >
+                            <div className="shrink-0 ml-7">
+                              <UsersRoundIcon className="size-4" />
+                            </div>
+
+                            {`所有${noun}成员`}
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+
+                        <div className="py-1.5">
+                          <Separator />
+                        </div>
+
+                        {/* 树形内容区域 */}
+                        {displayTreeData.map((node) => (
+                          <DepartmentTreeItem
+                            key={node.id}
+                            node={node}
+                            orgId={orgId}
+                            renderNode={renderNode}
+                            selectable={selectable}
+                            treeData={treeData}
+                            onAddChild={handleAddChild}
+                            onDelete={handleDeleteDepartment}
+                            onEdit={handleEdit}
+                          />
+                        ))}
+                      </SidebarMenu>
+                    </SidebarGroup>
                   )
-                : (
-                    <div className="flex items-center justify-center p-8">
-                      <div className="text-center text-muted-foreground">
-                        <div className="text-sm">{`暂无${noun}数据`}</div>
+                : searchKeyword
+                  ? (
+                      <div className="flex items-center justify-center p-8">
+                        <div className="text-center text-muted-foreground">
+                          <div>{`未找到匹配的${noun}`}</div>
+                          <div className="text-sm mt-1">尝试使用其他关键词搜索</div>
+                        </div>
                       </div>
-                    </div>
-                  )
-        }
+                    )
+                  : (
+                      <div className="flex items-center justify-center p-8">
+                        <div className="text-center text-muted-foreground">
+                          <div className="text-sm">{`暂无${noun}数据`}</div>
+                        </div>
+                      </div>
+                    )
+          }
+        </ScrollGradientContainer>
       </SidebarContent>
 
       {/* 统一的部门对话框，仅此一个实例 */}

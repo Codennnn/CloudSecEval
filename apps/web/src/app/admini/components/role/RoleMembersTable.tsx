@@ -167,12 +167,10 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
   )
 
   const handleAddMember = useEvent(async () => {
-    const disabledIds = (membersQuery.data?.data ?? []).map((u) => u.id)
-
     const selected = await openMemberSelectDialog({
       title: '选择要添加的成员',
       mode: 'multiple',
-      disabledIds,
+      value: membersQuery.data?.data,
     })
 
     if (selected && selected.length > 0) {

@@ -136,7 +136,7 @@ export function StatCardsContainer({
 
   // 预定义网格类名以确保 Tailwind CSS 正确识别
   const getGridClasses = () => {
-    const baseClasses = 'grid gap-4 px-4 lg:px-6'
+    const baseClasses = 'grid gap-4 px-admin-content'
     const cardStyles = '*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs'
 
     // 根据配置生成响应式网格类名

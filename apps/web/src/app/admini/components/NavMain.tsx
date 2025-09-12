@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import { isCrowdTest } from '~/utils/platform'
 
 import { AdminRoutes } from '~admin/lib/admin-nav'
 import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
@@ -33,39 +34,41 @@ export function NavMain({ items }: NavMainProps) {
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-4">
-        <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-              tooltip="创建授权码"
-              onClick={() => {
-                openCreateDialog()
-              }}
-            >
-              <SquarePlusIcon />
-              <span>创建授权码</span>
-            </SidebarMenuButton>
+        {!isCrowdTest() && (
+          <SidebarMenu>
+            <SidebarMenuItem className="flex items-center gap-2">
+              <SidebarMenuButton
+                className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+                tooltip="创建授权码"
+                onClick={() => {
+                  openCreateDialog()
+                }}
+              >
+                <SquarePlusIcon />
+                <span>创建授权码</span>
+              </SidebarMenuButton>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href={AdminRoutes.Licenses}>
-                  <Button
-                    className="group-data-[collapsible=icon]:opacity-0"
-                    size="iconNormal"
-                    variant="outline"
-                  >
-                    <ListIcon />
-                    <span className="sr-only">查看授权码列表</span>
-                  </Button>
-                </Link>
-              </TooltipTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href={AdminRoutes.Licenses}>
+                    <Button
+                      className="group-data-[collapsible=icon]:opacity-0"
+                      size="iconNormal"
+                      variant="outline"
+                    >
+                      <ListIcon />
+                      <span className="sr-only">查看授权码列表</span>
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
 
-              <TooltipContent>
-                查看授权码列表
-              </TooltipContent>
-            </Tooltip>
-          </SidebarMenuItem>
-        </SidebarMenu>
+                <TooltipContent>
+                  查看授权码列表
+                </TooltipContent>
+              </Tooltip>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
 
         <SidebarMenu>
           {items.map((item) => {

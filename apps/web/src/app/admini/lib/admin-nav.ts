@@ -1,4 +1,4 @@
-import { BarChartIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
+import { BarChartIcon, BookUpIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, NotebookTextIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
 
 import { SITE_CONFIG } from '~/constants/common'
 import { adminPermission } from '~/constants/permission'
@@ -24,8 +24,9 @@ export const enum AdminRoutes {
   Unauthorized = '/admini/unauthorized',
 
   // 网安众测平台
-  Bugs = '/crowd-test/bugs',
-  MyBugs = '/crowd-test/my-bugs',
+  CrowdTestDashboard = '/crowd-test/dashboard',
+  CrowdTestBugs = '/crowd-test/bugs',
+  CrowdTestMyBugs = '/crowd-test/my-bugs',
   CrowdTestTeams = '/crowd-test/teams',
   CrowdTestRoles = '/crowd-test/roles',
 }
@@ -98,22 +99,33 @@ export const adminNavConfig: AdminNavConfig = {
     url: AdminRoutes.Unauthorized,
   },
 
-  // 网安众测平台
-  [AdminRoutes.Bugs]: {
-    title: '漏洞管理',
-    url: AdminRoutes.Bugs,
+  // CrowdTest
+  [AdminRoutes.CrowdTestDashboard]: {
+    title: '攻防演练大屏',
+    url: AdminRoutes.CrowdTestDashboard,
+    icon: GaugeIcon,
   },
-  [AdminRoutes.MyBugs]: {
-    title: '我的漏洞',
-    url: AdminRoutes.MyBugs,
+  [AdminRoutes.CrowdTestBugs]: {
+    title: '报告管理',
+    url: AdminRoutes.CrowdTestBugs,
+    icon: NotebookTextIcon,
+  },
+  [AdminRoutes.CrowdTestMyBugs]: {
+    title: '我的报告',
+    url: AdminRoutes.CrowdTestMyBugs,
+    icon: BookUpIcon,
   },
   [AdminRoutes.CrowdTestTeams]: {
     title: '团队管理',
     url: AdminRoutes.CrowdTestTeams,
+    icon: UsersIcon,
+    requiredPermission: [adminPermission.departments.read],
   },
   [AdminRoutes.CrowdTestRoles]: {
     title: '角色管理',
     url: AdminRoutes.CrowdTestRoles,
+    icon: SquareUserRoundIcon,
+    requiredPermission: [adminPermission.roles.read],
   },
 }
 
@@ -161,8 +173,9 @@ const createAdminNavItem = (adminRoute: AdminRoutes): AdminNavItem => ({
 // MARK: 主导航栏
 const adminNavMain = isCrowdTest()
   ? [
-      createAdminNavItem(AdminRoutes.Bugs),
-      createAdminNavItem(AdminRoutes.MyBugs),
+      createAdminNavItem(AdminRoutes.CrowdTestDashboard),
+      createAdminNavItem(AdminRoutes.CrowdTestBugs),
+      createAdminNavItem(AdminRoutes.CrowdTestMyBugs),
       createAdminNavItem(AdminRoutes.CrowdTestTeams),
       createAdminNavItem(AdminRoutes.CrowdTestRoles),
     ]
