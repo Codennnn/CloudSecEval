@@ -28,6 +28,7 @@ import {
 import { Input } from '~/components/ui/input'
 import { Switch } from '~/components/ui/switch'
 import type { DepartmentId } from '~/lib/api/types'
+import { isCrowdTest } from '~/utils/platform'
 
 import { convertDepartmentValue, convertToDepartmentSelectorValue, DepartmentSelector } from './DepartmentSelector'
 
@@ -114,6 +115,7 @@ export function MemberDialog(props: MemberDialogProps) {
   } = props
 
   const [dialogMode, setDialogMode] = useState<MemberDialogMode>(mode)
+  const noun = isCrowdTest() ? '团队' : '部门'
 
   useEffect(() => {
     setDialogMode(mode)
@@ -266,7 +268,7 @@ export function MemberDialog(props: MemberDialogProps) {
         <DialogHeader>
           <DialogTitle>{dialogMode === 'edit' ? '编辑用户' : '创建成员'}</DialogTitle>
           <DialogDescription>
-            {dialogMode === 'edit' ? '修改用户的相关信息' : '填写信息以在该部门下创建新用户'}
+            {dialogMode === 'edit' ? '修改用户的相关信息' : `填写信息以在该${noun}下创建新用户`}
           </DialogDescription>
         </DialogHeader>
 
@@ -398,11 +400,11 @@ export function MemberDialog(props: MemberDialogProps) {
               name="departmentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>所属部门</FormLabel>
+                  <FormLabel>{`所属${noun}`}</FormLabel>
                   <FormControl>
                     <DepartmentSelector
                       disabled={isPending}
-                      placeholder="请选择所属部门"
+                      placeholder={`请选择所属${noun}`}
                       showRootOption={false}
                       value={typeof field.value === 'string' ? field.value : undefined}
                       onValueChange={field.onChange}

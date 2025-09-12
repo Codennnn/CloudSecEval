@@ -1,9 +1,17 @@
 import { type ReactElement, useMemo } from 'react'
 
+import { EllipsisVerticalIcon } from 'lucide-react'
+
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
 
 import { type BugItem, type BugStatus, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../types'
 
@@ -65,22 +73,32 @@ export function useBugColumns(): TableColumnDef<BugItem>[] {
           const id = row.original.id
 
           return (
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => { console.warn('TODO: view bug detail', id) }}
-              >
-                查看
-              </Button>
+            <div className="flex items-center gap-0.5">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="data-[state=open]:bg-muted text-muted-foreground"
+                    size="iconNormal"
+                    variant="ghost"
+                  >
+                    <EllipsisVerticalIcon />
+                  </Button>
+                </DropdownMenuTrigger>
 
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => { console.warn('TODO: open audit dialog', id) }}
-              >
-                审核
-              </Button>
+                <DropdownMenuContent align="end" className="w-32">
+                  <DropdownMenuItem
+                    onClick={() => { console.warn('TODO: view bug detail', id) }}
+                  >
+                    查看详情
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => { console.warn('TODO: open audit dialog', id) }}
+                  >
+                    审核
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )
         },

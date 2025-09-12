@@ -140,7 +140,7 @@ export function RoleList(props: RoleListProps) {
   }
 
   return (
-    <div className="w-72 flex flex-col shrink-0 border-r">
+    <div className="w-72 flex flex-col shrink-0">
       <div className="flex items-center justify-between p-admin-content pb-admin-content-half">
         <div className="font-medium">角色列表</div>
 

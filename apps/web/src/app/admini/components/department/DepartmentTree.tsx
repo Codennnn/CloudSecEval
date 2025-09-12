@@ -17,6 +17,7 @@ import {
 import { Skeleton } from '~/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
+import { isCrowdTest } from '~/utils/platform'
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
@@ -173,7 +174,8 @@ export function DepartmentTree(props: DepartmentTreeProps) {
   const deleteDepartment = useMutation({
     ...departmentsControllerRemoveDepartmentMutation(),
     onSuccess: () => {
-      toast.success('删除部门成功')
+      const noun = isCrowdTest() ? '团队' : '部门'
+      toast.success(`删除${noun}成功`)
       void refetch()
     },
   })
@@ -307,6 +309,7 @@ export function DepartmentTree(props: DepartmentTreeProps) {
           <div className="flex items-center gap-2">
             <DepartmentTreeSearch
               orgId={orgId}
+              placeholder={`搜索${isCrowdTest() ? '团队' : '部门'}...`}
               treeData={treeData}
             />
 
@@ -324,7 +327,7 @@ export function DepartmentTree(props: DepartmentTreeProps) {
               </TooltipTrigger>
 
               <TooltipContent>
-                添加新部门
+                {`添加新${isCrowdTest() ? '团队' : '部门'}`}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -369,15 +372,15 @@ export function DepartmentTree(props: DepartmentTreeProps) {
                 ? (
                     <div className="flex items-center justify-center p-8">
                       <div className="text-center text-muted-foreground">
-                        <div className="text-sm">未找到匹配的部门</div>
-                        <div className="text-xs mt-1">尝试使用其他关键词搜索</div>
+                        <div>{`未找到匹配的${isCrowdTest() ? '团队' : '部门'}`}</div>
+                        <div className="text-sm mt-1">尝试使用其他关键词搜索</div>
                       </div>
                     </div>
                   )
                 : (
                     <div className="flex items-center justify-center p-8">
                       <div className="text-center text-muted-foreground">
-                        <div className="text-sm">暂无部门数据</div>
+                        <div className="text-sm">{`暂无${isCrowdTest() ? '团队' : '部门'}数据`}</div>
                       </div>
                     </div>
                   )

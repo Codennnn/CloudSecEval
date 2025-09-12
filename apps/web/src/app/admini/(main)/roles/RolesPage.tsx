@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { Separator } from '~/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
 
 import { RoleDetails } from '~admin/components/role/RoleDetails'
@@ -23,6 +24,10 @@ export function RolesPage() {
         onSelect={(roleId) => {
           setSelectedRoleId(roleId)
         }}
+      />
+
+      <Separator
+        orientation="vertical"
       />
 
       <div className="flex-1 overflow-y-auto p-admin-content">

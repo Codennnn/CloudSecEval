@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { Separator } from '~/components/ui/separator'
+
 import { DepartmentMembersTable } from '~admin/components/department/DepartmentMembersTable'
 import { DepartmentTree } from '~admin/components/department/DepartmentTree'
 import type { DepartmentTreeProps } from '~admin/components/department/types'
@@ -21,7 +23,7 @@ export function UserPage() {
   }
 
   return (
-    <div className="flex gap-admin-content h-full">
+    <div className="flex h-full">
       {user && (
         <DepartmentTree
           orgId={user.organization.id}
@@ -30,7 +32,11 @@ export function UserPage() {
         />
       )}
 
-      <div className="flex-1 overflow-y-auto">
+      <Separator
+        orientation="vertical"
+      />
+
+      <div className="flex-1 overflow-y-auto p-admin-content">
         {selectedDepartmentId
           && (
             <DepartmentMembersTable

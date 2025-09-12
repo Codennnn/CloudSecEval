@@ -9,6 +9,7 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import type { OrganizationId } from '~/lib/api/types'
 import { cn } from '~/lib/utils'
+import { isCrowdTest } from '~/utils/platform'
 
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import type { DepartmentTreeNode } from './types'
@@ -30,7 +31,7 @@ interface DepartmentTreeSearchProps {
 export function DepartmentTreeSearch(props: DepartmentTreeSearchProps) {
   const {
     orgId,
-    placeholder = '搜索部门...',
+    placeholder = `搜索${isCrowdTest() ? '团队' : '部门'}...`,
     className,
   } = props
 

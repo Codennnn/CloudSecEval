@@ -2,12 +2,21 @@
 
 import { type ReactElement, useMemo, useRef, useState } from 'react'
 
+import { EllipsisVerticalIcon } from 'lucide-react'
+
 import { ProTable, type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
@@ -251,10 +260,42 @@ function useColumns(refreshList: () => void, openEdit: (item: MyBugItem) => void
           const item = row.original
 
           return (
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => { openEdit(item) }}>编辑</Button>
-              <Button size="sm" variant="ghost" onClick={async () => { await mockSubmitMyBug(item.id); refreshList() }}>提交</Button>
-              <Button size="sm" variant="destructive" onClick={async () => { await mockDeleteMyBug(item.id); refreshList() }}>删除</Button>
+            <div className="flex items-center gap-0.5">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="data-[state=open]:bg-muted text-muted-foreground"
+                    size="iconNormal"
+                    variant="ghost"
+                  >
+                    <EllipsisVerticalIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-32">
+                  <DropdownMenuItem onClick={() => { openEdit(item) }}>
+                    编辑
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      void mockSubmitMyBug(item.id)
+                      refreshList()
+                    }}
+                  >
+                    提交
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={async () => { await mockDeleteMyBug(item.id); refreshList() }}
+                  >
+                    删除
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )
         },

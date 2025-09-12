@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import type { DepartmentId } from '~/lib/api/types'
+import { isCrowdTest } from '~/utils/platform'
 
 import { MemberDialog, type MemberDialogMode } from './MemberDialog'
 
@@ -196,11 +197,11 @@ export function DepartmentMembersTable(props: DepartmentMembersTableProps) {
   )
 
   return (
-    <div className="py-admin-content pr-admin-content">
+    <div>
       <ProTable<UserListItemDto>
         columns={columns}
         data={membersQuery.data?.data ?? []}
-        headerTitle={`部门成员${includeChildren ? '（含子部门）' : ''}`}
+        headerTitle={`${isCrowdTest() ? '团队' : '部门'}成员${includeChildren ? `（含子${isCrowdTest() ? '团队' : '部门'}）` : ''}`}
         loading={membersQuery.isLoading}
         pagination={membersQuery.data?.pagination}
         toolbar={{

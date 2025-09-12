@@ -26,6 +26,8 @@ export const enum AdminRoutes {
   // 网安众测平台
   Bugs = '/crowd-test/bugs',
   MyBugs = '/crowd-test/my-bugs',
+  CrowdTestTeams = '/crowd-test/teams',
+  CrowdTestRoles = '/crowd-test/roles',
 }
 
 interface AdminNavItem {
@@ -105,6 +107,14 @@ export const adminNavConfig: AdminNavConfig = {
     title: '我的漏洞',
     url: AdminRoutes.MyBugs,
   },
+  [AdminRoutes.CrowdTestTeams]: {
+    title: '团队管理',
+    url: AdminRoutes.CrowdTestTeams,
+  },
+  [AdminRoutes.CrowdTestRoles]: {
+    title: '角色管理',
+    url: AdminRoutes.CrowdTestRoles,
+  },
 }
 
 export function getPageNameByRoute(pathname: string): string {
@@ -153,6 +163,8 @@ const adminNavMain = isCrowdTest()
   ? [
       createAdminNavItem(AdminRoutes.Bugs),
       createAdminNavItem(AdminRoutes.MyBugs),
+      createAdminNavItem(AdminRoutes.CrowdTestTeams),
+      createAdminNavItem(AdminRoutes.CrowdTestRoles),
     ]
   : [
       createAdminNavItem(AdminRoutes.Dashboard),

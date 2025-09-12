@@ -23,6 +23,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from '~/components/ui/sidebar'
+import { isCrowdTest } from '~/utils/platform'
 
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
 import type { DepartmentTreeItemProps } from './types'
@@ -117,7 +118,7 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
               }}
             >
               <PlusIcon />
-              <span>添加子部门</span>
+              <span>{`添加子${isCrowdTest() ? '团队' : '部门'}`}</span>
             </DropdownMenuItem>
 
             <DropdownMenuItem

@@ -29,6 +29,7 @@ import { Input } from '~/components/ui/input'
 import { Switch } from '~/components/ui/switch'
 import { Textarea } from '~/components/ui/textarea'
 import { emitter, EVENT_KEY } from '~/constants/common'
+import { isCrowdTest } from '~/utils/platform'
 
 import { convertDepartmentValue, convertToDepartmentSelectorValue, DepartmentSelector } from './DepartmentSelector'
 import type {
@@ -108,10 +109,11 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
   const isEditMode = mode === 'edit'
 
   // ==================== UI 文案 ====================
-  const dialogTitle = isEditMode ? '编辑部门' : '创建部门'
+  const noun = isCrowdTest() ? '团队' : '部门'
+  const dialogTitle = isEditMode ? `编辑${noun}` : `创建${noun}`
   const dialogDescription = isEditMode
-    ? '修改部门的相关信息'
-    : '请填写以下信息来创建新的部门'
+    ? `修改${noun}的相关信息`
+    : `请填写以下信息来创建新的${noun}`
   const submitButtonText = isEditMode ? '保存修改' : '确认创建'
   const loadingButtonText = isEditMode ? '保存中...' : '创建中...'
 
@@ -172,7 +174,7 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
           body: updateData,
         })
 
-        toast.success('部门更新成功')
+        toast.success(`${noun}更新成功`)
       }
       else {
         // 创建模式
@@ -188,7 +190,7 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
           body: createData,
         })
 
-        toast.success('部门创建成功')
+        toast.success(`${noun}创建成功`)
       }
 
       // 触发数据刷新
@@ -197,7 +199,7 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
       handleOpenChange(false)
     }
     catch {
-      toast.error(`${isEditMode ? '更新' : '创建'}部门失败，请稍后重试`)
+      toast.error(`${isEditMode ? '更新' : '创建'}${noun}失败，请稍后重试`)
     }
   }
 
@@ -221,17 +223,17 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
               void form.handleSubmit(handleSubmit)(ev)
             }}
           >
-            {/* 部门名称 */}
+            {/* 名称 */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>部门名称</FormLabel>
+                  <FormLabel>{`${noun}名称`}</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isPending}
-                      placeholder="请输入部门名称"
+                      placeholder={`请输入${noun}名称`}
                       {...field}
                     />
                   </FormControl>
@@ -240,19 +242,20 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
               )}
             />
 
-            {/* 父部门选择 */}
+            {/* 上级选择 */}
             <FormField
               control={form.control}
               name="parentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>上级部门</FormLabel>
+                  <FormLabel>{`上级${noun}`}</FormLabel>
                   <FormControl>
                     <DepartmentSelector
                       disabled={isPending}
                       excludeDepartmentId={formData?.id}
                       orgId={orgId}
-                      placeholder="请选择上级部门"
+                      placeholder={`请选择上级${noun}`}
+                      rootLabel={`无（作为顶级${noun}）`}
                       value={field.value}
                       onValueChange={field.onChange}
                     />
@@ -262,17 +265,17 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
               )}
             />
 
-            {/* 部门描述 */}
+            {/* 描述 */}
             <FormField
               control={form.control}
               name="remark"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>部门描述</FormLabel>
+                  <FormLabel>{`${noun}描述`}</FormLabel>
                   <FormControl>
                     <Textarea
                       disabled={isPending}
-                      placeholder="请输入部门描述（可选）"
+                      placeholder={`请输入${noun}描述（可选）`}
                       rows={3}
                       {...field}
                     />
@@ -291,7 +294,7 @@ export function DepartmentDialog(props: DepartmentDialogProps) {
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">启用状态</FormLabel>
                     <div className="text-sm text-muted-foreground">
-                      是否启用该部门
+                      {`是否启用该${noun}`}
                     </div>
                   </div>
                   <FormControl>
