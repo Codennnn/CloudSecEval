@@ -1,0 +1,27 @@
+{
+  "name": "@mono/constants",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./app": {
+      "types": "./dist/app.d.ts",
+      "import": "./dist/app.js",
+      "require": "./dist/app.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "lint": "pnpm lint:es && pnpm lint:ts",
+    "lint:es": "eslint \"**/*.{ts,tsx,js,mjs,cjs}\"",
+    "lint:ts": "tsc --noEmit --skipLibCheck",
+    "format": "eslint \"**/*.{ts,tsx,js,mjs,cjs}\" --fix"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  }
+}
