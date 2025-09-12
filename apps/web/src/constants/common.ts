@@ -2,7 +2,7 @@ import mitt from 'mitt'
 
 import { isCrowdTest } from '~/utils/platform'
 
-const SITE_DESCRIPTION = isCrowdTest() ? '网安安全防护平台，助力网络安全建设。' : 'NestJS 中文文档，高质量的中文翻译版本，精准还原官方内容，助力中文开发者轻松掌握高效、可靠且可扩展的 Node.js 框架。'
+const SITE_DESCRIPTION = isCrowdTest() ? '网安攻防演练平台，助力网络安全建设。' : 'NestJS 中文文档，高质量的中文翻译版本，精准还原官方内容，助力中文开发者轻松掌握高效、可靠且可扩展的 Node.js 框架。'
 
 // 网站配置常量
 export const SITE_CONFIG = {
@@ -14,7 +14,7 @@ export const SITE_CONFIG = {
   title: 'NestJS - 渐进式 Node.js 框架',
   description: SITE_DESCRIPTION,
 
-  adminTitle: isCrowdTest() ? '网安安全防护平台' : 'NestJS 文档管理后台',
+  adminTitle: isCrowdTest() ? '网安攻防演练平台' : 'NestJS 文档管理后台',
 
   // 作者和发布者信息
   author: 'NestJS 中文文档团队',
