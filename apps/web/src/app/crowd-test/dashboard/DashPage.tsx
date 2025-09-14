@@ -1,15 +1,16 @@
 'use client'
 
 import { Clock, Shield } from 'lucide-react'
-import { Area, AreaChart, Cell, Line, LineChart, Pie, PieChart } from 'recharts'
+import { Area, AreaChart, Line, LineChart } from 'recharts'
 
 import { Badge } from '~/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
+import { ChartContainer } from '~/components/ui/chart'
 
 import { ActivityTimeline } from './components/ActivityTimeline'
 import { PersonalRankingList } from './components/PersonalRankingList'
 import { ReportStatsCards } from './components/ReportStatsCards'
+import { TeamOnlineChart } from './components/TeamOnlineChart'
 import { TeamReportsChart } from './components/TeamReportsChart'
 import {
   activityTimeline,
@@ -131,40 +132,7 @@ export function DashboardPage() {
               <CardTitle>团队在线人数</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="relative h-64">
-                <ChartContainer
-                  config={{
-                    online: { label: '在线', color: '#3b82f6' },
-                  }}
-                >
-                  <PieChart>
-                    <Pie
-                      cx="50%"
-                      cy="50%"
-                      data={teamOnlineData}
-                      dataKey="value"
-                      endAngle={-270}
-                      innerRadius={48}
-                      label={({ name, value, percent }) => `${name} ${String(value)} (${(percent * 100).toFixed(0)}%)`}
-                      labelLine={false}
-                      outerRadius={78}
-                      startAngle={90}
-                    >
-                      {teamOnlineData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <ChartLegend content={<ChartLegendContent />} verticalAlign="bottom" />
-                  </PieChart>
-                </ChartContainer>
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-2xl font-semibold">{totalOnline}</div>
-                    <div className="text-xs text-muted-foreground">总在线人数</div>
-                  </div>
-                </div>
-              </div>
+              <TeamOnlineChart data={teamOnlineData} totalOnline={totalOnline} />
             </CardContent>
           </Card>
         </div>
