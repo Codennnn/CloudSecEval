@@ -148,9 +148,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                     <SelectValue placeholder="选择攻击方式" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">低</SelectItem>
                     <SelectItem value="medium">Web</SelectItem>
-                    <SelectItem value="high">Web</SelectItem>
                     <SelectItem value="high">移动端</SelectItem>
                     <SelectItem value="critical">其他</SelectItem>
                   </SelectContent>

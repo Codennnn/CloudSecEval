@@ -19,7 +19,7 @@ interface TeamOnlineChartProps {
 
 export function TeamOnlineChart({ data, totalOnline }: TeamOnlineChartProps) {
   return (
-    <div className="relative h-64">
+    <div className="relative min-h-64">
       <ChartContainer
         config={{
           online: { label: '在线', color: roleColorMap[TeamRole.蓝] },
@@ -42,6 +42,7 @@ export function TeamOnlineChart({ data, totalOnline }: TeamOnlineChartProps) {
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
           </Pie>
+
           <ChartTooltip content={<ChartTooltipContent />} />
         </PieChart>
       </ChartContainer>

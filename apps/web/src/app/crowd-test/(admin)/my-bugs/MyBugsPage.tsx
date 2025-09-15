@@ -9,6 +9,7 @@ import type { ListResponse } from '~/lib/api/types'
 
 import { BugListTable } from '../components/BugListTable'
 
+import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import type { Options } from '~api/sdk.gen'
 import type { PaginationMetaDto } from '~api/types.gen'
 
@@ -179,7 +180,7 @@ export function MyBugsPage() {
   }
 
   const openEdit = (item: MyBugItem) => {
-    router.push(`/crowd-test/bugs/${item.id}`)
+    router.push(getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugId: item.id }))
   }
 
   return (
@@ -195,10 +196,6 @@ export function MyBugsPage() {
         }}
         onEdit={(item) => {
           openEdit(item)
-        }}
-        onSubmit={(item) => {
-          void mockSubmitMyBug(item.id)
-          void refreshList()
         }}
       />
     </div>

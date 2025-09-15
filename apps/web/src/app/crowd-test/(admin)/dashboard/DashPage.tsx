@@ -12,6 +12,7 @@ import { PersonalRankingList } from './components/PersonalRankingList'
 import { ReportStatsCards } from './components/ReportStatsCards'
 import { TeamOnlineChart } from './components/TeamOnlineChart'
 import { TeamReportsChart } from './components/TeamReportsChart'
+import { TeamReportsOverviewTable } from './components/TeamReportsOverviewTable'
 import {
   activityTimeline,
   personalRanking,
@@ -66,9 +67,6 @@ function generateEventTrendData(days: number) {
 
 const eventTrendData = generateEventTrendData(14)
 
-/**
- * 企业攻防演练大屏仪表盘
- */
 export function DashboardPage() {
   return (
     <div className="p-admin-content space-y-6">
@@ -124,7 +122,7 @@ export function DashboardPage() {
             <StatsCardTitle>团队报告数统计</StatsCardTitle>
           </StatsCardHeader>
           <StatsCardContent>
-            <div className="h-64">
+            <div className="min-h-64">
               <TeamReportsChart
                 data={workloadData.map((d) => ({
                   team: d.team,
@@ -156,10 +154,12 @@ export function DashboardPage() {
         </StatsCard>
       </div>
 
+      <TeamReportsOverviewTable />
+
       <div>
         <StatsCard>
           <StatsCardHeader>
-            <StatsCardTitle>个人工作量排行</StatsCardTitle>
+            <StatsCardTitle>个人排行</StatsCardTitle>
           </StatsCardHeader>
           <StatsCardContent>
             <PersonalRankingList data={personalRanking} maxItems={10} />

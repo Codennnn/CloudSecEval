@@ -9,5 +9,9 @@ export const metadata: Metadata = {
 }
 
 export default function TeamProfilePage() {
-  return <TeamProfile />
+  return (
+    <div className="p-admin-content">
+      <TeamProfile />
+    </div>
+  )
 }

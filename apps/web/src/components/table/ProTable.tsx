@@ -80,6 +80,8 @@ export interface ProTableProps<TData> {
 
   /** 工具栏配置 */
   toolbar?: {
+    /** 是否显示工具栏，默认 true */
+    showToolbar?: boolean
     /** 是否显示列控制功能，默认 true */
     showColumnControl?: boolean
     /** 右侧自定义内容 */
@@ -110,6 +112,8 @@ export interface ProTableProps<TData> {
 
   /** 分页组件配置 */
   paginationConfig?: {
+    /** 是否显示分页组件，默认 true */
+    showPagination?: boolean
     /** 是否显示每页条数选择器，默认 true */
     showPageSizeSelector?: boolean
     /** 是否显示选中行数统计，默认 false */
@@ -173,12 +177,14 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
   } = props
 
   const {
+    showToolbar = true,
     rightContent,
     search,
     refresh,
   } = toolbar
 
   const {
+    showPagination = true,
     showPageSizeSelector = true,
     showSelection = false,
     pageSizeOptions = [10, 20, 30, 40, 50],
@@ -488,22 +494,24 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
         {!!headerTitle && <h2 className="font-bold">{headerTitle}</h2>}
 
         {/* MARK: 工具栏 */}
-        <TableToolbar
-          className="ml-auto"
-          columnVisibilityStorageKey={columnVisibilityStorageKey}
-          fields={searchFields}
-          refresh={{
-            show: true,
-            ...refresh,
-            onRefresh: () => {
-              void handleRefresh()
-            },
-          }}
-          right={rightContent}
-          search={search}
-          onColumnVisibilityChange={handleColumnVisibilityChange}
-          onQueryParamsChange={handleQueryParamsChange}
-        />
+        {showToolbar && (
+          <TableToolbar
+            className="ml-auto"
+            columnVisibilityStorageKey={columnVisibilityStorageKey}
+            fields={searchFields}
+            refresh={{
+              show: true,
+              ...refresh,
+              onRefresh: () => {
+                void handleRefresh()
+              },
+            }}
+            right={rightContent}
+            search={search}
+            onColumnVisibilityChange={handleColumnVisibilityChange}
+            onQueryParamsChange={handleQueryParamsChange}
+          />
+        )}
       </div>
 
       {/* MARK: 表格 */}
@@ -556,12 +564,14 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
       </div>
 
       {/* MARK: 分页 */}
-      <TablePagination
-        pageSizeOptions={pageSizeOptions}
-        showPageSizeSelector={showPageSizeSelector}
-        showSelection={showSelection}
-        table={table}
-      />
+      {showPagination && (
+        <TablePagination
+          pageSizeOptions={pageSizeOptions}
+          showPageSizeSelector={showPageSizeSelector}
+          showSelection={showSelection}
+          table={table}
+        />
+      )}
 
       {/* MARK: 选中工具栏 */}
       {rowSelectionEnabled && selectionToolbarEnabled

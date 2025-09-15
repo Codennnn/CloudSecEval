@@ -1,4 +1,4 @@
-import { BugReportForm } from '~crowd-test/components/BugReportForm'
+import { BugReportForm } from '~/app/crowd-test/(admin)/components/BugReportForm'
 
 export default function BugReportPage() {
   return (

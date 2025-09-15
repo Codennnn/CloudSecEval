@@ -1,0 +1,9 @@
+.crowd-test-dashboard {
+  --foreground: white;
+
+  color: var(--foreground);
+
+  @theme inline {
+    --color-crowd-test-dashboard-background: #060d1b;
+  }
+}

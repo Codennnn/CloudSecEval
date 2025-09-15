@@ -6,10 +6,6 @@ import type { BugItem } from '../types'
 
 import { StatCard, type StatCardData } from '~admin/components/StatCard'
 
-// ============================================================================
-// MARK: 统计卡片计算与渲染
-// ============================================================================
-
 /**
  * 判断日期是否为今天
  */
@@ -80,11 +76,9 @@ function computeBugStats(all: BugItem[]): StatCardData[] {
   return cards
 }
 
-/**
- * 统计卡片组件
- */
 export function BugStatsCards(props: { data: BugItem[] }): ReactElement {
   const { data } = props
+
   const stats = computeBugStats(data)
 
   return (

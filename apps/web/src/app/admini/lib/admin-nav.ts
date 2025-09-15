@@ -1,3 +1,4 @@
+import { consola } from 'consola'
 import { BarChartIcon, BookUpIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, NotebookTextIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
 
 import { SITE_CONFIG } from '~/constants/common'
@@ -25,8 +26,10 @@ export const enum AdminRoutes {
 
   CrowdTestDashboard = '/crowd-test/dashboard',
   CrowdTestBugs = '/crowd-test/bugs',
+  CrowdTestBugsDetail = '/crowd-test/bugs/[bugId]',
   CrowdTestMyBugs = '/crowd-test/my-bugs',
   CrowdTestTeams = '/crowd-test/teams',
+  CrowdTestTeamProfile = '/crowd-test/teams/[teamId]',
   CrowdTestRoles = '/crowd-test/roles',
 }
 
@@ -109,6 +112,11 @@ export const adminNavConfig: AdminNavConfig = {
     url: AdminRoutes.CrowdTestBugs,
     icon: NotebookTextIcon,
   },
+  [AdminRoutes.CrowdTestBugsDetail]: {
+    title: '报告详情',
+    url: AdminRoutes.CrowdTestBugsDetail,
+    icon: NotebookTextIcon,
+  },
   [AdminRoutes.CrowdTestMyBugs]: {
     title: '我的报告',
     url: AdminRoutes.CrowdTestMyBugs,
@@ -119,6 +127,11 @@ export const adminNavConfig: AdminNavConfig = {
     url: AdminRoutes.CrowdTestTeams,
     icon: UsersIcon,
     requiredPermission: [adminPermission.departments.read],
+  },
+  [AdminRoutes.CrowdTestTeamProfile]: {
+    title: '团队概况',
+    url: AdminRoutes.CrowdTestTeamProfile,
+    icon: UsersIcon,
   },
   [AdminRoutes.CrowdTestRoles]: {
     title: '角色管理',
@@ -250,4 +263,42 @@ export function getPagePermissionByRoute(pathname: string): PermissionFlag[] | u
   }
 
   return undefined
+}
+
+/**
+ * 根据 RouteKey 获取对应的完整路由路径
+ *
+ * @param routeKey - 路由配置中定义的路由键名
+ * @param params - 动态路由参数对象，用于替换路径中的动态参数（如 [projectId]）
+ * @returns 返回与 routeKey 对应的实际路由路径
+ * @example
+ * ```ts
+ * // 基础用法
+ * getRoutePath(RouteKey.首页) // 返回: '/'
+ *
+ * // 带动态参数
+ * getRoutePath(RouteKey.TW_客户_项目详情, { projectId: '123' }) // 返回: '/client/project/123'
+ * ```
+ */
+export function getRoutePath(routeKey: AdminRoutes, params?: Record<string, string | number>) {
+  let path: string = adminNavConfig[routeKey].url
+
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      const paramPattern = `[${key}]`
+
+      if (!path.includes(paramPattern)) {
+        consola.warn(
+          `[路由参数警告] 路由 "${routeKey}" 的路径 "${path}" 中未找到参数 "${key}" 的占位符`,
+          '\n提供的参数：', params,
+        )
+
+        return
+      }
+
+      path = path.replace(paramPattern, String(value))
+    })
+  }
+
+  return path
 }

@@ -1,7 +1,9 @@
 'use client'
 
 import { type ReactElement, useMemo } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
+import { useRouter } from 'next/navigation'
 import { EllipsisVerticalIcon, PencilLineIcon } from 'lucide-react'
 
 import { ProTable, type ProTableProps } from '~/components/table/ProTable'
@@ -16,7 +18,9 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
-import { type BugSeverity, type BugStatus, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../bugs/types'
+import { type BugSeverity, type BugStatus, NEW_BUG_ID, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../bugs/types'
+
+import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 
 export const enum BugReportRoleView {
   ADMIN,
@@ -37,8 +41,6 @@ interface BugListTableProps<Row extends BugLikeRow>
   roleView?: BugReportRoleView
   /** 行级回调：编辑 */
   onEdit?: (item: Row) => void
-  /** 行级回调：提交 */
-  onSubmit?: (item: Row) => void
   /** 行级回调：删除 */
   onDelete?: (item: Row) => void | Promise<void>
 }
@@ -46,9 +48,24 @@ interface BugListTableProps<Row extends BugLikeRow>
 export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Row>): ReactElement {
   const {
     roleView = BugReportRoleView.USER,
+    onEdit,
     onDelete,
     ...restProTableProps
   } = props
+
+  const router = useRouter()
+
+  const handleCreate = useEvent(() => {
+    router.push(getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugId: NEW_BUG_ID }))
+  })
+
+  const handleEdit = useEvent((item: Row) => {
+    onEdit?.(item)
+  })
+
+  const handleDelete = useEvent((item: Row) => {
+    void onDelete?.(item)
+  })
 
   const columns = useMemo<TableColumnDef<Row>[]>(() => {
     const list: TableColumnDef<Row>[] = [
@@ -95,13 +112,25 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
         return (
           <div className="flex items-center gap-0.5">
             {roleView === BugReportRoleView.ADMIN && (
-              <Button size="sm" variant="ghost">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  handleEdit(item)
+                }}
+              >
                 查看详情
               </Button>
             )}
 
             {roleView === BugReportRoleView.USER && (
-              <Button size="iconSm" variant="ghost">
+              <Button
+                size="iconSm"
+                variant="ghost"
+                onClick={() => {
+                  handleEdit(item)
+                }}
+              >
                 <PencilLineIcon />
               </Button>
             )}
@@ -122,7 +151,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={
-                      () => { void onDelete?.(item) }
+                      () => { handleDelete(item) }
                     }
                   >
                     删除
@@ -136,7 +165,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
     })
 
     return list
-  }, [onDelete, roleView])
+  }, [handleDelete, handleEdit, roleView])
 
   return (
     <ProTable<Row>
@@ -152,7 +181,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
           <Button
             size="sm"
             onClick={() => {
-            //
+              handleCreate()
             }}
           >
             提交报告

@@ -39,3 +39,5 @@ export const STATUS_TO_LABEL: Record<BugStatus, string> = {
   rejected: '已拒绝',
   fixed: '已修复',
 }
+
+export const NEW_BUG_ID = 'new'
