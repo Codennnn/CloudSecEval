@@ -9,8 +9,7 @@ export interface ActivityItem {
 }
 
 export const projectInfo = {
-  name: '春季企业攻防演练',
-  leader: '张三',
+  name: '企业攻防演练',
   startDate: '2024-03-01',
   endDate: '2024-03-15',
   status: '进行中',

@@ -15,9 +15,6 @@ interface TeamOnlineChartProps {
   totalOnline: number
 }
 
-/**
- * 团队在线人数饼图组件
- */
 export function TeamOnlineChart({ data, totalOnline }: TeamOnlineChartProps) {
   return (
     <div className="relative h-64">

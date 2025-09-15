@@ -483,7 +483,7 @@ export function ProTable<TData>(props: ProTableProps<TData>) {
   const tableRows = table.getRowModel().rows
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-admin-content-half', className)}>
       <div className="flex items-center gap-2">
         {!!headerTitle && <h2 className="font-bold">{headerTitle}</h2>}
 

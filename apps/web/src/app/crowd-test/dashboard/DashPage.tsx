@@ -1,11 +1,11 @@
 'use client'
 
-import { Clock, Shield } from 'lucide-react'
-import { Area, AreaChart, Line, LineChart } from 'recharts'
+import { Shield } from 'lucide-react'
+import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
 
 import { Badge } from '~/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { ChartContainer } from '~/components/ui/chart'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
+import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
 import { ActivityTimeline } from './components/ActivityTimeline'
 import { PersonalRankingList } from './components/PersonalRankingList'
@@ -14,19 +14,57 @@ import { TeamOnlineChart } from './components/TeamOnlineChart'
 import { TeamReportsChart } from './components/TeamReportsChart'
 import {
   activityTimeline,
-  approveTrend,
   personalRanking,
   projectInfo,
-  riskTrend,
   roleColorMap,
   teams,
-  vulnTrend,
   workloadData,
 } from './lib/mockData'
 
 // 按队伍汇总在线人数（用于饼图）
 const teamOnlineData = teams.map((t) => ({ name: t.name, value: t.online, fill: roleColorMap[t.role] ?? '#8b5cf6' }))
 const totalOnline = teams.reduce((sum, t) => sum + t.online, 0)
+
+// 事件趋势图配置（提交 / 审核）
+const eventChartConfig = {
+  submitted: {
+    label: '提交报告',
+    color: 'oklch(56% 0.19 230deg)',
+  },
+  approved: {
+    label: '审核通过',
+    color: 'oklch(60.8% 0.172 155.46deg)',
+  },
+} as const
+
+/**
+ * 生成近 N 天的事件趋势数据（提交 / 审核）。
+ */
+function generateEventTrendData(days: number) {
+  const today = new Date()
+  const data: { date: string, submitted: number, approved: number }[] = []
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+
+    // 简单的可读性波动曲线：基于正弦和余量构造
+    const base = 12 + Math.round(5 * Math.sin((days - i) / 2))
+    const submitted = base + (i % 3)
+    const approvedRaw = submitted - (1 + (i % 2))
+    const approved = approvedRaw >= 0 ? approvedRaw : 0
+
+    data.push({
+      date: d.toISOString().split('T')[0],
+      submitted,
+      approved,
+    })
+  }
+
+  return data
+}
+
+const eventTrendData = generateEventTrendData(14)
 
 /**
  * 企业攻防演练大屏仪表盘
@@ -47,57 +85,6 @@ export function DashboardPage() {
               <h2 className="text-2xl font-semibold tracking-tight">{projectInfo.name}</h2>
               <Badge>{projectInfo.status}</Badge>
             </div>
-            <div className="mt-2 grid gap-1 text-sm text-muted-foreground @sm:grid-cols-2">
-              <div>负责人：{projectInfo.leader}</div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 opacity-70" />
-                <span>时间：{projectInfo.startDate} 至 {projectInfo.endDate}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3 lg:justify-items-end">
-            <div className="rounded-lg border bg-card p-3">
-              <div className="text-xs text-muted-foreground">风险评分</div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-2xl font-semibold text-error">{projectInfo.riskScore}</span>
-              </div>
-              <div className="mt-2 h-10">
-                <ChartContainer config={{ value: { label: '风险', color: 'oklch(57.7% 0.245 27.325deg)' } }}>
-                  <AreaChart data={riskTrend}>
-                    <Area dataKey="value" fill="oklch(96% 0.03 20deg)" stroke="oklch(57.7% 0.245 27.325deg)" strokeWidth={2} type="monotone" />
-                  </AreaChart>
-                </ChartContainer>
-              </div>
-            </div>
-
-            <div className="rounded-lg border bg-card p-3">
-              <div className="text-xs text-muted-foreground">漏洞总数</div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-2xl font-semibold">{projectInfo.totalVulns}</span>
-              </div>
-              <div className="mt-2 h-10">
-                <ChartContainer config={{ value: { label: '漏洞', color: 'oklch(48% 0.2 20deg)' } }}>
-                  <LineChart data={vulnTrend}>
-                    <Line dataKey="value" dot={false} stroke="oklch(48% 0.2 20deg)" strokeWidth={2} type="monotone" />
-                  </LineChart>
-                </ChartContainer>
-              </div>
-            </div>
-
-            <div className="rounded-lg border bg-card p-3">
-              <div className="text-xs text-muted-foreground">报告通过</div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-2xl font-semibold text-success">{projectInfo.reports.approved}</span>
-              </div>
-              <div className="mt-2 h-10">
-                <ChartContainer config={{ value: { label: '通过', color: 'oklch(60.8% 0.172 155.46deg)' } }}>
-                  <AreaChart data={approveTrend}>
-                    <Area dataKey="value" fill="oklch(95% 0.06 150deg)" stroke="oklch(60.8% 0.172 155.46deg)" strokeWidth={2} type="monotone" />
-                  </AreaChart>
-                </ChartContainer>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -112,46 +99,31 @@ export function DashboardPage() {
         }}
       />
 
-      {/* 分组标题：实时动态与在线概览 */}
-      <div>
-        <h3 className="text-sm font-semibold tracking-wide text-foreground-accent">实时动态与在线概览</h3>
-        <p className="mt-1 text-xs text-muted-foreground">左侧为实时测试动态，右侧为团队在线人数与资产状态概览。</p>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-admin-content">
+        <StatsCard>
+          <StatsCardHeader>
+            <StatsCardTitle>时间线活动</StatsCardTitle>
+          </StatsCardHeader>
 
-      {/* 中间区域 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <StatsCardContent>
+            <ActivityTimeline activities={activityTimeline} />
+          </StatsCardContent>
+        </StatsCard>
 
-        <div className="space-y-6">
-          {/* 时间线活动列表 */}
-          <ActivityTimeline activities={activityTimeline} />
-        </div>
+        <StatsCard>
+          <StatsCardHeader>
+            <StatsCardTitle>团队在线情况</StatsCardTitle>
+          </StatsCardHeader>
+          <StatsCardContent>
+            <TeamOnlineChart data={teamOnlineData} totalOnline={totalOnline} />
+          </StatsCardContent>
+        </StatsCard>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>团队在线人数</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <TeamOnlineChart data={teamOnlineData} totalOnline={totalOnline} />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* 分组标题：团队协作状态区 */}
-      <div>
-        <h3 className="text-sm font-semibold tracking-wide text-foreground-accent">团队协作与贡献</h3>
-        <p className="mt-1 text-xs text-muted-foreground">团队在线情况、工作量对比，以及个人贡献排行。</p>
-      </div>
-
-      {/* 团队协作状态区 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* 工作量统计 */}
-        <Card>
-          <CardHeader>
-            <CardTitle>工作量统计</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <StatsCard>
+          <StatsCardHeader>
+            <StatsCardTitle>团队报告数统计</StatsCardTitle>
+          </StatsCardHeader>
+          <StatsCardContent>
             <div className="h-64">
               <TeamReportsChart
                 data={workloadData.map((d) => ({
@@ -161,18 +133,38 @@ export function DashboardPage() {
                 }))}
               />
             </div>
-          </CardContent>
-        </Card>
+          </StatsCardContent>
+        </StatsCard>
 
-        {/* 个人工作量排行 */}
-        <Card>
-          <CardHeader>
-            <CardTitle>个人工作量排行</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <StatsCard>
+          <StatsCardHeader>
+            <StatsCardTitle>事件趋势</StatsCardTitle>
+          </StatsCardHeader>
+          <StatsCardContent>
+            <div className="h-64">
+              <ChartContainer config={eventChartConfig}>
+                <LineChart data={eventTrendData}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis axisLine={false} dataKey="date" minTickGap={24} tickLine={false} />
+                  <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+                  <Line dataKey="submitted" dot={false} stroke="var(--color-submitted)" strokeWidth={2} type="monotone" />
+                  <Line dataKey="approved" dot={false} stroke="var(--color-approved)" strokeWidth={2} type="monotone" />
+                </LineChart>
+              </ChartContainer>
+            </div>
+          </StatsCardContent>
+        </StatsCard>
+      </div>
+
+      <div>
+        <StatsCard>
+          <StatsCardHeader>
+            <StatsCardTitle>个人工作量排行</StatsCardTitle>
+          </StatsCardHeader>
+          <StatsCardContent>
             <PersonalRankingList data={personalRanking} maxItems={10} />
-          </CardContent>
-        </Card>
+          </StatsCardContent>
+        </StatsCard>
       </div>
     </div>
   )

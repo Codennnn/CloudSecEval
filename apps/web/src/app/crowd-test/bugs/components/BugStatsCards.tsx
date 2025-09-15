@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 
-import { Activity, AlertTriangle, CalendarDays, CheckCircle2, Clock, Hourglass } from 'lucide-react'
+import { Activity, AlertTriangle, CalendarDays, CheckCircle2 } from 'lucide-react'
 
 import type { BugItem } from '../types'
 
@@ -37,20 +37,6 @@ function computeBugStats(all: BugItem[]): StatCardData[] {
   const rejected = all.filter((x) => x.status === 'rejected').length
   const decisionTotal = accepted + rejected
   const acceptanceRate = decisionTotal > 0 ? `${Math.round((accepted / decisionTotal) * 100)}%` : '—'
-
-  const responded = all.filter((x) => x.firstRespondedAt)
-  const avgFirstRespHours = responded.length > 0
-    ? Math.round(responded.reduce((acc, x) => {
-        const respondTime = new Date(x.firstRespondedAt!).getTime()
-        const createTime = new Date(x.createdAt).getTime()
-
-        return acc + ((respondTime - createTime) / (1000 * 60 * 60))
-      }, 0) / responded.length)
-    : null
-
-  const fortyEightHours = 48 * 60 * 60 * 1000
-  const now = Date.now()
-  const slaOverdue = all.filter((x) => x.status === 'pending' && !x.firstRespondedAt && (now - new Date(x.createdAt).getTime() > fortyEightHours)).length
 
   const cards: StatCardData[] = [
     {
@@ -89,24 +75,6 @@ function computeBugStats(all: BugItem[]): StatCardData[] {
       icon: CheckCircle2,
       trendType: 'neutral',
     },
-    {
-      title: '平均首次响应 (小时)',
-      value: avgFirstRespHours ?? '—',
-      changePercent: '—',
-      primaryText: '提交到首次响应的平均用时',
-      secondaryText: responded.length > 0 ? `样本数 ${responded.length}` : '暂无样本',
-      icon: Clock,
-      trendType: 'neutral',
-    },
-    {
-      title: '超 SLA 数量',
-      value: slaOverdue,
-      changePercent: '—',
-      primaryText: '超过 48h 未响应的待审核漏洞',
-      secondaryText: '用于提醒及时处理',
-      icon: Hourglass,
-      trendType: 'neutral',
-    },
   ]
 
   return cards
@@ -120,12 +88,12 @@ export function BugStatsCards(props: { data: BugItem[] }): ReactElement {
   const stats = computeBugStats(data)
 
   return (
-    <>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
       {stats.map((card, idx) => (
         <div key={idx}>
           <StatCard data={card} />
         </div>
       ))}
-    </>
+    </div>
   )
 }

@@ -3,15 +3,10 @@
 import { useRef, useState } from 'react'
 
 import { type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { Textarea } from '~/components/ui/textarea'
 import type { ListResponse } from '~/lib/api/types'
 
 import { BugListTable } from '../components/BugListTable'
+import { BugReportForm } from '../components/BugReportForm'
 
 import type { Options } from '~api/sdk.gen'
 import type { PaginationMetaDto } from '~api/types.gen'
@@ -119,7 +114,9 @@ async function mockListMyBugs(options: Options): Promise<ListResponse<MyBugItem>
     hasPrevPage: safePage > 1,
   }
 
-  await new Promise((r) => { setTimeout(r, 380) })
+  await new Promise((r) => {
+    setTimeout(r, 380)
+  })
 
   return { code: 200, message: 'ok', data: pageRows, pagination }
 }
@@ -209,7 +206,9 @@ function useEditState(): [EditState, (next: Partial<EditState>) => void, () => v
     setState((prev) => ({ ...prev, ...next }))
   }
 
-  const reset = () => { setState({ title: '', description: '', severity: 'medium', tagsText: '' }) }
+  const reset = () => {
+    setState({ title: '', description: '', severity: 'medium', tagsText: '' })
+  }
 
   return [state, update, reset]
 }
@@ -238,31 +237,6 @@ export function MyBugsPage() {
     setFormOpen(true)
   }
 
-  async function handleSubmit(): Promise<void> {
-    const tags = edit.tagsText.split(',').map((s) => s.trim()).filter(Boolean)
-
-    if (!edit.id) {
-      await mockCreateMyBug({
-        title: edit.title,
-        description: edit.description,
-        severity: edit.severity,
-        tags,
-      })
-    }
-    else {
-      await mockUpdateMyBug(edit.id, {
-        title: edit.title,
-        description: edit.description,
-        severity: edit.severity,
-        tags,
-      })
-    }
-
-    setFormOpen(false)
-    resetEdit()
-    await refreshList()
-  }
-
   return (
     <div className="p-admin-content">
       <BugListTable<MyBugItem>
@@ -286,58 +260,43 @@ export function MyBugsPage() {
       />
 
       {formOpen && (
-        <Card className="max-w-3xl">
-          <CardHeader>
-            <CardTitle>{edit.id ? '编辑漏洞' : '新建漏洞'}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">标题</Label>
-              <Input id="title" value={edit.title} onChange={(e) => { setEdit({ title: e.target.value }) }} />
-            </div>
+        <BugReportForm
+          initialValues={edit.id
+            ? {
+                id: edit.id,
+                title: edit.title,
+                description: edit.description,
+                severity: edit.severity,
+                tags: edit.tagsText.split(',').map((s) => s.trim()).filter(Boolean),
+              }
+            : undefined}
+          onCancel={() => {
+            setFormOpen(false)
+            resetEdit()
+          }}
+          onSubmit={async (values) => {
+            if (!values.id) {
+              await mockCreateMyBug({
+                title: values.title,
+                description: values.description,
+                severity: values.severity,
+                tags: values.tags,
+              })
+            }
+            else {
+              await mockUpdateMyBug(values.id, {
+                title: values.title,
+                description: values.description,
+                severity: values.severity,
+                tags: values.tags,
+              })
+            }
 
-            <div className="grid gap-2">
-              <Label htmlFor="severity">严重级别</Label>
-              <Select
-                value={edit.severity}
-                onValueChange={(v) => {
-                  setEdit({ severity: v as BugSeverity })
-                }}
-              >
-                <SelectTrigger className="w-40" id="severity">
-                  <SelectValue placeholder="选择级别" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">低</SelectItem>
-                  <SelectItem value="medium">中</SelectItem>
-                  <SelectItem value="high">高</SelectItem>
-                  <SelectItem value="critical">严重</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="description">问题描述 / 复现步骤 / 影响</Label>
-              <Textarea id="description" rows={8} value={edit.description} onChange={(e) => { setEdit({ description: e.target.value }) }} />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="tags">标签（逗号分隔）</Label>
-              <Input id="tags" placeholder="auth, api" value={edit.tagsText} onChange={(e) => { setEdit({ tagsText: e.target.value }) }} />
-            </div>
-          </CardContent>
-          <CardFooter className="justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setFormOpen(false)
-                resetEdit()
-              }}
-            >取消
-            </Button>
-            <Button onClick={() => { void handleSubmit() }}>{edit.id ? '保存' : '提交'}</Button>
-          </CardFooter>
-        </Card>
+            setFormOpen(false)
+            resetEdit()
+            await refreshList()
+          }}
+        />
       )}
     </div>
   )

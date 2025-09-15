@@ -23,22 +23,6 @@ interface TeamReportsChartProps {
 export function TeamReportsChart(props: TeamReportsChartProps) {
   const { data } = props
 
-  const getBarColor = (teamName: string, role?: string): string => {
-    if (role && roleColorMap[role]) {
-      return roleColorMap[role]
-    }
-
-    if (teamName.includes('红')) {
-      return roleColorMap['红']
-    }
-
-    if (teamName.includes('蓝')) {
-      return roleColorMap['蓝']
-    }
-
-    return roleColorMap['评估']
-  }
-
   return (
     <ChartContainer
       config={{
@@ -47,12 +31,21 @@ export function TeamReportsChart(props: TeamReportsChartProps) {
     >
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="team" />
-        <YAxis />
+
+        <XAxis axisLine={false} dataKey="team" />
+
+        <YAxis axisLine={false} />
+
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="reports" radius={[6, 6, 0, 0]}>
+
+        <Bar dataKey="reports" radius={6}>
           {data.map((d) => (
-            <Cell key={d.team} fill={getBarColor(d.team, d.role)} />
+            <Cell
+              key={d.team}
+              fill={d.role
+                ? roleColorMap[d.role]
+                : undefined}
+            />
           ))}
         </Bar>
       </BarChart>

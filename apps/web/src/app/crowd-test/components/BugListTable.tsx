@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
-import { STATUS_TO_LABEL, STATUS_TO_VARIANT, type BugStatus, type BugSeverity } from '../bugs/types'
+import { type BugSeverity, type BugStatus, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../bugs/types'
 
 // ============================================================================
 // MARK: 类型
@@ -86,7 +86,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
         header: '严重级别',
         enableSorting: false,
         cell: ({ row }) => {
-          const sev = (row.original as Row).severity
+          const sev = (row.original).severity
           const label: Record<BugSeverity, string> = {
             low: '低',
             medium: '中',
@@ -102,7 +102,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
         header: '状态',
         enableSorting: false,
         cell: ({ row }) => {
-          const status = (row.original as Row).status as BugStatus
+          const status = (row.original).status
           const classes = STATUS_TO_VARIANT[status]
           const text = STATUS_TO_LABEL[status]
 
@@ -119,7 +119,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
         enableSorting: false,
         enableHiding: false,
         cell: ({ row }) => {
-          const item = row.original as Row
+          const item = row.original
 
           return (
             <div className="flex items-center gap-0.5">
@@ -147,13 +147,16 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
                     </DropdownMenuItem>
                   )}
 
-                  {(onEdit || onSubmit) && (onDelete) && <DropdownMenuSeparator />}
+                  <DropdownMenuSeparator />
 
-                  {onDelete && (
-                    <DropdownMenuItem variant="destructive" onClick={() => { void onDelete(item) }}>
-                      删除
-                    </DropdownMenuItem>
-                  )}
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={
+                      () => { void onDelete?.(item) }
+                    }
+                  >
+                    删除
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -170,7 +173,11 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
       className={className}
       columnVisibilityStorageKey={storageKey}
       columns={columns}
-      paginationConfig={{ pageSizeOptions: [10, 20, 30, 40, 50], showPageSizeSelector: true, showSelection: false }}
+      paginationConfig={{
+        pageSizeOptions: [10, 20, 30, 40, 50],
+        showPageSizeSelector: true,
+        showSelection: false,
+      }}
       queryKeyFn={queryKeyFn}
       queryOptionsFn={queryOptionsFn}
       rowSelection={{ enabled: false }}
@@ -179,7 +186,3 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
     />
   )
 }
-
-export default BugListTable
-
-

@@ -23,7 +23,6 @@ export const enum AdminRoutes {
   Docs = '/admini/docs',
   Unauthorized = '/admini/unauthorized',
 
-  // 网安众测平台
   CrowdTestDashboard = '/crowd-test/dashboard',
   CrowdTestBugs = '/crowd-test/bugs',
   CrowdTestMyBugs = '/crowd-test/my-bugs',
@@ -101,7 +100,7 @@ export const adminNavConfig: AdminNavConfig = {
 
   // CrowdTest
   [AdminRoutes.CrowdTestDashboard]: {
-    title: '攻防演练大屏',
+    title: '数据总览',
     url: AdminRoutes.CrowdTestDashboard,
     icon: GaugeIcon,
   },
