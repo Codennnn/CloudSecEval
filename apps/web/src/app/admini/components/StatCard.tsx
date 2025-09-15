@@ -31,9 +31,6 @@ export interface StatCardData {
   trendType?: 'positive' | 'negative' | 'neutral'
 }
 
-/**
- * 统计卡片组件属性
- */
 export interface StatCardProps {
   /** 卡片数据 */
   data: StatCardData
@@ -101,11 +98,7 @@ export function StatCard(props: React.PropsWithChildren<StatCardProps>) {
   )
 }
 
-/**
- * 统计卡片容器组件
- * 提供响应式网格布局
- */
-export interface StatCardsContainerProps {
+interface StatCardsContainerProps {
   /** 子组件 */
   children: React.ReactNode
   /** 自定义类名 */

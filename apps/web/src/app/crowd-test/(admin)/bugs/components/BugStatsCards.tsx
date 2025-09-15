@@ -4,7 +4,7 @@ import { Activity, AlertTriangle, CalendarDays, CheckCircle2 } from 'lucide-reac
 
 import type { BugItem } from '../types'
 
-import { StatCard, type StatCardData } from '~admin/components/StatCard'
+import { BugStatsCard, type StatCardData } from './BugStatsCard'
 
 /**
  * 判断日期是否为今天
@@ -82,10 +82,10 @@ export function BugStatsCards(props: { data: BugItem[] }): ReactElement {
   const stats = computeBugStats(data)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-admin-content">
       {stats.map((card, idx) => (
         <div key={idx}>
-          <StatCard data={card} />
+          <BugStatsCard data={card} />
         </div>
       ))}
     </div>

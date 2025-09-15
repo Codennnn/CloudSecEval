@@ -1,5 +1,12 @@
+.crowd-test-root {
+  --theme: #3b82f6;
+  --theme2: #ef4444;
+}
+
 .crowd-test-dashboard {
   --foreground: white;
+  --theme: #1491ff;
+  --theme2: #09f6ff;
 
   color: var(--foreground);
 
