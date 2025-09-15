@@ -4,6 +4,8 @@ import { Cell, Pie, PieChart } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 
+import { roleColorMap, TeamRole } from '../lib/mockData'
+
 interface TeamOnlineData {
   name: string
   value: number
@@ -20,7 +22,7 @@ export function TeamOnlineChart({ data, totalOnline }: TeamOnlineChartProps) {
     <div className="relative h-64">
       <ChartContainer
         config={{
-          online: { label: '在线', color: '#3b82f6' },
+          online: { label: '在线', color: roleColorMap[TeamRole.蓝] },
         }}
       >
         <PieChart>

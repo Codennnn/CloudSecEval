@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 
-import { roleColorMap } from '../lib/mockData'
+import { roleColorMap, TeamRole } from '../lib/mockData'
 
 interface TeamReportsDatum {
   team: string
@@ -26,7 +26,7 @@ export function TeamReportsChart(props: TeamReportsChartProps) {
   return (
     <ChartContainer
       config={{
-        reports: { label: '报告数', color: '#3b82f6' },
+        reports: { label: '报告数', color: roleColorMap[TeamRole.蓝] },
       }}
     >
       <BarChart data={data}>

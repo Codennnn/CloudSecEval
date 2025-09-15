@@ -1,12 +1,13 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
+
+import { useRouter } from 'next/navigation'
 
 import { type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { ListResponse } from '~/lib/api/types'
 
 import { BugListTable } from '../components/BugListTable'
-import { BugReportForm } from '../components/BugReportForm'
 
 import type { Options } from '~api/sdk.gen'
 import type { PaginationMetaDto } from '~api/types.gen'
@@ -121,45 +122,18 @@ async function mockListMyBugs(options: Options): Promise<ListResponse<MyBugItem>
   return { code: 200, message: 'ok', data: pageRows, pagination }
 }
 
-async function mockCreateMyBug(data: Pick<MyBugItem, 'title' | 'description' | 'severity' | 'tags'>): Promise<MyBugItem> {
-  const list = ensureMockData()
-  const now = new Date().toISOString()
-  const item: MyBugItem = {
-    id: `mybug_${list.length + 1}`,
-    title: data.title,
-    description: data.description,
-    severity: data.severity,
-    status: 'pending',
-    tags: data.tags ?? [],
-    createdAt: now,
-    updatedAt: now,
-  }
-  list.unshift(item)
-  await new Promise((r) => { setTimeout(r, 260) })
-
-  return item
-}
-
-async function mockUpdateMyBug(id: string, data: Partial<Pick<MyBugItem, 'title' | 'description' | 'severity' | 'tags'>>): Promise<MyBugItem | null> {
-  const list = ensureMockData()
-  const idx = list.findIndex((x) => x.id === id)
-
-  if (idx < 0) { return null }
-
-  list[idx] = { ...list[idx], ...data, updatedAt: new Date().toISOString() }
-  await new Promise((r) => { setTimeout(r, 220) })
-
-  return list[idx]
-}
-
 async function mockDeleteMyBug(id: string): Promise<boolean> {
   const list = ensureMockData()
   const idx = list.findIndex((x) => x.id === id)
 
-  if (idx < 0) { return false }
+  if (idx < 0) {
+    return false
+  }
 
   list.splice(idx, 1)
-  await new Promise((r) => { setTimeout(r, 200) })
+  await new Promise((r) => {
+    setTimeout(r, 200)
+  })
 
   return true
 }
@@ -168,10 +142,14 @@ async function mockSubmitMyBug(id: string): Promise<{ submitted: boolean }> {
   const list = ensureMockData()
   const idx = list.findIndex((x) => x.id === id)
 
-  if (idx < 0) { return { submitted: false } }
+  if (idx < 0) {
+    return { submitted: false }
+  }
 
   list[idx] = { ...list[idx], status: 'pending', updatedAt: new Date().toISOString() }
-  await new Promise((r) => { setTimeout(r, 180) })
+  await new Promise((r) => {
+    setTimeout(r, 180)
+  })
 
   return { submitted: true }
 }
@@ -191,61 +169,26 @@ const getQueryOptions: QueryOptionsFn<MyBugItem> = (options: Options) => {
   }
 }
 
-interface EditState {
-  id?: string
-  title: string
-  description: string
-  severity: BugSeverity
-  tagsText: string
-}
-
-function useEditState(): [EditState, (next: Partial<EditState>) => void, () => void] {
-  const [state, setState] = useState<EditState>({ title: '', description: '', severity: 'medium', tagsText: '' })
-
-  const update = (next: Partial<EditState>) => {
-    setState((prev) => ({ ...prev, ...next }))
-  }
-
-  const reset = () => {
-    setState({ title: '', description: '', severity: 'medium', tagsText: '' })
-  }
-
-  return [state, update, reset]
-}
-
-// ============================================================================
-// MARK: 页面
-// ============================================================================
-
 export function MyBugsPage() {
+  const router = useRouter()
+
   const tableRef = useRef<ProTableRef<MyBugItem> | null>(null)
-  const [edit, setEdit, resetEdit] = useEditState()
-  const [formOpen, setFormOpen] = useState<boolean>(false)
 
   const refreshList = async () => {
     await tableRef.current?.refresh()
   }
 
   const openEdit = (item: MyBugItem) => {
-    setEdit({
-      id: item.id,
-      title: item.title,
-      description: item.description,
-      severity: item.severity,
-      tagsText: item.tags.join(', '),
-    })
-    setFormOpen(true)
+    router.push(`/crowd-test/bugs/${item.id}`)
   }
 
   return (
     <div className="p-admin-content">
       <BugListTable<MyBugItem>
-        showActions
+        columnVisibilityStorageKey="my-bugs-columns"
         queryKeyFn={getQueryKey}
         queryOptionsFn={getQueryOptions}
-        searchPlaceholder="搜索标题/描述"
-        storageKey="my-bugs-columns"
-        tableRef={tableRef as unknown as React.RefObject<ProTableRef<MyBugItem> | null>}
+        tableRef={tableRef}
         onDelete={async (item) => {
           await mockDeleteMyBug(item.id)
           void refreshList()
@@ -258,46 +201,6 @@ export function MyBugsPage() {
           void refreshList()
         }}
       />
-
-      {formOpen && (
-        <BugReportForm
-          initialValues={edit.id
-            ? {
-                id: edit.id,
-                title: edit.title,
-                description: edit.description,
-                severity: edit.severity,
-                tags: edit.tagsText.split(',').map((s) => s.trim()).filter(Boolean),
-              }
-            : undefined}
-          onCancel={() => {
-            setFormOpen(false)
-            resetEdit()
-          }}
-          onSubmit={async (values) => {
-            if (!values.id) {
-              await mockCreateMyBug({
-                title: values.title,
-                description: values.description,
-                severity: values.severity,
-                tags: values.tags,
-              })
-            }
-            else {
-              await mockUpdateMyBug(values.id, {
-                title: values.title,
-                description: values.description,
-                severity: values.severity,
-                tags: values.tags,
-              })
-            }
-
-            setFormOpen(false)
-            resetEdit()
-            await refreshList()
-          }}
-        />
-      )}
     </div>
   )
 }

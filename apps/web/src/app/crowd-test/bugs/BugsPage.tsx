@@ -1,6 +1,6 @@
 'use client'
 
-import { BugListTable } from '../components/BugListTable'
+import { BugListTable, BugReportRoleView } from '../components/BugListTable'
 
 import { BugStatsCards } from './components/BugStatsCards'
 import { getBugListQueryKey, getBugListQueryOptions } from './lib/bugQueries'
@@ -14,11 +14,10 @@ export function BugPage() {
       <BugStatsCards data={mockData} />
 
       <BugListTable
+        columnVisibilityStorageKey="bug-list-columns"
         queryKeyFn={getBugListQueryKey}
         queryOptionsFn={getBugListQueryOptions}
-        searchPlaceholder="搜索标题/作者"
-        showActions={false}
-        storageKey="bug-list-columns"
+        roleView={BugReportRoleView.ADMIN}
       />
     </div>
   )

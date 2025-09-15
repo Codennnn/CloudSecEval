@@ -8,7 +8,6 @@ import { Badge } from '~/components/ui/badge'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
-import { ActivityTimeline } from '../../dashboard/components/ActivityTimeline'
 import {
   activityTimeline,
   approveTrend,
@@ -18,6 +17,8 @@ import {
   vulnTrend,
   workloadData,
 } from '../../dashboard/lib/mockData'
+
+import { ActivityTimeline } from '~crowd-test/dashboard/components/ActivityTimeline'
 
 /**
  * 团队概览页面（纯展示）。

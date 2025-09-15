@@ -2,9 +2,9 @@
 
 import { type ReactElement, useMemo } from 'react'
 
-import { EllipsisVerticalIcon } from 'lucide-react'
+import { EllipsisVerticalIcon, PencilLineIcon } from 'lucide-react'
 
-import { ProTable, type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
+import { ProTable, type ProTableProps } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
@@ -13,17 +13,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
 import { type BugSeverity, type BugStatus, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../bugs/types'
 
-// ============================================================================
-// MARK: 类型
-// ============================================================================
+export const enum BugReportRoleView {
+  ADMIN,
+  USER,
+}
 
-/** 基础的漏洞行数据结构（两处列表共有字段） */
 export interface BugLikeRow {
   id: string
   title: string
@@ -32,51 +31,24 @@ export interface BugLikeRow {
   severity: BugSeverity
 }
 
-interface BugListTableProps<Row extends BugLikeRow> {
-  /** 本地列可见性存储键 */
-  storageKey: string
-  /** 查询键函数（透传给 ProTable） */
-  queryKeyFn: QueryKeyFn
-  /** 查询选项函数（透传给 ProTable） */
-  queryOptionsFn: QueryOptionsFn<Row>
-  /** 外部表格引用，用于刷新等 */
-  tableRef?: React.RefObject<ProTableRef<Row> | null>
-  /** 搜索输入框占位文案 */
-  searchPlaceholder?: string
-  /** 是否显示操作列（有回调时自动显示） */
-  showActions?: boolean
+interface BugListTableProps<Row extends BugLikeRow>
+  extends Pick<ProTableProps<Row>, 'className' | 'toolbar' | 'queryKeyFn' | 'queryOptionsFn' | 'tableRef' | 'columnVisibilityStorageKey'>
+{
+  roleView?: BugReportRoleView
   /** 行级回调：编辑 */
   onEdit?: (item: Row) => void
   /** 行级回调：提交 */
   onSubmit?: (item: Row) => void
   /** 行级回调：删除 */
   onDelete?: (item: Row) => void | Promise<void>
-  /** 额外的容器类名 */
-  className?: string
 }
 
-// ============================================================================
-// MARK: 组件
-// ============================================================================
-
-/**
- * 统一漏洞列表表格（字段：标题/严重级别/状态/创建时间，可选操作列）
- */
 export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Row>): ReactElement {
   const {
-    storageKey,
-    queryKeyFn,
-    queryOptionsFn,
-    tableRef,
-    searchPlaceholder = '搜索标题',
-    showActions,
-    onEdit,
-    onSubmit,
+    roleView = BugReportRoleView.USER,
     onDelete,
-    className,
+    ...restProTableProps
   } = props
-
-  const computedShowActions = Boolean(showActions || onEdit || onSubmit || onDelete)
 
   const columns = useMemo<TableColumnDef<Row>[]>(() => {
     const list: TableColumnDef<Row>[] = [
@@ -112,43 +84,41 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
       createDateColumn<Row>({ accessorKey: 'createdAt', header: '创建时间', enableSorting: false }),
     ]
 
-    if (computedShowActions) {
-      list.push({
-        id: 'actions',
-        header: '操作',
-        enableSorting: false,
-        enableHiding: false,
-        cell: ({ row }) => {
-          const item = row.original
+    list.push({
+      id: 'actions',
+      header: '操作',
+      enableSorting: false,
+      enableHiding: false,
+      cell: ({ row }) => {
+        const item = row.original
 
-          return (
-            <div className="flex items-center gap-0.5">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="data-[state=open]:bg-muted text-muted-foreground"
-                    size="iconNormal"
-                    variant="ghost"
-                  >
-                    <EllipsisVerticalIcon />
-                  </Button>
-                </DropdownMenuTrigger>
+        return (
+          <div className="flex items-center gap-0.5">
+            {roleView === BugReportRoleView.ADMIN && (
+              <Button size="sm" variant="ghost">
+                查看详情
+              </Button>
+            )}
 
-                <DropdownMenuContent align="end" className="w-32">
-                  {onEdit && (
-                    <DropdownMenuItem onClick={() => { onEdit(item) }}>
-                      编辑
-                    </DropdownMenuItem>
-                  )}
+            {roleView === BugReportRoleView.USER && (
+              <Button size="iconSm" variant="ghost">
+                <PencilLineIcon />
+              </Button>
+            )}
 
-                  {onSubmit && (
-                    <DropdownMenuItem onClick={() => { onSubmit(item) }}>
-                      提交
-                    </DropdownMenuItem>
-                  )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="data-[state=open]:bg-muted text-muted-foreground"
+                  size="iconSm"
+                  variant="ghost"
+                >
+                  <EllipsisVerticalIcon />
+                </Button>
+              </DropdownMenuTrigger>
 
-                  <DropdownMenuSeparator />
-
+              <DropdownMenuContent align="end" className="w-32">
+                {roleView === BugReportRoleView.USER && (
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={
@@ -157,32 +127,38 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
                   >
                     删除
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )
-        },
-      })
-    }
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )
+      },
+    })
 
     return list
-  }, [computedShowActions, onDelete, onEdit, onSubmit])
+  }, [onDelete, roleView])
 
   return (
     <ProTable<Row>
-      className={className}
-      columnVisibilityStorageKey={storageKey}
+      {...restProTableProps}
       columns={columns}
       paginationConfig={{
         pageSizeOptions: [10, 20, 30, 40, 50],
         showPageSizeSelector: true,
         showSelection: false,
       }}
-      queryKeyFn={queryKeyFn}
-      queryOptionsFn={queryOptionsFn}
-      rowSelection={{ enabled: false }}
-      tableRef={tableRef as unknown as React.RefObject<ProTableRef<Row> | null>}
-      toolbar={{ search: { inputProps: { placeholder: searchPlaceholder } } }}
+      toolbar={{
+        rightContent: (
+          <Button
+            size="sm"
+            onClick={() => {
+            //
+            }}
+          >
+            提交报告
+          </Button>
+        ),
+      }}
     />
   )
 }

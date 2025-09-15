@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
-import { AdminRoutes, generatePageTitle } from '../../admini/lib/admin-nav'
-
 import { DashboardPage as DashboardPageComponent } from './DashPage'
+
+import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 
 export const metadata: Metadata = {
   title: generatePageTitle(AdminRoutes.CrowdTestDashboard),

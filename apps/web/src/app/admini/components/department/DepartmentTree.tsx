@@ -7,6 +7,7 @@ import { useMutation } from '@tanstack/react-query'
 import { PlusIcon, UsersRoundIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import {
@@ -21,8 +22,6 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
 import { isCrowdTest } from '~/utils/platform'
-
-import { ScrollGradientContainer } from '../../../../components/ScrollGradientContainer'
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import { useDepartmentTreeStore } from './stores/useDepartmentTreeStore'
