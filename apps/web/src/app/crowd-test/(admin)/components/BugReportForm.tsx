@@ -1,9 +1,10 @@
 'use client'
 
 import { useMemo } from 'react'
-import { type FieldValues, useForm } from 'react-hook-form'
+import { type FieldValues, useFieldArray, useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
 
 import { getPlainTextFromHtml, QuillEditor } from '~/components/richtext/QuillEditor'
@@ -22,17 +23,21 @@ interface BugReportFormValues {
   description: string
   severity: BugSeverity
   attackType: BugAttackType
+  urls: string[]
 }
 
 const bugFormSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(1, '标题不能为空'),
+  title: z.string().min(1, '报告标题不能为空'),
   attackType: z.enum(['web', 'mobile', 'other']),
   // 将富文本转为纯文本校验空内容
   description: z
     .string()
     .refine((html) => getPlainTextFromHtml(html).trim().length > 0, '描述不能为空'),
   severity: z.enum(['low', 'medium', 'high', 'critical']),
+  urls: z.array(z.object({
+    url: z.string().optional(),
+  })),
 })
 
 type BugFormInput = z.input<typeof bugFormSchema>
@@ -67,12 +72,18 @@ export function BugReportForm(props: BugReportFormCardProps) {
       description: initialValues?.description ?? '',
       severity,
       attackType,
+      urls: initialValues?.urls?.map((url) => ({ url })) ?? [{ url: '' }],
     }
   }, [initialValues])
 
   const form = useForm<BugFormInput, FieldValues, BugFormOutput>({
     resolver: zodResolver(bugFormSchema),
     defaultValues,
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'urls',
   })
 
   const submitBtnText = submitText ?? (defaultValues.id ? '保存' : '提交')
@@ -84,6 +95,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
       description: values.description.trim(),
       severity: values.severity as BugSeverity,
       attackType: values.attackType as BugAttackType,
+      urls: values.urls.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0),
     }
 
     return onSubmit?.(result)
@@ -92,7 +104,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
   return (
     <Form {...form}>
       <form
-        className="space-y-4"
+        className="flex flex-col gap-form-item"
         onSubmit={(ev) => {
           ev.preventDefault()
           void form.handleSubmit(handleSubmit)(ev)
@@ -103,7 +115,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>标题</FormLabel>
+              <FormLabel>报告标题</FormLabel>
               <FormControl>
                 <Input id="title" {...field} />
               </FormControl>
@@ -117,17 +129,18 @@ export function BugReportForm(props: BugReportFormCardProps) {
           name="severity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>严重级别</FormLabel>
+              <FormLabel>漏洞等级</FormLabel>
               <FormControl>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-40" id="severity">
-                    <SelectValue placeholder="选择级别" />
+                    <SelectValue placeholder="选择漏洞等级" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">低</SelectItem>
-                    <SelectItem value="medium">中</SelectItem>
-                    <SelectItem value="high">高</SelectItem>
-                    <SelectItem value="critical">严重</SelectItem>
+                    <SelectItem value="info">信息</SelectItem>
+                    <SelectItem value="low">低危</SelectItem>
+                    <SelectItem value="medium">中危</SelectItem>
+                    <SelectItem value="high">高危</SelectItem>
+                    <SelectItem value="critical">危急</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -148,9 +161,9 @@ export function BugReportForm(props: BugReportFormCardProps) {
                     <SelectValue placeholder="选择攻击方式" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="medium">Web</SelectItem>
-                    <SelectItem value="high">移动端</SelectItem>
-                    <SelectItem value="critical">其他</SelectItem>
+                    <SelectItem value="web">Web</SelectItem>
+                    <SelectItem value="mobile">移动端</SelectItem>
+                    <SelectItem value="other">其他</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -172,6 +185,62 @@ export function BugReportForm(props: BugReportFormCardProps) {
             </FormItem>
           )}
         />
+
+        {/* 漏洞 URL 字段 */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium leading-none">漏洞 URL</div>
+            <Button
+              size="xs"
+              type="button"
+              variant="outline"
+              onClick={() => {
+                append({ url: '' })
+              }}
+            >
+              <Plus />
+              添加 URL
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {fields.map((field, index) => (
+              <FormField
+                key={field.id}
+                control={form.control}
+                name={`urls.${index}.url`}
+                render={({ field: urlField }) => (
+                  <FormItem>
+                    <div className="flex gap-2">
+                      <FormControl>
+                        <Input
+                          {...urlField}
+                          className="flex-1"
+                          placeholder="https://example.com/vulnerable-page"
+                          type="url"
+                        />
+                      </FormControl>
+                      {fields.length > 1 && (
+                        <Button
+                          className="h-10 w-10 p-0"
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            remove(index)
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* 附件上传（仅 UI，无交互） */}
         <div className="space-y-2">
