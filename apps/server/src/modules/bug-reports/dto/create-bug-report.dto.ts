@@ -41,7 +41,7 @@ export class CreateBugReportDto extends PickType(BaseBugReportDto, [
   @ApiProperty({
     description: '漏洞等级',
     enum: VulnerabilitySeverity,
-    example: VulnerabilitySeverity.HIGH,
+    enumName: 'VulnerabilitySeverity',
   })
   @IsEnum(VulnerabilitySeverity, { message: '漏洞等级必须是有效的枚举值' })
   @Expose()

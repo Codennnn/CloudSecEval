@@ -1,12 +1,14 @@
 'use client'
 
-import { type ReactElement, useMemo } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { useRouter } from 'next/navigation'
+import { useMutation } from '@tanstack/react-query'
 import { EllipsisVerticalIcon, PencilLineIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
-import { ProTable, type ProTableProps } from '~/components/table/ProTable'
+import { ProTable, type ProTableProps, type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
@@ -18,25 +20,20 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
-import { type BugSeverity, type BugStatus, NEW_BUG_ID, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../bugs/types'
+import { NEW_BUG_ID, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../bugs/types'
 
+import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
+import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey } from '~api/@tanstack/react-query.gen'
+import { type BugReportSummaryDto, VulnerabilitySeverity } from '~api/types.gen'
 
 export const enum BugReportRoleView {
   ADMIN,
   USER,
 }
 
-export interface BugLikeRow {
-  id: string
-  title: string
-  status: BugStatus
-  createdAt: string
-  severity: BugSeverity
-}
-
-interface BugListTableProps<Row extends BugLikeRow>
-  extends Pick<ProTableProps<Row>, 'className' | 'toolbar' | 'queryKeyFn' | 'queryOptionsFn' | 'tableRef' | 'columnVisibilityStorageKey'>
+interface BugListTableProps<Row extends BugReportSummaryDto>
+  extends Pick<ProTableProps<Row>, 'className' | 'toolbar' | 'queryKeyFn' | 'queryOptionsFn' | 'columnVisibilityStorageKey'>
 {
   roleView?: BugReportRoleView
   /** 行级回调：编辑 */
@@ -45,7 +42,9 @@ interface BugListTableProps<Row extends BugLikeRow>
   onDelete?: (item: Row) => void | Promise<void>
 }
 
-export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Row>): ReactElement {
+export function BugListTable<Row extends BugReportSummaryDto>(
+  props: BugListTableProps<Row>,
+) {
   const {
     roleView = BugReportRoleView.USER,
     onEdit,
@@ -54,6 +53,17 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
   } = props
 
   const router = useRouter()
+
+  const tableRef = useRef<ProTableRef<Row> | null>(null)
+
+  const [bugToDelete, setBugToDelete] = useState<Row | null>(null)
+
+  const deleteBugMutation = useMutation({
+    ...bugReportsControllerDeleteMutation(),
+    onSuccess: () => {
+      toast.success('漏洞报告已成功删除')
+    },
+  })
 
   const handleCreate = useEvent(() => {
     router.push(
@@ -65,8 +75,21 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
     onEdit?.(item)
   })
 
-  const handleDelete = useEvent((item: Row) => {
-    void onDelete?.(item)
+  const handleDeleteClick = useEvent((item: Row) => {
+    setBugToDelete(item)
+  })
+
+  const handleDeleteConfirm = useEvent(async () => {
+    if (bugToDelete) {
+      void onDelete?.(bugToDelete)
+
+      await deleteBugMutation.mutateAsync({
+        path: { id: bugToDelete.id },
+      })
+
+      void tableRef.current?.refresh()
+      setBugToDelete(null)
+    }
   })
 
   const columns = useMemo<TableColumnDef<Row>[]>(() => {
@@ -78,11 +101,11 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
         enableSorting: false,
         cell: ({ row }) => {
           const sev = (row.original).severity
-          const label: Record<BugSeverity, string> = {
-            low: '低',
-            medium: '中',
-            high: '高',
-            critical: '严重',
+          const label: Record<VulnerabilitySeverity, string> = {
+            [VulnerabilitySeverity.LOW]: '低',
+            [VulnerabilitySeverity.MEDIUM]: '中',
+            [VulnerabilitySeverity.HIGH]: '高',
+            [VulnerabilitySeverity.CRITICAL]: '严重',
           }
 
           return <Badge variant="outline">{label[sev]}</Badge>
@@ -155,7 +178,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={
-                      () => { handleDelete(item) }
+                      () => { handleDeleteClick(item) }
                     }
                   >
                     删除
@@ -169,31 +192,74 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
     })
 
     return list
-  }, [handleDelete, handleEdit, roleView, router])
+  }, [handleDeleteClick, handleEdit, roleView, router])
 
   return (
-    <ProTable<Row>
-      {...restProTableProps}
-      columns={columns}
-      paginationConfig={{
-        pageSizeOptions: [10, 20, 30, 40, 50],
-        showPageSizeSelector: true,
-        showSelection: false,
-      }}
-      toolbar={{
-        rightContent: roleView === BugReportRoleView.USER
-          ? (
-              <Button
-                size="sm"
-                onClick={() => {
-                  handleCreate()
-                }}
-              >
-                提交报告
-              </Button>
-            )
-          : null,
-      }}
-    />
+    <>
+      <ProTable<Row>
+        {...restProTableProps}
+        columns={columns}
+        paginationConfig={{
+          pageSizeOptions: [10, 20, 30, 40, 50],
+          showPageSizeSelector: true,
+          showSelection: false,
+        }}
+        queryKeyFn={bugReportsControllerFindManyQueryKey as QueryKeyFn}
+        queryOptionsFn={bugReportsControllerFindManyOptions as QueryOptionsFn<Row>}
+        tableRef={tableRef}
+        toolbar={{
+          rightContent: roleView === BugReportRoleView.USER
+            ? (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    handleCreate()
+                  }}
+                >
+                  提交报告
+                </Button>
+              )
+            : null,
+        }}
+      />
+
+      {/* MARK: 删除确认对话框 */}
+      <DeleteConfirmDialog
+        confirmText="DELETE"
+        deleteButtonText="确认删除"
+        description={
+          bugToDelete
+            ? (
+                <div>
+                  你即将删除：
+                  <ul className="list-disc list-inside space-y-1.5 py-2">
+                    <li>
+                      标题：
+                      <span className="text-muted-foreground">
+                        {bugToDelete.title}
+                      </span>
+                    </li>
+                    <li>
+                      状态：
+                      <span className="text-muted-foreground">
+                        {STATUS_TO_LABEL[bugToDelete.status]}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              )
+            : null
+        }
+        isDeleting={deleteBugMutation.isPending}
+        open={!!bugToDelete}
+        title="删除漏洞报告"
+        onConfirm={handleDeleteConfirm}
+        onOpenChange={(open) => {
+          if (!open) {
+            setBugToDelete(null)
+          }
+        }}
+      />
+    </>
   )
 }

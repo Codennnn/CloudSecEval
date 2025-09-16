@@ -3,7 +3,6 @@
 import { BugListTable, BugReportRoleView } from '../components/BugListTable'
 
 import { BugStatsCards } from './components/BugStatsCards'
-import { getBugListQueryKey, getBugListQueryOptions } from './lib/bugQueries'
 import { ensureMockData } from './lib/mockData'
 
 export function BugPage() {
@@ -15,8 +14,6 @@ export function BugPage() {
 
       <BugListTable
         columnVisibilityStorageKey="bug-list-columns"
-        queryKeyFn={getBugListQueryKey}
-        queryOptionsFn={getBugListQueryOptions}
         roleView={BugReportRoleView.ADMIN}
       />
     </div>
