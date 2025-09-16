@@ -17,7 +17,7 @@ import type { BugSeverity } from '../bugs/types'
 
 type BugAttackType = 'web' | 'mobile' | 'other'
 
-interface BugReportFormValues {
+export interface BugReportFormValues {
   id?: string
   title: string
   description: string

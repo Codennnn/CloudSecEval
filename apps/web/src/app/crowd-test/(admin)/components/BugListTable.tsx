@@ -56,7 +56,9 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
   const router = useRouter()
 
   const handleCreate = useEvent(() => {
-    router.push(getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugId: NEW_BUG_ID }))
+    router.push(
+      getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: NEW_BUG_ID }),
+    )
   })
 
   const handleEdit = useEvent((item: Row) => {
@@ -179,16 +181,18 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
         showSelection: false,
       }}
       toolbar={{
-        rightContent: (
-          <Button
-            size="sm"
-            onClick={() => {
-              handleCreate()
-            }}
-          >
-            提交报告
-          </Button>
-        ),
+        rightContent: roleView === BugReportRoleView.USER
+          ? (
+              <Button
+                size="sm"
+                onClick={() => {
+                  handleCreate()
+                }}
+              >
+                提交报告
+              </Button>
+            )
+          : null,
       }}
     />
   )
