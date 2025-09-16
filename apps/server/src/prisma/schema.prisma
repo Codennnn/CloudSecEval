@@ -28,6 +28,7 @@ model Organization {
   departments Department[]
   users       User[]
   roles       Role[]
+  bugReports  BugReport[] // 组织内的漏洞报告
 
   @@map("organizations")
 }
@@ -75,6 +76,8 @@ model User {
   passwordResetTokens PasswordResetToken[]
   refreshTokens       RefreshToken[]
   userRoles           UserRole[]
+  bugReports          BugReport[] // 用户提交的漏洞报告
+  reviewedBugReports  BugReport[]          @relation("BugReportReviewer") // 用户审核的漏洞报告
 
   @@index([orgId])
   @@index([departmentId])
@@ -221,4 +224,58 @@ model UserRole {
   @@index([orgId])
   @@index([expiresAt])
   @@map("user_roles")
+}
+
+// 漏洞报告模型 - 用于攻防演练平台的漏洞报告管理
+model BugReport {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title          String // 报告标题（必填）
+  severity       BugSeverity // 漏洞等级（必填）
+  attackMethod   String? // 攻击方式（选填）
+  description    String? // 详细问题描述（选填，富文本）
+  discoveredUrls String[] // 发现漏洞的URL列表（选填）
+  attachments    Json? // 附件元数据（选填，存储文件信息的JSON数组）
+  status         BugReportStatus @default(PENDING) // 报告状态
+  userId         String          @db.Uuid // 提交用户ID
+  orgId          String          @db.Uuid // 组织ID（用于数据隔离）
+  reviewerId     String?         @db.Uuid // 审核人ID（可选）
+  reviewNote     String? // 审核备注（可选）
+  reviewedAt     DateTime? // 审核时间（可选）
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  // 关联
+  user         User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  reviewer     User?        @relation("BugReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([orgId])
+  @@index([userId])
+  @@index([status])
+  @@index([severity])
+  @@index([createdAt])
+  @@map("bug_reports")
+}
+
+// 漏洞等级枚举
+enum BugSeverity {
+  INFO // 信息
+  LOW // 低危
+  MEDIUM // 中危
+  HIGH // 高危
+  CRITICAL // 严重
+
+  @@map("bug_severity")
+}
+
+// 漏洞报告状态枚举
+enum BugReportStatus {
+  PENDING // 待审核
+  IN_REVIEW // 审核中
+  APPROVED // 已通过
+  REJECTED // 已驳回
+  RESOLVED // 已解决
+  CLOSED // 已关闭
+
+  @@map("bug_report_status")
 }

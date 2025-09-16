@@ -10,6 +10,7 @@ import { DisabledApiGuard } from './common/guards/disabled-api.guard'
 import { ConfigModule } from './config/config.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
+import { BugReportsModule } from './modules/bug-reports/bug-reports.module'
 import { DepartmentsModule } from './modules/departments/departments.module'
 import { LicenseModule } from './modules/license/license.module'
 import { OrganizationsModule } from './modules/organizations/organizations.module'
@@ -38,6 +39,7 @@ import { PrismaModule } from './prisma/prisma.module'
     LicenseModule,
     UploadsModule,
     StatisticsModule,
+    BugReportsModule,
   ],
   controllers: [AppController],
   providers: [
