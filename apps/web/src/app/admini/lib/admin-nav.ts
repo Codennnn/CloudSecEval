@@ -5,6 +5,7 @@ import { SITE_CONFIG } from '~/constants/common'
 import { adminPermission } from '~/constants/permission'
 import { matchPermission, type PermissionFlag } from '~/lib/permissions/matcher'
 import { isCrowdTest } from '~/utils/platform'
+import { isRouteMatch } from '~/utils/route'
 
 import { useUserPermissions } from '~admin/stores/useUserStore'
 
@@ -26,7 +27,7 @@ export const enum AdminRoutes {
 
   CrowdTestDashboard = '/crowd-test/dashboard',
   CrowdTestBugs = '/crowd-test/bugs',
-  CrowdTestBugsDetail = '/crowd-test/bugs/[bugId]',
+  CrowdTestBugsDetail = '/crowd-test/bugs/[bugReportId]',
   CrowdTestMyBugs = '/crowd-test/my-bugs',
   CrowdTestTeams = '/crowd-test/teams',
   CrowdTestTeamProfile = '/crowd-test/teams/[teamId]',
@@ -147,7 +148,7 @@ export function getPageNameByRoute(pathname: string): string {
 
   // 查找匹配的路由
   for (const route of routes) {
-    if (pathname.startsWith(route)) {
+    if (isRouteMatch(pathname, route)) {
       return adminNavConfig[route as AdminRoutes].title
     }
   }
@@ -257,7 +258,7 @@ export function getPagePermissionByRoute(pathname: string): PermissionFlag[] | u
   const routes = Object.keys(adminNavConfig).sort((a, b) => b.length - a.length)
 
   for (const route of routes) {
-    if (pathname.startsWith(route)) {
+    if (isRouteMatch(pathname, route)) {
       return adminNavConfig[route as AdminRoutes].requiredPermission
     }
   }
