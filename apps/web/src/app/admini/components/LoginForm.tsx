@@ -102,7 +102,7 @@ export function LoginForm({
         <CardHeader>
           <CardTitle>欢迎回来</CardTitle>
           <CardDescription>
-            登录后台管理系统，开始管理你的内容和数据
+            {SITE_CONFIG.adminLoginDescription}
           </CardDescription>
         </CardHeader>
 

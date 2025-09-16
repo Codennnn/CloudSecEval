@@ -116,7 +116,9 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
                 size="sm"
                 variant="ghost"
                 onClick={() => {
-                  handleEdit(item)
+                  router.push(
+                    getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: item.id }),
+                  )
                 }}
               >
                 查看详情
@@ -165,7 +167,7 @@ export function BugListTable<Row extends BugLikeRow>(props: BugListTableProps<Ro
     })
 
     return list
-  }, [handleDelete, handleEdit, roleView])
+  }, [handleDelete, handleEdit, roleView, router])
 
   return (
     <ProTable<Row>

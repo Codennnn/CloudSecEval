@@ -1,10 +1,12 @@
 'use client'
 
+import { consola } from 'consola'
 import { toast } from 'sonner'
 
 import { isLoggingEnabled } from './config'
 import type { ApiResponse } from './types'
 
+import { AdminRoutes } from '~admin/lib/admin-nav'
 import { client } from '~api/client.gen'
 
 export class ApiError extends Error {
@@ -20,10 +22,29 @@ export class ApiError extends Error {
   }
 }
 
+function redirectToLogin(): void {
+  // 检查是否在客户端环境
+  if (typeof window !== 'undefined') {
+    const loginUrl = AdminRoutes.Login
+
+    window.location.href = loginUrl
+  }
+}
+
 function handleError(error: unknown, showError = true): void {
   // 记录错误日志（开发环境）
   if (isLoggingEnabled()) {
-    console.error('API Error:', error)
+    consola.error('API Error:', error)
+  }
+
+  // 处理认证相关错误，重定向到登录页面
+  if (error instanceof ApiError) {
+    // 自定义业务码 20100（未经授权的访问）
+    if (error.code === '20100') {
+      redirectToLogin()
+
+      return
+    }
   }
 
   if (showError) {

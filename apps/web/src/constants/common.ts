@@ -10,11 +10,12 @@ export const SITE_CONFIG = {
   baseUrl: 'https://nestjs.leoku.dev',
 
   // 网站信息
-  name: 'NestJS 中文文档',
+  name: isCrowdTest() ? '企业攻防演练平台' : 'NestJS 中文文档',
   title: 'NestJS - 渐进式 Node.js 框架',
   description: SITE_DESCRIPTION,
 
   adminTitle: isCrowdTest() ? '企业攻防演练平台' : 'NestJS 文档管理后台',
+  adminLoginDescription: isCrowdTest() ? '企业攻防演练平台，助力网络安全建设' : '登录后台管理系统，开始管理你的内容和数据',
 
   // 作者和发布者信息
   author: 'NestJS 中文文档团队',

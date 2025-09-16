@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
 
-import { getPlainTextFromHtml, QuillEditor } from '~/components/richtext/QuillEditor'
+import { RichTextEditor } from '~/components/richtext/RichTextEditor'
 import { Button } from '~/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
@@ -31,9 +31,7 @@ const bugFormSchema = z.object({
   title: z.string().min(1, '报告标题不能为空'),
   attackType: z.enum(['web', 'mobile', 'other']),
   // 将富文本转为纯文本校验空内容
-  description: z
-    .string()
-    .refine((html) => getPlainTextFromHtml(html).trim().length > 0, '描述不能为空'),
+  description: z.string(),
   severity: z.enum(['low', 'medium', 'high', 'critical']),
   urls: z.array(z.object({
     url: z.string().optional(),
@@ -179,7 +177,11 @@ export function BugReportForm(props: BugReportFormCardProps) {
             <FormItem>
               <FormLabel>问题描述 / 复现步骤 / 影响</FormLabel>
               <FormControl>
-                <QuillEditor id="description" placeholder="请详细描述问题、复现步骤与影响范围" value={field.value} onChange={field.onChange} />
+                <RichTextEditor
+                  placeholder="请详细描述问题、复现步骤与影响范围"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
