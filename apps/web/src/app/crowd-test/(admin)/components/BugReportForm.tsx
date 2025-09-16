@@ -140,7 +140,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                     <SelectItem value="low">低危</SelectItem>
                     <SelectItem value="medium">中危</SelectItem>
                     <SelectItem value="high">高危</SelectItem>
-                    <SelectItem value="critical">危急</SelectItem>
+                    <SelectItem value="critical">严重</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
