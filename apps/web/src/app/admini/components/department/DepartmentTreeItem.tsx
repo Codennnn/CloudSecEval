@@ -2,7 +2,7 @@
 
 import { useEvent } from 'react-use-event-hook'
 
-import { ChevronDownIcon, ChevronRightIcon, EditIcon, EllipsisVerticalIcon, FolderIcon, PlusIcon, TrashIcon } from 'lucide-react'
+import { ChevronDownIcon, ChevronRightIcon, EditIcon, EllipsisVerticalIcon, FolderIcon, PlusIcon, TextSelectIcon, TrashIcon } from 'lucide-react'
 
 import { Checkbox } from '~/components/ui/checkbox'
 import {
@@ -35,6 +35,7 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
     orgId,
     treeData,
     renderNode,
+    onViewDetail,
     onAddChild,
     onEdit,
     onDelete,
@@ -114,11 +115,11 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
           >
             <DropdownMenuItem
               onClick={() => {
-                onAddChild?.(node.id)
+                onViewDetail?.(node.id)
               }}
             >
-              <PlusIcon />
-              <span>{`添加子${isCrowdTest() ? '团队' : '部门'}`}</span>
+              <TextSelectIcon />
+              <span>查看详情</span>
             </DropdownMenuItem>
 
             <DropdownMenuItem
@@ -128,6 +129,15 @@ export function DepartmentTreeItem(props: DepartmentTreeItemProps) {
             >
               <EditIcon />
               <span>编辑</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => {
+                onAddChild?.(node.id)
+              }}
+            >
+              <PlusIcon />
+              <span>{`添加子${isCrowdTest() ? '团队' : '部门'}`}</span>
             </DropdownMenuItem>
 
             <DropdownMenuItem

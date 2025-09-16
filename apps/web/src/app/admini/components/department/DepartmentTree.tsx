@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
+import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query'
 import { PlusIcon, UsersRoundIcon } from 'lucide-react'
 import { toast } from 'sonner'
@@ -36,6 +37,7 @@ import type {
   DepartmentTreeProps,
 } from './types'
 
+import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { departmentsControllerRemoveDepartmentMutation } from '~api/@tanstack/react-query.gen'
 
 function TreeLoadingSkeleton() {
@@ -69,6 +71,8 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     onExpand,
     renderNode,
   } = props
+
+  const router = useRouter()
 
   const [isInitialized, setIsInitialized] = useState(false)
 
@@ -280,6 +284,12 @@ export function DepartmentTree(props: DepartmentTreeProps) {
     return undefined
   }
 
+  const handleViewDetail = useEvent<NonNullable<DepartmentTreeItemProps['onViewDetail']>>((nodeId) => {
+    if (isCrowdTest()) {
+      router.push(getRoutePath(AdminRoutes.CrowdTestTeamProfile, { teamId: nodeId }))
+    }
+  })
+
   const handleAddChild = useEvent<NonNullable<DepartmentTreeItemProps['onAddChild']>>((nodeId) => {
     openCreateDialog({ parentId: nodeId })
   })
@@ -378,6 +388,7 @@ export function DepartmentTree(props: DepartmentTreeProps) {
                             onAddChild={handleAddChild}
                             onDelete={handleDeleteDepartment}
                             onEdit={handleEdit}
+                            onViewDetail={handleViewDetail}
                           />
                         ))}
                       </SidebarMenu>

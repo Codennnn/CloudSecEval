@@ -5,7 +5,7 @@ import { TeamProfile } from './TeamProfile'
 import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
 
 export const metadata: Metadata = {
-  title: generatePageTitle(AdminRoutes.CrowdTestTeams),
+  title: generatePageTitle(AdminRoutes.CrowdTestTeamProfile),
 }
 
 export default function TeamProfilePage() {

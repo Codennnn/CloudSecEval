@@ -64,6 +64,8 @@ export interface DepartmentTreeItemProps {
 
   /** 自定义节点渲染函数 */
   renderNode?: (node: DepartmentTreeNode) => React.ReactNode
+  /** 查看详情节点回调 */
+  onViewDetail?: (nodeId: string) => void
   /** 删除节点回调 */
   onDelete?: (nodeId: string) => void
   /** 编辑节点回调 */
