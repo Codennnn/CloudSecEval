@@ -1,5 +1,6 @@
 import { Prisma } from '#prisma/client'
-import type { BUG_REPORT_STATUS, BUG_SEVERITY } from '~/common/constants/bug-reports'
+import type { BUG_REPORT_STATUS } from '~/common/constants/bug-reports'
+import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 
 /**
  * 漏洞报告高级搜索构建器
@@ -56,7 +57,7 @@ export class BugReportSearchBuilder {
   /**
    * 按单个等级筛选
    */
-  bySeverity(severity: keyof typeof BUG_SEVERITY): this {
+  bySeverity(severity: VulnerabilitySeverity): this {
     this.where.severity = severity
 
     return this
@@ -65,7 +66,7 @@ export class BugReportSearchBuilder {
   /**
    * 按多个等级筛选
    */
-  bySeverities(severities: (keyof typeof BUG_SEVERITY)[]): this {
+  bySeverities(severities: VulnerabilitySeverity[]): this {
     if (severities.length > 0) {
       this.where.severity = { in: severities }
     }
@@ -446,7 +447,7 @@ export class BugReportSearchBuilder {
    */
   static forCriticalReports(orgId?: string): BugReportSearchBuilder {
     const builder = new BugReportSearchBuilder()
-      .bySeverities(['HIGH', 'CRITICAL'])
+      .bySeverities([VulnerabilitySeverity.HIGH, VulnerabilitySeverity.CRITICAL])
       .includeUser()
       .orderBySeverity('desc')
       .orderByCreatedAt('desc')

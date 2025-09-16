@@ -4,6 +4,7 @@ import { omit } from 'radash'
 
 import type { License, Prisma } from '#prisma/client'
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
+import { RiskLevel } from '~/common/enums/severity.enum'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { SortOrder } from '~/common/search/interfaces/search.interface'
 import { MailService } from '~/modules/mail/mail.service'
@@ -423,7 +424,7 @@ export class LicenseService {
           recentRiskyAccesses: stats.recentRiskyAccesses,
           lastAccessTime: stats.lastAccessTime,
           riskLevel,
-          isRisky: riskLevel !== 'safe',
+          isRisky: riskLevel !== RiskLevel.SAFE,
         },
       }
 
@@ -593,10 +594,10 @@ export class LicenseService {
   private calculateRiskLevel(
     license: BaseLicenseDto,
     stats: { recentRiskyAccesses: number, commonIPs: string[] },
-  ): 'safe' | 'low' | 'medium' | 'high' {
+  ): RiskLevel {
     // 如果已锁定，直接返回高风险
     if (license.locked) {
-      return 'high'
+      return RiskLevel.HIGH
     }
 
     // 根据警告次数和最近风险访问判断风险等级
@@ -605,21 +606,21 @@ export class LicenseService {
 
     // 高风险：警告次数≥5或最近风险访问≥5
     if (warningCount >= 5 || recentRiskyAccesses >= 5) {
-      return 'high'
+      return RiskLevel.HIGH
     }
 
     // 中风险：警告次数3-4或最近风险访问3-4或IP变化频繁
     if (warningCount >= 3 || recentRiskyAccesses >= 3 || commonIPs.length >= 3) {
-      return 'medium'
+      return RiskLevel.MEDIUM
     }
 
     // 低风险：警告次数1-2或最近风险访问1-2
     if (warningCount >= 1 || recentRiskyAccesses >= 1) {
-      return 'low'
+      return RiskLevel.LOW
     }
 
     // 安全：无警告无风险访问
-    return 'safe'
+    return RiskLevel.SAFE
   }
 
   /**

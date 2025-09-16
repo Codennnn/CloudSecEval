@@ -3,6 +3,7 @@ import { Type } from 'class-transformer'
 import { IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
+import { RiskLevel } from '~/common/enums/severity.enum'
 import {
   AdvancedBooleanSearchOperators,
   AdvancedDateSearchOperators,
@@ -11,16 +12,6 @@ import {
 } from '~/common/search/dto/advanced-search-operators.dto'
 import { BaseSearchDto } from '~/common/search/dto/base-search.dto'
 import { AggregateFunction, SearchOperators } from '~/common/search/interfaces/search.interface'
-
-/**
- * 风险等级枚举
- */
-export enum RiskLevel {
-  SAFE = 'safe',
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-}
 
 /**
  * 风险等级搜索操作符 DTO

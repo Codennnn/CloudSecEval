@@ -37,7 +37,7 @@ const statItems = [
 ]
 
 function StatItem(props: StatItemProps) {
-  const { title, value, icon, type } = props
+  const { title, value, icon } = props
 
   return (
     <div className="flex items-center gap-2">

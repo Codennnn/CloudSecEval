@@ -4,49 +4,22 @@
  * 用于统一管理漏洞等级、报告状态等枚举值和相关配置
  */
 
-/**
- * 漏洞等级枚举
- */
-export const BUG_SEVERITY = {
-  INFO: 'INFO',
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
-  CRITICAL: 'CRITICAL',
-} as const
+import {
+  VULNERABILITY_SEVERITY_LABELS,
+  VulnerabilitySeverity,
+} from '~/common/enums/severity.enum'
 
 /**
- * 漏洞等级显示名称映射
+ * 漏洞等级枚举（已迁移到统一枚举文件）
+ * @deprecated 请使用 ~/common/enums/severity.enum 中的 VulnerabilitySeverity
  */
-export const BUG_SEVERITY_LABELS = {
-  [BUG_SEVERITY.INFO]: '信息',
-  [BUG_SEVERITY.LOW]: '低危',
-  [BUG_SEVERITY.MEDIUM]: '中危',
-  [BUG_SEVERITY.HIGH]: '高危',
-  [BUG_SEVERITY.CRITICAL]: '严重',
-} as const
+export const BUG_SEVERITY = VulnerabilitySeverity
 
 /**
- * 漏洞等级颜色配置（用于前端显示）
+ * 漏洞等级显示名称映射（已迁移到统一枚举文件）
+ * @deprecated 请使用 ~/common/enums/severity.enum 中的 VULNERABILITY_SEVERITY_LABELS
  */
-export const BUG_SEVERITY_COLORS = {
-  [BUG_SEVERITY.INFO]: '#6B7280', // 灰色
-  [BUG_SEVERITY.LOW]: '#10B981', // 绿色
-  [BUG_SEVERITY.MEDIUM]: '#F59E0B', // 黄色
-  [BUG_SEVERITY.HIGH]: '#EF4444', // 红色
-  [BUG_SEVERITY.CRITICAL]: '#7C2D12', // 深红色
-} as const
-
-/**
- * 漏洞等级权重（用于排序和统计）
- */
-export const BUG_SEVERITY_WEIGHTS = {
-  [BUG_SEVERITY.INFO]: 1,
-  [BUG_SEVERITY.LOW]: 2,
-  [BUG_SEVERITY.MEDIUM]: 3,
-  [BUG_SEVERITY.HIGH]: 4,
-  [BUG_SEVERITY.CRITICAL]: 5,
-} as const
+export const BUG_SEVERITY_LABELS = VULNERABILITY_SEVERITY_LABELS
 
 /**
  * 漏洞报告状态枚举
@@ -125,5 +98,4 @@ export const BUG_REPORT_ATTACHMENTS = {
 } as const
 
 // 类型定义导出
-export type BugSeverity = typeof BUG_SEVERITY[keyof typeof BUG_SEVERITY]
 export type BugReportStatus = typeof BUG_REPORT_STATUS[keyof typeof BUG_REPORT_STATUS]

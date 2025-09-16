@@ -139,22 +139,6 @@ async function mockDeleteMyBug(id: string): Promise<boolean> {
   return true
 }
 
-async function mockSubmitMyBug(id: string): Promise<{ submitted: boolean }> {
-  const list = ensureMockData()
-  const idx = list.findIndex((x) => x.id === id)
-
-  if (idx < 0) {
-    return { submitted: false }
-  }
-
-  list[idx] = { ...list[idx], status: 'pending', updatedAt: new Date().toISOString() }
-  await new Promise((r) => {
-    setTimeout(r, 180)
-  })
-
-  return { submitted: true }
-}
-
 const getQueryKey: QueryKeyFn = (options: Options) => {
   return ['my-bugs', options.query]
 }

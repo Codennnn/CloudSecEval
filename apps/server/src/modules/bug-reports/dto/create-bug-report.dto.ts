@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
 import {
   IsArray,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -9,6 +10,8 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator'
+
+import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 
 import { BaseBugReportDto } from './base-bug-report.dto'
 
@@ -37,11 +40,12 @@ export class CreateBugReportDto extends PickType(BaseBugReportDto, [
 
   @ApiProperty({
     description: '漏洞等级',
-    enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-    example: 'HIGH',
+    enum: VulnerabilitySeverity,
+    example: VulnerabilitySeverity.HIGH,
   })
+  @IsEnum(VulnerabilitySeverity, { message: '漏洞等级必须是有效的枚举值' })
   @Expose()
-  readonly severity!: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  readonly severity!: VulnerabilitySeverity
 
   @ApiPropertyOptional({
     description: '攻击方式',

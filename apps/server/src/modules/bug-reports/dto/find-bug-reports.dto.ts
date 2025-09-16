@@ -11,6 +11,7 @@ import {
 import { BooleanTransform } from '~/common/decorators/boolean-transform.decorator'
 import { IsId } from '~/common/decorators/uuid.decorator'
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
+import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 
 /**
  * 查询漏洞报告 DTO
@@ -20,25 +21,25 @@ import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
 export class FindBugReportsDto extends PaginationQueryDto {
   @ApiPropertyOptional({
     description: '漏洞等级筛选',
-    enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-    example: 'HIGH',
+    enum: VulnerabilitySeverity,
+    example: VulnerabilitySeverity.HIGH,
   })
   @IsOptional()
-  @IsEnum(['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], {
+  @IsEnum(VulnerabilitySeverity, {
     message: '漏洞等级必须是有效的枚举值',
   })
   @Expose()
-  readonly severity?: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  readonly severity?: VulnerabilitySeverity
 
   @ApiPropertyOptional({
     description: '多个漏洞等级筛选',
-    enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
+    enum: VulnerabilitySeverity,
     isArray: true,
-    example: ['HIGH', 'CRITICAL'],
+    example: [VulnerabilitySeverity.HIGH, VulnerabilitySeverity.CRITICAL],
   })
   @IsOptional()
   @IsArray({ message: '漏洞等级列表必须是数组' })
-  @IsEnum(['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], {
+  @IsEnum(VulnerabilitySeverity, {
     each: true,
     message: '每个漏洞等级必须是有效的枚举值',
   })
@@ -50,7 +51,7 @@ export class FindBugReportsDto extends PaginationQueryDto {
     return value
   })
   @Expose()
-  readonly severities?: ('INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL')[]
+  readonly severities?: VulnerabilitySeverity[]
 
   @ApiPropertyOptional({
     description: '报告状态筛选',

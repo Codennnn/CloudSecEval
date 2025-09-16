@@ -1,8 +1,9 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsArray, IsBoolean, IsDate, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsArray, IsBoolean, IsDate, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 import { StandardListResponseDto, StandardResponseDto } from '~/common/dto/standard-response.dto'
+import { RiskLevel } from '~/common/enums/severity.enum'
 
 import { BaseLicenseDto } from './base-license.dto'
 
@@ -76,11 +77,11 @@ export class LicenseStatsDto {
 
   @ApiProperty({
     description: '风险等级',
-    example: 'low',
-    enum: ['safe', 'low', 'medium', 'high'],
+    example: RiskLevel.LOW,
+    enum: RiskLevel,
   })
-  @IsIn(['safe', 'low', 'medium', 'high'])
-  readonly riskLevel!: 'safe' | 'low' | 'medium' | 'high'
+  @IsEnum(RiskLevel)
+  readonly riskLevel!: RiskLevel
 
   @ApiProperty({
     description: '是否为风险访问',

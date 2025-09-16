@@ -14,6 +14,7 @@ import {
 
 import { IsId } from '~/common/decorators/uuid.decorator'
 import { CommonTimeDto } from '~/common/dto/common.dto'
+import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 
 /**
  * 附件信息 DTO
@@ -82,14 +83,14 @@ export class BaseBugReportDto extends CommonTimeDto {
 
   @ApiProperty({
     description: '漏洞等级',
-    enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-    example: 'HIGH',
+    enum: VulnerabilitySeverity,
+    example: VulnerabilitySeverity.HIGH,
   })
-  @IsEnum(['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], {
+  @IsEnum(VulnerabilitySeverity, {
     message: '漏洞等级必须是有效的枚举值',
   })
   @Expose()
-  readonly severity!: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  readonly severity!: VulnerabilitySeverity
 
   @ApiPropertyOptional({
     description: '攻击方式',
@@ -212,14 +213,14 @@ export class BugReportRefDto {
 
   @ApiProperty({
     description: '漏洞等级',
-    enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-    example: 'HIGH',
+    enum: VulnerabilitySeverity,
+    example: VulnerabilitySeverity.HIGH,
   })
-  @IsEnum(['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], {
+  @IsEnum(VulnerabilitySeverity, {
     message: '漏洞等级必须是有效的枚举值',
   })
   @Expose()
-  readonly severity!: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  readonly severity!: VulnerabilitySeverity
 
   @ApiProperty({
     description: '报告状态',
