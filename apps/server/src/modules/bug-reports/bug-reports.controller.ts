@@ -11,30 +11,28 @@ import {
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { User } from '#prisma/client'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
 import { JwtAuthGuard } from '~/modules/auth/guards/jwt-auth.guard'
+import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 
+import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsService } from './bug-reports.service'
 import {
   BatchOperationResponseDto,
   BugReportResponseDto,
   BugReportStatsResponseDto,
   BugReportSummaryDto,
-  MyBugReportResponseDto,
   PaginatedBugReportsResponseDto,
 } from './dto/bug-report-response.dto'
 import {
   BatchCreateBugReportsDto,
   CreateBugReportDto,
-  QuickCreateBugReportDto,
 } from './dto/create-bug-report.dto'
 import {
   BugReportStatsDto,
   FindBugReportsDto,
-  FindMyBugReportsDto,
 } from './dto/find-bug-reports.dto'
 import {
   BatchUpdateBugReportStatusDto,
@@ -60,10 +58,10 @@ export class BugReportsController {
     description: '漏洞报告创建成功',
     type: BugReportResponseDto,
   })
-  // @RequirePermissions('bug_reports:create')
+  @RequirePermissions(PERMISSIONS.bug_reports.create)
   async create(
     @Body() createBugReportDto: CreateBugReportDto,
-    @CurrentUser() currentUser: User,
+    @CurrentUser() currentUser: CurrentUserDto,
   ) {
     const bugReport = await this.bugReportsService.create(createBugReportDto, currentUser)
 
@@ -71,30 +69,6 @@ export class BugReportsController {
       data: bugReport,
       dto: BugReportResponseDto,
       msg: '漏洞报告创建成功',
-    })
-  }
-
-  @Post('quick')
-  @ApiOperation({
-    summary: '快速创建漏洞报告',
-    description: '快速创建漏洞报告，只需要填写基本信息',
-  })
-  @ApiResponse({
-    status: 201,
-    description: '快速漏洞报告创建成功',
-    type: BugReportResponseDto,
-  })
-  // @RequirePermissions('bug_reports:create')
-  async quickCreate(
-    @Body() quickCreateDto: QuickCreateBugReportDto,
-    @CurrentUser() currentUser: User,
-  ) {
-    const bugReport = await this.bugReportsService.quickCreate(quickCreateDto, currentUser)
-
-    return resp({
-      data: bugReport,
-      dto: BugReportResponseDto,
-      msg: '漏洞报告快速创建成功',
     })
   }
 
@@ -108,10 +82,10 @@ export class BugReportsController {
     description: '批量创建成功',
     type: BatchOperationResponseDto,
   })
-  // @RequirePermissions('bug_reports:create', 'bug_reports:batch_operations')
+  @RequirePermissions([PERMISSIONS.bug_reports.create, PERMISSIONS.bug_reports.batch_operations])
   async batchCreate(
     @Body() batchCreateDto: BatchCreateBugReportsDto,
-    @CurrentUser() currentUser: User,
+    @CurrentUser() currentUser: CurrentUserDto,
   ) {
     const { count } = await this.bugReportsService.batchCreate(batchCreateDto, currentUser)
 
@@ -137,10 +111,10 @@ export class BugReportsController {
     description: '获取漏洞报告列表成功',
     type: PaginatedBugReportsResponseDto,
   })
-  // @RequirePermissions('bug_reports:read')
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
   async findMany(
     @Query() findBugReportsDto: FindBugReportsDto,
-    @CurrentUser() currentUser: User,
+    @CurrentUser() currentUser: CurrentUserDto,
   ) {
     const result = await this.bugReportsService.findMany(findBugReportsDto, currentUser)
 
@@ -149,29 +123,6 @@ export class BugReportsController {
       dto: BugReportSummaryDto,
       pageOptions: result.pagination,
       msg: '获取漏洞报告列表成功',
-    })
-  }
-
-  @Get('my')
-  @ApiOperation({
-    summary: '获取我的漏洞报告',
-    description: '获取当前用户提交的漏洞报告列表',
-  })
-  @ApiResponse({
-    status: 200,
-    description: '获取我的漏洞报告成功',
-    type: [MyBugReportResponseDto],
-  })
-  async findMyReports(
-    @Query() findMyBugReportsDto: FindMyBugReportsDto,
-    @CurrentUser() currentUser: User,
-  ) {
-    const result = await this.bugReportsService.findMyReports(findMyBugReportsDto, currentUser)
-
-    return resp({
-      data: result.data,
-      dto: MyBugReportResponseDto,
-      msg: '获取我的漏洞报告成功',
     })
   }
 
@@ -185,12 +136,11 @@ export class BugReportsController {
     description: '获取统计数据成功',
     type: BugReportStatsResponseDto,
   })
-  // @RequirePermissions('bug_reports:read', 'bug_reports:stats')
+  @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
   async getStats(
     @Query() statsDto: BugReportStatsDto,
-    @CurrentUser() currentUser: User,
   ) {
-    const stats = await this.bugReportsService.getStats(statsDto, currentUser)
+    const stats = await this.bugReportsService.getStats(statsDto)
 
     return resp({
       data: stats,
@@ -210,12 +160,11 @@ export class BugReportsController {
     description: '获取漏洞报告详情成功',
     type: BugReportResponseDto,
   })
-  // @RequirePermissions('bug_reports:read')
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
   async findById(
     @Param('id') id: string,
-    @CurrentUser() currentUser: User,
   ) {
-    const bugReport = await this.bugReportsService.findById(id, currentUser)
+    const bugReport = await this.bugReportsService.findById(id)
 
     return resp({
       data: bugReport,
@@ -235,13 +184,12 @@ export class BugReportsController {
     description: '漏洞报告更新成功',
     type: BugReportResponseDto,
   })
-  // @RequirePermissions('bug_reports:update')
+  @RequirePermissions(PERMISSIONS.bug_reports.update)
   async update(
     @Param('id') id: string,
     @Body() updateBugReportDto: UpdateBugReportDto,
-    @CurrentUser() currentUser: User,
   ) {
-    const updated = await this.bugReportsService.update(id, updateBugReportDto, currentUser)
+    const updated = await this.bugReportsService.update(id, updateBugReportDto)
 
     return resp({
       data: updated,
@@ -261,11 +209,11 @@ export class BugReportsController {
     description: '漏洞报告状态更新成功',
     type: BugReportResponseDto,
   })
-  // @RequirePermissions('bug_reports:review', 'bug_reports:update_status')
+  @RequirePermissions([PERMISSIONS.bug_reports.review, PERMISSIONS.bug_reports.update_status])
   async updateStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateBugReportStatusDto,
-    @CurrentUser() currentUser: User,
+    @CurrentUser() currentUser: CurrentUserDto,
   ) {
     const updated = await this.bugReportsService.updateStatus(id, updateStatusDto, currentUser)
 
@@ -286,10 +234,14 @@ export class BugReportsController {
     description: '批量更新状态成功',
     type: BatchOperationResponseDto,
   })
-  // @RequirePermissions('bug_reports:review', 'bug_reports:update_status', 'bug_reports:batch_operations')
+  @RequirePermissions([
+    PERMISSIONS.bug_reports.review,
+    PERMISSIONS.bug_reports.update_status,
+    PERMISSIONS.bug_reports.batch_operations,
+  ])
   async batchUpdateStatus(
     @Body() batchUpdateDto: BatchUpdateBugReportStatusDto,
-    @CurrentUser() currentUser: User,
+    @CurrentUser() currentUser: CurrentUserDto,
   ) {
     const result = await this.bugReportsService.batchUpdateStatus(batchUpdateDto, currentUser)
 
@@ -311,13 +263,12 @@ export class BugReportsController {
     description: '漏洞报告重新提交成功',
     type: BugReportResponseDto,
   })
-  // @RequirePermissions('bug_reports:update')
+  @RequirePermissions(PERMISSIONS.bug_reports.update)
   async resubmit(
     @Param('id') id: string,
     @Body() resubmitDto: ResubmitBugReportDto,
-    @CurrentUser() currentUser: User,
   ) {
-    const updated = await this.bugReportsService.resubmit(id, resubmitDto, currentUser)
+    const updated = await this.bugReportsService.resubmit(id, resubmitDto)
 
     return resp({
       data: updated,
@@ -336,12 +287,11 @@ export class BugReportsController {
     status: 200,
     description: '漏洞报告删除成功',
   })
-  // @RequirePermissions('bug_reports:delete')
+  @RequirePermissions(PERMISSIONS.bug_reports.delete)
   async delete(
     @Param('id') id: string,
-    @CurrentUser() currentUser: User,
   ) {
-    await this.bugReportsService.delete(id, currentUser)
+    await this.bugReportsService.delete(id)
 
     return resp({
       msg: '漏洞报告删除成功',

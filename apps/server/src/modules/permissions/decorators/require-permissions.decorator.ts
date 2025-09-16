@@ -38,6 +38,7 @@ export const RESOURCES = [
   'organizations',
   'statistics',
   'licenses',
+  'bug_reports',
   'admin',
 ] as const
 
@@ -47,6 +48,10 @@ export const ACTIONS = [
   'update',
   'delete',
   'export',
+  'review',
+  'update_status',
+  'batch_operations',
+  'stats',
 ] as const
 
 export type Resource = typeof RESOURCES[number]
@@ -104,6 +109,16 @@ export const PERMISSIONS = {
     update: 'licenses:update',
     delete: 'licenses:delete',
   },
+  bug_reports: {
+    create: 'bug_reports:create',
+    read: 'bug_reports:read',
+    update: 'bug_reports:update',
+    delete: 'bug_reports:delete',
+    review: 'bug_reports:review',
+    update_status: 'bug_reports:update_status',
+    batch_operations: 'bug_reports:batch_operations',
+    stats: 'bug_reports:stats',
+  },
   // admin 通常通过通配符控制：P('admin').all → 'admin:*'
   admin: {},
 } as const satisfies Record<Resource, Partial<Record<BaseAction, PermissionSlug>>>
@@ -120,6 +135,10 @@ export function P<R extends Resource>(resource: R) {
     update: `${resource}:update` as const,
     delete: `${resource}:delete` as const,
     export: `${resource}:export` as const,
+    review: `${resource}:review` as const,
+    update_status: `${resource}:update_status` as const,
+    batch_operations: `${resource}:batch_operations` as const,
+    stats: `${resource}:stats` as const,
     all: `${resource}:*` as const,
   }
 }

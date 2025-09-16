@@ -105,17 +105,15 @@ export class FindBugReportsDto extends PaginationQueryDto {
   readonly reviewerId?: string
 
   @ApiPropertyOptional({
-    description: '组织ID筛选',
-    example: 'org-uuid',
+    description: '组织 ID 筛选',
   })
   @IsOptional()
-  @IsId('组织ID')
+  @IsId('组织 ID')
   @Expose()
   readonly orgId?: string
 
   @ApiPropertyOptional({
     description: '标题关键词搜索',
-    example: 'SQL注入',
   })
   @IsOptional()
   @IsString({ message: '标题关键词必须是字符串' })
@@ -124,7 +122,6 @@ export class FindBugReportsDto extends PaginationQueryDto {
 
   @ApiPropertyOptional({
     description: '攻击方式关键词搜索',
-    example: 'SQL',
   })
   @IsOptional()
   @IsString({ message: '攻击方式关键词必须是字符串' })
@@ -157,15 +154,6 @@ export class FindBugReportsDto extends PaginationQueryDto {
   @IsDateString({}, { message: '结束时间必须是有效的ISO日期字符串' })
   @Expose()
   readonly createdAtEnd?: string
-
-  @ApiPropertyOptional({
-    description: '是否包含附件筛选',
-    example: true,
-  })
-  @IsOptional()
-  @BooleanTransform()
-  @Expose()
-  readonly hasAttachments?: boolean
 
   @ApiPropertyOptional({
     description: '排序字段',
@@ -217,64 +205,6 @@ export class FindBugReportsDto extends PaginationQueryDto {
   @BooleanTransform()
   @Expose()
   readonly includeOrganization?: boolean
-}
-
-/**
- * 我的漏洞报告查询 DTO
- *
- * 用于用户查询自己提交的漏洞报告
- */
-export class FindMyBugReportsDto extends PaginationQueryDto {
-  @ApiPropertyOptional({
-    description: '漏洞等级筛选',
-    enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-    example: 'HIGH',
-  })
-  @IsOptional()
-  @IsEnum(['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], {
-    message: '漏洞等级必须是有效的枚举值',
-  })
-  @Expose()
-  readonly severity?: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
-
-  @ApiPropertyOptional({
-    description: '报告状态筛选',
-    enum: ['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'],
-    example: 'PENDING',
-  })
-  @IsOptional()
-  @IsEnum(['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'], {
-    message: '报告状态必须是有效的枚举值',
-  })
-  @Expose()
-  readonly status?: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'RESOLVED' | 'CLOSED'
-
-  @ApiPropertyOptional({
-    description: '标题关键词搜索',
-    example: 'SQL注入',
-  })
-  @IsOptional()
-  @IsString({ message: '标题关键词必须是字符串' })
-  @Expose()
-  readonly titleKeyword?: string
-
-  @ApiPropertyOptional({
-    description: '创建时间开始筛选（ISO日期字符串）',
-    example: '2024-01-01T00:00:00Z',
-  })
-  @IsOptional()
-  @IsDateString({}, { message: '开始时间必须是有效的ISO日期字符串' })
-  @Expose()
-  readonly createdAtStart?: string
-
-  @ApiPropertyOptional({
-    description: '创建时间结束筛选（ISO日期字符串）',
-    example: '2024-12-31T23:59:59Z',
-  })
-  @IsOptional()
-  @IsDateString({}, { message: '结束时间必须是有效的ISO日期字符串' })
-  @Expose()
-  readonly createdAtEnd?: string
 }
 
 /**

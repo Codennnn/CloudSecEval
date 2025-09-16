@@ -5,7 +5,7 @@ import { BugReportStatus } from '~/common/constants/bug-reports'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
-import type { BugReportStatsDto, FindBugReportsDto, FindMyBugReportsDto } from './dto/find-bug-reports.dto'
+import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
 
 /**
  * 漏洞报告数据访问层
@@ -79,62 +79,6 @@ export class BugReportsRepository {
           dto.includeReviewer,
           dto.includeOrganization,
         ),
-      }),
-      this.prisma.bugReport.count({ where }),
-    ])
-
-    const page = dto.page ?? 1
-    const pageSize = take
-
-    return {
-      data,
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-    }
-  }
-
-  /**
-   * 查找用户自己的漏洞报告
-   */
-  async findMyReports(userId: string, dto: FindMyBugReportsDto) {
-    const where: Prisma.BugReportWhereInput = {
-      userId,
-      ...dto.severity && { severity: dto.severity },
-      ...dto.status && { status: dto.status },
-      ...dto.titleKeyword && {
-        title: { contains: dto.titleKeyword, mode: 'insensitive' },
-      },
-      ...(dto.createdAtStart ?? dto.createdAtEnd) && {
-        createdAt: {
-          ...dto.createdAtStart && { gte: new Date(dto.createdAtStart) },
-          ...dto.createdAtEnd && { lte: new Date(dto.createdAtEnd) },
-        },
-      },
-    }
-
-    const { skip, take } = getPaginationParams({
-      page: dto.page,
-      pageSize: dto.pageSize,
-    })
-
-    const [data, total] = await Promise.all([
-      this.prisma.bugReport.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take,
-        include: {
-          reviewer: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              avatarUrl: true,
-            },
-          },
-        },
       }),
       this.prisma.bugReport.count({ where }),
     ])
@@ -404,16 +348,6 @@ export class BugReportsRepository {
 
       if (dto.createdAtEnd) {
         where.createdAt.lte = new Date(dto.createdAtEnd)
-      }
-    }
-
-    // 附件筛选
-    if (dto.hasAttachments !== undefined) {
-      if (dto.hasAttachments) {
-        where.attachments = { not: Prisma.JsonNull }
-      }
-      else {
-        where.attachments = { equals: Prisma.JsonNull }
       }
     }
 

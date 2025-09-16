@@ -87,43 +87,6 @@ export class CreateBugReportDto extends PickType(BaseBugReportDto, [
 }
 
 /**
- * 漏洞报告快速创建 DTO
- *
- * 用于快速创建漏洞报告，只包含最基本的必填字段
- */
-export class QuickCreateBugReportDto {
-  @ApiProperty({
-    description: '报告标题',
-    example: 'SQL注入漏洞',
-    maxLength: 200,
-  })
-  @IsString({ message: '报告标题必须是字符串' })
-  @IsNotEmpty({ message: '报告标题不能为空' })
-  @MaxLength(200, { message: '报告标题不能超过200个字符' })
-  @Expose()
-  readonly title!: string
-
-  @ApiProperty({
-    description: '漏洞等级',
-    enum: ['INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-    example: 'HIGH',
-  })
-  @Expose()
-  readonly severity!: 'INFO' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
-
-  @ApiPropertyOptional({
-    description: '简单描述',
-    example: '在登录页面发现SQL注入漏洞',
-    maxLength: 500,
-  })
-  @IsOptional()
-  @IsString({ message: '描述必须是字符串' })
-  @MaxLength(500, { message: '描述不能超过500个字符' })
-  @Expose()
-  readonly description?: string
-}
-
-/**
  * 批量创建漏洞报告 DTO
  */
 export class BatchCreateBugReportsDto {

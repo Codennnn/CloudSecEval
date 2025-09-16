@@ -108,3 +108,5 @@ export class SafeUserDto extends OmitType(BaseUserDto, ['password']) {
   @Expose()
   readonly userRoles?: UserRoleDto[]
 }
+
+export class CurrentUserDto extends SafeUserDto {}

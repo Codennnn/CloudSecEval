@@ -1,6 +1,6 @@
 import type { Request } from 'express'
 
-import type { SafeUserDto } from '~/modules/users/dto/base-user.dto'
+import type { CurrentUserDto } from '~/modules/users/dto/base-user.dto'
 
 /**
  * 通用的类型别名，用于替代 any 类型
@@ -54,5 +54,5 @@ export interface ExpressRequest extends Request {
    * - 由 JWT 或 Local 策略中的 validate 方法设置
    * - 通过 @CurrentUser() 装饰器获取
    */
-  user?: SafeUserDto
+  user?: CurrentUserDto
 }

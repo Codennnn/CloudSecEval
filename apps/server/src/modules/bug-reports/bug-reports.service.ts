@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 
-import { BugReport, BugReportStatus, Prisma, User } from '#prisma/client'
+import { BugReportStatus, Prisma } from '#prisma/client'
 import {
   BUG_REPORT_ATTACHMENTS,
   BUG_REPORT_STATUS,
@@ -10,10 +10,11 @@ import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { UploadsService } from '~/modules/uploads/uploads.service'
 
+import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsRepository } from './bug-reports.repository'
 import { AttachmentDto } from './dto/base-bug-report.dto'
-import type { BatchCreateBugReportsDto, CreateBugReportDto, QuickCreateBugReportDto } from './dto/create-bug-report.dto'
-import type { BugReportStatsDto, FindBugReportsDto, FindMyBugReportsDto } from './dto/find-bug-reports.dto'
+import type { BatchCreateBugReportsDto, CreateBugReportDto } from './dto/create-bug-report.dto'
+import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
 import type {
   BatchUpdateBugReportStatusDto,
   ResubmitBugReportDto,
@@ -24,7 +25,7 @@ import type {
 /**
  * 漏洞报告业务逻辑层
  *
- * 处理漏洞报告相关的业务逻辑，包括权限检查、文件处理、状态流转等
+ * 处理漏洞报告相关的业务逻辑，包括文件处理、状态流转等
  */
 @Injectable()
 export class BugReportsService {
@@ -33,10 +34,7 @@ export class BugReportsService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  /**
-   * 创建漏洞报告
-   */
-  async create(dto: CreateBugReportDto, currentUser: User) {
+  async create(dto: CreateBugReportDto, currentUser: CurrentUserDto) {
     // 处理附件
     let attachments: AttachmentDto[] | undefined = []
 
@@ -56,25 +54,7 @@ export class BugReportsService {
         : undefined,
       status: BUG_REPORT_STATUS.PENDING,
       user: { connect: { id: currentUser.id } },
-      organization: { connect: { id: currentUser.orgId } },
-    }
-
-    const bugReport = await this.bugReportsRepository.create(createData)
-
-    return bugReport
-  }
-
-  /**
-   * 快速创建漏洞报告
-   */
-  async quickCreate(dto: QuickCreateBugReportDto, currentUser: User) {
-    const createData: Prisma.BugReportCreateInput = {
-      title: dto.title,
-      severity: dto.severity,
-      description: dto.description,
-      status: BUG_REPORT_STATUS.PENDING,
-      user: { connect: { id: currentUser.id } },
-      organization: { connect: { id: currentUser.orgId } },
+      organization: { connect: { id: currentUser.organization.id } },
     }
 
     const bugReport = await this.bugReportsRepository.create(createData)
@@ -85,7 +65,7 @@ export class BugReportsService {
   /**
    * 批量创建漏洞报告
    */
-  async batchCreate(dto: BatchCreateBugReportsDto, currentUser: User) {
+  async batchCreate(dto: BatchCreateBugReportsDto, currentUser: CurrentUserDto) {
     const createData = dto.bugReports.map((report) => ({
       title: report.title,
       severity: report.severity,
@@ -94,7 +74,7 @@ export class BugReportsService {
       discoveredUrls: report.discoveredUrls ?? [],
       status: BUG_REPORT_STATUS.PENDING,
       userId: currentUser.id,
-      orgId: currentUser.orgId,
+      orgId: currentUser.organization.id,
     }))
 
     const result = await this.bugReportsRepository.createMany(createData)
@@ -105,15 +85,12 @@ export class BugReportsService {
   /**
    * 根据ID获取漏洞报告
    */
-  async findById(id: string, currentUser: User) {
+  async findById(id: string) {
     const bugReport = await this.bugReportsRepository.findById(id, true)
 
     if (!bugReport) {
       throw BusinessException.notFound(BUSINESS_CODES.BUG_REPORT_NOT_FOUND)
     }
-
-    // 权限检查：只能查看自己的报告或管理员可以查看组织内的报告
-    await this.checkReadPermission(bugReport, currentUser)
 
     return bugReport
   }
@@ -121,30 +98,10 @@ export class BugReportsService {
   /**
    * 查询漏洞报告列表
    */
-  async findMany(dto: FindBugReportsDto, currentUser: User) {
-    // 非管理员只能查看自己组织内的报告
-    if (!this.isAdmin(currentUser)) {
-      dto = Object.assign({}, dto, { orgId: currentUser.orgId })
-    }
-
-    const result = await this.bugReportsRepository.findMany(dto)
-
-    return {
-      data: result.data,
-      pagination: {
-        total: result.total,
-        page: result.page,
-        pageSize: result.pageSize,
-        totalPages: result.totalPages,
-      },
-    }
-  }
-
-  /**
-   * 获取我的漏洞报告
-   */
-  async findMyReports(dto: FindMyBugReportsDto, currentUser: User) {
-    const result = await this.bugReportsRepository.findMyReports(currentUser.id, dto)
+  async findMany(dto: FindBugReportsDto, currentUser: CurrentUserDto) {
+    const result = await this.bugReportsRepository.findMany(
+      Object.assign({}, dto, { orgId: currentUser.organization.id }),
+    )
 
     return {
       data: result.data,
@@ -160,12 +117,7 @@ export class BugReportsService {
   /**
    * 更新漏洞报告
    */
-  async update(id: string, dto: UpdateBugReportDto, currentUser: User) {
-    const bugReport = await this.findBugReportOrThrow(id)
-
-    // 权限检查：只能更新自己的报告，且未被审核
-    await this.checkUpdatePermission(bugReport, currentUser)
-
+  async update(id: string, dto: UpdateBugReportDto) {
     // 处理附件更新
     let attachments: AttachmentDto[] | undefined
 
@@ -197,16 +149,12 @@ export class BugReportsService {
   /**
    * 更新漏洞报告状态
    */
-  async updateStatus(id: string, dto: UpdateBugReportStatusDto, currentUser: User) {
+  async updateStatus(id: string, dto: UpdateBugReportStatusDto, currentUser: CurrentUserDto) {
     const bugReport = await this.findBugReportOrThrow(id)
-
-    // 权限检查：只有管理员可以更新状态
-    this.checkAdminPermission(currentUser)
 
     // 业务逻辑检查
     if (dto.status) {
       this.validateStatusTransition(bugReport.status, dto.status)
-      this.validateReviewPermission(bugReport, currentUser)
     }
 
     const updateData: Prisma.BugReportUpdateInput = {
@@ -226,11 +174,8 @@ export class BugReportsService {
   /**
    * 批量更新漏洞报告状态
    */
-  async batchUpdateStatus(dto: BatchUpdateBugReportStatusDto, currentUser: User) {
-    // 权限检查：只有管理员可以批量更新状态
-    this.checkAdminPermission(currentUser)
-
-    // 验证所有报告是否存在且在当前用户组织内
+  async batchUpdateStatus(dto: BatchUpdateBugReportStatusDto, currentUser: CurrentUserDto) {
+    // 验证所有报告是否存在
     const bugReports = await this.bugReportsRepository.findByIds(dto.bugReportIds, false)
 
     const validIds: string[] = []
@@ -244,14 +189,8 @@ export class BugReportsService {
         continue
       }
 
-      if (!this.isAdmin(currentUser) && report.orgId !== currentUser.orgId) {
-        failures.push({ id, error: '无权限操作' })
-        continue
-      }
-
       try {
         this.validateStatusTransition(report.status, dto.status)
-        this.validateReviewPermission(report, currentUser)
         validIds.push(id)
       }
       catch (error) {
@@ -280,13 +219,8 @@ export class BugReportsService {
   /**
    * 重新提交漏洞报告
    */
-  async resubmit(id: string, dto: ResubmitBugReportDto, currentUser: User) {
+  async resubmit(id: string, dto: ResubmitBugReportDto) {
     const bugReport = await this.findBugReportOrThrow(id)
-
-    // 权限检查：只能重新提交自己被驳回的报告
-    if (bugReport.userId !== currentUser.id) {
-      throw BusinessException.forbidden(BUSINESS_CODES.BUG_REPORT_ACCESS_DENIED)
-    }
 
     if (bugReport.status !== BUG_REPORT_STATUS.REJECTED) {
       throw new BadRequestException('只能重新提交被驳回的报告')
@@ -327,12 +261,7 @@ export class BugReportsService {
   /**
    * 删除漏洞报告
    */
-  async delete(id: string, currentUser: User) {
-    const bugReport = await this.findBugReportOrThrow(id)
-
-    // 权限检查：只能删除自己未被审核的报告，或管理员可以删除组织内的报告
-    await this.checkDeletePermission(bugReport, currentUser)
-
+  async delete(id: string) {
     await this.bugReportsRepository.delete(id)
 
     // 删除成功，无需返回数据，由控制器负责返回提示信息
@@ -341,12 +270,7 @@ export class BugReportsService {
   /**
    * 获取漏洞报告统计数据
    */
-  async getStats(dto: BugReportStatsDto, currentUser: User) {
-    // 非管理员只能查看自己组织的统计
-    if (!this.isAdmin(currentUser)) {
-      dto = Object.assign({}, dto, { orgId: currentUser.orgId })
-    }
-
+  async getStats(dto: BugReportStatsDto) {
     const stats = await this.bugReportsRepository.getStats(dto)
 
     return stats
@@ -406,7 +330,7 @@ export class BugReportsService {
     const allowedTransitions
       = BUG_REPORT_STATUS_TRANSITIONS[currentStatus as keyof typeof BUG_REPORT_STATUS_TRANSITIONS]
 
-    if (!allowedTransitions) {
+    if (typeof allowedTransitions !== 'string') {
       throw BusinessException.badRequest(BUSINESS_CODES.INVALID_STATUS_TRANSITION)
     }
 
@@ -415,89 +339,6 @@ export class BugReportsService {
     if (!isValidTransition) {
       throw BusinessException.badRequest(BUSINESS_CODES.INVALID_STATUS_TRANSITION)
     }
-  }
-
-  /**
-   * 验证审核权限（不能审核自己的报告）
-   */
-  private validateReviewPermission(bugReport: BugReport, currentUser: User) {
-    if (bugReport.userId === currentUser.id) {
-      throw BusinessException.badRequest(BUSINESS_CODES.CANNOT_APPROVE_OWN_BUG_REPORT)
-    }
-  }
-
-  /**
-   * 检查读取权限
-   */
-  private async checkReadPermission(bugReport: BugReport, currentUser: User) {
-    const isOwner = bugReport.userId === currentUser.id
-    const isInSameOrg = bugReport.orgId === currentUser.orgId
-    const isAdmin = this.isAdmin(currentUser)
-
-    if (!isOwner && !isInSameOrg && !isAdmin) {
-      throw BusinessException.forbidden(BUSINESS_CODES.BUG_REPORT_ACCESS_DENIED)
-    }
-  }
-
-  /**
-   * 检查更新权限
-   */
-  private async checkUpdatePermission(bugReport: BugReport, currentUser: User) {
-    // 只能更新自己的报告
-    if (bugReport.userId !== currentUser.id) {
-      throw BusinessException.forbidden(BUSINESS_CODES.BUG_REPORT_ACCESS_DENIED)
-    }
-
-    // 已审核的报告不能修改
-    if (
-      bugReport.status !== BUG_REPORT_STATUS.PENDING
-      && bugReport.status !== BUG_REPORT_STATUS.REJECTED
-      && bugReport.status !== BUG_REPORT_STATUS.CLOSED
-    ) {
-      throw BusinessException.badRequest(BUSINESS_CODES.CANNOT_EDIT_REVIEWED_BUG_REPORT)
-    }
-  }
-
-  /**
-   * 检查删除权限
-   */
-  private async checkDeletePermission(bugReport: BugReport, currentUser: User) {
-    const isOwner = bugReport.userId === currentUser.id
-    const isAdmin = this.isAdmin(currentUser)
-    const isInSameOrg = bugReport.orgId === currentUser.orgId
-
-    if (!isOwner && !(isAdmin && isInSameOrg)) {
-      throw BusinessException.forbidden(BUSINESS_CODES.BUG_REPORT_ACCESS_DENIED)
-    }
-
-    // 用户只能删除自己未被审核的报告
-    if (isOwner && !isAdmin) {
-      if (
-        bugReport.status !== BUG_REPORT_STATUS.PENDING
-        && bugReport.status !== BUG_REPORT_STATUS.REJECTED
-        && bugReport.status !== BUG_REPORT_STATUS.CLOSED
-      ) {
-        throw BusinessException.badRequest(BUSINESS_CODES.CANNOT_DELETE_REVIEWED_BUG_REPORT)
-      }
-    }
-  }
-
-  /**
-   * 检查管理员权限
-   */
-  private checkAdminPermission(currentUser: User) {
-    if (!this.isAdmin(currentUser)) {
-      throw BusinessException.forbidden(BUSINESS_CODES.INSUFFICIENT_PERMISSIONS)
-    }
-  }
-
-  /**
-   * 判断是否为管理员
-   */
-  private isAdmin(user: User): boolean {
-    // 这里应该根据实际的权限系统来判断
-    // 暂时简化处理，实际项目中应该检查用户的角色权限
-    return user.email.includes('admin') // 临时实现，实际应该检查角色
   }
 
   /**

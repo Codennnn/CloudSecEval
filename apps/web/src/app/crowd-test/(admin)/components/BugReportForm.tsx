@@ -52,11 +52,6 @@ export interface BugReportFormCardProps {
   submitText?: string
 }
 
-/**
- * BugReportForm
- * 漏洞上报表单（包含标题、级别、攻击方式、描述等）。
- * 本次编辑：在描述与提交按钮之间新增“附件上传”的静态 UI（仅展示，无交互）。
- */
 export function BugReportForm(props: BugReportFormCardProps) {
   const { initialValues, onSubmit, onCancel, submitText } = props
 
