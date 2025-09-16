@@ -1,7 +1,6 @@
 import { CheckCircleIcon, ClockIcon, FileTextIcon, XCircleIcon } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
-import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
 import type { ActivityItem } from '../lib/mockData'
 

@@ -8,30 +8,9 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/
 import { Separator } from '~/components/ui/separator'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
-import { activityTimeline, riskTrend, vulnTrend } from '../../dashboard/lib/mockData'
+import { activityTimeline, getReportStatusTitle, riskTrend, type TeamReportStats, teamReportStats, vulnTrend } from '../../dashboard/lib/mockData'
 
 import { MemberReportTable } from './MemberReportTable'
-
-const statsData = [
-  {
-    title: '已通过',
-    description: '审核通过的报告',
-    value: 5,
-    icon: CheckCircleIcon,
-  },
-  {
-    title: '待审核',
-    description: '等待处理的报告',
-    icon: ClockIcon,
-    value: 10,
-  },
-  {
-    title: '已拒绝',
-    description: '未通过的报告',
-    icon: XCircleIcon,
-    value: 2,
-  },
-]
 
 interface StatCardProps {
   title: string
@@ -67,6 +46,61 @@ function StatCard(props: StatCardProps) {
   )
 }
 
+/**
+ * 团队报告统计卡片组：根据状态键动态生成标题和描述
+ */
+function TeamReportStatsCards({ stats }: { stats: TeamReportStats }) {
+  /**
+   * 根据状态键返回描述
+   */
+  function getStatusDescription(status: keyof TeamReportStats) {
+    if (status === 'pending') {
+      return '等待处理的报告'
+    }
+
+    if (status === 'approved') {
+      return '审核通过的报告'
+    }
+
+    return '未通过的报告'
+  }
+
+  /**
+   * 根据状态键返回图标
+   */
+  function getStatusIcon(status: keyof TeamReportStats) {
+    if (status === 'pending') {
+      return <ClockIcon className="size-6" />
+    }
+
+    if (status === 'approved') {
+      return <CheckCircleIcon className="size-6" />
+    }
+
+    return <XCircleIcon className="size-6" />
+  }
+
+  const statusKeys: (keyof TeamReportStats)[] = ['approved', 'pending', 'rejected']
+
+  return (
+    <>
+      {statusKeys.map((status, idx) => (
+        <div key={status} className="flex justify-between gap-admin-content px-admin-content">
+          <StatCard
+            description={getStatusDescription(status)}
+            icon={getStatusIcon(status)}
+            title={getReportStatusTitle(status)}
+            value={stats[status]}
+          />
+          {idx !== statusKeys.length - 1 && (
+            <Separator orientation="vertical" />
+          )}
+        </div>
+      ))}
+    </>
+  )
+}
+
 export function TeamProfile() {
   // Performance 区：用现有趋势数组合并为双曲线数据
   const performanceData = riskTrend.map((r, idx) => ({
@@ -87,18 +121,7 @@ export function TeamProfile() {
         <Separator />
 
         <div className="grid md:grid-cols-3">
-          {statsData.map((stat, idx) => (
-            <div key={stat.title} className="flex justify-between gap-admin-content px-admin-content">
-              <StatCard
-                key={stat.title}
-                {...stat}
-                icon={<stat.icon className="size-6" />}
-              />
-              {idx !== statsData.length - 1 && (
-                <Separator orientation="vertical" />
-              )}
-            </div>
-          ))}
+          <TeamReportStatsCards stats={teamReportStats} />
         </div>
 
         <Separator />

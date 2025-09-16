@@ -104,3 +104,57 @@ export const activityTimeline: ActivityItem[] = [
   { id: 'a3', time: '09:58', user: '赵强', action: '审核漏洞报告', title: '弱口令问题', severity: '低危', status: '已拒绝' },
   { id: 'a4', time: '09:40', user: '陈晓', action: '提交漏洞报告', title: 'SQL 注入', severity: '高危', status: '待审核' },
 ]
+
+// 漏洞报告状态统计（纯数据，不包含颜色、图标等展示信息）
+export interface ReportStatusStats {
+  pending: number
+  approved: number
+  rejected: number
+  archived: number
+}
+
+export const reportStatusStats: ReportStatusStats = {
+  pending: projectInfo.reports.pending,
+  approved: projectInfo.reports.approved,
+  rejected: projectInfo.reports.rejected,
+  archived: projectInfo.reports.archived,
+}
+
+// 团队报告统计（仅包含部分状态）
+export interface TeamReportStats {
+  approved: number
+  pending: number
+  rejected: number
+}
+
+export const teamReportStats: TeamReportStats = {
+  approved: 5,
+  pending: 10,
+  rejected: 2,
+}
+
+// 报告状态标题映射（统一的状态标题获取）
+export type ReportStatus = 'pending' | 'approved' | 'rejected' | 'archived'
+
+export function getReportStatusTitle(status: ReportStatus): string {
+  switch (status) {
+    case 'pending':
+
+      return '待审核'
+
+    case 'approved':
+
+      return '已通过'
+
+    case 'rejected':
+
+      return '已拒绝'
+
+    case 'archived':
+
+      return '已归档'
+
+    default:
+      return '未知状态'
+  }
+}

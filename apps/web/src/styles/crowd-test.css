@@ -12,5 +12,10 @@
 
   @theme inline {
     --color-crowd-test-dashboard-background: #060d1b;
+    --color-report-pending: #f90;
+    --color-report-approved: #0c0;
+    --color-report-rejected: #f00;
+    --color-report-archived: #999;
+    --spacing-dash-card: calc(var(--spacing) * 6);
   }
 }

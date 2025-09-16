@@ -4,15 +4,16 @@ import { DashDecoratorImg } from './DashDecoratorImg'
 
 interface DashCardProps extends React.PropsWithChildren<React.ComponentProps<'div'>> {
   title?: string
+  contentClassName?: string
 }
 
 export function DashCard(props: DashCardProps) {
-  const { className, title, children, ...rest } = props
+  const { title, children, contentClassName, ...rest } = props
 
   return (
     <div
       {...rest}
-      className={cn(className)}
+      className={cn('flex flex-col overflow-hidden', rest.className)}
     >
       <div className="relative">
         <DashDecoratorImg
@@ -23,15 +24,15 @@ export function DashCard(props: DashCardProps) {
         <div className="pl-10 pb-2 font-bold text-lg relative z-10">
           {title}
         </div>
-      </div>
-
-      <div className="relative z-10 p-4">
-        {children}
 
         <DashDecoratorImg
-          className="absolute inset-0"
+          className="absolute inset-0 top-[36px]"
           src="/assets/crowd-test/dash-card-content-bg.png"
         />
+      </div>
+
+      <div className={cn('relative z-10 flex-1 p-4 min-h-0 overflow-y-auto', contentClassName)}>
+        {children}
       </div>
     </div>
   )

@@ -4,12 +4,7 @@ import { CheckCircle, Clock, FileText, XCircle } from 'lucide-react'
 
 import { Card } from '~/components/ui/card'
 
-interface ReportStats {
-  pending: number
-  approved: number
-  rejected: number
-  archived: number
-}
+import { getReportStatusTitle, type ReportStatusStats } from '../lib/mockData'
 
 /**
  * 根据 tone 返回对应的图标背景与数值文本颜色
@@ -92,39 +87,55 @@ function StatCard({
 }
 
 /**
- * 报告统计卡片组：以一致的样式展示待审核、已通过、已拒绝、已归档数量
+ * 报告统计卡片组：
+ * - 接收纯数据 `ReportStatusStats`
+ * - 在组件内部决定展示（标题、说明、图标、颜色）
  */
-export function ReportStatsCards({ stats }: { stats: ReportStats }) {
+export function ReportStatsCards({ stats }: { stats: ReportStatusStats }) {
+  const cardsConfig: {
+    key: keyof ReportStatusStats
+    hint: string
+    tone: 'orange' | 'green' | 'red' | 'gray'
+    icon: React.ReactNode
+  }[] = [
+    {
+      key: 'pending',
+      hint: '等待处理的报告',
+      tone: 'orange',
+      icon: <Clock className="h-4 w-4" />,
+    },
+    {
+      key: 'approved',
+      hint: '审核通过的报告',
+      tone: 'green',
+      icon: <CheckCircle className="h-4 w-4" />,
+    },
+    {
+      key: 'rejected',
+      hint: '未通过的报告',
+      tone: 'red',
+      icon: <XCircle className="h-4 w-4" />,
+    },
+    {
+      key: 'archived',
+      hint: '已完成归档',
+      tone: 'gray',
+      icon: <FileText className="h-4 w-4" />,
+    },
+  ]
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <StatCard
-        hint="等待处理的报告"
-        icon={<Clock className="h-4 w-4" />}
-        title="待审核"
-        tone="orange"
-        value={stats.pending}
-      />
-      <StatCard
-        hint="审核通过的报告"
-        icon={<CheckCircle className="h-4 w-4" />}
-        title="已通过"
-        tone="green"
-        value={stats.approved}
-      />
-      <StatCard
-        hint="未通过的报告"
-        icon={<XCircle className="h-4 w-4" />}
-        title="已拒绝"
-        tone="red"
-        value={stats.rejected}
-      />
-      <StatCard
-        hint="已完成归档"
-        icon={<FileText className="h-4 w-4" />}
-        title="已归档"
-        tone="gray"
-        value={stats.archived}
-      />
+      {cardsConfig.map((c) => (
+        <StatCard
+          key={c.key}
+          hint={c.hint}
+          icon={c.icon}
+          title={getReportStatusTitle(c.key)}
+          tone={c.tone}
+          value={stats[c.key]}
+        />
+      ))}
     </div>
   )
 }
