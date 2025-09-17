@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo } from 'react'
 import { type FieldValues, useFieldArray, useForm } from 'react-hook-form'
+import { useEvent } from 'react-use-event-hook'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
 
+import { FileUploader } from '~/components/FileUploader'
 import { RichTextEditor } from '~/components/richtext/RichTextEditor'
 import { Button } from '~/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
@@ -34,6 +36,7 @@ const bugFormSchema = z.object({
   discoveredUrls: z.array(z.object({
     url: z.string().optional(),
   })),
+  attachmentIds: z.array(z.string()).default([]),
 })
 
 type BugFormInput = z.input<typeof bugFormSchema>
@@ -79,6 +82,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
       severity: initialValues?.severity ?? VulnerabilitySeverity.MEDIUM,
       attackType: normalizedAttackType,
       discoveredUrls: initialValues?.discoveredUrls?.map((url) => ({ url })) ?? [{ url: '' }],
+      attachmentIds: initialValues?.attachmentIds ?? [],
     }
   }, [initialValues])
 
@@ -100,17 +104,18 @@ export function BugReportForm(props: BugReportFormCardProps) {
     form.reset(defaultValues)
   }, [defaultValues, form])
 
-  function handleSubmit(values: BugFormOutput) {
+  const handleSubmit = useEvent((values: BugFormOutput) => {
     const result: BugReportFormValues = {
       title: values.title.trim(),
       description: values.description.trim(),
       severity: values.severity,
       attackType: values.attackType as BugAttackType,
       discoveredUrls: values.discoveredUrls.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0),
+      attachmentIds: values.attachmentIds ?? [],
     }
 
     return onSubmit?.(result)
-  }
+  })
 
   return (
     <Form {...form}>
@@ -237,9 +242,9 @@ export function BugReportForm(props: BugReportFormCardProps) {
         />
 
         {/* 漏洞 URL 字段 */}
-        <div className="space-y-2">
+        <FormItem>
           <div className="flex items-center justify-between">
-            <div className="text-sm font-medium leading-none">漏洞 URL</div>
+            <FormLabel>漏洞 URL</FormLabel>
             {!readonly && (
               <Button
                 size="xs"
@@ -256,97 +261,94 @@ export function BugReportForm(props: BugReportFormCardProps) {
           </div>
 
           <div className="space-y-3">
-            {fields.map((field, index) => (
-              <FormField
-                key={field.id}
-                control={form.control}
-                name={`discoveredUrls.${index}.url`}
-                render={({ field: urlField }) => (
-                  <FormItem>
-                    <div className="flex gap-2">
-                      {readonly
-                        ? (
-                            <div className="text-sm break-all flex-1">
-                              {urlField.value
-                                ? (
-                                    <a
-                                      className="text-primary underline"
-                                      href={urlField.value}
-                                      rel="noopener noreferrer"
-                                      target="_blank"
-                                    >
-                                      {urlField.value}
-                                    </a>
-                                  )
-                                : (
-                                    <span className="text-muted-foreground">-</span>
-                                  )}
-                            </div>
+            {
+              readonly
+                ? fields.length > 0
+                  ? (
+                      <ul>
+                        {fields.map((field) => {
+                          return (
+                            <li key={field.id}>
+                              <div className="text-sm truncate">
+                                {field.url}
+                              </div>
+                              <div className="text-sm truncate">
+                                {field.url}
+                              </div>
+                            </li>
                           )
-                        : (
-                            <FormControl>
-                              <Input
-                                {...urlField}
-                                className="flex-1"
-                                placeholder="填写漏洞 URL"
-                                type="url"
-                              />
-                            </FormControl>
-                          )}
+                        })}
+                      </ul>
+                    )
+                  : '-'
+                : fields.map((field, index) => {
+                    return (
+                      <FormField
+                        key={field.id}
+                        control={form.control}
+                        name={`discoveredUrls.${index}.url`}
+                        render={({ field: urlField }) => (
+                          <FormItem>
+                            <div className="flex gap-2">
+                              <FormControl>
+                                <Input
+                                  {...urlField}
+                                  className="flex-1"
+                                  placeholder="填写漏洞 URL"
+                                  type="url"
+                                />
+                              </FormControl>
 
-                      {!readonly && fields.length > 1 && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              className="size-9 p-0"
-                              size="sm"
-                              type="button"
-                              variant="outline"
-                              onClick={() => {
-                                remove(index)
-                              }}
-                            >
-                              <X />
-                            </Button>
-                          </TooltipTrigger>
+                              {fields.length > 1 && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      className="size-9 p-0"
+                                      size="sm"
+                                      type="button"
+                                      variant="outline"
+                                      onClick={() => {
+                                        remove(index)
+                                      }}
+                                    >
+                                      <X />
+                                    </Button>
+                                  </TooltipTrigger>
 
-                          <TooltipContent>
-                            删除 URL
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                    {!readonly && <FormMessage />}
-                  </FormItem>
-                )}
+                                  <TooltipContent>
+                                    删除 URL
+                                  </TooltipContent>
+                                </Tooltip>
+                              )}
+                            </div>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )
+                  })
+            }
+          </div>
+        </FormItem>
+
+        {/* 附件上传 */}
+        <FormField
+          control={form.control}
+          name="attachmentIds"
+          render={({ field }) => (
+            <FormItem>
+              <FileUploader
+                multiple
+                accept={undefined}
+                readonly={readonly}
+                value={field.value ?? []}
+                onChange={field.onChange}
               />
-            ))}
-          </div>
-        </div>
-
-        {/* 附件上传（仅 UI，无交互） */}
-        <div className="space-y-2">
-          <div className="text-sm font-medium leading-none">附件</div>
-          <div className="rounded-md border border-dashed p-4">
-            <div className="flex flex-col items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
-              <p>将文件拖拽到此处，或点击下方按钮选择文件</p>
-              <p className="text-xs">支持图片、视频、日志、PDF 等（仅展示 UI）</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {!readonly && (
-                <Button type="button" variant="secondary">添加附件</Button>
-              )}
-            </div>
-            <div className="mt-3">
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center justify-between rounded-md border p-2">
-                  <span className="truncate">example-screenshot.png</span>
-                  <span className="text-muted-foreground">1.2MB</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+              {!readonly && <FormMessage />}
+            </FormItem>
+          )}
+        />
 
         <div className="flex gap-2">
           {!readonly && (
