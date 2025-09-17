@@ -35,13 +35,13 @@ const bugFormSchema = z.object({
 
 // 草稿的表单验证（宽松）
 const draftFormSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  severity: z.enum(Object.values(VulnerabilitySeverity)).optional(),
+  title: z.string().default(''),
+  description: z.string().default(''),
+  severity: z.enum(Object.values(VulnerabilitySeverity)).default(VulnerabilitySeverity.MEDIUM),
   discoveredUrls: z.array(z.object({
     url: z.string().optional(),
-  })).optional(),
-  attachmentIds: z.array(z.string()).optional(),
+  })).default([{ url: '' }]),
+  attachmentIds: z.array(z.string()).default([]),
 })
 
 type BugFormInput = z.input<typeof draftFormSchema>
@@ -88,11 +88,11 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
   const defaultValues: BugFormInput = useMemo(() => {
     return {
-      title: initialValues?.title,
-      description: initialValues?.description,
-      severity: initialValues?.severity as VulnerabilitySeverity | undefined,
-      discoveredUrls: initialValues?.discoveredUrls?.map((url) => ({ url })),
-      attachmentIds: initialValues?.attachmentIds,
+      title: initialValues?.title ?? '',
+      description: initialValues?.description ?? '',
+      severity: (initialValues?.severity ?? VulnerabilitySeverity.MEDIUM) as VulnerabilitySeverity,
+      discoveredUrls: initialValues?.discoveredUrls?.map((url) => ({ url })) ?? [{ url: '' }],
+      attachmentIds: initialValues?.attachmentIds ?? [],
     }
   }, [initialValues])
 
@@ -117,11 +117,11 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
   const handleSubmit = useEvent((values: BugFormOutput) => {
     const result: BugReportFormValues = {
-      title: values.title?.trim() ?? '',
-      description: values.description?.trim() ?? '',
-      severity: values.severity ?? VulnerabilitySeverity.MEDIUM,
-      discoveredUrls: values.discoveredUrls?.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0) ?? [],
-      attachmentIds: values.attachmentIds ?? [],
+      title: values.title.trim(),
+      description: values.description.trim(),
+      severity: values.severity,
+      discoveredUrls: values.discoveredUrls.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0),
+      attachmentIds: values.attachmentIds,
     }
 
     return onSubmit?.(result)
@@ -129,11 +129,11 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
   const handleSaveDraft = useEvent((values: BugFormOutput) => {
     const result: BugReportFormValues = {
-      title: values.title?.trim() ?? '',
-      description: values.description?.trim() ?? '',
-      severity: values.severity ?? VulnerabilitySeverity.MEDIUM,
-      discoveredUrls: values.discoveredUrls?.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0) ?? [],
-      attachmentIds: values.attachmentIds ?? [],
+      title: values.title.trim(),
+      description: values.description.trim(),
+      severity: values.severity,
+      discoveredUrls: values.discoveredUrls.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0),
+      attachmentIds: values.attachmentIds,
     }
 
     return onSaveDraft?.(result)
@@ -262,9 +262,6 @@ export function BugReportForm(props: BugReportFormCardProps) {
                         {fields.map((field) => {
                           return (
                             <li key={field.id}>
-                              <div className="text-sm truncate">
-                                {field.url}
-                              </div>
                               <div className="text-sm truncate">
                                 {field.url}
                               </div>

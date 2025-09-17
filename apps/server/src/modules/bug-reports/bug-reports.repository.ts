@@ -159,18 +159,6 @@ export class BugReportsRepository {
   }
 
   /**
-   * 检查漏洞报告是否在指定组织内
-   */
-  async checkOrganization(id: string, orgId: string): Promise<boolean> {
-    const report = await this.prisma.bugReport.findFirst({
-      where: { id, orgId },
-      select: { id: true },
-    })
-
-    return !!report
-  }
-
-  /**
    * 获取漏洞报告统计数据
    */
   async getStats(dto: BugReportStatsDto) {
