@@ -1,14 +1,11 @@
-import type { ReactElement } from 'react'
-
 import { Activity, AlertTriangle, CalendarDays, CheckCircle2 } from 'lucide-react'
 
-import type { BugItem } from '../types'
+import { BugReportStatus } from '../../constants'
 
 import { BugStatsCard, type StatCardData } from './BugStatsCard'
 
-/**
- * 判断日期是否为今天
- */
+import { type BugReportSummaryDto, VulnerabilitySeverity } from '~api/types.gen'
+
 function isToday(date: string): boolean {
   const d = new Date(date)
   const now = new Date()
@@ -21,16 +18,18 @@ function isToday(date: string): boolean {
 /**
  * 计算审核员/管理员关注的统计指标
  */
-function computeBugStats(all: BugItem[]): StatCardData[] {
+function computeBugStats(all: BugReportSummaryDto[]): StatCardData[] {
   const total = all.length
-  const pending = all.filter((x) => x.status === 'pending').length
+  const pending = all.filter((x) => x.status === BugReportStatus.PENDING).length
   const todayAdded = all.filter((x) => isToday(x.createdAt)).length
   const highCriticalPending = all.filter((x) =>
-    (x.severity === 'high' || x.severity === 'critical') && x.status === 'pending',
+    (x.severity === VulnerabilitySeverity.HIGH
+      || x.severity === VulnerabilitySeverity.CRITICAL)
+    && x.status === BugReportStatus.PENDING,
   ).length
 
-  const accepted = all.filter((x) => x.status === 'accepted').length
-  const rejected = all.filter((x) => x.status === 'rejected').length
+  const accepted = all.filter((x) => x.status === BugReportStatus.APPROVED).length
+  const rejected = all.filter((x) => x.status === BugReportStatus.REJECTED).length
   const decisionTotal = accepted + rejected
   const acceptanceRate = decisionTotal > 0 ? `${Math.round((accepted / decisionTotal) * 100)}%` : '—'
 
@@ -76,7 +75,11 @@ function computeBugStats(all: BugItem[]): StatCardData[] {
   return cards
 }
 
-export function BugStatsCards(props: { data: BugItem[] }): ReactElement {
+interface BugStatsCardsProps {
+  data: BugReportSummaryDto[]
+}
+
+export function BugStatsCards(props: BugStatsCardsProps) {
   const { data } = props
 
   const stats = computeBugStats(data)

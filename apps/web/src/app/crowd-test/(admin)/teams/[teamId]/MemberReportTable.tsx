@@ -2,33 +2,33 @@
 
 import { useMemo } from 'react'
 
-import { type BugSeverity, type BugStatus, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '~/app/crowd-test/(admin)/bugs/types'
 import { activityTimeline } from '~/app/crowd-test/(admin)/dashboard/lib/mockData'
 import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
 
+import { BugReportStatus, getReportStatus, getVulSeverity } from '../../constants'
+
+import { VulnerabilitySeverity } from '~api/types.gen'
+
 interface MemberReportRow {
   id: string
   title: string
   authorName: string
-  severity: BugSeverity
-  status: BugStatus
+  severity: VulnerabilitySeverity
+  status: BugReportStatus
   createdAt: string
 }
 
 export function MemberReportTable() {
   const memberReports: MemberReportRow[] = useMemo(() => {
-    const sevMap: Record<string, BugSeverity> = { 高危: 'high', 中危: 'medium', 低危: 'low' }
-    const statusMap: Record<string, BugStatus> = { 待审核: 'pending', 已通过: 'accepted', 已拒绝: 'rejected' }
-
     const base = activityTimeline.map((a, i) => ({
       id: a.id ?? String(i + 1),
       title: a.title,
       authorName: a.user,
-      severity: sevMap[a.severity] ?? 'medium',
-      status: statusMap[a.status] ?? 'pending',
+      severity: getVulSeverity(a.severity).label as VulnerabilitySeverity,
+      status: getReportStatus(a.status).label as BugReportStatus,
       createdAt: new Date().toISOString(),
     }))
 
@@ -36,8 +36,8 @@ export function MemberReportTable() {
       id: `e${i + 1}`,
       title: `接口鉴权异常 ${i + 1}`,
       authorName: i % 2 === 0 ? '李明' : '王楠',
-      severity: (['low', 'medium', 'high'] as BugSeverity[])[i % 3],
-      status: (['pending', 'accepted', 'rejected'] as BugStatus[])[i % 3],
+      severity: ([VulnerabilitySeverity.LOW, VulnerabilitySeverity.MEDIUM, VulnerabilitySeverity.HIGH])[i % 3],
+      status: ([BugReportStatus.PENDING, BugReportStatus.APPROVED, BugReportStatus.REJECTED])[i % 3],
       createdAt: new Date(Date.now() - i * 3600_000).toISOString(),
     }))
 
@@ -49,13 +49,14 @@ export function MemberReportTable() {
     { accessorKey: 'title', header: '报告标题', enableSorting: false },
     {
       accessorKey: 'severity',
-      header: '严重级别',
+      header: '漏洞等级',
       enableSorting: false,
       cell: ({ row }) => {
-        const sev = row.original.severity
-        const label: Record<BugSeverity, string> = { low: '低', medium: '中', high: '高', critical: '严重' }
-
-        return <Badge variant="outline">{label[sev]}</Badge>
+        return (
+          <Badge variant="outline">
+            {getVulSeverity(row.original.severity).label}
+          </Badge>
+        )
       },
     },
     {
@@ -63,9 +64,11 @@ export function MemberReportTable() {
       header: '状态',
       enableSorting: false,
       cell: ({ row }) => {
-        const st = row.original.status
-
-        return <Badge className={`border ${STATUS_TO_VARIANT[st]}`}>{STATUS_TO_LABEL[st]}</Badge>
+        return (
+          <Badge>
+            {getReportStatus(row.original.status).label}
+          </Badge>
+        )
       },
     },
     createDateColumn<MemberReportRow>({ accessorKey: 'createdAt', header: '创建时间', enableSorting: false }),

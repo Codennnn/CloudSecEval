@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '~/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 
-import type { BugSeverity } from '../bugs/types'
+import type { VulnerabilitySeverity } from '~api/types.gen'
 
 type BugAttackType = 'web' | 'mobile' | 'other'
 
@@ -21,7 +21,7 @@ export interface BugReportFormValues {
   id?: string
   title: string
   description: string
-  severity: BugSeverity
+  severity: VulnerabilitySeverity
   attackType: BugAttackType
   urls: string[]
 }
@@ -86,7 +86,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
       id: values.id,
       title: values.title.trim(),
       description: values.description.trim(),
-      severity: values.severity as BugSeverity,
+      severity: values.severity as VulnerabilitySeverity,
       attackType: values.attackType as BugAttackType,
       urls: values.urls.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0),
     }

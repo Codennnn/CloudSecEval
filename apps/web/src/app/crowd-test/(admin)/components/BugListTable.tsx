@@ -20,12 +20,12 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
-import { NEW_BUG_ID, STATUS_TO_LABEL, STATUS_TO_VARIANT } from '../bugs/types'
+import { getReportStatus, getVulSeverity, NEW_BUG_ID } from '../constants'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey } from '~api/@tanstack/react-query.gen'
-import { type BugReportSummaryDto, VulnerabilitySeverity } from '~api/types.gen'
+import { type BugReportSummaryDto } from '~api/types.gen'
 
 export const enum BugReportRoleView {
   ADMIN,
@@ -73,6 +73,9 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
   const handleEdit = useEvent((item: Row) => {
     onEdit?.(item)
+    router.push(
+      getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: item.id }),
+    )
   })
 
   const handleDeleteClick = useEvent((item: Row) => {
@@ -100,15 +103,11 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         header: '严重级别',
         enableSorting: false,
         cell: ({ row }) => {
-          const sev = (row.original).severity
-          const label: Record<VulnerabilitySeverity, string> = {
-            [VulnerabilitySeverity.LOW]: '低',
-            [VulnerabilitySeverity.MEDIUM]: '中',
-            [VulnerabilitySeverity.HIGH]: '高',
-            [VulnerabilitySeverity.CRITICAL]: '严重',
-          }
-
-          return <Badge variant="outline">{label[sev]}</Badge>
+          return (
+            <Badge variant="outline">
+              {getVulSeverity(row.original.severity).label}
+            </Badge>
+          )
         },
       },
       {
@@ -116,11 +115,13 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         header: '状态',
         enableSorting: false,
         cell: ({ row }) => {
-          const status = (row.original).status
-          const classes = STATUS_TO_VARIANT[status]
-          const text = STATUS_TO_LABEL[status]
+          const status = row.original.status
 
-          return <Badge className={`border ${classes}`}>{text}</Badge>
+          return (
+            <Badge>
+              {getReportStatus(status).label}
+            </Badge>
+          )
         },
       },
       createDateColumn<Row>({ accessorKey: 'createdAt', header: '创建时间', enableSorting: false }),
@@ -242,7 +243,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
                     <li>
                       状态：
                       <span className="text-muted-foreground">
-                        {STATUS_TO_LABEL[bugToDelete.status]}
+                        {getReportStatus(bugToDelete.status).label}
                       </span>
                     </li>
                   </ul>
