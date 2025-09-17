@@ -1,35 +1,34 @@
 'use client'
 
-import { useState } from 'react'
+import { type RefObject, useImperativeHandle, useState } from 'react'
 
-import { cn } from '../../lib/utils'
+import { cn } from '~/lib/utils'
 
 import { CKRichEditor } from './CKRichEditor'
 
+interface RichTextEditorRef {
+  /** 获取编辑器当前值 */
+  getValue: () => string
+  /** 设置编辑器值 */
+  setValue: (value: string) => void
+  /** 清空编辑器内容 */
+  clear: () => void
+}
+
 export interface RichTextEditorProps {
-  /**
-   * 编辑器的值（受控组件）
-   */
+  /** 编辑器的值 */
   value?: string
-  /**
-   * 值变化时的回调函数
-   */
+  /** 值变化时的回调函数 */
   onChange?: (value: string) => void
-  /**
-   * 初始值（仅在非受控模式下使用）
-   */
+  /** 初始值（仅在非受控模式下使用） */
   defaultValue?: string
-  /**
-   * 是否禁用编辑器
-   */
+  /** 是否禁用编辑器 */
   disabled?: boolean
-  /**
-   * 占位符文本
-   */
+  /** 占位符文本 */
   placeholder?: string
-  /**
-   * 编辑器类名
-   */
+  /** 编辑器引用 */
+  editorRef?: RefObject<RichTextEditorRef>
+  /** 编辑器类 */
   className?: string
 }
 
@@ -45,6 +44,7 @@ export function RichTextEditor(props: RichTextEditorProps) {
     disabled = false,
     placeholder,
     className,
+    editorRef,
   } = props
 
   // 内部状态管理（非受控模式）
@@ -71,23 +71,14 @@ export function RichTextEditor(props: RichTextEditorProps) {
     }
   }
 
-  /**
-   * 获取编辑器当前值（供外部调用）
-   */
   const getValue = () => currentValue
 
-  /**
-   * 设置编辑器值（供外部调用，仅在非受控模式下有效）
-   */
   const setValue = (newValue: string) => {
     if (!isControlled) {
       setInternalValue(newValue)
     }
   }
 
-  /**
-   * 清空编辑器内容
-   */
   const clear = () => {
     const emptyValue = ''
 
@@ -100,9 +91,17 @@ export function RichTextEditor(props: RichTextEditorProps) {
     }
   }
 
+  useImperativeHandle<RichTextEditorRef, RichTextEditorRef>(editorRef, () => ({
+    getValue,
+    setValue,
+    clear,
+  }))
+
   return (
     <div className={cn('w-full overflow-hidden', className)}>
       <CKRichEditor
+        disabled={disabled}
+        placeholder={placeholder}
         value={currentValue}
         onChange={handleEditorChange}
       />

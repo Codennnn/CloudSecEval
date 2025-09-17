@@ -317,14 +317,14 @@ const editorConfig: EditorConfig = {
 }
 
 export interface CKRichEditorProps {
-  /**
-   * 编辑器的值（受控组件）
-   */
+  /** 编辑器的值 */
   value?: string
-  /**
-   * 值变化时的回调函数
-   */
+  /** 值变化时的回调函数 */
   onChange?: (value: string) => void
+  /** 是否禁用编辑器 */
+  disabled?: boolean
+  /** 占位符文本 */
+  placeholder?: string
 }
 
 /**
@@ -332,7 +332,8 @@ export interface CKRichEditorProps {
  * 支持受控和非受控两种模式
  */
 export function CKRichEditor(props: CKRichEditorProps) {
-  const { value, onChange } = props
+  const { value, onChange, placeholder, disabled } = props
+
   const editorRef = useRef<ClassicEditor | null>(null)
   const isControlled = value !== undefined
 
@@ -375,7 +376,11 @@ export function CKRichEditor(props: CKRichEditorProps) {
 
   return (
     <CKEditor
-      config={editorConfig}
+      config={{
+        ...editorConfig,
+        placeholder,
+      }}
+      disabled={disabled}
       editor={ClassicEditor}
       onChange={handleEditorChange}
       onReady={handleEditorReady}
