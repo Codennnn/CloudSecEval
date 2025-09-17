@@ -8,13 +8,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
 
-import { FileUploader } from '~/components/FileUploader'
 import { RichTextEditor } from '~/components/richtext/RichTextEditor'
 import { Button } from '~/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import { FileUploader } from '~/components/upload/FileUploader'
 
 import { type CreateBugReportDto, VulnerabilitySeverity } from '~api/types.gen'
 import { getVulSeverity } from '~crowd-test/constants'
@@ -22,13 +22,10 @@ import { getVulSeverity } from '~crowd-test/constants'
 type BugAttackType = 'web' | 'mobile' | 'other'
 
 export interface BugReportFormValues extends CreateBugReportDto {
-  /** 编辑态可带上后端返回的ID，仅用于UI逻辑 */
-  id?: string
   attackType: BugAttackType
 }
 
 const bugFormSchema = z.object({
-  id: z.string().optional(),
   title: z.string().min(1, '报告标题不能为空'),
   attackType: z.enum(['web', 'mobile', 'other']),
   description: z.string(),
@@ -76,7 +73,6 @@ export function BugReportForm(props: BugReportFormCardProps) {
       : 'web'
 
     return {
-      id: initialValues?.id,
       title: initialValues?.title ?? '',
       description: initialValues?.description ?? '',
       severity: initialValues?.severity ?? VulnerabilitySeverity.MEDIUM,

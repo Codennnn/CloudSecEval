@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query'
 import { EllipsisVerticalIcon, PencilLineIcon } from 'lucide-react'
@@ -141,20 +142,18 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         return (
           <div className="flex items-center gap-0.5">
             {isAdmin && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  router.push(
-                    getRoutePath(
-                      AdminRoutes.CrowdTestBugsReview,
-                      { bugReportId: item.id },
-                    ),
-                  )
-                }}
+              <Link
+                href={
+                  getRoutePath(AdminRoutes.CrowdTestBugsReview, { bugReportId: item.id })
+                }
               >
-                查看详情
-              </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                >
+                  查看详情
+                </Button>
+              </Link>
             )}
 
             {isUser && (
@@ -199,7 +198,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
     })
 
     return list
-  }, [handleDeleteClick, handleEdit, isAdmin, isUser, router])
+  }, [handleDeleteClick, handleEdit, isAdmin, isUser])
 
   return (
     <>

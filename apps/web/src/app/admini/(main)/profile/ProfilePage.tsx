@@ -9,11 +9,11 @@ import { toast } from 'sonner'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Separator } from '~/components/ui/separator'
 import { Textarea } from '~/components/ui/textarea'
+import { CardBox, CardBoxContent, CardBoxDescription, CardBoxHeader, CardBoxTitle } from '~/components/ui-common/CardBox'
 import { UserAvatar } from '~/components/UserAvatar'
 import { formatDate } from '~/utils/date'
 
@@ -221,51 +221,52 @@ export function ProfilePage() {
             />
 
             <div className="grid gap-6 md:grid-cols-3">
-              {/* 头像和基本信息卡片 */}
-              <Card className="md:col-span-1">
-                <CardHeader className="text-center">
-                  <div className="flex justify-center mb-4">
-                    <UserAvatar
-                      avatarUrl={userProfile.avatarUrl}
-                      name={userProfile.name}
-                      size="2xl"
-                    />
-                  </div>
-                  <CardTitle className="text-xl">{userProfile.name}</CardTitle>
-                  <CardDescription>
-                    <Badge variant="secondary">{userProfile.role}</Badge>
-                  </CardDescription>
-                </CardHeader>
-
-                {storeUser && (
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <MailIcon className="size-4" />
-                      <span>{storeUser.email}</span>
+              <div>
+                <CardBox className="md:col-span-1">
+                  <CardBoxHeader className="text-center">
+                    <div className="flex justify-center mb-4">
+                      <UserAvatar
+                        avatarUrl={userProfile.avatarUrl}
+                        name={userProfile.name}
+                        size="2xl"
+                      />
                     </div>
+                    <CardBoxTitle className="text-xl">{userProfile.name}</CardBoxTitle>
+                    <CardBoxDescription>
+                      <Badge variant="secondary">{userProfile.role}</Badge>
+                    </CardBoxDescription>
+                  </CardBoxHeader>
 
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <HouseIcon className="size-4" />
-                      <span>{storeUser.organization.name} / {storeUser.department?.name ?? '无部门'}</span>
-                    </div>
+                  {storeUser && (
+                    <CardBoxContent className="space-y-4">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <MailIcon className="size-4" />
+                        <span>{storeUser.email}</span>
+                      </div>
 
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <CalendarIcon className="size-4" />
-                      <span>加入于 {formatDate(storeUser.createdAt)}</span>
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <HouseIcon className="size-4" />
+                        <span>{storeUser.organization.name} / {storeUser.department?.name ?? '无部门'}</span>
+                      </div>
 
-              {/* 详细信息编辑卡片 */}
-              <Card className="md:col-span-2">
-                <CardHeader>
-                  <CardTitle>详细信息</CardTitle>
-                  <CardDescription>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <CalendarIcon className="size-4" />
+                        <span>加入于 {formatDate(storeUser.createdAt)}</span>
+                      </div>
+                    </CardBoxContent>
+                  )}
+                </CardBox>
+              </div>
+
+              <CardBox className="md:col-span-2">
+                <CardBoxHeader>
+                  <CardBoxTitle>详细信息</CardBoxTitle>
+                  <CardBoxDescription>
                     {isEditing ? '编辑您的个人信息' : '查看您的个人信息'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
+                  </CardBoxDescription>
+                </CardBoxHeader>
+
+                <CardBoxContent className="space-y-6">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="name">姓名</Label>
@@ -341,8 +342,8 @@ export function ProfilePage() {
                       {updateAvatarMutation.isPending ? '上传中...' : '更换头像'}
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </CardBoxContent>
+              </CardBox>
             </div>
           </div>
         </div>

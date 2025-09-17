@@ -2,31 +2,36 @@
 
 import { useMemo } from 'react'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { BugReportForm, type BugReportFormValues } from './BugReportForm'
 
+import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerCreateMutation, bugReportsControllerFindByIdOptions } from '~api/@tanstack/react-query.gen'
-import type { BugReportResponseDto, CreateBugReportDto, VulnerabilitySeverity } from '~api/types.gen'
-import { NEW_BUG_ID } from '~crowd-test/constants'
+import type { CreateBugReportDto, VulnerabilitySeverity } from '~api/types.gen'
+import { BugReportRoleView, NEW_BUG_ID } from '~crowd-test/constants'
 
 export interface BugReportFormEditProps {
   readonly?: boolean
+  roleView?: BugReportRoleView
 }
 
 export function BugReportFormEdit(props: BugReportFormEditProps) {
-  const { readonly } = props
+  const { readonly, roleView = BugReportRoleView.USER } = props
 
-  const { bugReportId } = useParams()
+  const router = useRouter()
 
-  const { data: bugReportData } = useQuery({
+  const { bugReportId } = useParams<{ bugReportId: string }>()
+
+  const { data } = useQuery({
     ...bugReportsControllerFindByIdOptions({
-      path: { id: bugReportId as string },
+      path: { id: bugReportId },
     }),
     enabled: typeof bugReportId === 'string' && bugReportId !== NEW_BUG_ID,
   })
+  const bugReportData = data?.data
 
   const createBugReportMutation = useMutation({
     ...bugReportsControllerCreateMutation(),
@@ -37,35 +42,30 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
 
   const handleSubmit = async (values: BugReportFormValues) => {
     const createData: CreateBugReportDto = {
-      title: values.title,
-      severity: values.severity,
+      ...values,
       attackMethod: values.attackType,
-      description: values.description,
-      discoveredUrls: values.discoveredUrls?.filter((url: string) => url.length > 0),
-      // 暂时不处理附件，后续可以扩展
-      attachmentIds: [],
     }
 
     await createBugReportMutation.mutateAsync({
       body: createData,
     })
+
+    if (roleView === BugReportRoleView.USER) {
+      router.replace(getRoutePath(AdminRoutes.CrowdTestMyBugs))
+    }
+    else {
+      router.replace(getRoutePath(AdminRoutes.CrowdTestBugs))
+    }
   }
 
   const initialValues = useMemo(() => {
     if (bugReportData) {
-      const data: BugReportResponseDto = bugReportData
-
-      const severity = data.severity as VulnerabilitySeverity
-      const attackType = (data.attackMethod ?? 'web') as BugReportFormValues['attackType']
-      const discoveredUrls = data.discoveredUrls ?? []
+      const attackType = (bugReportData.attackMethod ?? 'web') as BugReportFormValues['attackType']
 
       return {
-        id: data.id,
-        title: data.title,
-        description: data.description ?? '',
-        severity,
+        ...bugReportData,
+        severity: bugReportData.severity as VulnerabilitySeverity,
         attackType,
-        discoveredUrls,
       }
     }
 

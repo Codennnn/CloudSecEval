@@ -1,31 +1,43 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
-import { XIcon } from 'lucide-react'
-
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
-
-import { Button } from './ui/button'
+import { UploadedFileList } from './UploadedFileList'
 
 import { formDataBodySerializer } from '~api/client'
 import { client as apiClient } from '~api/client.gen'
 import { uploadsControllerCleanupTempFile, uploadsControllerGetTempFile } from '~api/sdk.gen'
 
-export function FileUploader(props: {
-  value: string[]
-  onChange: (ids: string[]) => void
-  readonly?: boolean
-  accept?: string
-  multiple?: boolean
-  maxFiles?: number
-}) {
-  const { value, onChange, readonly, accept, multiple = true, maxFiles = 10 } = props
+interface TempFile {
+  id: string
+  originalName: string
+  size: number
+  mimeType: string
+}
 
-  interface TempFile {
-    id: string
-    originalName: string
-    size: number
-    mimeType: string
-  }
+interface FileUploaderProps {
+  /** 已上传的文件 ID 列表 */
+  value: string[]
+  /** 文件变更回调 */
+  onChange: (ids: string[]) => void
+  /** 是否只读 */
+  readonly?: boolean
+  /** 接受的文件类型 */
+  accept?: string
+  /** 是否允许多选 */
+  multiple?: boolean
+  /** 最大上传文件数量 */
+  maxFiles?: number
+}
+
+export function FileUploader(props: FileUploaderProps) {
+  const {
+    value,
+    onChange,
+    readonly,
+    accept,
+    multiple = true,
+    maxFiles = 10,
+  } = props
 
   const [files, setFiles] = useState<TempFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -67,7 +79,7 @@ export function FileUploader(props: {
     void fetchTempFiles()
   }, [value])
 
-  const pickFiles = useCallback(() => {
+  const pickFiles = useEvent(() => {
     if (readonly) {
       return
     }
@@ -75,9 +87,9 @@ export function FileUploader(props: {
     if (inputRef.current) {
       inputRef.current.click()
     }
-  }, [readonly])
+  })
 
-  const handleFiles = useCallback(async (selected: FileList | File[]) => {
+  const handleFiles = useEvent(async (selected: FileList | File[]) => {
     if (readonly) {
       return
     }
@@ -138,36 +150,36 @@ export function FileUploader(props: {
 
       setIsUploading(false)
     }
-  }, [readonly, value, maxFiles, files, onChange])
+  })
 
-  const onInputChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>((ev) => {
+  const onInputChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>((ev) => {
     const fileList = ev.target.files
 
     if (fileList && fileList.length > 0) {
       void handleFiles(fileList)
       ev.target.value = ''
     }
-  }, [handleFiles])
+  })
 
-  const onDrop = useCallback<React.DragEventHandler<HTMLDivElement>>((ev) => {
+  const onDrop = useEvent<React.DragEventHandler<HTMLDivElement>>((ev) => {
     ev.preventDefault()
     setIsDragging(false)
 
     if (ev.dataTransfer?.files?.length) {
       void handleFiles(ev.dataTransfer.files)
     }
-  }, [handleFiles])
+  })
 
-  const onDragOver = useCallback<React.DragEventHandler<HTMLDivElement>>((ev) => {
+  const onDragOver = useEvent<React.DragEventHandler<HTMLDivElement>>((ev) => {
     ev.preventDefault()
     setIsDragging(true)
-  }, [])
+  })
 
-  const onDragLeave = useCallback<React.DragEventHandler<HTMLDivElement>>(() => {
+  const onDragLeave = useEvent<React.DragEventHandler<HTMLDivElement>>(() => {
     setIsDragging(false)
-  }, [])
+  })
 
-  const removeOne = useCallback(async (id: string) => {
+  const removeOne = useEvent(async (id: string) => {
     if (readonly) {
       return
     }
@@ -181,9 +193,9 @@ export function FileUploader(props: {
     const nextFiles = files.filter((f) => f.id !== id)
     setFiles(nextFiles)
     onChange(nextIds)
-  }, [readonly, value, files, onChange])
+  })
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = useCallback((ev) => {
+  const handleKeyDown = useEvent<React.KeyboardEventHandler<HTMLDivElement>>((ev) => {
     if (readonly) {
       return
     }
@@ -192,7 +204,7 @@ export function FileUploader(props: {
       ev.preventDefault()
       pickFiles()
     }
-  }, [readonly, pickFiles])
+  })
 
   return (
     <div className="space-y-2">
@@ -232,30 +244,11 @@ export function FileUploader(props: {
         </div>
 
         <div className="mt-3">
-          <ul className="space-y-2 text-sm">
-            {files.length > 0
-              ? files.map((f) => (
-                  <li key={f.id} className="flex items-center justify-between rounded-md border p-2">
-                    <div className="min-w-0 flex-1">
-                      <span className="truncate block" title={f.originalName}>{f.originalName}</span>
-                      <span className="text-muted-foreground text-xs">{(f.size / 1024).toFixed(1)} KB</span>
-                    </div>
-                    {!readonly && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button className="size-9 p-0" size="sm" type="button" variant="outline" onClick={() => { void removeOne(f.id) }}>
-                            <XIcon />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>删除附件</TooltipContent>
-                      </Tooltip>
-                    )}
-                  </li>
-                ))
-              : (
-                  <li className="flex items-center justify-between rounded-md border p-2 text-muted-foreground">暂无附件</li>
-                )}
-          </ul>
+          <UploadedFileList
+            files={files}
+            readonly={readonly}
+            onRemove={(id) => { void removeOne(id) }}
+          />
         </div>
       </div>
     </div>

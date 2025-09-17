@@ -73,7 +73,7 @@ export function UserAvatar({
   const finalAvatarUrl = avatarUrl
     ? avatarUrl.startsWith('http')
       ? avatarUrl
-      : `${process.env.NEXT_PUBLIC_API_BASE_URL}${avatarUrl}`
+      : `${process.env.NEXT_PUBLIC_API_BASE}${avatarUrl}`
     : undefined
 
   return (
