@@ -277,8 +277,9 @@ export class BugReportsService {
   }
 
   /**
-   * 处理附件（将临时文件ID转换为持久化的附件信息）
+   * 处理附件（将存储文件ID转换为持久化的附件信息）
    */
+  // eslint-disable-next-line @typescript-eslint/require-await
   private async processAttachments(attachmentIds: string[]) {
     if (attachmentIds.length > BUG_REPORT_ATTACHMENTS.MAX_COUNT) {
       throw new BadRequestException(
@@ -289,34 +290,34 @@ export class BugReportsService {
     const attachments = []
 
     for (const attachmentId of attachmentIds) {
-      const tempFile = await this.uploadsService.getTempFile(attachmentId)
+      const storedFile = this.uploadsService.getStoredFile(attachmentId)
 
-      if (!tempFile) {
+      if (!storedFile) {
         throw BusinessException.notFound(BUSINESS_CODES.INVALID_ATTACHMENT_ID)
       }
 
       // 验证文件类型和大小
       if (
         !BUG_REPORT_ATTACHMENTS.ALLOWED_TYPES
-          .includes(tempFile.mimeType as (typeof BUG_REPORT_ATTACHMENTS.ALLOWED_TYPES)[number])
+          .includes(storedFile.mimeType as (typeof BUG_REPORT_ATTACHMENTS.ALLOWED_TYPES)[number])
       ) {
-        throw new BadRequestException(`不支持的文件类型: ${tempFile.mimeType}`)
+        throw new BadRequestException(`不支持的文件类型: ${storedFile.mimeType}`)
       }
 
-      if (tempFile.size > BUG_REPORT_ATTACHMENTS.MAX_SIZE) {
+      if (storedFile.size > BUG_REPORT_ATTACHMENTS.MAX_SIZE) {
         throw new BadRequestException(
           `文件大小不能超过 ${BUG_REPORT_ATTACHMENTS.MAX_SIZE / 1024 / 1024}MB`,
         )
       }
 
       attachments.push({
-        id: tempFile.id,
-        originalName: tempFile.originalName,
-        fileName: tempFile.fileName,
-        mimeType: tempFile.mimeType,
-        size: tempFile.size,
-        hash: tempFile.hash,
-        uploadedAt: tempFile.uploadedAt,
+        id: storedFile.id,
+        originalName: storedFile.originalName,
+        fileName: storedFile.fileName,
+        mimeType: storedFile.mimeType,
+        size: storedFile.size,
+        hash: storedFile.hash,
+        uploadedAt: storedFile.storedAt,
       })
     }
 

@@ -12,8 +12,8 @@ import { UsersService } from './users.service'
 @Module({
   imports: [
     PrismaModule,
-    UploadsModule,
     PermissionsModule,
+    UploadsModule,
     CommonModule,
   ],
   controllers: [UsersController],

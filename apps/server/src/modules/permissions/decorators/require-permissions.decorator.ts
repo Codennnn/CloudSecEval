@@ -39,6 +39,7 @@ export const RESOURCES = [
   'statistics',
   'licenses',
   'bug_reports',
+  'uploads',
   'admin',
 ] as const
 
@@ -118,6 +119,11 @@ export const PERMISSIONS = {
     update_status: 'bug_reports:update_status',
     batch_operations: 'bug_reports:batch_operations',
     stats: 'bug_reports:stats',
+  },
+  uploads: {
+    create: 'uploads:create',
+    read: 'uploads:read',
+    delete: 'uploads:delete',
   },
   // admin 通常通过通配符控制：P('admin').all → 'admin:*'
   admin: {},

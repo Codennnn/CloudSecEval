@@ -1,4 +1,4 @@
-import { BUSINESS_ERROR_CODES } from '~/common/constants/business-codes'
+import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 import { DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
 import { DepartmentApiResponseDto, DepartmentListApiResponseDto, DepartmentMembersApiResponseDto, DepartmentTreeApiResponseDto } from '~/modules/departments/dto/department-response.dto'
@@ -7,6 +7,7 @@ import { OrganizationApiResponseDto, OrganizationListApiResponseDto } from '~/mo
 import { PermissionApiResponseDto, PermissionListApiResponseDto } from '~/modules/permissions/dto/permission-response.dto'
 import { RoleApiResponseDto, RoleListApiResponseDto } from '~/modules/roles/dto/role-response.dto'
 import { AccessStatisticsResponseDto, ConversionFunnelResponseDto, DashboardOverviewResponseDto, LicenseStatisticsResponseDto, LicenseTrendResponseDto, RealtimeMonitoringResponseDto, RevenueStatisticsResponseDto, RiskAnalysisResponseDto, UserStatisticsResponseDto } from '~/modules/statistics/dto/statistics-response.dto'
+import { BatchFileDeleteApiResponseDto, FileDeleteApiResponseDto, FileInfoApiResponseDto, FileUploadApiResponseDto, MultipleFileUploadApiResponseDto } from '~/modules/uploads/dto/upload-response.dto'
 import { UserApiResponseDto, UserListApiResponseDto } from '~/modules/users/dto/user-response.dto'
 
 import { createSuccessResponse } from './api-responses.config'
@@ -199,7 +200,7 @@ export const USERS_API_CONFIG = {
       description: '用户删除成功',
       type: DeleteUserApiResponseDto,
     }),
-    errorResponseCode: [BUSINESS_ERROR_CODES.CANNOT_DELETE_SELF],
+    errorResponseCode: [BUSINESS_CODES.CANNOT_DELETE_SELF],
     requireAdmin: true,
   },
 
@@ -801,5 +802,124 @@ export const PERMISSIONS_API_CONFIG = {
     successResponse: createSuccessResponse({
       description: '权限删除成功',
     }),
+  },
+} satisfies Record<string, ApiOperationConfig>
+
+// ================================
+// MARK: 文件上传管理API配置
+// ================================
+
+export const UPLOADS_API_CONFIG = {
+  uploadSingleFile: {
+    summary: '单文件上传',
+    description: '上传单个文件，支持图片、文档、音频、视频等格式',
+    successResponse: createSuccessResponse({
+      description: '文件上传成功',
+      type: FileUploadApiResponseDto,
+    }),
+    requireAuth: false,
+    consumes: ['multipart/form-data'],
+    requestBody: {
+      description: '选择要上传的文件（字段名：file）',
+      schema: {
+        type: 'object',
+        properties: {
+          file: { type: 'string', format: 'binary' },
+        },
+        required: ['file'],
+      },
+    },
+  },
+
+  uploadMultipleFiles: {
+    summary: '多文件上传',
+    description: '批量上传多个文件，最多支持10个文件同时上传，每个文件都会进行独立验证',
+    successResponse: createSuccessResponse({
+      description: '文件上传成功',
+      type: MultipleFileUploadApiResponseDto,
+    }),
+    requireAuth: false,
+    consumes: ['multipart/form-data'],
+    requestBody: {
+      description: '选择要上传的文件列表（字段名：files）',
+      schema: {
+        type: 'object',
+        properties: {
+          files: {
+            type: 'array',
+            items: { type: 'string', format: 'binary' },
+            maxItems: 10,
+          },
+        },
+        required: ['files'],
+      },
+    },
+  },
+
+  uploadCustomFile: {
+    summary: '自定义文件上传',
+    description: '使用自定义验证规则上传文件，可以指定文件大小限制、允许的文件类型等参数',
+    successResponse: createSuccessResponse({
+      description: '文件上传成功',
+      type: FileUploadApiResponseDto,
+    }),
+    requireAuth: false,
+    consumes: ['multipart/form-data'],
+    requestBody: {
+      description: '选择要上传的文件和自定义验证选项',
+      schema: {
+        type: 'object',
+        properties: {
+          file: { type: 'string', format: 'binary' },
+          maxSize: {
+            type: 'number',
+            description: '最大文件大小（字节）',
+            example: 10485760,
+          },
+          allowedTypes: {
+            type: 'array',
+            items: { type: 'string' },
+            description: '允许的MIME类型',
+            example: ['image/jpeg', 'image/png'],
+          },
+          required: {
+            type: 'boolean',
+            description: '是否必需文件',
+            example: true,
+          },
+        },
+        required: ['file'],
+      },
+    },
+  },
+
+  getStoredFile: {
+    summary: '获取文件信息',
+    description: '根据文件ID获取已存储文件的详细信息，包括文件名、大小、类型和访问URL等',
+    successResponse: createSuccessResponse({
+      description: '获取文件信息成功',
+      type: FileInfoApiResponseDto,
+    }),
+    requireAuth: false,
+  },
+
+  deleteStoredFile: {
+    summary: '删除文件',
+    description: '根据文件ID删除已存储的文件，同时清理本地文件系统中的文件',
+    successResponse: createSuccessResponse({
+      description: '文件删除成功',
+      type: FileDeleteApiResponseDto,
+    }),
+    requireAuth: false,
+  },
+
+  deleteStoredFiles: {
+    summary: '批量删除文件',
+    description: '根据文件ID列表批量删除已存储的文件，返回删除成功和失败的文件统计',
+    successResponse: createSuccessResponse({
+      description: '批量删除完成',
+      type: BatchFileDeleteApiResponseDto,
+    }),
+    requireAuth: false,
   },
 } satisfies Record<string, ApiOperationConfig>

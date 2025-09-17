@@ -1,5 +1,3 @@
-import { createHash } from 'node:crypto'
-
 import { Injectable } from '@nestjs/common'
 import bcrypt from 'bcrypt'
 import { promises as fs } from 'fs'
@@ -10,6 +8,7 @@ import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { generateAvatarUrl } from '~/common/utils/gravatar.util'
 import { PermissionsService } from '~/modules/permissions/permissions.service'
+import { UploadsService } from '~/modules/uploads/uploads.service'
 
 import { SafeUserDto } from './dto/base-user.dto'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -24,6 +23,7 @@ export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly permissionsService: PermissionsService,
+    private readonly uploadsService: UploadsService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -175,41 +175,50 @@ export class UsersService {
   }
 
   async updateAvatarFromFile(userId: UserId, file: Express.Multer.File) {
-    const baseDir = process.cwd()
-    const avatarsDir = join(baseDir, 'storage', 'avatars', userId)
+    const storedFileInfo = await this.uploadsService.handleUploadedFile(file)
 
-    await fs.mkdir(avatarsDir, { recursive: true })
-
-    const ext = (file.originalname.split('.').pop() ?? 'bin').toLowerCase()
-    const hash = createHash('sha256').update(file.buffer).digest('hex')
-    const fileName = `${hash}.${ext}`
-    const targetPath = join(avatarsDir, fileName)
-    const publicUrl = `/static/avatars/${userId}/${fileName}`
-
-    // 写入新文件
-    await fs.writeFile(targetPath, file.buffer)
-
+    // 获取用户当前信息
     const existing = await this.usersRepository.findById(userId)
     const oldUrl = existing.avatarUrl
 
     try {
-      const updated = await this.usersRepository.update(userId, { avatarUrl: publicUrl })
+      // 更新用户头像URL
+      const updated = await this.usersRepository.update(userId, {
+        avatarUrl: storedFileInfo.publicUrl,
+      })
 
+      // 清理旧头像文件（仅限存储在static目录的文件）
       if (oldUrl?.startsWith('/static/')) {
-        const storagePrefix = '/static/'
-        const relativePath = oldUrl.slice(storagePrefix.length)
-        const absolutePath = join(baseDir, 'storage', relativePath)
-
-        if (absolutePath !== targetPath) {
-          await fs.rm(absolutePath, { force: true })
-        }
+        await this.cleanupOldAvatarFile(oldUrl, storedFileInfo.localPath)
       }
 
       return updated
     }
     catch (err) {
-      await fs.rm(targetPath, { force: true })
+      // 如果更新失败，清理已上传的文件
+      await this.uploadsService.deleteStoredFile(storedFileInfo.id)
       throw err
+    }
+  }
+
+  /**
+   * 清理旧的头像文件
+   */
+  private async cleanupOldAvatarFile(oldUrl: string, newFilePath: string): Promise<void> {
+    try {
+      const baseDir = process.cwd()
+      const storagePrefix = '/static/'
+      const relativePath = oldUrl.slice(storagePrefix.length)
+      const absolutePath = join(baseDir, 'storage', relativePath)
+
+      // 确保不删除刚上传的文件
+      if (absolutePath !== newFilePath) {
+        await fs.rm(absolutePath, { force: true })
+      }
+    }
+    catch (error) {
+      // 静默处理清理错误，不影响主流程
+      console.warn('清理旧头像文件失败:', error)
     }
   }
 }
