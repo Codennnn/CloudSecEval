@@ -28,6 +28,7 @@ export const enum AdminRoutes {
   CrowdTestDashboard = '/crowd-test/dashboard',
   CrowdTestBugs = '/crowd-test/bugs',
   CrowdTestBugsDetail = '/crowd-test/bugs/[bugReportId]',
+  CrowdTestBugsReview = '/crowd-test/bugs/review/[bugReportId]',
   CrowdTestMyBugs = '/crowd-test/my-bugs',
   CrowdTestTeams = '/crowd-test/teams',
   CrowdTestTeamProfile = '/crowd-test/teams/[teamId]',
@@ -116,6 +117,11 @@ export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.CrowdTestBugsDetail]: {
     title: '报告详情',
     url: AdminRoutes.CrowdTestBugsDetail,
+    icon: NotebookTextIcon,
+  },
+  [AdminRoutes.CrowdTestBugsReview]: {
+    title: '报告审核',
+    url: AdminRoutes.CrowdTestBugsReview,
     icon: NotebookTextIcon,
   },
   [AdminRoutes.CrowdTestMyBugs]: {

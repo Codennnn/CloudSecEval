@@ -8,9 +8,8 @@ import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
 import { Badge } from '~/components/ui/badge'
 
-import { BugReportStatus, getReportStatus, getVulSeverity } from '../../constants'
-
 import { VulnerabilitySeverity } from '~api/types.gen'
+import { BugReportStatus, getReportStatus, getVulSeverity } from '~crowd-test/constants'
 
 interface MemberReportRow {
   id: string

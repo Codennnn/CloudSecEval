@@ -20,22 +20,17 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 
-import { getReportStatus, getVulSeverity, NEW_BUG_ID } from '../constants'
-
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey } from '~api/@tanstack/react-query.gen'
 import { type BugReportSummaryDto } from '~api/types.gen'
-
-export const enum BugReportRoleView {
-  ADMIN,
-  USER,
-}
+import { BugReportRoleView, getReportStatus, getVulSeverity, NEW_BUG_ID } from '~crowd-test/constants'
 
 interface BugListTableProps<Row extends BugReportSummaryDto>
   extends Pick<ProTableProps<Row>, 'className' | 'toolbar' | 'queryKeyFn' | 'queryOptionsFn' | 'columnVisibilityStorageKey'>
 {
   roleView?: BugReportRoleView
+
   /** 行级回调：编辑 */
   onEdit?: (item: Row) => void
   /** 行级回调：删除 */
@@ -51,6 +46,9 @@ export function BugListTable<Row extends BugReportSummaryDto>(
     onDelete,
     ...restProTableProps
   } = props
+
+  const isAdmin = roleView === BugReportRoleView.ADMIN
+  const isUser = roleView === BugReportRoleView.USER
 
   const router = useRouter()
 
@@ -97,7 +95,12 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
   const columns = useMemo<TableColumnDef<Row>[]>(() => {
     const list: TableColumnDef<Row>[] = [
-      { accessorKey: 'title', header: '标题', enableSorting: false },
+      {
+        accessorKey: 'title',
+        header: '标题',
+        enableSorting: false,
+        enableHiding: false,
+      },
       {
         accessorKey: 'severity',
         header: '严重级别',
@@ -124,7 +127,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
           )
         },
       },
-      createDateColumn<Row>({ accessorKey: 'createdAt', header: '创建时间', enableSorting: false }),
+      createDateColumn<Row>({ accessorKey: 'createdAt', header: '创建时间' }),
     ]
 
     list.push({
@@ -137,13 +140,16 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
         return (
           <div className="flex items-center gap-0.5">
-            {roleView === BugReportRoleView.ADMIN && (
+            {isAdmin && (
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => {
                   router.push(
-                    getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: item.id }),
+                    getRoutePath(
+                      AdminRoutes.CrowdTestBugsReview,
+                      { bugReportId: item.id },
+                    ),
                   )
                 }}
               >
@@ -151,7 +157,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
               </Button>
             )}
 
-            {roleView === BugReportRoleView.USER && (
+            {isUser && (
               <Button
                 size="iconSm"
                 variant="ghost"
@@ -175,7 +181,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-32">
-                {roleView === BugReportRoleView.USER && (
+                {isUser && (
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={
@@ -193,7 +199,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
     })
 
     return list
-  }, [handleDeleteClick, handleEdit, roleView, router])
+  }, [handleDeleteClick, handleEdit, isAdmin, isUser, router])
 
   return (
     <>
@@ -209,7 +215,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         queryOptionsFn={bugReportsControllerFindManyOptions as QueryOptionsFn<Row>}
         tableRef={tableRef}
         toolbar={{
-          rightContent: roleView === BugReportRoleView.USER
+          rightContent: isUser
             ? (
                 <Button
                   size="sm"

@@ -46,7 +46,7 @@ export function BugStatsCard(props: React.PropsWithChildren<StatCardProps>) {
 
   return (
     <div className={cn('@container/card p-[3px] shadow-md shadow-secondary rounded-xl', className)}>
-      <Card className="shadow-none rounded-xl border-none bg-gradient-to-b from-theme/8 to-transparent">
+      <Card className="shadow-none rounded-xl border-none bg-gradient-to-b from-theme/8 to-transparent pb-4">
         <CardHeader>
           <CardDescription>
             <div className="flex items-center gap-1">
@@ -55,7 +55,7 @@ export function BugStatsCard(props: React.PropsWithChildren<StatCardProps>) {
             </div>
           </CardDescription>
 
-          <CardTitle className="text-2xl font-bold text-theme tabular-nums @[250px]/card:text-3xl">
+          <CardTitle className="text-2xl font-extrabold text-theme tabular-nums @[250px]/card:text-3xl">
             {value}
           </CardTitle>
         </CardHeader>

@@ -1,4 +1,4 @@
-import { BugReportStatus } from '../../constants'
+import { BugReportStatus } from '../../../constants'
 
 import { type BugReportSummaryDto, VulnerabilitySeverity } from '~api/types.gen'
 

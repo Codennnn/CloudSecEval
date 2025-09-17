@@ -1,6 +1,6 @@
 'use client'
 
-import { BugListTable } from '../components/BugListTable'
+import { BugListTable } from '../../components/BugListTable'
 
 import type { BugReportSummaryDto } from '~api/types.gen'
 

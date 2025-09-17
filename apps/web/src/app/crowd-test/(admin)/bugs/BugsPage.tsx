@@ -1,9 +1,10 @@
 'use client'
 
-import { BugListTable, BugReportRoleView } from '../components/BugListTable'
-
-import { BugStatsCards } from './components/BugStatsCards'
 import { ensureMockData } from './lib/mockData'
+
+import { BugListTable } from '~crowd-test/components/BugListTable'
+import { BugStatsCards } from '~crowd-test/components/BugStatsCards'
+import { BugReportRoleView } from '~crowd-test/constants'
 
 export function BugPage() {
   const mockData = ensureMockData()

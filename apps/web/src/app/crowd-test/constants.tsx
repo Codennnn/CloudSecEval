@@ -93,3 +93,8 @@ export function getReportStatus(status: string): ReportStatusConfig {
     color: 'bg-gray-500/15 text-gray-600 border-gray-500/20',
   }
 }
+
+export const enum BugReportRoleView {
+  ADMIN,
+  USER,
+}

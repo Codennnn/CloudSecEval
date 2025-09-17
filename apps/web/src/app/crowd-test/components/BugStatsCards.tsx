@@ -1,10 +1,9 @@
 import { Activity, AlertTriangle, CalendarDays, CheckCircle2 } from 'lucide-react'
 
-import { BugReportStatus } from '../../constants'
-
 import { BugStatsCard, type StatCardData } from './BugStatsCard'
 
 import { type BugReportSummaryDto, VulnerabilitySeverity } from '~api/types.gen'
+import { BugReportStatus } from '~crowd-test/constants'
 
 function isToday(date: string): boolean {
   const d = new Date(date)

@@ -68,15 +68,6 @@ export function DashboardPage() {
 
         <StatsCard>
           <StatsCardHeader>
-            <StatsCardTitle>团队在线情况</StatsCardTitle>
-          </StatsCardHeader>
-          <StatsCardContent>
-            <TeamOnlineChart data={teamOnlineData} totalOnline={totalOnline} />
-          </StatsCardContent>
-        </StatsCard>
-
-        <StatsCard>
-          <StatsCardHeader>
             <StatsCardTitle>团队报告数统计</StatsCardTitle>
           </StatsCardHeader>
           <StatsCardContent>
@@ -89,6 +80,15 @@ export function DashboardPage() {
                 }))}
               />
             </div>
+          </StatsCardContent>
+        </StatsCard>
+
+        <StatsCard>
+          <StatsCardHeader>
+            <StatsCardTitle>团队在线情况</StatsCardTitle>
+          </StatsCardHeader>
+          <StatsCardContent>
+            <TeamOnlineChart data={teamOnlineData} totalOnline={totalOnline} />
           </StatsCardContent>
         </StatsCard>
 
