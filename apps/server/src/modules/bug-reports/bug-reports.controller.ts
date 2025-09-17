@@ -22,6 +22,10 @@ import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsService } from './bug-reports.service'
 import {
+  GetApprovalHistoryDto,
+  ProcessApprovalDto,
+} from './dto/approval.dto'
+import {
   CreateBugReportDto,
 } from './dto/create-bug-report.dto'
 import {
@@ -35,7 +39,6 @@ import {
 import {
   ResubmitBugReportDto,
   UpdateBugReportDto,
-  UpdateBugReportStatusDto,
 } from './dto/update-bug-report.dto'
 
 @ApiTags('漏洞报告管理')
@@ -165,22 +168,6 @@ export class BugReportsController {
     })
   }
 
-  @Put(':id/status')
-  @ApiDocs(BUG_REPORTS_API_CONFIG.updateStatus)
-  @RequirePermissions([PERMISSIONS.bug_reports.review, PERMISSIONS.bug_reports.update_status])
-  async updateStatus(
-    @Param('id') id: string,
-    @Body() updateStatusDto: UpdateBugReportStatusDto,
-    @CurrentUser() currentUser: CurrentUserDto,
-  ) {
-    const updated = await this.bugReportsService.updateStatus(id, updateStatusDto, currentUser)
-
-    return resp({
-      msg: '漏洞报告状态更新成功',
-      data: updated,
-    })
-  }
-
   @Put(':id/resubmit')
   @ApiDocs(BUG_REPORTS_API_CONFIG.resubmit)
   @RequirePermissions(PERMISSIONS.bug_reports.update)
@@ -207,5 +194,54 @@ export class BugReportsController {
     return resp({
       msg: '漏洞报告删除成功',
     })
+  }
+
+  @Post(':id/process')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.processApproval)
+  @RequirePermissions(PERMISSIONS.bug_reports.review)
+  async processApproval(
+    @Param('id') id: string,
+    @Body() processApprovalDto: ProcessApprovalDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const result = await this.bugReportsService.processApproval(id, processApprovalDto, currentUser)
+
+    return resp({
+      msg: this.getApprovalSuccessMessage(processApprovalDto.action),
+      data: result,
+    })
+  }
+
+  @Get(':id/approval-history')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.getApprovalHistory)
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
+  async getApprovalHistory(
+    @Param('id') id: string,
+    @Query() query: GetApprovalHistoryDto,
+  ) {
+    const history = await this.bugReportsService.getApprovalHistory(
+      id,
+      query.includeApprover,
+      query.includeTargetUser,
+    )
+
+    return resp({
+      msg: '获取审批历史成功',
+      data: history,
+    })
+  }
+
+  /**
+   * 获取审批成功消息
+   */
+  private getApprovalSuccessMessage(action: string): string {
+    const messages: Record<string, string> = {
+      APPROVE: '审批通过',
+      REJECT: '已驳回',
+      REQUEST_INFO: '已要求补充信息',
+      FORWARD: '已转发',
+    }
+
+    return messages[action] || '处理完成'
   }
 }

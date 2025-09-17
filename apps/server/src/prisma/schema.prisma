@@ -119,14 +119,16 @@ model User {
   updatedAt    DateTime @updatedAt
 
   // 关联
-  organization        Organization         @relation(fields: [orgId], references: [id], onDelete: Restrict)
-  department          Department?          @relation(fields: [departmentId], references: [id], onDelete: SetNull)
-  passwordResetTokens PasswordResetToken[]
-  refreshTokens       RefreshToken[]
-  userRoles           UserRole[]
-  bugReports          BugReport[] // 用户提交的漏洞报告
-  reviewedBugReports  BugReport[]          @relation("BugReportReviewer") // 用户审核的漏洞报告
-  uploadedFiles       FileObject[]
+  organization           Organization              @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  department             Department?               @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  passwordResetTokens    PasswordResetToken[]
+  refreshTokens          RefreshToken[]
+  userRoles              UserRole[]
+  bugReports             BugReport[]               // 用户提交的漏洞报告
+  reviewedBugReports     BugReport[]               @relation("BugReportReviewer") // 用户审核的漏洞报告
+  uploadedFiles          FileObject[]
+  approvalLogs           BugReportApprovalLog[]    @relation("BugReportApprover") // 用户审批的漏洞报告
+  forwardedApprovalLogs  BugReportApprovalLog[]    @relation("BugReportForwardTarget") // 转发给用户的审批
 
   @@index([orgId])
   @@index([departmentId])
@@ -294,9 +296,10 @@ model BugReport {
   updatedAt      DateTime        @updatedAt
 
   // 关联
-  user         User         @relation(fields: [userId], references: [id], onDelete: Restrict)
-  organization Organization @relation(fields: [orgId], references: [id], onDelete: Restrict)
-  reviewer     User?        @relation("BugReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  user         User                     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  organization Organization             @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  reviewer     User?                    @relation("BugReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  approvalLogs BugReportApprovalLog[]
 
   @@index([orgId])
   @@index([userId])
@@ -328,4 +331,25 @@ enum BugReportStatus {
   CLOSED // 已关闭
 
   @@map("bug_report_status")
+}
+
+// 审批日志模型 - 记录所有审批操作历史
+model BugReportApprovalLog {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bugReportId  String   @db.Uuid
+  approverId   String   @db.Uuid
+  action       String   // 'APPROVE', 'REJECT', 'REQUEST_INFO', 'FORWARD'
+  comment      String   // 审批意见
+  targetUserId String?  @db.Uuid // 转发目标用户ID（仅转发时使用）
+  createdAt    DateTime @default(now())
+
+  // 关联
+  bugReport  BugReport @relation(fields: [bugReportId], references: [id], onDelete: Cascade)
+  approver   User      @relation("BugReportApprover", fields: [approverId], references: [id], onDelete: Restrict)
+  targetUser User?     @relation("BugReportForwardTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([bugReportId])
+  @@index([approverId])
+  @@index([createdAt])
+  @@map("bug_report_approval_logs")
 }

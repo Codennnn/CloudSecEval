@@ -1,212 +1,119 @@
-import { ApiPropertyOptional } from '@nestjs/swagger'
-import { Expose, Transform } from 'class-transformer'
-import {
-  IsArray,
-  IsDateString,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator'
+import { ApiPropertyOptional, IntersectionType } from '@nestjs/swagger'
+import { Expose, Type } from 'class-transformer'
+import { IsBoolean, IsDateString, IsEnum, IsOptional, ValidateNested } from 'class-validator'
 
 import { BugReportStatus } from '#prisma/client'
 import { BooleanTransform } from '~/common/decorators/boolean-transform.decorator'
 import { IsId } from '~/common/decorators/uuid.decorator'
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
+import {
+  AdvancedDateSearchOperators,
+  AdvancedStringSearchOperators,
+} from '~/common/search/dto/advanced-search-operators.dto'
+import { BaseSearchDto } from '~/common/search/dto/base-search.dto'
 
 /**
- * 查询漏洞报告 DTO
- *
- * 用于接收查询漏洞报告的请求参数，支持多种筛选条件
+ * 漏洞报告搜索字段 DTO
+ * 支持高级搜索操作符，提供强大的查询能力
  */
-export class FindBugReportsDto extends PaginationQueryDto {
+export class BugReportSearchFields {
+  @ApiPropertyOptional({ description: '标题搜索条件', type: AdvancedStringSearchOperators })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AdvancedStringSearchOperators)
+  title?: AdvancedStringSearchOperators | string
+
   @ApiPropertyOptional({
-    description: '漏洞等级筛选',
+    description: '漏洞等级',
     enum: VulnerabilitySeverity,
     example: VulnerabilitySeverity.HIGH,
   })
   @IsOptional()
-  @IsEnum(VulnerabilitySeverity, {
-    message: '漏洞等级必须是有效的枚举值',
-  })
-  @Expose()
-  readonly severity?: VulnerabilitySeverity
+  @IsEnum(VulnerabilitySeverity)
+  severity?: VulnerabilitySeverity
 
-  @ApiPropertyOptional({
-    description: '多个漏洞等级筛选',
-    enum: VulnerabilitySeverity,
-    isArray: true,
-    example: [VulnerabilitySeverity.HIGH, VulnerabilitySeverity.CRITICAL],
-  })
+  @ApiPropertyOptional({ description: '攻击方式搜索条件', type: AdvancedStringSearchOperators })
   @IsOptional()
-  @IsArray({ message: '漏洞等级列表必须是数组' })
-  @IsEnum(VulnerabilitySeverity, {
-    each: true,
-    message: '每个漏洞等级必须是有效的枚举值',
-  })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      return value.split(',').map((s) => s.trim())
-    }
+  @ValidateNested()
+  @Type(() => AdvancedStringSearchOperators)
+  attackMethod?: AdvancedStringSearchOperators | string
 
-    return value
-  })
-  @Expose()
-  readonly severities?: VulnerabilitySeverity[]
+  @ApiPropertyOptional({ description: '描述搜索条件', type: AdvancedStringSearchOperators })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AdvancedStringSearchOperators)
+  description?: AdvancedStringSearchOperators | string
 
   @ApiPropertyOptional({
-    description: '报告状态筛选',
+    description: '状态',
     enum: BugReportStatus,
     example: BugReportStatus.PENDING,
   })
   @IsOptional()
-  @IsEnum(BugReportStatus, {
-    message: '报告状态必须是有效的枚举值',
-  })
-  @Expose()
-  readonly status?: BugReportStatus
+  @IsEnum(BugReportStatus)
+  status?: BugReportStatus
 
-  @ApiPropertyOptional({
-    description: '多个报告状态筛选',
-    enum: BugReportStatus,
-    isArray: true,
-    example: [BugReportStatus.PENDING, BugReportStatus.IN_REVIEW],
-  })
-  @IsOptional()
-  @IsArray({ message: '报告状态列表必须是数组' })
-  @IsEnum(BugReportStatus, {
-    each: true,
-    message: '每个报告状态必须是有效的枚举值',
-  })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') {
-      return value.split(',').map((s) => s.trim())
-    }
-
-    return value
-  })
-  @Expose()
-  readonly statuses?: BugReportStatus[]
-
-  @ApiPropertyOptional({
-    description: '提交用户ID筛选',
-    example: 'user-uuid',
-  })
+  @ApiPropertyOptional({ description: '提交用户ID' })
   @IsOptional()
   @IsId('用户ID')
-  @Expose()
-  readonly userId?: string
+  userId?: string
 
-  @ApiPropertyOptional({
-    description: '审核人ID筛选',
-    example: 'reviewer-uuid',
-  })
+  @ApiPropertyOptional({ description: '审核人ID' })
   @IsOptional()
   @IsId('审核人ID')
-  @Expose()
-  readonly reviewerId?: string
+  reviewerId?: string
 
-  @ApiPropertyOptional({
-    description: '组织 ID 筛选',
-  })
+  @ApiPropertyOptional({ description: '组织ID' })
   @IsOptional()
-  @IsId('组织 ID')
-  @Expose()
-  readonly orgId?: string
+  @IsId('组织ID')
+  orgId?: string
 
-  @ApiPropertyOptional({
-    description: '标题关键词搜索',
-  })
+  @ApiPropertyOptional({ description: '创建时间搜索条件', type: AdvancedDateSearchOperators })
   @IsOptional()
-  @IsString({ message: '标题关键词必须是字符串' })
-  @Expose()
-  readonly titleKeyword?: string
+  @ValidateNested()
+  @Type(() => AdvancedDateSearchOperators)
+  createdAt?: AdvancedDateSearchOperators | Date
 
-  @ApiPropertyOptional({
-    description: '攻击方式关键词搜索',
-  })
+  @ApiPropertyOptional({ description: '更新时间搜索条件', type: AdvancedDateSearchOperators })
   @IsOptional()
-  @IsString({ message: '攻击方式关键词必须是字符串' })
-  @Expose()
-  readonly attackMethodKeyword?: string
+  @ValidateNested()
+  @Type(() => AdvancedDateSearchOperators)
+  updatedAt?: AdvancedDateSearchOperators | Date
 
-  @ApiPropertyOptional({
-    description: '描述关键词搜索',
-    example: '登录',
-  })
+  @ApiPropertyOptional({ description: '审核时间搜索条件', type: AdvancedDateSearchOperators })
   @IsOptional()
-  @IsString({ message: '描述关键词必须是字符串' })
-  @Expose()
-  readonly descriptionKeyword?: string
+  @ValidateNested()
+  @Type(() => AdvancedDateSearchOperators)
+  reviewedAt?: AdvancedDateSearchOperators | Date
+}
 
-  @ApiPropertyOptional({
-    description: '创建时间开始筛选（ISO日期字符串）',
-    example: '2024-01-01T00:00:00Z',
-  })
+/**
+ * 查询漏洞报告 DTO
+ * 支持高级搜索功能，使用通用搜索框架
+ */
+export class FindBugReportsDto extends IntersectionType(
+  PaginationQueryDto,
+  BaseSearchDto,
+  BugReportSearchFields,
+) {
+  @ApiPropertyOptional({ description: '是否包含关联的用户信息', example: true })
   @IsOptional()
-  @IsDateString({}, { message: '开始时间必须是有效的ISO日期字符串' })
-  @Expose()
-  readonly createdAtStart?: string
-
-  @ApiPropertyOptional({
-    description: '创建时间结束筛选（ISO日期字符串）',
-    example: '2024-12-31T23:59:59Z',
-  })
-  @IsOptional()
-  @IsDateString({}, { message: '结束时间必须是有效的ISO日期字符串' })
-  @Expose()
-  readonly createdAtEnd?: string
-
-  @ApiPropertyOptional({
-    description: '排序字段',
-    enum: ['createdAt', 'updatedAt', 'severity', 'status', 'title'],
-    example: 'createdAt',
-  })
-  @IsOptional()
-  @IsEnum(['createdAt', 'updatedAt', 'severity', 'status', 'title'], {
-    message: '排序字段必须是有效的枚举值',
-  })
-  @Expose()
-  readonly sortBy?: 'createdAt' | 'updatedAt' | 'severity' | 'status' | 'title'
-
-  @ApiPropertyOptional({
-    description: '排序方向',
-    enum: ['ASC', 'DESC'],
-    example: 'DESC',
-  })
-  @IsOptional()
-  @IsEnum(['ASC', 'DESC'], {
-    message: '排序方向必须是 ASC 或 DESC',
-  })
-  @Expose()
-  readonly sortOrder?: 'ASC' | 'DESC'
-
-  @ApiPropertyOptional({
-    description: '是否包含关联的用户信息',
-    example: true,
-  })
-  @IsOptional()
+  @IsBoolean({ message: '包含用户信息必须是布尔值' })
   @BooleanTransform()
-  @Expose()
-  readonly includeUser?: boolean
+  includeUser?: boolean
 
-  @ApiPropertyOptional({
-    description: '是否包含关联的审核人信息',
-    example: true,
-  })
+  @ApiPropertyOptional({ description: '是否包含关联的审核人信息', example: true })
   @IsOptional()
+  @IsBoolean({ message: '包含审核人信息必须是布尔值' })
   @BooleanTransform()
-  @Expose()
-  readonly includeReviewer?: boolean
+  includeReviewer?: boolean
 
-  @ApiPropertyOptional({
-    description: '是否包含关联的组织信息',
-    example: false,
-  })
+  @ApiPropertyOptional({ description: '是否包含关联的组织信息', example: false })
   @IsOptional()
+  @IsBoolean({ message: '包含组织信息必须是布尔值' })
   @BooleanTransform()
-  @Expose()
-  readonly includeOrganization?: boolean
+  includeOrganization?: boolean
 }
 
 /**

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
 
 import { Prisma } from '#prisma/client'
-import { BugReportStatus } from '~/common/constants/bug-reports'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
 import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
+import { AdvancedBugReportSearchBuilder } from './utils/advanced-bug-report-search-builder.util'
 
 /**
  * 漏洞报告数据访问层
@@ -23,16 +23,6 @@ export class BugReportsRepository {
     return this.prisma.bugReport.create({
       data,
       include: this.getIncludeOptions(),
-    })
-  }
-
-  /**
-   * 批量创建漏洞报告
-   */
-  async createMany(data: Prisma.BugReportCreateManyInput[]) {
-    return this.prisma.bugReport.createMany({
-      data,
-      skipDuplicates: false,
     })
   }
 
@@ -57,11 +47,18 @@ export class BugReportsRepository {
   }
 
   /**
-   * 查找漏洞报告（支持复杂条件筛选和分页）
+   * 查找漏洞报告（支持高级搜索功能）
+   *
+   * @description 使用统一的搜索框架，提供强大的查询能力
+   * @param dto 搜索参数
+   * @returns 包含漏洞报告列表、总数和分页信息的数据
    */
   async findMany(dto: FindBugReportsDto) {
-    const where = this.buildWhereCondition(dto)
-    const orderBy = this.buildOrderBy(dto.sortBy, dto.sortOrder)
+    const searchBuilder = new AdvancedBugReportSearchBuilder(dto)
+
+    // 构建查询条件
+    const where = searchBuilder.buildWhere()
+    const orderBy = searchBuilder.getOrderBy()
 
     const { skip, take } = getPaginationParams({
       page: dto.page,
@@ -107,28 +104,6 @@ export class BugReportsRepository {
   }
 
   /**
-   * 批量更新漏洞报告状态
-   */
-  async updateManyStatus(
-    ids: string[],
-    status: string,
-    reviewerId?: string,
-    reviewNote?: string,
-  ) {
-    const updateData: Prisma.BugReportUpdateManyArgs['data'] = {
-      status: status as BugReportStatus,
-      ...reviewerId && { reviewerId },
-      ...reviewNote && { reviewNote },
-      ...status !== 'PENDING' && { reviewedAt: new Date() },
-    }
-
-    return this.prisma.bugReport.updateMany({
-      where: { id: { in: ids } },
-      data: updateData,
-    })
-  }
-
-  /**
    * 删除漏洞报告
    */
   async delete(id: string) {
@@ -144,18 +119,6 @@ export class BugReportsRepository {
     return this.prisma.bugReport.deleteMany({
       where: { id: { in: ids } },
     })
-  }
-
-  /**
-   * 检查用户是否拥有指定的漏洞报告
-   */
-  async checkOwnership(id: string, userId: string): Promise<boolean> {
-    const report = await this.prisma.bugReport.findFirst({
-      where: { id, userId },
-      select: { id: true },
-    })
-
-    return !!report
   }
 
   /**
@@ -279,100 +242,6 @@ export class BugReportsRepository {
   }
 
   /**
-   * 构建查询条件
-   */
-  private buildWhereCondition(dto: FindBugReportsDto): Prisma.BugReportWhereInput {
-    const where: Prisma.BugReportWhereInput = {}
-
-    // 等级筛选
-    if (dto.severity) {
-      where.severity = dto.severity
-    }
-    else if (dto.severities && dto.severities.length > 0) {
-      where.severity = { in: dto.severities }
-    }
-
-    // 状态筛选
-    if (dto.status) {
-      where.status = dto.status
-    }
-    else if (dto.statuses && dto.statuses.length > 0) {
-      where.status = { in: dto.statuses }
-    }
-
-    // 用户和组织筛选
-    if (dto.userId) {
-      where.userId = dto.userId
-    }
-
-    if (dto.reviewerId) {
-      where.reviewerId = dto.reviewerId
-    }
-
-    if (dto.orgId) {
-      where.orgId = dto.orgId
-    }
-
-    // 关键词搜索
-    if (dto.titleKeyword) {
-      where.title = { contains: dto.titleKeyword, mode: 'insensitive' }
-    }
-
-    if (dto.attackMethodKeyword) {
-      where.attackMethod = { contains: dto.attackMethodKeyword, mode: 'insensitive' }
-    }
-
-    if (dto.descriptionKeyword) {
-      where.description = { contains: dto.descriptionKeyword, mode: 'insensitive' }
-    }
-
-    // 时间范围筛选
-    if (dto.createdAtStart || dto.createdAtEnd) {
-      where.createdAt = {}
-
-      if (dto.createdAtStart) {
-        where.createdAt.gte = new Date(dto.createdAtStart)
-      }
-
-      if (dto.createdAtEnd) {
-        where.createdAt.lte = new Date(dto.createdAtEnd)
-      }
-    }
-
-    return where
-  }
-
-  /**
-   * 构建排序条件
-   */
-  private buildOrderBy(
-    sortBy?: string,
-    sortOrder?: string,
-  ): Prisma.BugReportOrderByWithRelationInput {
-    const order = sortOrder === 'ASC' ? 'asc' : 'desc'
-
-    switch (sortBy) {
-      case 'title':
-        return { title: order }
-
-      case 'severity':
-        return { severity: order }
-
-      case 'status':
-        return { status: order }
-
-      case 'updatedAt':
-        return { updatedAt: order }
-
-      case 'createdAt':
-        return { createdAt: order }
-
-      default:
-        return { createdAt: order }
-    }
-  }
-
-  /**
    * 获取关联查询选项
    */
   private getIncludeOptions(
@@ -433,5 +302,68 @@ export class BugReportsRepository {
       default:
         return Prisma.sql`DATE(created_at)`
     }
+  }
+
+  /**
+   * 创建审批日志记录
+   */
+  async createApprovalLog(data: Prisma.BugReportApprovalLogCreateInput) {
+    return this.prisma.bugReportApprovalLog.create({
+      data,
+      include: {
+        approver: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
+        targetUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    })
+  }
+
+  /**
+   * 获取漏洞报告的审批历史
+   */
+  async getApprovalHistory(
+    bugReportId: string,
+    includeApprover = true,
+    includeTargetUser = true,
+  ) {
+    return this.prisma.bugReportApprovalLog.findMany({
+      where: { bugReportId },
+      include: {
+        ...includeApprover && {
+          approver: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+            },
+          },
+        },
+        ...includeTargetUser && {
+          targetUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    })
   }
 }

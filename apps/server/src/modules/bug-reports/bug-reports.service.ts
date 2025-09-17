@@ -12,6 +12,7 @@ import { UploadsService } from '~/modules/uploads/uploads.service'
 
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsRepository } from './bug-reports.repository'
+import { ApprovalAction, ProcessApprovalDto } from './dto/approval.dto'
 import { AttachmentDto } from './dto/base-bug-report.dto'
 import type { CreateBugReportDto } from './dto/create-bug-report.dto'
 import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
@@ -396,5 +397,203 @@ export class BugReportsService {
     }
 
     return bugReport
+  }
+
+  /**
+   * 统一审批处理
+   */
+  async processApproval(id: string, dto: ProcessApprovalDto, currentUser: CurrentUserDto) {
+    const bugReport = await this.findBugReportOrThrow(id)
+
+    // 验证审批权限
+    await this.validateApprovalPermission(bugReport, currentUser, dto.action)
+
+    // 记录审批日志
+    await this.recordApprovalLog(id, {
+      action: dto.action,
+      comment: dto.comment,
+      approverId: currentUser.id,
+      targetUserId: dto.targetUserId,
+    })
+
+    // 根据审批动作执行相应逻辑
+    switch (dto.action) {
+      case ApprovalAction.APPROVE:
+        return this.handleApprove(bugReport, dto, currentUser)
+
+      case ApprovalAction.REJECT:
+        return this.handleReject(bugReport, dto, currentUser)
+
+      case ApprovalAction.REQUEST_INFO:
+        return this.handleRequestInfo(bugReport, dto, currentUser)
+
+      case ApprovalAction.FORWARD:
+        return this.handleForward(bugReport, dto, currentUser)
+
+      default:
+        throw new BadRequestException('不支持的审批动作')
+    }
+  }
+
+  /**
+   * 获取审批历史
+   */
+  async getApprovalHistory(id: string, includeApprover = true, includeTargetUser = true) {
+    // 验证漏洞报告是否存在
+    await this.findBugReportOrThrow(id)
+
+    return this.bugReportsRepository.getApprovalHistory(id, includeApprover, includeTargetUser)
+  }
+
+  /**
+   * 处理审批通过
+   */
+  private async handleApprove(
+    bugReport: BugReport,
+    dto: ProcessApprovalDto,
+    currentUser: CurrentUserDto,
+  ) {
+    // 检查是否需要多级审批（这里简化处理，可根据实际需求扩展）
+    const needsSecondApproval = this.needsSecondApproval(bugReport)
+
+    if (needsSecondApproval && bugReport.status === BugReportStatus.PENDING) {
+      // 第一级审批通过，进入审核中状态
+      return this.updateStatus(bugReport.id, {
+        status: BugReportStatus.IN_REVIEW,
+        reviewNote: dto.comment,
+      }, currentUser)
+    }
+    else {
+      // 最终审批通过
+      return this.updateStatus(bugReport.id, {
+        status: BugReportStatus.APPROVED,
+        reviewNote: dto.comment,
+      }, currentUser)
+    }
+  }
+
+  /**
+   * 处理审批驳回
+   */
+  private async handleReject(
+    bugReport: BugReport,
+    dto: ProcessApprovalDto,
+    currentUser: CurrentUserDto,
+  ) {
+    return this.updateStatus(bugReport.id, {
+      status: BugReportStatus.REJECTED,
+      reviewNote: dto.comment,
+    }, currentUser)
+  }
+
+  /**
+   * 处理要求补充信息
+   */
+  private async handleRequestInfo(
+    bugReport: BugReport,
+    dto: ProcessApprovalDto,
+    currentUser: CurrentUserDto,
+  ) {
+    // 先更新状态
+    const result = await this.updateStatus(bugReport.id, {
+      status: BugReportStatus.PENDING,
+      reviewNote: dto.comment,
+    }, currentUser)
+
+    // 单独清除审批人 - 需要直接调用 repository
+    await this.bugReportsRepository.update(bugReport.id, {
+      reviewer: { disconnect: true },
+    })
+
+    return result
+  }
+
+  /**
+   * 处理转发审批
+   */
+  private async handleForward(
+    bugReport: BugReport,
+    dto: ProcessApprovalDto,
+    currentUser: CurrentUserDto,
+  ) {
+    if (!dto.targetUserId) {
+      throw new BadRequestException('转发操作需要指定目标用户')
+    }
+
+    // 先更新审批意见
+    const result = await this.updateStatus(bugReport.id, {
+      reviewNote: dto.comment,
+    }, currentUser)
+
+    // 单独更新审批人 - 需要直接调用 repository
+    await this.bugReportsRepository.update(bugReport.id, {
+      reviewer: { connect: { id: dto.targetUserId } },
+    })
+
+    return result
+  }
+
+  /**
+   * 验证审批权限
+   */
+  // eslint-disable-next-line @typescript-eslint/require-await
+  private async validateApprovalPermission(
+    bugReport: BugReport,
+    currentUser: CurrentUserDto,
+    action: ApprovalAction,
+  ) {
+    // 检查报告状态是否可以审批
+    const validStatuses: BugReportStatus[] = [BugReportStatus.PENDING, BugReportStatus.IN_REVIEW]
+
+    if (!validStatuses.includes(bugReport.status)) {
+      throw new BadRequestException(`当前状态 ${bugReport.status} 不允许审批操作`)
+    }
+
+    // 检查组织权限
+    if (bugReport.orgId !== currentUser.organization.id) {
+      throw new BadRequestException('只能审批本组织的漏洞报告')
+    }
+
+    // 检查是否是自己提交的报告（不能自审）
+    if (bugReport.userId === currentUser.id) {
+      throw new BadRequestException('不能审批自己提交的漏洞报告')
+    }
+
+    // 转发操作需要额外验证目标用户
+    if (action === ApprovalAction.FORWARD) {
+      // 这里可以添加目标用户有效性验证
+      // 例如检查目标用户是否有审批权限、是否在同一组织等
+    }
+  }
+
+  /**
+   * 记录审批日志
+   */
+  private async recordApprovalLog(bugReportId: string, data: {
+    action: string
+    comment: string
+    approverId: string
+    targetUserId?: string
+  }) {
+    return this.bugReportsRepository.createApprovalLog({
+      bugReport: { connect: { id: bugReportId } },
+      approver: { connect: { id: data.approverId } },
+      action: data.action,
+      comment: data.comment,
+      ...data.targetUserId && {
+        targetUser: { connect: { id: data.targetUserId } },
+      },
+    })
+  }
+
+  /**
+   * 判断是否需要二级审批
+   */
+  private needsSecondApproval(bugReport: BugReport): boolean {
+    // 这里可以根据业务规则决定是否需要二级审批
+    // 例如：高危和严重等级的漏洞需要二级审批
+    const highRiskSeverities = ['HIGH', 'CRITICAL']
+
+    return highRiskSeverities.includes(bugReport.severity)
   }
 }

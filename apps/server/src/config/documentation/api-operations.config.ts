@@ -1032,4 +1032,25 @@ export const BUG_REPORTS_API_CONFIG = {
     }),
     requireAdmin: false,
   },
+
+  processApproval: {
+    summary: '处理审批',
+    description: '对漏洞报告进行审批处理，支持通过、驳回、要求补充信息、转发等操作',
+    successResponse: createSuccessResponse({
+      description: '审批处理成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  getApprovalHistory: {
+    summary: '获取审批历史',
+    description: '获取漏洞报告的审批历史记录',
+    successResponse: createSuccessResponse({
+      description: '获取审批历史成功',
+      type: Array,
+    }),
+    requireAdmin: false,
+  },
+
 } satisfies Record<string, ApiOperationConfig>
