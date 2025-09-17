@@ -1,6 +1,7 @@
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 import { DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
+import { BugReportResponseDto, BugReportStatsResponseDto, PaginatedBugReportsResponseDto } from '~/modules/bug-reports/dto/bug-report-response.dto'
 import { DepartmentApiResponseDto, DepartmentListApiResponseDto, DepartmentMembersApiResponseDto, DepartmentTreeApiResponseDto } from '~/modules/departments/dto/department-response.dto'
 import { AdminCheckLicenseApiResponseDto, CheckLicenseApiResponseDto, CreateLicenseApiResponseDto, DeleteLicenseApiResponseDto, LicenseDetailApiResponseDto, LicenseListApiResponseDto, LogAccessApiResponseDto, SendRemindersResponseDataDto, ToggleLockResponseDataDto, UpdateLicenseApiResponseDto } from '~/modules/license/dto/license-response.dto'
 import { OrganizationApiResponseDto, OrganizationListApiResponseDto } from '~/modules/organizations/dto/organization-response.dto'
@@ -817,7 +818,6 @@ export const UPLOADS_API_CONFIG = {
       description: '文件上传成功',
       type: FileUploadApiResponseDto,
     }),
-    requireAuth: false,
     consumes: ['multipart/form-data'],
     requestBody: {
       description: '选择要上传的文件（字段名：file）',
@@ -838,7 +838,6 @@ export const UPLOADS_API_CONFIG = {
       description: '文件上传成功',
       type: MultipleFileUploadApiResponseDto,
     }),
-    requireAuth: false,
     consumes: ['multipart/form-data'],
     requestBody: {
       description: '选择要上传的文件列表（字段名：files）',
@@ -863,7 +862,6 @@ export const UPLOADS_API_CONFIG = {
       description: '文件上传成功',
       type: FileUploadApiResponseDto,
     }),
-    requireAuth: false,
     consumes: ['multipart/form-data'],
     requestBody: {
       description: '选择要上传的文件和自定义验证选项',
@@ -900,7 +898,6 @@ export const UPLOADS_API_CONFIG = {
       description: '获取文件信息成功',
       type: FileInfoApiResponseDto,
     }),
-    requireAuth: false,
   },
 
   deleteStoredFile: {
@@ -910,7 +907,6 @@ export const UPLOADS_API_CONFIG = {
       description: '文件删除成功',
       type: FileDeleteApiResponseDto,
     }),
-    requireAuth: false,
   },
 
   deleteStoredFiles: {
@@ -920,6 +916,90 @@ export const UPLOADS_API_CONFIG = {
       description: '批量删除完成',
       type: BatchFileDeleteApiResponseDto,
     }),
-    requireAuth: false,
+  },
+} satisfies Record<string, ApiOperationConfig>
+
+// ================================
+// MARK: 漏洞报告管理API配置
+// ================================
+
+export const BUG_REPORTS_API_CONFIG = {
+  create: {
+    summary: '创建漏洞报告',
+    description: '用户提交新的漏洞报告，支持附件上传',
+    successResponse: createSuccessResponse({
+      description: '漏洞报告创建成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  findMany: {
+    summary: '获取漏洞报告列表',
+    description: '分页查询漏洞报告，支持多种筛选条件和排序',
+    successResponse: createSuccessResponse({
+      description: '获取漏洞报告列表成功',
+      type: PaginatedBugReportsResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  getStats: {
+    summary: '获取漏洞报告统计数据',
+    description: '获取漏洞报告的统计信息，按等级、状态、时间等维度分析',
+    successResponse: createSuccessResponse({
+      description: '获取统计数据成功',
+      type: BugReportStatsResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  findById: {
+    summary: '获取漏洞报告详情',
+    description: '根据ID获取漏洞报告的详细信息',
+    successResponse: createSuccessResponse({
+      description: '获取漏洞报告详情成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  update: {
+    summary: '更新漏洞报告',
+    description: '更新漏洞报告的内容，只能更新自己未被审核的报告',
+    successResponse: createSuccessResponse({
+      description: '漏洞报告更新成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  updateStatus: {
+    summary: '更新漏洞报告状态',
+    description: '管理员审核漏洞报告，更新报告状态和审核意见',
+    successResponse: createSuccessResponse({
+      description: '漏洞报告状态更新成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  resubmit: {
+    summary: '重新提交漏洞报告',
+    description: '重新提交被驳回的漏洞报告，可以修改内容后重新提交审核',
+    successResponse: createSuccessResponse({
+      description: '漏洞报告重新提交成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  delete: {
+    summary: '删除漏洞报告',
+    description: '删除漏洞报告，只能删除自己未被审核的报告',
+    successResponse: createSuccessResponse({
+      description: '漏洞报告删除成功',
+    }),
+    requireAdmin: false,
   },
 } satisfies Record<string, ApiOperationConfig>

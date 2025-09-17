@@ -1,5 +1,4 @@
-import { Prisma } from '#prisma/client'
-import type { BUG_REPORT_STATUS } from '~/common/constants/bug-reports'
+import { BugReportStatus, Prisma } from '#prisma/client'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 
 /**
@@ -77,7 +76,7 @@ export class BugReportSearchBuilder {
   /**
    * 按单个状态筛选
    */
-  byStatus(status: keyof typeof BUG_REPORT_STATUS): this {
+  byStatus(status: BugReportStatus): this {
     this.where.status = status
 
     return this
@@ -86,7 +85,7 @@ export class BugReportSearchBuilder {
   /**
    * 按多个状态筛选
    */
-  byStatuses(statuses: (keyof typeof BUG_REPORT_STATUS)[]): this {
+  byStatuses(statuses: BugReportStatus[]): this {
     if (statuses.length > 0) {
       this.where.status = { in: statuses }
     }
@@ -431,7 +430,7 @@ export class BugReportSearchBuilder {
    */
   static forPendingReports(orgId?: string): BugReportSearchBuilder {
     const builder = new BugReportSearchBuilder()
-      .byStatus('PENDING')
+      .byStatus(BugReportStatus.PENDING)
       .includeUser()
       .orderByCreatedAt('asc')
 

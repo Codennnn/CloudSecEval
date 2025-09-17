@@ -1,26 +1,19 @@
-/**
- * 漏洞报告状态枚举
- */
-export const BUG_REPORT_STATUS = {
-  PENDING: 'PENDING',
-  IN_REVIEW: 'IN_REVIEW',
-  APPROVED: 'APPROVED',
-  REJECTED: 'REJECTED',
-  RESOLVED: 'RESOLVED',
-  CLOSED: 'CLOSED',
-} as const
+import { BugReportStatus } from '#prisma/client'
+
+// 重新导出 Prisma 生成的枚举
+export { BugReportStatus }
 
 /**
  * 可进行状态流转的规则
  * 定义从某个状态可以流转到哪些状态
  */
 export const BUG_REPORT_STATUS_TRANSITIONS = {
-  [BUG_REPORT_STATUS.PENDING]: [BUG_REPORT_STATUS.IN_REVIEW, BUG_REPORT_STATUS.REJECTED],
-  [BUG_REPORT_STATUS.IN_REVIEW]: [BUG_REPORT_STATUS.APPROVED, BUG_REPORT_STATUS.REJECTED],
-  [BUG_REPORT_STATUS.APPROVED]: [BUG_REPORT_STATUS.RESOLVED, BUG_REPORT_STATUS.CLOSED],
-  [BUG_REPORT_STATUS.REJECTED]: [BUG_REPORT_STATUS.PENDING], // 可重新提交审核
-  [BUG_REPORT_STATUS.RESOLVED]: [BUG_REPORT_STATUS.CLOSED],
-  [BUG_REPORT_STATUS.CLOSED]: [], // 终态，无法流转
+  [BugReportStatus.PENDING]: [BugReportStatus.IN_REVIEW, BugReportStatus.REJECTED],
+  [BugReportStatus.IN_REVIEW]: [BugReportStatus.APPROVED, BugReportStatus.REJECTED],
+  [BugReportStatus.APPROVED]: [BugReportStatus.RESOLVED, BugReportStatus.CLOSED],
+  [BugReportStatus.REJECTED]: [BugReportStatus.PENDING], // 可重新提交审核
+  [BugReportStatus.RESOLVED]: [BugReportStatus.CLOSED],
+  [BugReportStatus.CLOSED]: [], // 终态，无法流转
 } as const
 
 /**
@@ -49,6 +42,3 @@ export const BUG_REPORT_ATTACHMENTS = {
     'audio/mpeg',
   ],
 } as const
-
-// 类型定义导出
-export type BugReportStatus = typeof BUG_REPORT_STATUS[keyof typeof BUG_REPORT_STATUS]

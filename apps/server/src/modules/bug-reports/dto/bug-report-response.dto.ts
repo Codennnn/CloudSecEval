@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
 
-import { StandardListResponseDto } from '~/common/dto/standard-response.dto'
+import { StandardListResponseDto, StandardResponseDto } from '~/common/dto/standard-response.dto'
 import { BaseOrganizationDto } from '~/modules/organizations/dto/base-organization.dto'
 import { BaseUserDto } from '~/modules/users/dto/base-user.dto'
 
@@ -67,11 +67,11 @@ export class OrganizationRefDto extends PickType(BaseOrganizationDto, ['id', 'na
 }
 
 /**
- * 漏洞报告响应 DTO
+ * 漏洞报告数据 DTO
  *
  * 用于返回漏洞报告的完整信息，包含关联的用户和组织信息
  */
-export class BugReportResponseDto extends BaseBugReportDto {
+export class BugReportDataDto extends BaseBugReportDto {
   @ApiPropertyOptional({
     description: '提交用户信息',
     type: () => UserRefDto,
@@ -103,6 +103,18 @@ export class BugReportResponseDto extends BaseBugReportDto {
   @Type(() => AttachmentDto)
   @Expose()
   readonly attachments?: AttachmentDto[]
+}
+
+/**
+ * 漏洞报告响应 DTO
+ */
+export class BugReportResponseDto extends StandardResponseDto<BugReportDataDto> {
+  @ApiProperty({
+    description: '漏洞报告数据',
+    type: BugReportDataDto,
+  })
+  @Type(() => BugReportDataDto)
+  declare data: BugReportDataDto
 }
 
 /**
@@ -158,9 +170,9 @@ export class PaginatedBugReportsResponseDto extends StandardListResponseDto<BugR
 }
 
 /**
- * 我的漏洞报告响应 DTO
+ * 我的漏洞报告数据项 DTO
  */
-export class MyBugReportResponseDto extends PickType(BaseBugReportDto, [
+export class MyBugReportDataDto extends PickType(BaseBugReportDto, [
   'id',
   'title',
   'severity',
@@ -191,9 +203,21 @@ export class MyBugReportResponseDto extends PickType(BaseBugReportDto, [
 }
 
 /**
- * 漏洞报告统计响应 DTO
+ * 我的漏洞报告响应 DTO
  */
-export class BugReportStatsResponseDto {
+export class MyBugReportResponseDto extends StandardListResponseDto<MyBugReportDataDto> {
+  @ApiProperty({
+    description: '我的漏洞报告列表数据',
+    type: [MyBugReportDataDto],
+  })
+  @Type(() => MyBugReportDataDto)
+  declare data: MyBugReportDataDto[]
+}
+
+/**
+ * 漏洞报告统计数据 DTO
+ */
+export class BugReportStatsDataDto {
   @ApiProperty({
     description: '总报告数',
     example: 150,
@@ -256,37 +280,13 @@ export class BugReportStatsResponseDto {
 }
 
 /**
- * 批量操作响应 DTO
+ * 漏洞报告统计响应 DTO
  */
-export class BatchOperationResponseDto {
+export class BugReportStatsResponseDto extends StandardResponseDto<BugReportStatsDataDto> {
   @ApiProperty({
-    description: '成功处理的数量',
-    example: 8,
+    description: '漏洞报告统计数据',
+    type: BugReportStatsDataDto,
   })
-  @Expose()
-  readonly successCount!: number
-
-  @ApiProperty({
-    description: '失败处理的数量',
-    example: 2,
-  })
-  @Expose()
-  readonly failureCount!: number
-
-  @ApiProperty({
-    description: '成功处理的ID列表',
-    example: ['uuid-1', 'uuid-2'],
-  })
-  @Expose()
-  readonly successIds!: string[]
-
-  @ApiProperty({
-    description: '失败处理的详情',
-    example: [
-      { id: 'uuid-3', error: '报告不存在' },
-      { id: 'uuid-4', error: '无权限操作' },
-    ],
-  })
-  @Expose()
-  readonly failures!: { id: string, error: string }[]
+  @Type(() => BugReportStatsDataDto)
+  declare data: BugReportStatsDataDto
 }

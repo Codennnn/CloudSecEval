@@ -142,8 +142,8 @@ export class UploadsController {
   @Get('stored/:id')
   @RequirePermissions(PERMISSIONS.uploads.read)
   @ApiDocs(UPLOADS_API_CONFIG.getStoredFile)
-  getStoredFile(@Param('id') id: string) {
-    const storedFile = this.uploadsService.getStoredFile(id)
+  async getStoredFile(@Param('id') id: string) {
+    const storedFile = await this.uploadsService.getStoredFile(id)
 
     if (storedFile) {
       return resp({

@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common'
 import { consola } from 'consola'
 import { createHash } from 'crypto'
 import { promises as fs } from 'fs'
-import { nanoid } from 'nanoid'
-import { join } from 'path'
+import { basename, join } from 'path'
+
+import { type FileObject, Prisma } from '#prisma/client'
+import { PrismaService } from '~/prisma/prisma.service'
 
 interface StoredFileInfo {
   /** 文件唯一标识 */
@@ -48,31 +50,59 @@ interface FileStorageOptions {
 
 @Injectable()
 export class UploadsService {
-  private readonly storedFiles = new Map<string, StoredFileInfo>()
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * 处理上传的文件，直接存储到本地文件系统
    */
   async handleUploadedFile(file: Express.Multer.File): Promise<StoredFileInfo> {
-    const id = nanoid()
     const hash = this.generateFileHash(file.buffer)
-    const storedAt = new Date()
-
-    // 检查是否已存在相同文件（基于哈希去重）
-    const existingFile = this.findFileByHash(hash)
-
-    if (existingFile) {
-      // 返回已存在文件的信息，避免重复存储
-      return {
-        ...existingFile,
-        id, // 生成新的ID但复用已存储的文件
-        originalName: file.originalname, // 保留当前上传的原始文件名
-        storedAt,
-      }
-    }
-
     const category = this.getFileCategory(file.mimetype)
     const extension = this.getFileExtension(file.originalname)
+
+    // 幂等检查：存在相同 sha256+size 且已就绪的文件则直接返回
+    try {
+      const existed: FileObject | null = await this.prisma.fileObject.findFirst({
+        where: { sha256: hash, size: file.size, status: { not: 'DELETED' } },
+      })
+
+      if (existed && existed.status !== 'DELETED') {
+        const info: StoredFileInfo = {
+          id: existed.id,
+          originalName: existed.originalName ?? file.originalname,
+          fileName: basename(existed.storageKey),
+          mimeType: existed.mimeType,
+          size: existed.size,
+          hash,
+          localPath: existed.storageKey,
+          publicUrl: existed.url ?? '',
+          storedAt: existed.createdAt,
+        }
+
+        return info
+      }
+    }
+    catch (e) {
+      // 查询异常不应阻断上传流程，但记录日志
+      consola.warn('幂等检查失败，将继续写入：', e)
+    }
+
+    // 创建 UPLOADING 记录并写入文件后置 READY
+    const uploading: FileObject = await this.prisma.fileObject.create({
+      data: {
+        provider: 'local',
+        bucket: null,
+        storageKey: '',
+        url: null,
+        size: file.size,
+        mimeType: file.mimetype,
+        originalName: file.originalname,
+        sha256: hash,
+        md5: null,
+        status: 'UPLOADING',
+        visibility: 'PRIVATE',
+      },
+    })
 
     try {
       const storageResult = await this.storeFileToLocal({
@@ -82,24 +112,66 @@ export class UploadsService {
         buffer: file.buffer,
       })
 
+      const updated: FileObject = await this.prisma.fileObject.update({
+        where: { id: uploading.id },
+        data: {
+          storageKey: storageResult.localPath,
+          url: storageResult.publicUrl,
+          status: 'READY',
+          checksumAt: new Date(),
+        },
+      })
+
       const fileInfo: StoredFileInfo = {
-        id,
-        originalName: file.originalname,
+        id: updated.id,
+        originalName: updated.originalName ?? file.originalname,
         fileName: storageResult.fileName,
-        mimeType: file.mimetype,
-        size: file.size,
+        mimeType: updated.mimeType,
+        size: updated.size,
         hash,
         localPath: storageResult.localPath,
         publicUrl: storageResult.publicUrl,
-        storedAt,
+        storedAt: updated.createdAt,
       }
-
-      // 保存文件信息到内存映射
-      this.storedFiles.set(id, fileInfo)
 
       return fileInfo
     }
-    catch (error) {
+    catch (error: unknown) {
+      // 处理唯一键并发写入：返回已存在记录
+      // P2002: Unique constraint failed on the constraint
+      // 其他错误：标记失败并抛出
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        const existed: FileObject | null = await this.prisma.fileObject.findFirst({
+          where: { sha256: hash, size: file.size, status: { not: 'DELETED' } },
+        })
+
+        if (existed) {
+          const info: StoredFileInfo = {
+            id: existed.id,
+            originalName: existed.originalName ?? file.originalname,
+            fileName: basename(existed.storageKey),
+            mimeType: existed.mimeType,
+            size: existed.size,
+            hash,
+            localPath: existed.storageKey,
+            publicUrl: existed.url ?? '',
+            storedAt: existed.createdAt,
+          }
+
+          return info
+        }
+      }
+
+      try {
+        await this.prisma.fileObject.update({
+          where: { id: uploading.id },
+          data: { status: 'FAILED' },
+        })
+      }
+      catch {
+        // 忽略失败状态回写异常
+      }
+
       consola.error('文件存储失败:', error)
       throw error
     }
@@ -182,57 +254,98 @@ export class UploadsService {
   /**
    * 通过哈希查找已存在的文件
    */
-  private findFileByHash(hash: string): StoredFileInfo | undefined {
-    for (const fileInfo of this.storedFiles.values()) {
-      if (fileInfo.hash === hash) {
-        return fileInfo
-      }
+  private async findFileById(id: string): Promise<StoredFileInfo | undefined> {
+    const record: FileObject | null = await this.prisma.fileObject.findUnique({ where: { id } })
+
+    if (!record || record.status === 'DELETED') {
+      return undefined
     }
 
-    return undefined
+    const info: StoredFileInfo = {
+      id: record.id,
+      originalName: record.originalName ?? '',
+      fileName: basename(record.storageKey),
+      mimeType: record.mimeType,
+      size: record.size,
+      hash: record.sha256,
+      localPath: record.storageKey,
+      publicUrl: record.url ?? '',
+      storedAt: record.createdAt,
+    }
+
+    return info
   }
 
   /**
    * 获取存储的文件信息
    */
-  getStoredFile(id: string): StoredFileInfo | undefined {
-    return this.storedFiles.get(id)
+  async getStoredFile(id: string): Promise<StoredFileInfo | undefined> {
+    const found = await this.findFileById(id)
+
+    return found
   }
 
   /**
    * 获取多个存储文件信息
    */
-  getStoredFiles(ids: string[]): StoredFileInfo[] {
-    return ids.map((id) => this.storedFiles.get(id)).filter(Boolean) as StoredFileInfo[]
+  async getStoredFiles(ids: string[]): Promise<StoredFileInfo[]> {
+    if (ids.length === 0) {
+      return []
+    }
+
+    const records: FileObject[] = await this.prisma.fileObject.findMany({
+      where: { id: { in: ids } },
+    })
+    const list: StoredFileInfo[] = []
+
+    for (const r of records) {
+      if (r.status !== 'DELETED') {
+        list.push({
+          id: r.id,
+          originalName: r.originalName ?? '',
+          fileName: basename(r.storageKey),
+          mimeType: r.mimeType,
+          size: r.size,
+          hash: r.sha256,
+          localPath: r.storageKey,
+          publicUrl: r.url ?? '',
+          storedAt: r.createdAt,
+        })
+      }
+    }
+
+    return list
   }
 
   /**
    * 删除存储的文件
    */
   async deleteStoredFile(id: string): Promise<boolean> {
-    const fileInfo = this.storedFiles.get(id)
+    const record: FileObject | null = await this.prisma.fileObject.findUnique({ where: { id } })
 
-    if (!fileInfo) {
+    if (!record || record.status === 'DELETED') {
       return false
     }
 
     try {
-      // 检查是否有其他文件使用相同哈希（去重文件）
-      const sameHashFiles = Array.from(this.storedFiles.values())
-        .filter((f) => f.hash === fileInfo.hash && f.id !== id)
+      await this.deleteFileFromLocal(record.storageKey)
+    }
+    catch (error) {
+      consola.error(`删除文件失败: ${record.storageKey}`, error)
 
-      // 只有在没有其他文件使用相同哈希时才删除物理文件
-      if (sameHashFiles.length === 0) {
-        await this.deleteFileFromLocal(fileInfo.localPath)
-      }
+      return false
+    }
 
-      // 删除文件信息记录
-      this.storedFiles.delete(id)
+    try {
+      await this.prisma.fileObject.update({
+        where: { id },
+        data: { status: 'DELETED', deletedAt: new Date() },
+      })
 
       return true
     }
-    catch (error) {
-      consola.error(`删除文件失败: ${fileInfo.localPath}`, error)
+    catch (e) {
+      consola.error('标记删除失败:', e)
 
       return false
     }

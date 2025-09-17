@@ -8,6 +8,7 @@ import {
   IsString,
 } from 'class-validator'
 
+import { BugReportStatus } from '#prisma/client'
 import { BooleanTransform } from '~/common/decorators/boolean-transform.decorator'
 import { IsId } from '~/common/decorators/uuid.decorator'
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
@@ -55,25 +56,25 @@ export class FindBugReportsDto extends PaginationQueryDto {
 
   @ApiPropertyOptional({
     description: '报告状态筛选',
-    enum: ['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'],
-    example: 'PENDING',
+    enum: BugReportStatus,
+    example: BugReportStatus.PENDING,
   })
   @IsOptional()
-  @IsEnum(['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'], {
+  @IsEnum(BugReportStatus, {
     message: '报告状态必须是有效的枚举值',
   })
   @Expose()
-  readonly status?: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'RESOLVED' | 'CLOSED'
+  readonly status?: BugReportStatus
 
   @ApiPropertyOptional({
     description: '多个报告状态筛选',
-    enum: ['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'],
+    enum: BugReportStatus,
     isArray: true,
-    example: ['PENDING', 'IN_REVIEW'],
+    example: [BugReportStatus.PENDING, BugReportStatus.IN_REVIEW],
   })
   @IsOptional()
   @IsArray({ message: '报告状态列表必须是数组' })
-  @IsEnum(['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'], {
+  @IsEnum(BugReportStatus, {
     each: true,
     message: '每个报告状态必须是有效的枚举值',
   })
@@ -85,7 +86,7 @@ export class FindBugReportsDto extends PaginationQueryDto {
     return value
   })
   @Expose()
-  readonly statuses?: ('PENDING' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'RESOLVED' | 'CLOSED')[]
+  readonly statuses?: BugReportStatus[]
 
   @ApiPropertyOptional({
     description: '提交用户ID筛选',

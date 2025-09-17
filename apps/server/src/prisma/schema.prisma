@@ -14,6 +14,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// -------------------------
+// 文件与上传 元数据模型
+// -------------------------
+enum FileStatus {
+  UPLOADING
+  SCANNING
+  READY
+  FAILED
+  DELETED
+}
+
+enum FileVisibility {
+  PRIVATE
+  PUBLIC
+  PROTECTED
+}
+
+model FileObject {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provider     String         @default("local")
+  bucket       String?
+  storageKey   String
+  url          String?
+  size         Int
+  mimeType     String
+  originalName String?
+  sha256       String
+  md5          String?
+  width        Int?
+  height       Int?
+  duration     Int?
+  status       FileStatus     @default(UPLOADING)
+  visibility   FileVisibility @default(PRIVATE)
+  metadata     Json?
+  uploaderId   String?        @db.Uuid
+  uploader     User?          @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+  scannedAt    DateTime?
+  checksumAt   DateTime?
+  deletedAt    DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([uploaderId, createdAt])
+  @@index([status, createdAt])
+  @@unique([sha256, size])
+  @@map("file_objects")
+}
+
 // 组织模型
 model Organization {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -78,6 +126,7 @@ model User {
   userRoles           UserRole[]
   bugReports          BugReport[] // 用户提交的漏洞报告
   reviewedBugReports  BugReport[]          @relation("BugReportReviewer") // 用户审核的漏洞报告
+  uploadedFiles       FileObject[]
 
   @@index([orgId])
   @@index([departmentId])

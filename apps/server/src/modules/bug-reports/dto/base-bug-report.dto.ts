@@ -12,6 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator'
 
+import { BugReportStatus } from '#prisma/client'
 import { IsId } from '~/common/decorators/uuid.decorator'
 import { CommonTimeDto } from '~/common/dto/common.dto'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
@@ -136,14 +137,14 @@ export class BaseBugReportDto extends CommonTimeDto {
 
   @ApiProperty({
     description: '报告状态',
-    enum: ['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'],
-    example: 'PENDING',
+    enum: BugReportStatus,
+    example: BugReportStatus.PENDING,
   })
-  @IsEnum(['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'], {
+  @IsEnum(BugReportStatus, {
     message: '报告状态必须是有效的枚举值',
   })
   @Expose()
-  readonly status!: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'RESOLVED' | 'CLOSED'
+  readonly status!: BugReportStatus
 
   @ApiProperty({
     description: '提交用户ID',
@@ -224,14 +225,14 @@ export class BugReportRefDto {
 
   @ApiProperty({
     description: '报告状态',
-    enum: ['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'],
-    example: 'PENDING',
+    enum: BugReportStatus,
+    example: BugReportStatus.PENDING,
   })
-  @IsEnum(['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'RESOLVED', 'CLOSED'], {
+  @IsEnum(BugReportStatus, {
     message: '报告状态必须是有效的枚举值',
   })
   @Expose()
-  readonly status!: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'RESOLVED' | 'CLOSED'
+  readonly status!: BugReportStatus
 
   @ApiProperty({
     description: '创建时间',

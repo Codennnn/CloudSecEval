@@ -1,9 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 
-import { BugReportStatus, Prisma } from '#prisma/client'
+import { BugReport, BugReportStatus, Prisma } from '#prisma/client'
 import {
   BUG_REPORT_ATTACHMENTS,
-  BUG_REPORT_STATUS,
   BUG_REPORT_STATUS_TRANSITIONS,
 } from '~/common/constants/bug-reports'
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
@@ -13,10 +12,9 @@ import { UploadsService } from '~/modules/uploads/uploads.service'
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsRepository } from './bug-reports.repository'
 import { AttachmentDto } from './dto/base-bug-report.dto'
-import type { BatchCreateBugReportsDto, CreateBugReportDto } from './dto/create-bug-report.dto'
+import type { CreateBugReportDto } from './dto/create-bug-report.dto'
 import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
 import type {
-  BatchUpdateBugReportStatusDto,
   ResubmitBugReportDto,
   UpdateBugReportDto,
   UpdateBugReportStatusDto,
@@ -52,7 +50,7 @@ export class BugReportsService {
       attachments: attachments.length > 0
         ? (attachments as unknown as Prisma.InputJsonValue)
         : undefined,
-      status: BUG_REPORT_STATUS.PENDING,
+      status: BugReportStatus.PENDING,
       user: { connect: { id: currentUser.id } },
       organization: { connect: { id: currentUser.organization.id } },
     }
@@ -63,29 +61,9 @@ export class BugReportsService {
   }
 
   /**
-   * 批量创建漏洞报告
+   * 根据 ID 获取漏洞报告
    */
-  async batchCreate(dto: BatchCreateBugReportsDto, currentUser: CurrentUserDto) {
-    const createData = dto.bugReports.map((report) => ({
-      title: report.title,
-      severity: report.severity,
-      attackMethod: report.attackMethod,
-      description: report.description,
-      discoveredUrls: report.discoveredUrls ?? [],
-      status: BUG_REPORT_STATUS.PENDING,
-      userId: currentUser.id,
-      orgId: currentUser.organization.id,
-    }))
-
-    const result = await this.bugReportsRepository.createMany(createData)
-
-    return { count: result.count }
-  }
-
-  /**
-   * 根据ID获取漏洞报告
-   */
-  async findById(id: string) {
+  async findById(id: BugReport['id']) {
     const bugReport = await this.bugReportsRepository.findById(id, true)
 
     if (!bugReport) {
@@ -172,57 +150,12 @@ export class BugReportsService {
   }
 
   /**
-   * 批量更新漏洞报告状态
-   */
-  async batchUpdateStatus(dto: BatchUpdateBugReportStatusDto, currentUser: CurrentUserDto) {
-    // 验证所有报告是否存在
-    const bugReports = await this.bugReportsRepository.findByIds(dto.bugReportIds, false)
-
-    const validIds: string[] = []
-    const failures: { id: string, error: string }[] = []
-
-    for (const id of dto.bugReportIds) {
-      const report = bugReports.find((r) => r.id === id)
-
-      if (!report) {
-        failures.push({ id, error: '报告不存在' })
-        continue
-      }
-
-      try {
-        this.validateStatusTransition(report.status, dto.status)
-        validIds.push(id)
-      }
-      catch (error) {
-        failures.push({ id, error: error instanceof Error ? error.message : '状态更新失败' })
-      }
-    }
-
-    // 执行批量更新
-    if (validIds.length > 0) {
-      await this.bugReportsRepository.updateManyStatus(
-        validIds,
-        dto.status,
-        currentUser.id,
-        dto.reviewNote,
-      )
-    }
-
-    return {
-      successCount: validIds.length,
-      failureCount: failures.length,
-      successIds: validIds,
-      failures,
-    }
-  }
-
-  /**
    * 重新提交漏洞报告
    */
   async resubmit(id: string, dto: ResubmitBugReportDto) {
     const bugReport = await this.findBugReportOrThrow(id)
 
-    if (bugReport.status !== BUG_REPORT_STATUS.REJECTED) {
+    if (bugReport.status !== BugReportStatus.REJECTED) {
       throw new BadRequestException('只能重新提交被驳回的报告')
     }
 
@@ -239,7 +172,7 @@ export class BugReportsService {
     }
 
     const updateData: Prisma.BugReportUpdateInput = {
-      status: BUG_REPORT_STATUS.PENDING,
+      status: BugReportStatus.PENDING,
       reviewer: { disconnect: true },
       reviewNote: dto.resubmitNote ?? null,
       reviewedAt: null,
@@ -279,7 +212,6 @@ export class BugReportsService {
   /**
    * 处理附件（将存储文件ID转换为持久化的附件信息）
    */
-  // eslint-disable-next-line @typescript-eslint/require-await
   private async processAttachments(attachmentIds: string[]) {
     if (attachmentIds.length > BUG_REPORT_ATTACHMENTS.MAX_COUNT) {
       throw new BadRequestException(
@@ -290,7 +222,7 @@ export class BugReportsService {
     const attachments = []
 
     for (const attachmentId of attachmentIds) {
-      const storedFile = this.uploadsService.getStoredFile(attachmentId)
+      const storedFile = await this.uploadsService.getStoredFile(attachmentId)
 
       if (!storedFile) {
         throw BusinessException.notFound(BUSINESS_CODES.INVALID_ATTACHMENT_ID)
@@ -331,11 +263,11 @@ export class BugReportsService {
     const allowedTransitions
       = BUG_REPORT_STATUS_TRANSITIONS[currentStatus as keyof typeof BUG_REPORT_STATUS_TRANSITIONS]
 
-    if (typeof allowedTransitions !== 'string') {
+    if (!Array.isArray(allowedTransitions)) {
       throw BusinessException.badRequest(BUSINESS_CODES.INVALID_STATUS_TRANSITION)
     }
 
-    const isValidTransition = (allowedTransitions as readonly string[]).includes(newStatus)
+    const isValidTransition = allowedTransitions.includes(newStatus)
 
     if (!isValidTransition) {
       throw BusinessException.badRequest(BUSINESS_CODES.INVALID_STATUS_TRANSITION)
