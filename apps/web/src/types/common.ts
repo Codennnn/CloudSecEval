@@ -47,3 +47,32 @@ export type UnsafeAny = any
 export interface PageProps<T> {
   params: Promise<T>
 }
+
+/**
+ * 基础枚举配置接口
+ *
+ * 用于表示枚举的基本属性，如标签、外观、颜色等
+ */
+export interface BaseEnumConfig {
+  /** 枚举名称 */
+  label: string
+  /** 参考前景色，通常用于文本、图标等 */
+  frontColor?: string
+  /** 参考背景色，通常用于图表、背景等 */
+  bgColor?: string
+}
+
+/**
+ * 枚举配置映射类型
+ *
+ * 用于将枚举值映射到其对应的配置信息
+ *
+ * @template T - 枚举值的类型
+ * @template TConfig - 枚举配置的类型，默认为 BaseEnumConfig
+ */
+export type EnumConfig<
+  T extends string | number,
+  TConfig = BaseEnumConfig,
+> = {
+  [K in T]: TConfig & { value: K }
+}

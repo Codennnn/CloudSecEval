@@ -11,8 +11,7 @@ import { toast } from 'sonner'
 
 import { ProTable, type ProTableProps, type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
-import { createDateColumn } from '~/components/table/table.util'
-import { Badge } from '~/components/ui/badge'
+import { createDateColumn, createEnumColumn } from '~/components/table/table.util'
 import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
@@ -25,7 +24,7 @@ import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey } from '~api/@tanstack/react-query.gen'
 import { type BugReportSummaryDto } from '~api/types.gen'
-import { BugReportRoleView, getReportStatus, getVulSeverity, NEW_BUG_ID } from '~crowd-test/constants'
+import { BugReportRoleView, getReportStatus, getVulSeverity, NEW_BUG_ID, reportStatusConfig, vulSeverityConfig } from '~crowd-test/constants'
 
 interface BugListTableProps<Row extends BugReportSummaryDto>
   extends Pick<ProTableProps<Row>, 'className' | 'toolbar' | 'queryKeyFn' | 'queryOptionsFn' | 'columnVisibilityStorageKey'>
@@ -102,32 +101,20 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         enableSorting: false,
         enableHiding: false,
       },
-      {
+      createEnumColumn<Row>({
         accessorKey: 'severity',
         header: '严重级别',
         enableSorting: false,
-        cell: ({ row }) => {
-          return (
-            <Badge variant="outline">
-              {getVulSeverity(row.original.severity).label}
-            </Badge>
-          )
-        },
-      },
-      {
+        enumOptions: Object.values(vulSeverityConfig),
+        getLabelFn: (value) => getVulSeverity(value).label,
+      }),
+      createEnumColumn<Row>({
         accessorKey: 'status',
         header: '状态',
         enableSorting: false,
-        cell: ({ row }) => {
-          const status = row.original.status
-
-          return (
-            <Badge>
-              {getReportStatus(status).label}
-            </Badge>
-          )
-        },
-      },
+        enumOptions: Object.values(reportStatusConfig),
+        getLabelFn: (value) => getReportStatus(value).label,
+      }),
       createDateColumn<Row>({ accessorKey: 'createdAt', header: '创建时间' }),
     ]
 

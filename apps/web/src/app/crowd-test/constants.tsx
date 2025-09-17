@@ -1,3 +1,5 @@
+import type { EnumConfig } from '~/types/common'
+
 export const NEW_BUG_ID = 'new'
 
 export enum VulnerabilitySeverity {
@@ -8,36 +10,30 @@ export enum VulnerabilitySeverity {
   CRITICAL = 'CRITICAL',
 }
 
-interface VulSeverityConfig {
-  label: string
-  color: string
-}
-
-const vulSeverityConfig: Record<VulnerabilitySeverity, VulSeverityConfig> = {
+export const vulSeverityConfig = {
   [VulnerabilitySeverity.INFO]: {
+    value: VulnerabilitySeverity.INFO,
     label: '信息',
-    color:
-    'bg-gray-500/15 text-gray-600 border-gray-500/20',
   },
   [VulnerabilitySeverity.LOW]: {
+    value: VulnerabilitySeverity.LOW,
     label: '低危',
-    color: 'bg-green-500/15 text-green-600 border-green-500/20',
   },
   [VulnerabilitySeverity.MEDIUM]: {
+    value: VulnerabilitySeverity.MEDIUM,
     label: '中危',
-    color: 'bg-yellow-500/15 text-yellow-600 border-yellow-500/20',
   },
   [VulnerabilitySeverity.HIGH]: {
+    value: VulnerabilitySeverity.HIGH,
     label: '高危',
-    color: 'bg-red-500/15 text-red-600 border-red-500/20',
   },
   [VulnerabilitySeverity.CRITICAL]: {
+    value: VulnerabilitySeverity.CRITICAL,
     label: '严重',
-    color: 'bg-purple-500/15 text-purple-600 border-purple-500/20',
   },
-}
+} satisfies EnumConfig<VulnerabilitySeverity>
 
-export function getVulSeverity(severity: string): VulSeverityConfig {
+export function getVulSeverity(severity: string) {
   if (severity in vulSeverityConfig) {
     return vulSeverityConfig[severity as VulnerabilitySeverity]
   }
@@ -58,43 +54,38 @@ export const enum BugReportStatus {
   CLOSED = 'CLOSED',
 }
 
-interface ReportStatusConfig {
-  label: string
-  color: string
-}
-
-const reportStatusConfig: Record<BugReportStatus, ReportStatusConfig> = {
+export const reportStatusConfig = {
   [BugReportStatus.DRAFT]: {
+    value: BugReportStatus.DRAFT,
     label: '草稿',
-    color: 'bg-slate-500/15 text-slate-600 border-slate-500/20',
   },
   [BugReportStatus.PENDING]: {
+    value: BugReportStatus.PENDING,
     label: '待审核',
-    color: 'bg-yellow-500/15 text-yellow-600 border-yellow-500/20',
   },
   [BugReportStatus.IN_REVIEW]: {
+    value: BugReportStatus.IN_REVIEW,
     label: '审核中',
-    color: 'bg-yellow-500/15 text-yellow-600 border-yellow-500/20',
   },
   [BugReportStatus.APPROVED]: {
+    value: BugReportStatus.APPROVED,
     label: '已通过',
-    color: 'bg-green-500/15 text-green-600 border-green-500/20',
   },
   [BugReportStatus.REJECTED]: {
+    value: BugReportStatus.REJECTED,
     label: '已驳回',
-    color: 'bg-red-500/15 text-red-600 border-red-500/20',
   },
   [BugReportStatus.RESOLVED]: {
+    value: BugReportStatus.RESOLVED,
     label: '已解决',
-    color: 'bg-blue-500/15 text-blue-600 border-blue-500/20',
   },
   [BugReportStatus.CLOSED]: {
+    value: BugReportStatus.CLOSED,
     label: '已关闭',
-    color: 'bg-gray-500/15 text-gray-600 border-gray-500/20',
   },
-}
+} satisfies EnumConfig<BugReportStatus>
 
-export function getReportStatus(status: string): ReportStatusConfig {
+export function getReportStatus(status: string) {
   if (status in reportStatusConfig) {
     return reportStatusConfig[status as BugReportStatus]
   }
