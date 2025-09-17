@@ -8,6 +8,7 @@ export { BugReportStatus }
  * 定义从某个状态可以流转到哪些状态
  */
 export const BUG_REPORT_STATUS_TRANSITIONS = {
+  [BugReportStatus.DRAFT]: [BugReportStatus.PENDING], // 草稿只能提交为待审核
   [BugReportStatus.PENDING]: [BugReportStatus.IN_REVIEW, BugReportStatus.REJECTED],
   [BugReportStatus.IN_REVIEW]: [BugReportStatus.APPROVED, BugReportStatus.REJECTED],
   [BugReportStatus.APPROVED]: [BugReportStatus.RESOLVED, BugReportStatus.CLOSED],

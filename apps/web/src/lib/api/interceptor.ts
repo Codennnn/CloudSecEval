@@ -3,6 +3,8 @@
 import { consola } from 'consola'
 import { toast } from 'sonner'
 
+import { isCrowdTest } from '~/utils/platform'
+
 import { isLoggingEnabled } from './config'
 import type { ApiResponse } from './types'
 
@@ -22,12 +24,19 @@ export class ApiError extends Error {
   }
 }
 
-function redirectToLogin(): void {
-  // 检查是否在客户端环境
-  if (typeof window !== 'undefined') {
-    const loginUrl = AdminRoutes.Login
+// 防止重复重定向的标志
+let isRedirecting = false
 
-    window.location.href = loginUrl
+function redirectToLogin(): void {
+  // 检查是否在客户端环境和是否已在重定向过程中
+  if (typeof window !== 'undefined' && !isRedirecting) {
+    isRedirecting = true
+    const loginUrl = isCrowdTest() ? AdminRoutes.CrowdTestLogin : AdminRoutes.Login
+
+    // 使用 setTimeout 避免在同步代码中立即执行重定向
+    setTimeout(() => {
+      window.location.href = loginUrl
+    }, 0)
   }
 }
 
@@ -39,8 +48,7 @@ function handleError(error: unknown, showError = true): void {
 
   // 处理认证相关错误，重定向到登录页面
   if (error instanceof ApiError) {
-    // 自定义业务码 20100（未经授权的访问）
-    if (error.code === '20100') {
+    if (error.status === 401 || error.code === '20100') {
       redirectToLogin()
 
       return

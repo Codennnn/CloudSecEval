@@ -25,6 +25,10 @@ import {
   CreateBugReportDto,
 } from './dto/create-bug-report.dto'
 import {
+  SaveDraftDto,
+  SubmitDraftDto,
+} from './dto/draft-bug-report.dto'
+import {
   BugReportStatsDto,
   FindBugReportsDto,
 } from './dto/find-bug-reports.dto'
@@ -111,6 +115,53 @@ export class BugReportsController {
     return resp({
       msg: '漏洞报告更新成功',
       data: updated,
+    })
+  }
+
+  @Post('drafts')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.saveDraft)
+  @RequirePermissions(PERMISSIONS.bug_reports.create)
+  async saveDraft(
+    @Body() saveDraftDto: SaveDraftDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const draft = await this.bugReportsService.saveDraft(saveDraftDto, currentUser)
+
+    return resp({
+      msg: '草稿保存成功',
+      data: draft,
+    })
+  }
+
+  @Put('drafts/:id')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.updateDraft)
+  @RequirePermissions(PERMISSIONS.bug_reports.update)
+  async updateDraft(
+    @Param('id') id: string,
+    @Body() updateDraftDto: SaveDraftDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const updated = await this.bugReportsService.updateDraft(id, updateDraftDto, currentUser)
+
+    return resp({
+      msg: '草稿更新成功',
+      data: updated,
+    })
+  }
+
+  @Put('drafts/:id/submit')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.submitDraft)
+  @RequirePermissions(PERMISSIONS.bug_reports.create)
+  async submitDraft(
+    @Param('id') id: string,
+    @Body() submitDraftDto: SubmitDraftDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const submitted = await this.bugReportsService.submitDraft(id, submitDraftDto, currentUser)
+
+    return resp({
+      msg: '草稿提交成功',
+      data: submitted,
     })
   }
 

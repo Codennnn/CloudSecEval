@@ -73,12 +73,11 @@ export class BaseBugReportDto extends CommonTimeDto {
 
   @ApiProperty({
     description: '报告标题',
-    example: 'SQL注入漏洞',
     maxLength: 200,
   })
   @IsString({ message: '报告标题必须是字符串' })
   @IsNotEmpty({ message: '报告标题不能为空' })
-  @MaxLength(200, { message: '报告标题不能超过200个字符' })
+  @MaxLength(200, { message: '报告标题不能超过 200 个字符' })
   @Expose()
   readonly title!: string
 
@@ -100,7 +99,7 @@ export class BaseBugReportDto extends CommonTimeDto {
   })
   @IsOptional()
   @IsString({ message: '攻击方式必须是字符串' })
-  @MaxLength(100, { message: '攻击方式不能超过100个字符' })
+  @MaxLength(100, { message: '攻击方式不能超过 100 个字符' })
   @Expose()
   readonly attackMethod?: string
 
@@ -119,8 +118,8 @@ export class BaseBugReportDto extends CommonTimeDto {
     type: [String],
   })
   @IsOptional()
-  @IsArray({ message: 'URL列表必须是数组' })
-  @IsUrl({}, { each: true, message: '每个URL必须是有效的URL格式' })
+  @IsArray({ message: 'URL 列表必须是数组' })
+  @IsUrl({}, { each: true, message: '每个 URL 必须是有效的 URL 格式' })
   @Expose()
   readonly discoveredUrls?: string[]
 
@@ -196,16 +195,15 @@ export class BaseBugReportDto extends CommonTimeDto {
  */
 export class BugReportRefDto {
   @ApiProperty({
-    description: '漏洞报告ID',
+    description: '漏洞报告 ID',
     example: 'uuid-string',
   })
-  @IsId('漏洞报告ID')
+  @IsId('漏洞报告 ID')
   @Expose()
   readonly id!: string
 
   @ApiProperty({
     description: '报告标题',
-    example: 'SQL注入漏洞',
   })
   @IsString({ message: '报告标题必须是字符串' })
   @IsNotEmpty({ message: '报告标题不能为空' })

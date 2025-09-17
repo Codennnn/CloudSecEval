@@ -25,6 +25,7 @@ export const enum AdminRoutes {
   Docs = '/admini/docs',
   Unauthorized = '/admini/unauthorized',
 
+  CrowdTestLogin = '/crowd-test/login',
   CrowdTestDashboard = '/crowd-test/dashboard',
   CrowdTestBugs = '/crowd-test/bugs',
   CrowdTestBugsDetail = '/crowd-test/bugs/[bugReportId]',
@@ -32,6 +33,7 @@ export const enum AdminRoutes {
   CrowdTestMyBugs = '/crowd-test/my-bugs',
   CrowdTestTeams = '/crowd-test/teams',
   CrowdTestTeamProfile = '/crowd-test/teams/[teamId]',
+  CrowdTestPermissions = '/crowd-test/permissions',
   CrowdTestRoles = '/crowd-test/roles',
 }
 
@@ -104,6 +106,10 @@ export const adminNavConfig: AdminNavConfig = {
   },
 
   // CrowdTest
+  [AdminRoutes.CrowdTestLogin]: {
+    title: '登录',
+    url: AdminRoutes.CrowdTestLogin,
+  },
   [AdminRoutes.CrowdTestDashboard]: {
     title: '数据总览',
     url: AdminRoutes.CrowdTestDashboard,
@@ -139,6 +145,12 @@ export const adminNavConfig: AdminNavConfig = {
     title: '团队概况',
     url: AdminRoutes.CrowdTestTeamProfile,
     icon: UsersIcon,
+  },
+  [AdminRoutes.CrowdTestPermissions]: {
+    title: '权限管理',
+    url: AdminRoutes.CrowdTestPermissions,
+    icon: FingerprintIcon,
+    requiredPermission: [adminPermission.permissions.read],
   },
   [AdminRoutes.CrowdTestRoles]: {
     title: '角色管理',
@@ -197,6 +209,7 @@ const adminNavMain = isCrowdTest()
       createAdminNavItem(AdminRoutes.CrowdTestMyBugs),
       createAdminNavItem(AdminRoutes.CrowdTestTeams),
       createAdminNavItem(AdminRoutes.CrowdTestRoles),
+      createAdminNavItem(AdminRoutes.CrowdTestPermissions),
     ]
   : [
       createAdminNavItem(AdminRoutes.Dashboard),

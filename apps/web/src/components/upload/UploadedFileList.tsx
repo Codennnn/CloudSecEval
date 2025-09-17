@@ -4,20 +4,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip
 
 import { Button } from '../ui/button'
 
-export interface UploadedFileItem {
-  id: string
-  originalName: string
-  size: number
-  mimeType: string
-}
+import type { FileUploadResponseDataDto } from '~api/types.gen'
+
+export type UploadedFileItem = FileUploadResponseDataDto
 
 interface UploadedFileListProps {
   /** 已上传的文件 */
-  files: UploadedFileItem[]
+  files?: UploadedFileItem[]
   /** 是否只读，控制是否展示删除按钮 */
   readonly?: boolean
-  /** 删除回调，传入文件 id */
-  onRemove?: (id: string) => void | Promise<void>
+  /** 删除回调，传入文件对象 */
+  onRemove?: (file: UploadedFileItem) => void | Promise<void>
 }
 
 /**
@@ -30,7 +27,7 @@ export function UploadedFileList(props: UploadedFileListProps) {
 
   return (
     <ul className="space-y-2 text-sm">
-      {files.length > 0
+      {Array.isArray(files) && files.length > 0
         ? files.map((f) => (
             <li key={f.id} className="flex items-center justify-between rounded-md border p-2">
               <div className="min-w-0 flex-1">
@@ -45,7 +42,7 @@ export function UploadedFileList(props: UploadedFileListProps) {
                       size="sm"
                       type="button"
                       variant="outline"
-                      onClick={() => { void onRemove?.(f.id) }}
+                      onClick={() => { void onRemove?.(f) }}
                     >
                       <XIcon />
                     </Button>

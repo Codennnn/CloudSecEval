@@ -2,8 +2,8 @@ import { Activity, AlertTriangle, CalendarDays, CheckCircle2 } from 'lucide-reac
 
 import { BugStatsCard, type StatCardData } from './BugStatsCard'
 
-import { type BugReportSummaryDto, VulnerabilitySeverity } from '~api/types.gen'
-import { BugReportStatus } from '~crowd-test/constants'
+import { type BugReportSummaryDto } from '~api/types.gen'
+import { BugReportStatus, VulnerabilitySeverity } from '~crowd-test/constants'
 
 function isToday(date: string): boolean {
   const d = new Date(date)

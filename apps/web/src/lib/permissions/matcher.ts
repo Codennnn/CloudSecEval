@@ -64,6 +64,11 @@ export function matchPermission(
   required: PermissionFlag | PermissionFlag[],
   mode: PermissionMode = PermissionMode.Any,
 ): boolean {
+  // 超级管理员权限
+  if (userPerms.includes('admin:*')) {
+    return true
+  }
+
   // 如果是单个权限，直接进行匹配
   if (typeof required === 'string') {
     return matchSinglePermission(userPerms, required)

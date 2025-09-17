@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { AlertTriangle, ArrowLeft, Home, RefreshCw } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Home } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
@@ -41,15 +41,6 @@ export function UnauthorizedPage() {
     }
     else {
       router.push(AdminRoutes.Dashboard)
-    }
-  }
-
-  const handleRetry = () => {
-    if (attemptedPath) {
-      router.push(attemptedPath)
-    }
-    else {
-      router.refresh()
     }
   }
 
@@ -113,33 +104,23 @@ export function UnauthorizedPage() {
             <div className="space-y-3">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Button
-                  className="h-icon-button-sm border-border/60 hover:bg-accent/50"
+                  size="sm"
                   variant="outline"
                   onClick={handleGoBack}
                 >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <ArrowLeft />
                   返回上页
                 </Button>
 
                 <Button
-                  className="h-icon-button-sm bg-primary hover:bg-primary/90"
+                  size="sm"
+                  variant="default"
                   onClick={() => { router.push(AdminRoutes.Dashboard) }}
                 >
-                  <Home className="h-4 w-4 mr-2" />
+                  <Home />
                   返回仪表板
                 </Button>
               </div>
-
-              {attemptedPath && (
-                <Button
-                  className="w-full h-icon-button-sm text-muted-foreground hover:text-foreground hover:bg-accent/30"
-                  variant="ghost"
-                  onClick={handleRetry}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  重试访问
-                </Button>
-              )}
             </div>
 
             {/* 帮助信息 */}

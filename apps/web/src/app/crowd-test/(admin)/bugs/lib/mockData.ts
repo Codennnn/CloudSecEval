@@ -1,6 +1,5 @@
-import { BugReportStatus } from '../../../constants'
-
-import { type BugReportSummaryDto, VulnerabilitySeverity } from '~api/types.gen'
+import { type BugReportSummaryDto } from '~api/types.gen'
+import { BugReportStatus, VulnerabilitySeverity } from '~crowd-test/constants'
 
 // ============================================================================
 // MARK: Mock 数据生成与管理

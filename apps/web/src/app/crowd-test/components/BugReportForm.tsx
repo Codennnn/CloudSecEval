@@ -13,21 +13,18 @@ import { Button } from '~/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { Separator } from '~/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { FileUploader } from '~/components/upload/FileUploader'
 
-import { type CreateBugReportDto, VulnerabilitySeverity } from '~api/types.gen'
-import { getVulSeverity } from '~crowd-test/constants'
+import { type CreateBugReportDto } from '~api/types.gen'
+import { getVulSeverity, VulnerabilitySeverity } from '~crowd-test/constants'
 
-type BugAttackType = 'web' | 'mobile' | 'other'
+export type BugReportFormValues = CreateBugReportDto
 
-export interface BugReportFormValues extends CreateBugReportDto {
-  attackType: BugAttackType
-}
-
+// 正式提交的表单验证（严格）
 const bugFormSchema = z.object({
   title: z.string().min(1, '报告标题不能为空'),
-  attackType: z.enum(['web', 'mobile', 'other']),
   description: z.string(),
   severity: z.enum(Object.values(VulnerabilitySeverity)),
   discoveredUrls: z.array(z.object({
@@ -36,19 +33,38 @@ const bugFormSchema = z.object({
   attachmentIds: z.array(z.string()).default([]),
 })
 
-type BugFormInput = z.input<typeof bugFormSchema>
-type BugFormOutput = z.output<typeof bugFormSchema>
+// 草稿的表单验证（宽松）
+const draftFormSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  severity: z.enum(Object.values(VulnerabilitySeverity)).optional(),
+  discoveredUrls: z.array(z.object({
+    url: z.string().optional(),
+  })).optional(),
+  attachmentIds: z.array(z.string()).optional(),
+})
+
+type BugFormInput = z.input<typeof draftFormSchema>
+type BugFormOutput = z.output<typeof draftFormSchema>
 
 export interface BugReportFormCardProps {
   /** 初始表单值（编辑态可传入 id 与各字段） */
   initialValues?: Partial<BugReportFormValues>
   /** 自定义提交按钮文案 */
   submitText?: string
+  /** 自定义保存草稿按钮文案 */
+  saveDraftText?: string
   /** 是否只读 */
   readonly?: boolean
+  /** 是否显示保存草稿按钮 */
+  showSaveDraft?: boolean
+  /** 是否为草稿状态 */
+  isDraft?: boolean
 
   /** 提交回调，返回结构化的表单数据 */
   onSubmit?: (values: BugReportFormValues) => void | Promise<void>
+  /** 保存草稿回调 */
+  onSaveDraft?: (values: BugReportFormValues) => void | Promise<void>
   /** 取消回调，用于关闭外层弹层或重置状态 */
   onCancel?: () => void
 }
@@ -58,32 +74,30 @@ export interface BugReportFormCardProps {
  * 受控表单组件：支持异步 initialValues 变化时基于 reset 同步展示。
  */
 export function BugReportForm(props: BugReportFormCardProps) {
-  const { initialValues, onSubmit, onCancel, submitText, readonly } = props
-
-  const attackTypeTextMap: Record<string, string> = {
-    web: 'Web',
-    mobile: '移动端',
-    other: '其他',
-  }
+  const {
+    initialValues,
+    onSubmit,
+    onSaveDraft,
+    onCancel,
+    submitText,
+    saveDraftText,
+    readonly,
+    showSaveDraft = false,
+    isDraft = false,
+  } = props
 
   const defaultValues: BugFormInput = useMemo(() => {
-    const candidateAttackType = initialValues?.attackType as string | undefined
-    const normalizedAttackType: BugFormInput['attackType'] = (candidateAttackType === 'web' || candidateAttackType === 'mobile' || candidateAttackType === 'other')
-      ? candidateAttackType
-      : 'web'
-
     return {
-      title: initialValues?.title ?? '',
-      description: initialValues?.description ?? '',
-      severity: initialValues?.severity ?? VulnerabilitySeverity.MEDIUM,
-      attackType: normalizedAttackType,
-      discoveredUrls: initialValues?.discoveredUrls?.map((url) => ({ url })) ?? [{ url: '' }],
-      attachmentIds: initialValues?.attachmentIds ?? [],
+      title: initialValues?.title,
+      description: initialValues?.description,
+      severity: initialValues?.severity as VulnerabilitySeverity | undefined,
+      discoveredUrls: initialValues?.discoveredUrls?.map((url) => ({ url })),
+      attachmentIds: initialValues?.attachmentIds,
     }
   }, [initialValues])
 
   const form = useForm<BugFormInput, FieldValues, BugFormOutput>({
-    resolver: zodResolver(bugFormSchema),
+    resolver: zodResolver(isDraft ? draftFormSchema : bugFormSchema),
     defaultValues,
     shouldUnregister: false,
   })
@@ -93,7 +107,8 @@ export function BugReportForm(props: BugReportFormCardProps) {
     name: 'discoveredUrls',
   })
 
-  const submitBtnText = submitText ?? ((initialValues as { id?: string } | undefined)?.id ? '保存' : '提交')
+  const submitBtnText = submitText ?? (isDraft ? '提交报告' : (initialValues as { id?: string } | undefined)?.id ? '保存' : '提交')
+  const draftBtnText = saveDraftText ?? '保存草稿'
 
   // 当 initialValues 发生变化（异步加载详情）时，重置表单以反映最新数据
   useEffect(() => {
@@ -102,15 +117,26 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
   const handleSubmit = useEvent((values: BugFormOutput) => {
     const result: BugReportFormValues = {
-      title: values.title.trim(),
-      description: values.description.trim(),
-      severity: values.severity,
-      attackType: values.attackType as BugAttackType,
-      discoveredUrls: values.discoveredUrls.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0),
+      title: values.title?.trim() ?? '',
+      description: values.description?.trim() ?? '',
+      severity: values.severity ?? VulnerabilitySeverity.MEDIUM,
+      discoveredUrls: values.discoveredUrls?.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0) ?? [],
       attachmentIds: values.attachmentIds ?? [],
     }
 
     return onSubmit?.(result)
+  })
+
+  const handleSaveDraft = useEvent((values: BugFormOutput) => {
+    const result: BugReportFormValues = {
+      title: values.title?.trim() ?? '',
+      description: values.description?.trim() ?? '',
+      severity: values.severity ?? VulnerabilitySeverity.MEDIUM,
+      discoveredUrls: values.discoveredUrls?.map((item) => item.url?.trim() ?? '').filter((url) => url.length > 0) ?? [],
+      attachmentIds: values.attachmentIds ?? [],
+    }
+
+    return onSaveDraft?.(result)
   })
 
   return (
@@ -134,7 +160,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
               {
                 readonly
-                  ? <div className="text-sm break-words">{field.value || '-'}</div>
+                  ? <div className="text-sm break-words">{field.value ?? '-'}</div>
                   : (
                       <FormControl>
                         <Input id="title" {...field} />
@@ -158,7 +184,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                 readonly
                   ? (
                       <div className="text-sm">
-                        {getVulSeverity(field.value).label}
+                        {field.value ? getVulSeverity(field.value).label : '-'}
                       </div>
                     )
                   : (
@@ -184,35 +210,6 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
         <FormField
           control={form.control}
-          name="attackType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>攻击方式</FormLabel>
-              {readonly
-                ? (
-                    <div className="text-sm">{attackTypeTextMap[field.value] ?? field.value}</div>
-                  )
-                : (
-                    <FormControl>
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger className="w-40" id="attackType">
-                          <SelectValue placeholder="选择攻击方式" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="web">Web</SelectItem>
-                          <SelectItem value="mobile">移动端</SelectItem>
-                          <SelectItem value="other">其他</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  )}
-              {!readonly && <FormMessage />}
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
@@ -220,7 +217,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
               {readonly
                 ? (
                     <div className="prose max-w-none break-words">
-                      {field.value || '-'}
+                      {field.value ?? '-'}
                     </div>
                   )
                 : (
@@ -338,7 +335,6 @@ export function BugReportForm(props: BugReportFormCardProps) {
                 multiple
                 accept={undefined}
                 readonly={readonly}
-                value={field.value ?? []}
                 onChange={field.onChange}
               />
               {!readonly && <FormMessage />}
@@ -346,10 +342,13 @@ export function BugReportForm(props: BugReportFormCardProps) {
           )}
         />
 
-        <div className="flex gap-2">
-          {!readonly && (
-            <>
+        {!readonly && (
+          <div>
+            <Separator />
+
+            <div className="flex items-center gap-2 py-4">
               <Button
+                size="sm"
                 type="button"
                 variant="outline"
                 onClick={() => {
@@ -359,15 +358,31 @@ export function BugReportForm(props: BugReportFormCardProps) {
                 取消
               </Button>
 
-              <Button
-                type="submit"
-                variant="default"
-              >
-                {submitBtnText}
-              </Button>
-            </>
-          )}
-        </div>
+              <div className="flex items-center gap-2 ml-auto">
+                {showSaveDraft && onSaveDraft && (
+                  <Button
+                    size="sm"
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      void form.handleSubmit(handleSaveDraft)()
+                    }}
+                  >
+                    {draftBtnText}
+                  </Button>
+                )}
+
+                <Button
+                  size="sm"
+                  type="submit"
+                  variant="default"
+                >
+                  {submitBtnText}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </form>
     </Form>
   )

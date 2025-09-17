@@ -1,6 +1,12 @@
-import { VulnerabilitySeverity } from '~api/types.gen'
-
 export const NEW_BUG_ID = 'new'
+
+export enum VulnerabilitySeverity {
+  INFO = 'INFO',
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
+}
 
 interface VulSeverityConfig {
   label: string
@@ -43,6 +49,7 @@ export function getVulSeverity(severity: string): VulSeverityConfig {
 }
 
 export const enum BugReportStatus {
+  DRAFT = 'DRAFT',
   PENDING = 'PENDING',
   IN_REVIEW = 'IN_REVIEW',
   APPROVED = 'APPROVED',
@@ -57,6 +64,10 @@ interface ReportStatusConfig {
 }
 
 const reportStatusConfig: Record<BugReportStatus, ReportStatusConfig> = {
+  [BugReportStatus.DRAFT]: {
+    label: '草稿',
+    color: 'bg-slate-500/15 text-slate-600 border-slate-500/20',
+  },
   [BugReportStatus.PENDING]: {
     label: '待审核',
     color: 'bg-yellow-500/15 text-yellow-600 border-yellow-500/20',

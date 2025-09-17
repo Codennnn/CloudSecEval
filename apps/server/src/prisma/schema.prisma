@@ -319,6 +319,7 @@ enum BugSeverity {
 
 // 漏洞报告状态枚举
 enum BugReportStatus {
+  DRAFT // 草稿
   PENDING // 待审核
   IN_REVIEW // 审核中
   APPROVED // 已通过

@@ -7,6 +7,7 @@ import {
   PROTECTED_FILE_EXTENSIONS,
   SEARCH_BOT_PATTERN,
 } from '~/constants/routes.server'
+import { isCrowdTest } from '~/utils/platform'
 
 import { AdminRoutes } from '~admin/lib/admin-nav'
 
@@ -33,12 +34,16 @@ function handleAdminRoutes(request: NextRequest, pathname: string) {
 
   // 情况2：已登录用户访问登录页，重定向到仪表板
   if (hasLogin && isLoginPage) {
-    return NextResponse.redirect(new URL(AdminRoutes.Dashboard, request.url))
+    return NextResponse.redirect(new URL(
+      isCrowdTest() ? AdminRoutes.CrowdTestDashboard : AdminRoutes.Dashboard, request.url,
+    ))
   }
 
   // 情况3：未登录用户访问非登录页面，重定向到登录页
   if (!hasLogin && !isLoginPage) {
-    return NextResponse.redirect(new URL(AdminRoutes.Login, request.url))
+    return NextResponse.redirect(new URL(
+      isCrowdTest() ? AdminRoutes.CrowdTestLogin : AdminRoutes.Login, request.url,
+    ))
   }
 
   // 其他情况：允许继续访问（已登录访问其他页面，或未登录访问登录页）

@@ -1002,4 +1002,34 @@ export const BUG_REPORTS_API_CONFIG = {
     }),
     requireAdmin: false,
   },
+
+  saveDraft: {
+    summary: '保存草稿',
+    description: '保存漏洞报告草稿，所有字段都是可选的',
+    successResponse: createSuccessResponse({
+      description: '草稿保存成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  updateDraft: {
+    summary: '更新草稿',
+    description: '更新草稿内容',
+    successResponse: createSuccessResponse({
+      description: '草稿更新成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  submitDraft: {
+    summary: '提交草稿',
+    description: '将草稿提交为正式报告',
+    successResponse: createSuccessResponse({
+      description: '草稿提交成功',
+      type: BugReportResponseDto,
+    }),
+    requireAdmin: false,
+  },
 } satisfies Record<string, ApiOperationConfig>

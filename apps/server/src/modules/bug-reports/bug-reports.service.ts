@@ -6,6 +6,7 @@ import {
   BUG_REPORT_STATUS_TRANSITIONS,
 } from '~/common/constants/bug-reports'
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
+import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { UploadsService } from '~/modules/uploads/uploads.service'
 
@@ -13,6 +14,7 @@ import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsRepository } from './bug-reports.repository'
 import { AttachmentDto } from './dto/base-bug-report.dto'
 import type { CreateBugReportDto } from './dto/create-bug-report.dto'
+import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
 import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
 import type {
   ResubmitBugReportDto,
@@ -33,14 +35,12 @@ export class BugReportsService {
   ) {}
 
   async create(dto: CreateBugReportDto, currentUser: CurrentUserDto) {
-    // 处理附件
     let attachments: AttachmentDto[] | undefined = []
 
     if (dto.attachmentIds && dto.attachmentIds.length > 0) {
       attachments = await this.processAttachments(dto.attachmentIds)
     }
 
-    // 构建创建数据
     const createData: Prisma.BugReportCreateInput = {
       title: dto.title,
       severity: dto.severity,
@@ -60,9 +60,6 @@ export class BugReportsService {
     return bugReport
   }
 
-  /**
-   * 根据 ID 获取漏洞报告
-   */
   async findById(id: BugReport['id']) {
     const bugReport = await this.bugReportsRepository.findById(id, true)
 
@@ -198,6 +195,120 @@ export class BugReportsService {
     await this.bugReportsRepository.delete(id)
 
     // 删除成功，无需返回数据，由控制器负责返回提示信息
+  }
+
+  /**
+   * 保存草稿
+   * 支持部分字段保存，所有字段都是可选的
+   */
+  async saveDraft(dto: SaveDraftDto, currentUser: CurrentUserDto) {
+    let attachments: AttachmentDto[] = []
+
+    if (dto.attachmentIds?.length) {
+      attachments = await this.processAttachments(dto.attachmentIds)
+    }
+
+    const createData: Prisma.BugReportCreateInput = {
+      title: dto.title ?? '未命名草稿',
+      severity: dto.severity ?? VulnerabilitySeverity.INFO,
+      attackMethod: dto.attackMethod,
+      description: dto.description,
+      discoveredUrls: dto.discoveredUrls ?? [],
+      attachments: attachments.length > 0
+        ? (attachments as unknown as Prisma.InputJsonValue)
+        : undefined,
+      status: BugReportStatus.DRAFT,
+      user: { connect: { id: currentUser.id } },
+      organization: { connect: { id: currentUser.organization.id } },
+    }
+
+    const draftReport = await this.bugReportsRepository.create(createData)
+
+    return draftReport
+  }
+
+  /**
+   * 更新草稿
+   * 只能更新状态为 DRAFT 的报告
+   */
+  async updateDraft(id: string, dto: SaveDraftDto, currentUser: CurrentUserDto) {
+    const bugReport = await this.findBugReportOrThrow(id)
+
+    // 验证权限和状态
+    if (bugReport.status !== BugReportStatus.DRAFT) {
+      throw new BadRequestException('只能更新草稿状态的报告')
+    }
+
+    if (bugReport.userId !== currentUser.id) {
+      throw new BadRequestException('只能更新自己的草稿')
+    }
+
+    // 处理附件更新
+    let attachments: AttachmentDto[] | undefined
+
+    if (dto.attachmentIds !== undefined) {
+      if (dto.attachmentIds.length > 0) {
+        attachments = await this.processAttachments(dto.attachmentIds)
+      }
+      else {
+        attachments = []
+      }
+    }
+
+    const updateData: Prisma.BugReportUpdateInput = {
+      ...dto.title && { title: dto.title },
+      ...dto.severity && { severity: dto.severity },
+      ...dto.attackMethod !== undefined && { attackMethod: dto.attackMethod },
+      ...dto.description !== undefined && { description: dto.description },
+      ...dto.discoveredUrls !== undefined && { discoveredUrls: dto.discoveredUrls },
+      ...attachments !== undefined && {
+        attachments: attachments as unknown as Prisma.InputJsonValue,
+      },
+    }
+
+    const updatedDraft = await this.bugReportsRepository.update(id, updateData)
+
+    return updatedDraft
+  }
+
+  /**
+   * 提交草稿（草稿转为正式提交）
+   * 验证必填字段完整性后提交
+   */
+  async submitDraft(id: string, dto: SubmitDraftDto, currentUser: CurrentUserDto) {
+    const bugReport = await this.findBugReportOrThrow(id)
+
+    // 验证权限和状态
+    if (bugReport.status !== BugReportStatus.DRAFT) {
+      throw new BadRequestException('只能提交草稿状态的报告')
+    }
+
+    if (bugReport.userId !== currentUser.id) {
+      throw new BadRequestException('只能提交自己的草稿')
+    }
+
+    // 处理附件
+    let attachments: AttachmentDto[] = []
+
+    if (dto.attachmentIds && dto.attachmentIds.length > 0) {
+      attachments = await this.processAttachments(dto.attachmentIds)
+    }
+
+    const updateData: Prisma.BugReportUpdateInput = {
+      title: dto.title,
+      severity: dto.severity,
+      attackMethod: dto.attackMethod,
+      description: dto.description,
+      discoveredUrls: dto.discoveredUrls ?? [],
+      attachments: attachments.length > 0
+        ? (attachments as unknown as Prisma.InputJsonValue)
+        : undefined,
+      status: BugReportStatus.PENDING, // 提交后变为待审核
+    }
+
+    const submittedReport = await this.bugReportsRepository.update(id, updateData)
+
+    return submittedReport
   }
 
   /**

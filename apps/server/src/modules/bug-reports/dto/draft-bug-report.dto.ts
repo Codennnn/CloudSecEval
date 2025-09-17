@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, PickType } from '@nestjs/swagger'
+import { ApiPropertyOptional, PartialType, PickType } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
 import {
   IsArray,
@@ -7,20 +7,19 @@ import {
 } from 'class-validator'
 
 import { BaseBugReportDto } from './base-bug-report.dto'
+import { CreateBugReportDto } from './create-bug-report.dto'
 
 /**
- * 创建漏洞报告 DTO
- *
- * 用于接收创建漏洞报告的请求数据
- * 不包含系统自动生成的字段（如ID、创建时间、用户ID、组织ID等）
+ * 保存草稿 DTO
+ * 所有字段都是可选的，允许部分保存
  */
-export class CreateBugReportDto extends PickType(BaseBugReportDto, [
+export class SaveDraftDto extends PartialType(PickType(BaseBugReportDto, [
   'title',
   'severity',
   'attackMethod',
   'description',
   'discoveredUrls',
-] as const) {
+] as const)) {
   @ApiPropertyOptional({
     description: '附件ID列表（来自文件上传接口的临时文件ID）',
     example: ['file-id-1', 'file-id-2'],
@@ -32,3 +31,9 @@ export class CreateBugReportDto extends PickType(BaseBugReportDto, [
   @Expose()
   readonly attachmentIds?: string[]
 }
+
+/**
+ * 草稿转正式提交 DTO
+ * 继承创建DTO，确保必填字段完整
+ */
+export class SubmitDraftDto extends CreateBugReportDto {}

@@ -1,24 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import { UploadedFileList } from './UploadedFileList'
 
-import { formDataBodySerializer } from '~api/client'
-import { client as apiClient } from '~api/client.gen'
-import { uploadsControllerCleanupTempFile, uploadsControllerGetTempFile } from '~api/sdk.gen'
+import type { FileUploadResponseDataDto } from '~api/types.gen'
 
-interface TempFile {
-  id: string
-  originalName: string
-  size: number
-  mimeType: string
-}
+export type FileInfo = FileUploadResponseDataDto
 
 interface FileUploaderProps {
-  /** 已上传的文件 ID 列表 */
-  value: string[]
+  /** 已上传的文件列表 */
+  value?: FileInfo[]
   /** 文件变更回调 */
-  onChange: (ids: string[]) => void
+  onChange?: (files: FileInfo[]) => void
+  /** 文件选择回调，用于处理新选择的文件 */
+  onFilesSelected?: (files: File[]) => Promise<void>
+  /** 文件删除回调 */
+  onFileRemove?: (file: FileInfo) => Promise<void>
   /** 是否只读 */
   readonly?: boolean
   /** 接受的文件类型 */
@@ -27,57 +24,25 @@ interface FileUploaderProps {
   multiple?: boolean
   /** 最大上传文件数量 */
   maxFiles?: number
+  /** 是否正在处理文件 */
+  loading?: boolean
 }
 
 export function FileUploader(props: FileUploaderProps) {
   const {
     value,
     onChange,
+    onFilesSelected,
+    onFileRemove,
     readonly,
     accept,
     multiple = true,
     maxFiles = 10,
+    loading = false,
   } = props
 
-  const [files, setFiles] = useState<TempFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
-
-  useEffect(() => {
-    async function fetchTempFiles() {
-      if (!value || value.length === 0) {
-        setFiles([])
-      }
-      else {
-        const results: TempFile[] = []
-
-        for (const id of value) {
-          try {
-            const res = await uploadsControllerGetTempFile({ path: { id } })
-            const payload = (res as unknown as { data?: unknown })?.data ?? res
-            const data = (payload as unknown as { data?: unknown })?.data ?? payload
-
-            if (data && typeof data === 'object') {
-              results.push({
-                id: (data as Record<string, unknown>).id as string,
-                originalName: (data as Record<string, unknown>).originalName as string,
-                size: (data as Record<string, unknown>).size as number,
-                mimeType: (data as Record<string, unknown>).mimeType as string,
-              })
-            }
-          }
-          catch {
-            // ignore
-          }
-        }
-
-        setFiles(results)
-      }
-    }
-
-    void fetchTempFiles()
-  }, [value])
 
   const pickFiles = useEvent(() => {
     if (readonly) {
@@ -90,7 +55,7 @@ export function FileUploader(props: FileUploaderProps) {
   })
 
   const handleFiles = useEvent(async (selected: FileList | File[]) => {
-    if (readonly) {
+    if (readonly || loading) {
       return
     }
 
@@ -100,55 +65,14 @@ export function FileUploader(props: FileUploaderProps) {
 
     if (totalCount > maxFiles) {
       alert(`最多只能上传 ${maxFiles} 个附件`)
+
+      return
     }
-    else {
-      setIsUploading(true)
-      const newIds: string[] = []
-      const newFiles: TempFile[] = []
 
-      for (const file of Array.from(selected)) {
-        try {
-          const res = await apiClient.post({
-            ...formDataBodySerializer,
-            url: '/api/uploads/single',
-            headers: { 'Content-Type': null },
-            body: { file },
-          })
+    const filesArray = Array.from(selected)
 
-          const payloadObj = res as unknown as { data?: unknown }
-          const payload = payloadObj && payloadObj.data !== undefined ? payloadObj.data : res
-          const dataObj = payload as unknown as { data?: unknown }
-          const data = dataObj && dataObj.data !== undefined ? dataObj.data : payload
-
-          if (data && typeof data === 'object') {
-            const raw = data as Record<string, unknown>
-            const id = raw.id as string
-
-            if (id) {
-              newIds.push(id)
-              newFiles.push({
-                id,
-                originalName: (raw.originalName as string) ?? file.name,
-                size: (raw.size as number) ?? file.size,
-                mimeType: (raw.mimeType as string) ?? file.type,
-              })
-            }
-          }
-        }
-        catch {
-          // ignore
-        }
-      }
-
-      if (newIds.length > 0) {
-        const prevIds = value ?? []
-        const mergedIds = [...prevIds, ...newIds]
-        const mergedFiles = [...files, ...newFiles]
-        setFiles(mergedFiles)
-        onChange(mergedIds)
-      }
-
-      setIsUploading(false)
+    if (onFilesSelected) {
+      await onFilesSelected(filesArray)
     }
   })
 
@@ -165,7 +89,7 @@ export function FileUploader(props: FileUploaderProps) {
     ev.preventDefault()
     setIsDragging(false)
 
-    if (ev.dataTransfer?.files?.length) {
+    if (ev.dataTransfer.files.length > 0) {
       void handleFiles(ev.dataTransfer.files)
     }
   })
@@ -179,20 +103,19 @@ export function FileUploader(props: FileUploaderProps) {
     setIsDragging(false)
   })
 
-  const removeOne = useEvent(async (id: string) => {
-    if (readonly) {
+  const removeOne = useEvent(async (file: FileInfo) => {
+    if (readonly || loading) {
       return
     }
 
-    try {
-      await uploadsControllerCleanupTempFile({ path: { id } })
+    if (onFileRemove) {
+      await onFileRemove(file)
     }
-    catch {}
-
-    const nextIds = (value ?? []).filter((x) => x !== id)
-    const nextFiles = files.filter((f) => f.id !== id)
-    setFiles(nextFiles)
-    onChange(nextIds)
+    else {
+      // 如果没有提供删除回调，则默认从列表中移除
+      const nextFiles = value?.filter((f) => f.id !== file.id) ?? []
+      onChange?.(nextFiles)
+    }
   })
 
   const handleKeyDown = useEvent<React.KeyboardEventHandler<HTMLDivElement>>((ev) => {
@@ -225,7 +148,7 @@ export function FileUploader(props: FileUploaderProps) {
         <div className="flex flex-col items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
           <p>将文件拖拽到此处，或点击下方按钮选择文件</p>
           <p className="text-xs">支持图片、视频、日志、PDF 等</p>
-          {isUploading && <p className="text-xs text-primary">正在上传...</p>}
+          {loading && <p className="text-xs text-primary">正在处理...</p>}
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -245,9 +168,9 @@ export function FileUploader(props: FileUploaderProps) {
 
         <div className="mt-3">
           <UploadedFileList
-            files={files}
+            files={value}
             readonly={readonly}
-            onRemove={(id) => { void removeOne(id) }}
+            onRemove={removeOne}
           />
         </div>
       </div>
