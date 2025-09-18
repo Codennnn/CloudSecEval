@@ -9,6 +9,7 @@ import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
 
 import { RichTextEditor } from '~/components/richtext/RichTextEditor'
+import { SafeHtmlRenderer } from '~/components/richtext/SafeHtmlRenderer'
 import { Button } from '~/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
@@ -177,61 +178,70 @@ export function BugReportForm(props: BugReportFormCardProps) {
         <FormField
           control={form.control}
           name="severity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>漏洞等级</FormLabel>
+          render={({ field }) => {
+            const severity = getVulSeverity(field.value)
 
-              {
-                readonly
-                  ? (
-                      <div className="text-sm">
-                        {field.value ? getVulSeverity(field.value).label : '-'}
-                      </div>
-                    )
-                  : (
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
+            return (
+              <FormItem>
+                <FormLabel>漏洞等级</FormLabel>
+
+                {
+                  readonly
+                    ? (
+                        <div
+                          className={cn(
+                            'text-sm font-semibold',
+                            severity.frontColor,
+                          )}
                         >
-                          <SelectTrigger
-                            className={cn(
-                              'font-semibold',
-                              field.value
-                                ? getVulSeverity(field.value).frontColor
-                                : '',
-                            )}
-                            id="severity"
+                          {severity.label}
+                        </div>
+                      )
+                    : (
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
                           >
-                            <SelectValue placeholder="选择漏洞等级" />
-                          </SelectTrigger>
+                            <SelectTrigger
+                              className={cn(
+                                'font-semibold',
+                                field.value
+                                  ? severity.frontColor
+                                  : '',
+                              )}
+                              id="severity"
+                            >
+                              <SelectValue placeholder="选择漏洞等级" />
+                            </SelectTrigger>
 
-                          <SelectContent>
-                            {Object.values(VulnerabilitySeverity).map((s) => {
-                              const severity = getVulSeverity(s)
+                            <SelectContent>
+                              {Object.values(VulnerabilitySeverity).map((s) => {
+                                const sev = getVulSeverity(s)
 
-                              return (
-                                <SelectItem
-                                  key={s}
-                                  className={cn(
-                                    'font-semibold',
-                                    severity.frontColor,
-                                  )}
-                                  value={s}
-                                >
-                                  {severity.label}
-                                </SelectItem>
-                              )
-                            })}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    )
-              }
+                                return (
+                                  <SelectItem
+                                    key={s}
+                                    className={cn(
+                                      'font-semibold',
+                                      sev.frontColor,
+                                    )}
+                                    value={s}
+                                  >
+                                    {sev.label}
+                                  </SelectItem>
+                                )
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      )
+                }
 
-              {!readonly && <FormMessage />}
-            </FormItem>
-          )}
+                {!readonly && <FormMessage />}
+              </FormItem>
+            )
+          }}
         />
 
         <FormField
@@ -242,8 +252,8 @@ export function BugReportForm(props: BugReportFormCardProps) {
               <FormLabel>问题描述 / 复现步骤 / 影响</FormLabel>
               {readonly
                 ? (
-                    <div className="prose max-w-none break-words">
-                      {field.value ?? '-'}
+                    <div className="prose max-w-none bg-muted/70 rounded-lg overflow-hidden p-4">
+                      <SafeHtmlRenderer html={field.value ?? ''} />
                     </div>
                   )
                 : (

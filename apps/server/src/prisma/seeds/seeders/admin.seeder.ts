@@ -66,7 +66,7 @@ export class AdminSeeder extends BaseSeeder {
         },
       })
 
-      // 为管理员分配系统角色 super_admin（包含 admin:* 权限）
+      // 为管理员分配系统角色 super_admin（包含超级管理员权限）
       // 若未先播种 Permissions/ Roles，记录警告并跳过，不阻断执行
       const superAdminRole = await this.prisma.role.findFirst({
         where: { slug: 'super_admin', system: true },

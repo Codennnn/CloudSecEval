@@ -1,3 +1,5 @@
+import { SYSTEM_PERMISSIONS } from '~/common/constants/permissions'
+
 /**
  * 系统角色种子数据
  *
@@ -25,7 +27,7 @@ export const SYSTEM_ROLE_SEEDS: RoleSeedData[] = [
     description: '拥有系统全部权限，可管理所有组织和用户',
     system: true,
     isActive: true,
-    permissions: ['admin:*'],
+    permissions: [SYSTEM_PERMISSIONS.SUPER_ADMIN],
   },
   {
     name: '组织拥有者',

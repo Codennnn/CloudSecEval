@@ -13,7 +13,7 @@ import type { ExpressRequest } from '~/types/common'
  *
  * 工作原理：
  * - 兼容模式：优先检查传统的管理员邮箱配置
- * - 权限模式：检查用户是否拥有 admin:* 权限
+ * - 权限模式：检查用户是否拥有超级管理员权限
  * - 如果两者都不满足，则抛出权限不足异常
  *
  * 使用方式：
@@ -58,7 +58,7 @@ export class AdminGuard implements CanActivate {
       return true
     }
 
-    // TODO: 权限模式：检查用户是否拥有 admin:* 权限
+    // TODO: 权限模式：检查用户是否拥有超级管理员权限
     // 暂时注释掉，等权限系统完全集成后启用
     /*
     try {
@@ -67,7 +67,7 @@ export class AdminGuard implements CanActivate {
         const permissionCheck = await permissionsService.checkUserPermission(
           user.id,
           user.orgId,
-          'admin:*'
+          SYSTEM_PERMISSIONS.SUPER_ADMIN
         )
 
         if (permissionCheck.hasPermission) {

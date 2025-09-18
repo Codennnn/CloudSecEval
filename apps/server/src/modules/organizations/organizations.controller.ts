@@ -6,6 +6,7 @@ import { resp, respWithPagination } from '~/common/utils/response.util'
 import { ORGANIZATIONS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
+import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { UserListApiResponseDto, UserListItemDto } from '~/modules/users/dto/user-response.dto'
 
 import { CreateOrganizationDto } from './dto/create-organization.dto'
@@ -27,6 +28,7 @@ export class OrganizationsController {
   constructor(private readonly orgService: OrganizationsService) {}
 
   @Post()
+  @RequirePermissions(PERMISSIONS.organizations.create)
   @ApiDocs(ORGANIZATIONS_API_CONFIG.create)
   async create(
     @Body() createOrganizationDto: CreateOrganizationDto,
@@ -41,6 +43,7 @@ export class OrganizationsController {
   }
 
   @Get()
+  @RequirePermissions(PERMISSIONS.organizations.read)
   @ApiDocs(ORGANIZATIONS_API_CONFIG.findAllOrganizations)
   async findAllOrganizations(
     @Query() query: FindOrganizationsDto,
@@ -61,6 +64,7 @@ export class OrganizationsController {
   }
 
   @Get('members')
+  @RequirePermissions(PERMISSIONS.organizations.read)
   @ApiDocs(ORGANIZATIONS_API_CONFIG.getOrganizationMembers)
   async getOrganizationMembers(
     @CurrentUser() user: unknown,
@@ -84,6 +88,7 @@ export class OrganizationsController {
   }
 
   @Get(':id')
+  @RequirePermissions(PERMISSIONS.organizations.read)
   @ApiDocs(ORGANIZATIONS_API_CONFIG.findOrganization)
   async findOrganization(@Param('id') id: string): Promise<OrganizationApiResponseDto> {
     const organization = await this.orgService.findOne(id)
@@ -96,6 +101,7 @@ export class OrganizationsController {
   }
 
   @Patch(':id')
+  @RequirePermissions(PERMISSIONS.organizations.update)
   @ApiDocs(ORGANIZATIONS_API_CONFIG.update)
   async update(
     @Param('id') id: string,
@@ -111,6 +117,7 @@ export class OrganizationsController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PERMISSIONS.organizations.delete)
   @ApiDocs(ORGANIZATIONS_API_CONFIG.removeOrganization)
   async removeOrganization(@Param('id') id: string): Promise<OrganizationApiResponseDto> {
     const result = await this.orgService.remove(id)

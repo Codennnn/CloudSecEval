@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 
+import { CommonModule } from '~/common/common.module'
 import { PermissionsModule } from '~/modules/permissions/permissions.module'
 import { UploadsModule } from '~/modules/uploads/uploads.module'
 import { PrismaModule } from '~/prisma/prisma.module'
@@ -20,6 +21,7 @@ import { BugReportsService } from './bug-reports.service'
  */
 @Module({
   imports: [
+    CommonModule,
     PrismaModule,
     UploadsModule,
     PermissionsModule,

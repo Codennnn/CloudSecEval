@@ -5,6 +5,7 @@ import { AdminGuard } from '~/common/guards/admin.guard'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { DEPARTMENTS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
+import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { CreateUserDto } from '~/modules/users/dto/create-user.dto'
 import { UserListItemDto, UserResponseDto } from '~/modules/users/dto/user-response.dto'
 
@@ -30,6 +31,7 @@ export class DepartmentsController {
   constructor(private readonly deptService: DepartmentsService) {}
 
   @Post()
+  @RequirePermissions(PERMISSIONS.departments.create)
   @ApiDocs(DEPARTMENTS_API_CONFIG.create)
   async create(
     @Body() createDepartmentDto: CreateDepartmentDto,
@@ -44,6 +46,7 @@ export class DepartmentsController {
   }
 
   @Get()
+  @RequirePermissions(PERMISSIONS.departments.read)
   @ApiDocs(DEPARTMENTS_API_CONFIG.findAllDepartments)
   async findAllDepartments(
     @Query() query: FindDepartmentsDto,
@@ -64,6 +67,7 @@ export class DepartmentsController {
   }
 
   @Get(':id')
+  @RequirePermissions(PERMISSIONS.departments.read)
   @ApiDocs(DEPARTMENTS_API_CONFIG.findDepartment)
   async findDepartment(@Param('id') id: string): Promise<DepartmentApiResponseDto> {
     const department = await this.deptService.findOne(id)
@@ -76,6 +80,7 @@ export class DepartmentsController {
   }
 
   @Get('organizations/:orgId/tree')
+  @RequirePermissions(PERMISSIONS.departments.read)
   @ApiDocs(DEPARTMENTS_API_CONFIG.getDepartmentTree)
   async getDepartmentTree(@Param('orgId') orgId: string): Promise<DepartmentTreeApiResponseDto> {
     const tree = await this.deptService.getDepartmentTree(orgId)
@@ -87,6 +92,7 @@ export class DepartmentsController {
   }
 
   @Patch(':id')
+  @RequirePermissions(PERMISSIONS.departments.update)
   @ApiDocs(DEPARTMENTS_API_CONFIG.update)
   async update(
     @Param('id') id: string,
@@ -102,6 +108,7 @@ export class DepartmentsController {
   }
 
   @Get(':departmentId/members')
+  @RequirePermissions(PERMISSIONS.departments.read)
   @ApiDocs(DEPARTMENTS_API_CONFIG.getDepartmentMembers)
   async getDepartmentMembers(
     @Param() params: GetDepartmentMembersParamsDto,
@@ -123,6 +130,7 @@ export class DepartmentsController {
   }
 
   @Post(':departmentId/users')
+  @RequirePermissions([PERMISSIONS.departments.update, PERMISSIONS.users.create])
   @ApiDocs(DEPARTMENTS_API_CONFIG.createUserInDepartment)
   async createUserInDepartment(
     @Param() params: GetDepartmentMembersParamsDto,
@@ -145,6 +153,7 @@ export class DepartmentsController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PERMISSIONS.departments.delete)
   @ApiDocs(DEPARTMENTS_API_CONFIG.removeDepartment)
   async removeDepartment(@Param('id') id: string): Promise<DepartmentApiResponseDto> {
     const result = await this.deptService.remove(id)

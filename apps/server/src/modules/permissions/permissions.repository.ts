@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 
 import { type Permission, Prisma } from '#prisma/client'
+import { SYSTEM_PERMISSIONS } from '~/common/constants/permissions'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
@@ -247,7 +248,7 @@ export class PermissionsRepository {
     }
 
     // 超级管理员权限
-    if (userPermissions.includes('admin:*')) {
+    if (userPermissions.includes(SYSTEM_PERMISSIONS.SUPER_ADMIN)) {
       return true
     }
 

@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
+import { SYSTEM_PERMISSIONS } from '~/common/constants/permissions'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { isPublicRoute } from '~/common/utils/guard.util'
 import { ExpressRequest } from '~/types/common'
@@ -60,7 +61,7 @@ export class PermissionsGuard implements CanActivate {
     const { id: userId, organization } = user
 
     try {
-      // 若两个维度均允许超级管理员，则进行一次全局 admin:* 快速放行
+      // 若两个维度均允许超级管理员，则进行一次全局超级管理员权限快速放行
       const allowSuperAdminForPermissions = permissionMetadata
         ? permissionMetadata.options.allowSuperAdmin
         : true
@@ -73,7 +74,7 @@ export class PermissionsGuard implements CanActivate {
         const superAdminResult = await this.permissionsService.checkUserPermission(
           userId,
           organization.id,
-          'admin:*',
+          SYSTEM_PERMISSIONS.SUPER_ADMIN,
         )
 
         if (superAdminResult.hasPermission) {
@@ -145,7 +146,7 @@ export class PermissionsGuard implements CanActivate {
       const superAdminResult = await this.permissionsService.checkUserPermission(
         userId,
         orgId,
-        'admin:*',
+        SYSTEM_PERMISSIONS.SUPER_ADMIN,
       )
 
       if (superAdminResult.hasPermission) {
@@ -180,7 +181,7 @@ export class PermissionsGuard implements CanActivate {
       const superAdminResult = await this.permissionsService.checkUserPermission(
         userId,
         orgId,
-        'admin:*',
+        SYSTEM_PERMISSIONS.SUPER_ADMIN,
       )
 
       if (superAdminResult.hasPermission) {

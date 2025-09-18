@@ -41,8 +41,8 @@ export const vulSeverityConfig = {
   },
 } satisfies EnumConfig<VulnerabilitySeverity, VulSeverityConfig>
 
-export function getVulSeverity(severity: string): VulSeverityConfig {
-  if (severity in vulSeverityConfig) {
+export function getVulSeverity(severity?: string): VulSeverityConfig {
+  if (severity && severity in vulSeverityConfig) {
     return vulSeverityConfig[severity as VulnerabilitySeverity]
   }
 
@@ -97,8 +97,8 @@ export const reportStatusConfig = {
   },
 } satisfies EnumConfig<BugReportStatus, ReportStatusConfig>
 
-export function getReportStatus(status: string): ReportStatusConfig {
-  if (status in reportStatusConfig) {
+export function getReportStatus(status?: string): ReportStatusConfig {
+  if (status && status in reportStatusConfig) {
     return reportStatusConfig[status as BugReportStatus]
   }
 

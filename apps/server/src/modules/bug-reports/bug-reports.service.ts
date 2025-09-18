@@ -8,6 +8,7 @@ import {
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import { BusinessException } from '~/common/exceptions/business.exception'
+import { HtmlSanitizerService } from '~/common/services/html-sanitizer.service'
 import { UploadsService } from '~/modules/uploads/uploads.service'
 
 import { CurrentUserDto } from '../users/dto/base-user.dto'
@@ -33,6 +34,7 @@ export class BugReportsService {
   constructor(
     private readonly bugReportsRepository: BugReportsRepository,
     private readonly uploadsService: UploadsService,
+    private readonly htmlSanitizerService: HtmlSanitizerService,
   ) {}
 
   async create(dto: CreateBugReportDto, currentUser: CurrentUserDto) {
@@ -42,11 +44,16 @@ export class BugReportsService {
       attachments = await this.processAttachments(dto.attachmentIds)
     }
 
+    // 对富文本内容进行消毒处理
+    const sanitizedDescription = dto.description
+      ? this.htmlSanitizerService.sanitizeHtml(dto.description)
+      : undefined
+
     const createData: Prisma.BugReportCreateInput = {
       title: dto.title,
       severity: dto.severity,
       attackMethod: dto.attackMethod,
-      description: dto.description,
+      description: sanitizedDescription,
       discoveredUrls: dto.discoveredUrls ?? [],
       attachments: attachments.length > 0
         ? (attachments as unknown as Prisma.InputJsonValue)
@@ -127,11 +134,16 @@ export class BugReportsService {
       }
     }
 
+    // 对富文本内容进行消毒处理
+    const sanitizedDescription = dto.description !== undefined
+      ? dto.description ? this.htmlSanitizerService.sanitizeHtml(dto.description) : dto.description
+      : undefined
+
     const updateData: Prisma.BugReportUpdateInput = {
       ...dto.title && { title: dto.title },
       ...dto.severity && { severity: dto.severity },
       ...dto.attackMethod !== undefined && { attackMethod: dto.attackMethod },
-      ...dto.description !== undefined && { description: dto.description },
+      ...sanitizedDescription !== undefined && { description: sanitizedDescription },
       ...dto.discoveredUrls !== undefined && { discoveredUrls: dto.discoveredUrls },
       ...attachments !== undefined && {
         attachments: attachments as unknown as Prisma.InputJsonValue,
@@ -230,11 +242,16 @@ export class BugReportsService {
       attachments = await this.processAttachments(dto.attachmentIds)
     }
 
+    // 对富文本内容进行消毒处理
+    const sanitizedDescription = dto.description
+      ? this.htmlSanitizerService.sanitizeHtml(dto.description)
+      : undefined
+
     const createData: Prisma.BugReportCreateInput = {
       title: dto.title ?? '未命名草稿',
       severity: dto.severity ?? VulnerabilitySeverity.INFO,
       attackMethod: dto.attackMethod,
-      description: dto.description,
+      description: sanitizedDescription,
       discoveredUrls: dto.discoveredUrls ?? [],
       attachments: attachments.length > 0
         ? (attachments as unknown as Prisma.InputJsonValue)
@@ -277,11 +294,16 @@ export class BugReportsService {
       }
     }
 
+    // 对富文本内容进行消毒处理
+    const sanitizedDescription = dto.description !== undefined
+      ? dto.description ? this.htmlSanitizerService.sanitizeHtml(dto.description) : dto.description
+      : undefined
+
     const updateData: Prisma.BugReportUpdateInput = {
       ...dto.title && { title: dto.title },
       ...dto.severity && { severity: dto.severity },
       ...dto.attackMethod !== undefined && { attackMethod: dto.attackMethod },
-      ...dto.description !== undefined && { description: dto.description },
+      ...sanitizedDescription !== undefined && { description: sanitizedDescription },
       ...dto.discoveredUrls !== undefined && { discoveredUrls: dto.discoveredUrls },
       ...attachments !== undefined && {
         attachments: attachments as unknown as Prisma.InputJsonValue,
@@ -316,11 +338,16 @@ export class BugReportsService {
       attachments = await this.processAttachments(dto.attachmentIds)
     }
 
+    // 对富文本内容进行消毒处理
+    const sanitizedDescription = dto.description
+      ? this.htmlSanitizerService.sanitizeHtml(dto.description)
+      : undefined
+
     const updateData: Prisma.BugReportUpdateInput = {
       title: dto.title,
       severity: dto.severity,
       attackMethod: dto.attackMethod,
-      description: dto.description,
+      description: sanitizedDescription,
       discoveredUrls: dto.discoveredUrls ?? [],
       attachments: attachments.length > 0
         ? (attachments as unknown as Prisma.InputJsonValue)

@@ -125,7 +125,7 @@ export const PERMISSIONS = {
     read: 'uploads:read',
     delete: 'uploads:delete',
   },
-  // admin 通常通过通配符控制：P('admin').all → 'admin:*'
+  // admin 通常通过通配符控制：P('admin').all → 超级管理员权限
   admin: {},
 } as const satisfies Record<Resource, Partial<Record<BaseAction, PermissionSlug>>>
 
