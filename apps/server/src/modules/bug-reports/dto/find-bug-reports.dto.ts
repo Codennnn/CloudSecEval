@@ -1,11 +1,10 @@
 import { ApiPropertyOptional, IntersectionType } from '@nestjs/swagger'
-import { Expose, Type } from 'class-transformer'
-import { IsBoolean, IsDateString, IsEnum, IsOptional, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsBoolean, IsOptional, ValidateNested } from 'class-validator'
 
 import { BugReportStatus } from '#prisma/client'
 import { BooleanTransform } from '~/common/decorators/boolean-transform.decorator'
 import { EnumOrOperatorsTransform, IsEnumOrOperators } from '~/common/decorators/enum-or-operators.decorator'
-import { IsId } from '~/common/decorators/uuid.decorator'
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import {
@@ -108,48 +107,4 @@ export class FindBugReportsDto extends IntersectionType(
   @IsBoolean({ message: '包含组织信息必须是布尔值' })
   @BooleanTransform()
   includeOrganization?: boolean
-}
-
-/**
- * 漏洞报告统计查询 DTO
- */
-export class BugReportStatsDto {
-  @ApiPropertyOptional({
-    description: '组织ID筛选',
-    example: 'org-uuid',
-  })
-  @IsOptional()
-  @IsId('组织ID')
-  @Expose()
-  readonly orgId?: string
-
-  @ApiPropertyOptional({
-    description: '统计开始时间（ISO日期字符串）',
-    example: '2024-01-01T00:00:00Z',
-  })
-  @IsOptional()
-  @IsDateString({}, { message: '开始时间必须是有效的ISO日期字符串' })
-  @Expose()
-  readonly startDate?: string
-
-  @ApiPropertyOptional({
-    description: '统计结束时间（ISO日期字符串）',
-    example: '2024-12-31T23:59:59Z',
-  })
-  @IsOptional()
-  @IsDateString({}, { message: '结束时间必须是有效的ISO日期字符串' })
-  @Expose()
-  readonly endDate?: string
-
-  @ApiPropertyOptional({
-    description: '统计粒度',
-    enum: ['day', 'week', 'month', 'year'],
-    example: 'day',
-  })
-  @IsOptional()
-  @IsEnum(['day', 'week', 'month', 'year'], {
-    message: '统计粒度必须是有效的枚举值',
-  })
-  @Expose()
-  readonly granularity?: 'day' | 'week' | 'month' | 'year'
 }

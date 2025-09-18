@@ -26,14 +26,19 @@ import {
   ProcessApprovalDto,
 } from './dto/approval.dto'
 import {
+  GetApprovalStatusStatsDto,
+} from './dto/approval-status-stats.dto'
+import {
   CreateBugReportDto,
 } from './dto/create-bug-report.dto'
+import {
+  GetDepartmentReportsStatsDto,
+} from './dto/department-reports-stats.dto'
 import {
   SaveDraftDto,
   SubmitDraftDto,
 } from './dto/draft-bug-report.dto'
 import {
-  BugReportStatsDto,
   FindBugReportsDto,
 } from './dto/find-bug-reports.dto'
 import { GetTimelineDto } from './dto/timeline.dto'
@@ -108,35 +113,6 @@ export class BugReportsController {
       msg: '获取审理活动时间线成功',
       data: result.data,
       pageOptions: result.pagination,
-    })
-  }
-
-  @Get(':id')
-  @ApiDocs(BUG_REPORTS_API_CONFIG.findById)
-  @RequirePermissions(PERMISSIONS.bug_reports.read)
-  async findById(
-    @Param('id') id: string,
-  ) {
-    const bugReport = await this.bugReportsService.findById(id)
-
-    return resp({
-      msg: '获取漏洞报告成功',
-      data: bugReport,
-    })
-  }
-
-  @Put(':id')
-  @ApiDocs(BUG_REPORTS_API_CONFIG.update)
-  @RequirePermissions(PERMISSIONS.bug_reports.update)
-  async update(
-    @Param('id') id: string,
-    @Body() updateBugReportDto: UpdateBugReportDto,
-  ) {
-    const updated = await this.bugReportsService.update(id, updateBugReportDto)
-
-    return resp({
-      msg: '漏洞报告更新成功',
-      data: updated,
     })
   }
 
@@ -250,17 +226,62 @@ export class BugReportsController {
     })
   }
 
-  @Get('stats')
-  @ApiDocs(BUG_REPORTS_API_CONFIG.getStats)
+  @Get('department-stats')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.getDepartmentReportsStats)
   @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
-  async getStats(
-    @Query() statsDto: BugReportStatsDto,
+  async getDepartmentReportsStats(
+    @Query() statsDto: GetDepartmentReportsStatsDto,
+    @CurrentUser() currentUser: CurrentUserDto,
   ) {
-    const stats = await this.bugReportsService.getStats(statsDto)
+    const stats = await this.bugReportsService.getDepartmentReportsStats(statsDto, currentUser)
 
     return resp({
-      msg: '获取统计数据成功',
+      msg: '获取部门报告统计成功',
       data: stats,
+    })
+  }
+
+  @Get('approval-status-stats')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.getApprovalStatusStats)
+  @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
+  async getApprovalStatusStats(
+    @Query() statsDto: GetApprovalStatusStatsDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const stats = await this.bugReportsService.getApprovalStatusStats(statsDto, currentUser)
+
+    return resp({
+      msg: '获取审批状态统计成功',
+      data: stats,
+    })
+  }
+
+  @Get(':id')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.findById)
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
+  async findById(
+    @Param('id') id: string,
+  ) {
+    const bugReport = await this.bugReportsService.findById(id)
+
+    return resp({
+      msg: '获取漏洞报告成功',
+      data: bugReport,
+    })
+  }
+
+  @Put(':id')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.update)
+  @RequirePermissions(PERMISSIONS.bug_reports.update)
+  async update(
+    @Param('id') id: string,
+    @Body() updateBugReportDto: UpdateBugReportDto,
+  ) {
+    const updated = await this.bugReportsService.update(id, updateBugReportDto)
+
+    return resp({
+      msg: '漏洞报告更新成功',
+      data: updated,
     })
   }
 

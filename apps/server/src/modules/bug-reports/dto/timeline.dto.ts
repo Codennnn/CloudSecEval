@@ -1,7 +1,11 @@
-import { ApiProperty, ApiPropertyOptional, IntersectionType } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional, IntersectionType, PickType } from '@nestjs/swagger'
+import { Expose, Type } from 'class-transformer'
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator'
 
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
+import { StandardListResponseDto } from '~/common/dto/standard-response.dto'
+
+import { BaseBugReportDto } from './base-bug-report.dto'
 
 /**
  * 时间线事件类型枚举
@@ -14,6 +18,13 @@ export enum TimelineEventType {
   FORWARD = 'FORWARD', // 转发审批
   RESUBMIT = 'RESUBMIT', // 重新提交
   UPDATE = 'UPDATE', // 更新报告
+}
+
+/**
+ * 时间线中的漏洞报告信息
+ */
+export class TimelineBugReportDto
+  extends PickType(BaseBugReportDto, ['id', 'title', 'severity', 'status']) {
 }
 
 /**
@@ -61,19 +72,21 @@ export class TimelineEventDto {
   @ApiProperty({ description: '事件ID' })
   readonly id!: string
 
-  @ApiProperty({ description: '事件类型', enum: TimelineEventType })
+  @ApiProperty({
+    description: '事件类型',
+    enum: TimelineEventType,
+  })
   readonly eventType!: TimelineEventType
 
   @ApiProperty({ description: '事件发生时间' })
   readonly createdAt!: Date
 
-  @ApiProperty({ description: '漏洞报告信息' })
-  readonly bugReport!: {
-    id: string
-    title: string
-    severity: string
-    status: string
-  }
+  @ApiProperty({
+    description: '漏洞报告信息',
+    type: () => TimelineBugReportDto,
+  })
+  @Type(() => TimelineBugReportDto)
+  readonly bugReport!: TimelineBugReportDto
 
   @ApiProperty({ description: '操作用户信息' })
   readonly user!: {
@@ -83,7 +96,9 @@ export class TimelineEventDto {
     avatarUrl?: string | null
   }
 
-  @ApiPropertyOptional({ description: '审批相关信息（仅审批事件有值）' })
+  @ApiPropertyOptional({
+    description: '审批相关信息（仅审批事件有值）',
+  })
   readonly approvalInfo?: {
     action: string
     comment: string
@@ -103,4 +118,17 @@ export class TimelineEventDto {
     name: string
     code: string
   }
+}
+
+/**
+ * 分页时间线事件响应 DTO
+ */
+export class TimelineEventResponseDto extends StandardListResponseDto<TimelineEventDto> {
+  @ApiProperty({
+    description: '时间线事件列表',
+    type: [TimelineEventDto],
+  })
+  @Type(() => TimelineEventDto)
+  @Expose()
+  readonly data!: TimelineEventDto[]
 }

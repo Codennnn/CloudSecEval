@@ -1,10 +1,13 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { Cell, Pie, PieChart } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 
 import { roleColorMap, TeamRole } from '../lib/mockData'
+
+import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
 
 interface TeamOnlineData {
   name: string
@@ -17,7 +20,12 @@ interface TeamOnlineChartProps {
   totalOnline: number
 }
 
-export function TeamOnlineChart({ data, totalOnline }: TeamOnlineChartProps) {
+export function TeamOnlineChart({ totalOnline }: TeamOnlineChartProps) {
+  const { data } = useQuery({
+    ...departmentsControllerGetDepartmentOnlineStatsOptions(),
+  })
+  const statsData = data?.data.map((d) => ({ name: d.name, value: d.online, fill: roleColorMap[d.role] ?? '#8b5cf6' }))
+
   return (
     <div className="relative min-h-64">
       <ChartContainer
@@ -29,7 +37,7 @@ export function TeamOnlineChart({ data, totalOnline }: TeamOnlineChartProps) {
           <Pie
             cx="50%"
             cy="50%"
-            data={data}
+            data={statsData}
             dataKey="value"
             endAngle={-270}
             innerRadius={48}
@@ -38,7 +46,7 @@ export function TeamOnlineChart({ data, totalOnline }: TeamOnlineChartProps) {
             outerRadius={78}
             startAngle={90}
           >
-            {data.map((entry, index) => (
+            {statsData?.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
           </Pie>

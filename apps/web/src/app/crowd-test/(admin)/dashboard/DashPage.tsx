@@ -17,7 +17,6 @@ import {
   projectInfo,
   roleColorMap,
   teams,
-  workloadData,
 } from './lib/mockData'
 
 // 按队伍汇总在线人数（用于饼图）
@@ -75,13 +74,7 @@ export function DashboardPage() {
           </StatsCardHeader>
           <StatsCardContent>
             <div className="min-h-64">
-              <TeamReportsChart
-                data={workloadData.map((d) => ({
-                  team: d.team,
-                  reports: d.reports,
-                  role: d.role,
-                }))}
-              />
+              <TeamReportsChart />
             </div>
           </StatsCardContent>
         </StatsCard>

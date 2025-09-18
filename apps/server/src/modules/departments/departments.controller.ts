@@ -5,7 +5,9 @@ import { AdminGuard } from '~/common/guards/admin.guard'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { DEPARTMENTS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
+import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
 import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
+import { CurrentUserDto } from '~/modules/users/dto/base-user.dto'
 import { CreateUserDto } from '~/modules/users/dto/create-user.dto'
 import { UserListItemDto, UserResponseDto } from '~/modules/users/dto/user-response.dto'
 
@@ -63,6 +65,18 @@ export class DepartmentsController {
         pageSize: query.pageSize,
       },
       dto: DepartmentListItemDto,
+    })
+  }
+
+  @Get('online-stats')
+  @RequirePermissions(PERMISSIONS.departments.read)
+  @ApiDocs(DEPARTMENTS_API_CONFIG.getDepartmentOnlineStats)
+  async getDepartmentOnlineStats(@CurrentUser() currentUser: CurrentUserDto) {
+    const stats = await this.deptService.getDepartmentOnlineStats(currentUser.organization.id)
+
+    return resp({
+      msg: '获取部门在线人数统计成功',
+      data: stats,
     })
   }
 

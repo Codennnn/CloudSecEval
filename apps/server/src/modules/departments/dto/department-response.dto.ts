@@ -101,3 +101,36 @@ export class DepartmentMembersApiResponseDto extends StandardListResponseDto<Use
   })
   readonly data!: UserListItemDto[]
 }
+
+/**
+ * 部门在线人数统计 DTO
+ */
+export class DepartmentOnlineStatsDto {
+  @ApiProperty({
+    description: '部门名称',
+    example: '技术部',
+  })
+  @Expose()
+  readonly name!: string
+
+  @ApiProperty({
+    description: '在线人数',
+    example: 8,
+  })
+  @Expose()
+  readonly online!: number
+}
+
+/**
+ * 部门在线人数统计 API 响应 DTO
+ */
+export class DepartmentOnlineStatsApiResponseDto extends StandardResponseDto<
+  DepartmentOnlineStatsDto[]
+> {
+  @ApiProperty({
+    description: '部门在线人数统计数据',
+    type: [DepartmentOnlineStatsDto],
+  })
+  @Type(() => DepartmentOnlineStatsDto)
+  declare data: DepartmentOnlineStatsDto[]
+}

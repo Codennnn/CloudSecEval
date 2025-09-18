@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common'
 
-import { Prisma } from '#prisma/client'
+import { BugReportStatus, BugSeverity, Prisma } from '#prisma/client'
+import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
-import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
-import { type GetTimelineDto, type TimelineEventDto, TimelineEventType } from './dto/timeline.dto'
+import type { ApprovalStatusStatsDataDto, ApprovalStatusStatsDto, GetApprovalStatusStatsDto } from './dto/approval-status-stats.dto'
+import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
+import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
+import { type GetTimelineDto, type TimelineBugReportDto, type TimelineEventDto, TimelineEventType } from './dto/timeline.dto'
 import { AdvancedBugReportSearchBuilder } from './utils/advanced-bug-report-search-builder.util'
 
 /**
@@ -16,6 +19,66 @@ interface BugReportFilter {
   orgId?: string
   /** 用户ID - 用于查询特定用户的报告 */
   userId?: string
+}
+
+/**
+ * 漏洞报告基础信息接口
+ */
+interface BugReportBasicInfo {
+  id: string
+  title: string
+  severity: BugSeverity
+  status: BugReportStatus
+}
+
+/**
+ * 用户基础信息接口
+ */
+interface UserBasicInfo {
+  id: string
+  name: string | null
+  email: string
+  avatarUrl?: string | null
+}
+
+/**
+ * 组织基础信息接口
+ */
+interface OrganizationBasicInfo {
+  id: string
+  name: string
+  code: string
+}
+
+/**
+ * 提交事件数据接口
+ */
+interface SubmitEventData {
+  id: string
+  createdAt: Date
+  title: string
+  severity: BugSeverity
+  status: BugReportStatus
+  user: UserBasicInfo
+  organization: OrganizationBasicInfo
+}
+
+/**
+ * 审批事件数据接口
+ */
+interface ApprovalEventData {
+  id: string
+  action: string
+  createdAt: Date
+  approver: UserBasicInfo
+  targetUser?: {
+    id: string
+    name: string | null
+    email: string
+  } | null
+  bugReport: BugReportBasicInfo & {
+    organization: OrganizationBasicInfo
+  }
 }
 
 /**
@@ -146,126 +209,6 @@ export class BugReportsRepository {
   }
 
   /**
-   * 获取漏洞报告统计数据
-   */
-  async getStats(dto: BugReportStatsDto) {
-    const where: Prisma.BugReportWhereInput = {
-      ...dto.orgId && { orgId: dto.orgId },
-      ...(dto.startDate ?? dto.endDate) && {
-        createdAt: {
-          ...dto.startDate && { gte: new Date(dto.startDate) },
-          ...dto.endDate && { lte: new Date(dto.endDate) },
-        },
-      },
-    }
-
-    // 总数统计
-    const total = await this.prisma.bugReport.count({ where })
-
-    // 按等级统计
-    const bySeverity = await this.prisma.bugReport.groupBy({
-      by: ['severity'],
-      where,
-      _count: { id: true },
-    })
-
-    // 按状态统计
-    const byStatus = await this.prisma.bugReport.groupBy({
-      by: ['status'],
-      where,
-      _count: { id: true },
-    })
-
-    // 按时间统计（根据粒度）
-    const timeGrouping = this.getTimeGrouping(dto.granularity ?? 'day')
-    const byTime = await this.prisma.$queryRaw<{ date: string, count: bigint }[]>`
-      SELECT 
-        ${timeGrouping} as date,
-        COUNT(*)::integer as count
-      FROM bug_reports 
-      WHERE 
-        ${dto.orgId ? Prisma.sql`org_id = ${dto.orgId} AND` : Prisma.empty}
-        ${dto.startDate ? Prisma.sql`created_at >= ${new Date(dto.startDate)} AND` : Prisma.empty}
-        ${dto.endDate ? Prisma.sql`created_at <= ${new Date(dto.endDate)} AND` : Prisma.empty}
-        true
-      GROUP BY ${timeGrouping}
-      ORDER BY date
-    `
-
-    // 最活跃的报告者
-    const topReporters = await this.prisma.user.findMany({
-      where: {
-        bugReports: {
-          some: where,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatarUrl: true,
-        _count: {
-          select: { bugReports: { where } },
-        },
-      },
-      orderBy: {
-        bugReports: { _count: 'desc' },
-      },
-      take: 10,
-    })
-
-    // 最活跃的审核者
-    const topReviewers = await this.prisma.user.findMany({
-      where: {
-        reviewedBugReports: {
-          some: where,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatarUrl: true,
-        _count: {
-          select: { reviewedBugReports: { where } },
-        },
-      },
-      orderBy: {
-        reviewedBugReports: { _count: 'desc' },
-      },
-      take: 10,
-    })
-
-    return {
-      total,
-      bySeverity: Object.fromEntries(
-        bySeverity.map((item) => [item.severity, item._count.id]),
-      ),
-      byStatus: Object.fromEntries(
-        byStatus.map((item) => [item.status, item._count.id]),
-      ),
-      byTime: byTime.map((item) => ({
-        date: item.date,
-        count: Number(item.count),
-      })),
-      topReporters: topReporters.map((user) => ({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatarUrl: user.avatarUrl,
-        reportCount: user._count.bugReports,
-      })),
-      topReviewers: topReviewers.map((user) => ({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatarUrl: user.avatarUrl,
-        reviewCount: user._count.reviewedBugReports,
-      })),
-    }
-  }
-
-  /**
    * 获取关联查询选项
    */
   private getIncludeOptions(
@@ -359,28 +302,6 @@ export class BugReportsRepository {
           },
         },
       },
-    }
-  }
-
-  /**
-   * 获取时间分组SQL片段
-   */
-  private getTimeGrouping(granularity: string): Prisma.Sql {
-    switch (granularity) {
-      case 'day':
-        return Prisma.sql`DATE(created_at)`
-
-      case 'week':
-        return Prisma.sql`DATE_TRUNC('week', created_at)::date`
-
-      case 'month':
-        return Prisma.sql`DATE_TRUNC('month', created_at)::date`
-
-      case 'year':
-        return Prisma.sql`DATE_TRUNC('year', created_at)::date`
-
-      default:
-        return Prisma.sql`DATE(created_at)`
     }
   }
 
@@ -561,41 +482,8 @@ export class BugReportsRepository {
     const [submits, approvals] = await Promise.all([submitEvents, approvalEvents])
 
     const allEvents: TimelineEventDto[] = [
-      // 提交事件
-      ...submits.map((report) => ({
-        id: `submit-${report.id}`,
-        eventType: TimelineEventType.SUBMIT,
-        createdAt: report.createdAt,
-        bugReport: {
-          id: report.id,
-          title: report.title,
-          severity: report.severity,
-          status: report.status,
-        },
-        user: report.user,
-        organization: report.organization,
-        description: '提交了漏洞报告',
-      })),
-      // 审批事件
-      ...approvals.map((approval) => ({
-        id: `approval-${approval.id}`,
-        eventType: this.mapActionToEventType(approval.action),
-        createdAt: approval.createdAt,
-        bugReport: {
-          id: approval.bugReport.id,
-          title: approval.bugReport.title,
-          severity: approval.bugReport.severity,
-          status: approval.bugReport.status,
-        },
-        user: approval.approver,
-        organization: approval.bugReport.organization,
-        approvalInfo: {
-          action: approval.action,
-          // comment 字段已在时间线查询中排除以节省带宽
-          ...approval.targetUser && { targetUser: approval.targetUser },
-        },
-        description: this.getEventDescription(approval.action),
-      })),
+      ...this.mapSubmitEvents(submits),
+      ...this.mapApprovalEvents(approvals),
     ]
 
     // 按时间倒序排序
@@ -662,5 +550,244 @@ export class BugReportsRepository {
     }
 
     return descriptions[action] || '处理了漏洞报告'
+  }
+
+  /**
+   * 获取组织下各部门的漏洞报告统计
+   */
+  async getDepartmentReportsStats(
+    dto: GetDepartmentReportsStatsDto,
+    orgId: string,
+  ): Promise<DepartmentReportsStatsDataDto> {
+    // 构建时间和状态过滤条件
+    const where: Prisma.BugReportWhereInput = {
+      orgId,
+      // 排除草稿状态的报告
+      status: {
+        not: BugReportStatus.DRAFT,
+        ...dto.status && { equals: dto.status as BugReportStatus },
+      },
+      // 只统计有部门的用户报告
+      user: {
+        department: {
+          isNot: null,
+        },
+      },
+      ...(dto.startDate ?? dto.endDate) && {
+        createdAt: {
+          ...dto.startDate && { gte: new Date(dto.startDate) },
+          ...dto.endDate && { lte: new Date(dto.endDate) },
+        },
+      },
+    }
+
+    // 统计总报告数
+    const totalReports = await this.prisma.bugReport.count({ where })
+
+    // 按部门和状态统计报告数量
+    const departmentStatusStats = await this.prisma.bugReport.groupBy({
+      by: ['userId', 'status'],
+      where,
+      _count: { id: true },
+    })
+
+    // 获取用户部门信息
+    const userIds = departmentStatusStats.map((item) => item.userId)
+    const usersWithDepartments = await this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: {
+        id: true,
+        department: {
+          select: {
+            id: true,
+            name: true,
+            parent: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    // 按部门分组统计
+    const departmentCountMap = new Map<string, {
+      departmentId: string
+      departmentName: string
+      parentDepartmentName?: string
+      totalCount: number
+      statusCounts: Map<string, number>
+    }>()
+
+    for (const stat of departmentStatusStats) {
+      const user = usersWithDepartments.find((u) => u.id === stat.userId)
+
+      // 由于已经在where条件中过滤，这里应该都有部门
+      if (!user?.department) {
+        continue
+      }
+
+      const deptKey = user.department.id
+      const existing = departmentCountMap.get(deptKey)
+
+      if (existing) {
+        existing.totalCount += stat._count.id
+        const currentStatusCount = existing.statusCounts.get(stat.status) ?? 0
+        existing.statusCounts.set(stat.status, currentStatusCount + stat._count.id)
+      }
+      else {
+        const statusCounts = new Map<string, number>()
+        statusCounts.set(stat.status, stat._count.id)
+        departmentCountMap.set(deptKey, {
+          departmentId: user.department.id,
+          departmentName: user.department.name,
+          parentDepartmentName: user.department.parent?.name,
+          totalCount: stat._count.id,
+          statusCounts,
+        })
+      }
+    }
+
+    // 转换为数组并排序
+    const departmentStatsArray = Array.from(departmentCountMap.values()).map((item) => ({
+      department: {
+        id: item.departmentId,
+        name: item.departmentName,
+        parentName: item.parentDepartmentName,
+        path: item.parentDepartmentName
+          ? `${item.parentDepartmentName}/${item.departmentName}`
+          : item.departmentName,
+      },
+      reportCount: item.totalCount,
+      statusCounts: Object.fromEntries(
+        Array.from(item.statusCounts.entries()).map(([status, count]) => [
+          status,
+          { status: status as BugReportStatus, count },
+        ]),
+      ) as Record<BugReportStatus, { status: BugReportStatus, count: number }>,
+    })).sort((a, b) => b.reportCount - a.reportCount)
+
+    return {
+      totalReports,
+      totalDepartments: departmentStatsArray.length,
+      departmentStats: departmentStatsArray,
+    }
+  }
+
+  /**
+   * 获取组织下各审批状态的漏洞报告统计
+   */
+  async getApprovalStatusStats(
+    dto: GetApprovalStatusStatsDto,
+    orgId: string,
+  ): Promise<ApprovalStatusStatsDataDto> {
+    // 构建查询条件
+    const where: Prisma.BugReportWhereInput = {
+      orgId,
+      ...dto.severity && { severity: dto.severity },
+      ...(dto.startDate ?? dto.endDate) && {
+        createdAt: {
+          ...dto.startDate && { gte: new Date(dto.startDate) },
+          ...dto.endDate && { lte: new Date(dto.endDate) },
+        },
+      },
+    }
+
+    // 统计总报告数
+    const totalReports = await this.prisma.bugReport.count({ where })
+
+    // 按状态分组统计
+    const statusGroups = await this.prisma.bugReport.groupBy({
+      by: ['status'],
+      where,
+      _count: { id: true },
+    })
+
+    // 构建状态统计映射
+    const statusStatsMap = new Map<BugReportStatus, ApprovalStatusStatsDto>()
+
+    // 添加有数据的状态
+    for (const group of statusGroups) {
+      statusStatsMap.set(group.status, {
+        status: group.status,
+        count: group._count.id,
+        percentage: totalReports > 0
+          ? Math.round(group._count.id / totalReports * 100 * 100) / 100
+          : 0,
+      })
+    }
+
+    // 确保所有状态都有数据（即使数量为0）
+    const allStatuses = Object.values(BugReportStatus)
+
+    for (const status of allStatuses) {
+      if (!statusStatsMap.has(status)) {
+        statusStatsMap.set(status, {
+          status,
+          count: 0,
+          percentage: 0,
+        })
+      }
+    }
+
+    // 转换为 Record 对象
+    const statusStats = Object.fromEntries(statusStatsMap.entries()) as Record<
+      BugReportStatus,
+      ApprovalStatusStatsDto
+    >
+
+    return {
+      totalReports,
+      statusStats,
+    }
+  }
+
+  /**
+   * 映射提交事件
+   */
+  private mapSubmitEvents(submits: SubmitEventData[]): TimelineEventDto[] {
+    return submits.map((report) => ({
+      id: `submit-${report.id}`,
+      eventType: TimelineEventType.SUBMIT,
+      createdAt: report.createdAt,
+      bugReport: this.createBugReportInfo(report),
+      user: report.user,
+      organization: report.organization,
+      description: '提交了漏洞报告',
+    }))
+  }
+
+  /**
+   * 映射审批事件
+   */
+  private mapApprovalEvents(approvals: ApprovalEventData[]): TimelineEventDto[] {
+    return approvals.map((approval) => ({
+      id: `approval-${approval.id}`,
+      eventType: this.mapActionToEventType(approval.action),
+      createdAt: approval.createdAt,
+      bugReport: this.createBugReportInfo(approval.bugReport),
+      user: approval.approver,
+      organization: approval.bugReport.organization,
+      approvalInfo: {
+        action: approval.action,
+        comment: '', // comment 字段已在时间线查询中排除以节省带宽
+        ...approval.targetUser && { targetUser: approval.targetUser },
+      },
+      description: this.getEventDescription(approval.action),
+    }))
+  }
+
+  /**
+   * 创建漏洞报告基础信息
+   */
+  private createBugReportInfo(report: BugReportBasicInfo): TimelineBugReportDto {
+    return {
+      id: report.id,
+      title: report.title,
+      severity: report.severity as unknown as VulnerabilitySeverity,
+      status: report.status,
+    }
   }
 }

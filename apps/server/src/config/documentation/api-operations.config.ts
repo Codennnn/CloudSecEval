@@ -1,9 +1,11 @@
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 import { DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
-import { BugReportResponseDto, BugReportStatsResponseDto, PaginatedBugReportsResponseDto } from '~/modules/bug-reports/dto/bug-report-response.dto'
-import { TimelineEventDto } from '~/modules/bug-reports/dto/timeline.dto'
-import { DepartmentApiResponseDto, DepartmentListApiResponseDto, DepartmentMembersApiResponseDto, DepartmentTreeApiResponseDto } from '~/modules/departments/dto/department-response.dto'
+import { ApprovalStatusStatsResponseDto } from '~/modules/bug-reports/dto/approval-status-stats.dto'
+import { BugReportResponseDto, PaginatedBugReportsResponseDto } from '~/modules/bug-reports/dto/bug-report-response.dto'
+import { DepartmentReportsStatsResponseDto } from '~/modules/bug-reports/dto/department-reports-stats.dto'
+import { TimelineEventResponseDto } from '~/modules/bug-reports/dto/timeline.dto'
+import { DepartmentApiResponseDto, DepartmentListApiResponseDto, DepartmentMembersApiResponseDto, DepartmentOnlineStatsApiResponseDto, DepartmentTreeApiResponseDto } from '~/modules/departments/dto/department-response.dto'
 import { AdminCheckLicenseApiResponseDto, CheckLicenseApiResponseDto, CreateLicenseApiResponseDto, DeleteLicenseApiResponseDto, LicenseDetailApiResponseDto, LicenseListApiResponseDto, LogAccessApiResponseDto, SendRemindersResponseDataDto, ToggleLockResponseDataDto, UpdateLicenseApiResponseDto } from '~/modules/license/dto/license-response.dto'
 import { OrganizationApiResponseDto, OrganizationListApiResponseDto } from '~/modules/organizations/dto/organization-response.dto'
 import { PermissionApiResponseDto, PermissionListApiResponseDto } from '~/modules/permissions/dto/permission-response.dto'
@@ -599,6 +601,16 @@ export const DEPARTMENTS_API_CONFIG = {
     requireAdmin: true,
   },
 
+  getDepartmentOnlineStats: {
+    summary: '获取部门在线人数统计',
+    description: '获取各部门的在线人数统计数据，包括部门名称、角色类型、在线人数和任务数量（仅限管理员）',
+    successResponse: createSuccessResponse({
+      description: '获取部门在线人数统计成功',
+      type: DepartmentOnlineStatsApiResponseDto,
+    }),
+    requireAdmin: true,
+  },
+
   removeDepartment: {
     summary: '删除部门',
     description: '删除部门（仅限管理员）',
@@ -945,16 +957,6 @@ export const BUG_REPORTS_API_CONFIG = {
     requireAdmin: false,
   },
 
-  getStats: {
-    summary: '获取漏洞报告统计数据',
-    description: '获取漏洞报告的统计信息，按等级、状态、时间等维度分析',
-    successResponse: createSuccessResponse({
-      description: '获取统计数据成功',
-      type: BugReportStatsResponseDto,
-    }),
-    requireAdmin: false,
-  },
-
   findById: {
     summary: '获取漏洞报告详情',
     description: '根据ID获取漏洞报告的详细信息',
@@ -1069,7 +1071,27 @@ export const BUG_REPORTS_API_CONFIG = {
     description: '获取漏洞报告的审理活动事件时间线数据列表，包括提交、审核、驳回等操作',
     successResponse: createSuccessResponse({
       description: '获取时间线成功',
-      type: [TimelineEventDto],
+      type: TimelineEventResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  getDepartmentReportsStats: {
+    summary: '获取部门报告统计',
+    description: '根据组织获取该组织下各部门成员提交的漏洞报告统计数据，用于图表展示',
+    successResponse: createSuccessResponse({
+      description: '获取部门报告统计成功',
+      type: DepartmentReportsStatsResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  getApprovalStatusStats: {
+    summary: '获取审批状态统计',
+    description: '获取组织内各审批状态的漏洞报告统计数据，包括各状态数量和占比',
+    successResponse: createSuccessResponse({
+      description: '获取审批状态统计成功',
+      type: ApprovalStatusStatsResponseDto,
     }),
     requireAdmin: false,
   },

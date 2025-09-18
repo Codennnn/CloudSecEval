@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { CheckCircleIcon, ClockIcon, FileTextIcon, RefreshCwIcon, SendIcon, Share2Icon, XCircleIcon } from 'lucide-react'
 
+import { getVulSeverity, VulnerabilitySeverity, vulSeverityConfig } from '~/app/crowd-test/constants'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
@@ -8,25 +9,18 @@ import { bugReportsControllerGetTimelineInfiniteOptions } from '~/lib/api/genera
 import type { TimelineEventDto } from '~/lib/api/generated/types.gen'
 import { DateFormat, formatDate } from '~/utils/date'
 
-type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO' | undefined
+type Severity = VulnerabilitySeverity | undefined
 type EventType = TimelineEventDto['eventType']
 
+const pageSize = 10
+
 interface ActivityTimelineProps {
-  /** 每页数据条数 */
-  pageSize?: number
   /** 事件类型筛选 */
   eventType?: 'SUBMIT' | 'APPROVE' | 'REJECT' | 'REQUEST_INFO' | 'FORWARD' | 'RESUBMIT' | 'UPDATE'
 }
 
-/**
- * 时间线组件（接入真实接口）
- * - 内部管理数据获取和分页
- * - 支持加载更多数据
- * - 根据 eventType 显示图标与状态颜色
- * - 根据 bugReport.severity 显示风险等级 Badge
- */
 export function ActivityTimeline(props: ActivityTimelineProps) {
-  const { pageSize = 10, eventType } = props
+  const { eventType } = props
 
   // 使用无限查询获取时间线数据
   const {
@@ -45,7 +39,7 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
       // 如果当前页数据条数小于页面大小，说明没有更多数据了
-      if (!lastPage || lastPage.length < pageSize) {
+      if (lastPage.data.length < pageSize) {
         return undefined
       }
 
@@ -53,8 +47,9 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
     },
   })
 
-  // 扁平化所有页面的数据
-  const events = data?.pages.flatMap((page) => page ?? []) ?? []
+  const events = typeof data === 'object' && 'pages' in data
+    ? data.pages.flatMap((page) => page.data)
+    : []
 
   // 时间线项目骨架组件
   const TimelineItemSkeleton = () => (
@@ -114,35 +109,30 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
   }
 
   const getSeverityBadgeClass = (severity: Severity) => {
-    let badgeClass = 'border-gray-200 bg-gray-50 text-gray-700'
-
-    switch (severity) {
-      case 'CRITICAL':
-        badgeClass = 'border-red-300 bg-red-50 text-red-700'
-        break
-
-      case 'HIGH':
-        badgeClass = 'border-orange-300 bg-orange-50 text-orange-700'
-        break
-
-      case 'MEDIUM':
-        badgeClass = 'border-yellow-300 bg-yellow-50 text-yellow-700'
-        break
-
-      case 'LOW':
-        badgeClass = 'border-emerald-300 bg-emerald-50 text-emerald-700'
-        break
-
-      case 'INFO':
-        badgeClass = 'border-blue-300 bg-blue-50 text-blue-700'
-        break
-
-      default:
-        badgeClass = 'border-gray-200 bg-gray-50 text-gray-700'
-        break
+    if (!severity || !(severity in vulSeverityConfig)) {
+      return 'border-gray-200 bg-gray-50 text-gray-700'
     }
 
-    return badgeClass
+    // 根据严重级别返回对应的 badge 样式
+    switch (severity) {
+      case VulnerabilitySeverity.CRITICAL:
+        return 'border-purple-300 bg-purple-50 text-purple-700'
+
+      case VulnerabilitySeverity.HIGH:
+        return 'border-red-300 bg-red-50 text-red-700'
+
+      case VulnerabilitySeverity.MEDIUM:
+        return 'border-orange-300 bg-orange-50 text-orange-700'
+
+      case VulnerabilitySeverity.LOW:
+        return 'border-amber-300 bg-amber-50 text-amber-700'
+
+      case VulnerabilitySeverity.INFO:
+        return 'border-gray-200 bg-gray-50 text-gray-700'
+
+      default:
+        return 'border-gray-200 bg-gray-50 text-gray-700'
+    }
   }
 
   const getActionText = (eventType: EventType) => {
@@ -206,7 +196,6 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
     return icon
   }
 
-  // 处理加载更多
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
       void fetchNextPage()
@@ -217,92 +206,90 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
     <div className="relative">
       <div className="absolute left-[8px] top-0 bottom-0 w-px bg-border" />
 
-      {/* 初始加载状态 */}
-      {isLoading && events.length === 0 && (
-        <ol className="space-y-4">
-          {Array.from({ length: 4 }, (_, idx) => (
-            <TimelineItemSkeleton key={idx} />
-          ))}
-        </ol>
-      )}
+      {events.length > 0
+        ? (
+            <>
+              <ul className="space-y-4">
+                {events.map((evt) => {
+                  const id = evt.id
+                  const eventType = evt.eventType
+                  const createdAt = evt.createdAt
+                  const bugReport = evt.bugReport
+                  const user = evt.user as { name?: string, email?: string } | undefined
 
-      {/* 无数据状态 */}
-      {!isLoading && events.length === 0 && (
-        <div className="text-sm text-muted-foreground">暂无事件</div>
-      )}
+                  const actionText = getActionText(eventType)
+                  const statusColor = getStatusTextColor(eventType)
+                  const severityConfig = getVulSeverity(bugReport.severity)
+                  const severityClass = getSeverityBadgeClass(bugReport.severity as Severity)
+                  const displayUser = user?.name ?? user?.email ?? '未知用户'
+                  const displayTime = formatDate(createdAt, DateFormat.HH_MM)
 
-      {/* 事件列表 */}
-      {events.length > 0 && (
-        <>
-          <ol className="space-y-4">
-            {events.map((evt: TimelineEventDto) => {
-              const id = evt.id
-              const eventType = evt.eventType
-              const createdAt = evt.createdAt
-              const bugReport = evt.bugReport as { title?: string, severity?: Severity } | undefined
-              const user = evt.user as { name?: string, email?: string } | undefined
+                  return (
+                    <li key={id} className="relative pl-8">
+                      <span className="absolute left-0 top-0 flex items-center justify-center rounded-full bg-background">
+                        {renderIcon(eventType, 16)}
+                      </span>
 
-              const actionText = getActionText(eventType)
-              const statusColor = getStatusTextColor(eventType)
-              const severityClass = getSeverityBadgeClass(bugReport?.severity)
-              const displayUser = user?.name ?? user?.email ?? '未知用户'
-              const displayTime = formatDate(createdAt, DateFormat.HH_MM)
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="text-sm flex items-center gap-1 overflow-hidden">
+                          <span className="font-medium shrink-0">{displayUser}</span>
+                          <span className="text-muted-foreground shrink-0">{actionText}</span>
+                          <span className="font-medium truncate flex-1 min-w-0">
+                            {bugReport.title}
+                          </span>
+                        </div>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {displayTime}
+                        </span>
+                      </div>
 
-              return (
-                <li key={id} className="relative pl-8">
-                  <span className="absolute left-0 top-0 flex items-center justify-center rounded-full bg-background">
-                    {renderIcon(eventType, 16)}
-                  </span>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge className={severityClass} variant="outline">
+                          {severityConfig.label}
+                        </Badge>
 
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="text-sm flex items-center gap-1 overflow-hidden">
-                      <span className="font-medium shrink-0">{displayUser}</span>
-                      <span className="text-muted-foreground shrink-0">{actionText}</span>
-                      <span className="font-medium truncate flex-1 min-w-0">{bugReport?.title ?? '（无标题）'}</span>
-                    </div>
-                    <span className="shrink-0 text-xs text-muted-foreground">
-                      {displayTime}
-                    </span>
-                  </div>
+                        <span className={`text-xs ${statusColor}`}>
+                          {actionText}
+                        </span>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
 
-                  <div className="mt-1 flex items-center gap-2">
-                    <Badge className={severityClass} variant="outline">
-                      {bugReport?.severity ?? 'UNKNOWN'}
-                    </Badge>
+              {/* 加载更多按钮 */}
+              {hasNextPage && (
+                <div className="mt-6 flex justify-center">
+                  <Button
+                    disabled={isFetchingNextPage}
+                    size="sm"
+                    variant="outline"
+                    onClick={handleLoadMore}
+                  >
+                    {isFetchingNextPage ? '加载中...' : '加载更多'}
+                  </Button>
+                </div>
+              )}
 
-                    <span className={`text-xs ${statusColor}`}>
-                      {actionText}
-                    </span>
-                  </div>
-                </li>
-              )
-            })}
-          </ol>
+              {isFetchingNextPage && (
+                <ol className="mt-4 space-y-4">
+                  {Array.from({ length: 2 }, (_, idx) => (
+                    <TimelineItemSkeleton key={`loading-${idx}`} />
+                  ))}
+                </ol>
+              )}
+            </>
+          )
+        : isLoading
+          ? (
+              <ol className="space-y-4">
+                {Array.from({ length: 4 }, (_, idx) => (
+                  <TimelineItemSkeleton key={idx} />
+                ))}
 
-          {/* 加载更多按钮 */}
-          {hasNextPage && (
-            <div className="mt-6 flex justify-center">
-              <Button
-                disabled={isFetchingNextPage}
-                size="sm"
-                variant="outline"
-                onClick={handleLoadMore}
-              >
-                {isFetchingNextPage ? '加载中...' : '加载更多'}
-              </Button>
-            </div>
-          )}
-
-          {/* 加载中状态（加载更多时） */}
-          {isFetchingNextPage && (
-            <ol className="mt-4 space-y-4">
-              {Array.from({ length: 2 }, (_, idx) => (
-                <TimelineItemSkeleton key={`loading-${idx}`} />
-              ))}
-            </ol>
-          )}
-        </>
-      )}
+              </ol>
+            )
+          : <div className="text-sm text-muted-foreground">暂无事件</div> }
     </div>
   )
 }

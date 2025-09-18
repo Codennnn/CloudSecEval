@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 
-import type { Department, Prisma } from '#prisma/client'
+import type { Department, Organization, Prisma } from '#prisma/client'
 import { CreateUserDto } from '~/modules/users/dto/create-user.dto'
 import { UsersService } from '~/modules/users/users.service'
 
@@ -29,7 +29,7 @@ export class DepartmentsService {
     return this.deptRepository.findById(id)
   }
 
-  getDepartmentTree(orgId: Department['orgId']) {
+  getDepartmentTree(orgId: Organization['id']) {
     return this.deptRepository.getDepartmentTree(orgId)
   }
 
@@ -87,5 +87,25 @@ export class DepartmentsService {
    */
   async createUserInDepartment(createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto)
+  }
+
+  /**
+   * 获取部门在线人数统计（按组织隔离）
+   */
+  async getDepartmentOnlineStats(orgId: Organization['id']) {
+    // 获取指定组织下的所有活跃部门及其用户数量
+    const departments = await this.deptRepository.findWithAdvancedSearch({
+      orgId, // 添加组织ID筛选
+      isActive: true,
+      page: 1,
+      pageSize: 100, // 获取所有部门
+    })
+
+    return departments.departments.map((dept) => {
+      return {
+        name: dept.name,
+        online: dept._count.users, // 使用实际用户数量作为在线人数
+      }
+    })
   }
 }

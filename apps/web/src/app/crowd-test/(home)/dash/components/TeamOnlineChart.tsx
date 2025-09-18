@@ -15,7 +15,7 @@ export function TeamOnlineChart() {
     <div className="relative min-h-64">
       <ChartContainer
         config={{
-          online: { label: '在线', color: '#22d3ee' },
+          // online: { label: '在线', color: '#22d3ee' },
         }}
       >
         <PieChart>

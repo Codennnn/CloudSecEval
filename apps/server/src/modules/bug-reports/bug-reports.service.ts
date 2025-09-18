@@ -14,10 +14,12 @@ import { UploadsService } from '~/modules/uploads/uploads.service'
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsRepository } from './bug-reports.repository'
 import { ApprovalAction, ProcessApprovalDto } from './dto/approval.dto'
+import type { ApprovalStatusStatsDataDto, GetApprovalStatusStatsDto } from './dto/approval-status-stats.dto'
 import { AttachmentDto } from './dto/base-bug-report.dto'
 import type { CreateBugReportDto } from './dto/create-bug-report.dto'
+import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
-import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
+import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
 import type { GetTimelineDto } from './dto/timeline.dto'
 import type {
   ResubmitBugReportDto,
@@ -362,15 +364,6 @@ export class BugReportsService {
   }
 
   /**
-   * 获取漏洞报告统计数据
-   */
-  async getStats(dto: BugReportStatsDto) {
-    const stats = await this.bugReportsRepository.getStats(dto)
-
-    return stats
-  }
-
-  /**
    * 获取报告审理活动时间线
    */
   async getTimeline(dto: GetTimelineDto, currentUser: CurrentUserDto) {
@@ -664,5 +657,35 @@ export class BugReportsService {
     const highRiskSeverities = ['HIGH', 'CRITICAL']
 
     return highRiskSeverities.includes(bugReport.severity)
+  }
+
+  /**
+   * 获取组织下各部门的漏洞报告统计
+   */
+  async getDepartmentReportsStats(
+    dto: GetDepartmentReportsStatsDto,
+    currentUser: CurrentUserDto,
+  ): Promise<DepartmentReportsStatsDataDto> {
+    const stats = await this.bugReportsRepository.getDepartmentReportsStats(
+      dto,
+      currentUser.organization.id,
+    )
+
+    return stats
+  }
+
+  /**
+   * 获取组织下各审批状态的漏洞报告统计
+   */
+  async getApprovalStatusStats(
+    dto: GetApprovalStatusStatsDto,
+    currentUser: CurrentUserDto,
+  ): Promise<ApprovalStatusStatsDataDto> {
+    const stats = await this.bugReportsRepository.getApprovalStatusStats(
+      dto,
+      currentUser.organization.id,
+    )
+
+    return stats
   }
 }
