@@ -14,7 +14,7 @@ import { UploadsService } from '~/modules/uploads/uploads.service'
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsRepository } from './bug-reports.repository'
 import { ApprovalAction, ProcessApprovalDto } from './dto/approval.dto'
-import type { ApprovalStatusStatsDataDto, GetApprovalStatusStatsDto } from './dto/approval-status-stats.dto'
+import type { GetApprovalStatusStatsDto } from './dto/approval-status-stats.dto'
 import { AttachmentDto } from './dto/base-bug-report.dto'
 import type { CreateBugReportDto } from './dto/create-bug-report.dto'
 import type { DailyReportsStatsDataDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
@@ -681,7 +681,7 @@ export class BugReportsService {
   async getApprovalStatusStats(
     dto: GetApprovalStatusStatsDto,
     currentUser: CurrentUserDto,
-  ): Promise<ApprovalStatusStatsDataDto> {
+  ) {
     const stats = await this.bugReportsRepository.getApprovalStatusStats(
       dto,
       currentUser.organization.id,

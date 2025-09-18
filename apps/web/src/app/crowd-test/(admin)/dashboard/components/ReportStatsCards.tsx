@@ -3,9 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { Card } from '~/components/ui/card'
+import { Skeleton } from '~/components/ui/skeleton'
 import { bugReportsControllerGetApprovalStatusStatsOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
-
-import { Skeleton } from '../../../../../components/ui/skeleton'
 
 import { BugReportStatus, getReportStatus } from '~crowd-test/constants'
 
@@ -81,7 +80,7 @@ export function ReportStatsCards() {
       {cardsConfig.map((c) => (
         <StatCard
           key={c.key}
-          isLoading={!isLoading}
+          isLoading={isLoading}
           type={c.key}
           value={c.count}
         />

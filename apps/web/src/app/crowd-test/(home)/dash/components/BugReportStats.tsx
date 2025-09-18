@@ -1,6 +1,11 @@
 'use client'
 
+import { get } from 'lodash-es'
+
 import { DashDecoratorImg } from './DashDecoratorImg'
+
+import type { ApprovalStatusStatsDataDto } from '~api/types.gen'
+import { BugReportStatus } from '~crowd-test/constants'
 
 interface StatItemProps {
   title: string
@@ -8,33 +13,6 @@ interface StatItemProps {
   icon: string
   type: 'pending' | 'approved' | 'rejected' | 'archived'
 }
-
-const statItems = [
-  {
-    title: '待审核',
-    value: 10,
-    icon: '/assets/crowd-test/dash-report-stat-pending.png',
-    type: 'pending' as const,
-  },
-  {
-    title: '已通过',
-    value: 20,
-    icon: '/assets/crowd-test/dash-report-stat-approved.png',
-    type: 'approved' as const,
-  },
-  {
-    title: '已拒绝',
-    value: 30,
-    icon: '/assets/crowd-test/dash-report-stat-rejected.png',
-    type: 'rejected' as const,
-  },
-  {
-    title: '已归档',
-    value: 40,
-    icon: '/assets/crowd-test/dash-report-stat-archived.png',
-    type: 'archived' as const,
-  },
-]
 
 function StatItem(props: StatItemProps) {
   const { title, value, icon } = props
@@ -56,7 +34,40 @@ function StatItem(props: StatItemProps) {
   )
 }
 
-export function BugReportStats() {
+interface BugReportStatsProps {
+  data?: ApprovalStatusStatsDataDto['statusStats']
+}
+
+export function BugReportStats(props: BugReportStatsProps) {
+  const { data } = props
+
+  const statItems = [
+    {
+      title: '待审核',
+      value: get(data, `${BugReportStatus.PENDING}.count`, 0) as number,
+      icon: '/assets/crowd-test/dash-report-stat-pending.png',
+      type: 'pending' as const,
+    },
+    {
+      title: '已通过',
+      value: get(data, `${BugReportStatus.APPROVED}.count`, 0) as number,
+      icon: '/assets/crowd-test/dash-report-stat-approved.png',
+      type: 'approved' as const,
+    },
+    {
+      title: '已拒绝',
+      value: get(data, `${BugReportStatus.REJECTED}.count`, 0) as number,
+      icon: '/assets/crowd-test/dash-report-stat-rejected.png',
+      type: 'rejected' as const,
+    },
+    {
+      title: '已归档',
+      value: get(data, `${BugReportStatus.CLOSED}.count`, 0) as number,
+      icon: '/assets/crowd-test/dash-report-stat-archived.png',
+      type: 'archived' as const,
+    },
+  ]
+
   return (
     <div className="grid grid-cols-2 gap-4">
       {statItems.map((item) => (

@@ -22,10 +22,6 @@ export function BugStatsCards() {
 
     const { statusStats, totalReports } = statsData
 
-    // 计算待处理总数（待审核 + 审核中）
-    const pendingTotal = (statusStats[BugReportStatus.PENDING].count ?? 0)
-      + (statusStats[BugReportStatus.IN_REVIEW].count ?? 0)
-
     // 计算已裁决总数（通过 + 驳回）
     const decidedTotal = (statusStats[BugReportStatus.APPROVED].count ?? 0)
       + (statusStats[BugReportStatus.REJECTED].count ?? 0)

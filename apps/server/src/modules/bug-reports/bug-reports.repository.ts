@@ -5,7 +5,7 @@ import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
-import type { ApprovalStatusStatsDataDto, ApprovalStatusStatsDto, GetApprovalStatusStatsDto } from './dto/approval-status-stats.dto'
+import type { ApprovalStatusStatsDataDto, ApprovalStatusStatsDto, GetApprovalStatusStatsDto, SeverityStatsDto } from './dto/approval-status-stats.dto'
 import type { DailyReportsStatsDataDto, DailyReportStatsDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
 import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
@@ -706,6 +706,13 @@ export class BugReportsRepository {
       _count: { id: true },
     })
 
+    // 按漏洞等级分组统计
+    const severityGroups = await this.prisma.bugReport.groupBy({
+      by: ['severity'],
+      where,
+      _count: { id: true },
+    })
+
     // 构建状态统计映射
     const statusStatsMap = new Map<BugReportStatus, ApprovalStatusStatsDto>()
 
@@ -733,15 +740,48 @@ export class BugReportsRepository {
       }
     }
 
+    // 构建漏洞等级统计映射
+    const severityStatsMap = new Map<BugSeverity, SeverityStatsDto>()
+
+    // 添加有数据的等级
+    for (const group of severityGroups) {
+      severityStatsMap.set(group.severity, {
+        severity: group.severity,
+        count: group._count.id,
+        percentage: totalReports > 0
+          ? Math.round(group._count.id / totalReports * 100 * 100) / 100
+          : 0,
+      })
+    }
+
+    // 确保所有等级都有数据（即使数量为0）
+    const allSeverities = Object.values(BugSeverity)
+
+    for (const severity of allSeverities) {
+      if (!severityStatsMap.has(severity)) {
+        severityStatsMap.set(severity, {
+          severity,
+          count: 0,
+          percentage: 0,
+        })
+      }
+    }
+
     // 转换为 Record 对象
     const statusStats = Object.fromEntries(statusStatsMap.entries()) as Record<
       BugReportStatus,
       ApprovalStatusStatsDto
     >
 
+    const severityStats = Object.fromEntries(severityStatsMap.entries()) as Record<
+      BugSeverity,
+      SeverityStatsDto
+    >
+
     return {
       totalReports,
       statusStats,
+      severityStats,
     }
   }
 

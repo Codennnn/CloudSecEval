@@ -58,12 +58,35 @@ export class ApprovalStatusStatsDto
 }
 
 /**
+ * 漏洞等级统计数据项 DTO
+ */
+export class SeverityStatsDto {
+  @ApiProperty({
+    description: '漏洞等级',
+    enum: BugSeverity,
+  })
+  @Expose()
+  readonly severity!: BugSeverity
+
+  @ApiProperty({
+    description: '报告数量',
+  })
+  @Expose()
+  readonly count!: number
+
+  @ApiProperty({
+    description: '占总数的百分比',
+  })
+  @Expose()
+  readonly percentage!: number
+}
+
+/**
  * 审批状态统计响应数据 DTO
  */
 export class ApprovalStatusStatsDataDto {
   @ApiProperty({
     description: '总报告数',
-    example: 64,
   })
   @Expose()
   readonly totalReports!: number
@@ -81,6 +104,20 @@ export class ApprovalStatusStatsDataDto {
   })
   @Expose()
   readonly statusStats!: Record<BugReportStatus, ApprovalStatusStatsDto>
+
+  @ApiProperty({
+    description: '漏洞等级统计详情，key 为等级值，value 为包含等级和统计信息的对象',
+    additionalProperties: {
+      type: 'object',
+      properties: {
+        severity: { enum: Object.values(BugSeverity) },
+        count: { type: 'number' },
+        percentage: { type: 'number' },
+      },
+    },
+  })
+  @Expose()
+  readonly severityStats!: Record<BugSeverity, SeverityStatsDto>
 }
 
 /**

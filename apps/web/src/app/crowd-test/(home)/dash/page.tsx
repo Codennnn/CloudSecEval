@@ -1,5 +1,7 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+
 import { SITE_CONFIG } from '~/constants/common'
 
 import { BugLevel } from './components/BugLevel'
@@ -12,7 +14,14 @@ import { ReportSubmitChart } from './components/ReportSubmitChart'
 import { TeamOnlineChart } from './components/TeamOnlineChart'
 import { TeamRanking } from './components/TeamRanking'
 
+import { bugReportsControllerGetApprovalStatusStatsOptions } from '~api/@tanstack/react-query.gen'
+
 export default function DashPage() {
+  const { data } = useQuery(
+    bugReportsControllerGetApprovalStatusStatsOptions(),
+  )
+  const statsData = data?.data
+
   return (
     <div className="crowd-test-dashboard bg-crowd-test-dashboard-background h-screen w-screen px-2 overflow-hidden">
       <div className="relative size-full">
@@ -27,11 +36,11 @@ export default function DashPage() {
             <div className="flex h-full gap-8 overflow-hidden">
               <div className="basis-1/4 flex flex-col gap-dash-card">
                 <DashCard title="报告成果">
-                  <BugReportStats />
+                  <BugReportStats data={statsData?.statusStats} />
                 </DashCard>
 
                 <DashCard title="发现漏洞等级">
-                  <BugLevel />
+                  <BugLevel data={statsData?.severityStats} />
                 </DashCard>
 
                 <DashCard className="flex-1 overflow-hidden" title="团队排行榜">

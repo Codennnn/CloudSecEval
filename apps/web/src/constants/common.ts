@@ -11,7 +11,7 @@ export const SITE_CONFIG = {
 
   // 网站信息
   name: isCrowdTest() ? '企业攻防演练平台' : 'NestJS 中文文档',
-  title: 'NestJS - 渐进式 Node.js 框架',
+  title: isCrowdTest() ? '企业攻防演练平台' : 'NestJS - 渐进式 Node.js 框架',
   description: SITE_DESCRIPTION,
 
   adminTitle: isCrowdTest() ? '企业攻防演练平台' : 'NestJS 文档管理后台',

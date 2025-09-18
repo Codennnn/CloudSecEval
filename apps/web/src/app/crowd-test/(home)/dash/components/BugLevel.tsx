@@ -1,19 +1,30 @@
-const bugLevelData = [
-  {
-    level: '高危',
-    value: 100,
-  },
-  {
-    level: '中危',
-    value: 50,
-  },
-  {
-    level: '低危',
-    value: 20,
-  },
-]
+import { get } from 'lodash-es'
 
-export function BugLevel() {
+import type { ApprovalStatusStatsDataDto } from '~api/types.gen'
+import { VulnerabilitySeverity } from '~crowd-test/constants'
+
+interface BugLevelProps {
+  data?: ApprovalStatusStatsDataDto['severityStats']
+}
+
+export function BugLevel(props: BugLevelProps) {
+  const { data } = props
+
+  const bugLevelData = [
+    {
+      level: '高危',
+      value: get(data, `${VulnerabilitySeverity.HIGH}.count`, 0) as number,
+    },
+    {
+      level: '中危',
+      value: get(data, `${VulnerabilitySeverity.MEDIUM}.count`, 0) as number,
+    },
+    {
+      level: '低危',
+      value: get(data, `${VulnerabilitySeverity.LOW}.count`, 0) as number,
+    },
+  ]
+
   return (
     <div className="flex flex-col gap-2">
       {bugLevelData.map((item) => (
