@@ -2,6 +2,7 @@ import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 import { DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
 import { BugReportResponseDto, BugReportStatsResponseDto, PaginatedBugReportsResponseDto } from '~/modules/bug-reports/dto/bug-report-response.dto'
+import { TimelineEventDto } from '~/modules/bug-reports/dto/timeline.dto'
 import { DepartmentApiResponseDto, DepartmentListApiResponseDto, DepartmentMembersApiResponseDto, DepartmentTreeApiResponseDto } from '~/modules/departments/dto/department-response.dto'
 import { AdminCheckLicenseApiResponseDto, CheckLicenseApiResponseDto, CreateLicenseApiResponseDto, DeleteLicenseApiResponseDto, LicenseDetailApiResponseDto, LicenseListApiResponseDto, LogAccessApiResponseDto, SendRemindersResponseDataDto, ToggleLockResponseDataDto, UpdateLicenseApiResponseDto } from '~/modules/license/dto/license-response.dto'
 import { OrganizationApiResponseDto, OrganizationListApiResponseDto } from '~/modules/organizations/dto/organization-response.dto'
@@ -1059,6 +1060,16 @@ export const BUG_REPORTS_API_CONFIG = {
     successResponse: createSuccessResponse({
       description: '获取我的漏洞报告列表成功',
       type: PaginatedBugReportsResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  getTimeline: {
+    summary: '获取报告审理活动时间线',
+    description: '获取漏洞报告的审理活动事件时间线数据列表，包括提交、审核、驳回等操作',
+    successResponse: createSuccessResponse({
+      description: '获取时间线成功',
+      type: [TimelineEventDto],
     }),
     requireAdmin: false,
   },

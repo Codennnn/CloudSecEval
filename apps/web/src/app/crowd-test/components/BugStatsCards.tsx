@@ -37,7 +37,7 @@ function computeBugStats(all: BugReportSummaryDto[]): StatCardData[] {
       title: '待审核总数',
       value: pending,
       changePercent: '—',
-      primaryText: '当前队列中的待审核漏洞',
+      primaryText: '当前等待审核的漏洞',
       secondaryText: `总数 ${total} 条`,
       icon: Activity,
       trendType: 'neutral',

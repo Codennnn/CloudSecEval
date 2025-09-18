@@ -13,7 +13,6 @@ import { TeamOnlineChart } from './components/TeamOnlineChart'
 import { TeamReportsChart } from './components/TeamReportsChart'
 import { TeamReportsOverviewTable } from './components/TeamReportsOverviewTable'
 import {
-  activityTimeline,
   personalRanking,
   projectInfo,
   roleColorMap,
@@ -25,6 +24,10 @@ import {
 const teamOnlineData = teams.map((t) => ({ name: t.name, value: t.online, fill: roleColorMap[t.role] ?? '#8b5cf6' }))
 const totalOnline = teams.reduce((sum, t) => sum + t.online, 0)
 
+/**
+ * 仪表盘主页组件
+ * - 使用重构后的 ActivityTimeline 组件（内部管理数据）
+ */
 export function DashboardPage() {
   return (
     <div className="p-admin-content space-y-6">
@@ -62,7 +65,7 @@ export function DashboardPage() {
           </StatsCardHeader>
 
           <StatsCardContent>
-            <ActivityTimeline activities={activityTimeline} />
+            <ActivityTimeline />
           </StatsCardContent>
         </StatsCard>
 

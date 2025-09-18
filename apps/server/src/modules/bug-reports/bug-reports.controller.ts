@@ -36,6 +36,7 @@ import {
   BugReportStatsDto,
   FindBugReportsDto,
 } from './dto/find-bug-reports.dto'
+import { GetTimelineDto } from './dto/timeline.dto'
 import {
   ResubmitBugReportDto,
   UpdateBugReportDto,
@@ -89,6 +90,22 @@ export class BugReportsController {
 
     return respWithPagination({
       msg: '获取我的漏洞报告列表成功',
+      data: result.data,
+      pageOptions: result.pagination,
+    })
+  }
+
+  @Get('timeline')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.getTimeline)
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
+  async getTimeline(
+    @Query() timelineDto: GetTimelineDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const result = await this.bugReportsService.getTimeline(timelineDto, currentUser)
+
+    return respWithPagination({
+      msg: '获取审理活动时间线成功',
       data: result.data,
       pageOptions: result.pagination,
     })

@@ -18,6 +18,7 @@ import { AttachmentDto } from './dto/base-bug-report.dto'
 import type { CreateBugReportDto } from './dto/create-bug-report.dto'
 import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
 import type { BugReportStatsDto, FindBugReportsDto } from './dto/find-bug-reports.dto'
+import type { GetTimelineDto } from './dto/timeline.dto'
 import type {
   ResubmitBugReportDto,
   UpdateBugReportDto,
@@ -367,6 +368,26 @@ export class BugReportsService {
     const stats = await this.bugReportsRepository.getStats(dto)
 
     return stats
+  }
+
+  /**
+   * 获取报告审理活动时间线
+   */
+  async getTimeline(dto: GetTimelineDto, currentUser: CurrentUserDto) {
+    const result = await this.bugReportsRepository.getTimeline(
+      dto,
+      currentUser.organization.id,
+    )
+
+    return {
+      data: result.data,
+      pagination: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      },
+    }
   }
 
   /**
