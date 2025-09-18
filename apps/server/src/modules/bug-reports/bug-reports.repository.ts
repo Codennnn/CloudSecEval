@@ -46,17 +46,9 @@ export class BugReportsRepository {
     })
   }
 
-  /**
-   * 查找漏洞报告（支持高级搜索功能）
-   *
-   * @description 使用统一的搜索框架，提供强大的查询能力
-   * @param dto 搜索参数
-   * @returns 包含漏洞报告列表、总数和分页信息的数据
-   */
   async findMany(dto: FindBugReportsDto) {
     const searchBuilder = new AdvancedBugReportSearchBuilder(dto)
 
-    // 构建查询条件
     const where = searchBuilder.buildWhere()
     const orderBy = searchBuilder.getOrderBy()
 

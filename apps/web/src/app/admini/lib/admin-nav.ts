@@ -25,6 +25,7 @@ export const enum AdminRoutes {
   Docs = '/admini/docs',
   Unauthorized = '/admini/unauthorized',
 
+  CrowdTestRoot = '/crowd-test',
   CrowdTestLogin = '/crowd-test/login',
   CrowdTestDashboard = '/crowd-test/dashboard',
   CrowdTestBugs = '/crowd-test/bugs',
@@ -36,6 +37,19 @@ export const enum AdminRoutes {
   CrowdTestPermissions = '/crowd-test/permissions',
   CrowdTestRoles = '/crowd-test/roles',
 }
+
+/** 登录成功后重定向的路由 */
+export const loginRedirectRoute = isCrowdTest()
+  ? AdminRoutes.CrowdTestDashboard
+  : AdminRoutes.Dashboard
+
+export const adminRootRoute = isCrowdTest()
+  ? AdminRoutes.CrowdTestRoot
+  : AdminRoutes.Root
+
+export const adminLoginRoute = isCrowdTest()
+  ? AdminRoutes.CrowdTestLogin
+  : AdminRoutes.Login
 
 interface AdminNavItem {
   title: string
@@ -106,6 +120,10 @@ export const adminNavConfig: AdminNavConfig = {
   },
 
   // CrowdTest
+  [AdminRoutes.CrowdTestRoot]: {
+    title: SITE_CONFIG.adminTitle,
+    url: AdminRoutes.CrowdTestRoot,
+  },
   [AdminRoutes.CrowdTestLogin]: {
     title: '登录',
     url: AdminRoutes.CrowdTestLogin,
@@ -172,7 +190,7 @@ export function getPageNameByRoute(pathname: string): string {
   }
 
   // 如果没有匹配到任何路由，返回根路由的标题
-  return adminNavConfig[AdminRoutes.Root].title
+  return adminNavConfig[adminRootRoute].title
 }
 
 /**

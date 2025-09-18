@@ -40,7 +40,6 @@ export function getVulSeverity(severity: string) {
 
   return {
     label: '未知',
-    color: 'bg-gray-500/15 text-gray-600 border-gray-500/20',
   }
 }
 

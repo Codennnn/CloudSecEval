@@ -3,12 +3,10 @@
 import { consola } from 'consola'
 import { toast } from 'sonner'
 
-import { isCrowdTest } from '~/utils/platform'
-
 import { isLoggingEnabled } from './config'
 import type { ApiResponse } from './types'
 
-import { AdminRoutes } from '~admin/lib/admin-nav'
+import { adminLoginRoute } from '~admin/lib/admin-nav'
 import { client } from '~api/client.gen'
 
 export class ApiError extends Error {
@@ -31,7 +29,7 @@ function redirectToLogin(): void {
   // 检查是否在客户端环境和是否已在重定向过程中
   if (typeof window !== 'undefined' && !isRedirecting) {
     isRedirecting = true
-    const loginUrl = isCrowdTest() ? AdminRoutes.CrowdTestLogin : AdminRoutes.Login
+    const loginUrl = adminLoginRoute
 
     // 使用 setTimeout 避免在同步代码中立即执行重定向
     setTimeout(() => {

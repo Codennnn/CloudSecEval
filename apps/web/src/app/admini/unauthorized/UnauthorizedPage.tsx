@@ -8,7 +8,7 @@ import { AlertTriangle, ArrowLeft, Home } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 
-import { AdminRoutes, getPageNameByRoute } from '~admin/lib/admin-nav'
+import { getPageNameByRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
 
 /**
  * 无权限访问页面
@@ -40,7 +40,7 @@ export function UnauthorizedPage() {
       router.back()
     }
     else {
-      router.push(AdminRoutes.Dashboard)
+      router.push(loginRedirectRoute)
     }
   }
 
@@ -115,7 +115,7 @@ export function UnauthorizedPage() {
                 <Button
                   size="sm"
                   variant="default"
-                  onClick={() => { router.push(AdminRoutes.Dashboard) }}
+                  onClick={() => { router.push(loginRedirectRoute) }}
                 >
                   <Home />
                   返回仪表板

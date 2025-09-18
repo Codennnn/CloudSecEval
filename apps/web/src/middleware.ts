@@ -7,9 +7,8 @@ import {
   PROTECTED_FILE_EXTENSIONS,
   SEARCH_BOT_PATTERN,
 } from '~/constants/routes.server'
-import { isCrowdTest } from '~/utils/platform'
 
-import { AdminRoutes } from '~admin/lib/admin-nav'
+import { adminLoginRoute, adminRootRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
 
 /**
  * 处理管理后台路由的访问控制逻辑
@@ -21,28 +20,28 @@ function handleAdminRoutes(request: NextRequest, pathname: string) {
   const token = request.cookies.get('access_token')?.value
   const hasLogin = !!token
   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-  const isRootPath = pathname === AdminRoutes.Root
+  const isRootPath = pathname === adminRootRoute
 
   // 情况1：访问管理后台根路径，根据登录状态重定向
   if (isRootPath) {
-    const targetRoute = hasLogin ? AdminRoutes.Dashboard : AdminRoutes.Login
+    const targetRoute = hasLogin ? loginRedirectRoute : adminLoginRoute
 
     return NextResponse.redirect(new URL(targetRoute, request.url))
   }
 
-  const isLoginPage = pathname.startsWith(AdminRoutes.Login)
+  const isLoginPage = pathname.startsWith(adminLoginRoute)
 
   // 情况2：已登录用户访问登录页，重定向到仪表板
   if (hasLogin && isLoginPage) {
     return NextResponse.redirect(new URL(
-      isCrowdTest() ? AdminRoutes.CrowdTestDashboard : AdminRoutes.Dashboard, request.url,
+      loginRedirectRoute, request.url,
     ))
   }
 
   // 情况3：未登录用户访问非登录页面，重定向到登录页
   if (!hasLogin && !isLoginPage) {
     return NextResponse.redirect(new URL(
-      isCrowdTest() ? AdminRoutes.CrowdTestLogin : AdminRoutes.Login, request.url,
+      adminLoginRoute, request.url,
     ))
   }
 
@@ -54,7 +53,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 管理后台路由访问控制
-  if (pathname.startsWith(AdminRoutes.Root)) {
+  if (pathname.startsWith(adminRootRoute)) {
     return handleAdminRoutes(request, pathname)
   }
 

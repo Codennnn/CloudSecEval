@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { AdminRoutes } from '~admin/lib/admin-nav'
+import { adminLoginRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
 import { authControllerLoginMutation, authControllerLogoutMutation } from '~api/@tanstack/react-query.gen'
 
@@ -27,7 +27,7 @@ export function useLogin() {
       // 同步用户信息到 store（持久化存储）
       setUser(user)
 
-      router.replace(AdminRoutes.Dashboard)
+      router.replace(loginRedirectRoute)
     },
   })
 }
@@ -54,7 +54,7 @@ export function useLogout() {
       // 清除所有查询缓存
       queryClient.clear()
 
-      router.replace(AdminRoutes.Login)
+      router.replace(adminLoginRoute)
     },
   })
 }

@@ -103,7 +103,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
       },
       createEnumColumn<Row>({
         accessorKey: 'severity',
-        header: '严重级别',
+        header: '漏洞等级',
         enableSorting: false,
         enumOptions: Object.values(vulSeverityConfig),
         getLabelFn: (value) => getVulSeverity(value).label,

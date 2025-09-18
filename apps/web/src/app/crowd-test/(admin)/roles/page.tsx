@@ -6,4 +6,4 @@ export const metadata: Metadata = {
   title: generatePageTitle(AdminRoutes.Roles),
 }
 
-export { default } from '~/app/admini/(main)/roles/page'
+export { default } from '~admin/(main)/roles/page'

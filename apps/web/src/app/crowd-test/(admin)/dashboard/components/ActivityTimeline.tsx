@@ -29,7 +29,6 @@ const getReviewStatusTextColor = (status: ActivityItem['status']) => {
   return textClass
 }
 
-// 根据严重级别返回徽标样式
 const getSeverityBadgeClass = (severity: ActivityItem['severity']) => {
   let badgeClass = 'border-gray-200 bg-gray-50 text-gray-700'
 

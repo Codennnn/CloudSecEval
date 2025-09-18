@@ -56,7 +56,7 @@ function computeBugStats(all: BugReportSummaryDto[]): StatCardData[] {
       value: highCriticalPending,
       changePercent: '—',
       primaryText: '高优先级需要优先处理',
-      secondaryText: '严重级别 high 或 critical',
+      secondaryText: '漏洞等级为高危或严重的待处理漏洞',
       icon: AlertTriangle,
       trendType: 'neutral',
     },

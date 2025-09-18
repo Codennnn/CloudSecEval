@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 
 import { LoginForm } from '~admin/components/LoginForm'
-import { AdminRoutes, generatePageTitle } from '~admin/lib/admin-nav'
+import { adminLoginRoute, generatePageTitle } from '~admin/lib/admin-nav'
 
 export const metadata: Metadata = {
-  title: generatePageTitle(AdminRoutes.Login),
+  title: generatePageTitle(adminLoginRoute),
 }
 
 export default function AdminLoginPage() {

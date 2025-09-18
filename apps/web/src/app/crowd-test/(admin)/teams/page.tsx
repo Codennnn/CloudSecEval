@@ -6,4 +6,4 @@ export const metadata: Metadata = {
   title: generatePageTitle(AdminRoutes.CrowdTestTeams),
 }
 
-export { default } from '~/app/admini/(main)/users/page'
+export { default } from '~admin/(main)/users/page'

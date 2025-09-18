@@ -28,7 +28,7 @@ import { cn } from '~/lib/utils'
 import { usePrefetch } from '~/utils/navigation'
 
 import { useLogin } from '~admin/hooks/api/useAuth'
-import { AdminRoutes } from '~admin/lib/admin-nav'
+import { loginRedirectRoute } from '~admin/lib/admin-nav'
 import type { LoginDto } from '~api/types.gen'
 
 const loginFormSchema = z.object({
@@ -50,7 +50,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  usePrefetch({ href: AdminRoutes.Dashboard })
+  usePrefetch({ href: loginRedirectRoute })
 
   const loginMutation = useLogin()
 

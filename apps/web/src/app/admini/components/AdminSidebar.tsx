@@ -19,10 +19,7 @@ import { NavDocuments } from '~admin/components/NavDocuments'
 import { NavMain } from '~admin/components/NavMain'
 import { NavSecondary } from '~admin/components/NavSecondary'
 import { NavUser } from '~admin/components/NavUser'
-import {
-  AdminRoutes,
-  useAdminNav,
-} from '~admin/lib/admin-nav'
+import { adminRootRoute, useAdminNav } from '~admin/lib/admin-nav'
 
 export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { navMain, navSecondary, navDocuments } = useAdminNav()
@@ -36,7 +33,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href={AdminRoutes.Root}>
+              <Link href={adminRootRoute}>
                 <Image
                   alt="NestJS Logo"
                   height={24}
