@@ -857,14 +857,14 @@ export class BugReportsRepository {
       { date: string, count: number }[]
     >`
       SELECT 
-        DATE(created_at) as date,
+        DATE("createdAt") as date,
         COUNT(*)::int as count
       FROM bug_reports 
-      WHERE org_id = ${orgId}::uuid
-        AND status != ${BugReportStatus.DRAFT}::"BugReportStatus"
-        AND created_at >= ${startOfPeriod}
-        AND created_at <= ${endOfPeriod}
-      GROUP BY DATE(created_at)
+      WHERE "orgId" = ${orgId}::uuid
+        AND status != ${BugReportStatus.DRAFT}::"public"."bug_report_status"
+        AND "createdAt" >= ${startOfPeriod}
+        AND "createdAt" <= ${endOfPeriod}
+      GROUP BY DATE("createdAt")
       ORDER BY date
     `
 
@@ -873,15 +873,15 @@ export class BugReportsRepository {
       { date: string, count: number }[]
     >`
       SELECT 
-        DATE(bal.created_at) as date,
-        COUNT(DISTINCT bal.bug_report_id)::int as count
+        DATE(bal."createdAt") as date,
+        COUNT(DISTINCT bal."bugReportId")::int as count
       FROM bug_report_approval_logs bal
-      JOIN bug_reports br ON bal.bug_report_id = br.id
-      WHERE br.org_id = ${orgId}::uuid
+      JOIN bug_reports br ON bal."bugReportId" = br.id
+      WHERE br."orgId" = ${orgId}::uuid
         AND bal.action IN ('APPROVE', 'REJECT')
-        AND bal.created_at >= ${startOfPeriod}
-        AND bal.created_at <= ${endOfPeriod}
-      GROUP BY DATE(bal.created_at)
+        AND bal."createdAt" >= ${startOfPeriod}
+        AND bal."createdAt" <= ${endOfPeriod}
+      GROUP BY DATE(bal."createdAt")
       ORDER BY date
     `
 

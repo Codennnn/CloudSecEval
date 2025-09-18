@@ -52,15 +52,33 @@ export function EventTrendChart() {
       <StatsCardHeader>
         <StatsCardTitle>事件趋势</StatsCardTitle>
       </StatsCardHeader>
+
       <StatsCardContent>
         <div className="h-64">
           <ChartContainer config={eventChartConfig}>
             <LineChart data={eventTrendData}>
               <CartesianGrid vertical={false} />
-              <XAxis axisLine={false} dataKey="date" minTickGap={24} tickLine={false} />
+              <XAxis
+                axisLine={false}
+                dataKey="date"
+                minTickGap={24}
+                tickLine={false}
+              />
               <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
-              <Line dataKey="submitted" dot={false} stroke="var(--color-submitted)" strokeWidth={2} type="monotone" />
-              <Line dataKey="approved" dot={false} stroke="var(--color-approved)" strokeWidth={2} type="monotone" />
+              <Line
+                dataKey="submitted"
+                dot={false}
+                stroke="var(--color-submitted)"
+                strokeWidth={2}
+                type="monotone"
+              />
+              <Line
+                dataKey="approved"
+                dot={false}
+                stroke="var(--color-approved)"
+                strokeWidth={2}
+                type="monotone"
+              />
             </LineChart>
           </ChartContainer>
         </div>
