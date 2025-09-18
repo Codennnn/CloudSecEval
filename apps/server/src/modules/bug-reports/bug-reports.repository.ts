@@ -46,10 +46,16 @@ export class BugReportsRepository {
     })
   }
 
-  async findMany(dto: FindBugReportsDto) {
+  async findMany(dto: FindBugReportsDto, orgId?: string) {
     const searchBuilder = new AdvancedBugReportSearchBuilder(dto)
 
     const where = searchBuilder.buildWhere()
+
+    // 添加组织级别的权限控制
+    if (orgId) {
+      where.orgId = orgId
+    }
+
     const orderBy = searchBuilder.getOrderBy()
 
     const { skip, take } = getPaginationParams({

@@ -4,6 +4,7 @@ import { IsBoolean, IsDateString, IsEnum, IsOptional, ValidateNested } from 'cla
 
 import { BugReportStatus } from '#prisma/client'
 import { BooleanTransform } from '~/common/decorators/boolean-transform.decorator'
+import { EnumOrOperatorsTransform, IsEnumOrOperators } from '~/common/decorators/enum-or-operators.decorator'
 import { IsId } from '~/common/decorators/uuid.decorator'
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
@@ -25,13 +26,30 @@ export class BugReportSearchFields {
   title?: AdvancedStringSearchOperators | string
 
   @ApiPropertyOptional({
-    description: '漏洞等级',
-    enum: VulnerabilitySeverity,
+    description: '漏洞等级搜索条件',
+    oneOf: [
+      { enum: Object.values(VulnerabilitySeverity), description: '简单枚举值' },
+      { type: 'object', description: '高级搜索操作符' },
+    ],
     example: VulnerabilitySeverity.HIGH,
   })
   @IsOptional()
-  @IsEnum(VulnerabilitySeverity)
-  severity?: VulnerabilitySeverity
+  @IsEnumOrOperators(VulnerabilitySeverity)
+  @EnumOrOperatorsTransform()
+  severity?: AdvancedStringSearchOperators | VulnerabilitySeverity
+
+  @ApiPropertyOptional({
+    description: '状态搜索条件',
+    oneOf: [
+      { enum: Object.values(BugReportStatus), description: '简单枚举值' },
+      { type: 'object', description: '高级搜索操作符' },
+    ],
+    example: BugReportStatus.PENDING,
+  })
+  @IsOptional()
+  @IsEnumOrOperators(BugReportStatus)
+  @EnumOrOperatorsTransform()
+  status?: AdvancedStringSearchOperators | BugReportStatus
 
   @ApiPropertyOptional({ description: '攻击方式搜索条件', type: AdvancedStringSearchOperators })
   @IsOptional()
@@ -44,30 +62,6 @@ export class BugReportSearchFields {
   @ValidateNested()
   @Type(() => AdvancedStringSearchOperators)
   description?: AdvancedStringSearchOperators | string
-
-  @ApiPropertyOptional({
-    description: '状态',
-    enum: BugReportStatus,
-    example: BugReportStatus.PENDING,
-  })
-  @IsOptional()
-  @IsEnum(BugReportStatus)
-  status?: BugReportStatus
-
-  @ApiPropertyOptional({ description: '提交用户ID' })
-  @IsOptional()
-  @IsId('用户ID')
-  userId?: string
-
-  @ApiPropertyOptional({ description: '审核人ID' })
-  @IsOptional()
-  @IsId('审核人ID')
-  reviewerId?: string
-
-  @ApiPropertyOptional({ description: '组织ID' })
-  @IsOptional()
-  @IsId('组织ID')
-  orgId?: string
 
   @ApiPropertyOptional({ description: '创建时间搜索条件', type: AdvancedDateSearchOperators })
   @IsOptional()

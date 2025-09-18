@@ -76,7 +76,8 @@ export class BugReportsService {
    */
   async findMany(dto: FindBugReportsDto, currentUser: CurrentUserDto) {
     const result = await this.bugReportsRepository.findMany(
-      Object.assign({}, dto, { orgId: currentUser.organization.id }),
+      dto,
+      currentUser.organization.id,
     )
 
     return {

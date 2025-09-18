@@ -13,9 +13,6 @@ interface BugReportSearchFields {
   attackMethod: string
   description: string
   status: string
-  userId: string
-  reviewerId: string
-  orgId: string
   createdAt: Date
   updatedAt: Date
   reviewedAt: Date
@@ -57,24 +54,6 @@ const BUG_REPORT_FIELD_CONFIG = {
     global: false,
     sortable: true,
     searchable: true,
-  },
-  userId: {
-    type: 'string',
-    global: false,
-    sortable: false,
-    searchable: false, // UUID 字段不参与搜索
-  },
-  reviewerId: {
-    type: 'string',
-    global: false,
-    sortable: false,
-    searchable: false, // UUID 字段不参与搜索
-  },
-  orgId: {
-    type: 'string',
-    global: false,
-    sortable: false,
-    searchable: false, // UUID 字段不参与搜索
   },
   createdAt: {
     type: 'date',
@@ -125,23 +104,10 @@ export class AdvancedBugReportSearchBuilder extends EntitySearchBuilder<
 
   /**
    * 构建自定义筛选条件
-   * 处理 UUID 字段的精确匹配筛选
+   * 目前无需额外的自定义筛选逻辑
    */
   protected buildCustomFilters(): void {
-    const { userId, reviewerId, orgId } = this.searchDto
-
-    // UUID 字段只支持精确匹配
-    if (userId) {
-      this.conditions.userId = userId
-    }
-
-    if (reviewerId) {
-      this.conditions.reviewerId = reviewerId
-    }
-
-    if (orgId) {
-      this.conditions.orgId = orgId
-    }
+    // 所有搜索字段都通过通用搜索框架处理
   }
 
   /**
