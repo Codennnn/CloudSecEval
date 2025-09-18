@@ -1,93 +1,87 @@
-import { Activity, AlertTriangle, CalendarDays, CheckCircle2 } from 'lucide-react'
+import { useMemo } from 'react'
+
+import { useQuery } from '@tanstack/react-query'
+import { CheckCircle2, Clock, Eye, Percent } from 'lucide-react'
+
+import { bugReportsControllerGetApprovalStatusStatsOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
 
 import { BugStatsCard, type StatCardData } from './BugStatsCard'
 
-import { type BugReportSummaryDto } from '~api/types.gen'
-import { BugReportStatus, VulnerabilitySeverity } from '~crowd-test/constants'
+import { BugReportStatus } from '~crowd-test/constants'
 
-function isToday(date: string): boolean {
-  const d = new Date(date)
-  const now = new Date()
+export function BugStatsCards() {
+  const { data, isLoading } = useQuery(
+    bugReportsControllerGetApprovalStatusStatsOptions(),
+  )
+  const statsData = data?.data
 
-  return d.getFullYear() === now.getFullYear()
-    && d.getMonth() === now.getMonth()
-    && d.getDate() === now.getDate()
-}
+  const statsItems = useMemo<StatCardData[]>(() => {
+    if (!statsData) {
+      return []
+    }
 
-/**
- * 计算审核员/管理员关注的统计指标
- */
-function computeBugStats(all: BugReportSummaryDto[]): StatCardData[] {
-  const total = all.length
-  const pending = all.filter((x) => x.status === BugReportStatus.PENDING).length
-  const todayAdded = all.filter((x) => isToday(x.createdAt)).length
-  const highCriticalPending = all.filter((x) =>
-    (x.severity === VulnerabilitySeverity.HIGH
-      || x.severity === VulnerabilitySeverity.CRITICAL)
-    && x.status === BugReportStatus.PENDING,
-  ).length
+    const { statusStats, totalReports } = statsData
 
-  const accepted = all.filter((x) => x.status === BugReportStatus.APPROVED).length
-  const rejected = all.filter((x) => x.status === BugReportStatus.REJECTED).length
-  const decisionTotal = accepted + rejected
-  const acceptanceRate = decisionTotal > 0 ? `${Math.round((accepted / decisionTotal) * 100)}%` : '—'
+    // 计算待处理总数（待审核 + 审核中）
+    const pendingTotal = (statusStats[BugReportStatus.PENDING].count ?? 0)
+      + (statusStats[BugReportStatus.IN_REVIEW].count ?? 0)
 
-  const cards: StatCardData[] = [
-    {
-      title: '待审核总数',
-      value: pending,
-      changePercent: '—',
-      primaryText: '当前等待审核的漏洞',
-      secondaryText: `总数 ${total} 条`,
-      icon: Activity,
-      trendType: 'neutral',
-    },
-    {
-      title: '今日新增',
-      value: todayAdded,
-      changePercent: '—',
-      primaryText: '今天新提交的漏洞数量',
-      secondaryText: '按创建时间统计',
-      icon: CalendarDays,
-      trendType: 'neutral',
-    },
-    {
-      title: '高/严重待处理',
-      value: highCriticalPending,
-      changePercent: '—',
-      primaryText: '高优先级需要优先处理',
-      secondaryText: '漏洞等级为高危或严重的待处理漏洞',
-      icon: AlertTriangle,
-      trendType: 'neutral',
-    },
-    {
-      title: '接收率',
-      value: acceptanceRate,
-      changePercent: '—',
-      primaryText: `已接收 ${accepted} / 已裁决 ${decisionTotal}`,
-      secondaryText: '接收率 = 接收 ÷ (接收 + 拒绝)',
-      icon: CheckCircle2,
-      trendType: 'neutral',
-    },
-  ]
+    // 计算已裁决总数（通过 + 驳回）
+    const decidedTotal = (statusStats[BugReportStatus.APPROVED].count ?? 0)
+      + (statusStats[BugReportStatus.REJECTED].count ?? 0)
 
-  return cards
-}
+    // 计算通过率
+    const approvalRate = decidedTotal > 0
+      ? Math.round((statusStats[BugReportStatus.APPROVED].count ?? 0) / decidedTotal * 100)
+      : 0
 
-interface BugStatsCardsProps {
-  data: BugReportSummaryDto[]
-}
-
-export function BugStatsCards(props: BugStatsCardsProps) {
-  const { data } = props
-
-  const stats = computeBugStats(data)
+    return [
+      {
+        title: '待审核',
+        value: statusStats[BugReportStatus.PENDING].count ?? 0,
+        changePercent: totalReports > 0
+          ? `${Math.round((statusStats[BugReportStatus.PENDING].count ?? 0) / totalReports * 100)}%`
+          : '—',
+        primaryText: '等待审核的漏洞报告',
+        icon: Clock,
+        trendType: 'neutral',
+      },
+      {
+        title: '审核中',
+        value: statusStats[BugReportStatus.IN_REVIEW].count ?? 0,
+        changePercent: totalReports > 0
+          ? `${Math.round((statusStats[BugReportStatus.IN_REVIEW].count ?? 0) / totalReports * 100)}%`
+          : '—',
+        primaryText: '正在审核中的漏洞',
+        icon: Eye,
+        trendType: 'neutral',
+      },
+      {
+        title: '已通过',
+        value: statusStats[BugReportStatus.APPROVED].count ?? 0,
+        changePercent: statusStats[BugReportStatus.APPROVED].percentage
+          ? `${statusStats[BugReportStatus.APPROVED].percentage.toFixed(1)}%`
+          : '—',
+        primaryText: '已通过审核的漏洞',
+        icon: CheckCircle2,
+        trendType: 'positive',
+      },
+      {
+        title: '通过率',
+        value: `${approvalRate}%`,
+        changePercent: decidedTotal > 0 ? `${decidedTotal} 已裁决` : '暂无数据',
+        primaryText: `已通过 ${statusStats[BugReportStatus.APPROVED].count ?? 0} / 已裁决 ${decidedTotal}`,
+        icon: Percent,
+        trendType: approvalRate >= 70 ? 'positive' : approvalRate >= 50 ? 'neutral' : 'negative',
+      },
+    ]
+  }, [statsData])
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-admin-content">
-      {stats.map((card, idx) => (
+      {statsItems.map((card, idx) => (
         <div key={idx}>
-          <BugStatsCard data={card} />
+          <BugStatsCard data={card} isLoading={isLoading} />
         </div>
       ))}
     </div>

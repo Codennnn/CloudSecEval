@@ -32,6 +32,9 @@ import {
   CreateBugReportDto,
 } from './dto/create-bug-report.dto'
 import {
+  GetDailyReportsStatsDto,
+} from './dto/daily-reports-stats.dto'
+import {
   GetDepartmentReportsStatsDto,
 } from './dto/department-reports-stats.dto'
 import {
@@ -252,6 +255,21 @@ export class BugReportsController {
 
     return resp({
       msg: '获取审批状态统计成功',
+      data: stats,
+    })
+  }
+
+  @Get('daily-stats')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.getDailyReportsStats)
+  @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
+  async getDailyReportsStats(
+    @Query() statsDto: GetDailyReportsStatsDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const stats = await this.bugReportsService.getDailyReportsStats(statsDto, currentUser)
+
+    return resp({
+      msg: '获取每日报告统计成功',
       data: stats,
     })
   }

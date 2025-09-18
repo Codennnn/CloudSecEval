@@ -17,6 +17,7 @@ import { ApprovalAction, ProcessApprovalDto } from './dto/approval.dto'
 import type { ApprovalStatusStatsDataDto, GetApprovalStatusStatsDto } from './dto/approval-status-stats.dto'
 import { AttachmentDto } from './dto/base-bug-report.dto'
 import type { CreateBugReportDto } from './dto/create-bug-report.dto'
+import type { DailyReportsStatsDataDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
 import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
@@ -682,6 +683,21 @@ export class BugReportsService {
     currentUser: CurrentUserDto,
   ): Promise<ApprovalStatusStatsDataDto> {
     const stats = await this.bugReportsRepository.getApprovalStatusStats(
+      dto,
+      currentUser.organization.id,
+    )
+
+    return stats
+  }
+
+  /**
+   * 获取组织下每日报告统计
+   */
+  async getDailyReportsStats(
+    dto: GetDailyReportsStatsDto,
+    currentUser: CurrentUserDto,
+  ): Promise<DailyReportsStatsDataDto> {
+    const stats = await this.bugReportsRepository.getDailyReportsStats(
       dto,
       currentUser.organization.id,
     )

@@ -6,6 +6,7 @@ import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
 import type { ApprovalStatusStatsDataDto, ApprovalStatusStatsDto, GetApprovalStatusStatsDto } from './dto/approval-status-stats.dto'
+import type { DailyReportsStatsDataDto, DailyReportStatsDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
 import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
 import { type GetTimelineDto, type TimelineBugReportDto, type TimelineEventDto, TimelineEventType } from './dto/timeline.dto'
@@ -788,6 +789,121 @@ export class BugReportsRepository {
       title: report.title,
       severity: report.severity as unknown as VulnerabilitySeverity,
       status: report.status,
+    }
+  }
+
+  /**
+   * 获取组织下每日报告统计
+   */
+  async getDailyReportsStats(
+    dto: GetDailyReportsStatsDto,
+    orgId: string,
+  ): Promise<DailyReportsStatsDataDto> {
+    // 设置默认时间范围：最近30天
+    const endDate = dto.endDate ? new Date(dto.endDate) : new Date()
+    const startDate = dto.startDate
+      ? new Date(dto.startDate)
+      : new Date(endDate.getTime() - 29 * 24 * 60 * 60 * 1000) // 30天前
+
+    // 设置时间边界：开始日期为00:00:00，结束日期为23:59:59
+    const startOfPeriod = new Date(startDate)
+    startOfPeriod.setHours(0, 0, 0, 0)
+
+    const endOfPeriod = new Date(endDate)
+    endOfPeriod.setHours(23, 59, 59, 999)
+
+    // 查询每日提交统计
+    const submittedStats = await this.prisma.$queryRaw<
+      { date: string, count: number }[]
+    >`
+      SELECT 
+        DATE(created_at) as date,
+        COUNT(*)::int as count
+      FROM bug_reports 
+      WHERE org_id = ${orgId}::uuid
+        AND status != ${BugReportStatus.DRAFT}::"BugReportStatus"
+        AND created_at >= ${startOfPeriod}
+        AND created_at <= ${endOfPeriod}
+      GROUP BY DATE(created_at)
+      ORDER BY date
+    `
+
+    // 查询每日审核统计
+    const reviewedStats = await this.prisma.$queryRaw<
+      { date: string, count: number }[]
+    >`
+      SELECT 
+        DATE(bal.created_at) as date,
+        COUNT(DISTINCT bal.bug_report_id)::int as count
+      FROM bug_report_approval_logs bal
+      JOIN bug_reports br ON bal.bug_report_id = br.id
+      WHERE br.org_id = ${orgId}::uuid
+        AND bal.action IN ('APPROVE', 'REJECT')
+        AND bal.created_at >= ${startOfPeriod}
+        AND bal.created_at <= ${endOfPeriod}
+      GROUP BY DATE(bal.created_at)
+      ORDER BY date
+    `
+
+    // 构建完整的日期范围
+    const dailyStatsMap = new Map<string, DailyReportStatsDto>()
+    const currentDate = new Date(startOfPeriod)
+
+    // 初始化所有日期为0
+    while (currentDate <= endOfPeriod) {
+      const dateStr = currentDate.toISOString().split('T')[0]
+      dailyStatsMap.set(dateStr, {
+        date: dateStr,
+        submittedCount: 0,
+        reviewedCount: 0,
+      })
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    // 填充提交数据
+    for (const stat of submittedStats) {
+      const dateStr = stat.date
+
+      const existing = dailyStatsMap.get(dateStr)
+
+      if (existing) {
+        dailyStatsMap.set(dateStr, {
+          date: existing.date,
+          submittedCount: stat.count,
+          reviewedCount: existing.reviewedCount,
+        })
+      }
+    }
+
+    // 填充审核数据
+    for (const stat of reviewedStats) {
+      const dateStr = stat.date
+
+      const existing = dailyStatsMap.get(dateStr)
+
+      if (existing) {
+        dailyStatsMap.set(dateStr, {
+          date: existing.date,
+          submittedCount: existing.submittedCount,
+          reviewedCount: stat.count,
+        })
+      }
+    }
+
+    // 转换为数组并排序
+    const dailyStats = Array.from(dailyStatsMap.values())
+      .sort((a, b) => a.date.localeCompare(b.date))
+
+    // 计算总计
+    const totalSubmitted = dailyStats.reduce((sum, stat) => sum + stat.submittedCount, 0)
+    const totalReviewed = dailyStats.reduce((sum, stat) => sum + stat.reviewedCount, 0)
+    const totalDays = dailyStats.length
+
+    return {
+      totalDays,
+      totalSubmitted,
+      totalReviewed,
+      dailyStats,
     }
   }
 }

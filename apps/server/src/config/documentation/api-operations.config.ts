@@ -3,6 +3,7 @@ import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 import { DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
 import { ApprovalStatusStatsResponseDto } from '~/modules/bug-reports/dto/approval-status-stats.dto'
 import { BugReportResponseDto, PaginatedBugReportsResponseDto } from '~/modules/bug-reports/dto/bug-report-response.dto'
+import { DailyReportsStatsResponseDto } from '~/modules/bug-reports/dto/daily-reports-stats.dto'
 import { DepartmentReportsStatsResponseDto } from '~/modules/bug-reports/dto/department-reports-stats.dto'
 import { TimelineEventResponseDto } from '~/modules/bug-reports/dto/timeline.dto'
 import { DepartmentApiResponseDto, DepartmentListApiResponseDto, DepartmentMembersApiResponseDto, DepartmentOnlineStatsApiResponseDto, DepartmentTreeApiResponseDto } from '~/modules/departments/dto/department-response.dto'
@@ -1092,6 +1093,16 @@ export const BUG_REPORTS_API_CONFIG = {
     successResponse: createSuccessResponse({
       description: '获取审批状态统计成功',
       type: ApprovalStatusStatsResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  getDailyReportsStats: {
+    summary: '获取每日报告统计',
+    description: '获取组织内每日提交和审核的漏洞报告统计数据，支持时间范围筛选，默认统计最近30天',
+    successResponse: createSuccessResponse({
+      description: '获取每日报告统计成功',
+      type: DailyReportsStatsResponseDto,
     }),
     requireAdmin: false,
   },

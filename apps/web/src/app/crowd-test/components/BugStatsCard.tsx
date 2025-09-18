@@ -18,8 +18,6 @@ export interface StatCardData {
   changePercent: string
   /** 主要描述文本 */
   primaryText: string
-  /** 次要描述文本 */
-  secondaryText: string
   /** 主要图标 */
   icon: LucideIcon
   /** 变化趋势类型（用于样式） */
@@ -29,18 +27,18 @@ export interface StatCardData {
 interface StatCardProps {
   /** 卡片数据 */
   data: StatCardData
+  isLoading?: boolean
   /** 自定义类名 */
   className?: string
 }
 
 export function BugStatsCard(props: React.PropsWithChildren<StatCardProps>) {
-  const { data, className, children } = props
+  const { children, data, className } = props
 
   const {
     title,
     value,
     primaryText,
-    secondaryText,
     icon: Icon,
   } = data
 
@@ -48,25 +46,21 @@ export function BugStatsCard(props: React.PropsWithChildren<StatCardProps>) {
     <div className={cn('@container/card p-[3px] shadow-md shadow-secondary rounded-xl', className)}>
       <Card className="shadow-none rounded-xl border-none bg-gradient-to-b from-theme/8 to-transparent pb-4">
         <CardHeader>
-          <CardDescription>
+          <CardTitle>
             <div className="flex items-center gap-1">
               {title}
               <Icon className="size-4" />
             </div>
-          </CardDescription>
-
-          <CardTitle className="text-2xl font-extrabold text-theme tabular-nums @[250px]/card:text-3xl">
-            {value}
           </CardTitle>
+
+          <CardDescription>
+            {primaryText}
+          </CardDescription>
         </CardHeader>
 
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            {primaryText}
-          </div>
-
-          <div className="text-muted-foreground">
-            {secondaryText}
+          <div className="text-2xl font-extrabold text-theme tabular-nums @[250px]/card:text-3xl">
+            {value}
           </div>
         </CardFooter>
 
