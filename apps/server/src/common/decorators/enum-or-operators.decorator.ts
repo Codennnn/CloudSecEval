@@ -16,7 +16,7 @@ export function IsEnumOrOperators(
   enumObject: Record<string, unknown>,
   validationOptions?: ValidationOptions,
 ) {
-  return function (object: Record<string, unknown>, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isEnumOrOperators',
       target: object.constructor,

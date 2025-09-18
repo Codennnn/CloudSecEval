@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Separator } from '~/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { FileUploader } from '~/components/upload/FileUploader'
+import { cn } from '~/lib/utils'
 
 import { type CreateBugReportDto } from '~api/types.gen'
 import { getVulSeverity, VulnerabilitySeverity } from '~crowd-test/constants'
@@ -189,14 +190,39 @@ export function BugReportForm(props: BugReportFormCardProps) {
                     )
                   : (
                       <FormControl>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger id="severity">
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger
+                            className={cn(
+                              'font-semibold',
+                              field.value
+                                ? getVulSeverity(field.value).frontColor
+                                : '',
+                            )}
+                            id="severity"
+                          >
                             <SelectValue placeholder="选择漏洞等级" />
                           </SelectTrigger>
+
                           <SelectContent>
-                            {Object.values(VulnerabilitySeverity).map((s) => (
-                              <SelectItem key={s} value={s}>{getVulSeverity(s).label}</SelectItem>
-                            ))}
+                            {Object.values(VulnerabilitySeverity).map((s) => {
+                              const severity = getVulSeverity(s)
+
+                              return (
+                                <SelectItem
+                                  key={s}
+                                  className={cn(
+                                    'font-semibold',
+                                    severity.frontColor,
+                                  )}
+                                  value={s}
+                                >
+                                  {severity.label}
+                                </SelectItem>
+                              )
+                            })}
                           </SelectContent>
                         </Select>
                       </FormControl>

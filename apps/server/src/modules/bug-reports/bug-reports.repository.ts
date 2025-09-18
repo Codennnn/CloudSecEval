@@ -91,6 +91,51 @@ export class BugReportsRepository {
   }
 
   /**
+   * 查询当前用户的漏洞报告列表
+   */
+  async findMyReports(dto: FindBugReportsDto, userId: string) {
+    const searchBuilder = new AdvancedBugReportSearchBuilder(dto)
+
+    const where = searchBuilder.buildWhere()
+
+    // 只查询当前用户提交的报告
+    where.userId = userId
+
+    const orderBy = searchBuilder.getOrderBy()
+
+    const { skip, take } = getPaginationParams({
+      page: dto.page,
+      pageSize: dto.pageSize,
+    })
+
+    const [data, total] = await Promise.all([
+      this.prisma.bugReport.findMany({
+        where,
+        orderBy,
+        skip,
+        take,
+        include: this.getIncludeOptions(
+          false, // 不需要包含用户信息，因为是当前用户
+          dto.includeReviewer,
+          dto.includeOrganization,
+        ),
+      }),
+      this.prisma.bugReport.count({ where }),
+    ])
+
+    const page = dto.page ?? 1
+    const pageSize = take
+
+    return {
+      data,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    }
+  }
+
+  /**
    * 更新漏洞报告
    */
   async update(id: string, data: Prisma.BugReportUpdateInput) {

@@ -92,6 +92,26 @@ export class BugReportsService {
   }
 
   /**
+   * 查询当前用户的漏洞报告列表
+   */
+  async findMyReports(dto: FindBugReportsDto, currentUser: CurrentUserDto) {
+    const result = await this.bugReportsRepository.findMyReports(
+      dto,
+      currentUser.id,
+    )
+
+    return {
+      data: result.data,
+      pagination: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      },
+    }
+  }
+
+  /**
    * 更新漏洞报告
    */
   async update(id: string, dto: UpdateBugReportDto) {

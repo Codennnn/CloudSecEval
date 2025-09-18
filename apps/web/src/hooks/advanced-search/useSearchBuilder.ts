@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import type {
@@ -118,9 +118,13 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   // 验证错误状态
   const [errors, setErrors] = useState<SearchValidationError[]>([])
 
-  /**
-   * 设置配置并触发回调
-   */
+  // 使用 ref 保持最新的 onChange 回调引用
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
+
+  // 追踪是否为初始渲染，避免初始时触发 onChange
+  const [isInitialized, setIsInitialized] = useState(false)
+
   const setConfig = useEvent(
     (configOrUpdater: SearchConfig | ((prev: SearchConfig) => SearchConfig)) => {
       setConfigState((prev) => {
@@ -128,12 +132,20 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
           ? configOrUpdater(prev)
           : configOrUpdater
 
-        onChange?.(newConfig)
-
         return newConfig
       })
     },
   )
+
+  // 监听配置变化，延迟触发回调以避免渲染期间状态更新
+  useEffect(() => {
+    if (isInitialized) {
+      onChangeRef.current?.(config)
+    }
+    else {
+      setIsInitialized(true)
+    }
+  }, [config, isInitialized])
 
   /**
    * 添加搜索条件

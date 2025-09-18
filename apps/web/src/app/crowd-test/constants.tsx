@@ -1,4 +1,4 @@
-import type { EnumConfig } from '~/types/common'
+import type { BaseEnumConfig, EnumConfig } from '~/types/common'
 
 export const NEW_BUG_ID = 'new'
 
@@ -10,6 +10,10 @@ export enum VulnerabilitySeverity {
   CRITICAL = 'CRITICAL',
 }
 
+interface VulSeverityConfig extends BaseEnumConfig {
+  value: VulnerabilitySeverity
+}
+
 export const vulSeverityConfig = {
   [VulnerabilitySeverity.INFO]: {
     value: VulnerabilitySeverity.INFO,
@@ -18,28 +22,33 @@ export const vulSeverityConfig = {
   [VulnerabilitySeverity.LOW]: {
     value: VulnerabilitySeverity.LOW,
     label: '低危',
+    frontColor: '!text-amber-500',
   },
   [VulnerabilitySeverity.MEDIUM]: {
     value: VulnerabilitySeverity.MEDIUM,
     label: '中危',
+    frontColor: '!text-orange-600',
   },
   [VulnerabilitySeverity.HIGH]: {
     value: VulnerabilitySeverity.HIGH,
     label: '高危',
+    frontColor: '!text-red-700',
   },
   [VulnerabilitySeverity.CRITICAL]: {
     value: VulnerabilitySeverity.CRITICAL,
     label: '严重',
+    frontColor: '!text-purple-700',
   },
-} satisfies EnumConfig<VulnerabilitySeverity>
+} satisfies EnumConfig<VulnerabilitySeverity, VulSeverityConfig>
 
-export function getVulSeverity(severity: string) {
+export function getVulSeverity(severity: string): VulSeverityConfig {
   if (severity in vulSeverityConfig) {
     return vulSeverityConfig[severity as VulnerabilitySeverity]
   }
 
   return {
     label: '未知',
+    value: severity as VulnerabilitySeverity,
   }
 }
 
@@ -51,6 +60,10 @@ export const enum BugReportStatus {
   REJECTED = 'REJECTED',
   RESOLVED = 'RESOLVED',
   CLOSED = 'CLOSED',
+}
+
+interface ReportStatusConfig extends BaseEnumConfig {
+  value: BugReportStatus
 }
 
 export const reportStatusConfig = {
@@ -82,16 +95,16 @@ export const reportStatusConfig = {
     value: BugReportStatus.CLOSED,
     label: '已关闭',
   },
-} satisfies EnumConfig<BugReportStatus>
+} satisfies EnumConfig<BugReportStatus, ReportStatusConfig>
 
-export function getReportStatus(status: string) {
+export function getReportStatus(status: string): ReportStatusConfig {
   if (status in reportStatusConfig) {
     return reportStatusConfig[status as BugReportStatus]
   }
 
   return {
     label: '未知',
-    color: 'bg-gray-500/15 text-gray-600 border-gray-500/20',
+    value: status as BugReportStatus,
   }
 }
 

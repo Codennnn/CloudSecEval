@@ -1053,4 +1053,14 @@ export const BUG_REPORTS_API_CONFIG = {
     requireAdmin: false,
   },
 
+  findMyReports: {
+    summary: '获取我的漏洞报告列表',
+    description: '获取当前用户提交的漏洞报告列表，支持分页、排序和筛选',
+    successResponse: createSuccessResponse({
+      description: '获取我的漏洞报告列表成功',
+      type: PaginatedBugReportsResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
 } satisfies Record<string, ApiOperationConfig>

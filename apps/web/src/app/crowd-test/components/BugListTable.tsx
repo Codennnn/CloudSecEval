@@ -22,7 +22,7 @@ import {
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
-import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey } from '~api/@tanstack/react-query.gen'
+import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey, bugReportsControllerFindMyReportsOptions } from '~api/@tanstack/react-query.gen'
 import { type BugReportSummaryDto } from '~api/types.gen'
 import { BugReportRoleView, getReportStatus, getVulSeverity, NEW_BUG_ID, reportStatusConfig, vulSeverityConfig } from '~crowd-test/constants'
 
@@ -94,7 +94,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
   })
 
   const columns = useMemo<TableColumnDef<Row>[]>(() => {
-    const list: TableColumnDef<Row>[] = [
+    return [
       {
         accessorKey: 'title',
         header: '标题',
@@ -116,75 +116,72 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         getLabelFn: (value) => getReportStatus(value).label,
       }),
       createDateColumn<Row>({ accessorKey: 'createdAt', header: '创建时间' }),
-    ]
+      {
+        id: 'actions',
+        header: '操作',
+        enableSorting: false,
+        enableHiding: false,
+        cell: ({ row }) => {
+          const item = row.original
 
-    list.push({
-      id: 'actions',
-      header: '操作',
-      enableSorting: false,
-      enableHiding: false,
-      cell: ({ row }) => {
-        const item = row.original
-
-        return (
-          <div className="flex items-center gap-0.5">
-            {isAdmin && (
-              <Link
-                href={
-                  getRoutePath(AdminRoutes.CrowdTestBugsReview, { bugReportId: item.id })
-                }
-              >
-                <Button
-                  size="sm"
-                  variant="ghost"
+          return (
+            <div className="flex items-center gap-0.5">
+              {isAdmin && (
+                <Link
+                  href={
+                    getRoutePath(AdminRoutes.CrowdTestBugsReview, { bugReportId: item.id })
+                  }
                 >
-                  查看详情
-                </Button>
-              </Link>
-            )}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                  >
+                    查看详情
+                  </Button>
+                </Link>
+              )}
 
-            {isUser && (
-              <Button
-                size="iconSm"
-                variant="ghost"
-                onClick={() => {
-                  handleEdit(item)
-                }}
-              >
-                <PencilLineIcon />
-              </Button>
-            )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              {isUser && (
                 <Button
-                  className="data-[state=open]:bg-muted text-muted-foreground"
                   size="iconSm"
                   variant="ghost"
+                  onClick={() => {
+                    handleEdit(item)
+                  }}
                 >
-                  <EllipsisVerticalIcon />
+                  <PencilLineIcon />
                 </Button>
-              </DropdownMenuTrigger>
+              )}
 
-              <DropdownMenuContent align="end" className="w-32">
-                {isUser && (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={
-                      () => { handleDeleteClick(item) }
-                    }
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="data-[state=open]:bg-muted text-muted-foreground"
+                    size="iconSm"
+                    variant="ghost"
                   >
-                    删除
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )
-      },
-    })
+                    <EllipsisVerticalIcon />
+                  </Button>
+                </DropdownMenuTrigger>
 
-    return list
+                <DropdownMenuContent align="end" className="w-32">
+                  {isUser && (
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={
+                        () => { handleDeleteClick(item) }
+                      }
+                    >
+                      删除
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )
+        },
+      },
+    ]
   }, [handleDeleteClick, handleEdit, isAdmin, isUser])
 
   return (
@@ -198,7 +195,11 @@ export function BugListTable<Row extends BugReportSummaryDto>(
           showSelection: false,
         }}
         queryKeyFn={bugReportsControllerFindManyQueryKey as QueryKeyFn}
-        queryOptionsFn={bugReportsControllerFindManyOptions as QueryOptionsFn<Row>}
+        queryOptionsFn={
+          isUser
+            ? bugReportsControllerFindMyReportsOptions as QueryOptionsFn<Row>
+            : bugReportsControllerFindManyOptions as QueryOptionsFn<Row>
+        }
         tableRef={tableRef}
         toolbar={{
           rightContent: isUser

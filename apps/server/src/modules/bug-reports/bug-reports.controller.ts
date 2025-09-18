@@ -78,6 +78,22 @@ export class BugReportsController {
     })
   }
 
+  @Get('my-reports')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.findMyReports)
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
+  async findMyReports(
+    @Query() findBugReportsDto: FindBugReportsDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const result = await this.bugReportsService.findMyReports(findBugReportsDto, currentUser)
+
+    return respWithPagination({
+      msg: '获取我的漏洞报告列表成功',
+      data: result.data,
+      pageOptions: result.pagination,
+    })
+  }
+
   @Get('stats')
   @ApiDocs(BUG_REPORTS_API_CONFIG.getStats)
   @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
