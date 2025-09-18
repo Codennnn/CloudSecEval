@@ -1,7 +1,6 @@
 import { get } from 'lodash-es'
 
 import type { TableColumnDef } from '~/components/table/table.type'
-import { Badge } from '~/components/ui/badge'
 import { FieldTypeEnum } from '~/constants/form'
 import { cn } from '~/lib/utils'
 import type { SearchField } from '~/types/advanced-search'
@@ -87,43 +86,4 @@ export type EnumColumnOptions<TData> = TableColumnDef<TData> & {
   enumOptions: { value: string, label: string }[]
   getLabelFn?: (value: string) => string
   className?: string
-}
-
-/**
- * 创建枚举类型的表格列
- */
-export function createEnumColumn<TData>(
-  options: EnumColumnOptions<TData>,
-): TableColumnDef<TData> {
-  const {
-    enumOptions,
-    getLabelFn,
-    className,
-    ...rest
-  } = options
-
-  return {
-    ...rest,
-    type: FieldTypeEnum.ENUM,
-    enumOptions,
-    cell: ({ row }) => {
-      const value = typeof rest.accessorKey === 'string'
-        ? get(row.original, rest.accessorKey)
-        : undefined
-
-      if (value) {
-        const label = getLabelFn?.(String(value))
-          ?? enumOptions.find((opt) => opt.value === value)?.label
-          ?? String(value)
-
-        return (
-          <Badge className={className} variant="outline">
-            {label}
-          </Badge>
-        )
-      }
-
-      return '-'
-    },
-  }
 }

@@ -11,7 +11,8 @@ import { toast } from 'sonner'
 
 import { ProTable, type ProTableProps, type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
-import { createDateColumn, createEnumColumn } from '~/components/table/table.util'
+import { createDateColumn } from '~/components/table/table.util'
+import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
   DropdownMenu,
@@ -19,10 +20,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import { FieldTypeEnum } from '~/constants/form'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
-import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey, bugReportsControllerFindMyReportsOptions } from '~api/@tanstack/react-query.gen'
+import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey, bugReportsControllerFindMyReportsOptions, bugReportsControllerFindMyReportsQueryKey } from '~api/@tanstack/react-query.gen'
 import { type BugReportSummaryDto } from '~api/types.gen'
 import { BugReportRoleView, getReportStatus, getVulSeverity, NEW_BUG_ID, reportStatusConfig, vulSeverityConfig } from '~crowd-test/constants'
 
@@ -63,12 +65,6 @@ export function BugListTable<Row extends BugReportSummaryDto>(
     },
   })
 
-  const handleCreate = useEvent(() => {
-    router.push(
-      getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: NEW_BUG_ID }),
-    )
-  })
-
   const handleEdit = useEvent((item: Row) => {
     onEdit?.(item)
     router.push(
@@ -101,20 +97,40 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         enableSorting: false,
         enableHiding: false,
       },
-      createEnumColumn<Row>({
+      {
         accessorKey: 'severity',
         header: '漏洞等级',
         enableSorting: false,
+        type: FieldTypeEnum.ENUM,
         enumOptions: Object.values(vulSeverityConfig),
-        getLabelFn: (value) => getVulSeverity(value).label,
-      }),
-      createEnumColumn<Row>({
+        cell: ({ row }) => {
+          const severity = row.original.severity
+
+          return (
+            <Badge variant="outline">
+              {getVulSeverity(severity).label}
+            </Badge>
+          )
+        },
+      },
+      {
         accessorKey: 'status',
         header: '状态',
         enableSorting: false,
+        type: FieldTypeEnum.ENUM,
         enumOptions: Object.values(reportStatusConfig),
-        getLabelFn: (value) => getReportStatus(value).label,
-      }),
+        cell: ({ row }) => {
+          const status = row.original.status
+          const statusConfig = getReportStatus(status)
+
+          return (
+            <Badge className={statusConfig.frontColor} variant="outline">
+              {statusConfig.icon}
+              {statusConfig.label}
+            </Badge>
+          )
+        },
+      },
       createDateColumn<Row>({ accessorKey: 'createdAt', header: '创建时间' }),
       {
         id: 'actions',
@@ -194,7 +210,11 @@ export function BugListTable<Row extends BugReportSummaryDto>(
           showPageSizeSelector: true,
           showSelection: false,
         }}
-        queryKeyFn={bugReportsControllerFindManyQueryKey as QueryKeyFn}
+        queryKeyFn={
+          isUser
+            ? bugReportsControllerFindMyReportsQueryKey as QueryKeyFn
+            : bugReportsControllerFindManyQueryKey as QueryKeyFn
+        }
         queryOptionsFn={
           isUser
             ? bugReportsControllerFindMyReportsOptions as QueryOptionsFn<Row>
@@ -204,14 +224,20 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         toolbar={{
           rightContent: isUser
             ? (
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    handleCreate()
-                  }}
+                <Link
+                  href={
+                    getRoutePath(
+                      AdminRoutes.CrowdTestBugsDetail,
+                      { bugReportId: NEW_BUG_ID },
+                    )
+                  }
                 >
-                  提交报告
-                </Button>
+                  <Button
+                    size="sm"
+                  >
+                    提交报告
+                  </Button>
+                </Link>
               )
             : null,
         }}

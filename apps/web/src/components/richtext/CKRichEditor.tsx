@@ -40,7 +40,10 @@ import {
   Underline,
 } from 'ckeditor5'
 
+import { cn } from '~/lib/utils'
+
 import 'ckeditor5/ckeditor5.css'
+import styles from './CKRichEditor.module.css'
 
 const editorConfig: EditorConfig = {
   licenseKey: 'GPL',
@@ -325,14 +328,15 @@ export interface CKRichEditorProps {
   disabled?: boolean
   /** 占位符文本 */
   placeholder?: string
+  /** 外层容器类名（用于样式作用域与主题适配） */
+  className?: string
 }
 
 /**
  * CKEditor 富文本编辑器组件
- * 支持受控和非受控两种模式
  */
 export function CKRichEditor(props: CKRichEditorProps) {
-  const { value, onChange, placeholder, disabled } = props
+  const { value, onChange, placeholder, disabled, className } = props
 
   const editorRef = useRef<ClassicEditor | null>(null)
   const isControlled = value !== undefined
@@ -375,15 +379,17 @@ export function CKRichEditor(props: CKRichEditorProps) {
   }, [value, isControlled])
 
   return (
-    <CKEditor
-      config={{
-        ...editorConfig,
-        placeholder,
-      }}
-      disabled={disabled}
-      editor={ClassicEditor}
-      onChange={handleEditorChange}
-      onReady={handleEditorReady}
-    />
+    <div className={cn(styles.ckr, className)}>
+      <CKEditor
+        config={{
+          ...editorConfig,
+          placeholder,
+        }}
+        disabled={disabled}
+        editor={ClassicEditor}
+        onChange={handleEditorChange}
+        onReady={handleEditorReady}
+      />
+    </div>
   )
 }

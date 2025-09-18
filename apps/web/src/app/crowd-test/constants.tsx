@@ -1,3 +1,5 @@
+import { CheckIcon, ClockIcon, EyeIcon, FileTextIcon, XIcon } from 'lucide-react'
+
 import type { BaseEnumConfig, EnumConfig } from '~/types/common'
 
 export const NEW_BUG_ID = 'new'
@@ -64,36 +66,57 @@ export const enum BugReportStatus {
 
 interface ReportStatusConfig extends BaseEnumConfig {
   value: BugReportStatus
+  icon?: React.ReactNode
+  description?: string
 }
 
 export const reportStatusConfig = {
   [BugReportStatus.DRAFT]: {
     value: BugReportStatus.DRAFT,
     label: '草稿',
+    icon: <FileTextIcon />,
+    frontColor: '!text-muted-foreground',
+    description: '报告正在编辑中，尚未提交审核',
   },
   [BugReportStatus.PENDING]: {
     value: BugReportStatus.PENDING,
     label: '待审核',
+    icon: <ClockIcon />,
+    frontColor: '!text-yellow-600',
+    description: '报告已提交，正在等待审核人员处理',
   },
   [BugReportStatus.IN_REVIEW]: {
     value: BugReportStatus.IN_REVIEW,
     label: '审核中',
+    icon: <EyeIcon />,
+    frontColor: '!text-blue-600',
+    description: '报告正在审核中，请耐心等待审核结果',
   },
   [BugReportStatus.APPROVED]: {
     value: BugReportStatus.APPROVED,
     label: '已通过',
+    icon: <CheckIcon />,
+    frontColor: '!text-green-600',
+    description: '报告已通过审核，漏洞确认有效',
   },
   [BugReportStatus.REJECTED]: {
     value: BugReportStatus.REJECTED,
     label: '已驳回',
+    icon: <XIcon />,
+    frontColor: '!text-red-600',
+    description: '报告被驳回，请根据审核意见修改后重新提交',
   },
   [BugReportStatus.RESOLVED]: {
     value: BugReportStatus.RESOLVED,
     label: '已解决',
+    frontColor: '!text-green-700',
+    description: '漏洞已修复完成',
   },
   [BugReportStatus.CLOSED]: {
     value: BugReportStatus.CLOSED,
     label: '已关闭',
+    frontColor: '!text-muted-foreground',
+    description: '报告已关闭，处理流程结束',
   },
 } satisfies EnumConfig<BugReportStatus, ReportStatusConfig>
 

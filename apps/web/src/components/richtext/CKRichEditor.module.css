@@ -1,0 +1,85 @@
+.ckr {
+  /* 尺寸与圆角适配 */
+  --ck-font-size-base: 14px;
+  --ck-border-radius: var(--radius);
+  --ck-spacing-unit: 0.5rem;
+
+  /* 基础前景/背景颜色适配（对接 global.css 语义变量） */
+  --ck-color-base-background: var(--card);
+  --ck-color-base-foreground: var(--foreground);
+
+  /* Toolbar、面板与边框 */
+  --ck-color-toolbar-border: var(--border);
+  --ck-color-dropdown-panel-background: var(--popover);
+  --ck-color-dropdown-panel-border: var(--border);
+
+  /* 输入框与按钮 */
+  --ck-color-input-background: var(--secondary);
+  --ck-color-input-border: var(--border);
+  --ck-color-button-default-background: transparent;
+  --ck-color-button-default-hover-background: var(--secondary);
+  --ck-color-button-on-background: var(--secondary);
+  --ck-color-button-on-hover-background: var(--secondary);
+}
+
+/* 外层容器（统一边框与圆角，仿 Input 风格） */
+.ckr .ck.ck-editor {
+  background-color: transparent;
+}
+
+.ckr .ck-content {
+  /* 跟随项目的字体与文字颜色 */
+  font-family: var(--font-sans);
+  color: var(--foreground);
+}
+
+.ckr .ck-content code,
+.ckr .ck-content pre code {
+  font-family: var(--font-mono);
+}
+
+/* 结构性微调，确保编辑区域的可用高度与排版一致 */
+.ckr .ck-editor__editable {
+  min-height: 220px;
+
+  /* 移除编辑区自身边框，交给外层容器统一处理 */
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.ckr .ck-content pre {
+  padding: var(--spacing-code-block, 12px);
+  border-radius: calc(var(--radius) - 2px);
+  color: var(--popover-foreground);
+  background-color: oklch(14.5% 0 0deg);
+}
+
+.ckr .ck-content table {
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+/* 工具栏与顶部区域：背景与分隔线，圆角与容器一致 */
+.ckr .ck-editor__top,
+.ckr .ck-toolbar {
+  background-color: var(--popover);
+}
+
+.ckr .ck-toolbar {
+  border-bottom: 1px solid var(--border);
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+}
+
+/* 占位符颜色（与全局 muted-foreground 一致） */
+.ckr .ck-placeholder::before {
+  font-size: 14px;
+  color: var(--muted-foreground) !important;
+}
+
+/* 文本选区颜色（与 Input 统一） */
+.ckr .ck-content ::selection {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}

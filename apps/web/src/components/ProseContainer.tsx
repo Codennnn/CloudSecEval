@@ -16,29 +16,6 @@ interface ProseContainerProps extends React.HTMLAttributes<HTMLElement> {
 
 /**
  * Prose 组件 - 为 MDX 内容提供统一的排版样式
- *
- * @example
- * ```tsx
- * // 使用默认的 div 标签
- * <Prose>
- *   <MDXContent />
- * </Prose>
- *
- * // 使用 article 标签
- * <Prose as="article">
- *   <MDXContent />
- * </Prose>
- *
- * // 使用 section 标签并添加自定义样式
- * <Prose as="section" className="my-custom-class">
- *   <MDXContent />
- * </Prose>
- *
- * // 传递其他 HTML 属性
- * <Prose as="main" id="main-content" role="main">
- *   <MDXContent />
- * </Prose>
- * ```
  */
 export function ProseContainer(props: React.PropsWithChildren<ProseContainerProps>) {
   const {

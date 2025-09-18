@@ -94,20 +94,6 @@ export class BugReportsController {
     })
   }
 
-  @Get('stats')
-  @ApiDocs(BUG_REPORTS_API_CONFIG.getStats)
-  @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
-  async getStats(
-    @Query() statsDto: BugReportStatsDto,
-  ) {
-    const stats = await this.bugReportsService.getStats(statsDto)
-
-    return resp({
-      msg: '获取统计数据成功',
-      data: stats,
-    })
-  }
-
   @Get(':id')
   @ApiDocs(BUG_REPORTS_API_CONFIG.findById)
   @RequirePermissions(PERMISSIONS.bug_reports.read)
@@ -244,6 +230,20 @@ export class BugReportsController {
     return resp({
       msg: '获取审批历史成功',
       data: history,
+    })
+  }
+
+  @Get('stats')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.getStats)
+  @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
+  async getStats(
+    @Query() statsDto: BugReportStatsDto,
+  ) {
+    const stats = await this.bugReportsService.getStats(statsDto)
+
+    return resp({
+      msg: '获取统计数据成功',
+      data: stats,
     })
   }
 

@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
 
+import { ProseContainer } from '~/components/ProseContainer'
 import { RichTextEditor } from '~/components/richtext/RichTextEditor'
 import { SafeHtmlRenderer } from '~/components/richtext/SafeHtmlRenderer'
 import { Button } from '~/components/ui/button'
@@ -80,7 +81,6 @@ export function BugReportForm(props: BugReportFormCardProps) {
     initialValues,
     onSubmit,
     onSaveDraft,
-    onCancel,
     submitText,
     saveDraftText,
     readonly,
@@ -252,9 +252,9 @@ export function BugReportForm(props: BugReportFormCardProps) {
               <FormLabel>问题描述 / 复现步骤 / 影响</FormLabel>
               {readonly
                 ? (
-                    <div className="prose max-w-none bg-muted/70 rounded-lg overflow-hidden p-4">
+                    <ProseContainer className="bg-secondary rounded-lg p-2">
                       <SafeHtmlRenderer html={field.value ?? ''} />
-                    </div>
+                    </ProseContainer>
                   )
                 : (
                     <FormControl>
@@ -380,17 +380,6 @@ export function BugReportForm(props: BugReportFormCardProps) {
             <Separator />
 
             <div className="flex items-center gap-2 py-4">
-              <Button
-                size="sm"
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  onCancel?.()
-                }}
-              >
-                取消
-              </Button>
-
               <div className="flex items-center gap-2 ml-auto">
                 {showSaveDraft && onSaveDraft && (
                   <Button

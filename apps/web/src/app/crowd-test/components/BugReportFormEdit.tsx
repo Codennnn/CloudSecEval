@@ -6,17 +6,22 @@ import { useParams, useRouter } from 'next/navigation'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { BugReportApproval } from './BugReportApproval'
+import { BugReportApprovalHistory } from './BugReportApprovalHistory'
 import { BugReportForm, type BugReportFormValues } from './BugReportForm'
+import { BugReportStatusIndicator } from './BugReportStatusIndicator'
 
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
+import { useUser } from '~admin/stores/useUserStore'
 import {
   bugReportsControllerCreateMutation,
   bugReportsControllerFindByIdOptions,
+  bugReportsControllerResubmitMutation,
   bugReportsControllerSaveDraftMutation,
   bugReportsControllerSubmitDraftMutation,
   bugReportsControllerUpdateDraftMutation,
 } from '~api/@tanstack/react-query.gen'
-import type { CreateBugReportDto, SaveDraftDto, SubmitDraftDto } from '~api/types.gen'
+import type { CreateBugReportDto, ResubmitBugReportDto, SaveDraftDto, SubmitDraftDto } from '~api/types.gen'
 import { BugReportRoleView, BugReportStatus, NEW_BUG_ID, type VulnerabilitySeverity } from '~crowd-test/constants'
 
 export interface BugReportFormEditProps {
@@ -25,9 +30,10 @@ export interface BugReportFormEditProps {
 }
 
 export function BugReportFormEdit(props: BugReportFormEditProps) {
-  const { readonly, roleView = BugReportRoleView.USER } = props
+  const { roleView = BugReportRoleView.USER } = props
 
   const router = useRouter()
+  const user = useUser()
 
   const { bugReportId } = useParams<{ bugReportId: string }>()
   const isNew = bugReportId === NEW_BUG_ID
@@ -39,6 +45,8 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
     enabled: typeof bugReportId === 'string' && !isNew,
   })
   const bugReportData = data?.data
+  const isSameUser = bugReportData?.userId === user?.id
+  const canReview = !isSameUser
 
   // 判断是否为草稿状态
   const isDraft = bugReportData?.status === BugReportStatus.DRAFT
@@ -73,6 +81,13 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
     },
   })
 
+  const resubmitMutation = useMutation({
+    ...bugReportsControllerResubmitMutation(),
+    onSuccess: () => {
+      toast.success('报告重新提交成功！')
+    },
+  })
+
   const handleSubmit = async (values: BugReportFormValues) => {
     // 如果是草稿状态，使用提交草稿API
     if (hasDraft) {
@@ -95,6 +110,29 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
         body: createData,
       })
     }
+
+    if (roleView === BugReportRoleView.USER) {
+      router.replace(getRoutePath(AdminRoutes.CrowdTestMyBugs))
+    }
+    else {
+      router.replace(getRoutePath(AdminRoutes.CrowdTestBugs))
+    }
+  }
+
+  const handleResubmit = async (values: BugReportFormValues, resubmitNote?: string) => {
+    if (!bugReportData?.id) {
+      return
+    }
+
+    const resubmitData: ResubmitBugReportDto = {
+      ...values,
+      resubmitNote,
+    }
+
+    await resubmitMutation.mutateAsync({
+      path: { id: bugReportData.id },
+      body: resubmitData,
+    })
 
     if (roleView === BugReportRoleView.USER) {
       router.replace(getRoutePath(AdminRoutes.CrowdTestMyBugs))
@@ -147,18 +185,131 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
     return undefined
   }, [bugReportData])
 
+  // 根据状态确定表单行为
+  const getFormBehavior = () => {
+    const status = bugReportData?.status
+
+    // 如果是管理员视图且不是同一用户，则只读
+    if (roleView === BugReportRoleView.ADMIN && !isSameUser) {
+      return {
+        readonly: true,
+        showSaveDraft: false,
+        submitText: '',
+        isDraft: false,
+        onSubmit: undefined,
+        onSaveDraft: undefined,
+      }
+    }
+
+    // 新建报告
+    if (isNew) {
+      return {
+        readonly: false,
+        showSaveDraft: true,
+        submitText: createBugReportMutation.isPending ? '提交中...' : '提交报告',
+        isDraft: true,
+        onSubmit: handleSubmit,
+        onSaveDraft: handleSaveDraft,
+      }
+    }
+
+    // 根据状态决定行为
+    switch (status) {
+      case BugReportStatus.DRAFT: {
+        return {
+          readonly: false,
+          showSaveDraft: true,
+          submitText: submitDraftMutation.isPending ? '提交中...' : '提交报告',
+          isDraft: true,
+          onSubmit: handleSubmit,
+          onSaveDraft: handleSaveDraft,
+        }
+      }
+
+      case BugReportStatus.REJECTED: {
+        return {
+          readonly: false,
+          showSaveDraft: false,
+          submitText: resubmitMutation.isPending ? '重新提交中...' : '重新提交',
+          isDraft: false,
+          onSubmit: (values: BugReportFormValues) => handleResubmit(values, '根据审核意见进行了修改'),
+          onSaveDraft: undefined,
+        }
+      }
+
+      case BugReportStatus.PENDING:
+      // fallthrough
+
+      case BugReportStatus.IN_REVIEW:
+      // fallthrough
+
+      case BugReportStatus.APPROVED:
+      // fallthrough
+
+      case BugReportStatus.RESOLVED:
+      // fallthrough
+
+      case BugReportStatus.CLOSED:
+      // fallthrough
+
+      default: {
+        return {
+          readonly: true,
+          showSaveDraft: false,
+          submitText: '',
+          isDraft: false,
+          onSubmit: undefined,
+          onSaveDraft: undefined,
+        }
+      }
+    }
+  }
+
+  const formBehavior = getFormBehavior()
+
   return (
-    <div>
-      <BugReportForm
-        initialValues={initialValues}
-        isDraft={isDraft || isNew}
-        readonly={readonly}
-        saveDraftText={saveDraftMutation.isPending || updateDraftMutation.isPending ? '保存中...' : '保存草稿'}
-        showSaveDraft={!readonly}
-        submitText={submitDraftMutation.isPending ? '处理中...' : (isDraft ? '提交报告' : '确认提交')}
-        onSaveDraft={handleSaveDraft}
-        onSubmit={handleSubmit}
-      />
+    <div className="flex gap-admin-content">
+      <div className="flex-1">
+        <BugReportForm
+          initialValues={initialValues}
+          isDraft={formBehavior.isDraft}
+          readonly={formBehavior.readonly}
+          saveDraftText={saveDraftMutation.isPending || updateDraftMutation.isPending ? '保存中...' : '保存草稿'}
+          showSaveDraft={formBehavior.showSaveDraft}
+          submitText={formBehavior.submitText}
+          onSaveDraft={formBehavior.onSaveDraft}
+          onSubmit={formBehavior.onSubmit}
+        />
+      </div>
+
+      <div className="flex flex-col gap-admin-content shrink-0 xl:w-[420px]">
+        {/* 状态显示 */}
+        {bugReportData && !isNew && (
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">当前状态</h3>
+            <BugReportStatusIndicator
+              status={bugReportData.status as BugReportStatus}
+            />
+          </div>
+        )}
+
+        {bugReportData && (
+          <BugReportApprovalHistory
+            bugReportId={bugReportId}
+          />
+        )}
+
+        {canReview && (
+          <>
+            {bugReportData && (
+              <BugReportApproval
+                bugReportId={bugReportId}
+                currentStatus={bugReportData.status as BugReportStatus}
+              />
+            )}
+          </>
+        )}
+      </div>
     </div>
   )
 }
