@@ -1,9 +1,14 @@
 'use client'
 
+import { useMemo } from 'react'
+
+import { useQuery } from '@tanstack/react-query'
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
+
+import { bugReportsControllerGetDailyReportsStatsOptions } from '~api/@tanstack/react-query.gen'
 
 // 事件趋势图配置（提交 / 审核）
 const eventChartConfig = {
@@ -18,35 +23,72 @@ const eventChartConfig = {
 } as const
 
 /**
- * 生成近 N 天的事件趋势数据（提交 / 审核）。
+ * 将 API 返回的每日统计数据转换为图表所需的格式
  */
-function generateEventTrendData(days: number) {
-  const today = new Date()
-  const data: { date: string, submitted: number, approved: number }[] = []
-
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(today)
-    d.setDate(today.getDate() - i)
-
-    // 简单的可读性波动曲线：基于正弦和余量构造
-    const base = 12 + Math.round(5 * Math.sin((days - i) / 2))
-    const submitted = base + (i % 3)
-    const approvedRaw = submitted - (1 + (i % 2))
-    const approved = approvedRaw >= 0 ? approvedRaw : 0
-
-    data.push({
-      date: d.toISOString().split('T')[0],
-      submitted,
-      approved,
-    })
-  }
-
-  return data
+function transformApiDataToChartData(
+  apiData: { date: string, submittedCount: number, reviewedCount: number }[],
+) {
+  return apiData.map((item) => ({
+    date: item.date,
+    submitted: item.submittedCount,
+    approved: item.reviewedCount,
+  }))
 }
 
-const eventTrendData = generateEventTrendData(14)
-
 export function EventTrendChart() {
+  // 获取最近14天的数据，与原始模拟数据保持一致
+  const { data, isLoading, isError } = useQuery(
+    bugReportsControllerGetDailyReportsStatsOptions({
+      query: {
+        // 14天前的日期
+        startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        // 当前日期
+        endDate: new Date().toISOString().split('T')[0],
+      },
+    }),
+  )
+
+  // 转换API数据为图表所需格式
+  const chartData = useMemo(() => {
+    if (!data?.data.dailyStats) {
+      return []
+    }
+
+    return transformApiDataToChartData(data.data.dailyStats)
+  }, [data])
+
+  // 加载状态
+  if (isLoading) {
+    return (
+      <StatsCard>
+        <StatsCardHeader>
+          <StatsCardTitle>事件趋势</StatsCardTitle>
+        </StatsCardHeader>
+        <StatsCardContent>
+          <div className="h-64 flex items-center justify-center">
+            <div className="text-muted-foreground">加载中...</div>
+          </div>
+        </StatsCardContent>
+      </StatsCard>
+    )
+  }
+
+  // 错误状态
+  if (isError) {
+    return (
+      <StatsCard>
+        <StatsCardHeader>
+          <StatsCardTitle>事件趋势</StatsCardTitle>
+        </StatsCardHeader>
+        <StatsCardContent>
+          <div className="h-64 flex items-center justify-center">
+            <div className="text-muted-foreground">加载失败，请稍后重试</div>
+          </div>
+        </StatsCardContent>
+      </StatsCard>
+    )
+  }
+
   return (
     <StatsCard>
       <StatsCardHeader>
@@ -56,7 +98,7 @@ export function EventTrendChart() {
       <StatsCardContent>
         <div className="h-64">
           <ChartContainer config={eventChartConfig}>
-            <LineChart data={eventTrendData}>
+            <LineChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis
                 axisLine={false}
