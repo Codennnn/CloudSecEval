@@ -3,34 +3,32 @@
 import { useQuery } from '@tanstack/react-query'
 import { Cell, Pie, PieChart } from 'recharts'
 
+import { getTeamRole, teamConfig, TeamRole } from '~/app/crowd-test/constants'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
-
-import { roleColorMap, TeamRole } from '../lib/mockData'
 
 import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
 
-interface TeamOnlineData {
-  name: string
-  value: number
-  fill: string
-}
-
-interface TeamOnlineChartProps {
-  data: TeamOnlineData[]
-  totalOnline: number
-}
-
-export function TeamOnlineChart({ totalOnline }: TeamOnlineChartProps) {
+export function TeamOnlineChart() {
   const { data } = useQuery({
     ...departmentsControllerGetDepartmentOnlineStatsOptions(),
   })
-  const statsData = data?.data.map((d) => ({ name: d.name, value: d.online, fill: roleColorMap[d.role] ?? '#8b5cf6' }))
+
+  const totalOnline = data?.data.totalOnline
+  const statsData = data?.data.departments
+    .filter((d) => d.online > 0)
+    .map((d) => {
+      return {
+        name: d.department.name,
+        value: d.online,
+        fill: teamConfig[getTeamRole(d.department.remark)].colorValue,
+      }
+    })
 
   return (
     <div className="relative min-h-64">
       <ChartContainer
         config={{
-          online: { label: '在线', color: roleColorMap[TeamRole.蓝] },
+          online: { label: '在线', color: teamConfig[TeamRole.蓝].colorValue },
         }}
       >
         <PieChart>

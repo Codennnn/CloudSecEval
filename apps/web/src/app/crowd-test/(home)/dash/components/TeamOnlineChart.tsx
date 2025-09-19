@@ -1,15 +1,34 @@
+import { useQuery } from '@tanstack/react-query'
 import { Cell, Pie, PieChart } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 
-import { roleColorMap, TeamRole, teams } from '../../../(admin)/dashboard/lib/mockData'
+import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
+import { getTeamRole, teamConfig, TeamRole } from '~crowd-test/constants'
 
 export function TeamOnlineChart() {
+  const { data } = useQuery({
+    ...departmentsControllerGetDepartmentOnlineStatsOptions(),
+  })
+
   const legendSolidColors = ['#3b82f6', '#ef4444', '#22d3ee', '#a78bfa']
 
+  const totalOnline = data?.data.totalOnline ?? 0
+
   // 按队伍汇总在线人数（用于饼图）
-  const teamOnlineData = teams.map((t) => ({ name: t.name, value: t.online, fill: roleColorMap[t.role] ?? '#8b5cf6' }))
-  const totalOnline = teams.reduce((sum, t) => sum + t.online, 0)
+  const teamOnlineData = data?.data.departments
+    ? data.data.departments
+        .filter((d) => d.online > 0)
+        .map((d) => {
+          const role = getTeamRole(d.department.remark)
+
+          return {
+            name: d.department.name,
+            value: d.online,
+            fill: teamConfig[role].colorValue,
+          }
+        })
+    : []
 
   return (
     <div className="relative min-h-64">
@@ -70,33 +89,34 @@ export function TeamOnlineChart() {
 
       {/* 发光环效果 */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center -translate-y-[16px]">
-        <div className="size-44 rounded-full ring-1 ring-cyan-400/20 shadow-[0_0_80px_20px_rgba(34,211,238,0.08)]" />
+        <div className="size-44 rounded-full ring-1 ring-theme2/20 shadow-[0_0_80px_20px_rgba(34,211,238,0.08)]" />
       </div>
 
       {/* 中心统计数值 */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center -translate-y-[16px]">
         <div className="text-center">
-          <div className="text-3xl font-extrabold bg-gradient-to-b from-cyan-200 to-blue-500 bg-clip-text text-transparent tabular-nums">
+          <div className="text-3xl font-extrabold bg-gradient-to-b from-theme2 to-theme bg-clip-text text-transparent tabular-nums">
             {totalOnline}
           </div>
-          <div className="text-[10px] uppercase tracking-widest text-cyan-200/70">总在线人数</div>
+          <div className="text-xs text-theme2/70">总在线人数</div>
         </div>
       </div>
 
       {/* 简洁图例 - 按红队蓝队分组 */}
-      <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-xs text-muted-foreground">
+      <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
         {(() => {
           // 按队伍分组计算总在线人数
-          const redTeamOnline = teams
-            .filter((t) => t.role === TeamRole.红)
-            .reduce((sum, t) => sum + t.online, 0)
-          const blueTeamOnline = teams
-            .filter((t) => t.role === TeamRole.蓝)
-            .reduce((sum, t) => sum + t.online, 0)
+          const departments = data?.data.departments ?? []
+          const redTeamOnline = departments
+            .filter((d) => getTeamRole(d.department.remark) === TeamRole.红)
+            .reduce((sum, d) => sum + d.online, 0)
+          const blueTeamOnline = departments
+            .filter((d) => getTeamRole(d.department.remark) === TeamRole.蓝)
+            .reduce((sum, d) => sum + d.online, 0)
 
           const groupData = [
-            { name: '红队', value: redTeamOnline, color: roleColorMap[TeamRole.红] },
-            { name: '蓝队', value: blueTeamOnline, color: roleColorMap[TeamRole.蓝] },
+            { name: '红队', value: redTeamOnline, color: teamConfig[TeamRole.红].colorValue },
+            { name: '蓝队', value: blueTeamOnline, color: teamConfig[TeamRole.蓝].colorValue },
           ]
 
           return groupData.map((item) => {
@@ -107,8 +127,8 @@ export function TeamOnlineChart() {
                 <svg className="shrink-0" height="10" viewBox="0 0 10 10" width="10">
                   <circle cx="5" cy="5" fill={item.color} r="5" />
                 </svg>
-                <span className="truncate">{item.name}</span>
-                <span className="ml-auto tabular-nums text-foreground/70">{item.value}人 ({percent}%)</span>
+                <span className="truncate opacity-60">{item.name}</span>
+                <span className="ml-auto tabular-nums opacity-80">{item.value}人 ({percent}%)</span>
               </div>
             )
           })

@@ -2,10 +2,15 @@
 
 import { useMemo } from 'react'
 
-import { workloadData } from '~/app/crowd-test/(admin)/dashboard/lib/mockData'
+import { useQuery } from '@tanstack/react-query'
+import { get } from 'lodash-es'
+
 import { cn } from '~/lib/utils'
 
 import { DashDecoratorImg } from './DashDecoratorImg'
+
+import { bugReportsControllerGetDepartmentReportsStatsOptions } from '~api/@tanstack/react-query.gen'
+import { BugReportStatus } from '~crowd-test/constants'
 
 interface TeamRankingItem {
   team: string
@@ -16,35 +21,45 @@ interface TeamRankingItem {
 }
 
 interface TeamRankingProps {
-  data?: TeamRankingItem[]
   maxItems?: number
   className?: string
 }
 
 export function TeamRanking(props: TeamRankingProps) {
-  const { data, maxItems = 5, className } = props
+  const { maxItems = 5, className } = props
 
-  // 从 workloadData 生成排行数据
-  const generatedData = useMemo<TeamRankingItem[]>(() => {
-    return workloadData.map((d) => {
-      // 基于提交数和通过数计算综合评分
-      const reportsScore = d.reports * 2 // 提交数权重
-      const vulnsScore = d.vulns * 3 // 通过数权重更高
-      const score = Math.min(100, reportsScore + vulnsScore) // 限制最高100分
+  const { data } = useQuery({
+    ...bugReportsControllerGetDepartmentReportsStatsOptions(),
+  })
 
-      return {
-        team: d.team,
-        score,
-        reports: d.reports,
-        vulns: d.vulns,
-      }
-    })
-  }, [])
+  // 从接口数据生成排行数据
+  const teamData = useMemo<TeamRankingItem[]>(() => {
+    const departmentStats = data?.data.departmentStats
 
-  const finalData = data ?? generatedData
+    if (departmentStats) {
+      return departmentStats.map((d) => {
+        const reports = d.reportCount
+        const vulns = get(d, `statusCounts.${BugReportStatus.APPROVED}.count`, 0)
+
+        // 基于提交数和通过数计算综合评分
+        const reportsScore = reports * 2 // 提交数权重
+        const vulnsScore = vulns * 3 // 通过数权重更高
+        const score = Math.min(100, reportsScore + vulnsScore) // 限制最高100分
+
+        return {
+          team: d.department.name,
+          score,
+          reports,
+          vulns,
+        }
+      })
+    }
+
+    return []
+  }, [data])
 
   // 按通过率排序：优先按通过率，然后按通过数，最后按提交数
-  const sorted = [...finalData]
+  const sorted = [...teamData]
     .sort((a, b) => {
       // 计算通过率
       const reportsA = a.reports ?? 0

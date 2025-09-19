@@ -6,7 +6,7 @@ import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
 import type { ApprovalStatusStatsDataDto, ApprovalStatusStatsDto, GetApprovalStatusStatsDto, SeverityStatsDto } from './dto/approval-status-stats.dto'
-import type { DailyReportsStatsDataDto, DailyReportStatsDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
+import type { DailyReportStatsDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
 import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
 import { type GetTimelineDto, type TimelineBugReportDto, type TimelineEventDto, TimelineEventType } from './dto/timeline.dto'
@@ -602,6 +602,7 @@ export class BugReportsRepository {
           select: {
             id: true,
             name: true,
+            remark: true,
             parent: {
               select: {
                 id: true,
@@ -618,6 +619,7 @@ export class BugReportsRepository {
       departmentId: string
       departmentName: string
       parentDepartmentName?: string
+      departmentRemark?: string
       totalCount: number
       statusCounts: Map<string, number>
     }>()
@@ -645,6 +647,7 @@ export class BugReportsRepository {
           departmentId: user.department.id,
           departmentName: user.department.name,
           parentDepartmentName: user.department.parent?.name,
+          departmentRemark: user.department.remark ?? undefined,
           totalCount: stat._count.id,
           statusCounts,
         })
@@ -656,6 +659,7 @@ export class BugReportsRepository {
       department: {
         id: item.departmentId,
         name: item.departmentName,
+        remark: item.departmentRemark,
         parentName: item.parentDepartmentName,
         path: item.parentDepartmentName
           ? `${item.parentDepartmentName}/${item.departmentName}`
@@ -838,14 +842,15 @@ export class BugReportsRepository {
   async getDailyReportsStats(
     dto: GetDailyReportsStatsDto,
     orgId: string,
-  ): Promise<DailyReportsStatsDataDto> {
+  ) {
     // 设置默认时间范围：最近30天
     const endDate = dto.endDate ? new Date(dto.endDate) : new Date()
     const startDate = dto.startDate
       ? new Date(dto.startDate)
       : new Date(endDate.getTime() - 29 * 24 * 60 * 60 * 1000) // 30天前
 
-    // 设置时间边界：开始日期为00:00:00，结束日期为23:59:59
+    // 改进时间边界处理：考虑时区影响，使用UTC时间进行数据库查询
+    // 但同时确保时间范围的准确性
     const startOfPeriod = new Date(startDate)
     startOfPeriod.setHours(0, 0, 0, 0)
 
@@ -853,27 +858,37 @@ export class BugReportsRepository {
     endOfPeriod.setHours(23, 59, 59, 999)
 
     // 查询每日提交统计
+    // 修复时区问题：使用 DATE("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai')
+    // 修复状态过滤：明确包含所有已提交状态，提高可读性和维护性
     const submittedStats = await this.prisma.$queryRaw<
       { date: string, count: number }[]
     >`
       SELECT 
-        DATE("createdAt") as date,
+        DATE("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai') as date,
         COUNT(*)::int as count
       FROM bug_reports 
       WHERE "orgId" = ${orgId}::uuid
-        AND status != ${BugReportStatus.DRAFT}::"public"."bug_report_status"
+        AND status IN (
+          ${BugReportStatus.PENDING}::"public"."bug_report_status",
+          ${BugReportStatus.IN_REVIEW}::"public"."bug_report_status",
+          ${BugReportStatus.APPROVED}::"public"."bug_report_status",
+          ${BugReportStatus.REJECTED}::"public"."bug_report_status",
+          ${BugReportStatus.RESOLVED}::"public"."bug_report_status",
+          ${BugReportStatus.CLOSED}::"public"."bug_report_status"
+        )
         AND "createdAt" >= ${startOfPeriod}
         AND "createdAt" <= ${endOfPeriod}
-      GROUP BY DATE("createdAt")
+      GROUP BY DATE("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai')
       ORDER BY date
     `
 
     // 查询每日审核统计
+    // 修复时区问题：同样应用时区转换
     const reviewedStats = await this.prisma.$queryRaw<
       { date: string, count: number }[]
     >`
       SELECT 
-        DATE(bal."createdAt") as date,
+        DATE(bal."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai') as date,
         COUNT(DISTINCT bal."bugReportId")::int as count
       FROM bug_report_approval_logs bal
       JOIN bug_reports br ON bal."bugReportId" = br.id
@@ -881,9 +896,21 @@ export class BugReportsRepository {
         AND bal.action IN ('APPROVE', 'REJECT')
         AND bal."createdAt" >= ${startOfPeriod}
         AND bal."createdAt" <= ${endOfPeriod}
-      GROUP BY DATE(bal."createdAt")
+      GROUP BY DATE(bal."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai')
       ORDER BY date
     `
+
+    // 添加调试信息（开发环境下可取消注释用于问题排查）
+    // console.warn('Daily Stats Query Debug:', {
+    //   orgId,
+    //   startDate: startDate.toISOString().split('T')[0],
+    //   endDate: endDate.toISOString().split('T')[0],
+    //   startOfPeriod: startOfPeriod.toISOString(),
+    //   endOfPeriod: endOfPeriod.toISOString(),
+    //   submittedStatsCount: submittedStats.length,
+    //   reviewedStatsCount: reviewedStats.length,
+    //   submittedStats: submittedStats.slice(0, 3), // 显示前3条数据用于调试
+    // })
 
     // 构建完整的日期范围
     const dailyStatsMap = new Map<string, DailyReportStatsDto>()

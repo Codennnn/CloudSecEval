@@ -15,13 +15,7 @@ import { TeamReportsOverviewTable } from './components/TeamReportsOverviewTable'
 import {
   personalRanking,
   projectInfo,
-  roleColorMap,
-  teams,
 } from './lib/mockData'
-
-// 按队伍汇总在线人数（用于饼图）
-const teamOnlineData = teams.map((t) => ({ name: t.name, value: t.online, fill: roleColorMap[t.role] ?? '#8b5cf6' }))
-const totalOnline = teams.reduce((sum, t) => sum + t.online, 0)
 
 export function DashboardPage() {
   return (
@@ -73,7 +67,7 @@ export function DashboardPage() {
             <StatsCardTitle>团队在线情况</StatsCardTitle>
           </StatsCardHeader>
           <StatsCardContent>
-            <TeamOnlineChart data={teamOnlineData} totalOnline={totalOnline} />
+            <TeamOnlineChart />
           </StatsCardContent>
         </StatsCard>
 

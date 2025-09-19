@@ -1,8 +1,14 @@
 'use client'
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { useMemo } from 'react'
+
+import { useQuery } from '@tanstack/react-query'
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from 'recharts'
 
 import { ChartContainer, ChartTooltip } from '~/components/ui/chart'
+
+import { bugReportsControllerGetDepartmentReportsStatsOptions } from '~api/@tanstack/react-query.gen'
+import { getTeamRole, getTeamRoleConfig, TeamRole } from '~crowd-test/constants'
 
 interface TooltipPayload {
   dataKey: string
@@ -22,9 +28,9 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload?.length) {
     return (
-      <div className="rounded-lg border border-cyan-400/30 bg-gray-900/95 p-3 shadow-2xl backdrop-blur-sm">
-        <div className="mb-2 border-b border-cyan-400/20 pb-2">
-          <p className="text-xs font-mono text-cyan-300">{`日期: ${label}`}</p>
+      <div className="rounded-lg border border-theme2/30 bg-crowd-test-dashboard-background/80 p-3 shadow-2xl backdrop-blur-sm">
+        <div className="mb-2 border-b border-theme2/30 pb-2">
+          <p className="text-xs font-mono text-theme2">{`团队: ${label}`}</p>
         </div>
         <div className="space-y-1">
           {payload.map((item, index) => (
@@ -34,7 +40,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
                 style={{ backgroundColor: item.color }}
               />
               <span className="text-xs font-mono text-gray-200">
-                提交数:
+                报告数:
               </span>
               <span className="text-xs font-mono font-bold text-white">
                 {item.value}
@@ -51,57 +57,47 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 }
 
 interface ReportSubmitDatum {
-  date: string
-  count: number
+  team: string
+  reports: number
+  role: TeamRole
 }
 
-interface ReportSubmitChartProps {
-  data?: ReportSubmitDatum[]
-}
+export function ReportSubmitChart() {
+  const { data } = useQuery({
+    ...bugReportsControllerGetDepartmentReportsStatsOptions(),
+  })
 
-// 默认示例数据（最近 7 天提交数）
-const defaultData: ReportSubmitDatum[] = [
-  { date: '09-09', count: 12 },
-  { date: '09-10', count: 18 },
-  { date: '09-11', count: 9 },
-  { date: '09-12', count: 16 },
-  { date: '09-13', count: 21 },
-  { date: '09-14', count: 14 },
-  { date: '09-15', count: 19 },
-]
+  // 将API数据转换为图表需要的格式
+  const chartData = useMemo<ReportSubmitDatum[]>(() => {
+    const departmentStats = data?.data.departmentStats
 
-/**
- * 报告提交统计图
- * - 参考 TeamReportsChart 的实现方式
- * - 颜色适配仪表盘主题（青蓝系），同时遵循全局 ChartContainer 配置模式
- */
-export function ReportSubmitChart(props: ReportSubmitChartProps) {
-  const data = props.data ?? defaultData
+    if (!departmentStats) {
+      return []
+    }
+
+    return departmentStats.map((d) => ({
+      team: d.department.name,
+      reports: d.reportCount,
+      role: getTeamRole(d.department.remark),
+    }))
+  }, [data])
 
   return (
     <ChartContainer
       className="aspect-auto h-44 w-full"
       config={{
-        submissions: {
-          label: '提交数',
-          // 选用青蓝色以贴合首页仪表盘视觉基调
-          color: '#06b6d4',
+        reports: {
+          label: '报告数',
+          color: getTeamRoleConfig(TeamRole.蓝).colorValue,
         },
       }}
     >
-      <BarChart data={data}>
-        <defs>
-          <linearGradient id="fillSubmissions" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="5%" stopColor="var(--color-submissions)" stopOpacity={0.95} />
-            <stop offset="95%" stopColor="var(--color-submissions)" stopOpacity={0.15} />
-          </linearGradient>
-        </defs>
-
+      <BarChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
 
         <XAxis
           axisLine={false}
-          dataKey="date"
+          dataKey="team"
           tickLine={false}
           tickMargin={8}
         />
@@ -117,7 +113,14 @@ export function ReportSubmitChart(props: ReportSubmitChartProps) {
           }}
         />
 
-        <Bar dataKey="count" fill="url(#fillSubmissions)" radius={6} stroke="var(--color-submissions)" />
+        <Bar dataKey="reports" radius={6}>
+          {chartData.map((d) => (
+            <Cell
+              key={d.team}
+              fill={getTeamRoleConfig(d.role).colorValue}
+            />
+          ))}
+        </Bar>
       </BarChart>
     </ChartContainer>
   )

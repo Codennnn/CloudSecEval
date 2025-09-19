@@ -5,14 +5,9 @@ import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 
-import { roleColorMap, TeamRole } from '../lib/mockData'
-
 import { bugReportsControllerGetDepartmentReportsStatsOptions } from '~api/@tanstack/react-query.gen'
+import { getTeamRole, getTeamRoleConfig, TeamRole } from '~crowd-test/constants'
 
-/**
- * 团队报告数柱状图
- * 展示各队伍提交的漏洞报告数；红队为红色，蓝队为蓝色，其它队伍使用主题色回退。
- */
 export function TeamReportsChart() {
   const { data } = useQuery({
     ...bugReportsControllerGetDepartmentReportsStatsOptions(),
@@ -20,13 +15,13 @@ export function TeamReportsChart() {
   const statsData = data?.data.departmentStats.map((d) => ({
     team: d.department.name,
     reports: d.reportCount,
-    role: d.department.name === '未分配部门' ? TeamRole.蓝 : TeamRole.红,
+    role: getTeamRole(d.department.remark),
   }))
 
   return (
     <ChartContainer
       config={{
-        reports: { label: '报告数', color: roleColorMap[TeamRole.蓝] },
+        reports: { label: '报告数', color: getTeamRoleConfig(TeamRole.蓝).colorValue },
       }}
     >
       <BarChart data={statsData}>
@@ -42,7 +37,7 @@ export function TeamReportsChart() {
           {statsData?.map((d) => (
             <Cell
               key={d.team}
-              fill={roleColorMap[d.role]}
+              fill={getTeamRoleConfig(d.role).colorValue}
             />
           ))}
         </Bar>

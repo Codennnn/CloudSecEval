@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { pick } from 'radash'
 
 import type { Department, Organization, Prisma } from '#prisma/client'
 import { CreateUserDto } from '~/modules/users/dto/create-user.dto'
@@ -95,17 +96,24 @@ export class DepartmentsService {
   async getDepartmentOnlineStats(orgId: Organization['id']) {
     // 获取指定组织下的所有活跃部门及其用户数量
     const departments = await this.deptRepository.findWithAdvancedSearch({
-      orgId, // 添加组织ID筛选
+      orgId,
       isActive: true,
       page: 1,
       pageSize: 100, // 获取所有部门
     })
 
-    return departments.departments.map((dept) => {
+    const departmentStats = departments.departments.map((dept) => {
       return {
-        name: dept.name,
+        department: pick(dept, ['id', 'name', 'remark']),
         online: dept._count.users, // 使用实际用户数量作为在线人数
       }
     })
+
+    const totalOnline = departmentStats.reduce((sum, stat) => sum + stat.online, 0)
+
+    return {
+      totalOnline,
+      departments: departmentStats,
+    }
   }
 }

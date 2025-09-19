@@ -4,7 +4,7 @@
 }
 
 .crowd-test-dashboard {
-  --foreground: white;
+  --foreground: oklch(98.5% 0 0deg);
   --theme: #1491ff;
   --theme2: #09f6ff;
 

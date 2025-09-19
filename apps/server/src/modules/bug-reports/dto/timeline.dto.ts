@@ -34,7 +34,6 @@ export class GetTimelineDto extends IntersectionType(PaginationQueryDto) {
   @ApiPropertyOptional({
     description: '事件类型筛选',
     enum: TimelineEventType,
-    example: TimelineEventType.SUBMIT,
   })
   @IsOptional()
   @IsEnum(TimelineEventType, { message: '事件类型必须是有效的枚举值' })

@@ -18,6 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Separator } from '~/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { FileUploader } from '~/components/upload/FileUploader'
+import { useAttachmentFiles } from '~/hooks/useAttachmentFiles'
+import { useBatchFileUpload } from '~/hooks/useBatchFileUpload'
 import { cn } from '~/lib/utils'
 
 import { type CreateBugReportDto } from '~api/types.gen'
@@ -109,6 +111,13 @@ export function BugReportForm(props: BugReportFormCardProps) {
     name: 'discoveredUrls',
   })
 
+  // 上传相关逻辑
+  const { uploadFiles, isUploading: isUploadingFiles } = useBatchFileUpload()
+
+  // 监听附件ID变化，获取对应的文件信息
+  const attachmentIds = form.watch('attachmentIds') ?? []
+  const { data: attachmentFiles = [] } = useAttachmentFiles(attachmentIds)
+
   const submitBtnText = submitText ?? (isDraft ? '提交报告' : (initialValues as { id?: string } | undefined)?.id ? '保存' : '提交')
   const draftBtnText = saveDraftText ?? '保存草稿'
 
@@ -139,6 +148,44 @@ export function BugReportForm(props: BugReportFormCardProps) {
     }
 
     return onSaveDraft?.(result)
+  })
+
+  // 处理文件选择和上传
+  const handleFilesSelected = useEvent(async (selectedFiles: File[]) => {
+    if (readonly) {
+      return
+    }
+
+    try {
+      const uploadedFiles = await uploadFiles(selectedFiles)
+
+      // 获取当前已有的附件ID
+      const currentAttachmentIds = form.getValues('attachmentIds') ?? []
+      const newAttachmentIds = uploadedFiles.map((file) => file.id)
+
+      // 合并新旧附件ID
+      const allAttachmentIds = [...currentAttachmentIds, ...newAttachmentIds]
+
+      // 更新表单数据
+      form.setValue('attachmentIds', allAttachmentIds)
+    }
+    catch (error) {
+      console.error('文件上传失败:', error)
+      // 这里可以添加 toast 提示，或者通过 props 传入错误处理函数
+    }
+  })
+
+  // 处理文件删除
+  const handleFileRemove = useEvent((file: { id: string }) => {
+    if (readonly) {
+      return Promise.resolve()
+    }
+
+    const currentAttachmentIds = form.getValues('attachmentIds') ?? []
+    const updatedIds = currentAttachmentIds.filter((id) => id !== file.id)
+    form.setValue('attachmentIds', updatedIds)
+
+    return Promise.resolve()
   })
 
   return (
@@ -362,13 +409,16 @@ export function BugReportForm(props: BugReportFormCardProps) {
         <FormField
           control={form.control}
           name="attachmentIds"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FileUploader
                 multiple
                 accept={undefined}
+                loading={isUploadingFiles}
                 readonly={readonly}
-                onChange={field.onChange}
+                value={attachmentFiles}
+                onFileRemove={handleFileRemove}
+                onFilesSelected={handleFilesSelected}
               />
               {!readonly && <FormMessage />}
             </FormItem>

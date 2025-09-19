@@ -1,9 +1,10 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
 import { IsDateString, IsOptional, IsString } from 'class-validator'
 
 import { BugReportStatus } from '#prisma/client'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
+import { BaseDepartmentDto } from '~/modules/departments/dto/base-department.dto'
 
 /**
  * 获取部门报告统计的查询参数 DTO
@@ -37,21 +38,8 @@ export class GetDepartmentReportsStatsDto {
 /**
  * 部门信息 DTO
  */
-export class DepartmentInfoDto {
-  @ApiProperty({
-    description: '部门ID',
-    example: 'dept-uuid-123',
-  })
-  @Expose()
-  readonly id!: string
-
-  @ApiProperty({
-    description: '部门名称',
-    example: '技术部',
-  })
-  @Expose()
-  readonly name!: string
-
+export class DepartmentInfoDto
+  extends PickType(BaseDepartmentDto, ['id', 'name', 'remark']) {
   @ApiPropertyOptional({
     description: '父部门名称',
     example: '研发中心',

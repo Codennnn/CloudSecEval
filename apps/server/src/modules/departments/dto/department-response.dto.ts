@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, OmitType } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional, OmitType, PickType } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
 
 import { StandardListResponseDto, StandardResponseDto } from '~/common/dto/standard-response.dto'
@@ -102,16 +102,20 @@ export class DepartmentMembersApiResponseDto extends StandardListResponseDto<Use
   readonly data!: UserListItemDto[]
 }
 
+export class OnlineDepartmentDto extends PickType(BaseDepartmentDto, ['id', 'name', 'remark']) {
+}
+
 /**
  * 部门在线人数统计 DTO
  */
 export class DepartmentOnlineStatsDto {
   @ApiProperty({
-    description: '部门名称',
-    example: '技术部',
+    description: '部门信息',
+    type: OnlineDepartmentDto,
   })
+  @Type(() => OnlineDepartmentDto)
   @Expose()
-  readonly name!: string
+  readonly department!: OnlineDepartmentDto
 
   @ApiProperty({
     description: '在线人数',
@@ -122,15 +126,35 @@ export class DepartmentOnlineStatsDto {
 }
 
 /**
- * 部门在线人数统计 API 响应 DTO
+ * 部门在线人数统计汇总数据 DTO
  */
-export class DepartmentOnlineStatsApiResponseDto extends StandardResponseDto<
-  DepartmentOnlineStatsDto[]
-> {
+export class DepartmentOnlineStatsSummaryDto {
   @ApiProperty({
-    description: '部门在线人数统计数据',
+    description: '总在线人数',
+    example: 45,
+  })
+  @Expose()
+  readonly totalOnline!: number
+
+  @ApiProperty({
+    description: '各部门在线人数统计',
     type: [DepartmentOnlineStatsDto],
   })
   @Type(() => DepartmentOnlineStatsDto)
-  declare data: DepartmentOnlineStatsDto[]
+  @Expose()
+  readonly departments!: DepartmentOnlineStatsDto[]
+}
+
+/**
+ * 部门在线人数统计 API 响应 DTO
+ */
+export class DepartmentOnlineStatsApiResponseDto extends StandardResponseDto<
+  DepartmentOnlineStatsSummaryDto
+> {
+  @ApiProperty({
+    description: '部门在线人数统计汇总数据',
+    type: DepartmentOnlineStatsSummaryDto,
+  })
+  @Type(() => DepartmentOnlineStatsSummaryDto)
+  declare data: DepartmentOnlineStatsSummaryDto
 }

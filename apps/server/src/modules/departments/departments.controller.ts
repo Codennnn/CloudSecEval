@@ -71,7 +71,9 @@ export class DepartmentsController {
   @Get('online-stats')
   @RequirePermissions(PERMISSIONS.departments.read)
   @ApiDocs(DEPARTMENTS_API_CONFIG.getDepartmentOnlineStats)
-  async getDepartmentOnlineStats(@CurrentUser() currentUser: CurrentUserDto) {
+  async getDepartmentOnlineStats(
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
     const stats = await this.deptService.getDepartmentOnlineStats(currentUser.organization.id)
 
     return resp({

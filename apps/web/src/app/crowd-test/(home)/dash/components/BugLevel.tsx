@@ -3,6 +3,8 @@ import { get } from 'lodash-es'
 import type { ApprovalStatusStatsDataDto } from '~api/types.gen'
 import { getVulSeverity, VulnerabilitySeverity } from '~crowd-test/constants'
 
+const baselineCount = 50
+
 interface BugLevelProps {
   data?: ApprovalStatusStatsDataDto['severityStats']
 }
@@ -40,13 +42,16 @@ export function BugLevel(props: BugLevelProps) {
               <div
                 className="h-full bg-gradient-to-r from-theme to-95% to-theme2"
                 style={{
-                  width: `${(item.value / 100) * 100}%`,
+                  width: `${(item.value / baselineCount) * 100}%`,
                 }}
               />
             </div>
 
-            <div className="text-sm shrink-0 tabular-nums w-10 text-right">
-              {item.value}个
+            <div className="text-sm shrink-0 w-10 text-right opacity-70 whitespace-nowrap">
+              <span className="font-semibold mr-0.5 tabular-nums">
+                {item.value}
+              </span>
+              个
             </div>
           </div>
         </div>

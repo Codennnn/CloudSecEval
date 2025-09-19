@@ -23,7 +23,9 @@ export default function DashPage() {
   const statsData = data?.data
 
   return (
-    <div className="crowd-test-dashboard bg-crowd-test-dashboard-background h-screen w-screen px-2 overflow-hidden">
+    <div
+      className="crowd-test-dashboard bg-crowd-test-dashboard-background h-screen w-screen px-2 overflow-hidden"
+    >
       <div className="relative size-full">
         <div className="z-10 absolute left-1/2 -translate-x-1/2 top-8 text-3xl font-extrabold">
           {SITE_CONFIG.adminTitle}

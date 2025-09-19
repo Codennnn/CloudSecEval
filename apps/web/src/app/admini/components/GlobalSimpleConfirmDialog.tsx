@@ -1,5 +1,7 @@
 'use client'
 
+import { consola } from 'consola'
+
 import { useSimpleConfirmDialogStore } from '../stores/useSimpleConfirmDialogStore'
 
 import { SimpleConfirmDialog } from './SimpleConfirmDialog'
@@ -34,7 +36,7 @@ export function GlobalSimpleConfirmDialog() {
       closeDialog()
     }
     catch (error) {
-      console.error('确认操作执行失败:', error)
+      consola.error('确认操作执行失败:', error)
       // 发生错误时不关闭对话框，让用户可以重试
     }
     finally {

@@ -57,7 +57,7 @@ export function BugReportApprovalHistory({ bugReportId }: BugReportApprovalHisto
     }),
   })
 
-  const approvalHistory = ((data as unknown as { data: ApprovalLogItem[] })?.data) ?? []
+  const approvalHistory = (data as unknown as { data: ApprovalLogItem[] })?.data ?? []
 
   if (isLoading) {
     return (
@@ -110,22 +110,22 @@ export function BugReportApprovalHistory({ bugReportId }: BugReportApprovalHisto
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={log.approver?.avatarUrl} />
+                    <AvatarImage src={log.approver.avatarUrl} />
                     <AvatarFallback>
-                      {log.approver?.name?.charAt(0) ?? '?'}
+                      {log.approver.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
 
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium text-sm">
-                        {log.approver?.name ?? '未知用户'}
+                        {log.approver.name}
                       </span>
                       <Badge
                         className="text-xs"
                         variant={ACTION_VARIANTS[log.action]}
                       >
-                        {ACTION_LABELS[log.action] ?? log.action}
+                        {ACTION_LABELS[log.action]}
                       </Badge>
                       {log.targetUser && (
                         <span className="text-xs text-muted-foreground">
