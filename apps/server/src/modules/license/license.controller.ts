@@ -1,8 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { Request } from 'express'
 
-import { AdminGuard } from '~/common/guards/admin.guard'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { LICENSE_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
@@ -40,7 +39,6 @@ import { LicenseService } from './license.service'
 
 @ApiTags('授权码管理')
 @Controller('license')
-@UseGuards(AdminGuard)
 export class LicenseController {
   constructor(private readonly licenseService: LicenseService) {}
 

@@ -14,6 +14,7 @@ import { BugReportsModule } from './modules/bug-reports/bug-reports.module'
 import { DepartmentsModule } from './modules/departments/departments.module'
 import { LicenseModule } from './modules/license/license.module'
 import { OrganizationsModule } from './modules/organizations/organizations.module'
+import { PermissionsGuard } from './modules/permissions/guards/permissions.guard'
 import { PermissionsModule } from './modules/permissions/permissions.module'
 import { RolesModule } from './modules/roles/roles.module'
 import { StatisticsModule } from './modules/statistics/statistics.module'
@@ -53,6 +54,11 @@ import { PrismaModule } from './prisma/prisma.module'
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    // 权限守卫 - 在身份验证通过后进行权限检查
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
     },
   ],
 })

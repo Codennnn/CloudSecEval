@@ -1,7 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '~/common/guards/admin.guard'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { ORGANIZATIONS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
@@ -23,7 +22,6 @@ import { OrganizationsService } from './organizations.service'
 
 @ApiTags('组织管理')
 @Controller('orgs')
-@UseGuards(AdminGuard)
 export class OrganizationsController {
   constructor(private readonly orgService: OrganizationsService) {}
 

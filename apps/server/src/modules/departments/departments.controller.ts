@@ -1,7 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '~/common/guards/admin.guard'
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { DEPARTMENTS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
@@ -28,7 +27,6 @@ import { UpdateDepartmentDto } from './dto/update-department.dto'
 
 @ApiTags('部门管理')
 @Controller('departments')
-@UseGuards(AdminGuard)
 export class DepartmentsController {
   constructor(private readonly deptService: DepartmentsService) {}
 

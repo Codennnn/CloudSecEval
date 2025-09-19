@@ -1,7 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common'
+import { Controller, Get, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '~/common/guards/admin.guard'
 import { resp } from '~/common/utils/response.util'
 import { STATISTICS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
@@ -36,7 +35,6 @@ import { StatisticsService } from './statistics.service'
 
 @ApiTags('统计信息')
 @Controller('statistics')
-@UseGuards(AdminGuard)
 export class StatisticsController {
   constructor(private readonly statsService: StatisticsService) {}
 
