@@ -21,11 +21,13 @@ import {
 
 import { type AdminDocumentItem, AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 
-export function NavDocuments({
-  items,
-}: {
+interface NavDocumentsProps {
   items: AdminDocumentItem[]
-}) {
+}
+
+export function NavDocuments(props: NavDocumentsProps) {
+  const { items } = props
+
   const pathname = usePathname()
   const decodedPathname = decodeURIComponent(pathname)
 

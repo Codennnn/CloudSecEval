@@ -7,8 +7,9 @@ import {
   PROTECTED_FILE_EXTENSIONS,
   SEARCH_BOT_PATTERN,
 } from '~/constants/routes.server'
+import { isCrowdTest } from '~/utils/platform'
 
-import { adminLoginRoute, adminRootRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
+import { adminLoginRoute, adminRootRoute, AdminRoutes, getRoutePath, loginRedirectRoute } from '~admin/lib/admin-nav'
 
 /**
  * 处理管理后台路由的访问控制逻辑
@@ -51,6 +52,25 @@ function handleAdminRoutes(request: NextRequest, pathname: string) {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  if (isCrowdTest()) {
+    if (pathname === '/') {
+      return NextResponse.redirect(
+        new URL(getRoutePath(AdminRoutes.CrowdTestDash),
+          request.url,
+        ),
+      )
+    }
+
+    if (pathname.startsWith(AdminRoutes.Root)) {
+      return NextResponse.redirect(
+        new URL(
+          pathname.replace(AdminRoutes.Root, AdminRoutes.CrowdTestRoot),
+          request.url,
+        ),
+      )
+    }
+  }
 
   // 管理后台路由访问控制
   if (pathname.startsWith(adminRootRoute)) {

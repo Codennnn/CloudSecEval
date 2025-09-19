@@ -1,5 +1,5 @@
 import { consola } from 'consola'
-import { BarChartIcon, BookUpIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, NotebookTextIcon, SquareUserRoundIcon, UserIcon, UserRoundIcon, UsersIcon } from 'lucide-react'
+import { BarChartIcon, BookUpIcon, ChartLineIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, NotebookTextIcon, SquareUserRoundIcon, UserIcon, UserRoundIcon, UsersIcon } from 'lucide-react'
 
 import { SITE_CONFIG } from '~/constants/common'
 import { adminPermission } from '~/constants/permission'
@@ -27,6 +27,7 @@ export const enum AdminRoutes {
 
   CrowdTestRoot = '/crowd-test',
   CrowdTestLogin = '/crowd-test/login',
+  CrowdTestDash = '/crowd-test/dash',
   CrowdTestDashboard = '/crowd-test/dashboard',
   CrowdTestBugs = '/crowd-test/bugs',
   CrowdTestBugsDetail = '/crowd-test/bugs/[bugReportId]',
@@ -128,6 +129,12 @@ export const adminNavConfig: AdminNavConfig = {
   [AdminRoutes.CrowdTestLogin]: {
     title: '登录',
     url: AdminRoutes.CrowdTestLogin,
+  },
+  [AdminRoutes.CrowdTestDash]: {
+    title: '数据大屏',
+    url: AdminRoutes.CrowdTestDash,
+    icon: ChartLineIcon,
+    requiredPermission: [adminPermission.bug_reports.stats],
   },
   [AdminRoutes.CrowdTestDashboard]: {
     title: '数据总览',
@@ -247,6 +254,12 @@ const createAdminNavItem = (adminRoute: AdminRoutes): AdminNavItem => ({
 // MARK: 主导航栏
 const adminNavMain = isCrowdTest()
   ? [
+      {
+        title: '数据大屏',
+        url: AdminRoutes.CrowdTestDash,
+        icon: ChartLineIcon,
+        requiredPermission: [adminPermission.bug_reports.stats],
+      },
       createAdminNavItem(AdminRoutes.CrowdTestDashboard),
       createAdminNavItem(AdminRoutes.CrowdTestBugs),
       createAdminNavItem(AdminRoutes.CrowdTestMyBugs),
@@ -263,29 +276,33 @@ const adminNavMain = isCrowdTest()
       createAdminNavItem(AdminRoutes.Permissions),
     ]
 
-const adminNavSecondary: AdminSecondaryNavItem[] = [
-  {
-    title: '流量分析',
-    url: 'https://us.umami.is/websites/17a93541-f99f-43ed-8d7c-3887b4e85693',
-    icon: BarChartIcon,
-  },
-]
+const adminNavSecondary: AdminSecondaryNavItem[] = isCrowdTest()
+  ? []
+  : [
+      {
+        title: '流量分析',
+        url: 'https://us.umami.is/websites/17a93541-f99f-43ed-8d7c-3887b4e85693',
+        icon: BarChartIcon,
+      },
+    ]
 
 // MARK: 文档导航栏
-const adminNavDocuments: AdminDocumentItem[] = [
-  {
-    title: '项目介绍文案',
-    url: '项目介绍文案',
-  },
-  {
-    title: '收费逻辑说明话术',
-    url: '收费逻辑说明话术',
-  },
-  {
-    title: '文档搜索',
-    url: '文档搜索',
-  },
-]
+const adminNavDocuments: AdminDocumentItem[] = isCrowdTest()
+  ? []
+  : [
+      {
+        title: '项目介绍文案',
+        url: '项目介绍文案',
+      },
+      {
+        title: '收费逻辑说明话术',
+        url: '收费逻辑说明话术',
+      },
+      {
+        title: '文档搜索',
+        url: '文档搜索',
+      },
+    ]
 
 export function useAdminNav() {
   const userPermissions = useUserPermissions()
