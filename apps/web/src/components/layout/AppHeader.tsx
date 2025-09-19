@@ -16,7 +16,7 @@ export function AppHeader() {
   const handleAuthClick = () => {
     openAuthDialog({
       title: '输入授权信息',
-      description: '请输入您的邮箱和授权码来解锁付费内容',
+      description: '请输入你的邮箱和授权码来解锁付费内容',
       onSuccess: () => {
         // 授权成功后，组件会自动重新渲染并隐藏按钮
       },

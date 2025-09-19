@@ -171,7 +171,7 @@ export function GlobalAuthDialog() {
             {config.title ?? '输入授权信息'}
           </DialogTitle>
           <DialogDescription>
-            {config.description ?? '请输入您的邮箱和授权码来解锁付费内容'}
+            {config.description ?? '请输入你的邮箱和授权码来解锁付费内容'}
           </DialogDescription>
         </DialogHeader>
 

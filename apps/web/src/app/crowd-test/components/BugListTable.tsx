@@ -9,6 +9,7 @@ import { useMutation } from '@tanstack/react-query'
 import { EllipsisVerticalIcon, PencilLineIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { MemberInfo } from '~/components/MemberInfo'
 import { ProTable, type ProTableProps, type ProTableRef, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
@@ -91,6 +92,26 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
   const columns = useMemo<TableColumnDef<Row>[]>(() => {
     return [
+      ...(isAdmin
+        ? [
+            {
+              id: 'user',
+              accessorKey: 'user',
+              header: '提交人',
+              enableSorting: false,
+              enableHiding: false,
+              cell: ({ row }) => {
+                return (
+                  <MemberInfo
+                    avatarUrl={row.original.user?.avatarUrl}
+                    email={row.original.user?.email}
+                    name={row.original.user?.name}
+                  />
+                )
+              },
+            },
+          ] as TableColumnDef<Row>[]
+        : []),
       {
         accessorKey: 'title',
         header: '标题',

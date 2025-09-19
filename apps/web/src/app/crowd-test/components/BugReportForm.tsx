@@ -12,7 +12,7 @@ import { ProseContainer } from '~/components/ProseContainer'
 import { RichTextEditor } from '~/components/richtext/RichTextEditor'
 import { SafeHtmlRenderer } from '~/components/richtext/SafeHtmlRenderer'
 import { Button } from '~/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Separator } from '~/components/ui/separator'
@@ -206,13 +206,18 @@ export function BugReportForm(props: BugReportFormCardProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>报告标题</FormLabel>
+              {!readonly && (
+                <FormDescription>
+                  一句话概括问题，便于搜索与筛选。
+                </FormDescription>
+              )}
 
               {
                 readonly
                   ? <div className="text-sm break-words">{field.value ?? '-'}</div>
                   : (
                       <FormControl>
-                        <Input id="title" {...field} />
+                        <Input id="title" placeholder="例如：登录页验证码可被绕过" {...field} />
                       </FormControl>
                     )
               }
@@ -230,7 +235,12 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
             return (
               <FormItem>
-                <FormLabel>漏洞等级</FormLabel>
+                <FormLabel>严重等级</FormLabel>
+                {!readonly && (
+                  <FormDescription>
+                    请选择与你的评估一致的严重程度，后续仍可在审核中调整
+                  </FormDescription>
+                )}
 
                 {
                   readonly
@@ -259,7 +269,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                               )}
                               id="severity"
                             >
-                              <SelectValue placeholder="选择漏洞等级" />
+                              <SelectValue placeholder="请选择严重等级" />
                             </SelectTrigger>
 
                             <SelectContent>
@@ -296,7 +306,12 @@ export function BugReportForm(props: BugReportFormCardProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>问题描述 / 复现步骤 / 影响</FormLabel>
+              <FormLabel>问题描述与复现步骤</FormLabel>
+              {!readonly && (
+                <FormDescription>
+                  建议包含：环境信息、操作步骤、预期与实际结果、影响范围/业务风险
+                </FormDescription>
+              )}
               {readonly
                 ? (
                     <ProseContainer className="bg-secondary rounded-lg p-2">
@@ -306,7 +321,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                 : (
                     <FormControl>
                       <RichTextEditor
-                        placeholder="请详细描述问题、复现步骤与影响范围"
+                        placeholder="请按：环境→步骤→结果→影响 的结构详细填写，可粘贴代码与截图"
                         value={field.value}
                         onChange={field.onChange}
                       />
@@ -320,7 +335,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
         {/* MARK: 漏洞 URL 字段 */}
         <FormItem>
           <div className="flex items-center justify-between">
-            <FormLabel>漏洞 URL</FormLabel>
+            <FormLabel>复现链接</FormLabel>
             {!readonly && (
               <Button
                 size="xs"
@@ -331,10 +346,15 @@ export function BugReportForm(props: BugReportFormCardProps) {
                 }}
               >
                 <Plus />
-                添加 URL
+                添加链接
               </Button>
             )}
           </div>
+          {!readonly && (
+            <FormDescription>
+              提供可复现问题的页面或接口地址；如有多个，请逐条添加。
+            </FormDescription>
+          )}
 
           <div className="space-y-3">
             {
@@ -389,7 +409,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                                   </TooltipTrigger>
 
                                   <TooltipContent>
-                                    删除 URL
+                                    删除链接
                                   </TooltipContent>
                                 </Tooltip>
                               )}
@@ -411,6 +431,12 @@ export function BugReportForm(props: BugReportFormCardProps) {
           name="attachmentIds"
           render={() => (
             <FormItem>
+              <FormLabel>附件</FormLabel>
+              {!readonly && (
+                <FormDescription>
+                  上传截图、视频、POC 或日志等证据材料
+                </FormDescription>
+              )}
               <FileUploader
                 multiple
                 accept={undefined}

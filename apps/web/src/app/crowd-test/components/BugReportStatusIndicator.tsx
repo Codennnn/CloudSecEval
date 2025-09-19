@@ -30,7 +30,7 @@ export function BugReportStatusIndicator(props: BugReportStatusIndicatorProps) {
       {/* 被驳回状态的额外提示 */}
       {status === BugReportStatus.REJECTED && (
         <p className="text-sm text-red-600 mt-2">
-          您可以修改报告内容后重新提交。
+          你可以修改报告内容后重新提交。
         </p>
       )}
     </div>

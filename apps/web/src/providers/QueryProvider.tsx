@@ -17,11 +17,11 @@ const queryClientConfig: QueryClientConfig = {
       // 全局不进行失败重试；在具体查询中按需设置 retry
       retry: false,
       // 窗口重新获得焦点时重新获取数据
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
       // 网络重连时重新获取数据
       refetchOnReconnect: true,
       // 组件挂载时重新获取数据
-      refetchOnMount: true,
+      refetchOnMount: 'always',
     },
     mutations: {
       // 全局不进行失败重试；在具体变更中按需设置 retry

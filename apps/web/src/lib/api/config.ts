@@ -41,7 +41,7 @@ export const API_CONFIG: ApiConfig = {
   enableLogging: isDevelopment(),
   enableCache: true,
   cacheTime: 30 * 60 * 1000,
-  staleTime: 5 * 60 * 1000,
+  staleTime: 3 * 60 * 1000,
 }
 
 // ==================== MARK: 配置工具函数 ====================

@@ -216,7 +216,7 @@ export function ProfilePage() {
                     )
               }
               className="mb-6"
-              description="管理您的账户信息和个人设置"
+              description="管理你的账户信息和个人设置"
               title="个人资料"
             />
 

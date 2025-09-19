@@ -91,7 +91,7 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
           <div className="text-3xl mb-3">🔐</div>
           <h3 className="font-bold text-xl mb-3 text-info">付费内容</h3>
           <p className="text-info mb-4 leading-relaxed">
-            此内容为付费专享，请输入您的邮箱和授权码来解锁内容。
+            此内容为付费专享，请输入你的邮箱和授权码来解锁内容。
             <br />
             支持我们继续提供高质量的中文技术文档。
           </p>

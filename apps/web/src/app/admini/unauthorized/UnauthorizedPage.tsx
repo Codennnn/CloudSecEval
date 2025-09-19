@@ -87,7 +87,7 @@ export function UnauthorizedPage() {
               <ul className="space-y-list-item text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-muted-foreground/60 mt-0.5">•</span>
-                  您的账户权限不足
+                  你的账户权限不足
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-muted-foreground/60 mt-0.5">•</span>

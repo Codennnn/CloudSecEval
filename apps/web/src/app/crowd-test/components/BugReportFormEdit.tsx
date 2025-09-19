@@ -37,13 +37,17 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
 
   const { bugReportId } = useParams<{ bugReportId: string }>()
   const isNew = bugReportId === NEW_BUG_ID
+  const isUser = roleView === BugReportRoleView.USER
+
+  const queryOption = {
+    path: { id: bugReportId },
+  }
 
   const { data } = useQuery({
-    ...bugReportsControllerFindByIdOptions({
-      path: { id: bugReportId },
-    }),
+    ...bugReportsControllerFindByIdOptions(queryOption),
     enabled: typeof bugReportId === 'string' && !isNew,
   })
+
   const bugReportData = data?.data
   const isSameUser = bugReportData?.userId === user?.id
   const canReview = !isSameUser
@@ -284,7 +288,7 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
 
       <div className="flex flex-col gap-admin-content shrink-0 xl:w-[420px]">
         {/* 状态显示 */}
-        {bugReportData && !isNew && (
+        {bugReportData && !isNew && isUser && (
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground">当前状态</h3>
             <BugReportStatusIndicator
