@@ -526,7 +526,11 @@ export class BugReportsService {
     // 验证漏洞报告是否存在
     await this.findBugReportOrThrow(id)
 
-    return this.bugReportsRepository.getApprovalHistory(id, includeApprover, includeTargetUser)
+    return this.bugReportsRepository.getApprovalHistory(
+      id,
+      includeApprover,
+      includeTargetUser,
+    )
   }
 
   /**

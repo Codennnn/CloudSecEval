@@ -238,8 +238,8 @@ const adminNavMain = isCrowdTest()
       createAdminNavItem(AdminRoutes.CrowdTestDashboard),
       createAdminNavItem(AdminRoutes.CrowdTestBugs),
       createAdminNavItem(AdminRoutes.CrowdTestMyBugs),
-      createAdminNavItem(AdminRoutes.CrowdTestTeams),
       createAdminNavItem(AdminRoutes.CrowdTestMyTeam),
+      createAdminNavItem(AdminRoutes.CrowdTestTeams),
       createAdminNavItem(AdminRoutes.CrowdTestRoles),
       createAdminNavItem(AdminRoutes.CrowdTestPermissions),
     ]

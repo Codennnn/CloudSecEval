@@ -47,7 +47,7 @@ const ACTION_VARIANTS = {
 } as const
 
 export function BugReportApprovalHistory({ bugReportId }: BugReportApprovalHistoryProps) {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     ...bugReportsControllerGetApprovalHistoryOptions({
       path: { id: bugReportId },
       query: {
@@ -59,97 +59,67 @@ export function BugReportApprovalHistory({ bugReportId }: BugReportApprovalHisto
 
   const approvalHistory = (data as unknown as { data: ApprovalLogItem[] })?.data ?? []
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>审批历史</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">加载中...</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>审批历史</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-destructive">加载失败: {error.message}</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (approvalHistory.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>审批历史</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">暂无审批记录</p>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>审批历史</CardTitle>
       </CardHeader>
+
       <CardContent>
-        <div className="space-y-4">
-          {approvalHistory.map((log) => (
-            <div key={log.id} className="border-l-2 border-muted pl-4 pb-4 last:pb-0">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3 flex-1">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={log.approver.avatarUrl} />
-                    <AvatarFallback>
-                      {log.approver.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
+        {
+          isLoading
+            ? <p className="text-muted-foreground">加载中...</p>
+            : approvalHistory.length > 0
+              ? (
+                  <div className="space-y-4">
+                    {approvalHistory.map((log) => (
+                      <div key={log.id} className="border-l-2 border-muted pl-4 pb-4 last:pb-0">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 flex-1">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={log.approver.avatarUrl} />
+                              <AvatarFallback>
+                                {log.approver.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
 
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium text-sm">
-                        {log.approver.name}
-                      </span>
-                      <Badge
-                        className="text-xs"
-                        variant={ACTION_VARIANTS[log.action]}
-                      >
-                        {ACTION_LABELS[log.action]}
-                      </Badge>
-                      {log.targetUser && (
-                        <span className="text-xs text-muted-foreground">
-                          → {log.targetUser.name}
-                        </span>
-                      )}
-                    </div>
+                            <div className="flex-1 space-y-2">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-medium text-sm">
+                                  {log.approver.name}
+                                </span>
+                                <Badge
+                                  className="text-xs"
+                                  variant={ACTION_VARIANTS[log.action]}
+                                >
+                                  {ACTION_LABELS[log.action]}
+                                </Badge>
+                                {log.targetUser && (
+                                  <span className="text-xs text-muted-foreground">
+                                    → {log.targetUser.name}
+                                  </span>
+                                )}
+                              </div>
 
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {log.comment}
-                    </p>
+                              <p className="text-sm text-muted-foreground leading-relaxed">
+                                {log.comment}
+                              </p>
 
-                    <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(log.createdAt), {
-                        addSuffix: true,
-                        locale: zhCN,
-                      })}
-                    </p>
+                              <p className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(new Date(log.createdAt), {
+                                  addSuffix: true,
+                                  locale: zhCN,
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                )
+              : <p className="text-muted-foreground">暂无审批记录</p>
+        }
       </CardContent>
     </Card>
   )
