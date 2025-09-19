@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: generatePageTitle(AdminRoutes.CrowdTestTeamProfile),
 }
 
-export default function TeamProfilePage() {
+export default function MyTeamProfilePage() {
   return (
     <div className="p-admin-content">
       <TeamProfile />

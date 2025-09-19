@@ -317,7 +317,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
           )}
         />
 
-        {/* 漏洞 URL 字段 */}
+        {/* MARK: 漏洞 URL 字段 */}
         <FormItem>
           <div className="flex items-center justify-between">
             <FormLabel>漏洞 URL</FormLabel>
@@ -405,7 +405,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
           </div>
         </FormItem>
 
-        {/* 附件上传 */}
+        {/* MARK: 附件上传 */}
         <FormField
           control={form.control}
           name="attachmentIds"

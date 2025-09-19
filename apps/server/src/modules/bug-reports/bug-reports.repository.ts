@@ -20,6 +20,8 @@ interface BugReportFilter {
   orgId?: string
   /** 用户ID - 用于查询特定用户的报告 */
   userId?: string
+  /** 部门ID - 用于查询特定部门成员的报告 */
+  departmentId?: string
 }
 
 /**
@@ -133,6 +135,24 @@ export class BugReportsRepository {
   }
 
   /**
+   * 查询部门成员的漏洞报告列表
+   */
+  async findDepartmentReports(dto: FindBugReportsDto, departmentId?: string, orgId?: string) {
+    if (!departmentId) {
+      // 如果用户没有部门，返回空结果
+      return {
+        data: [],
+        total: 0,
+        page: dto.page ?? 1,
+        pageSize: dto.pageSize ?? 10,
+        totalPages: 0,
+      }
+    }
+
+    return this.findBugReportsWithFilter(dto, { departmentId, orgId })
+  }
+
+  /**
    * 通用的漏洞报告查询方法
    * 根据不同的过滤条件查询报告列表
    */
@@ -150,6 +170,12 @@ export class BugReportsRepository {
 
     if (filter.userId) {
       where.userId = filter.userId
+    }
+
+    if (filter.departmentId) {
+      where.user = {
+        departmentId: filter.departmentId,
+      }
     }
 
     const orderBy = searchBuilder.getOrderBy()

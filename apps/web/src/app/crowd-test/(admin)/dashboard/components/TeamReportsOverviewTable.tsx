@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react'
 
-import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { get } from 'lodash-es'
 
@@ -10,7 +9,6 @@ import { ProTable } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Badge } from '~/components/ui/badge'
 
-import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerGetDepartmentReportsStatsOptions } from '~api/@tanstack/react-query.gen'
 import { BugReportStatus, getTeamRole, getTeamRoleConfig, type TeamRole } from '~crowd-test/constants'
 

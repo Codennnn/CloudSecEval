@@ -71,7 +71,7 @@ export function PermissionSelect(props: PermissionSelectProps) {
     ...permissionsControllerFindAllOptions({
       query: {
         page: 1,
-        pageSize: 10,
+        pageSize: 100,
         ...(searchTerm ? { search: searchTerm } : {}),
       },
     }),

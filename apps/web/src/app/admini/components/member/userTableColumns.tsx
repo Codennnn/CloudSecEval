@@ -1,8 +1,8 @@
 'use client'
 
+import { MemberInfo } from '~/components/MemberInfo'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Badge } from '~/components/ui/badge'
-import { UserAvatar } from '~/components/UserAvatar'
 import { FieldTypeEnum } from '~/constants/form'
 import { formatDate } from '~/utils/date'
 
@@ -25,18 +25,11 @@ export function createUserColumns(
       accessorKey: 'user',
       header: '成员',
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <UserAvatar avatarUrl={row.original.avatarUrl} />
-
-          <div className="flex flex-col gap-0.5">
-            <div className="font-medium">
-              {row.original.name ?? '-'}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {row.original.email}
-            </div>
-          </div>
-        </div>
+        <MemberInfo
+          avatarUrl={row.original.avatarUrl}
+          email={row.original.email}
+          name={row.original.name}
+        />
       ),
       enableSorting: false,
       enableHiding: false,

@@ -8,13 +8,12 @@ interface PermissionGuardProps {
   required: PermissionFlag | PermissionFlag[]
   mode?: PermissionMode
   fallback?: React.ReactNode
-  children: React.ReactNode
 }
 
 /**
  * 页面/区块权限守卫
  */
-export function PermissionGuard(props: PermissionGuardProps) {
+export function PermissionGuard(props: React.PropsWithChildren<PermissionGuardProps>) {
   const { required, children } = props
 
   const fallbackNode = props.fallback ?? null

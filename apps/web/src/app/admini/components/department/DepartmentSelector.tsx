@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import type { OrganizationId } from '~/lib/api/types'
+import { isCrowdTest } from '~/utils/platform'
 
 import { useDepartmentData } from './hooks/useDepartmentData'
 import type { DepartmentTreeNode } from './types'
@@ -166,7 +167,7 @@ export function DepartmentSelector(props: DepartmentSelectorProps) {
     excludeDepartmentId,
     showRootOption = true,
     rootValue = 'ROOT',
-    rootLabel = '无（作为一级部门）',
+    rootLabel = isCrowdTest() ? '无' : '无（作为一级部门）',
     className,
   } = props
 

@@ -79,7 +79,7 @@ export class BugReportsService {
       throw BusinessException.notFound(BUSINESS_CODES.BUG_REPORT_NOT_FOUND)
     }
 
-    return bugReport
+    return this.transformAttachmentsToIds(bugReport)
   }
 
   /**
@@ -109,6 +109,27 @@ export class BugReportsService {
     const result = await this.bugReportsRepository.findMyReports(
       dto,
       currentUser.id,
+    )
+
+    return {
+      data: result.data.map((item) => this.transformAttachmentsToIds(item)),
+      pagination: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      },
+    }
+  }
+
+  /**
+   * 查询当前用户所在部门成员的漏洞报告列表
+   */
+  async findDepartmentReports(dto: FindBugReportsDto, currentUser: CurrentUserDto) {
+    const result = await this.bugReportsRepository.findDepartmentReports(
+      dto,
+      currentUser.department?.id,
+      currentUser.organization.id,
     )
 
     return {
@@ -703,5 +724,23 @@ export class BugReportsService {
     )
 
     return stats
+  }
+
+  /**
+   * 转换附件数据为ID列表
+   */
+  private transformAttachmentsToIds<T extends { attachments?: unknown }>(
+    data: T,
+  ): Omit<T, 'attachments'> & { attachmentIds?: string[] } {
+    const result = { ...data } as Omit<T, 'attachments'> & { attachmentIds?: string[] }
+
+    // 如果有附件数据，提取ID列表
+    if (data.attachments && Array.isArray(data.attachments)) {
+      result.attachmentIds = data.attachments.map((attachment: AttachmentDto) => attachment.id)
+      // 删除原始附件数据
+      delete (result as Record<string, unknown>).attachments
+    }
+
+    return result
   }
 }

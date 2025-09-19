@@ -274,11 +274,11 @@ export function getTeamRoleConfig(role?: string): TeamRoleConfig {
 
 export function getTeamRole(text?: string): TeamRole {
   if (text) {
-    if (text.includes(TeamRole.红)) {
+    if (text.includes(TeamRole.红) || text.includes('攻击')) {
       return TeamRole.红
     }
 
-    if (text.includes(TeamRole.蓝)) {
+    if (text.includes(TeamRole.蓝) || text.includes('防守')) {
       return TeamRole.蓝
     }
   }

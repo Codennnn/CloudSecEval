@@ -205,11 +205,6 @@ export function BugListTable<Row extends BugReportSummaryDto>(
       <ProTable<Row>
         {...restProTableProps}
         columns={columns}
-        paginationConfig={{
-          pageSizeOptions: [10, 20, 30, 40, 50],
-          showPageSizeSelector: true,
-          showSelection: false,
-        }}
         queryKeyFn={
           isUser
             ? bugReportsControllerFindMyReportsQueryKey as QueryKeyFn

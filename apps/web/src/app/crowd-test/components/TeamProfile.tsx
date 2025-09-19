@@ -8,9 +8,11 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/
 import { Separator } from '~/components/ui/separator'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
-import { activityTimeline, getReportStatusTitle, riskTrend, type TeamReportStats, teamReportStats, vulnTrend } from '../../dashboard/lib/mockData'
+import { getReportStatusTitle, riskTrend, type TeamReportStats, teamReportStats, vulnTrend } from '../(admin)/dashboard/lib/mockData'
 
 import { MemberReportTable } from './MemberReportTable'
+
+import { useUser } from '~admin/stores/useUserStore'
 
 interface StatCardProps {
   title: string
@@ -102,6 +104,9 @@ function TeamReportStatsCards({ stats }: { stats: TeamReportStats }) {
 }
 
 export function TeamProfile() {
+  const user = useUser()
+  const teamId = user?.department?.id
+
   // Performance 区：用现有趋势数组合并为双曲线数据
   const performanceData = riskTrend.map((r, idx) => ({
     idx,
@@ -188,14 +193,13 @@ export function TeamProfile() {
             </StatsCardHeader>
 
             <StatsCardContent>
-              <ActivityTimeline activities={activityTimeline} />
+              <ActivityTimeline />
             </StatsCardContent>
           </StatsCard>
         </div>
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold">成员漏洞报告列表</h3>
         <MemberReportTable />
       </div>
     </div>

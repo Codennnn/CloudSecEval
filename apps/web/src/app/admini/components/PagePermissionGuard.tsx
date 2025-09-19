@@ -9,10 +9,6 @@ import { useHasPermissions } from '~/lib/permissions/hooks'
 
 import { AdminRoutes, getPagePermissionByRoute } from '~admin/lib/admin-nav'
 
-interface PagePermissionGuardProps {
-  children: React.ReactNode
-}
-
 /**
  * 页面级权限保护组件
  *
@@ -22,7 +18,7 @@ interface PagePermissionGuardProps {
  * - 无权限时重定向到专用提示页面
  * - 传递原始路径信息供提示页面使用
  */
-export function PagePermissionGuard({ children }: PagePermissionGuardProps) {
+export function PagePermissionGuard({ children }: React.PropsWithChildren) {
   const router = useRouter()
   const pathname = usePathname()
 

@@ -5,7 +5,7 @@ import { StandardListResponseDto, StandardResponseDto } from '~/common/dto/stand
 import { BaseOrganizationDto } from '~/modules/organizations/dto/base-organization.dto'
 import { BaseUserDto } from '~/modules/users/dto/base-user.dto'
 
-import { AttachmentDto, BaseBugReportDto } from './base-bug-report.dto'
+import { BaseBugReportDto } from './base-bug-report.dto'
 
 /**
  * 用户引用 DTO（用于漏洞报告响应）
@@ -97,12 +97,12 @@ export class BugReportDataDto extends BaseBugReportDto {
   readonly organization?: OrganizationRefDto
 
   @ApiPropertyOptional({
-    description: '附件详细信息',
-    type: [AttachmentDto],
+    description: '附件ID列表',
+    type: [String],
+    example: ['file-id-1', 'file-id-2'],
   })
-  @Type(() => AttachmentDto)
   @Expose()
-  readonly attachments?: AttachmentDto[]
+  readonly attachmentIds?: string[]
 }
 
 /**
@@ -159,7 +159,8 @@ export class BugReportSummaryDto extends PickType(BaseBugReportDto, [
 /**
  * 分页漏洞报告响应 DTO
  */
-export class PaginatedBugReportsResponseDto extends StandardListResponseDto<BugReportSummaryDto> {
+export class PaginatedBugReportsResponseDto
+  extends StandardListResponseDto<BugReportSummaryDto> {
   @ApiProperty({
     description: '漏洞报告列表',
     type: [BugReportSummaryDto],
@@ -194,12 +195,12 @@ export class MyBugReportDataDto extends PickType(BaseBugReportDto, [
   readonly reviewer?: UserRefDto
 
   @ApiPropertyOptional({
-    description: '附件信息',
-    type: [AttachmentDto],
+    description: '附件ID列表',
+    type: [String],
+    example: ['file-id-1', 'file-id-2'],
   })
-  @Type(() => AttachmentDto)
   @Expose()
-  readonly attachments?: AttachmentDto[]
+  readonly attachmentIds?: string[]
 }
 
 /**

@@ -43,27 +43,12 @@ export const RESOURCES = [
   'admin',
 ] as const
 
-export const ACTIONS = [
-  'create',
-  'read',
-  'update',
-  'delete',
-  'export',
-  'review',
-  'update_status',
-  'batch_operations',
-  'stats',
-] as const
-
-export type Resource = typeof RESOURCES[number]
-export type BaseAction = typeof ACTIONS[number]
-export type WildcardAction = '*'
-export type Action = BaseAction | WildcardAction
+type Resource = typeof RESOURCES[number]
 
 /**
  * 规范化的权限标识符类型 `${resource}:${action}`，支持通配符 `${resource}:*`
  */
-export type PermissionSlug = `${Resource}:${Action}`
+export type PermissionFlag = `${Resource}:${string}`
 
 /**
  * 资源 → 动作的常量映射（非通配符）
@@ -111,6 +96,7 @@ export const PERMISSIONS = {
     delete: 'licenses:delete',
   },
   bug_reports: {
+    manage: 'bug_reports:manage',
     create: 'bug_reports:create',
     read: 'bug_reports:read',
     update: 'bug_reports:update',
@@ -127,7 +113,7 @@ export const PERMISSIONS = {
   },
   // admin 通常通过通配符控制：P('admin').all → 超级管理员权限
   admin: {},
-} as const satisfies Record<Resource, Partial<Record<BaseAction, PermissionSlug>>>
+} as const satisfies Record<Resource, Record<string, PermissionFlag>>
 
 /**
  * 权限标识构造器
@@ -148,12 +134,6 @@ export function P<R extends Resource>(resource: R) {
     all: `${resource}:*` as const,
   }
 }
-
-/**
- * 权限标识符
- * 格式为 'resource:action'
- */
-export type PermissionFlag = PermissionSlug
 
 /**
  * 权限元数据

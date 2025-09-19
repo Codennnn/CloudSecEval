@@ -103,6 +103,25 @@ export class BugReportsController {
     })
   }
 
+  @Get('department-reports')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.findDepartmentReports)
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
+  async findDepartmentReports(
+    @Query() findBugReportsDto: FindBugReportsDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    const result = await this.bugReportsService.findDepartmentReports(
+      findBugReportsDto,
+      currentUser,
+    )
+
+    return respWithPagination({
+      msg: '获取部门成员漏洞报告列表成功',
+      data: result.data,
+      pageOptions: result.pagination,
+    })
+  }
+
   @Get('timeline')
   @ApiDocs(BUG_REPORTS_API_CONFIG.getTimeline)
   @RequirePermissions(PERMISSIONS.bug_reports.read)
@@ -283,7 +302,7 @@ export class BugReportsController {
     const bugReport = await this.bugReportsService.findById(id)
 
     return resp({
-      msg: '获取漏洞报告成功',
+      msg: '获取漏洞报告详情成功',
       data: bugReport,
     })
   }

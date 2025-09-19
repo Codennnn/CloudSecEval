@@ -1,5 +1,5 @@
 import { consola } from 'consola'
-import { BarChartIcon, BookUpIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, NotebookTextIcon, SquareUserRoundIcon, UserIcon, UsersIcon } from 'lucide-react'
+import { BarChartIcon, BookUpIcon, FingerprintIcon, GaugeIcon, KeyIcon, type LucideIcon, NotebookTextIcon, SquareUserRoundIcon, UserIcon, UserRoundIcon, UsersIcon } from 'lucide-react'
 
 import { SITE_CONFIG } from '~/constants/common'
 import { adminPermission } from '~/constants/permission'
@@ -32,6 +32,7 @@ export const enum AdminRoutes {
   CrowdTestBugsDetail = '/crowd-test/bugs/[bugReportId]',
   CrowdTestBugsReview = '/crowd-test/bugs/review/[bugReportId]',
   CrowdTestMyBugs = '/crowd-test/my-bugs',
+  CrowdTestMyTeam = '/crowd-test/my-team',
   CrowdTestTeams = '/crowd-test/teams',
   CrowdTestTeamProfile = '/crowd-test/teams/[teamId]',
   CrowdTestPermissions = '/crowd-test/permissions',
@@ -132,26 +133,37 @@ export const adminNavConfig: AdminNavConfig = {
     title: '数据总览',
     url: AdminRoutes.CrowdTestDashboard,
     icon: GaugeIcon,
+    requiredPermission: [adminPermission.statistics.read],
   },
   [AdminRoutes.CrowdTestBugs]: {
     title: '报告管理',
     url: AdminRoutes.CrowdTestBugs,
     icon: NotebookTextIcon,
+    requiredPermission: [adminPermission.bug_reports.manage],
   },
   [AdminRoutes.CrowdTestBugsDetail]: {
     title: '报告详情',
     url: AdminRoutes.CrowdTestBugsDetail,
     icon: NotebookTextIcon,
+    requiredPermission: [adminPermission.bug_reports.read],
   },
   [AdminRoutes.CrowdTestBugsReview]: {
     title: '报告审核',
     url: AdminRoutes.CrowdTestBugsReview,
     icon: NotebookTextIcon,
+    requiredPermission: [adminPermission.bug_reports.manage],
   },
   [AdminRoutes.CrowdTestMyBugs]: {
     title: '我的报告',
     url: AdminRoutes.CrowdTestMyBugs,
     icon: BookUpIcon,
+    requiredPermission: [adminPermission.bug_reports.read],
+  },
+  [AdminRoutes.CrowdTestMyTeam]: {
+    title: '我的团队',
+    url: AdminRoutes.CrowdTestMyTeam,
+    icon: UserRoundIcon,
+    requiredPermission: [adminPermission.bug_reports.read],
   },
   [AdminRoutes.CrowdTestTeams]: {
     title: '团队管理',
@@ -163,6 +175,7 @@ export const adminNavConfig: AdminNavConfig = {
     title: '团队概况',
     url: AdminRoutes.CrowdTestTeamProfile,
     icon: UsersIcon,
+    requiredPermission: [adminPermission.departments.read],
   },
   [AdminRoutes.CrowdTestPermissions]: {
     title: '权限管理',
@@ -226,6 +239,7 @@ const adminNavMain = isCrowdTest()
       createAdminNavItem(AdminRoutes.CrowdTestBugs),
       createAdminNavItem(AdminRoutes.CrowdTestMyBugs),
       createAdminNavItem(AdminRoutes.CrowdTestTeams),
+      createAdminNavItem(AdminRoutes.CrowdTestMyTeam),
       createAdminNavItem(AdminRoutes.CrowdTestRoles),
       createAdminNavItem(AdminRoutes.CrowdTestPermissions),
     ]

@@ -33,7 +33,7 @@ import { UserAvatar } from '~/components/UserAvatar'
 import { RoutePath } from '~/constants/routes.client'
 
 import { useLogout } from '~admin/hooks/api/useAuth'
-import { AdminRoutes } from '~admin/lib/admin-nav'
+import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { useUser } from '~admin/stores/useUserStore'
 
 export function NavUser() {
@@ -111,7 +111,7 @@ export function NavUser() {
             </DropdownMenuSub>
 
             <DropdownMenuGroup>
-              <Link href={AdminRoutes.Profile}>
+              <Link href={getRoutePath(AdminRoutes.Profile)}>
                 <DropdownMenuItem>
                   <UserIcon />
                   账号信息

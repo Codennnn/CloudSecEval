@@ -1107,4 +1107,14 @@ export const BUG_REPORTS_API_CONFIG = {
     requireAdmin: false,
   },
 
+  findDepartmentReports: {
+    summary: '获取部门成员报告列表',
+    description: '获取当前用户所在部门的成员提交的漏洞报告列表，支持分页、排序和筛选',
+    successResponse: createSuccessResponse({
+      description: '获取部门成员报告列表成功',
+      type: PaginatedBugReportsResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
 } satisfies Record<string, ApiOperationConfig>

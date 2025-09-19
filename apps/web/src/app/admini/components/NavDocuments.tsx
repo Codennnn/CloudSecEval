@@ -19,7 +19,7 @@ import {
   SidebarMenuItem,
 } from '~/components/ui/sidebar'
 
-import { type AdminDocumentItem, AdminRoutes } from '~admin/lib/admin-nav'
+import { type AdminDocumentItem, AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 
 export function NavDocuments({
   items,
@@ -74,7 +74,7 @@ export function NavDocuments({
         })}
 
         <SidebarMenuItem>
-          <Link href={AdminRoutes.Docs}>
+          <Link href={getRoutePath(AdminRoutes.Docs)}>
             <SidebarMenuButton
               className="text-sidebar-foreground/70"
               // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
