@@ -102,35 +102,37 @@ export function middleware(request: NextRequest) {
         return NextResponse.next()
       }
 
-      // 检查 referer 是否来自允许的域名
-      const isAllowedReferer = allowedDomains.some((domain) => {
-        try {
-          const refererUrl = new URL(referer)
+      if (!isCrowdTest()) {
+        // 检查 referer 是否来自允许的域名
+        const isAllowedReferer = allowedDomains.some((domain) => {
+          try {
+            const refererUrl = new URL(referer)
 
-          return refererUrl.hostname.includes(domain)
-            || refererUrl.hostname.endsWith(`.${domain}`)
-            || domain.includes(refererUrl.hostname)
-        }
-        catch {
-          return false
-        }
-      })
-
-      // 检查当前主机是否在允许列表中
-      const isAllowedHost = host && allowedDomains.some((domain) =>
-        host.includes(domain) || domain.includes(host),
-      )
-
-      if (!isAllowedReferer && !isAllowedHost) {
-        consola.warn('🚫 Blocked hotlink attempt:', {
-          path: request.nextUrl.pathname,
-          referer,
-          userAgent: userAgent.substring(0, 100),
-          timestamp: new Date().toISOString(),
+            return refererUrl.hostname.includes(domain)
+              || refererUrl.hostname.endsWith(`.${domain}`)
+              || domain.includes(refererUrl.hostname)
+          }
+          catch {
+            return false
+          }
         })
 
-        // 返回防盗链警告图片
-        return NextResponse.redirect(new URL(ASSET_ROUTES.HOTLINK_WARNING, request.url))
+        // 检查当前主机是否在允许列表中
+        const isAllowedHost = host && allowedDomains.some((domain) =>
+          host.includes(domain) || domain.includes(host),
+        )
+
+        if (!isAllowedReferer && !isAllowedHost) {
+          consola.warn('🚫 已拦截盗链访问：', {
+            path: request.nextUrl.pathname,
+            referer,
+            userAgent: userAgent.substring(0, 100),
+            timestamp: new Date().toISOString(),
+          })
+
+          // 返回防盗链警告图片
+          return NextResponse.redirect(new URL(ASSET_ROUTES.HOTLINK_WARNING, request.url))
+        }
       }
     }
   }
