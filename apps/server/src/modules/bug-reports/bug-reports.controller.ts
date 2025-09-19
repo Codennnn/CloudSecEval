@@ -44,6 +44,7 @@ import {
 import {
   FindBugReportsDto,
 } from './dto/find-bug-reports.dto'
+import { ExtendedGetApprovalHistoryDto } from './dto/history.dto'
 import { GetTimelineDto } from './dto/timeline.dto'
 import {
   ResubmitBugReportDto,
@@ -191,8 +192,9 @@ export class BugReportsController {
   async resubmit(
     @Param('id') id: string,
     @Body() resubmitDto: ResubmitBugReportDto,
+    @CurrentUser() currentUser: CurrentUserDto,
   ) {
-    const updated = await this.bugReportsService.resubmit(id, resubmitDto)
+    const updated = await this.bugReportsService.resubmit(id, resubmitDto, currentUser)
 
     return resp({
       msg: '漏洞报告重新提交成功',
@@ -234,13 +236,25 @@ export class BugReportsController {
   @RequirePermissions(PERMISSIONS.bug_reports.read)
   async getApprovalHistory(
     @Param('id') id: string,
-    @Query() query: GetApprovalHistoryDto,
+    @Query() query: ExtendedGetApprovalHistoryDto,
   ) {
-    const history = await this.bugReportsService.getApprovalHistory(
-      id,
-      query.includeApprover,
-      query.includeTargetUser,
-    )
+    // 判断是否需要返回扩展历史记录
+    const includeSubmissions = query.includeSubmissions ?? true
+
+    let history
+
+    if (includeSubmissions) {
+      // 返回包含提交记录的完整历史
+      history = await this.bugReportsService.getExtendedApprovalHistory(id, query)
+    }
+    else {
+      // 只返回审批记录，保持向后兼容
+      history = await this.bugReportsService.getApprovalHistory(
+        id,
+        query.includeApprover,
+        query.includeTargetUser,
+      )
+    }
 
     return resp({
       msg: '获取审批历史成功',
@@ -265,7 +279,11 @@ export class BugReportsController {
 
   @Get('approval-status-stats')
   @ApiDocs(BUG_REPORTS_API_CONFIG.getApprovalStatusStats)
-  @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
+  @RequirePermissions([
+    PERMISSIONS.bug_reports.read,
+    PERMISSIONS.bug_reports.stats,
+    PERMISSIONS.bug_reports.client_manage,
+  ])
   async getApprovalStatusStats(
     @Query() statsDto: GetApprovalStatusStatsDto,
     @CurrentUser() currentUser: CurrentUserDto,
@@ -280,7 +298,11 @@ export class BugReportsController {
 
   @Get('daily-stats')
   @ApiDocs(BUG_REPORTS_API_CONFIG.getDailyReportsStats)
-  @RequirePermissions([PERMISSIONS.bug_reports.read, PERMISSIONS.bug_reports.stats])
+  @RequirePermissions([
+    PERMISSIONS.bug_reports.read,
+    PERMISSIONS.bug_reports.stats,
+    PERMISSIONS.bug_reports.client_manage,
+  ])
   async getDailyReportsStats(
     @Query() statsDto: GetDailyReportsStatsDto,
     @CurrentUser() currentUser: CurrentUserDto,

@@ -9,6 +9,7 @@ import type { ApprovalStatusStatsDataDto, ApprovalStatusStatsDto, GetApprovalSta
 import type { DailyReportStatsDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
 import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
+import { ExtendedApprovalHistoryDto, HistoryEventType } from './dto/history.dto'
 import { type GetTimelineDto, type TimelineBugReportDto, type TimelineEventDto, TimelineEventType } from './dto/timeline.dto'
 import { AdvancedBugReportSearchBuilder } from './utils/advanced-bug-report-search-builder.util'
 
@@ -393,6 +394,220 @@ export class BugReportsRepository {
       },
       orderBy: { createdAt: 'asc' },
     })
+  }
+
+  /**
+   * 获取漏洞报告的完整历史记录（包含提交和审批）
+   */
+  async getExtendedApprovalHistory(
+    bugReportId: string,
+    options: {
+      includeApprover?: boolean
+      includeTargetUser?: boolean
+      includeSubmissions?: boolean
+      eventTypes?: HistoryEventType[]
+    } = {},
+  ): Promise<ExtendedApprovalHistoryDto[]> {
+    const {
+      includeApprover = true,
+      includeTargetUser = true,
+      includeSubmissions = true,
+      eventTypes,
+    } = options
+
+    // 1. 获取报告基础信息
+    const bugReport = await this.prisma.bugReport.findUnique({
+      where: { id: bugReportId },
+      include: {
+        user: includeApprover
+          ? {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                avatarUrl: true,
+              },
+            }
+          : false,
+      },
+    })
+
+    if (!bugReport) {
+      throw new Error('漏洞报告不存在')
+    }
+
+    // 2. 获取审批日志
+    const approvalLogs = await this.prisma.bugReportApprovalLog.findMany({
+      where: { bugReportId },
+      include: {
+        ...includeApprover && {
+          approver: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+            },
+          },
+        },
+        ...includeTargetUser && {
+          targetUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    })
+
+    // 3. 组合所有历史事件
+    const allEvents: ExtendedApprovalHistoryDto[] = []
+
+    // 添加首次提交事件
+    if (
+      includeSubmissions
+      && (!eventTypes || eventTypes.includes(HistoryEventType.SUBMIT))
+    ) {
+      allEvents.push({
+        id: `submit-${bugReport.id}`,
+        eventType: HistoryEventType.SUBMIT,
+        createdAt: bugReport.createdAt,
+        user: bugReport.user,
+        description: '提交了漏洞报告',
+        submitInfo: {
+          title: bugReport.title,
+          severity: bugReport.severity,
+          status: bugReport.status,
+          isResubmit: false,
+        },
+        bugReport: {
+          id: bugReport.id,
+          title: bugReport.title,
+          severity: bugReport.severity,
+          status: bugReport.status,
+        },
+      })
+    }
+
+    // 添加审批事件和重新提交事件
+    for (const log of approvalLogs) {
+      const eventType = this.mapActionToHistoryEventType(log.action)
+
+      if (eventTypes && !eventTypes.includes(eventType)) {
+        continue
+      }
+
+      const event: ExtendedApprovalHistoryDto = {
+        id: `approval-${log.id}`,
+        eventType,
+        createdAt: log.createdAt,
+        user: log.approver,
+        description: this.getHistoryEventDescription(log.action),
+        bugReport: {
+          id: bugReport.id,
+          title: bugReport.title,
+          severity: bugReport.severity,
+          status: bugReport.status,
+        },
+        // 审批相关信息
+        ...eventType !== HistoryEventType.RESUBMIT && {
+          approvalInfo: {
+            action: log.action,
+            comment: log.comment || undefined,
+            ...log.targetUser && { targetUser: log.targetUser },
+          },
+        },
+        // 重新提交信息
+        ...eventType === HistoryEventType.RESUBMIT && includeSubmissions && {
+          submitInfo: {
+            title: bugReport.title,
+            severity: bugReport.severity,
+            status: bugReport.status,
+            isResubmit: true,
+            changedFields: log.comment
+              ? this.extractChangedFieldsFromComment(log.comment)
+              : undefined,
+          },
+        },
+      }
+
+      allEvents.push(event)
+    }
+
+    // 按时间排序
+    allEvents.sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    )
+
+    return allEvents
+  }
+
+  /**
+   * 记录重新提交历史
+   */
+  async recordResubmissionHistory(
+    bugReportId: string,
+    userId: string,
+    changedFields?: string[],
+  ) {
+    const comment = changedFields?.length
+      ? `重新提交报告，修改了以下字段: ${changedFields.join(', ')}`
+      : '重新提交报告'
+
+    return this.createApprovalLog({
+      bugReport: { connect: { id: bugReportId } },
+      action: 'RESUBMIT',
+      comment,
+      approver: { connect: { id: userId } }, // 这里用提交者ID，区分于审核员
+      createdAt: new Date(),
+    })
+  }
+
+  /**
+   * 将审批操作映射为历史事件类型
+   */
+  private mapActionToHistoryEventType(action: string): HistoryEventType {
+    const mapping: Record<string, HistoryEventType> = {
+      APPROVE: HistoryEventType.APPROVE,
+      REJECT: HistoryEventType.REJECT,
+      REQUEST_INFO: HistoryEventType.REQUEST_INFO,
+      FORWARD: HistoryEventType.FORWARD,
+      RESUBMIT: HistoryEventType.RESUBMIT,
+    }
+
+    return mapping[action] ?? HistoryEventType.APPROVE
+  }
+
+  /**
+   * 获取历史事件描述
+   */
+  private getHistoryEventDescription(action: string): string {
+    const descriptions: Record<string, string> = {
+      APPROVE: '审批通过了漏洞报告',
+      REJECT: '驳回了漏洞报告',
+      REQUEST_INFO: '要求补充漏洞报告信息',
+      FORWARD: '转发了漏洞报告审批',
+      RESUBMIT: '重新提交了漏洞报告',
+    }
+
+    return descriptions[action] || '处理了漏洞报告'
+  }
+
+  /**
+   * 从评论中提取变更字段信息
+   */
+  private extractChangedFieldsFromComment(comment: string): string[] {
+    const match = /修改了以下字段:\s*(.+)/.exec(comment)
+
+    if (match && match[1]) {
+      return match[1].split(',').map((field) => field.trim())
+    }
+
+    return []
   }
 
   /**

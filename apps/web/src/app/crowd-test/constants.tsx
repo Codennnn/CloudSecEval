@@ -237,6 +237,7 @@ export function getReportStatus(status?: string): ReportStatusConfig {
 export const enum BugReportRoleView {
   ADMIN,
   USER,
+  CLIENT,
 }
 
 export const enum TeamRole {

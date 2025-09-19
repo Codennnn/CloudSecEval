@@ -4,6 +4,8 @@ import { persist } from 'zustand/middleware'
 import type { User } from '~/lib/api/types'
 import type { PermissionFlag } from '~/lib/permissions/matcher'
 
+import { adminPermission } from '../../../constants/permission'
+
 interface UserState {
   user: User | null
 
@@ -57,6 +59,12 @@ export const useUserStore = create<UserState>()(
  */
 export function useUser() {
   return useUserStore((state) => state.user)
+}
+
+export function useIsClient() {
+  const user = useUser()
+
+  return user?.permissions?.includes(adminPermission.bug_reports.client_manage)
 }
 
 /**

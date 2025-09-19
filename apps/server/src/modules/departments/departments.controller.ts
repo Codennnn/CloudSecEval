@@ -69,7 +69,10 @@ export class DepartmentsController {
   }
 
   @Get('online-stats')
-  @RequirePermissions(PERMISSIONS.departments.read)
+  @RequirePermissions([
+    PERMISSIONS.bug_reports.stats,
+    PERMISSIONS.bug_reports.client_manage,
+  ])
   @ApiDocs(DEPARTMENTS_API_CONFIG.getDepartmentOnlineStats)
   async getDepartmentOnlineStats(
     @CurrentUser() currentUser: CurrentUserDto,

@@ -105,6 +105,8 @@ export const PERMISSIONS = {
     update_status: 'bug_reports:update_status',
     batch_operations: 'bug_reports:batch_operations',
     stats: 'bug_reports:stats',
+    member_manage: 'bug_reports:member_manage',
+    client_manage: 'bug_reports:client_manage',
   },
   uploads: {
     create: 'uploads:create',

@@ -60,15 +60,15 @@ export function RolePermissionsInfo({ role }: RolePermissionsInfoProps) {
               {resourcePermissions?.map((permission) => (
                 <div
                   key={permission.id}
-                  className="bg-card border border-border rounded-md p-2"
+                  className="bg-card border border-border rounded-md p-2 overflow-hidden"
                 >
                   {permission.description && (
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 truncate">
                       {permission.description}
                     </p>
                   )}
 
-                  <div className="text-xs font-mono text-muted-foreground">
+                  <div className="text-xs font-mono text-muted-foreground truncate">
                     {permission.slug}
                   </div>
                 </div>

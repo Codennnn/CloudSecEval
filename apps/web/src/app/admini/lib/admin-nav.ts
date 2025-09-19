@@ -133,19 +133,28 @@ export const adminNavConfig: AdminNavConfig = {
     title: '数据总览',
     url: AdminRoutes.CrowdTestDashboard,
     icon: GaugeIcon,
-    requiredPermission: [adminPermission.statistics.read],
+    requiredPermission: [
+      adminPermission.bug_reports.stats,
+      adminPermission.bug_reports.client_manage,
+    ],
   },
   [AdminRoutes.CrowdTestBugs]: {
     title: '报告管理',
     url: AdminRoutes.CrowdTestBugs,
     icon: NotebookTextIcon,
-    requiredPermission: [adminPermission.bug_reports.manage],
+    requiredPermission: [
+      adminPermission.bug_reports.manage,
+      adminPermission.bug_reports.client_manage,
+    ],
   },
   [AdminRoutes.CrowdTestBugsDetail]: {
     title: '报告详情',
     url: AdminRoutes.CrowdTestBugsDetail,
     icon: NotebookTextIcon,
-    requiredPermission: [adminPermission.bug_reports.read],
+    requiredPermission: [
+      adminPermission.bug_reports.manage,
+      adminPermission.bug_reports.member_manage,
+    ],
   },
   [AdminRoutes.CrowdTestBugsReview]: {
     title: '报告审核',
@@ -157,13 +166,13 @@ export const adminNavConfig: AdminNavConfig = {
     title: '我的报告',
     url: AdminRoutes.CrowdTestMyBugs,
     icon: BookUpIcon,
-    requiredPermission: [adminPermission.bug_reports.read],
+    requiredPermission: [adminPermission.bug_reports.member_manage],
   },
   [AdminRoutes.CrowdTestMyTeam]: {
     title: '我的团队',
     url: AdminRoutes.CrowdTestMyTeam,
     icon: UserRoundIcon,
-    requiredPermission: [adminPermission.bug_reports.read],
+    requiredPermission: [adminPermission.bug_reports.member_manage],
   },
   [AdminRoutes.CrowdTestTeams]: {
     title: '团队管理',
@@ -175,7 +184,10 @@ export const adminNavConfig: AdminNavConfig = {
     title: '团队概况',
     url: AdminRoutes.CrowdTestTeamProfile,
     icon: UsersIcon,
-    requiredPermission: [adminPermission.departments.read],
+    requiredPermission: [
+      adminPermission.bug_reports.member_manage,
+      adminPermission.bug_reports.client_manage,
+    ],
   },
   [AdminRoutes.CrowdTestPermissions]: {
     title: '权限管理',

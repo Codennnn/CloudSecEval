@@ -21,6 +21,7 @@ import type { DailyReportsStatsDataDto, GetDailyReportsStatsDto } from './dto/da
 import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
+import { ExtendedGetApprovalHistoryDto } from './dto/history.dto'
 import type { GetTimelineDto } from './dto/timeline.dto'
 import type {
   ResubmitBugReportDto,
@@ -208,12 +209,15 @@ export class BugReportsService {
   /**
    * 重新提交漏洞报告
    */
-  async resubmit(id: string, dto: ResubmitBugReportDto) {
+  async resubmit(id: string, dto: ResubmitBugReportDto, currentUser?: CurrentUserDto) {
     const bugReport = await this.findBugReportOrThrow(id)
 
     if (bugReport.status !== BugReportStatus.REJECTED) {
       throw new BadRequestException('只能重新提交被驳回的报告')
     }
+
+    // 检测变更字段
+    const changedFields = this.detectChangedFields(bugReport, dto)
 
     // 处理附件更新
     let attachments: AttachmentDto[] | undefined
@@ -244,7 +248,55 @@ export class BugReportsService {
 
     const updatedBugReport = await this.bugReportsRepository.update(id, updateData)
 
+    // 记录重新提交历史
+    if (currentUser) {
+      await this.bugReportsRepository.recordResubmissionHistory(
+        id,
+        currentUser.id,
+        changedFields,
+      )
+    }
+
     return updatedBugReport
+  }
+
+  /**
+   * 检测变更字段
+   */
+  private detectChangedFields(
+    original: BugReport,
+    updated: ResubmitBugReportDto,
+  ): string[] {
+    const changes: string[] = []
+
+    if (updated.title && original.title !== updated.title) {
+      changes.push('标题')
+    }
+
+    if (updated.description !== undefined && original.description !== updated.description) {
+      changes.push('描述')
+    }
+
+    if (updated.severity && original.severity !== updated.severity) {
+      changes.push('严重程度')
+    }
+
+    if (updated.attackMethod !== undefined && original.attackMethod !== updated.attackMethod) {
+      changes.push('攻击方式')
+    }
+
+    if (
+      updated.discoveredUrls !== undefined
+      && JSON.stringify(original.discoveredUrls) !== JSON.stringify(updated.discoveredUrls)
+    ) {
+      changes.push('发现URL')
+    }
+
+    if (updated.attachmentIds !== undefined) {
+      changes.push('附件')
+    }
+
+    return changes
   }
 
   /**
@@ -531,6 +583,20 @@ export class BugReportsService {
       includeApprover,
       includeTargetUser,
     )
+  }
+
+  /**
+   * 获取扩展的审批历史（包含提交记录）
+   */
+  async getExtendedApprovalHistory(id: string, dto: ExtendedGetApprovalHistoryDto = {}) {
+    // 验证漏洞报告是否存在
+    await this.findBugReportOrThrow(id)
+
+    return this.bugReportsRepository.getExtendedApprovalHistory(id, {
+      includeApprover: dto.includeApprover,
+      includeTargetUser: dto.includeTargetUser,
+      includeSubmissions: dto.includeSubmissions,
+    })
   }
 
   /**
