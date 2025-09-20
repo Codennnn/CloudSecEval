@@ -25,6 +25,12 @@ import { cn } from '~/lib/utils'
 import { type CreateBugReportDto } from '~api/types.gen'
 import { getVulSeverity, VulnerabilitySeverity } from '~crowd-test/constants'
 
+function EmptyContent() {
+  return (
+    <div className="text-sm">-</div>
+  )
+}
+
 export type BugReportFormValues = CreateBugReportDto
 
 // 正式提交的表单验证（严格）
@@ -214,7 +220,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
               {
                 readonly
-                  ? <div className="text-sm break-words">{field.value ?? '-'}</div>
+                  ? <div className="text-sm break-words">{field.value ?? <EmptyContent />}</div>
                   : (
                       <FormControl>
                         <Input id="title" placeholder="例如：登录页验证码可被绕过" {...field} />
@@ -314,9 +320,13 @@ export function BugReportForm(props: BugReportFormCardProps) {
               )}
               {readonly
                 ? (
-                    <ProseContainer className="bg-secondary rounded-lg p-2">
-                      <SafeHtmlRenderer html={field.value ?? ''} />
-                    </ProseContainer>
+                    field.value
+                      ? (
+                          <ProseContainer className="bg-secondary rounded-lg p-2">
+                            <SafeHtmlRenderer html={field.value} />
+                          </ProseContainer>
+                        )
+                      : <EmptyContent />
                   )
                 : (
                     <FormControl>
@@ -373,7 +383,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                         })}
                       </ul>
                     )
-                  : '-'
+                  : <EmptyContent />
                 : fields.map((field, index) => {
                     return (
                       <FormField
