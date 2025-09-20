@@ -30,10 +30,9 @@ function RealTimeActivityLoading() {
 const pageSize = 10 // 实时监控显示较少数据
 
 export function RealTimeActivityMonitor() {
-  // 使用无限查询获取最新活动数据
   const {
     data,
-    isLoading,
+    isFetching,
   } = useInfiniteQuery({
     ...bugReportsControllerGetTimelineInfiniteOptions({
       query: {
@@ -61,84 +60,86 @@ export function RealTimeActivityMonitor() {
 
       {/* 活动列表 */}
       <div className="space-y-2">
-        {isLoading
-          ? <RealTimeActivityLoading />
-          : events.length === 0
-            ? (
-                <div className="text-sm text-white/60 p-3 rounded-lg bg-gray-400/5">
-                  暂无最新活动
-                </div>
-              )
-            : events.map((event) => {
-                const eventType = event.eventType
-                const bugReport = event.bugReport
-                const user = event.user as { name?: string, email?: string } | undefined
-                const createdAt = event.createdAt
+        {events.length > 0
+          ? events.map((event) => {
+              const eventType = event.eventType
+              const bugReport = event.bugReport
+              const user = event.user as { name?: string, email?: string } | undefined
+              const createdAt = event.createdAt
 
-                const severityConfig = getVulSeverity(bugReport.severity)
-                const eventConfig = getTimelineEventType(eventType)
+              const severityConfig = getVulSeverity(bugReport.severity)
+              const eventConfig = getTimelineEventType(eventType)
 
-                const displayUser = user?.name ?? user?.email ?? '未知用户'
-                const displayTime = formatDate(createdAt, DateFormat.HH_MM)
+              const displayUser = user?.name ?? user?.email ?? '未知用户'
+              const displayTime = formatDate(createdAt, DateFormat.HH_MM)
 
-                return (
-                  <div
-                    key={event.id}
-                    className={cn(
-                      'relative p-3 rounded-lg',
-                      eventConfig.bgColor,
-                    )}
-                  >
-                    <div className="relative z-10">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                          {/* 状态图标 - 显示事件类型图标 */}
-                          <div
-                            className={cn(
-                              'flex-shrink-0 p-1.5 rounded-full mt-0.5 text-sm',
-                              eventConfig.bgColor,
-                              eventConfig.frontColor,
-                            )}
-                          >
-                            {eventConfig.icon}
-                          </div>
-
-                          {/* 活动信息 */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-medium truncate">
-                                {eventConfig.label}
-                              </span>
-
-                              <span
-                                className={cn(
-                                  'text-xs px-2 py-0.5 rounded-full border font-semibold',
-                                  severityConfig.frontColorDark,
-                                  severityConfig.bgColorDark,
-                                  severityConfig.borderColorDark,
-                                )}
-                              >
-                                {severityConfig.label}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-2 text-xs opacity-60">
-                              <span className="font-medium text-theme2">{displayUser}</span>
-                              <span>→</span>
-                              <span className="truncate font-semibold">{bugReport.title}</span>
-                            </div>
-                          </div>
+              return (
+                <div
+                  key={event.id}
+                  className={cn(
+                    'relative p-3 rounded-lg',
+                    eventConfig.bgColor,
+                  )}
+                >
+                  <div className="relative z-10">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        {/* 状态图标 - 显示事件类型图标 */}
+                        <div
+                          className={cn(
+                            'flex-shrink-0 p-1.5 rounded-full mt-0.5 text-sm',
+                            eventConfig.bgColor,
+                            eventConfig.frontColor,
+                          )}
+                        >
+                          {eventConfig.icon}
                         </div>
 
-                        {/* 时间戳 */}
-                        <div className="flex-shrink-0 text-xs font-mono opacity-50">
-                          {displayTime}
+                        {/* 活动信息 */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-medium truncate">
+                              {eventConfig.label}
+                            </span>
+
+                            <span
+                              className={cn(
+                                'text-xs px-2 py-0.5 rounded-full border font-semibold',
+                                severityConfig.frontColorDark,
+                                severityConfig.bgColorDark,
+                                severityConfig.borderColorDark,
+                              )}
+                            >
+                              {severityConfig.label}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2 text-xs opacity-60">
+                            <span className="font-medium text-theme2">{displayUser}</span>
+                            <span>→</span>
+                            <span className="truncate font-semibold">{bugReport.title}</span>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* 时间戳 */}
+                      <div className="flex-shrink-0 text-xs font-mono opacity-50">
+                        {displayTime}
                       </div>
                     </div>
                   </div>
-                )
-              })}
+                </div>
+              )
+            })
+          : (
+              <div className="text-sm text-white/60 p-3 rounded-lg bg-gray-400/5">
+                暂无最新活动
+              </div>
+            )}
+
+        {isFetching
+          ? <RealTimeActivityLoading />
+          : null}
       </div>
     </div>
   )
