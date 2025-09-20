@@ -1,10 +1,11 @@
 import { ApiProperty, ApiPropertyOptional, IntersectionType, PickType } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
-import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator'
+import { IsBoolean, IsDateString, IsEnum, IsOptional, IsString } from 'class-validator'
 
 import { PaginationQueryDto } from '~/common/dto/pagination-query.dto'
 import { StandardListResponseDto } from '~/common/dto/standard-response.dto'
 
+import { BaseDepartmentDto } from '../../departments/dto/base-department.dto'
 import { BaseBugReportDto } from './base-bug-report.dto'
 
 /**
@@ -62,6 +63,23 @@ export class GetTimelineDto extends IntersectionType(PaginationQueryDto) {
   @IsOptional()
   @IsString({ message: '关键字必须是字符串' })
   readonly keyword?: string
+
+  @ApiPropertyOptional({
+    description: '部门 ID 筛选',
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  readonly departmentId?: BaseDepartmentDto['id']
+
+  @ApiPropertyOptional({
+    description: '是否包含子部门的数据',
+    example: true,
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  readonly includeSubDepartments?: boolean
 }
 
 /**

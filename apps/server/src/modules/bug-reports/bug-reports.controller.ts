@@ -22,7 +22,6 @@ import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsService } from './bug-reports.service'
 import {
-  GetApprovalHistoryDto,
   ProcessApprovalDto,
 } from './dto/approval.dto'
 import {

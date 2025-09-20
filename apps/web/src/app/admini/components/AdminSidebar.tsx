@@ -34,7 +34,7 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href={adminRootRoute}>
                 <Image
-                  alt="NestJS Logo"
+                  alt="网站 Logo"
                   height={24}
                   src={SITE_CONFIG.logoPath}
                   width={24}

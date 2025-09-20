@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircleIcon, ClockIcon, XCircleIcon } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { Area, AreaChart, XAxis, YAxis } from 'recharts'
 
 import { ActivityTimeline } from '~/app/crowd-test/(admin)/dashboard/components/ActivityTimeline'
@@ -8,17 +8,19 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/
 import { Separator } from '~/components/ui/separator'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
-import { getReportStatusTitle, riskTrend, type TeamReportStats, teamReportStats, vulnTrend } from '../(admin)/dashboard/lib/mockData'
+import { riskTrend, vulnTrend } from '../(admin)/dashboard/lib/mockData'
 
 import { MemberReportTable } from './MemberReportTable'
 
 import { useUser } from '~admin/stores/useUserStore'
+import { bugReportsControllerGetApprovalStatusStatsOptions } from '~api/@tanstack/react-query.gen'
+import { BugReportStatus, getReportStatus } from '~crowd-test/constants'
 
 interface StatCardProps {
-  title: string
-  description: string
-  icon: React.ReactNode
-  value: number
+  title?: string
+  description?: string
+  icon?: React.ReactNode
+  value?: number
 }
 
 function StatCard(props: StatCardProps) {
@@ -48,57 +50,54 @@ function StatCard(props: StatCardProps) {
   )
 }
 
-/**
- * 团队报告统计卡片组：根据状态键动态生成标题和描述
- */
-function TeamReportStatsCards({ stats }: { stats: TeamReportStats }) {
-  /**
-   * 根据状态键返回描述
-   */
-  function getStatusDescription(status: keyof TeamReportStats) {
-    if (status === 'pending') {
-      return '等待处理的报告'
-    }
+function TeamReportStatsCards() {
+  const user = useUser()
+  const teamId = user?.department?.id
 
-    if (status === 'approved') {
-      return '审核通过的报告'
-    }
+  const { data } = useQuery({
+    ...bugReportsControllerGetApprovalStatusStatsOptions({
+      query: {
+        departmentId: teamId!,
+      },
+    }),
+    enabled: Boolean(teamId),
+  })
+  const statsData = data?.data
 
-    return '未通过的报告'
-  }
-
-  /**
-   * 根据状态键返回图标
-   */
-  function getStatusIcon(status: keyof TeamReportStats) {
-    if (status === 'pending') {
-      return <ClockIcon className="size-6" />
-    }
-
-    if (status === 'approved') {
-      return <CheckCircleIcon className="size-6" />
-    }
-
-    return <XCircleIcon className="size-6" />
-  }
-
-  const statusKeys: (keyof TeamReportStats)[] = ['approved', 'pending', 'rejected']
+  const statsItems = [
+    {
+      key: BugReportStatus.PENDING,
+      count: statsData?.statusStats[BugReportStatus.PENDING].count ?? 0,
+    },
+    {
+      key: BugReportStatus.APPROVED,
+      count: statsData?.statusStats[BugReportStatus.APPROVED].count ?? 0,
+    },
+    {
+      key: BugReportStatus.REJECTED,
+      count: statsData?.statusStats[BugReportStatus.REJECTED].count ?? 0,
+    },
+  ]
 
   return (
     <>
-      {statusKeys.map((status, idx) => (
-        <div key={status} className="flex justify-between gap-admin-content px-admin-content">
-          <StatCard
-            description={getStatusDescription(status)}
-            icon={getStatusIcon(status)}
-            title={getReportStatusTitle(status)}
-            value={stats[status]}
-          />
-          {idx !== statusKeys.length - 1 && (
-            <Separator orientation="vertical" />
-          )}
-        </div>
-      ))}
+      {statsItems.map((it, idx, arr) => {
+        const statusConfig = getReportStatus(it.key)
+
+        return (
+          <div key={it.key} className="flex justify-between gap-admin-content px-admin-content">
+            <StatCard
+              description={statusConfig.hint}
+              icon={<div className="size-6">{statusConfig.icon}</div>}
+              title={statusConfig.label}
+              value={it.count}
+            />
+            {idx !== arr.length - 1 && (
+              <Separator orientation="vertical" />
+            )}
+          </div>
+        )
+      })}
     </>
   )
 }
@@ -126,7 +125,7 @@ export function TeamProfile() {
         <Separator />
 
         <div className="grid md:grid-cols-3">
-          <TeamReportStatsCards stats={teamReportStats} />
+          <TeamReportStatsCards />
         </div>
 
         <Separator />
@@ -193,7 +192,7 @@ export function TeamProfile() {
             </StatsCardHeader>
 
             <StatsCardContent>
-              <ActivityTimeline />
+              {!!teamId && <ActivityTimeline departmentId={teamId} />}
             </StatsCardContent>
           </StatsCard>
         </div>

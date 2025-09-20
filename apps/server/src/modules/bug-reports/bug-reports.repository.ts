@@ -603,7 +603,7 @@ export class BugReportsRepository {
   private extractChangedFieldsFromComment(comment: string): string[] {
     const match = /修改了以下字段:\s*(.+)/.exec(comment)
 
-    if (match && match[1]) {
+    if (match?.[1]) {
       return match[1].split(',').map((field) => field.trim())
     }
 
@@ -625,6 +625,29 @@ export class BugReportsRepository {
       ...dto.endDate && { lte: new Date(dto.endDate) },
     }
 
+    // 构建部门筛选条件
+    let departmentFilter: Prisma.BugReportWhereInput = {}
+
+    if (dto.departmentId) {
+      if (dto.includeSubDepartments) {
+        // 如果需要包含子部门，先获取所有子部门ID
+        const departmentIds = await this.collectDescendantDepartmentIds(dto.departmentId)
+        departmentFilter = {
+          user: {
+            departmentId: { in: departmentIds },
+          },
+        }
+      }
+      else {
+        // 只筛选指定部门
+        departmentFilter = {
+          user: {
+            departmentId: dto.departmentId,
+          },
+        }
+      }
+    }
+
     // 1. 查询提交事件（从 BugReport 表）
     const submitEvents = this.prisma.bugReport.findMany({
       where: {
@@ -637,6 +660,7 @@ export class BugReportsRepository {
           ],
         },
         ...dto.eventType && dto.eventType !== TimelineEventType.SUBMIT && { id: 'never-match' },
+        ...departmentFilter,
       },
       select: {
         id: true,
@@ -678,6 +702,7 @@ export class BugReportsRepository {
               { description: { contains: dto.keyword, mode: 'insensitive' } },
             ],
           },
+          ...departmentFilter,
         },
       },
       select: {
@@ -923,6 +948,40 @@ export class BugReportsRepository {
   }
 
   /**
+   * 获取某部门及其子孙部门的 ID 列表
+   * 用于支持包含子部门的统计查询
+   */
+  private async collectDescendantDepartmentIds(rootDeptId: string): Promise<string[]> {
+    const allDepartments = await this.prisma.department.findMany({
+      select: { id: true, parentId: true },
+    })
+
+    const childrenMap = new Map<string, string[]>()
+
+    for (const dept of allDepartments) {
+      const parentId = dept.parentId ?? 'root'
+      const children = childrenMap.get(parentId) ?? []
+      children.push(dept.id)
+      childrenMap.set(parentId, children)
+    }
+
+    const result: string[] = []
+    const stack = [rootDeptId]
+
+    while (stack.length > 0) {
+      const currentId = stack.pop()!
+      result.push(currentId)
+      const children = childrenMap.get(currentId) ?? []
+
+      for (const childId of children) {
+        stack.push(childId)
+      }
+    }
+
+    return result
+  }
+
+  /**
    * 获取组织下各审批状态的漏洞报告统计
    */
   async getApprovalStatusStats(
@@ -939,6 +998,23 @@ export class BugReportsRepository {
           ...dto.endDate && { lte: new Date(dto.endDate) },
         },
       },
+    }
+
+    // 添加部门筛选条件
+    if (dto.departmentId) {
+      if (dto.includeSubDepartments) {
+        // 如果需要包含子部门，先获取所有子部门ID
+        const departmentIds = await this.collectDescendantDepartmentIds(dto.departmentId)
+        where.user = {
+          departmentId: { in: departmentIds },
+        }
+      }
+      else {
+        // 只筛选指定部门
+        where.user = {
+          departmentId: dto.departmentId,
+        }
+      }
     }
 
     // 统计总报告数

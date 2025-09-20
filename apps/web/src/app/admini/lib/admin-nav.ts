@@ -37,6 +37,7 @@ export const enum AdminRoutes {
   CrowdTestTeams = '/crowd-test/teams',
   CrowdTestTeamProfile = '/crowd-test/teams/[teamId]',
   CrowdTestPermissions = '/crowd-test/permissions',
+  CrowdTestProfile = '/crowd-test/profile',
   CrowdTestRoles = '/crowd-test/roles',
 }
 
@@ -201,6 +202,11 @@ export const adminNavConfig: AdminNavConfig = {
     url: AdminRoutes.CrowdTestPermissions,
     icon: FingerprintIcon,
     requiredPermission: [adminPermission.permissions.read],
+  },
+  [AdminRoutes.CrowdTestProfile]: {
+    title: '个人资料',
+    url: AdminRoutes.CrowdTestProfile,
+    icon: UserIcon,
   },
   [AdminRoutes.CrowdTestRoles]: {
     title: '角色管理',

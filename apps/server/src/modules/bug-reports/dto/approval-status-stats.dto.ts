@@ -1,10 +1,11 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
-import { IsDateString, IsEnum, IsOptional } from 'class-validator'
+import { IsBoolean, IsDateString, IsEnum, IsOptional, IsString } from 'class-validator'
 
 import { BugReportStatus, BugSeverity } from '#prisma/client'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 
+import { BaseDepartmentDto } from '../../departments/dto/base-department.dto'
 import { BaseBugReportDto } from './base-bug-report.dto'
 
 /**
@@ -35,6 +36,23 @@ export class GetApprovalStatusStatsDto {
   @IsOptional()
   @IsEnum(BugSeverity, { message: '漏洞等级必须是有效的枚举值' })
   readonly severity?: BugSeverity
+
+  @ApiPropertyOptional({
+    description: '部门 ID 筛选',
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  readonly departmentId?: BaseDepartmentDto['id']
+
+  @ApiPropertyOptional({
+    description: '是否包含子部门的数据',
+    example: true,
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  readonly includeSubDepartments?: boolean
 }
 
 /**

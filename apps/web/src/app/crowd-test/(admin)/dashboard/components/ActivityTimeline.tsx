@@ -7,7 +7,7 @@ import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { bugReportsControllerGetTimelineInfiniteOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
 import type { TimelineEventDto } from '~/lib/api/generated/types.gen'
-import { DateFormat, formatDate } from '~/utils/date'
+import { DateFormat, formatDate, formatRelativeTime } from '~/utils/date'
 
 type Severity = VulnerabilitySeverity | undefined
 type EventType = TimelineEventDto['eventType']
@@ -17,10 +17,11 @@ const pageSize = 10
 interface ActivityTimelineProps {
   /** 事件类型筛选 */
   eventType?: 'SUBMIT' | 'APPROVE' | 'REJECT' | 'REQUEST_INFO' | 'FORWARD' | 'RESUBMIT' | 'UPDATE'
+  departmentId?: string
 }
 
 export function ActivityTimeline(props: ActivityTimelineProps) {
-  const { eventType } = props
+  const { eventType, departmentId } = props
 
   // 使用无限查询获取时间线数据
   const {
@@ -34,6 +35,7 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
       query: {
         pageSize,
         eventType,
+        departmentId,
       },
     }),
     initialPageParam: 1,
@@ -222,7 +224,7 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
                   const severityConfig = getVulSeverity(bugReport.severity)
                   const severityClass = getSeverityBadgeClass(bugReport.severity as Severity)
                   const displayUser = user?.name ?? user?.email ?? '未知用户'
-                  const displayTime = formatDate(createdAt, DateFormat.HH_MM)
+                  const displayTime = formatRelativeTime(createdAt)
 
                   return (
                     <li key={id} className="relative pl-8">
@@ -238,7 +240,10 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
                             {bugReport.title}
                           </span>
                         </div>
-                        <span className="shrink-0 text-xs text-muted-foreground">
+                        <span
+                          className="shrink-0 text-xs text-muted-foreground"
+                          title={formatDate(createdAt, DateFormat.YYYY_MM_DD_HH_MM)}
+                        >
                           {displayTime}
                         </span>
                       </div>
