@@ -47,7 +47,7 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading,
+    isFetching,
   } = useInfiniteQuery({
     ...bugReportsControllerGetTimelineInfiniteOptions({
       query: {
@@ -168,16 +168,18 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
               )}
             </>
           )
-        : isLoading
-          ? (
-              <ol className="space-y-4">
-                {Array.from({ length: 4 }, (_, idx) => (
-                  <TimelineItemSkeleton key={idx} />
-                ))}
+        : <div className="text-sm text-muted-foreground">暂无事件</div>}
 
-              </ol>
-            )
-          : <div className="text-sm text-muted-foreground">暂无事件</div> }
+      {isFetching
+        ? (
+            <ol className="space-y-4">
+              {Array.from({ length: 4 }, (_, idx) => (
+                <TimelineItemSkeleton key={idx} />
+              ))}
+
+            </ol>
+          )
+        : null}
     </div>
   )
 }
