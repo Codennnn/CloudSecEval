@@ -6,7 +6,7 @@ import { useEvent } from 'react-use-event-hook'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query'
-import { EllipsisVerticalIcon, PencilLineIcon } from 'lucide-react'
+import { EllipsisVerticalIcon, ExternalLinkIcon, PencilLineIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { MemberInfo } from '~/components/MemberInfo'
@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { FieldTypeEnum } from '~/constants/form'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
@@ -33,11 +34,6 @@ interface BugListTableProps<Row extends BugReportSummaryDto>
   extends Pick<ProTableProps<Row>, 'className' | 'toolbar' | 'queryKeyFn' | 'queryOptionsFn' | 'columnVisibilityStorageKey'>
 {
   roleView?: BugReportRoleView
-
-  /** 行级回调：编辑 */
-  onEdit?: (item: Row) => void
-  /** 行级回调：删除 */
-  onDelete?: (item: Row) => void | Promise<void>
 }
 
 export function BugListTable<Row extends BugReportSummaryDto>(
@@ -45,8 +41,6 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 ) {
   const {
     roleView = BugReportRoleView.USER,
-    onEdit,
-    onDelete,
     ...restProTableProps
   } = props
 
@@ -67,7 +61,6 @@ export function BugListTable<Row extends BugReportSummaryDto>(
   })
 
   const handleEdit = useEvent((item: Row) => {
-    onEdit?.(item)
     router.push(
       getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: item.id }),
     )
@@ -79,8 +72,6 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
   const handleDeleteConfirm = useEvent(async () => {
     if (bugToDelete) {
-      void onDelete?.(bugToDelete)
-
       await deleteBugMutation.mutateAsync({
         path: { id: bugToDelete.id },
       })
@@ -92,7 +83,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
   const columns = useMemo<TableColumnDef<Row>[]>(() => {
     return [
-      ...(isAdmin
+      ...(!isUser
         ? [
             {
               id: 'user',
@@ -117,6 +108,18 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         header: '标题',
         enableSorting: false,
         enableHiding: false,
+        cell: ({ row }) => {
+          return (
+            <Link
+              className="hover:underline underline-offset-2"
+              href={
+                getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: row.original.id })
+              }
+            >
+              {row.original.title}
+            </Link>
+          )
+        },
       },
       {
         accessorKey: 'severity',
@@ -160,22 +163,32 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         enableHiding: false,
         cell: ({ row }) => {
           const item = row.original
+          const detailRoute = isAdmin
+            ? AdminRoutes.CrowdTestBugsReview
+            : AdminRoutes.CrowdTestBugsDetail
 
           return (
             <div className="flex items-center gap-0.5">
-              {isAdmin && (
-                <Link
-                  href={
-                    getRoutePath(AdminRoutes.CrowdTestBugsReview, { bugReportId: item.id })
-                  }
-                >
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                  >
+              {!isUser && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={getRoutePath(detailRoute, { bugReportId: item.id })}
+                      target="_blank"
+                    >
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                      >
+                        <ExternalLinkIcon />
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+
+                  <TooltipContent>
                     查看详情
-                  </Button>
-                </Link>
+                  </TooltipContent>
+                </Tooltip>
               )}
 
               {isUser && (
@@ -202,7 +215,17 @@ export function BugListTable<Row extends BugReportSummaryDto>(
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end" className="w-32">
-                  {isUser && (
+                  {!isUser && (
+                    <Link
+                      href={getRoutePath(detailRoute, { bugReportId: item.id })}
+                    >
+                      <DropdownMenuItem>
+                        查看详情
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
+
+                  {(isUser || isAdmin) && (
                     <DropdownMenuItem
                       variant="destructive"
                       onClick={

@@ -2,10 +2,11 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { getTimelineEventType, getVulSeverity } from '~/app/crowd-test/constants'
 import { bugReportsControllerGetTimelineInfiniteOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
 import { cn } from '~/lib/utils'
 import { DateFormat, formatDate } from '~/utils/date'
+
+import { getTimelineEventType, getVulSeverity } from '~crowd-test/constants'
 
 function RealTimeActivityLoading() {
   return (
@@ -124,7 +125,7 @@ export function RealTimeActivityMonitor() {
                             <div className="flex items-center gap-2 text-xs opacity-60">
                               <span className="font-medium text-theme2">{displayUser}</span>
                               <span>→</span>
-                              <span className="truncate">{bugReport.title}</span>
+                              <span className="truncate font-semibold">{bugReport.title}</span>
                             </div>
                           </div>
                         </div>

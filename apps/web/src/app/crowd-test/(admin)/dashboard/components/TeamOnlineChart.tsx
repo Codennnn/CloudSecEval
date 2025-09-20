@@ -3,10 +3,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { Cell, Pie, PieChart } from 'recharts'
 
-import { getTeamRole, teamConfig, TeamRole } from '~/app/crowd-test/constants'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 
 import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
+import { getTeamRole, teamConfig, TeamRole } from '~crowd-test/constants'
 
 export function TeamOnlineChart() {
   const { data } = useQuery({

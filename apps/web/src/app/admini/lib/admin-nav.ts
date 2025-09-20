@@ -39,6 +39,7 @@ export const enum AdminRoutes {
   CrowdTestPermissions = '/crowd-test/permissions',
   CrowdTestProfile = '/crowd-test/profile',
   CrowdTestRoles = '/crowd-test/roles',
+  CrowdTestUnauthorized = '/crowd-test/unauthorized',
 }
 
 /** 登录成功后重定向的路由 */
@@ -118,7 +119,7 @@ export const adminNavConfig: AdminNavConfig = {
     url: AdminRoutes.Docs,
   },
   [AdminRoutes.Unauthorized]: {
-    title: '访问被拒绝',
+    title: '无权限访问',
     url: AdminRoutes.Unauthorized,
   },
 
@@ -162,6 +163,7 @@ export const adminNavConfig: AdminNavConfig = {
     requiredPermission: [
       adminPermission.bug_reports.manage,
       adminPermission.bug_reports.member_manage,
+      adminPermission.bug_reports.client_manage,
     ],
   },
   [AdminRoutes.CrowdTestBugsReview]: {
@@ -213,6 +215,10 @@ export const adminNavConfig: AdminNavConfig = {
     url: AdminRoutes.CrowdTestRoles,
     icon: SquareUserRoundIcon,
     requiredPermission: [adminPermission.roles.read],
+  },
+  [AdminRoutes.CrowdTestUnauthorized]: {
+    title: '无权限访问',
+    url: AdminRoutes.CrowdTestUnauthorized,
   },
 }
 

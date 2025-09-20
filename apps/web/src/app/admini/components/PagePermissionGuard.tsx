@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 
 import { PermissionMode } from '~/constants/permission'
 import { useHasPermissions } from '~/lib/permissions/hooks'
+import { isCrowdTest } from '~/utils/platform'
 
 import { AdminRoutes, getPagePermissionByRoute } from '~admin/lib/admin-nav'
 
@@ -42,7 +43,10 @@ export function PagePermissionGuard({ children }: React.PropsWithChildren) {
     // 如果需要权限但用户没有权限，则重定向
     if (requiredPermissions && !hasPermission) {
       // 构建重定向 URL，包含原始路径信息
-      const unauthorizedUrl = new URL(AdminRoutes.Unauthorized, window.location.origin)
+      const unauthorizedUrl = new URL(
+        isCrowdTest() ? AdminRoutes.CrowdTestUnauthorized : AdminRoutes.Unauthorized,
+        window.location.origin,
+      )
       unauthorizedUrl.searchParams.set('from', pathname)
 
       router.replace(unauthorizedUrl.toString())

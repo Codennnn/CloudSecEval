@@ -5,12 +5,14 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import { PermissionGuard } from '~/components/permission/PermissionGuard'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Textarea } from '~/components/ui/textarea'
+import { adminPermission } from '~/constants/permission'
 
 import { bugReportsControllerProcessApprovalMutation } from '~api/@tanstack/react-query.gen'
 import type { ProcessApprovalDto } from '~api/types.gen'
@@ -72,23 +74,7 @@ export function BugReportApproval({
     },
   })
 
-  // 检查是否可以审批
   const canApprove = [BugReportStatus.PENDING, BugReportStatus.IN_REVIEW].includes(currentStatus)
-
-  if (!canApprove) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>审批操作</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            当前状态：{currentStatus}，不支持审批操作
-          </p>
-        </CardContent>
-      </Card>
-    )
-  }
 
   const handleSubmit = () => {
     if (!selectedAction || !comment.trim()) {
@@ -118,70 +104,83 @@ export function BugReportApproval({
   const selectedActionConfig = APPROVAL_ACTIONS.find((action) => action.value === selectedAction)
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>审批操作</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="approval-action">审批动作</Label>
-          <Select
-            value={selectedAction}
-            onValueChange={(value: ProcessApprovalDto['action']) => {
-              setSelectedAction(value)
-            }}
-          >
-            <SelectTrigger id="approval-action">
-              <SelectValue placeholder="选择审批动作" />
-            </SelectTrigger>
-            <SelectContent>
-              {APPROVAL_ACTIONS.map((action) => (
-                <SelectItem key={action.value} value={action.value}>
-                  {action.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <PermissionGuard required={adminPermission.bug_reports.manage}>
+      <Card>
+        <CardHeader>
+          <CardTitle>审批操作</CardTitle>
+        </CardHeader>
 
-        {selectedAction === 'FORWARD' && (
-          <div className="space-y-2">
-            <Label htmlFor="target-user">目标用户ID</Label>
-            <Input
-              id="target-user"
-              placeholder="请输入要转发的用户ID"
-              value={targetUserId}
-              onChange={(e) => {
-                setTargetUserId(e.target.value)
-              }}
-            />
-          </div>
-        )}
+        {canApprove
+          ? (
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="approval-action">审批动作</Label>
+                  <Select
+                    value={selectedAction}
+                    onValueChange={(value: ProcessApprovalDto['action']) => {
+                      setSelectedAction(value)
+                    }}
+                  >
+                    <SelectTrigger id="approval-action">
+                      <SelectValue placeholder="选择审批动作" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {APPROVAL_ACTIONS.map((action) => (
+                        <SelectItem key={action.value} value={action.value}>
+                          {action.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="approval-comment">审批意见</Label>
-          <Textarea
-            id="approval-comment"
-            placeholder="请输入审批意见..."
-            rows={4}
-            value={comment}
-            onChange={(e) => {
-              setComment(e.target.value)
-            }}
-          />
-        </div>
+                {selectedAction === 'FORWARD' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="target-user">目标用户ID</Label>
+                    <Input
+                      id="target-user"
+                      placeholder="请输入要转发的用户ID"
+                      value={targetUserId}
+                      onChange={(e) => {
+                        setTargetUserId(e.target.value)
+                      }}
+                    />
+                  </div>
+                )}
 
-        <Button
-          className="w-full"
-          disabled={!selectedAction || !comment.trim() || processApprovalMutation.isPending}
-          variant={selectedActionConfig?.variant ?? 'default'}
-          onClick={handleSubmit}
-        >
-          {processApprovalMutation.isPending
-            ? '处理中...'
-            : selectedActionConfig?.label ?? '提交审批'}
-        </Button>
-      </CardContent>
-    </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="approval-comment">审批意见</Label>
+                  <Textarea
+                    id="approval-comment"
+                    placeholder="请输入审批意见..."
+                    rows={4}
+                    value={comment}
+                    onChange={(e) => {
+                      setComment(e.target.value)
+                    }}
+                  />
+                </div>
+
+                <Button
+                  className="w-full"
+                  disabled={!selectedAction || !comment.trim() || processApprovalMutation.isPending}
+                  variant={selectedActionConfig?.variant ?? 'default'}
+                  onClick={handleSubmit}
+                >
+                  {processApprovalMutation.isPending
+                    ? '处理中...'
+                    : selectedActionConfig?.label ?? '提交审批'}
+                </Button>
+              </CardContent>
+            )
+          : (
+              <CardContent>
+                <p className="text-muted-foreground">
+                  当前状态：{currentStatus}，不支持审批操作
+                </p>
+              </CardContent>
+            )}
+      </Card>
+    </PermissionGuard>
   )
 }
