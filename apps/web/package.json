@@ -15,7 +15,9 @@
     "format:docs": "prettier --write \"src/content/docs/**/*.mdx\"",
     "api:generate": "openapi-ts",
     "api:clean": "rimraf src/lib/api/generated",
-    "api:setup": "pnpm api:clean && pnpm api:generate"
+    "api:setup": "pnpm api:clean && pnpm api:generate",
+    "api:fetch-spec": "curl -s 'http://[::1]:8007/api-docs-json' -o src/lib/api/openapi-spec.json",
+    "api:update": "pnpm api:fetch-spec && pnpm api:setup"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^11.0.0",

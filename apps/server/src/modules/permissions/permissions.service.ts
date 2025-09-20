@@ -113,7 +113,6 @@ export class PermissionsService {
       orgId,
       permissions: new Set(result.permissions),
       roles: result.roles,
-      cachedAt: new Date(),
     }
   }
 
@@ -182,30 +181,6 @@ export class PermissionsService {
     }
     else {
       return requiredRoles.every((role) => userRoles.includes(role))
-    }
-  }
-
-  /**
-   * 刷新用户权限缓存
-   * TODO: 集成Redis缓存时实现
-   */
-  async refreshUserPermissionsCache(userId: string, orgId: string): Promise<void> {
-    // 暂时不实现缓存，直接重新查询
-    await this.getUserEffectivePermissions(userId, orgId)
-  }
-
-  /**
-   * 批量刷新权限缓存
-   * TODO: 角色权限变更时调用
-   */
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async invalidatePermissionsCache(userIds?: string[], orgId?: string): Promise<void> {
-    // TODO: 实现缓存失效逻辑
-    // 当角色权限发生变更时，需要使相关用户的权限缓存失效
-
-    // 临时实现：什么都不做
-    if (userIds || orgId) {
-      // 占位符，避免eslint警告
     }
   }
 }

@@ -28,10 +28,6 @@ export const CONFIG_DEFAULTS = {
   JWT_COOKIE_SECURE: false,
   JWT_COOKIE_SAME_SITE: 'lax',
 
-  // Redis 配置
-  REDIS_HOST: 'localhost',
-  REDIS_PORT: 6379,
-
   // 时区配置
   TIMEZONE: 'Asia/Shanghai',
 } as const

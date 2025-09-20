@@ -24,10 +24,6 @@ export interface AppConfig {
     password: string
     name: string
   }
-  redis: {
-    host: string
-    port: number
-  }
 }
 
 export interface AllConfig {

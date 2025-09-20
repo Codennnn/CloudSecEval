@@ -10,8 +10,6 @@ export interface UserEffectivePermissions {
     name: string
     slug: string
   }[]
-  /** 权限缓存的过期时间 */
-  cachedAt?: Date
 }
 
 /**

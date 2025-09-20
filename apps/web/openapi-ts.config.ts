@@ -1,11 +1,12 @@
 import { defineConfig } from '@hey-api/openapi-ts'
 
 /**
- * 此处使用硬编码 API_URL 的简要原因：
- * - 本配置由 openapi-ts CLI 在 Node 进程执行，Next 对 .env 的自动注入在此不生效，CLI 默认也不加载 .env。
- * - NEXT_PUBLIC_* 面向浏览器运行时；生成器需要的是 Swagger JSON（/api-docs-json），而非业务 API 基地址（/api）。
+ * 使用本地 OpenAPI 规范文件的原因：
+ * - 避免构建时对后端服务的网络依赖，特别适合 Netlify 等 CI/CD 环境
+ * - 通过 Git 管理 API 规范版本，确保前后端协作的一致性
+ * - 提供离线开发能力，新开发者克隆后即可开始工作
  */
-const API_URL = 'http://[::1]:8007/api-docs-json'
+const OPENAPI_SPEC_PATH = './src/lib/api/openapi-spec.json'
 const BASE_PATH = './src/lib/api'
 const OUTPUT_PATH = `${BASE_PATH}/generated`
 const LOG_PATH = `${BASE_PATH}/logs`
@@ -18,9 +19,9 @@ const LOG_PATH = `${BASE_PATH}/logs`
  * 使用现代插件架构，提供更好的类型安全性和开发体验
  */
 export default defineConfig({
-  // 输入配置 - 支持本地和远程 OpenAPI 规范
+  // 输入配置 - 使用本地 OpenAPI 规范文件
   input: {
-    path: API_URL,
+    path: OPENAPI_SPEC_PATH,
   },
 
   // 输出配置

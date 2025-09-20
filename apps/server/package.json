@@ -47,8 +47,6 @@
     "db:dev:reset": "pnpm db:dev:down && docker volume rm docker_postgres_dev_data 2>/dev/null || true && pnpm db:dev:up",
     "pgadmin:up": "cd docker && docker compose -f docker-compose.dev.yml --profile admin up -d",
     "pgadmin:down": "cd docker && docker compose -f docker-compose.dev.yml --profile admin down",
-    "redis:up": "cd docker && docker compose -f docker-compose.dev.yml --profile cache up -d redis",
-    "redis:down": "cd docker && docker compose -f docker-compose.dev.yml --profile cache down",
     "dev:db": "pnpm db:dev:up && sleep 5 && pnpm db:init",
     "dev:full": "pnpm dev:db && pnpm dev"
   },

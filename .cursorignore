@@ -1,1 +1,2 @@
 !.env*
+/apps/web/src/lib/api/openapi-spec.json

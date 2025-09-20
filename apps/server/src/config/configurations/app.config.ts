@@ -21,14 +21,6 @@ export default registerAs('app', () => ({
     name: process.env.ADMIN_NAME ?? CONFIG_DEFAULTS.ADMIN_NAME,
   },
 
-  // Redis 配置
-  redis: {
-    host: process.env.REDIS_HOST ?? CONFIG_DEFAULTS.REDIS_HOST,
-    port: process.env.REDIS_PORT
-      ? Number(process.env.REDIS_PORT)
-      : CONFIG_DEFAULTS.REDIS_PORT,
-  },
-
   // 时区配置
   timezone: process.env.TIMEZONE ?? CONFIG_DEFAULTS.TIMEZONE,
 }))

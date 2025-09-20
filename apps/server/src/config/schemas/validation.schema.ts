@@ -25,10 +25,6 @@ export const validationSchema = z.object({
   ADMIN_PASSWORD: z.string().min(6, '管理员密码至少需要6个字符').default(CONFIG_DEFAULTS.ADMIN_PASSWORD),
   ADMIN_NAME: z.string().default(CONFIG_DEFAULTS.ADMIN_NAME),
 
-  // Redis 配置（可选）
-  REDIS_HOST: z.string().optional(),
-  REDIS_PORT: z.coerce.number().optional(),
-
   // 时区配置（可选）
   TIMEZONE: z.string().default(CONFIG_DEFAULTS.TIMEZONE),
 })

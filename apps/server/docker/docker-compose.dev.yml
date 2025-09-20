@@ -13,17 +13,17 @@ services:
       # 设置时区
       TZ: ${TIMEZONE:-Asia/Shanghai}
       # 启用数据校验和（PostgreSQL 默认未启用；仅首次初始化数据目录时生效）
-      POSTGRES_INITDB_ARGS: "--data-checksums"
+      POSTGRES_INITDB_ARGS: '--data-checksums'
     ports:
-      - "${POSTGRES_PORT:-5433}:5432" # 使用 5433 避免与系统 PostgreSQL 冲突
+      - '${POSTGRES_PORT:-5433}:5432' # 使用 5433 避免与系统 PostgreSQL 冲突
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d # 可选：数据库初始化脚本目录
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nest_api_dev}",
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nest_api_dev}',
         ]
       interval: 10s
       timeout: 5s
@@ -54,10 +54,10 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - '${PGADMIN_PORT:-5050}:80'
     volumes:
       - pgadmin_dev_data:/var/lib/pgadmin
     depends_on:
@@ -66,26 +66,9 @@ services:
     profiles:
       - admin # 使用 profile，可选启动
 
-  # 可选：Redis 用于缓存和会话存储（如果项目需要）
-  redis:
-    image: redis:7-alpine
-    container_name: nest_redis_dev
-    restart: unless-stopped
-    env_file:
-      - ../.env.development
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis_dev_data:/data
-    command: redis-server --appendonly yes
-    profiles:
-      - cache # 使用 profile，可选启动
-
 # 数据卷定义
 volumes:
   postgres_dev_data:
     driver: local
   pgadmin_dev_data:
-    driver: local
-  redis_dev_data:
     driver: local
