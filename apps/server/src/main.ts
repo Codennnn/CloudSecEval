@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core'
 import type { NestExpressApplication } from '@nestjs/platform-express'
 import { consola } from 'consola'
 import cookieParser from 'cookie-parser'
+import { json, urlencoded } from 'express'
 
 import { AppModule } from '~/app.module'
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
@@ -32,6 +33,11 @@ void (async function bootstrap() {
 
   // 配置 Cookie 解析器
   app.use(cookieParser())
+
+  // 配置请求体解析器 - 支持大型富文本内容
+  const MAX_REQUEST_SIZE = '50mb' // 支持最大50MB的请求体
+  app.use(json({ limit: MAX_REQUEST_SIZE }))
+  app.use(urlencoded({ limit: MAX_REQUEST_SIZE, extended: true }))
 
   // 启用 CORS 跨域支持
   app.enableCors({

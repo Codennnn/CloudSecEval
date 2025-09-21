@@ -104,11 +104,12 @@ export class BaseBugReportDto extends CommonTimeDto {
   readonly attackMethod?: string
 
   @ApiPropertyOptional({
-    description: '详细问题描述（富文本）',
+    description: '详细问题描述（支持 HTML 格式的富文本）',
     example: '<p>在登录页面发现SQL注入漏洞...</p>',
   })
   @IsOptional()
   @IsString({ message: '问题描述必须是字符串' })
+  @MaxLength(10 * 1024 * 1024, { message: '问题描述内容不能超过 10MB' })
   @Expose()
   readonly description?: string
 
