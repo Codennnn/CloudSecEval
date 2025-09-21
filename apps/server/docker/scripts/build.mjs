@@ -4,7 +4,7 @@ import { spawn } from 'child_process'
 import { program } from 'commander'
 import { consola } from 'consola'
 
-import { confirm, docker, DOCKER_USERNAME, formatImagesTable, getPackageVersion, IMAGE_NAME, input, print, runCommand, runCommandWithProgressOutput, select, showBuildProgress } from './utils.mjs'
+import { confirm, docker, DOCKER_USERNAME, DOCKERFILE_PATH, formatImagesTable, getPackageVersion, IMAGE_NAME, input, print, PROJECT_ROOT, runCommand, runCommandWithProgressOutput, select, showBuildProgress } from './utils.mjs'
 
 // 全局信号处理 - 确保 Ctrl+C 能立即退出
 let isExiting = false
@@ -88,7 +88,7 @@ async function buildImage(tag, options = {}) {
     throw new Error('User interrupted')
   }
 
-  const { platform, dockerfile = 'docker/Dockerfile', push = false, buildx = false } = options
+  const { platform, dockerfile = DOCKERFILE_PATH, push = false, buildx = false } = options
 
   print.step(`构建镜像：${tag}`)
 
@@ -100,11 +100,11 @@ async function buildImage(tag, options = {}) {
 
   if (buildx && platform) {
     // 使用 buildx 进行多平台构建
-    command = `docker buildx build --platform ${platform} -t ${tag} -f ${dockerfile} ${push ? '--push' : '--load'} .`
+    command = `cd ${PROJECT_ROOT} && docker buildx build --platform ${platform} -t ${tag} -f ${dockerfile} ${push ? '--push' : '--load'} .`
   }
   else {
     // 传统构建方式
-    command = `docker build -t ${tag} -f ${dockerfile} .`
+    command = `cd ${PROJECT_ROOT} && docker build -t ${tag} -f ${dockerfile} .`
   }
 
   print.info(`执行命令：${command}`)
@@ -149,7 +149,7 @@ async function buildImageWithRealtime(tag, options = {}) {
     throw new Error('User interrupted')
   }
 
-  const { platform, dockerfile = 'docker/Dockerfile', push = false, buildx = false } = options
+  const { platform, dockerfile = DOCKERFILE_PATH, push = false, buildx = false } = options
 
   print.step(`构建镜像：${tag}`)
 
@@ -178,8 +178,8 @@ async function buildImageWithRealtime(tag, options = {}) {
   consola.log('')
 
   try {
-    // 使用带实时输出的命令执行
-    await runCommandWithProgressOutput(command, args)
+    // 使用带实时输出的命令执行（在monorepo根目录）
+    await runCommandWithProgressOutput(command, args, { cwd: PROJECT_ROOT })
 
     consola.log('')
     print.success(`镜像构建成功：${tag}`)
@@ -204,7 +204,7 @@ async function buildImageWithRealtime(tag, options = {}) {
 
 // 构建镜像 - 进度模式
 async function buildImageWithProgress(tag, options = {}) {
-  const { platform, dockerfile = 'docker/Dockerfile', push = false, buildx = false } = options
+  const { platform, dockerfile = DOCKERFILE_PATH, push = false, buildx = false } = options
 
   print.step(`构建镜像：${tag}`)
 
@@ -246,6 +246,7 @@ async function buildImageWithProgress(tag, options = {}) {
       const child = spawn(command, args, {
         stdio: ['inherit', 'pipe', 'pipe'],
         shell: true,
+        cwd: PROJECT_ROOT,
       })
 
       let buildSteps = []
@@ -420,7 +421,7 @@ async function localBuild(options = {}) {
   if (success) {
     print.success('🎉 本地构建完成！')
     print.info(`本地镜像：${tag}`)
-    print.info(`运行方法：docker run -p 8000:8000 --env-file .env ${tag}`)
+    print.info(`运行方法：docker run -p 8000:8000 --env-file apps/server/.env ${tag}`)
   }
 
   return success
@@ -757,7 +758,7 @@ async function runInteractiveMode() {
         print.info('后续操作：')
         consola.log('  📋 查看镜像：pnpm docker:build --list')
         consola.log('  🚀 发布镜像：pnpm docker:publish')
-        consola.log('  🧪 本地测试：docker run -p 8000:8000 --env-file .env <镜像名>')
+        consola.log('  🧪 本地测试：docker run -p 8000:8000 --env-file apps/server/.env <镜像名>')
         consola.log('  🗑️  清理镜像：pnpm docker:build --cleanup')
       }
     }
@@ -864,7 +865,7 @@ async function main() {
     .option('-t, --tag <tag>', '指定自定义标签')
     .option('-l, --latest', '同时构建 latest 标签')
     .option('-p, --platform <platform>', '指定目标平台架构')
-    .option('-f, --dockerfile <dockerfile>', '指定 Dockerfile 路径', 'docker/Dockerfile')
+    .option('-f, --dockerfile <dockerfile>', '指定 Dockerfile 路径', DOCKERFILE_PATH)
     .option('--list', '列出本地镜像')
     .option('--cleanup', '清理未使用的镜像')
     .option('--interactive', '交互式构建')
@@ -994,7 +995,7 @@ async function main() {
     print.info('后续操作：')
     consola.log('  📋 查看镜像：pnpm docker:build --list')
     consola.log('  🚀 发布镜像：pnpm docker:publish')
-    consola.log('  🧪 本地测试：docker run -p 8000:8000 --env-file .env <镜像名>')
+    consola.log('  🧪 本地测试：docker run -p 8000:8000 --env-file apps/server/.env <镜像名>')
     consola.log('  🗑️  清理镜像：pnpm docker:build --cleanup')
   }
   else {

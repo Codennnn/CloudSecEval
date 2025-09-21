@@ -56,9 +56,9 @@ model FileObject {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
+  @@unique([sha256, size])
   @@index([uploaderId, createdAt])
   @@index([status, createdAt])
-  @@unique([sha256, size])
   @@map("file_objects")
 }
 
@@ -119,16 +119,16 @@ model User {
   updatedAt    DateTime @updatedAt
 
   // 关联
-  organization           Organization              @relation(fields: [orgId], references: [id], onDelete: Restrict)
-  department             Department?               @relation(fields: [departmentId], references: [id], onDelete: SetNull)
-  passwordResetTokens    PasswordResetToken[]
-  refreshTokens          RefreshToken[]
-  userRoles              UserRole[]
-  bugReports             BugReport[]               // 用户提交的漏洞报告
-  reviewedBugReports     BugReport[]               @relation("BugReportReviewer") // 用户审核的漏洞报告
-  uploadedFiles          FileObject[]
-  approvalLogs           BugReportApprovalLog[]    @relation("BugReportApprover") // 用户审批的漏洞报告
-  forwardedApprovalLogs  BugReportApprovalLog[]    @relation("BugReportForwardTarget") // 转发给用户的审批
+  organization          Organization           @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  department            Department?            @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  passwordResetTokens   PasswordResetToken[]
+  refreshTokens         RefreshToken[]
+  userRoles             UserRole[]
+  bugReports            BugReport[] // 用户提交的漏洞报告
+  reviewedBugReports    BugReport[]            @relation("BugReportReviewer") // 用户审核的漏洞报告
+  uploadedFiles         FileObject[]
+  approvalLogs          BugReportApprovalLog[] @relation("BugReportApprover") // 用户审批的漏洞报告
+  forwardedApprovalLogs BugReportApprovalLog[] @relation("BugReportForwardTarget") // 转发给用户的审批
 
   @@index([orgId])
   @@index([departmentId])
@@ -296,9 +296,9 @@ model BugReport {
   updatedAt      DateTime        @updatedAt
 
   // 关联
-  user         User                     @relation(fields: [userId], references: [id], onDelete: Restrict)
-  organization Organization             @relation(fields: [orgId], references: [id], onDelete: Restrict)
-  reviewer     User?                    @relation("BugReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  organization Organization           @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  reviewer     User?                  @relation("BugReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
   approvalLogs BugReportApprovalLog[]
 
   @@index([orgId])
@@ -338,8 +338,8 @@ model BugReportApprovalLog {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   bugReportId  String   @db.Uuid
   approverId   String   @db.Uuid
-  action       String   // 'APPROVE', 'REJECT', 'REQUEST_INFO', 'FORWARD'
-  comment      String   // 审批意见
+  action       String // 'APPROVE', 'REJECT', 'REQUEST_INFO', 'FORWARD'
+  comment      String // 审批意见
   targetUserId String?  @db.Uuid // 转发目标用户ID（仅转发时使用）
   createdAt    DateTime @default(now())
 

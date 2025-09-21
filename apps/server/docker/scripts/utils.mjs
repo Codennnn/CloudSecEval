@@ -11,21 +11,28 @@ import { promisify } from 'util'
 
 const execAsync = promisify(exec)
 
-// 获取项目根目录
+// 获取项目根目录 - 指向monorepo根目录
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const projectRoot = join(__dirname, '..', '..')
+// 从 apps/server/docker/scripts/ 回到 monorepo 根目录
+const projectRoot = join(__dirname, '..', '..', '..', '..')
 
-// 导出项目根目录路径
+// 导出项目根目录路径（monorepo根目录）
 export const PROJECT_ROOT = projectRoot
+
+// 导出server应用目录路径
+export const SERVER_ROOT = join(projectRoot, 'apps', 'server')
 
 // Docker 相关常量
 export const DOCKER_USERNAME = 'leokuchon'
 export const IMAGE_NAME = 'nest-api'
 
-// Docker Compose 文件路径常量
+// Docker Compose 文件路径常量（相对于server目录）
 export const DOCKER_COMPOSE_FILE = 'docker/docker-compose.yml'
 export const DOCKER_COMPOSE_PROD_FILE = 'docker/docker-compose.prod.yml'
+
+// Dockerfile路径（相对于monorepo根目录）
+export const DOCKERFILE_PATH = 'apps/server/docker/Dockerfile'
 
 // 彩色输出函数
 export const colors = {
@@ -393,8 +400,8 @@ export async function select(message, choices) {
   }
 }
 
-// 获取包版本
-export function getPackageVersion(packagePath = 'package.json') {
+// 获取包版本（从server应用的package.json）
+export function getPackageVersion(packagePath = 'apps/server/package.json') {
   try {
     const pkgPath = join(PROJECT_ROOT, packagePath)
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))

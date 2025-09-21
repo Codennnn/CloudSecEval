@@ -21,7 +21,7 @@ COPY apps/server/src/prisma ./apps/server/src/prisma
 
 # 切换到后端应用目录生成 Prisma Client
 WORKDIR /app/apps/server
-RUN pnpm exec prisma generate --no-engine
+RUN pnpm exec prisma generate
 
 # 验证生成的客户端
 RUN ls -la generated/
@@ -49,8 +49,9 @@ COPY --from=deps /app/apps/server/generated ./apps/server/generated
 COPY apps/server/tsconfig*.json apps/server/nest-cli.json ./apps/server/
 COPY apps/server/src ./apps/server/src
 
-# 切换到后端应用目录编译
+# 切换到后端应用目录并安装依赖，确保模块解析正确
 WORKDIR /app/apps/server
+RUN pnpm install --frozen-lockfile --prefer-offline
 RUN pnpm run build
 
 # 剥离开发依赖，仅保留生产所需
@@ -81,7 +82,10 @@ ENV NODE_ENV=production
 COPY --from=builder /app/package.json /app/pnpm-workspace.yaml ./
 # 复制后端应用的必要文件和生产依赖
 COPY --from=builder /app/apps/server/package.json ./apps/server/
+# 复制根目录的 node_modules（pnpm 需要）
 COPY --from=builder /app/node_modules ./node_modules
+# 复制子目录的 node_modules
+COPY --from=builder /app/apps/server/node_modules ./apps/server/node_modules
 COPY --from=builder /app/apps/server/dist ./apps/server/dist
 COPY --from=builder /app/apps/server/prisma.config.ts ./apps/server/
 COPY --from=builder /app/apps/server/src/prisma ./apps/server/src/prisma
