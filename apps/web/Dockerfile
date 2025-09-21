@@ -1,5 +1,5 @@
 # 使用官方 Node.js 22 镜像
-FROM node:22-alpine AS base
+FROM --platform=linux/amd64 node:22-alpine AS base
 
 # 安装 pnpm
 RUN npm install -g pnpm@9.15.3
@@ -41,7 +41,7 @@ RUN pnpm api:generate
 RUN pnpm build
 
 # 运行阶段
-FROM node:22-alpine AS runner
+FROM --platform=linux/amd64 node:22-alpine AS runner
 WORKDIR /app
 
 # 安装 pnpm
