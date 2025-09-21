@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
 
+import { EmptyContent } from '~/components/EmptyContent'
 import { ProseContainer } from '~/components/ProseContainer'
 import { RichTextEditor } from '~/components/richtext/RichTextEditor'
 import { SafeHtmlRenderer } from '~/components/richtext/SafeHtmlRenderer'
@@ -24,12 +25,6 @@ import { cn } from '~/lib/utils'
 
 import { type CreateBugReportDto } from '~api/types.gen'
 import { getVulSeverity, VulnerabilitySeverity } from '~crowd-test/constants'
-
-function EmptyContent() {
-  return (
-    <div className="text-sm">-</div>
-  )
-}
 
 export type BugReportFormValues = CreateBugReportDto
 

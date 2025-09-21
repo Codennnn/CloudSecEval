@@ -73,21 +73,21 @@ export function UploadedFileList(props: UploadedFileListProps) {
         return (
           <div
             key={file.id}
-            className="group relative overflow-hidden rounded-lg border bg-card shadow-xs hover:shadow-sm transition-all duration-200 hover:scale-[1.02]"
+            className="group/file-item relative overflow-hidden rounded-lg border bg-card shadow-xs hover:shadow-sm transition-all"
           >
             {/* 删除按钮 */}
             {!readonly && (
-              <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute top-2 right-2 z-10 opacity-0 group-hover/file-item:opacity-100 transition-opacity duration-200">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      className="size-7 p-0 shadow-md hover:bg-destructive hover:text-destructive-foreground"
-                      size="sm"
+                      className="hover:bg-destructive/15 hover:text-destructive"
+                      size="iconSm"
                       type="button"
                       variant="outline"
                       onClick={() => { void onRemove?.(file) }}
                     >
-                      <XIcon className="size-3.5" />
+                      <XIcon />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">删除附件</TooltipContent>
@@ -126,9 +126,6 @@ export function UploadedFileList(props: UploadedFileListProps) {
                 </div>
               </div>
             </div>
-
-            {/* 底部状态条 */}
-            <div className="h-1 bg-gradient-to-r from-primary/20 to-primary/40" />
           </div>
         )
       })}

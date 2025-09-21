@@ -51,7 +51,7 @@ export class BusinessException extends HttpException {
     message?: string,
     extraData?: unknown,
   ): BusinessException {
-    return new BusinessException(businessCode, message, HttpStatus.UNAUTHORIZED, extraData)
+    return new BusinessException(businessCode, message, HttpStatus.OK, extraData)
   }
 
   static forbidden(
