@@ -1,6 +1,6 @@
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
-import { DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
+import { ChangePasswordApiResponseDto, DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
 import { ApprovalStatusStatsResponseDto } from '~/modules/bug-reports/dto/approval-status-stats.dto'
 import { BugReportResponseDto, PaginatedBugReportsResponseDto } from '~/modules/bug-reports/dto/bug-report-response.dto'
 import { DailyReportsStatsResponseDto } from '~/modules/bug-reports/dto/daily-reports-stats.dto'
@@ -336,6 +336,16 @@ export const AUTH_API_CONFIG = {
     successResponse: createSuccessResponse({
       description: '登出成功',
       type: LogoutApiResponseDto,
+    }),
+    requireAdmin: false,
+  },
+
+  changePassword: {
+    summary: '修改密码',
+    description: '通过验证当前密码来修改新密码',
+    successResponse: createSuccessResponse({
+      description: '密码修改成功',
+      type: ChangePasswordApiResponseDto,
     }),
     requireAdmin: false,
   },

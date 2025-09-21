@@ -1,6 +1,8 @@
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { tokenManager } from '~/lib/auth/token'
+
 import { adminLoginRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
 import { authControllerLoginMutation, authControllerLogoutMutation } from '~api/@tanstack/react-query.gen'
@@ -23,6 +25,19 @@ export function useLogin() {
     ...authControllerLoginMutation(),
     onSuccess: (data) => {
       const user = data.data.user
+      const { accessToken, refreshToken } = data.data
+
+      // 检查是否禁用了 Cookie 认证
+      const cookieDisabled = process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'false'
+
+      // 如果 Cookie 被禁用，则将 Token 保存到 localStorage
+      if (cookieDisabled) {
+        tokenManager.setLoginData(accessToken, refreshToken)
+      }
+      else {
+        // Cookie 模式下，也需要设置认证状态 Cookie（如果后端没有设置的话）
+        tokenManager.setAuthStatusCookie(true)
+      }
 
       // 同步用户信息到 store（持久化存储）
       setUser(user)
@@ -49,6 +64,18 @@ export function useLogout() {
   return useMutation({
     ...authControllerLogoutMutation(),
     onSuccess: () => {
+      // 检查是否禁用了 Cookie 认证
+      const cookieDisabled = process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'false'
+
+      // 清除所有认证数据
+      if (cookieDisabled) {
+        tokenManager.clearAllAuthData()
+      }
+      else {
+        // Cookie 模式下，清除认证状态 Cookie
+        tokenManager.setAuthStatusCookie(false)
+      }
+
       clearUser()
 
       // 清除所有查询缓存

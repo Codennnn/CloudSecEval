@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarIcon, EditIcon, HouseIcon, MailIcon, UploadIcon } from 'lucide-react'
+import { CalendarIcon, EditIcon, HouseIcon, KeyIcon, MailIcon, UploadIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
@@ -16,6 +16,8 @@ import { Textarea } from '~/components/ui/textarea'
 import { CardBox, CardBoxContent, CardBoxDescription, CardBoxHeader, CardBoxTitle } from '~/components/ui-common/CardBox'
 import { UserAvatar } from '~/components/UserAvatar'
 import { formatDate } from '~/utils/date'
+
+import { ChangePasswordForm } from './components/ChangePasswordForm'
 
 import { PageHeader } from '~admin/components/PageHeader'
 import { useUpdateProfile } from '~admin/hooks/api/useUpdateProfile'
@@ -342,6 +344,25 @@ export function ProfilePage() {
                       {updateAvatarMutation.isPending ? '上传中...' : '更换头像'}
                     </Button>
                   </div>
+                </CardBoxContent>
+              </CardBox>
+            </div>
+
+            {/* 密码管理区域 */}
+            <div className="mt-admin-content">
+              <CardBox>
+                <CardBoxHeader>
+                  <CardBoxTitle className="flex items-center gap-2">
+                    <KeyIcon className="size-5" />
+                    修改密码
+                  </CardBoxTitle>
+                  <CardBoxDescription>
+                    为了账户安全，请定期更换密码
+                  </CardBoxDescription>
+                </CardBoxHeader>
+
+                <CardBoxContent>
+                  <ChangePasswordForm />
                 </CardBoxContent>
               </CardBox>
             </div>

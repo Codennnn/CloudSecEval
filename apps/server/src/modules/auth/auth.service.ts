@@ -10,6 +10,7 @@ import { UsersService } from '~/modules/users/users.service'
 
 import { SafeUserDto } from '../users/dto/base-user.dto'
 import { AuthRepository } from './auth.repository'
+import { ChangePasswordDto } from './dto/change-password.dto'
 import { ResetPasswordDto } from './dto/reset-password.dto'
 import { UpdateProfileDto } from './dto/update-profile.dto'
 import { JwtPayloadData } from './types/auth.type'
@@ -161,6 +162,59 @@ export class AuthService {
 
     // 撤销所有刷新令牌
     await this.authRepository.revokeAllUserRefreshTokens(resetToken.userId)
+
+    return null
+  }
+
+  /**
+   * 修改密码
+   * 通过验证当前密码来修改新密码
+   */
+  async changePassword(userId: SafeUserDto['id'], changePasswordDto: ChangePasswordDto) {
+    const { currentPassword, newPassword, confirmNewPassword } = changePasswordDto
+
+    // 检查新密码和确认密码是否一致
+    if (newPassword !== confirmNewPassword) {
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.VALIDATION_ERROR,
+        '新密码和确认密码不一致',
+      )
+    }
+
+    const user = await this.usersService.findOneWithPassword(userId)
+
+    if (!user.isActive) {
+      throw BusinessException.forbidden(
+        BUSINESS_CODES.ACCOUNT_DISABLED,
+        '用户已禁用',
+      )
+    }
+
+    // 验证当前密码是否正确
+    const isCurrentPasswordValid = await this.verifyPassword(currentPassword, user.passwordHash)
+
+    if (!isCurrentPasswordValid) {
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_CREDENTIALS,
+        '当前密码错误',
+      )
+    }
+
+    // 检查新密码是否与当前密码相同
+    const isSamePassword = await this.verifyPassword(newPassword, user.passwordHash)
+
+    if (isSamePassword) {
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.VALIDATION_ERROR,
+        '新密码不能与当前密码相同',
+      )
+    }
+
+    // 更新用户密码
+    await this.usersService.setPassword(userId, newPassword)
+
+    // 撤销所有刷新令牌，强制用户重新登录
+    await this.authRepository.revokeAllUserRefreshTokens(userId)
 
     return null
   }

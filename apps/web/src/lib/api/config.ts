@@ -1,8 +1,6 @@
 import { isDevelopment } from '~/utils/platform'
 
 interface ApiConfig {
-  /** API 基础 URL */
-  baseUrl: string
   /** 请求超时时间（毫秒） */
   timeout: number
   /** 失败重试次数 */
@@ -28,9 +26,6 @@ interface ApiConfig {
  * 可通过环境变量进行覆盖
  */
 export const API_CONFIG: ApiConfig = {
-  baseUrl: (isDevelopment()
-    ? process.env.NEXT_PUBLIC_API_PROXY_SOURCE
-    : process.env.NEXT_PUBLIC_API_BASE_URL) ?? '',
   timeout: 10 * 1000,
   retries: 3,
   retryDelay: 1000,

@@ -10,7 +10,13 @@ export default registerAs('app', () => ({
 
   // CORS 配置
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(','),
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN === 'false'
+        ? false
+        : process.env.CORS_ORIGIN === '*'
+          ? '*'
+          : process.env.CORS_ORIGIN.split(',')
+      : false,
     credentials: process.env.CORS_CREDENTIALS ? process.env.CORS_CREDENTIALS === 'true' : CONFIG_DEFAULTS.CORS_CREDENTIALS,
   },
 

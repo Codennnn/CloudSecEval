@@ -16,7 +16,7 @@ export interface AppConfig {
   env: Environment
   apiPrefix: string
   cors: {
-    origin: string[]
+    origin: boolean | string | string[]
     credentials: boolean
   }
   admin: {

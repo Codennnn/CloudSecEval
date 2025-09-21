@@ -127,6 +127,23 @@ export class UsersService {
     return this.usersRepository.findByEmailWithPassword(email)
   }
 
+  /**
+   * 根据用户ID查找用户（包含密码哈希）
+   * 仅用于密码验证相关操作
+   */
+  async findOneWithPassword(id: UserId) {
+    const user = await this.usersRepository.findByIdWithPassword(id)
+
+    if (!user) {
+      throw BusinessException.notFound(
+        BUSINESS_CODES.USER_NOT_FOUND,
+        `用户 ID ${id} 不存在`,
+      )
+    }
+
+    return user
+  }
+
   async update(id: UserId, updateUserDto: UpdateUserDto, currentUserId?: UserId) {
     const { isActive, ...updateFields } = updateUserDto
 

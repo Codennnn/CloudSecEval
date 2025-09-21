@@ -35,11 +35,17 @@ void (async function bootstrap() {
 
   // 启用 CORS 跨域支持
   app.enableCors({
-    origin: configService.isDevelopment ? true : configService.app.cors.origin,
+    origin: '*',
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    credentials: configService.app.cors.credentials,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   })
+  // app.enableCors({
+  //   origin: '*',
+  //   origin: configService.app.cors.origin,
+  //   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  //   credentials: configService.app.cors.credentials,
+  //   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  // })
 
   // 全局应用验证管道
   app.useGlobalPipes(

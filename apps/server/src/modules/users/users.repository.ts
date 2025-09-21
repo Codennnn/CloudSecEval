@@ -35,6 +35,17 @@ export class UsersRepository {
     })
   }
 
+  /**
+   * 根据用户ID查找用户（包含密码哈希）
+   * 仅用于密码验证相关操作
+   */
+  findByIdWithPassword(id: User['id']) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: userWithPasswordSelectFields,
+    })
+  }
+
   async findById(id: User['id']) {
     const user = await this.prisma.user.findUnique({
       where: { id },

@@ -177,3 +177,15 @@ export class UpdateProfileApiResponseDto extends StandardResponseDto<UserRespons
   })
   declare data: UserResponseDto
 }
+
+/**
+ * 修改密码 API 响应 DTO
+ */
+export class ChangePasswordApiResponseDto extends StandardResponseDto<null> {
+  @ApiProperty({
+    description: '修改密码响应数据',
+    nullable: true,
+    example: null,
+  })
+  declare data: null
+}

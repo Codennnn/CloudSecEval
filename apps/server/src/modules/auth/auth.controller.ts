@@ -17,6 +17,7 @@ import { AuthService } from './auth.service'
 import { CurrentUser } from './decorators/current-user.decorator'
 import { Public } from './decorators/public.decorator'
 import {
+  ChangePasswordApiResponseDto,
   LoginApiResponseDto,
   LogoutApiResponseDto,
   PasswordResetRequestApiResponseDto,
@@ -27,6 +28,7 @@ import {
   TokenVerifyApiResponseDto,
   UpdateProfileApiResponseDto,
 } from './dto/auth-response.dto'
+import { ChangePasswordDto } from './dto/change-password.dto'
 import { LoginDto } from './dto/login.dto'
 import { RefreshTokenDto } from './dto/refresh-token.dto'
 import { RequestPasswordResetDto, ResetPasswordDto } from './dto/reset-password.dto'
@@ -151,6 +153,19 @@ export class AuthController {
     return resp({
       msg: '用户资料更新成功',
       data: updatedUser,
+    })
+  }
+
+  @Patch('change-password')
+  @ApiDocs(AUTH_API_CONFIG.changePassword)
+  async changePassword(
+    @CurrentUser() user: SafeUserDto,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<ChangePasswordApiResponseDto> {
+    await this.authService.changePassword(user.id, changePasswordDto)
+
+    return resp({
+      msg: '密码修改成功，请重新登录',
     })
   }
 

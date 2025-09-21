@@ -27,7 +27,7 @@ export function useUserSync() {
     // 认证失败时不要自动重试，避免无限循环
     retry: (failureCount, error) => {
       // 如果是401认证错误，不重试
-      if ('status' in error && error.status === 401) {
+      if (typeof error === 'object' && 'status' in error && error.status === 401) {
         return false
       }
 

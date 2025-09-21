@@ -12,14 +12,37 @@ import { isCrowdTest } from '~/utils/platform'
 import { adminLoginRoute, adminRootRoute, AdminRoutes, getRoutePath, loginRedirectRoute } from '~admin/lib/admin-nav'
 
 /**
+ * 检查用户登录状态
+ * 支持 Cookie 和 localStorage 两种认证方式
+ * @param request - Next.js 请求对象
+ * @returns 是否已登录
+ */
+function checkAuthStatus(request: NextRequest): boolean {
+  // 方式1：检查 JWT Cookie（原有方式）
+  const jwtToken = request.cookies.get('access_token')?.value
+
+  if (jwtToken) {
+    return true
+  }
+
+  // 方式2：检查认证状态 Cookie（localStorage 模式下的辅助判断）
+  const authStatus = request.cookies.get('auth_status')?.value
+
+  if (authStatus === 'true') {
+    return true
+  }
+
+  return false
+}
+
+/**
  * 处理管理后台路由的访问控制逻辑
  * @param request - Next.js 请求对象
  * @param pathname - 当前访问路径
  * @returns 重定向响应或 undefined（继续处理）
  */
 function handleAdminRoutes(request: NextRequest, pathname: string) {
-  const token = request.cookies.get('access_token')?.value
-  const hasLogin = !!token
+  const hasLogin = checkAuthStatus(request)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   const isRootPath = pathname === adminRootRoute
 

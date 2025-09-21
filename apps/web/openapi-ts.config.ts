@@ -10,7 +10,7 @@ const OPENAPI_SPEC_PATH = './src/lib/api/openapi-spec.json'
 const BASE_PATH = './src/lib/api'
 const OUTPUT_PATH = `${BASE_PATH}/generated`
 const LOG_PATH = `${BASE_PATH}/logs`
-// const RUNTIME_CONFIG_PATH = `${BASE_PATH}/hey-api-config.ts`
+const RUNTIME_CONFIG_PATH = `${BASE_PATH}/hey-api-config.ts`
 
 /**
  * OpenAPI-TS 配置文件
@@ -55,7 +55,7 @@ export default defineConfig({
       // 客户端实例配置
       bundle: true, // 将客户端代码打包
       exportFromIndex: false, // 不从 index 导出，保持模块独立性
-      // runtimeConfigPath: RUNTIME_CONFIG_PATH, // 运行时配置文件路径
+      runtimeConfigPath: RUNTIME_CONFIG_PATH, // 运行时配置文件路径
     },
 
     // JSON Schema 生成插件

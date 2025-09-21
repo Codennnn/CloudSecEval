@@ -77,7 +77,6 @@ const response = await api.get('/endpoint', {
 
 ```typescript
 interface ApiConfig {
-  baseUrl: string // API 基础 URL
   timeout: number // 请求超时时间
   retries: number // 重试次数
   retryDelay: number // 重试延迟
@@ -96,7 +95,7 @@ interface ApiConfig {
 
 ```bash
 # API 基础配置
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api
+NEXT_PUBLIC_API_BASE=http://localhost:3001
 NEXT_PUBLIC_API_TIMEOUT=10000
 NEXT_PUBLIC_API_RETRIES=3
 NEXT_PUBLIC_API_RETRY_DELAY=1000
@@ -292,7 +291,7 @@ function UserManagement() {
 
 ```bash
 # API 配置
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api
+NEXT_PUBLIC_API_BASE=http://localhost:3001
 
 # 开发工具
 NEXT_PUBLIC_ENABLE_REACT_QUERY_DEVTOOLS=true
