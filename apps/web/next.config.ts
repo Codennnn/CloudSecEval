@@ -6,6 +6,9 @@ import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 
 const nextConfig: NextConfig = {
+  // 添加这个配置以支持 Docker standalone 输出
+  output: 'standalone',
+
   serverExternalPackages: ['@shikijs/twoslash'],
 
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],

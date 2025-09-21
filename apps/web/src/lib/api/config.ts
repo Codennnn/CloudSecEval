@@ -28,10 +28,9 @@ interface ApiConfig {
  * 可通过环境变量进行覆盖
  */
 export const API_CONFIG: ApiConfig = {
-  baseUrl:
-    process.env.NEXT_PUBLIC_API_PROXY_SOURCE
-    ?? process.env.NEXT_PUBLIC_API_BASE_URL
-    ?? '',
+  baseUrl: (isDevelopment()
+    ? process.env.NEXT_PUBLIC_API_PROXY_SOURCE
+    : process.env.NEXT_PUBLIC_API_BASE_URL) ?? '',
   timeout: 10 * 1000,
   retries: 3,
   retryDelay: 1000,

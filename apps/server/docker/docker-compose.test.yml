@@ -5,6 +5,7 @@ services:
   # 测试环境用的 PostgreSQL 数据库
   postgres:
     image: postgres:17-alpine
+    platform: linux/amd64
     container_name: nest_postgres_test
     restart: unless-stopped
     environment:
@@ -20,6 +21,7 @@ services:
   # Nest 应用服务 - 测试环境
   app:
     image: nest-api:test
+    platform: linux/amd64
     container_name: nest_api_test
     restart: unless-stopped
     env_file:

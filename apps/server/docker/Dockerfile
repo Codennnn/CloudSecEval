@@ -1,5 +1,5 @@
 # ---------- deps 阶段：安装依赖并生成 Prisma Client ----------
-FROM node:22-alpine AS deps
+FROM --platform=linux/amd64 node:22-alpine AS deps
 
 # 启用 pnpm（Node 22 已内置 corepack）
 ENV PNPM_HOME=/pnpm
@@ -28,7 +28,7 @@ RUN ls -la generated/
 
 
 # ---------- builder 阶段：复制源码并编译 ----------
-FROM node:22-alpine AS builder
+FROM --platform=linux/amd64 node:22-alpine AS builder
 ENV PNPM_HOME=/pnpm
 RUN corepack enable
 
@@ -60,7 +60,7 @@ RUN pnpm run build
 
 
 # ---------- runner 阶段：仅保留运行所需内容 ----------
-FROM node:22-alpine AS runner
+FROM --platform=linux/amd64 node:22-alpine AS runner
 
 # 安装系统级依赖
 RUN apk add --no-cache \
