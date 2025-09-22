@@ -14,7 +14,7 @@ export const createClientConfig: CreateClientConfig = (config) => {
   const baseConfig = {
     ...config,
     baseUrl: process.env.NEXT_PUBLIC_API_BASE,
-    credentials: cookieDisabled ? undefined : 'include',
+    credentials: cookieDisabled ? 'omit' : 'include',
   } satisfies Config
 
   // 如果 Cookie 被禁用，则添加 Authorization header

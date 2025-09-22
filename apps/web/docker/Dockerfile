@@ -37,7 +37,7 @@ COPY packages/constants ./packages/constants
 WORKDIR /app/apps/web
 
 # 生成 API 客户端并构建应用
-RUN pnpm api:generate
+RUN pnpm api:setup
 RUN pnpm build
 
 # 运行阶段
@@ -60,7 +60,7 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
-# 暴露端口
+# 暴露端口（容器内部使用 8080）
 EXPOSE 8080
 
 # 设置环境变量
