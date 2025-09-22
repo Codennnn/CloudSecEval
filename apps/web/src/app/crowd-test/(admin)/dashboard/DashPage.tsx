@@ -76,7 +76,7 @@ export function DashboardPage() {
 
       <TeamReportsOverviewTable />
 
-      <div>
+      {/* <div>
         <StatsCard>
           <StatsCardHeader>
             <StatsCardTitle>个人排行</StatsCardTitle>
@@ -85,7 +85,7 @@ export function DashboardPage() {
             <PersonalRankingList data={personalRanking} maxItems={10} />
           </StatsCardContent>
         </StatsCard>
-      </div>
+      </div> */}
     </div>
   )
 }

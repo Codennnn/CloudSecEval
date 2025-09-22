@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 
-import { BugReport, BugReportStatus, Prisma } from '#prisma/client'
+import { BugReport, BugReportStatus, BugSeverity, Prisma } from '#prisma/client'
 import {
   BUG_REPORT_ATTACHMENTS,
   BUG_REPORT_STATUS_TRANSITIONS,
@@ -750,9 +750,16 @@ export class BugReportsService {
   private needsSecondApproval(bugReport: BugReport): boolean {
     // 这里可以根据业务规则决定是否需要二级审批
     // 例如：高危和严重等级的漏洞需要二级审批
-    const highRiskSeverities = ['HIGH', 'CRITICAL']
+    const highRiskSeverities: BugSeverity[] = [BugSeverity.HIGH, BugSeverity.CRITICAL]
 
     return highRiskSeverities.includes(bugReport.severity)
+  }
+
+  /**
+   * 验证是否为有效的 BugSeverity 枚举值
+   */
+  private isValidBugSeverity(value: string): value is BugSeverity {
+    return Object.values(BugSeverity).includes(value as BugSeverity)
   }
 
   /**
@@ -810,7 +817,8 @@ export class BugReportsService {
 
     // 如果有附件数据，提取ID列表
     if (data.attachments && Array.isArray(data.attachments)) {
-      result.attachmentIds = data.attachments.map((attachment: AttachmentDto) => attachment.id)
+      const attachments = data.attachments as AttachmentDto[]
+      result.attachmentIds = attachments.map((attachment) => attachment.id)
       // 删除原始附件数据
       delete (result as Record<string, unknown>).attachments
     }
@@ -863,7 +871,7 @@ export class BugReportsService {
         severity: fullReport.severity,
         attackMethod: fullReport.attackMethod ?? undefined,
         description: fullReport.description ?? undefined,
-        discoveredUrls: fullReport.discoveredUrls ?? undefined,
+        discoveredUrls: fullReport.discoveredUrls,
         status: fullReport.status,
         createdAt: fullReport.createdAt,
         updatedAt: fullReport.updatedAt,
@@ -900,14 +908,14 @@ export class BugReportsService {
       interface AttachmentData {
         id: string
         originalName: string
-        fileName?: string
+        fileName?: string | null
         mimeType: string
         size: number
-        hash?: string
-        uploadedAt?: Date
+        hash?: string | null
+        uploadedAt?: Date | string | null
       }
 
-      const attachments = fullReport.attachments as AttachmentData[]
+      const attachments = fullReport.attachments as unknown as AttachmentData[]
       const processedAttachments = attachments.map((attachment) => ({
         id: attachment.id,
         originalName: attachment.originalName,
@@ -932,10 +940,10 @@ export class BugReportsService {
           action: item.eventType.toUpperCase(),
           createdAt: item.createdAt,
           user: {
-            id: item.user?.id || '',
-            name: item.user?.name || '',
-            email: item.user?.email || '',
-            avatarUrl: item.user?.avatarUrl,
+            id: item.user.id,
+            name: item.user.name ?? '',
+            email: item.user.email,
+            avatarUrl: item.user.avatarUrl,
           },
           description: item.description,
           comment: item.approvalInfo?.comment ?? item.submitInfo?.changedFields?.join(', ') ?? undefined,
@@ -969,17 +977,23 @@ export class BugReportsService {
   ) {
     // 解析 JSON 文件
     interface ImportDataType {
-      exportMeta?: { exportedAt: string }
+      exportMeta?: {
+        exportedAt: string
+      }
       report?: {
         id: string
         title: string
         severity: string
-        attackMethod?: string
-        description?: string
-        discoveredUrls?: string[]
+        attackMethod?: string | null
+        description?: string | null
+        discoveredUrls?: string[] | null
       }
-      submitter?: { name?: string }
-      organization?: { name?: string }
+      submitter?: {
+        name?: string | null
+      }
+      organization?: {
+        name?: string
+      }
     }
 
     let importData: ImportDataType
@@ -988,7 +1002,7 @@ export class BugReportsService {
       const jsonContent = file.buffer.toString('utf8')
       importData = JSON.parse(jsonContent) as ImportDataType
     }
-    catch (error) {
+    catch {
       throw new BadRequestException('无效的JSON文件格式')
     }
 
@@ -1001,12 +1015,17 @@ export class BugReportsService {
       throw new BadRequestException('缺少必要的报告信息')
     }
 
+    // 验证严重性等级
+    if (!this.isValidBugSeverity(importData.report.severity)) {
+      throw new BadRequestException(`无效的严重性等级: ${importData.report.severity}`)
+    }
+
     // 对富文本内容进行消毒处理
     const sanitizedDescription = importData.report.description
       ? this.htmlSanitizerService.sanitizeHtml(importData.report.description)
       : undefined
 
-    // 创建新报告
+    // 创建新报告 - 此时 severity 已通过类型守卫验证，可以安全使用
     const createData: Prisma.BugReportCreateInput = {
       title: importData.report.title,
       severity: importData.report.severity,

@@ -6,6 +6,9 @@ import type { PermissionFlag } from '~/lib/permissions/matcher'
 
 import { adminPermission } from '../../../constants/permission'
 
+// 缓存默认权限数组，避免每次创建新对象
+const DEFAULT_PERMISSIONS: PermissionFlag[] = []
+
 interface UserState {
   user: User | null
 
@@ -80,7 +83,7 @@ export function useIsLoggedIn() {
  * @returns 权限标识字符串数组
  */
 export function useUserPermissions(): PermissionFlag[] {
-  const perms = useUserStore((s) => s.user?.permissions ?? [])
+  const perms = useUserStore((s) => s.user?.permissions ?? DEFAULT_PERMISSIONS)
 
   return perms
 }

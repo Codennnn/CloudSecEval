@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
+import { PasswordInput } from '~/components/ui/password-input'
 import { SITE_CONFIG } from '~/constants/common'
 import { cn } from '~/lib/utils'
 import { usePrefetch } from '~/utils/navigation'
@@ -142,11 +143,10 @@ export function LoginForm({
                   <FormItem>
                     <FormLabel>密码</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         autoComplete="current-password"
                         disabled={loginMutation.isPending}
                         placeholder="输入你的密码"
-                        type="password"
                         {...field}
                       />
                     </FormControl>
