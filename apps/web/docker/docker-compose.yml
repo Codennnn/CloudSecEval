@@ -9,6 +9,13 @@ services:
     environment:
       # 覆盖测试环境中需要容器化调整的配置
       - NODE_ENV=test
+      - NEXT_PUBLIC_ORAMA_API_KEY=UPc31JnTgKtFPL3bUzL18XfZ8zyiiz0G
+      - NEXT_PUBLIC_ENABLE_PAID_CONTENT_MODE=false
+      - NEXT_PUBLIC_API_BASE=https://172.168.88.192:8084
+      - NEXT_PUBLIC_API_PROXY_SOURCE=/api
+      - NEXT_PUBLIC_API_PROXY_DESTINATION=https://172.168.88.192:8084/api
+      - NEXT_PUBLIC_JWT_USE_COOKIE=false
+      - NEXT_PUBLIC_PROJECT_FLAG=crowd-test
     restart: unless-stopped
     # 如果后端也在 Docker 中运行，可以添加网络配置
     # networks:

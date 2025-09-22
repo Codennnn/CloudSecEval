@@ -20,13 +20,16 @@ import { authControllerLoginMutation, authControllerLogoutMutation } from '~api/
  */
 export function useLogin() {
   const router = useRouter()
-
+  const queryClient = useQueryClient()
   const { setUser } = useUserStore()
 
   return useMutation({
     ...authControllerLoginMutation(),
 
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      queryClient.clear()
+      await queryClient.invalidateQueries()
+
       const user = data.data.user
       const { accessToken, refreshToken } = data.data
 
@@ -64,7 +67,7 @@ export function useLogout() {
   return useMutation({
     ...authControllerLogoutMutation(),
 
-    onSuccess: () => {
+    onSuccess: async () => {
       // 清除所有认证数据
       if (!isCookieEnabled()) {
         tokenManager.clearAllAuthData()
@@ -76,8 +79,8 @@ export function useLogout() {
 
       clearUser()
 
-      // 清除所有查询缓存
       queryClient.clear()
+      await queryClient.invalidateQueries()
 
       router.replace(adminLoginRoute)
     },
