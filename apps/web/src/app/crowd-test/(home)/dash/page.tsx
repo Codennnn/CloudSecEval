@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 
 import { SITE_CONFIG } from '~/constants/common'
@@ -14,7 +15,28 @@ import { ReportSubmitChart } from './components/ReportSubmitChart'
 import { TeamOnlineChart } from './components/TeamOnlineChart'
 import { TeamRanking } from './components/TeamRanking'
 
+import { adminHomeRoute, AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerGetApprovalStatusStatsOptions } from '~api/@tanstack/react-query.gen'
+
+function NavItem(props: { href: string, title: string }) {
+  const { href, title } = props
+
+  return (
+    <Link
+      className="relative font-semibold text-sm flex items-center justify-center w-[120px] aspect-[133/38]"
+      href={href}
+      target="_blank"
+    >
+      <span className="relative z-10 bg-gradient-to-t bg-clip-text text-transparent from-theme to-theme2/80">
+        {title}
+      </span>
+      <DashDecoratorImg
+        className="absolute z-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        src="/assets/crowd-test/dash-nav-bg.png"
+      />
+    </Link>
+  )
+}
 
 export default function DashPage() {
   const { data } = useQuery(
@@ -32,7 +54,12 @@ export default function DashPage() {
         </div>
 
         <div className="flex flex-col h-full">
-          <div className="basis-[130px] overflow-hidden" />
+          <div className="basis-[130px] overflow-hidden">
+            <div className="absolute top-[40px] left-[125px] p-2 flex gap-5">
+              <NavItem href={getRoutePath(adminHomeRoute)} title="系统首页" />
+              <NavItem href={getRoutePath(AdminRoutes.CrowdTestBugs)} title="报告管理" />
+            </div>
+          </div>
 
           <div className="flex-1 px-10 min-h-0 overflow-y-auto">
             <div className="flex h-full gap-8 overflow-hidden">
@@ -52,7 +79,7 @@ export default function DashPage() {
 
               <div className="flex-1 flex flex-col gap-dash-card">
                 <div className="relative flex-1">
-                  <div className="absolute top-[16%] left-1/2 -translate-x-1/2 z-20 w-[380px]">
+                  <div className="absolute top-[12%] left-1/2 -translate-x-1/2 z-20 w-[380px]">
                     <span className="text-xl font-bold z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">攻防演练数据总览</span>
                     <DashDecoratorImg
                       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"

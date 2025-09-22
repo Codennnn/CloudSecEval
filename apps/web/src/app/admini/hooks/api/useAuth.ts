@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { tokenManager } from '~/lib/auth/token'
 import { isCookieEnabled } from '~/utils/platform'
 
-import { adminLoginRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
+import { adminHomeRoute, adminLoginRoute } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
 import { authControllerLoginMutation, authControllerLogoutMutation } from '~api/@tanstack/react-query.gen'
 
@@ -40,7 +40,7 @@ export function useLogin() {
       // 同步用户信息到 store（持久化存储）
       setUser(user)
 
-      router.replace(loginRedirectRoute)
+      router.replace(adminHomeRoute)
     },
   })
 }
@@ -61,6 +61,7 @@ export function useLogout() {
 
   return useMutation({
     ...authControllerLogoutMutation(),
+
     onSuccess: () => {
       // 清除所有认证数据
       if (!isCookieEnabled()) {

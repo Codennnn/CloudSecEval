@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { AlertTriangle, ArrowLeft, Home } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, LogIn } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 
-import { getPageNameByRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
+import { useLogout } from '~admin/hooks/api/useAuth'
+import { adminHomeRoute, getPageNameByRoute } from '~admin/lib/admin-nav'
 
 /**
  * 无权限访问页面
@@ -22,6 +23,7 @@ import { getPageNameByRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
 export function UnauthorizedPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const logout = useLogout()
   const [attemptedPath, setAttemptedPath] = useState<string>('')
   const [attemptedPageName, setAttemptedPageName] = useState<string>('')
 
@@ -40,8 +42,12 @@ export function UnauthorizedPage() {
       router.back()
     }
     else {
-      router.push(loginRedirectRoute)
+      router.push(adminHomeRoute)
     }
+  }
+
+  const handleReLogin = () => {
+    logout.mutate({})
   }
 
   return (
@@ -113,12 +119,13 @@ export function UnauthorizedPage() {
                 </Button>
 
                 <Button
+                  disabled={logout.isPending}
                   size="sm"
                   variant="default"
-                  onClick={() => { router.push(loginRedirectRoute) }}
+                  onClick={handleReLogin}
                 >
-                  <Home />
-                  返回仪表板
+                  <LogIn />
+                  {logout.isPending ? '登出中...' : '重新登录'}
                 </Button>
               </div>
             </div>

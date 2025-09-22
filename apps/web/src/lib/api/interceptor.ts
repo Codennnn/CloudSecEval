@@ -3,6 +3,8 @@
 import { consola } from 'consola'
 import { toast } from 'sonner'
 
+import { tokenManager } from '~/lib/auth/token'
+
 import { isLoggingEnabled } from './config'
 import type { ApiResponse } from './types'
 
@@ -46,7 +48,10 @@ function handleError(error: unknown, showError = true): void {
 
   // 处理认证相关错误，重定向到登录页面
   if (error instanceof ApiError) {
-    if (error.status === 401 || error.code === '20100') {
+    const unAuthorized = error.status === 401 || error.code === '20100'
+
+    if (unAuthorized) {
+      tokenManager.clearAllAuthData()
       redirectToLogin()
 
       return

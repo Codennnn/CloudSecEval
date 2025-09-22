@@ -9,10 +9,6 @@ services:
     environment:
       # 覆盖测试环境中需要容器化调整的配置
       - NODE_ENV=test
-      # API 配置 - 连接到容器化的后端服务（8001端口）
-      - NEXT_PUBLIC_API_BASE=http://host.docker.internal:8001
-      - NEXT_PUBLIC_API_PROXY_DESTINATION=http://host.docker.internal:8001/api
-      - NEXT_PUBLIC_JWT_USE_COOKIE=false
     restart: unless-stopped
     # 如果后端也在 Docker 中运行，可以添加网络配置
     # networks:

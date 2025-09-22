@@ -1,0 +1,39 @@
+# VCS / tooling
+.git
+.gitignore
+.github
+.vscode
+**/.DS_Store
+
+# Node/bundler artifacts
+node_modules
+**/node_modules
+**/.next
+**/dist
+**/coverage
+**/.turbo
+**/.pnpm-store
+**/.cache
+**/.eslintcache
+**/tsconfig.tsbuildinfo
+**/*.log
+
+# Local env files (构建期不需要)
+**/.env*
+!apps/web/.env.example
+
+# 非 web 子项目与不相关资源（仅放行 apps/web）
+apps/*
+!apps/web
+!apps/web/**
+
+# 放行必须的根文件
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!package.json
+
+# 放行依赖的 workspace 包
+!packages
+!packages/constants
+!packages/constants/**
+

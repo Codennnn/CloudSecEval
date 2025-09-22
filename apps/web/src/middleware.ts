@@ -9,26 +9,22 @@ import {
 } from '~/constants/routes.server'
 import { isCrowdTest } from '~/utils/platform'
 
-import { adminLoginRoute, adminRootRoute, AdminRoutes, getRoutePath, loginRedirectRoute } from '~admin/lib/admin-nav'
+import { AUTH_STATUS_COOKIE, AUTH_STATUS_LOGGED_IN, TOKEN_KEY } from './lib/auth/token'
 
-/**
- * 检查用户登录状态
- * 支持 Cookie 和 localStorage 两种认证方式
- * @param request - Next.js 请求对象
- * @returns 是否已登录
- */
+import { adminHomeRoute, adminLoginRoute, adminRootRoute, AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
+
 function checkAuthStatus(request: NextRequest): boolean {
   // 方式1：检查 JWT Cookie（原有方式）
-  const jwtToken = request.cookies.get('access_token')?.value
+  const jwtToken = request.cookies.get(TOKEN_KEY)?.value
 
   if (jwtToken) {
     return true
   }
 
   // 方式2：检查认证状态 Cookie（localStorage 模式下的辅助判断）
-  const authStatus = request.cookies.get('auth_status')?.value
+  const authStatus = request.cookies.get(AUTH_STATUS_COOKIE)?.value
 
-  if (authStatus === 'true') {
+  if (authStatus === AUTH_STATUS_LOGGED_IN) {
     return true
   }
 
@@ -48,7 +44,7 @@ function handleAdminRoutes(request: NextRequest, pathname: string) {
 
   // 情况1：访问管理后台根路径，根据登录状态重定向
   if (isRootPath) {
-    const targetRoute = hasLogin ? loginRedirectRoute : adminLoginRoute
+    const targetRoute = hasLogin ? adminHomeRoute : adminLoginRoute
 
     return NextResponse.redirect(new URL(targetRoute, request.url))
   }
@@ -58,7 +54,7 @@ function handleAdminRoutes(request: NextRequest, pathname: string) {
   // 情况2：已登录用户访问登录页，重定向到仪表板
   if (hasLogin && isLoginPage) {
     return NextResponse.redirect(new URL(
-      loginRedirectRoute, request.url,
+      adminHomeRoute, request.url,
     ))
   }
 

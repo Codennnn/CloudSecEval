@@ -3,9 +3,10 @@
  * 用于管理 localStorage 中的认证令牌
  */
 
-const TOKEN_KEY = 'access_token'
-const REFRESH_TOKEN_KEY = 'refresh_token'
-const AUTH_STATUS_COOKIE = 'auth_status'
+export const TOKEN_KEY = 'access_token'
+export const REFRESH_TOKEN_KEY = 'refresh_token'
+export const AUTH_STATUS_COOKIE = 'auth_status'
+export const AUTH_STATUS_LOGGED_IN = 'true'
 
 export const tokenManager = {
   /**
@@ -54,12 +55,10 @@ export const tokenManager = {
    * 清除所有令牌
    */
   clearTokens(): void {
-    if (typeof window === 'undefined') {
-      return
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(REFRESH_TOKEN_KEY)
     }
-
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(REFRESH_TOKEN_KEY)
   },
 
   /**
@@ -89,7 +88,7 @@ export const tokenManager = {
         // 设置一个简单的认证状态 Cookie，有效期 7 天
         const expires = new Date()
         expires.setDate(expires.getDate() + 7)
-        document.cookie = `${AUTH_STATUS_COOKIE}=true; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+        document.cookie = `${AUTH_STATUS_COOKIE}=${AUTH_STATUS_LOGGED_IN}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
       }
       else {
         // 清除认证状态 Cookie

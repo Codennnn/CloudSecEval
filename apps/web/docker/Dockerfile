@@ -39,6 +39,9 @@ COPY packages/constants ./packages/constants
 # 设置工作目录到 web 应用
 WORKDIR /app/apps/web
 
+# 复制环境变量文件到构建目录，确保构建时能读取 NEXT_PUBLIC_* 变量
+COPY apps/web/.env.test ./.env.test
+
 # 生成 API 客户端并构建应用
 RUN pnpm api:setup
 RUN pnpm build

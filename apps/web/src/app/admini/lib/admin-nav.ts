@@ -42,8 +42,7 @@ export const enum AdminRoutes {
   CrowdTestUnauthorized = '/crowd-test/unauthorized',
 }
 
-/** 登录成功后重定向的路由 */
-export const loginRedirectRoute = isCrowdTest()
+export const adminHomeRoute = isCrowdTest()
   ? AdminRoutes.CrowdTestDashboard
   : AdminRoutes.Dashboard
 
