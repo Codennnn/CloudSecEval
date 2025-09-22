@@ -276,10 +276,10 @@ const adminNavMain: AdminNavItem[] = isCrowdTest()
       createAdminNavItem(AdminRoutes.CrowdTestBugs),
       createAdminNavItem(AdminRoutes.CrowdTestMyBugs),
       createAdminNavItem(AdminRoutes.CrowdTestMyTeam),
-      {
-        title: '系统管理',
-        type: 'label',
-      },
+      // {
+      //   title: '系统管理',
+      //   type: 'label',
+      // },
       createAdminNavItem(AdminRoutes.CrowdTestTeams),
       createAdminNavItem(AdminRoutes.CrowdTestRoles),
       createAdminNavItem(AdminRoutes.CrowdTestPermissions),

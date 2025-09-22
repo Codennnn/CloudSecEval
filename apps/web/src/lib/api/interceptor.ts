@@ -31,11 +31,10 @@ function redirectToLogin(): void {
   // 检查是否在客户端环境和是否已在重定向过程中
   if (typeof window !== 'undefined' && !isRedirecting) {
     isRedirecting = true
-    const loginUrl = adminLoginRoute
 
     // 使用 setTimeout 避免在同步代码中立即执行重定向
     setTimeout(() => {
-      window.location.href = loginUrl
+      window.location.href = adminLoginRoute
     }, 0)
   }
 }

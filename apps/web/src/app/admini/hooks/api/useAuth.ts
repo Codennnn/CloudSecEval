@@ -19,7 +19,6 @@ import { authControllerLoginMutation, authControllerLogoutMutation } from '~api/
  * - 错误处理和提示
  */
 export function useLogin() {
-  const router = useRouter()
   const queryClient = useQueryClient()
   const { setUser } = useUserStore()
 
@@ -45,7 +44,7 @@ export function useLogin() {
       setUser(user)
       consola.log('已登录', { user })
 
-      router.replace(adminHomeRoute)
+      window.location.href = adminHomeRoute
     },
   })
 }
