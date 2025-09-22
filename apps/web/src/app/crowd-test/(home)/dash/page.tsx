@@ -56,7 +56,7 @@ export default function DashPage() {
         <div className="flex flex-col h-full">
           <div className="basis-[130px] overflow-hidden">
             <div className="absolute top-[40px] left-[125px] p-2 flex gap-5">
-              <NavItem href={getRoutePath(adminHomeRoute)} title="系统首页" />
+              <NavItem href={getRoutePath(adminHomeRoute)} title="后台系统" />
               <NavItem href={getRoutePath(AdminRoutes.CrowdTestBugs)} title="报告管理" />
             </div>
           </div>

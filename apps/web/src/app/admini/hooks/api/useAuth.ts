@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { consola } from 'consola'
 
 import { tokenManager } from '~/lib/auth/token'
 import { isCookieEnabled } from '~/utils/platform'
@@ -39,6 +40,7 @@ export function useLogin() {
 
       // 同步用户信息到 store（持久化存储）
       setUser(user)
+      consola.log('已登录', { user })
 
       router.replace(adminHomeRoute)
     },
