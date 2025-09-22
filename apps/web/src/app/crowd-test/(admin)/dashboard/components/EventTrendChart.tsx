@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query'
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
-import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
 import { bugReportsControllerGetDailyReportsStatsOptions } from '~api/@tanstack/react-query.gen'
 
@@ -53,55 +52,47 @@ export function EventTrendChart() {
   }, [data])
 
   return (
-    <StatsCard>
-      <StatsCardHeader>
-        <StatsCardTitle>事件趋势</StatsCardTitle>
-      </StatsCardHeader>
+    <div>
+      {
+        isLoading
+          ? (
+              <div className="h-64 flex items-center justify-center">
+                <div className="text-muted-foreground">加载中...</div>
+              </div>
+            )
+          : (
+              <ChartContainer config={eventChartConfig}>
+                <LineChart data={chartData}>
+                  <CartesianGrid vertical={false} />
 
-      <StatsCardContent>
-        {
-          isLoading
-            ? (
-                <div className="h-64 flex items-center justify-center">
-                  <div className="text-muted-foreground">加载中...</div>
-                </div>
-              )
-            : (
-                <div className="h-64">
-                  <ChartContainer config={eventChartConfig}>
-                    <LineChart data={chartData}>
-                      <CartesianGrid vertical={false} />
+                  <XAxis
+                    axisLine={false}
+                    dataKey="date"
+                    minTickGap={24}
+                    tickLine={false}
+                  />
 
-                      <XAxis
-                        axisLine={false}
-                        dataKey="date"
-                        minTickGap={24}
-                        tickLine={false}
-                      />
+                  <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
 
-                      <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+                  <Line
+                    dataKey="submitted"
+                    dot={false}
+                    stroke="var(--color-submitted)"
+                    strokeWidth={2}
+                    type="monotone"
+                  />
 
-                      <Line
-                        dataKey="submitted"
-                        dot={false}
-                        stroke="var(--color-submitted)"
-                        strokeWidth={2}
-                        type="monotone"
-                      />
-
-                      <Line
-                        dataKey="approved"
-                        dot={false}
-                        stroke="var(--color-approved)"
-                        strokeWidth={2}
-                        type="monotone"
-                      />
-                    </LineChart>
-                  </ChartContainer>
-                </div>
-              )
-        }
-      </StatsCardContent>
-    </StatsCard>
+                  <Line
+                    dataKey="approved"
+                    dot={false}
+                    stroke="var(--color-approved)"
+                    strokeWidth={2}
+                    type="monotone"
+                  />
+                </LineChart>
+              </ChartContainer>
+            )
+      }
+    </div>
   )
 }

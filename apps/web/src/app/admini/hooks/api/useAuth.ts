@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { tokenManager } from '~/lib/auth/token'
+import { isCookieEnabled } from '~/utils/platform'
 
 import { adminLoginRoute, loginRedirectRoute } from '~admin/lib/admin-nav'
 import { useUserStore } from '~admin/stores/useUserStore'
@@ -27,11 +28,8 @@ export function useLogin() {
       const user = data.data.user
       const { accessToken, refreshToken } = data.data
 
-      // 检查是否禁用了 Cookie 认证
-      const cookieDisabled = process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'false'
-
       // 如果 Cookie 被禁用，则将 Token 保存到 localStorage
-      if (cookieDisabled) {
+      if (!isCookieEnabled()) {
         tokenManager.setLoginData(accessToken, refreshToken)
       }
       else {
@@ -64,11 +62,8 @@ export function useLogout() {
   return useMutation({
     ...authControllerLogoutMutation(),
     onSuccess: () => {
-      // 检查是否禁用了 Cookie 认证
-      const cookieDisabled = process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'false'
-
       // 清除所有认证数据
-      if (cookieDisabled) {
+      if (!isCookieEnabled()) {
         tokenManager.clearAllAuthData()
       }
       else {

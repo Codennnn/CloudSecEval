@@ -3,6 +3,7 @@ import { Expose, Type } from 'class-transformer'
 import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 import { BugReportStatus } from '#prisma/client'
+import { BooleanTransform } from '~/common/decorators/boolean-transform.decorator'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 
 /**
@@ -15,6 +16,7 @@ export class ExportBugReportDto {
   })
   @IsOptional()
   @IsBoolean({ message: '包含附件内容选项必须是布尔值' })
+  @BooleanTransform(false)
   @Expose()
   readonly includeAttachmentContent?: boolean = false
 
@@ -24,6 +26,7 @@ export class ExportBugReportDto {
   })
   @IsOptional()
   @IsBoolean({ message: '包含审批历史选项必须是布尔值' })
+  @BooleanTransform(true)
   @Expose()
   readonly includeHistory?: boolean = true
 }
@@ -38,17 +41,19 @@ export class ImportBugReportDto {
   })
   @IsOptional()
   @IsBoolean()
+  @BooleanTransform(true)
   @Expose()
   readonly asNewReport?: boolean = true
 
   @ApiPropertyOptional({
     description: '是否导入审批历史',
-    default: false,
+    default: true,
   })
   @IsOptional()
   @IsBoolean()
+  @BooleanTransform(true)
   @Expose()
-  readonly includeHistory?: boolean = false
+  readonly includeHistory?: boolean = true
 
   @ApiPropertyOptional({
     description: '导入备注',

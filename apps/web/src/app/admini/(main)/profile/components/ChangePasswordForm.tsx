@@ -3,21 +3,14 @@
 import { useState } from 'react'
 
 import { useMutation } from '@tanstack/react-query'
-import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
+import { PasswordInput } from '~/components/ui/password-input'
 
 import { authControllerChangePasswordMutation } from '~api/@tanstack/react-query.gen'
 import type { ChangePasswordDto } from '~api/types.gen'
-
-interface PasswordVisibility {
-  current: boolean
-  new: boolean
-  confirm: boolean
-}
 
 /**
  * 密码修改表单组件
@@ -28,12 +21,6 @@ export function ChangePasswordForm() {
     currentPassword: '',
     newPassword: '',
     confirmNewPassword: '',
-  })
-
-  const [passwordVisibility, setPasswordVisibility] = useState<PasswordVisibility>({
-    current: false,
-    new: false,
-    confirm: false,
   })
 
   const changePasswordMutation = useMutation({
@@ -55,13 +42,6 @@ export function ChangePasswordForm() {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
-
-  const togglePasswordVisibility = (field: keyof PasswordVisibility) => {
-    setPasswordVisibility((prev) => ({
-      ...prev,
-      [field]: !prev[field],
     }))
   }
 
@@ -109,89 +89,32 @@ export function ChangePasswordForm() {
     <form className="space-y-4" onSubmit={(ev) => { void handleSubmit(ev) }}>
       <div className="space-y-2">
         <Label htmlFor="currentPassword">当前密码</Label>
-        <div className="relative">
-          <Input
-            className="pr-10"
-            id="currentPassword"
-            placeholder="请输入当前密码"
-            type={passwordVisibility.current ? 'text' : 'password'}
-            value={formData.currentPassword}
-            onChange={(e) => { handleInputChange('currentPassword', e.target.value) }}
-          />
-          <Button
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            size="sm"
-            type="button"
-            variant="ghost"
-            onClick={() => { togglePasswordVisibility('current') }}
-          >
-            {passwordVisibility.current
-              ? (
-                  <EyeOffIcon className="size-4" />
-                )
-              : (
-                  <EyeIcon className="size-4" />
-                )}
-          </Button>
-        </div>
+        <PasswordInput
+          id="currentPassword"
+          placeholder="请输入当前密码"
+          value={formData.currentPassword}
+          onChange={(e) => { handleInputChange('currentPassword', e.target.value) }}
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="newPassword">新密码</Label>
-        <div className="relative">
-          <Input
-            className="pr-10"
-            id="newPassword"
-            placeholder="请输入新密码（至少6位）"
-            type={passwordVisibility.new ? 'text' : 'password'}
-            value={formData.newPassword}
-            onChange={(e) => { handleInputChange('newPassword', e.target.value) }}
-          />
-          <Button
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            size="sm"
-            type="button"
-            variant="ghost"
-            onClick={() => { togglePasswordVisibility('new') }}
-          >
-            {passwordVisibility.new
-              ? (
-                  <EyeOffIcon className="size-4" />
-                )
-              : (
-                  <EyeIcon className="size-4" />
-                )}
-          </Button>
-        </div>
+        <PasswordInput
+          id="newPassword"
+          placeholder="请输入新密码（至少6位）"
+          value={formData.newPassword}
+          onChange={(e) => { handleInputChange('newPassword', e.target.value) }}
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="confirmNewPassword">确认新密码</Label>
-        <div className="relative">
-          <Input
-            className="pr-10"
-            id="confirmNewPassword"
-            placeholder="请再次输入新密码"
-            type={passwordVisibility.confirm ? 'text' : 'password'}
-            value={formData.confirmNewPassword}
-            onChange={(e) => { handleInputChange('confirmNewPassword', e.target.value) }}
-          />
-          <Button
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            size="sm"
-            type="button"
-            variant="ghost"
-            onClick={() => { togglePasswordVisibility('confirm') }}
-          >
-            {passwordVisibility.confirm
-              ? (
-                  <EyeOffIcon className="size-4" />
-                )
-              : (
-                  <EyeIcon className="size-4" />
-                )}
-          </Button>
-        </div>
+        <PasswordInput
+          id="confirmNewPassword"
+          placeholder="请再次输入新密码"
+          value={formData.confirmNewPassword}
+          onChange={(e) => { handleInputChange('confirmNewPassword', e.target.value) }}
+        />
       </div>
 
       <div className="pt-4">

@@ -42,10 +42,12 @@ export function TeamOnlineChart() {
             label={({ name, value, percent }) => `${name} ${String(value)} (${(percent * 100).toFixed(0)}%)`}
             labelLine={false}
             outerRadius={78}
+            paddingAngle={2}
             startAngle={90}
+
           >
             {statsData?.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
+              <Cell key={`cell-${index}`} fill={entry.fill} stroke="none" />
             ))}
           </Pie>
 

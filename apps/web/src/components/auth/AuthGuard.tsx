@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { tokenManager } from '~/lib/auth/token'
+import { isCookieEnabled } from '~/utils/platform'
 
 import { adminLoginRoute } from '~admin/lib/admin-nav'
 
@@ -24,9 +25,7 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
   useEffect(() => {
     // 检查认证状态
     const checkAuth = () => {
-      const cookieDisabled = process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'false'
-
-      if (cookieDisabled) {
+      if (!isCookieEnabled()) {
         // localStorage 模式：检查 localStorage 中的 token
         const hasToken = tokenManager.isAuthenticated()
         setIsAuthenticated(hasToken)

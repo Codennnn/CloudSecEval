@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { tokenManager } from '~/lib/auth/token'
+import { isCookieEnabled } from '~/utils/platform'
 
 import { adminLoginRoute } from '~admin/lib/admin-nav'
 
@@ -16,9 +17,7 @@ export function useAuthSync() {
   const router = useRouter()
 
   useEffect(() => {
-    const cookieDisabled = process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'false'
-
-    if (!cookieDisabled) {
+    if (isCookieEnabled()) {
       return // Cookie 模式下不需要同步
     }
 
@@ -74,9 +73,7 @@ export function useRequireAuth() {
   const router = useRouter()
 
   useEffect(() => {
-    const cookieDisabled = process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'false'
-
-    if (cookieDisabled) {
+    if (!isCookieEnabled()) {
       const hasToken = tokenManager.isAuthenticated()
 
       if (!hasToken) {

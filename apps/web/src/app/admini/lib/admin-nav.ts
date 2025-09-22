@@ -55,10 +55,11 @@ export const adminLoginRoute = isCrowdTest()
   ? AdminRoutes.CrowdTestLogin
   : AdminRoutes.Login
 
-interface AdminNavItem {
+export interface AdminNavItem {
   title: string
-  url: string
+  url?: string
   icon?: LucideIcon
+  type?: 'label' | 'menu-item'
   /** 访问该导航项所需的权限 */
   requiredPermission?: PermissionFlag[]
 }
@@ -264,7 +265,7 @@ const createAdminNavItem = (adminRoute: AdminRoutes): AdminNavItem => ({
 })
 
 // MARK: 主导航栏
-const adminNavMain = isCrowdTest()
+const adminNavMain: AdminNavItem[] = isCrowdTest()
   ? [
       {
         title: '数据大屏',
@@ -276,6 +277,10 @@ const adminNavMain = isCrowdTest()
       createAdminNavItem(AdminRoutes.CrowdTestBugs),
       createAdminNavItem(AdminRoutes.CrowdTestMyBugs),
       createAdminNavItem(AdminRoutes.CrowdTestMyTeam),
+      {
+        title: '系统管理',
+        type: 'label',
+      },
       createAdminNavItem(AdminRoutes.CrowdTestTeams),
       createAdminNavItem(AdminRoutes.CrowdTestRoles),
       createAdminNavItem(AdminRoutes.CrowdTestPermissions),
@@ -374,24 +379,26 @@ export function getPagePermissionByRoute(pathname: string): PermissionFlag[] | u
  * ```
  */
 export function getRoutePath(routeKey: AdminRoutes, params?: Record<string, string | number>) {
-  let path: string = adminNavConfig[routeKey].url
+  let path = adminNavConfig[routeKey].url
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       const paramPattern = `[${key}]`
 
-      if (!path.includes(paramPattern)) {
-        consola.warn(
-          `[路由参数警告] 路由 "${routeKey}" 的路径 "${path}" 中未找到参数 "${key}" 的占位符`,
-          '\n提供的参数：', params,
-        )
+      if (path) {
+        if (!path.includes(paramPattern)) {
+          consola.warn(
+            `[路由参数警告] 路由 "${routeKey}" 的路径 "${path}" 中未找到参数 "${key}" 的占位符`,
+            '\n提供的参数：', params,
+          )
 
-        return
+          return
+        }
+
+        path = path.replace(paramPattern, String(value))
       }
-
-      path = path.replace(paramPattern, String(value))
     })
   }
 
-  return path
+  return path ?? ''
 }

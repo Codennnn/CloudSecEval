@@ -95,3 +95,7 @@ export function isServer(): boolean {
 export function isCrowdTest(): boolean {
   return process.env.NEXT_PUBLIC_PROJECT_FLAG === 'crowd-test'
 }
+
+export function isCookieEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'true'
+}

@@ -4,6 +4,8 @@ FROM --platform=linux/amd64 node:22-alpine AS deps
 # 启用 pnpm（Node 22 已内置 corepack）
 ENV PNPM_HOME=/pnpm
 RUN corepack enable
+ARG NPM_REGISTRY=https://registry.npmmirror.com/
+ENV npm_config_registry=${NPM_REGISTRY}
 
 WORKDIR /app
 
@@ -13,7 +15,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/server/package.json ./apps/server/
 
 # 安装所有依赖（含 dev，便于后续构建）
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --registry=${NPM_REGISTRY}
 
 # 复制 Prisma 配置与 schema 并生成客户端（生产环境使用 --no-engine）
 COPY apps/server/prisma.config.ts ./apps/server/
@@ -31,6 +33,8 @@ RUN ls -la generated/
 FROM --platform=linux/amd64 node:22-alpine AS builder
 ENV PNPM_HOME=/pnpm
 RUN corepack enable
+ARG NPM_REGISTRY=https://registry.npmmirror.com/
+ENV npm_config_registry=${NPM_REGISTRY}
 
 WORKDIR /app
 
@@ -51,7 +55,7 @@ COPY apps/server/src ./apps/server/src
 
 # 切换到后端应用目录并安装依赖，确保模块解析正确
 WORKDIR /app/apps/server
-RUN pnpm install --frozen-lockfile --prefer-offline
+RUN pnpm install --frozen-lockfile --prefer-offline --registry=${NPM_REGISTRY}
 RUN pnpm run build
 
 # 剥离开发依赖，仅保留生产所需
@@ -74,6 +78,8 @@ RUN apk add --no-cache \
 # 启用 pnpm
 ENV PNPM_HOME=/pnpm
 RUN corepack enable
+ARG NPM_REGISTRY=https://registry.npmmirror.com/
+ENV npm_config_registry=${NPM_REGISTRY}
 
 WORKDIR /app
 ENV NODE_ENV=production

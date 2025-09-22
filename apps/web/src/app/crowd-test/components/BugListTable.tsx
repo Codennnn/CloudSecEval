@@ -27,6 +27,7 @@ import { FieldTypeEnum } from '~/constants/form'
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey, bugReportsControllerFindMyReportsOptions, bugReportsControllerFindMyReportsQueryKey } from '~api/@tanstack/react-query.gen'
+import { bugReportsControllerExportBugReport } from '~api/sdk.gen'
 import { type BugReportSummaryDto } from '~api/types.gen'
 import { BugReportRoleView, getReportStatus, getVulSeverity, NEW_BUG_ID, reportStatusConfig, vulSeverityConfig } from '~crowd-test/constants'
 
@@ -60,6 +61,62 @@ export function BugListTable<Row extends BugReportSummaryDto>(
     },
   })
 
+  const exportBugMutation = useMutation({
+    mutationFn: async (item: Row) => {
+      const response = await bugReportsControllerExportBugReport({
+        path: { id: item.id },
+        query: {
+          includeHistory: true,
+          includeAttachmentContent: false,
+        },
+      })
+
+      return { response, item }
+    },
+    onSuccess: ({ response, item }) => {
+      // 处理文件名：清理特殊字符并限制长度
+      const sanitizeFilename = (filename: string) => {
+        return filename
+          .replace(/[<>:"/\\|?*]/g, '-') // 替换不允许的字符
+          .replace(/\s+/g, '-') // 替换空格为连字符
+          .substring(0, 50) // 限制长度
+      }
+
+      const filename = sanitizeFilename(item.title || `bug-report-${item.id}`)
+
+      // 确保响应数据是JSON字符串格式
+      let jsonContent: string
+
+      if (typeof response.data === 'string') {
+        jsonContent = response.data
+      }
+      else {
+        jsonContent = JSON.stringify(response.data, null, 2)
+      }
+
+      // 创建下载链接
+      const blob = new Blob([jsonContent], {
+        type: 'application/json',
+      })
+
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${filename}-${Date.now()}.json`
+      document.body.appendChild(link)
+      link.click()
+
+      // 清理
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      toast.success('漏洞报告导出成功')
+    },
+    onError: () => {
+      toast.error('导出失败，请稍后重试')
+    },
+  })
+
   const handleEdit = useEvent((item: Row) => {
     router.push(
       getRoutePath(AdminRoutes.CrowdTestBugsDetail, { bugReportId: item.id }),
@@ -68,6 +125,12 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
   const handleDeleteClick = useEvent((item: Row) => {
     setBugToDelete(item)
+  })
+
+  const handleExportClick = useEvent((item: Row) => {
+    if (!exportBugMutation.isPending) {
+      exportBugMutation.mutate(item)
+    }
   })
 
   const handleDeleteConfirm = useEvent(async () => {
@@ -225,6 +288,13 @@ export function BugListTable<Row extends BugReportSummaryDto>(
                     </Link>
                   )}
 
+                  <DropdownMenuItem
+                    disabled={exportBugMutation.isPending}
+                    onClick={() => { handleExportClick(item) }}
+                  >
+                    导出报告
+                  </DropdownMenuItem>
+
                   {(isUser || isAdmin) && (
                     <DropdownMenuItem
                       variant="destructive"
@@ -242,7 +312,14 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         },
       },
     ]
-  }, [handleDeleteClick, handleEdit, isAdmin, isUser])
+  }, [
+    handleDeleteClick,
+    handleEdit,
+    handleExportClick,
+    exportBugMutation.isPending,
+    isAdmin,
+    isUser,
+  ])
 
   return (
     <>

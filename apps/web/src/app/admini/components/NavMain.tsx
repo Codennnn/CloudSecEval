@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FilePlusIcon, ListIcon, SquarePlusIcon, type UserIcon } from 'lucide-react'
+import { FilePlusIcon, ListIcon, SquarePlusIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -15,16 +16,12 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { isCrowdTest } from '~/utils/platform'
 
-import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
+import { type AdminNavItem, AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { useLicenseDialog } from '~admin/stores/useLicenseDialogStore'
 import { NEW_BUG_ID } from '~crowd-test/constants'
 
 interface NavMainProps {
-  items: {
-    title: string
-    url: string
-    icon?: typeof UserIcon
-  }[]
+  items: AdminNavItem[]
 }
 
 export function NavMain({ items }: NavMainProps) {
@@ -116,11 +113,17 @@ export function NavMain({ items }: NavMainProps) {
 
         <SidebarMenu>
           {items.map((item) => {
+            if (item.type === 'label') {
+              return (
+                <SidebarGroupLabel key={item.title}>{item.title}</SidebarGroupLabel>
+              )
+            }
+
             const isActive = pathname === item.url
 
             return (
               <SidebarMenuItem key={item.title}>
-                <Link href={item.url}>
+                <Link href={item.url ?? ''}>
                   <SidebarMenuButton isActive={isActive} tooltip={item.title}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>

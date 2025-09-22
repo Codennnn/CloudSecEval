@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Area, AreaChart, XAxis, YAxis } from 'recharts'
 
 import { ActivityTimeline } from '~/app/crowd-test/(admin)/dashboard/components/ActivityTimeline'
+import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 import { Separator } from '~/components/ui/separator'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
@@ -186,13 +187,17 @@ export function TeamProfile() {
         </div>
 
         <div className="space-y-6">
-          <StatsCard>
+          <StatsCard className="overflow-hidden">
             <StatsCardHeader>
               <StatsCardTitle>时间线活动</StatsCardTitle>
             </StatsCardHeader>
 
-            <StatsCardContent>
-              {!!teamId && <ActivityTimeline departmentId={teamId} />}
+            <StatsCardContent className="!p-0 flex flex-col">
+              <ScrollGradientContainer
+                className="p-card-box-content max-h-[375px]"
+              >
+                {!!teamId && <ActivityTimeline departmentId={teamId} />}
+              </ScrollGradientContainer>
             </StatsCardContent>
           </StatsCard>
         </div>

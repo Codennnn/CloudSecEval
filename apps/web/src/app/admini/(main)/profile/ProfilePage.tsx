@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarIcon, EditIcon, HouseIcon, KeyIcon, MailIcon, UploadIcon } from 'lucide-react'
+import { CalendarIcon, EditIcon, HouseIcon, MailIcon, UploadIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
@@ -353,7 +353,6 @@ export function ProfilePage() {
               <CardBox>
                 <CardBoxHeader>
                   <CardBoxTitle className="flex items-center gap-2">
-                    <KeyIcon className="size-5" />
                     修改密码
                   </CardBoxTitle>
                   <CardBoxDescription>

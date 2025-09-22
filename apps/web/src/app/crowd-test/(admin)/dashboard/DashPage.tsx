@@ -2,18 +2,17 @@
 
 import { Shield } from 'lucide-react'
 
+import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Badge } from '~/components/ui/badge'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
 import { ActivityTimeline } from './components/ActivityTimeline'
 import { EventTrendChart } from './components/EventTrendChart'
-import { PersonalRankingList } from './components/PersonalRankingList'
 import { ReportStatsCards } from './components/ReportStatsCards'
 import { TeamOnlineChart } from './components/TeamOnlineChart'
 import { TeamReportsChart } from './components/TeamReportsChart'
 import { TeamReportsOverviewTable } from './components/TeamReportsOverviewTable'
 import {
-  personalRanking,
   projectInfo,
 } from './lib/mockData'
 
@@ -21,8 +20,7 @@ export function DashboardPage() {
   return (
     <div className="p-admin-content space-y-6">
       {/* 顶部横幅：项目信息与关键信息总览 */}
-      <div className="relative overflow-hidden rounded-xl border bg-gradient-to-r from-[oklch(96%_0_0deg)] to-[oklch(96%_0.03_210deg)]">
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, oklch(70% 0.12 30deg) 0, transparent 40%), radial-gradient(circle at 80% 30%, oklch(70% 0.12 240deg) 0, transparent 40%)' }} />
+      <div className="relative overflow-hidden rounded-xl border bg-gradient-to-r from-theme/20 to-theme2/20">
         <div className="relative grid gap-6 p-6 lg:grid-cols-3">
           <div className="col-span-2">
             <div className="flex items-center gap-2 text-foreground-accent">
@@ -41,37 +39,57 @@ export function DashboardPage() {
       <ReportStatsCards />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-admin-content">
-        <StatsCard>
-          <StatsCardHeader>
-            <StatsCardTitle>时间线活动</StatsCardTitle>
-          </StatsCardHeader>
+        <div>
+          <StatsCard className="overflow-hidden">
+            <StatsCardHeader>
+              <StatsCardTitle>时间线活动</StatsCardTitle>
+            </StatsCardHeader>
 
-          <StatsCardContent>
-            <ActivityTimeline />
-          </StatsCardContent>
-        </StatsCard>
+            <StatsCardContent className="!p-0 flex flex-col">
+              <ScrollGradientContainer
+                className="p-card-box-content max-h-[375px]"
+              >
+                <ActivityTimeline />
+              </ScrollGradientContainer>
+            </StatsCardContent>
+          </StatsCard>
+        </div>
 
-        <StatsCard>
-          <StatsCardHeader>
-            <StatsCardTitle>团队报告数统计</StatsCardTitle>
-          </StatsCardHeader>
-          <StatsCardContent>
-            <div className="min-h-64">
-              <TeamReportsChart />
-            </div>
-          </StatsCardContent>
-        </StatsCard>
+        <div>
+          <StatsCard>
+            <StatsCardHeader>
+              <StatsCardTitle>团队报告数统计</StatsCardTitle>
+            </StatsCardHeader>
+            <StatsCardContent>
+              <div className="min-h-64">
+                <TeamReportsChart />
+              </div>
+            </StatsCardContent>
+          </StatsCard>
+        </div>
 
-        <StatsCard>
-          <StatsCardHeader>
-            <StatsCardTitle>团队在线情况</StatsCardTitle>
-          </StatsCardHeader>
-          <StatsCardContent>
-            <TeamOnlineChart />
-          </StatsCardContent>
-        </StatsCard>
+        <div>
+          <StatsCard>
+            <StatsCardHeader>
+              <StatsCardTitle>团队在线情况</StatsCardTitle>
+            </StatsCardHeader>
+            <StatsCardContent>
+              <TeamOnlineChart />
+            </StatsCardContent>
+          </StatsCard>
+        </div>
 
-        <EventTrendChart />
+        <div>
+          <StatsCard>
+            <StatsCardHeader>
+              <StatsCardTitle>事件趋势</StatsCardTitle>
+            </StatsCardHeader>
+
+            <StatsCardContent>
+              <EventTrendChart />
+            </StatsCardContent>
+          </StatsCard>
+        </div>
       </div>
 
       <TeamReportsOverviewTable />
