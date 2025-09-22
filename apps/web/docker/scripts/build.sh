@@ -13,22 +13,15 @@ if [ ! -f "package.json" ]; then
     exit 1
 fi
 
-# 检查 .env.test 文件是否存在
-if [ ! -f "apps/web/.env.test" ]; then
-    echo "❌ 错误：apps/web/.env.test 文件不存在"
-    echo "💡 提示：构建需要此文件来设置 NEXT_PUBLIC_* 环境变量"
-    exit 1
-fi
-
-# 构建 Docker 镜像
+# 构建 Docker 镜像（环境变量已硬编码到 Dockerfile 中）
 echo "📦 构建 Docker 镜像..."
-echo "📄 使用环境文件: apps/web/.env.test"
+echo "🔧 使用硬编码环境变量"
 docker build -t nestjs-docs-web:latest -f apps/web/docker/Dockerfile .
 
 echo "✅ 构建完成！"
 echo ""
 echo "🎯 使用方法："
-echo "  直接运行: docker run -p 3001:8080 --env-file apps/web/.env.test nestjs-docs-web:latest"
+echo "  直接运行: docker run -p 3001:8080 nestjs-docs-web:latest"
 echo "  使用 compose: cd apps/web/docker && docker-compose up"
 echo ""
 echo "🌐 访问地址: http://localhost:3001"

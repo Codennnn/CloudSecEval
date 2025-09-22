@@ -39,8 +39,16 @@ COPY packages/constants ./packages/constants
 # 设置工作目录到 web 应用
 WORKDIR /app/apps/web
 
-# 复制环境变量文件到构建目录，确保构建时能读取 NEXT_PUBLIC_* 变量
-COPY apps/web/.env.test ./.env.test
+# 设置构建时需要的环境变量（硬编码）
+ENV NODE_ENV=test \
+    NEXT_PUBLIC_ORAMA_API_KEY=UPc31JnTgKtFPL3bUzL18XfZ8zyiiz0G \
+    NEXT_PUBLIC_ORAMA_ENDPOINT=https://cloud.orama.run/v1/indexes/nestjs-docs-leoku-dev-j21flz \
+    NEXT_PUBLIC_ENABLE_PAID_CONTENT_MODE=false \
+    NEXT_PUBLIC_API_BASE=https://172.168.88.192:8084 \
+    NEXT_PUBLIC_API_PROXY_SOURCE=/api \
+    NEXT_PUBLIC_API_PROXY_DESTINATION=https://172.168.88.192:8084/api \
+    NEXT_PUBLIC_JWT_USE_COOKIE=false \
+    NEXT_PUBLIC_PROJECT_FLAG=crowd-test
 
 # 生成 API 客户端并构建应用
 RUN pnpm api:setup
@@ -72,10 +80,18 @@ USER nextjs
 # 暴露端口（容器内部使用 8080）
 EXPOSE 8080
 
-# 设置环境变量
-ENV NODE_ENV=production
-ENV HOSTNAME="0.0.0.0"
-ENV PORT=8080
+# 设置运行时环境变量
+ENV NODE_ENV=test \
+    HOSTNAME="0.0.0.0" \
+    PORT=8080 \
+    NEXT_PUBLIC_ORAMA_API_KEY=UPc31JnTgKtFPL3bUzL18XfZ8zyiiz0G \
+    NEXT_PUBLIC_ORAMA_ENDPOINT=https://cloud.orama.run/v1/indexes/nestjs-docs-leoku-dev-j21flz \
+    NEXT_PUBLIC_ENABLE_PAID_CONTENT_MODE=false \
+    NEXT_PUBLIC_API_BASE=https://172.168.88.192:8084 \
+    NEXT_PUBLIC_API_PROXY_SOURCE=/api \
+    NEXT_PUBLIC_API_PROXY_DESTINATION=https://172.168.88.192:8084/api \
+    NEXT_PUBLIC_JWT_USE_COOKIE=false \
+    NEXT_PUBLIC_PROJECT_FLAG=crowd-test
 
 # 启动应用
 CMD ["node", "apps/web/server.js"]
