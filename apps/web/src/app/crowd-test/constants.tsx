@@ -290,13 +290,33 @@ export function getTeamRoleConfig(role?: string): TeamRoleConfig {
   return teamConfig[TeamRole.蓝]
 }
 
-export function getTeamRole(text?: string): TeamRole {
+export function isRedTeam(text?: string): boolean {
   if (text) {
     if (text.includes(TeamRole.红) || text.includes('攻击')) {
+      return true
+    }
+  }
+
+  return false
+}
+
+export function isBlueTeam(text?: string): boolean {
+  if (text) {
+    if (text.includes(TeamRole.蓝) || text.includes('防守')) {
+      return true
+    }
+  }
+
+  return false
+}
+
+export function getTeamRole(text?: string): TeamRole {
+  if (text) {
+    if (isRedTeam(text)) {
       return TeamRole.红
     }
 
-    if (text.includes(TeamRole.蓝) || text.includes('防守')) {
+    if (isBlueTeam(text)) {
       return TeamRole.蓝
     }
   }

@@ -4,7 +4,7 @@ import { Cell, Pie, PieChart } from 'recharts'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 
 import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
-import { getTeamRole, teamConfig, TeamRole } from '~crowd-test/constants'
+import { getTeamRole, isBlueTeam, isRedTeam, teamConfig, TeamRole } from '~crowd-test/constants'
 
 export function TeamOnlineChart() {
   const { data } = useQuery({
@@ -13,12 +13,11 @@ export function TeamOnlineChart() {
 
   const legendSolidColors = ['#3b82f6', '#ef4444', '#22d3ee', '#a78bfa']
 
-  const totalOnline = data?.data.totalOnline ?? 0
-
   // 按队伍汇总在线人数（用于饼图）
   const teamOnlineData = data?.data.departments
     ? data.data.departments
-        .filter((d) => d.online > 0)
+        .filter((d) => d.online > 0
+          && (isRedTeam(d.department.remark) || isBlueTeam(d.department.remark)))
         .map((d) => {
           const role = getTeamRole(d.department.remark)
 
@@ -29,6 +28,7 @@ export function TeamOnlineChart() {
           }
         })
     : []
+  const totalOnline = teamOnlineData.reduce((sum, d) => sum + d.value, 0)
 
   return (
     <div className="relative min-h-64">

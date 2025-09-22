@@ -21,8 +21,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { FieldTypeEnum } from '~/constants/form'
+import { downloadBlob, sanitizeFileName } from '~/utils/file'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
@@ -74,41 +74,13 @@ export function BugListTable<Row extends BugReportSummaryDto>(
       return { response, item }
     },
     onSuccess: ({ response, item }) => {
-      // 处理文件名：清理特殊字符并限制长度
-      const sanitizeFilename = (filename: string) => {
-        return filename
-          .replace(/[<>:"/\\|?*]/g, '-') // 替换不允许的字符
-          .replace(/\s+/g, '-') // 替换空格为连字符
-          .substring(0, 50) // 限制长度
-      }
+      const filename = sanitizeFileName(item.title || `bug-report-${item.id}`)
 
-      const filename = sanitizeFilename(item.title || `bug-report-${item.id}`)
-
-      // 确保响应数据是JSON字符串格式
-      let jsonContent: string
-
-      if (typeof response.data === 'string') {
-        jsonContent = response.data
-      }
-      else {
-        jsonContent = JSON.stringify(response.data, null, 2)
-      }
-
-      // 创建下载链接
-      const blob = new Blob([jsonContent], {
+      downloadBlob(response.data, `${filename}-${Date.now()}.json`, {
         type: 'application/json',
+        stringify: true,
+        formatting: 2,
       })
-
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${filename}-${Date.now()}.json`
-      document.body.appendChild(link)
-      link.click()
-
-      // 清理
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
 
       toast.success('漏洞报告导出成功')
     },
@@ -233,25 +205,18 @@ export function BugListTable<Row extends BugReportSummaryDto>(
           return (
             <div className="flex items-center gap-0.5">
               {!isUser && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={getRoutePath(detailRoute, { bugReportId: item.id })}
-                      target="_blank"
-                    >
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                      >
-                        <ExternalLinkIcon />
-                      </Button>
-                    </Link>
-                  </TooltipTrigger>
-
-                  <TooltipContent>
-                    查看详情
-                  </TooltipContent>
-                </Tooltip>
+                <Link
+                  href={getRoutePath(detailRoute, { bugReportId: item.id })}
+                  target="_blank"
+                >
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <ExternalLinkIcon />
+                    详情
+                  </Button>
+                </Link>
               )}
 
               {isUser && (

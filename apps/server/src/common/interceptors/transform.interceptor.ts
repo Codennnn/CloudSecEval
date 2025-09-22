@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor, StreamableFile } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
@@ -10,9 +10,14 @@ export class TransformInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<StandardResponseDto | StandardListResponseDto> {
+  ): Observable<StandardResponseDto | StandardListResponseDto | StreamableFile> {
     return next.handle().pipe(
       map((data: unknown) => {
+        // 如果返回的数据是文件流（blob），直接返回，不进行封装
+        if (this.isStreamableFile(data)) {
+          return data
+        }
+
         // 如果返回的数据已经是标准响应格式，直接返回
         if (this.isStandardResponse(data)) {
           return data
@@ -61,5 +66,12 @@ export class TransformInterceptor implements NestInterceptor {
       && (data as Record<string, unknown>).pagination !== null
       && typeof ((data as Record<string, unknown>).pagination as Record<string, unknown>).total === 'number',
     )
+  }
+
+  /**
+   * 判断是否为 StreamableFile（文件流）
+   */
+  private isStreamableFile(data: unknown): data is StreamableFile {
+    return data instanceof StreamableFile
   }
 }

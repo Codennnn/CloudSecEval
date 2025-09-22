@@ -1,6 +1,6 @@
 import { type ApiBodyOptions, type ApiOperationOptions, type ApiResponseOptions, type ApiResponseSchemaHost } from '@nestjs/swagger'
 
-import type { BusinessErrorCode } from '~/common/constants/business-codes'
+import type { BusinessCode } from '~/common/constants/business-codes'
 
 /**
  * 基础类型定义
@@ -39,7 +39,7 @@ export interface ApiOperationConfig {
   successResponse: ApiResponseOptions
   /** 错误响应配置数组 */
   errorResponses?: ApiResponseOptions[]
-  errorResponseCode?: BusinessErrorCode[]
+  errorResponseCode?: BusinessCode[]
   /** 是否需要管理员权限 */
   requireAdmin?: boolean
   /** 是否需要鉴权（添加 Bearer 认证） */

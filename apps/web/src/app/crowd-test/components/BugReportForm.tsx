@@ -75,10 +75,6 @@ export interface BugReportFormCardProps {
   onCancel?: () => void
 }
 
-/**
- * BugReportForm
- * 受控表单组件：支持异步 initialValues 变化时基于 reset 同步展示。
- */
 export function BugReportForm(props: BugReportFormCardProps) {
   const {
     initialValues,
@@ -209,7 +205,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
               <FormLabel>报告标题</FormLabel>
               {!readonly && (
                 <FormDescription>
-                  一句话概括问题，便于搜索与筛选。
+                  一句话概括问题，便于搜索与筛选
                 </FormDescription>
               )}
 
@@ -339,9 +335,13 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
         {/* MARK: 漏洞 URL 字段 */}
         <FormItem>
-          <div className="flex items-center justify-between">
-            <FormLabel>复现链接</FormLabel>
-            {!readonly && (
+          <FormLabel>复现链接</FormLabel>
+          {!readonly && (
+            <div className="flex items-center justify-between gap-2">
+              <FormDescription>
+                提供可复现问题的页面或接口地址；如有多个，请逐条添加
+              </FormDescription>
+
               <Button
                 size="xs"
                 type="button"
@@ -353,12 +353,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
                 <Plus />
                 添加链接
               </Button>
-            )}
-          </div>
-          {!readonly && (
-            <FormDescription>
-              提供可复现问题的页面或接口地址；如有多个，请逐条添加。
-            </FormDescription>
+            </div>
           )}
 
           <div className="space-y-3">

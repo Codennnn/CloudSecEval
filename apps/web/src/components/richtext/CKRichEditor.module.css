@@ -74,7 +74,7 @@
 
 /* 占位符颜色（与全局 muted-foreground 一致） */
 .ckr .ck-placeholder::before {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--muted-foreground) !important;
 }
 

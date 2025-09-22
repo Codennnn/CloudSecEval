@@ -175,19 +175,61 @@ export class FileValidationPipe implements PipeTransform {
 // 预定义的常用管道实例
 export const ImageValidationPipe = new FileValidationPipe({
   maxSize: 5 * 1024 * 1024, // 5MB
-  allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+  allowedTypes: [
+    'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+    'image/bmp', 'image/tiff', 'image/x-icon',
+  ],
 })
 
 export const DocumentValidationPipe = new FileValidationPipe({
   maxSize: 20 * 1024 * 1024, // 20MB
   allowedTypes: [
+    // PDF
     'application/pdf',
+    // Microsoft Office
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     'application/vnd.ms-powerpoint',
+    // OpenDocument
+    'application/vnd.oasis.opendocument.text',
+    'application/vnd.oasis.opendocument.spreadsheet',
+    'application/vnd.oasis.opendocument.presentation',
+    // 其他文档格式
+    'application/rtf',
+    'text/plain',
+  ],
+})
+
+export const MediaValidationPipe = new FileValidationPipe({
+  maxSize: 100 * 1024 * 1024, // 100MB
+  allowedTypes: [
+    // 视频
+    'video/mp4', 'video/avi', 'video/quicktime', 'video/webm', 'video/x-matroska', 'video/x-flv',
+    // 音频
+    'audio/mpeg', 'audio/wav', 'audio/aac', 'audio/flac', 'audio/ogg', 'audio/mp4',
+  ],
+})
+
+export const CodeValidationPipe = new FileValidationPipe({
+  maxSize: 10 * 1024 * 1024, // 10MB
+  allowedTypes: [
+    // Web 技术
+    'application/javascript', 'application/typescript', 'text/html', 'text/css',
+    // 数据格式
+    'application/json', 'application/xml', 'application/x-yaml', 'text/csv',
+    // 代码文件（通常被识别为 text/plain）
+    'text/plain', 'text/x-python', 'text/x-java-source',
+  ],
+})
+
+export const ArchiveValidationPipe = new FileValidationPipe({
+  maxSize: 50 * 1024 * 1024, // 50MB
+  allowedTypes: [
+    'application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed',
+    'application/x-tar', 'application/gzip', 'application/x-bzip2',
   ],
 })
 

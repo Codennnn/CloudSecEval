@@ -124,6 +124,158 @@ const SUPPORTED_FILE_TYPES: Record<string, FileTypeConfig> = {
     extensions: ['wav'],
     pattern: 'wav',
   },
+  AAC: {
+    mimeType: 'audio/aac',
+    extensions: ['aac'],
+    pattern: 'aac',
+  },
+  FLAC: {
+    mimeType: 'audio/flac',
+    extensions: ['flac'],
+    pattern: 'flac',
+  },
+  OGG: {
+    mimeType: 'audio/ogg',
+    extensions: ['ogg'],
+    pattern: 'ogg',
+  },
+  M4A: {
+    mimeType: 'audio/mp4',
+    extensions: ['m4a'],
+    pattern: 'm4a',
+  },
+
+  // 更多图片类型
+  SVG: {
+    mimeType: 'image/svg+xml',
+    extensions: ['svg'],
+    pattern: 'svg',
+  },
+  BMP: {
+    mimeType: 'image/bmp',
+    extensions: ['bmp'],
+    pattern: 'bmp',
+  },
+  TIFF: {
+    mimeType: 'image/tiff',
+    extensions: ['tiff', 'tif'],
+    pattern: 'tiff|tif',
+  },
+  ICO: {
+    mimeType: 'image/x-icon',
+    extensions: ['ico'],
+    pattern: 'ico',
+  },
+
+  // 更多视频类型
+  WEBM: {
+    mimeType: 'video/webm',
+    extensions: ['webm'],
+    pattern: 'webm',
+  },
+  MKV: {
+    mimeType: 'video/x-matroska',
+    extensions: ['mkv'],
+    pattern: 'mkv',
+  },
+  FLV: {
+    mimeType: 'video/x-flv',
+    extensions: ['flv'],
+    pattern: 'flv',
+  },
+
+  // 更多文档类型
+  RTF: {
+    mimeType: 'application/rtf',
+    extensions: ['rtf'],
+    pattern: 'rtf',
+  },
+  ODT: {
+    mimeType: 'application/vnd.oasis.opendocument.text',
+    extensions: ['odt'],
+    pattern: 'odt',
+  },
+  ODS: {
+    mimeType: 'application/vnd.oasis.opendocument.spreadsheet',
+    extensions: ['ods'],
+    pattern: 'ods',
+  },
+  ODP: {
+    mimeType: 'application/vnd.oasis.opendocument.presentation',
+    extensions: ['odp'],
+    pattern: 'odp',
+  },
+
+  // 数据文件
+  CSV: {
+    mimeType: 'text/csv',
+    extensions: ['csv'],
+    pattern: 'csv',
+  },
+  JSON: {
+    mimeType: 'application/json',
+    extensions: ['json'],
+    pattern: 'json',
+  },
+  XML: {
+    mimeType: 'application/xml',
+    extensions: ['xml'],
+    pattern: 'xml',
+  },
+  YAML: {
+    mimeType: 'application/x-yaml',
+    extensions: ['yaml', 'yml'],
+    pattern: 'yaml|yml',
+  },
+
+  // 代码文件
+  HTML: {
+    mimeType: 'text/html',
+    extensions: ['html', 'htm'],
+    pattern: 'html|htm',
+  },
+  CSS: {
+    mimeType: 'text/css',
+    extensions: ['css'],
+    pattern: 'css',
+  },
+  JS: {
+    mimeType: 'application/javascript',
+    extensions: ['js'],
+    pattern: 'js',
+  },
+  TS: {
+    mimeType: 'application/typescript',
+    extensions: ['ts'],
+    pattern: 'ts',
+  },
+  PYTHON: {
+    mimeType: 'text/x-python',
+    extensions: ['py'],
+    pattern: 'py',
+  },
+  JAVA: {
+    mimeType: 'text/x-java-source',
+    extensions: ['java'],
+    pattern: 'java',
+  },
+
+  // 更多压缩文件
+  TAR: {
+    mimeType: 'application/x-tar',
+    extensions: ['tar'],
+    pattern: 'tar',
+  },
+  GZ: {
+    mimeType: 'application/gzip',
+    extensions: ['gz'],
+    pattern: 'gz',
+  },
+  BZ2: {
+    mimeType: 'application/x-bzip2',
+    extensions: ['bz2'],
+    pattern: 'bz2',
+  },
 }
 
 /**

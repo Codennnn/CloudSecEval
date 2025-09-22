@@ -941,6 +941,24 @@ export const UPLOADS_API_CONFIG = {
       type: BatchFileDeleteApiResponseDto,
     }),
   },
+
+  downloadFile: {
+    summary: '下载文件',
+    description: '根据文件ID下载已存储的文件，返回文件流供客户端下载',
+    successResponse: {
+      description: '文件下载成功，返回文件流',
+      content: {
+        'application/octet-stream': {
+          schema: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+    errorResponseCode: [BUSINESS_CODES.FILE_NOT_FOUND, BUSINESS_CODES.FILE_SYSTEM_ERROR],
+    requireAuth: true,
+  },
 } satisfies Record<string, ApiOperationConfig>
 
 // ================================

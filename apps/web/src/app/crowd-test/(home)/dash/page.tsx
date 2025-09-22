@@ -23,11 +23,11 @@ function NavItem(props: { href: string, title: string }) {
 
   return (
     <Link
-      className="relative font-semibold text-sm flex items-center justify-center w-[120px] aspect-[133/38]"
+      className="relative font-bold text-sm flex items-center justify-center w-[120px] aspect-[133/38] group/nav-item"
       href={href}
       target="_blank"
     >
-      <span className="relative z-10 bg-gradient-to-t bg-clip-text text-transparent from-theme to-theme2/80">
+      <span className="relative z-10 opacity-80 group-hover/nav-item:opacity-100">
         {title}
       </span>
       <DashDecoratorImg
@@ -55,7 +55,7 @@ export default function DashPage() {
 
         <div className="flex flex-col h-full">
           <div className="basis-[130px] overflow-hidden">
-            <div className="absolute top-[40px] left-[125px] p-2 flex gap-5">
+            <div className="absolute top-[5%] left-[7%] p-2 flex gap-5">
               <NavItem href={getRoutePath(adminHomeRoute)} title="后台系统" />
               <NavItem href={getRoutePath(AdminRoutes.CrowdTestBugs)} title="报告管理" />
             </div>
