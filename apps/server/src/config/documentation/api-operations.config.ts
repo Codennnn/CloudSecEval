@@ -1127,4 +1127,92 @@ export const BUG_REPORTS_API_CONFIG = {
     requireAdmin: false,
   },
 
+  export: {
+    summary: '导出漏洞报告',
+    description: '导出单个漏洞报告的完整信息为JSON格式，包含报告详情、附件和审批历史',
+    successResponse: {
+      description: '导出成功，返回JSON文件',
+      content: {
+        'application/json': {
+          example: {
+            exportMeta: {
+              version: '1.0.0',
+              exportedAt: '2024-01-01T12:00:00Z',
+              exportedBy: {
+                id: 'user-uuid',
+                name: '张三',
+                email: 'zhangsan@example.com',
+              },
+            },
+            report: {
+              id: 'report-uuid',
+              title: '某系统SQL注入漏洞',
+              severity: 'HIGH',
+              status: 'APPROVED',
+            },
+            submitter: {
+              id: 'user-uuid',
+              name: '李四',
+              email: 'lisi@example.com',
+            },
+            organization: {
+              id: 'org-uuid',
+              name: '示例公司',
+              code: 'EXAMPLE_CORP',
+            },
+          },
+        },
+      },
+    },
+    requireAdmin: false,
+  },
+
+  import: {
+    summary: '导入漏洞报告',
+    description: '从JSON文件导入漏洞报告，支持重新创建报告和附件',
+    requestBody: {
+      description: '导入的JSON文件和相关选项',
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          file: {
+            type: 'string',
+            format: 'binary',
+            description: '导出的JSON文件',
+          },
+          asNewReport: {
+            type: 'boolean',
+            description: '是否作为新报告导入',
+            default: true,
+          },
+          includeHistory: {
+            type: 'boolean',
+            description: '是否导入审批历史',
+            default: false,
+          },
+          importNote: {
+            type: 'string',
+            description: '导入备注',
+          },
+        },
+        required: ['file'],
+      },
+    },
+    successResponse: createSuccessResponse({
+      description: '导入成功',
+      schema: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', example: 'new-report-uuid' },
+          title: { type: 'string', example: '导入的漏洞报告标题' },
+          severity: { type: 'string', example: 'HIGH' },
+          status: { type: 'string', example: 'DRAFT' },
+          createdAt: { type: 'string', example: '2024-01-01T12:30:00Z' },
+        },
+      },
+    }),
+    requireAdmin: false,
+  },
+
 } satisfies Record<string, ApiOperationConfig>

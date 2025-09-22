@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,9 +8,14 @@ import {
   Post,
   Put,
   Query,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiTags } from '@nestjs/swagger'
+import { Response } from 'express'
 
 import { resp, respWithPagination } from '~/common/utils/response.util'
 import { BUG_REPORTS_API_CONFIG } from '~/config/documentation/api-operations.config'
@@ -40,6 +46,10 @@ import {
   SaveDraftDto,
   SubmitDraftDto,
 } from './dto/draft-bug-report.dto'
+import {
+  ExportBugReportDto,
+  ImportBugReportDto,
+} from './dto/export-import-bug-report.dto'
 import {
   FindBugReportsDto,
 } from './dto/find-bug-reports.dto'
@@ -340,6 +350,55 @@ export class BugReportsController {
     return resp({
       msg: '漏洞报告更新成功',
       data: updated,
+    })
+  }
+
+  @Get(':id/export')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.export)
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
+  async exportBugReport(
+    @Param('id') id: string,
+    @Query() exportDto: ExportBugReportDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+    @Res() response: Response,
+  ) {
+    const exportResult = await this.bugReportsService.exportBugReport(
+      id,
+      exportDto,
+      currentUser,
+    )
+
+    response.setHeader('Content-Type', exportResult.contentType)
+    response.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${exportResult.filename}"`,
+    )
+
+    return response.send(exportResult.buffer)
+  }
+
+  @Post('import')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.import)
+  @RequirePermissions(PERMISSIONS.bug_reports.create)
+  @UseInterceptors(FileInterceptor('file'))
+  async importBugReport(
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Body() importDto: ImportBugReportDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ) {
+    if (!file) {
+      throw new BadRequestException('请选择要导入的JSON文件')
+    }
+
+    const importedReport = await this.bugReportsService.importBugReport(
+      file,
+      importDto,
+      currentUser,
+    )
+
+    return resp({
+      msg: '漏洞报告导入成功',
+      data: importedReport,
     })
   }
 

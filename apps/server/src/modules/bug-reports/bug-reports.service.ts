@@ -20,6 +20,10 @@ import type { CreateBugReportDto } from './dto/create-bug-report.dto'
 import type { DailyReportsStatsDataDto, GetDailyReportsStatsDto } from './dto/daily-reports-stats.dto'
 import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from './dto/department-reports-stats.dto'
 import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
+import {
+  ExportBugReportDto,
+  ImportBugReportDto,
+} from './dto/export-import-bug-report.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
 import { ExtendedGetApprovalHistoryDto } from './dto/history.dto'
 import type { GetTimelineDto } from './dto/timeline.dto'
@@ -812,5 +816,227 @@ export class BugReportsService {
     }
 
     return result
+  }
+
+  /**
+   * 导出单个漏洞报告为 JSON
+   */
+  async exportBugReport(id: string, dto: ExportBugReportDto, currentUser: CurrentUserDto) {
+    const bugReport = await this.findBugReportOrThrow(id)
+
+    // 权限检查
+    if (bugReport.orgId !== currentUser.organization.id) {
+      throw new BadRequestException('只能导出本组织的漏洞报告')
+    }
+
+    // 获取完整数据
+    const fullReport = await this.bugReportsRepository.findById(id, true)
+
+    if (!fullReport) {
+      throw BusinessException.notFound(BUSINESS_CODES.BUG_REPORT_NOT_FOUND)
+    }
+
+    // 类型断言为包含关联数据的类型
+    type FullReportWithRelations = typeof fullReport & {
+      user?: { id: string, name: string | null, email: string, avatarUrl: string | null }
+      reviewer?: { id: string, name: string | null, email: string, avatarUrl: string | null }
+      organization?: { id: string, name: string, code: string }
+    }
+
+    const reportWithRelations = fullReport as FullReportWithRelations
+
+    // 构建导出数据
+    const exportData = {
+      exportMeta: {
+        version: '1.0.0',
+        exportedAt: new Date(),
+        exportedBy: {
+          id: currentUser.id,
+          name: currentUser.name ?? '',
+          email: currentUser.email,
+          avatarUrl: currentUser.avatarUrl ?? undefined,
+        },
+      },
+      report: {
+        id: fullReport.id,
+        title: fullReport.title,
+        severity: fullReport.severity,
+        attackMethod: fullReport.attackMethod ?? undefined,
+        description: fullReport.description ?? undefined,
+        discoveredUrls: fullReport.discoveredUrls ?? undefined,
+        status: fullReport.status,
+        createdAt: fullReport.createdAt,
+        updatedAt: fullReport.updatedAt,
+        reviewNote: fullReport.reviewNote ?? undefined,
+        reviewedAt: fullReport.reviewedAt ?? undefined,
+      },
+      submitter: reportWithRelations.user
+        ? {
+            id: reportWithRelations.user.id,
+            name: reportWithRelations.user.name ?? '',
+            email: reportWithRelations.user.email,
+            avatarUrl: reportWithRelations.user.avatarUrl ?? undefined,
+          }
+        : undefined,
+      reviewer: reportWithRelations.reviewer
+        ? {
+            id: reportWithRelations.reviewer.id,
+            name: reportWithRelations.reviewer.name ?? '',
+            email: reportWithRelations.reviewer.email,
+            avatarUrl: reportWithRelations.reviewer.avatarUrl ?? undefined,
+          }
+        : undefined,
+      organization: reportWithRelations.organization
+        ? {
+            id: reportWithRelations.organization.id,
+            name: reportWithRelations.organization.name,
+            code: reportWithRelations.organization.code,
+          }
+        : undefined,
+    }
+
+    // 处理附件
+    if (fullReport.attachments && Array.isArray(fullReport.attachments)) {
+      interface AttachmentData {
+        id: string
+        originalName: string
+        fileName?: string
+        mimeType: string
+        size: number
+        hash?: string
+        uploadedAt?: Date
+      }
+
+      const attachments = fullReport.attachments as AttachmentData[]
+      const processedAttachments = attachments.map((attachment) => ({
+        id: attachment.id,
+        originalName: attachment.originalName,
+        fileName: attachment.fileName ?? attachment.originalName,
+        mimeType: attachment.mimeType,
+        size: attachment.size,
+        hash: attachment.hash ?? '',
+        uploadedAt: attachment.uploadedAt ?? new Date(),
+        downloadUrl: `/api/uploads/download/${attachment.id}`,
+      }))
+
+      Object.assign(exportData, { attachments: processedAttachments })
+    }
+
+    // 处理审批历史
+    if (dto.includeHistory) {
+      try {
+        const history = await this.getExtendedApprovalHistory(id)
+        const processedHistory = history.map((item) => ({
+          id: item.id,
+          eventType: item.eventType,
+          action: item.eventType.toUpperCase(),
+          createdAt: item.createdAt,
+          user: {
+            id: item.user?.id || '',
+            name: item.user?.name || '',
+            email: item.user?.email || '',
+            avatarUrl: item.user?.avatarUrl,
+          },
+          description: item.description,
+          comment: item.approvalInfo?.comment ?? item.submitInfo?.changedFields?.join(', ') ?? undefined,
+          changedFields: item.submitInfo?.changedFields,
+        }))
+        Object.assign(exportData, { approvalHistory: processedHistory })
+      }
+      catch (error) {
+        console.warn('获取审批历史失败:', error)
+      }
+    }
+
+    // 生成 JSON 文件
+    const jsonContent = JSON.stringify(exportData, null, 2)
+    const filename = `bug-report-${fullReport.id}-${Date.now()}.json`
+
+    return {
+      buffer: Buffer.from(jsonContent, 'utf8'),
+      filename,
+      contentType: 'application/json',
+    }
+  }
+
+  /**
+   * 导入漏洞报告
+   */
+  async importBugReport(
+    file: Express.Multer.File,
+    dto: ImportBugReportDto,
+    currentUser: CurrentUserDto,
+  ) {
+    // 解析 JSON 文件
+    interface ImportDataType {
+      exportMeta?: { exportedAt: string }
+      report?: {
+        id: string
+        title: string
+        severity: string
+        attackMethod?: string
+        description?: string
+        discoveredUrls?: string[]
+      }
+      submitter?: { name?: string }
+      organization?: { name?: string }
+    }
+
+    let importData: ImportDataType
+
+    try {
+      const jsonContent = file.buffer.toString('utf8')
+      importData = JSON.parse(jsonContent) as ImportDataType
+    }
+    catch (error) {
+      throw new BadRequestException('无效的JSON文件格式')
+    }
+
+    // 数据验证
+    if (!importData.exportMeta || !importData.report) {
+      throw new BadRequestException('无效的导出文件格式')
+    }
+
+    if (!importData.report.title || !importData.report.severity) {
+      throw new BadRequestException('缺少必要的报告信息')
+    }
+
+    // 对富文本内容进行消毒处理
+    const sanitizedDescription = importData.report.description
+      ? this.htmlSanitizerService.sanitizeHtml(importData.report.description)
+      : undefined
+
+    // 创建新报告
+    const createData: Prisma.BugReportCreateInput = {
+      title: importData.report.title,
+      severity: importData.report.severity,
+      attackMethod: importData.report.attackMethod,
+      description: sanitizedDescription,
+      discoveredUrls: importData.report.discoveredUrls ?? [],
+      status: dto.asNewReport ? BugReportStatus.DRAFT : BugReportStatus.PENDING,
+      user: { connect: { id: currentUser.id } },
+      organization: { connect: { id: currentUser.organization.id } },
+    }
+
+    const newReport = await this.bugReportsRepository.create(createData)
+
+    // 记录导入操作
+    const comment = [
+      '从导出文件导入漏洞报告',
+      `原报告ID: ${importData.report.id}`,
+      `导出时间: ${importData.exportMeta.exportedAt}`,
+      `原提交者: ${importData.submitter?.name ?? '未知'}`,
+      `原组织: ${importData.organization?.name ?? '未知'}`,
+      dto.importNote ? `导入备注: ${dto.importNote}` : '',
+    ].filter(Boolean).join('\n')
+
+    await this.bugReportsRepository.createApprovalLog({
+      bugReport: { connect: { id: newReport.id } },
+      approver: { connect: { id: currentUser.id } },
+      action: 'IMPORT',
+      comment,
+    })
+
+    return newReport
   }
 }
