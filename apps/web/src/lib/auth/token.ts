@@ -45,11 +45,9 @@ export const tokenManager = {
    * 设置刷新令牌
    */
   setRefreshToken(token: string): void {
-    if (typeof window === 'undefined') {
-      return
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(REFRESH_TOKEN_KEY, token)
     }
-
-    localStorage.setItem(REFRESH_TOKEN_KEY, token)
   },
 
   /**
@@ -86,19 +84,17 @@ export const tokenManager = {
    * 设置认证状态 Cookie（用于 middleware 判断登录状态）
    */
   setAuthStatusCookie(isAuthenticated: boolean): void {
-    if (typeof document === 'undefined') {
-      return
-    }
-
-    if (isAuthenticated) {
-      // 设置一个简单的认证状态 Cookie，有效期 7 天
-      const expires = new Date()
-      expires.setDate(expires.getDate() + 7)
-      document.cookie = `${AUTH_STATUS_COOKIE}=true; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
-    }
-    else {
-      // 清除认证状态 Cookie
-      document.cookie = `${AUTH_STATUS_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+    if (typeof document !== 'undefined') {
+      if (isAuthenticated) {
+        // 设置一个简单的认证状态 Cookie，有效期 7 天
+        const expires = new Date()
+        expires.setDate(expires.getDate() + 7)
+        document.cookie = `${AUTH_STATUS_COOKIE}=true; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+      }
+      else {
+        // 清除认证状态 Cookie
+        document.cookie = `${AUTH_STATUS_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+      }
     }
   },
 

@@ -24,6 +24,7 @@ export function useLogin() {
 
   return useMutation({
     ...authControllerLoginMutation(),
+
     onSuccess: (data) => {
       const user = data.data.user
       const { accessToken, refreshToken } = data.data
@@ -32,10 +33,9 @@ export function useLogin() {
       if (!isCookieEnabled()) {
         tokenManager.setLoginData(accessToken, refreshToken)
       }
-      else {
-        // Cookie 模式下，也需要设置认证状态 Cookie（如果后端没有设置的话）
-        tokenManager.setAuthStatusCookie(true)
-      }
+
+      // Cookie 模式下，也需要设置认证状态 Cookie（如果后端没有设置的话）
+      tokenManager.setAuthStatusCookie(true)
 
       // 同步用户信息到 store（持久化存储）
       setUser(user)

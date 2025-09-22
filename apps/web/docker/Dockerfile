@@ -2,6 +2,9 @@
 FROM --platform=linux/amd64 node:22-alpine AS base
 
 # 安装 pnpm
+# 固定 registry，避免受主机 nrm/.npmrc 影响；可通过 --build-arg 覆盖
+ARG NPM_REGISTRY=https://registry.npmmirror.com/
+ENV npm_config_registry=${NPM_REGISTRY}
 RUN npm install -g pnpm@9.15.3
 
 # 设置工作目录
@@ -18,7 +21,7 @@ COPY packages/constants/package.json ./packages/constants/
 
 # 安装依赖阶段
 FROM base AS deps
-RUN pnpm install --frozen-lockfile --prod=false
+RUN pnpm install --frozen-lockfile --prod=false --registry=${npm_config_registry}
 
 # 构建阶段
 FROM base AS builder
@@ -45,6 +48,9 @@ FROM --platform=linux/amd64 node:22-alpine AS runner
 WORKDIR /app
 
 # 安装 pnpm
+# 固定 registry（运行阶段通常不再安装依赖，但为一致性保留）
+ARG NPM_REGISTRY=https://registry.npmmirror.com/
+ENV npm_config_registry=${NPM_REGISTRY}
 RUN npm install -g pnpm@9.15.3
 
 # 创建非 root 用户
