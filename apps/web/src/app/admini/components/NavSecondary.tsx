@@ -25,13 +25,13 @@ export function NavSecondary({
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => {
-            const isExternal = isExternalLink(item.url)
+            const isExternal = isExternalLink(item.url ?? '')
 
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
                   <Link
-                    href={item.url}
+                    href={item.url ?? ''}
                     target={isExternal ? '_blank' : '_self'}
                   >
                     {item.icon && <item.icon />}
