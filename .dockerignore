@@ -22,10 +22,12 @@ node_modules
 **/.env*
 !apps/web/.env.example
 
-# 非 web 子项目与不相关资源（仅放行 apps/web）
+# 非 web 子项目与不相关资源（仅放行 apps/web 和 apps/server）
 apps/*
 !apps/web
 !apps/web/**
+!apps/server
+!apps/server/**
 
 # 放行必须的根文件
 !pnpm-lock.yaml
