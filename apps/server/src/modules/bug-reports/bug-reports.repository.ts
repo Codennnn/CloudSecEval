@@ -1155,6 +1155,7 @@ export class BugReportsRepository {
 
   /**
    * 获取组织下每日报告统计
+   * 统计该组织下所有部门成员每日提交的漏洞报告数以及审核通过的漏洞报告数
    */
   async getDailyReportsStats(
     dto: GetDailyReportsStatsDto,
@@ -1174,18 +1175,18 @@ export class BugReportsRepository {
     const endOfPeriod = new Date(endDate)
     endOfPeriod.setHours(23, 59, 59, 999)
 
-    // 查询每日提交统计
-    // 修复时区问题：使用 DATE("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai')
-    // 修复状态过滤：明确包含所有已提交状态，提高可读性和维护性
+    // 查询该组织下所有部门成员每日提交的漏洞报告统计
+    // 通过JOIN users表确保只统计该组织成员提交的报告
     const submittedStats = await this.prisma.$queryRaw<
       { date: string, count: number }[]
     >`
       SELECT 
-        DATE("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai') as date,
+        DATE(br."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai') as date,
         COUNT(*)::int as count
-      FROM bug_reports 
-      WHERE "orgId" = ${orgId}::uuid
-        AND status IN (
+      FROM bug_reports br
+      INNER JOIN users u ON br."userId" = u.id
+      WHERE u."orgId" = ${orgId}::uuid
+        AND br.status IN (
           ${BugReportStatus.PENDING}::"public"."bug_report_status",
           ${BugReportStatus.IN_REVIEW}::"public"."bug_report_status",
           ${BugReportStatus.APPROVED}::"public"."bug_report_status",
@@ -1193,14 +1194,14 @@ export class BugReportsRepository {
           ${BugReportStatus.RESOLVED}::"public"."bug_report_status",
           ${BugReportStatus.CLOSED}::"public"."bug_report_status"
         )
-        AND "createdAt" >= ${startOfPeriod}
-        AND "createdAt" <= ${endOfPeriod}
-      GROUP BY DATE("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai')
+        AND br."createdAt" >= ${startOfPeriod}
+        AND br."createdAt" <= ${endOfPeriod}
+      GROUP BY DATE(br."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai')
       ORDER BY date
     `
 
-    // 查询每日审核统计
-    // 修复时区问题：同样应用时区转换
+    // 查询该组织下成员提交的报告每日审核通过的统计
+    // 只统计 action = 'APPROVE' 的审批记录
     const reviewedStats = await this.prisma.$queryRaw<
       { date: string, count: number }[]
     >`
@@ -1208,9 +1209,10 @@ export class BugReportsRepository {
         DATE(bal."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai') as date,
         COUNT(DISTINCT bal."bugReportId")::int as count
       FROM bug_report_approval_logs bal
-      JOIN bug_reports br ON bal."bugReportId" = br.id
-      WHERE br."orgId" = ${orgId}::uuid
-        AND bal.action IN ('APPROVE', 'REJECT')
+      INNER JOIN bug_reports br ON bal."bugReportId" = br.id
+      INNER JOIN users u ON br."userId" = u.id
+      WHERE u."orgId" = ${orgId}::uuid
+        AND bal.action = 'APPROVE'
         AND bal."createdAt" >= ${startOfPeriod}
         AND bal."createdAt" <= ${endOfPeriod}
       GROUP BY DATE(bal."createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Shanghai')
@@ -1246,7 +1248,10 @@ export class BugReportsRepository {
 
     // 填充提交数据
     for (const stat of submittedStats) {
-      const dateStr = stat.date
+      // 确保日期格式为字符串 YYYY-MM-DD
+      const dateStr = typeof stat.date === 'string'
+        ? stat.date
+        : new Date(stat.date).toISOString().split('T')[0]
 
       const existing = dailyStatsMap.get(dateStr)
 
@@ -1259,9 +1264,12 @@ export class BugReportsRepository {
       }
     }
 
-    // 填充审核数据
+    // 填充审核通过数据
     for (const stat of reviewedStats) {
-      const dateStr = stat.date
+      // 确保日期格式为字符串 YYYY-MM-DD
+      const dateStr = typeof stat.date === 'string'
+        ? stat.date
+        : new Date(stat.date).toISOString().split('T')[0]
 
       const existing = dailyStatsMap.get(dateStr)
 

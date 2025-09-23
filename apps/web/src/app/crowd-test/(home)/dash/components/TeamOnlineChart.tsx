@@ -1,34 +1,14 @@
-import { useQuery } from '@tanstack/react-query'
 import { Cell, Pie, PieChart } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
+import { useTeamOnlineStats } from '~/hooks/useTeamOnlineStats'
 
-import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
-import { getTeamRole, isBlueTeam, isRedTeam, teamConfig, TeamRole } from '~crowd-test/constants'
+import { teamConfig, TeamRole } from '~crowd-test/constants'
 
 export function TeamOnlineChart() {
-  const { data } = useQuery({
-    ...departmentsControllerGetDepartmentOnlineStatsOptions(),
-  })
-
   const legendSolidColors = ['#3b82f6', '#ef4444', '#22d3ee', '#a78bfa']
 
-  // 按队伍汇总在线人数（用于饼图）
-  const teamOnlineData = data?.data.departments
-    ? data.data.departments
-        .filter((d) => d.online > 0
-          && (isRedTeam(d.department.remark) || isBlueTeam(d.department.remark)))
-        .map((d) => {
-          const role = getTeamRole(d.department.remark)
-
-          return {
-            name: d.department.name,
-            value: d.online,
-            fill: teamConfig[role].colorValue,
-          }
-        })
-    : []
-  const totalOnline = teamOnlineData.reduce((sum, d) => sum + d.value, 0)
+  const { teamOnlineData, totalOnline } = useTeamOnlineStats()
 
   return (
     <div className="relative min-h-64">
@@ -105,14 +85,20 @@ export function TeamOnlineChart() {
       {/* 简洁图例 - 按红队蓝队分组 */}
       <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
         {(() => {
-          // 按队伍分组计算总在线人数
-          const departments = data?.data.departments ?? []
-          const redTeamOnline = departments
-            .filter((d) => getTeamRole(d.department.remark) === TeamRole.红)
-            .reduce((sum, d) => sum + d.online, 0)
-          const blueTeamOnline = departments
-            .filter((d) => getTeamRole(d.department.remark) === TeamRole.蓝)
-            .reduce((sum, d) => sum + d.online, 0)
+          // 从已处理的数据中按队伍分组计算总在线人数
+          const redTeamOnline = teamOnlineData
+            .filter((item) => {
+              // 根据颜色判断队伍（红队使用红色系）
+              return item.fill === teamConfig[TeamRole.红].colorValue
+            })
+            .reduce((sum, item) => sum + item.value, 0)
+
+          const blueTeamOnline = teamOnlineData
+            .filter((item) => {
+              // 根据颜色判断队伍（蓝队使用蓝色系）
+              return item.fill === teamConfig[TeamRole.蓝].colorValue
+            })
+            .reduce((sum, item) => sum + item.value, 0)
 
           const groupData = [
             { name: '红队', value: redTeamOnline, color: teamConfig[TeamRole.红].colorValue },

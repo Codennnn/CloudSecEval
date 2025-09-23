@@ -1,29 +1,14 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import { Cell, Pie, PieChart } from 'recharts'
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
+import { useTeamOnlineStats } from '~/hooks/useTeamOnlineStats'
 
-import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
-import { getTeamRole, isBlueTeam, isRedTeam, teamConfig, TeamRole } from '~crowd-test/constants'
+import { teamConfig, TeamRole } from '~crowd-test/constants'
 
 export function TeamOnlineChart() {
-  const { data } = useQuery({
-    ...departmentsControllerGetDepartmentOnlineStatsOptions(),
-  })
-
-  const statsData = data?.data.departments
-    .filter((d) => d.online > 0
-      && (isRedTeam(d.department.remark) || isBlueTeam(d.department.remark)))
-    .map((d) => {
-      return {
-        name: d.department.name,
-        value: d.online,
-        fill: teamConfig[getTeamRole(d.department.remark)].colorValue,
-      }
-    })
-  const totalOnline = statsData?.reduce((sum, d) => sum + d.value, 0) ?? 0
+  const { teamOnlineData: statsData, totalOnline } = useTeamOnlineStats()
 
   return (
     <div className="relative min-h-64">
@@ -47,7 +32,7 @@ export function TeamOnlineChart() {
             startAngle={90}
 
           >
-            {statsData?.map((entry, index) => (
+            {statsData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} stroke="none" />
             ))}
           </Pie>

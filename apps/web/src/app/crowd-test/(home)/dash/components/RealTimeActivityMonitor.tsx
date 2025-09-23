@@ -4,7 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { bugReportsControllerGetTimelineInfiniteOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
 import { cn } from '~/lib/utils'
-import { DateFormat, formatDate } from '~/utils/date'
+import { DateFormat, formatDate, formatRelativeTime } from '~/utils/date'
 
 import { getTimelineEventType, getVulSeverity } from '~crowd-test/constants'
 
@@ -71,7 +71,7 @@ export function RealTimeActivityMonitor() {
               const eventConfig = getTimelineEventType(eventType)
 
               const displayUser = user?.name ?? user?.email ?? '未知用户'
-              const displayTime = formatDate(createdAt, DateFormat.HH_MM)
+              const displayTime = formatRelativeTime(createdAt)
 
               return (
                 <div
@@ -123,7 +123,10 @@ export function RealTimeActivityMonitor() {
                       </div>
 
                       {/* 时间戳 */}
-                      <div className="flex-shrink-0 text-xs font-mono opacity-50">
+                      <div
+                        className="flex-shrink-0 text-xs font-mono opacity-50"
+                        title={formatDate(createdAt, DateFormat.YYYY_MM_DD_HH_MM)}
+                      >
                         {displayTime}
                       </div>
                     </div>
