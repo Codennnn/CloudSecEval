@@ -6,7 +6,7 @@ import { bugReportsControllerGetTimelineInfiniteOptions } from '~/lib/api/genera
 import { cn } from '~/lib/utils'
 import { DateFormat, formatDate, formatRelativeTime } from '~/utils/date'
 
-import { getTimelineEventType, getVulSeverity } from '~crowd-test/constants'
+import { BugReportStatus, getTimelineEventType, getVulSeverity } from '~crowd-test/constants'
 
 function RealTimeActivityLoading() {
   return (
@@ -44,7 +44,10 @@ export function RealTimeActivityMonitor() {
   })
 
   const events = typeof data === 'object' && 'pages' in data
-    ? data.pages.flatMap((page) => page.data).slice(0, pageSize)
+    ? data.pages
+        .flatMap((page) => page.data)
+        .slice(0, pageSize)
+        .filter((event) => event.bugReport.status !== BugReportStatus.DRAFT)
     : []
 
   return (

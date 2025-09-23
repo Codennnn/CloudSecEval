@@ -7,7 +7,7 @@ import { bugReportsControllerGetTimelineInfiniteOptions } from '~/lib/api/genera
 import { cn } from '~/lib/utils'
 import { DateFormat, formatDate, formatRelativeTime } from '~/utils/date'
 
-import { getTimelineEventType, getVulSeverity } from '~crowd-test/constants'
+import { BugReportStatus, getTimelineEventType, getVulSeverity } from '~crowd-test/constants'
 
 const pageSize = 10
 
@@ -68,7 +68,9 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
   })
 
   const events = typeof data === 'object' && 'pages' in data
-    ? data.pages.flatMap((page) => page.data)
+    ? data.pages
+        .flatMap((page) => page.data)
+        .filter((event) => event.bugReport.status !== BugReportStatus.DRAFT)
     : []
 
   const handleLoadMore = () => {

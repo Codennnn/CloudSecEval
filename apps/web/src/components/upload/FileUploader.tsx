@@ -142,8 +142,8 @@ export function FileUploader(props: FileUploaderProps) {
         <div
           className={[
             'relative overflow-hidden rounded-xl border-2 border-dashed transition-all duration-300 ease-out',
-            'bg-gradient-to-br from-muted/30 to-background',
-            'hover:from-muted/50 hover:to-muted/10 hover:shadow-sm cursor-pointer',
+            'bg-gradient-to-b from-secondary/50 to-background',
+            'hover:from-secondary hover:to-secondary/5 cursor-pointer',
             isDragging
               ? 'border-primary bg-primary/5 shadow-lg scale-[1.02]'
               : 'border-muted-foreground/40',

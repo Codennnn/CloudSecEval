@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { type FieldValues, useFieldArray, useForm } from 'react-hook-form'
 import { useEvent } from 'react-use-event-hook'
 
+import Link from 'next/link'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X } from 'lucide-react'
 import { z } from 'zod'
@@ -370,9 +371,13 @@ export function BugReportForm(props: BugReportFormCardProps) {
                         {fields.map((field) => {
                           return (
                             <li key={field.id}>
-                              <div className="text-sm truncate">
-                                {field.url}
-                              </div>
+                              <Link
+                                className="text-sm truncate"
+                                href={field.url ?? ''}
+                                target="_blank"
+                              >
+                                {field.url ?? ''}
+                              </Link>
                             </li>
                           )
                         })}
