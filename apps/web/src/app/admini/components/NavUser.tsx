@@ -31,6 +31,7 @@ import {
 } from '~/components/ui/sidebar'
 import { UserAvatar } from '~/components/UserAvatar'
 import { RoutePath } from '~/constants/routes.client'
+import { isCrowdTest } from '~/utils/platform'
 
 import { useLogout } from '~admin/hooks/api/useAuth'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
@@ -118,15 +119,16 @@ export function NavUser() {
                 </DropdownMenuItem>
               </Link>
 
-              <Link href={RoutePath.Docs} target="_blank">
-                <DropdownMenuItem>
-                  <BookTextIcon />
-                  前往文档
+              {!isCrowdTest() && (
+                <Link href={RoutePath.Docs} target="_blank">
+                  <DropdownMenuItem>
+                    <BookTextIcon />
+                    前往文档
 
-                  <ExternalLinkIcon className="ml-auto opacity-50 size-3.5" />
-                </DropdownMenuItem>
-              </Link>
-
+                    <ExternalLinkIcon className="ml-auto opacity-50 size-3.5" />
+                  </DropdownMenuItem>
+                </Link>
+              )}
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
