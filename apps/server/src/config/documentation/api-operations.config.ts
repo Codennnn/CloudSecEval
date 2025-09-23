@@ -837,7 +837,7 @@ export const PERMISSIONS_API_CONFIG = {
 export const UPLOADS_API_CONFIG = {
   uploadSingleFile: {
     summary: '单文件上传',
-    description: '上传单个文件，支持图片、文档、音频、视频等格式',
+    description: '上传单个文件，支持图片、文档、音频、视频、压缩文件等各种格式',
     successResponse: createSuccessResponse({
       description: '文件上传成功',
       type: FileUploadApiResponseDto,

@@ -214,6 +214,15 @@ export class UploadsService {
       return 'documents'
     }
 
+    if (mimeType.includes('zip')
+      || mimeType.includes('rar')
+      || mimeType.includes('7z')
+      || mimeType.includes('tar')
+      || mimeType.includes('gzip')
+      || mimeType.includes('bzip')) {
+      return 'archives'
+    }
+
     return 'others'
   }
 

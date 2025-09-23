@@ -9,7 +9,7 @@ export { BugReportStatus }
  */
 export const BUG_REPORT_STATUS_TRANSITIONS = {
   [BugReportStatus.DRAFT]: [BugReportStatus.PENDING], // 草稿只能提交为待审核
-  [BugReportStatus.PENDING]: [BugReportStatus.IN_REVIEW, BugReportStatus.REJECTED],
+  [BugReportStatus.PENDING]: [BugReportStatus.APPROVED, BugReportStatus.REJECTED], // 简化：待审核可直接通过或驳回
   [BugReportStatus.IN_REVIEW]: [BugReportStatus.APPROVED, BugReportStatus.REJECTED],
   [BugReportStatus.APPROVED]: [BugReportStatus.RESOLVED, BugReportStatus.CLOSED],
   [BugReportStatus.REJECTED]: [BugReportStatus.PENDING], // 可重新提交审核

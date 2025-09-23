@@ -548,7 +548,31 @@ export class BugReportsService {
     // 验证审批权限
     await this.validateApprovalPermission(bugReport, currentUser, dto.action)
 
-    // 记录审批日志
+    // 先执行审批操作，确保状态流转成功
+    let result
+
+    switch (dto.action) {
+      case ApprovalAction.APPROVE:
+        result = await this.handleApprove(bugReport, dto, currentUser)
+        break
+
+      case ApprovalAction.REJECT:
+        result = await this.handleReject(bugReport, dto, currentUser)
+        break
+
+      case ApprovalAction.REQUEST_INFO:
+        result = await this.handleRequestInfo(bugReport, dto, currentUser)
+        break
+
+      case ApprovalAction.FORWARD:
+        result = await this.handleForward(bugReport, dto, currentUser)
+        break
+
+      default:
+        throw new BadRequestException('不支持的审批动作')
+    }
+
+    // 只有操作成功后才记录审批日志
     await this.recordApprovalLog(id, {
       action: dto.action,
       comment: dto.comment,
@@ -556,23 +580,7 @@ export class BugReportsService {
       targetUserId: dto.targetUserId,
     })
 
-    // 根据审批动作执行相应逻辑
-    switch (dto.action) {
-      case ApprovalAction.APPROVE:
-        return this.handleApprove(bugReport, dto, currentUser)
-
-      case ApprovalAction.REJECT:
-        return this.handleReject(bugReport, dto, currentUser)
-
-      case ApprovalAction.REQUEST_INFO:
-        return this.handleRequestInfo(bugReport, dto, currentUser)
-
-      case ApprovalAction.FORWARD:
-        return this.handleForward(bugReport, dto, currentUser)
-
-      default:
-        throw new BadRequestException('不支持的审批动作')
-    }
+    return result
   }
 
   /**
@@ -611,22 +619,17 @@ export class BugReportsService {
     dto: ProcessApprovalDto,
     currentUser: CurrentUserDto,
   ) {
-    // 检查是否需要多级审批（这里简化处理，可根据实际需求扩展）
-    const needsSecondApproval = this.needsSecondApproval(bugReport)
+    // 简化审批逻辑：支持的状态直接审批通过
+    const validStatuses: BugReportStatus[] = [BugReportStatus.PENDING, BugReportStatus.IN_REVIEW]
 
-    if (needsSecondApproval && bugReport.status === BugReportStatus.PENDING) {
-      // 第一级审批通过，进入审核中状态
-      return this.updateStatus(bugReport.id, {
-        status: BugReportStatus.IN_REVIEW,
-        reviewNote: dto.comment,
-      }, currentUser)
-    }
-    else {
-      // 最终审批通过
+    if (validStatuses.includes(bugReport.status)) {
       return this.updateStatus(bugReport.id, {
         status: BugReportStatus.APPROVED,
         reviewNote: dto.comment,
       }, currentUser)
+    }
+    else {
+      throw new BadRequestException(`当前状态 ${bugReport.status} 不支持审批通过操作`)
     }
   }
 
@@ -742,17 +745,6 @@ export class BugReportsService {
         targetUser: { connect: { id: data.targetUserId } },
       },
     })
-  }
-
-  /**
-   * 判断是否需要二级审批
-   */
-  private needsSecondApproval(bugReport: BugReport): boolean {
-    // 这里可以根据业务规则决定是否需要二级审批
-    // 例如：高危和严重等级的漏洞需要二级审批
-    const highRiskSeverities: BugSeverity[] = [BugSeverity.HIGH, BugSeverity.CRITICAL]
-
-    return highRiskSeverities.includes(bugReport.severity)
   }
 
   /**

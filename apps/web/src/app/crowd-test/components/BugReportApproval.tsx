@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -14,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Textarea } from '~/components/ui/textarea'
 import { adminPermission } from '~/constants/permission'
 
+import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerProcessApprovalMutation } from '~api/@tanstack/react-query.gen'
 import type { ProcessApprovalDto } from '~api/types.gen'
 import { BugReportStatus } from '~crowd-test/constants'
@@ -44,6 +46,7 @@ export function BugReportApproval({
   const [comment, setComment] = useState('')
   const [targetUserId, setTargetUserId] = useState('')
 
+  const router = useRouter()
   const queryClient = useQueryClient()
 
   const processApprovalMutation = useMutation({
@@ -67,7 +70,11 @@ export function BugReportApproval({
       setComment('')
       setTargetUserId('')
 
+      // 调用回调函数
       onApprovalComplete?.()
+
+      // 导航到报告管理页面
+      router.push(getRoutePath(AdminRoutes.CrowdTestBugs))
     },
     onError: (error) => {
       toast.error(`操作失败: ${error.message || '未知错误'}`)

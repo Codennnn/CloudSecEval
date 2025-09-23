@@ -221,13 +221,14 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
               {isUser && (
                 <Button
-                  size="iconSm"
+                  size="sm"
                   variant="ghost"
                   onClick={() => {
                     handleEdit(item)
                   }}
                 >
                   <PencilLineIcon />
+                  编辑
                 </Button>
               )}
 
