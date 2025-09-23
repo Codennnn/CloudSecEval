@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
 import { IsDateString, IsOptional } from 'class-validator'
 
+import { IsId } from '~/common/decorators/uuid.decorator'
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 
 /**
@@ -23,6 +24,13 @@ export class GetDailyReportsStatsDto {
   @IsOptional()
   @IsDateString()
   readonly endDate?: string
+
+  @ApiPropertyOptional({
+    description: '部门ID，用于筛选特定部门的数据。如果不提供，则根据用户权限返回相应范围的数据',
+  })
+  @IsOptional()
+  @IsId('部门ID')
+  readonly departmentId?: string
 }
 
 /**

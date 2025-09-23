@@ -1,17 +1,46 @@
 import { useEffect, useState } from 'react'
 
-import { useQuery } from '@tanstack/react-query'
-
 import { useLocalStorage } from './useLocalStorage'
 
-import { departmentsControllerGetDepartmentOnlineStatsOptions } from '~api/@tanstack/react-query.gen'
 import type { DepartmentOnlineStatsDto } from '~api/types.gen'
-import { getTeamRole, isBlueTeam, isRedTeam, teamConfig } from '~crowd-test/constants'
+import { getTeamRole, isRedTeam, teamConfig } from '~crowd-test/constants'
+
+const teamData: DepartmentOnlineStatsDto[] = [
+  {
+    department: {
+      id: '1',
+      name: '广东网安科技攻击队 1',
+      remark: '红队',
+    },
+    online: 3,
+  },
+  {
+    department: {
+      id: '2',
+      name: '广东网安科技攻击队 2',
+      remark: '红队',
+    },
+    online: 230,
+  },
+  {
+    department: {
+      id: '3',
+      name: '众测团队',
+      remark: '红队',
+    },
+    online: 8,
+  },
+]
 
 interface MockDataState {
   baseTimestamp: number
   targetTotal: number
   departmentOffsets: Record<string, number>
+}
+
+interface CrowdTestTeamState {
+  lastUpdateTime: number
+  currentOnline: number
 }
 
 interface TeamOnlineData {
@@ -21,23 +50,45 @@ interface TeamOnlineData {
 }
 
 const MOCK_UPDATE_INTERVAL = 8 * 60 * 1000 // 8分钟更新一次
-const TARGET_MIN = 10
-const TARGET_MAX = 20
+const RED_TEAM_MIN = 10 // 红队最小在线人数
+const RED_TEAM_MAX = 20 // 红队最大在线人数
+const CROWD_TEST_UPDATE_INTERVAL = 30 * 1000 // 众测团队30秒更新一次
+const CROWD_TEST_MIN = 10 // 众测团队最小在线人数
+const CROWD_TEST_MAX = 20 // 众测团队最大在线人数
+const CROWD_TEST_TEAM_ID = '3' // 众测团队的ID
 
 /**
- * 生成随机的目标总人数和部门偏移
+ * 生成众测团队动态在线人数
+ */
+function generateCrowdTestOnline(): number {
+  return Math.floor(Math.random() * (CROWD_TEST_MAX - CROWD_TEST_MIN + 1)) + CROWD_TEST_MIN
+}
+
+/**
+ * 生成红队目标总人数和部门分配
  */
 function generateMockData(departments: DepartmentOnlineStatsDto[] = []): MockDataState {
-  const targetTotal = Math.floor(Math.random() * (TARGET_MAX - TARGET_MIN + 1)) + TARGET_MIN
+  // 生成红队目标总人数（10-20人）
+  const targetTotal = Math.floor(Math.random() * (RED_TEAM_MAX - RED_TEAM_MIN + 1)) + RED_TEAM_MIN
 
-  // 为每个部门生成随机偏移量
+  // 获取所有红队部门
+  const redTeamDepartments = departments.filter((d) => isRedTeam(d.department.remark))
+
+  // 为每个红队部门分配人数
   const departmentOffsets: Record<string, number> = {}
-  departments.forEach((d) => {
-    if (isRedTeam(d.department.remark) || isBlueTeam(d.department.remark)) {
-      // 每个部门随机增减 0-3 人
-      departmentOffsets[d.department.id] = Math.floor(Math.random() * 7) - 3
-    }
-  })
+
+  if (redTeamDepartments.length > 0) {
+    // 平均分配基础人数
+    const basePerDept = Math.floor(targetTotal / redTeamDepartments.length)
+    const remainder = targetTotal % redTeamDepartments.length
+
+    redTeamDepartments.forEach((d, index) => {
+      // 基础人数 + 余数分配（前面的部门多分配1人）
+      const allocatedCount = basePerDept + (index < remainder ? 1 : 0)
+      // 相对于原始数据的偏移量
+      departmentOffsets[d.department.id] = allocatedCount - d.online
+    })
+  }
 
   return {
     baseTimestamp: Date.now(),
@@ -47,25 +98,26 @@ function generateMockData(departments: DepartmentOnlineStatsDto[] = []): MockDat
 }
 
 /**
- * 调整部门数据以达到目标总人数
+ * 应用模拟数据调整部门在线人数
  */
 function adjustDepartmentData(
   departments: DepartmentOnlineStatsDto[],
   targetTotal: number,
   departmentOffsets: Record<string, number>,
+  crowdTestOnline?: number,
 ): DepartmentOnlineStatsDto[] {
-  const validDepartments = departments.filter((d) =>
-    isRedTeam(d.department.remark) || isBlueTeam(d.department.remark),
-  )
-
-  if (validDepartments.length === 0) {
-    return departments
-  }
-
-  // 先应用部门偏移
-  const adjustedDepartments = departments.map((d) => {
-    if (!(isRedTeam(d.department.remark) || isBlueTeam(d.department.remark))) {
+  return departments.map((d) => {
+    // 只调整红队部门
+    if (!isRedTeam(d.department.remark)) {
       return d
+    }
+
+    // 如果是众测团队且有动态在线人数，使用动态值
+    if (d.department.id === CROWD_TEST_TEAM_ID && crowdTestOnline !== undefined) {
+      return {
+        ...d,
+        online: crowdTestOnline,
+      }
     }
 
     const offset = departmentOffsets[d.department.id] || 0
@@ -76,68 +128,48 @@ function adjustDepartmentData(
       online: newOnline,
     }
   })
-
-  // 计算当前总数
-  const currentTotal = adjustedDepartments
-    .filter((d) => isRedTeam(d.department.remark) || isBlueTeam(d.department.remark))
-    .reduce((sum, d) => sum + d.online, 0)
-
-  // 如果当前总数与目标相差太大，进行二次调整
-  const diff = targetTotal - currentTotal
-
-  if (Math.abs(diff) > 0) {
-    const validDepts = adjustedDepartments.filter((d) =>
-      isRedTeam(d.department.remark) || isBlueTeam(d.department.remark),
-    )
-
-    // 平均分配差值
-    const avgAdjust = Math.floor(diff / validDepts.length)
-    const remainder = diff % validDepts.length
-
-    return adjustedDepartments.map((d) => {
-      if (!(isRedTeam(d.department.remark) || isBlueTeam(d.department.remark))) {
-        return d
-      }
-
-      const deptIndex = validDepts.findIndex((vd) => vd.department.id === d.department.id)
-      const extraAdjust = deptIndex < remainder ? 1 : 0
-      const finalOnline = Math.max(0, d.online + avgAdjust + extraAdjust)
-
-      return {
-        ...d,
-        online: finalOnline,
-      }
-    })
-  }
-
-  return adjustedDepartments
 }
 
 export function useTeamOnlineStats() {
   const [mockData, setMockData] = useLocalStorage<MockDataState>('team-online-mock-data')
   const [shouldRefreshMock, setShouldRefreshMock] = useState(false)
-
-  const { data: originalData, ...queryResult } = useQuery({
-    ...departmentsControllerGetDepartmentOnlineStatsOptions(),
-  })
+  const [crowdTestState, setCrowdTestState] = useLocalStorage<CrowdTestTeamState>('crowd-test-team-state')
+  const [currentCrowdTestOnline, setCurrentCrowdTestOnline] = useState<number>()
 
   // 检查是否需要更新模拟数据
   useEffect(() => {
-    if (!originalData?.data.departments) {
-      return
-    }
-
     const now = Date.now()
     const shouldUpdate = !mockData
       || (now - mockData.baseTimestamp) > MOCK_UPDATE_INTERVAL
       || shouldRefreshMock
 
     if (shouldUpdate) {
-      const newMockData = generateMockData(originalData.data.departments)
+      const newMockData = generateMockData(teamData)
       setMockData(newMockData)
       setShouldRefreshMock(false)
     }
-  }, [originalData, mockData, setMockData, shouldRefreshMock])
+  }, [mockData, setMockData, shouldRefreshMock])
+
+  // 检查是否需要更新众测团队在线人数
+  useEffect(() => {
+    const now = Date.now()
+    const shouldUpdateCrowdTest = !crowdTestState
+      || (now - crowdTestState.lastUpdateTime) > CROWD_TEST_UPDATE_INTERVAL
+
+    if (shouldUpdateCrowdTest) {
+      const newOnline = generateCrowdTestOnline()
+      const newState: CrowdTestTeamState = {
+        lastUpdateTime: now,
+        currentOnline: newOnline,
+      }
+      setCrowdTestState(newState)
+      setCurrentCrowdTestOnline(newOnline)
+    }
+    else {
+      // 使用已存储的值
+      setCurrentCrowdTestOnline(crowdTestState.currentOnline)
+    }
+  }, [crowdTestState, setCrowdTestState])
 
   // 设置定时器检查更新
   useEffect(() => {
@@ -150,43 +182,71 @@ export function useTeamOnlineStats() {
     }
   }, [])
 
+  // 设置众测团队定时器
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const newOnline = generateCrowdTestOnline()
+      const newState: CrowdTestTeamState = {
+        lastUpdateTime: Date.now(),
+        currentOnline: newOnline,
+      }
+      setCrowdTestState(newState)
+      setCurrentCrowdTestOnline(newOnline)
+    }, CROWD_TEST_UPDATE_INTERVAL)
+
+    return () => {
+      clearInterval(timer)
+    }
+  }, [setCrowdTestState])
+
   // 处理调整后的数据
-  const adjustedData = originalData && mockData
+  const adjustedData = mockData
     ? {
-        ...originalData,
         data: {
-          ...originalData.data,
           departments: adjustDepartmentData(
-            originalData.data.departments,
+            teamData,
             mockData.targetTotal,
             mockData.departmentOffsets,
+            currentCrowdTestOnline,
           ),
         },
       }
-    : originalData
+    : {
+        data: {
+          departments: adjustDepartmentData(
+            teamData,
+            0,
+            {},
+            currentCrowdTestOnline,
+          ),
+        },
+      }
 
   // 生成团队在线数据（用于饼图）
-  const teamOnlineData: TeamOnlineData[] = adjustedData?.data.departments
-    ? adjustedData.data.departments
-        .filter((d) => d.online > 0
-          && (isRedTeam(d.department.remark) || isBlueTeam(d.department.remark)))
-        .map((d) => {
-          const role = getTeamRole(d.department.remark)
+  const teamOnlineData: TeamOnlineData[] = adjustedData.data.departments
+    .filter((d) => d.online > 0
+      && isRedTeam(d.department.remark))
+    .map((d) => {
+      const role = getTeamRole(d.department.remark)
 
-          return {
-            name: d.department.name,
-            value: d.online,
-            fill: teamConfig[role].colorValue,
-          }
-        })
-    : []
+      return {
+        name: d.department.name,
+        value: d.online,
+        fill: teamConfig[role].colorValue,
+      }
+    })
 
-  const totalOnline = teamOnlineData.reduce((sum, d) => sum + d.value, 0)
+  // 计算所有红队部门的总在线人数（包括在线人数为0的部门）
+  const totalOnline = adjustedData.data.departments
+    .filter((d) => isRedTeam(d.department.remark))
+    .reduce((sum, d) => sum + d.online, 0)
 
   return {
     data: adjustedData,
     teamOnlineData,
     totalOnline,
-    ...queryResult,
+    isLoading: false,
+    isError: false,
+    error: null,
   }
 }

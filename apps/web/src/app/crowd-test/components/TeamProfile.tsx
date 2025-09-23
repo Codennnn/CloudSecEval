@@ -1,15 +1,13 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { Area, AreaChart, XAxis, YAxis } from 'recharts'
 
 import { ActivityTimeline } from '~/app/crowd-test/(admin)/dashboard/components/ActivityTimeline'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 import { Separator } from '~/components/ui/separator'
 import { StatsCard, StatsCardContent, StatsCardHeader, StatsCardTitle } from '~/components/ui-common/StatsCard'
 
-import { riskTrend, vulnTrend } from '../(admin)/dashboard/lib/mockData'
+import { EventTrendChart } from '../(admin)/dashboard/components/EventTrendChart'
 
 import { MemberReportTable } from './MemberReportTable'
 
@@ -107,14 +105,6 @@ export function TeamProfile() {
   const user = useUser()
   const teamId = user?.department?.id
 
-  // Performance 区：用现有趋势数组合并为双曲线数据
-  const performanceData = riskTrend.map((r, idx) => ({
-    idx,
-    date: String(idx + 1).padStart(2, '0'),
-    submitted: r.value,
-    approved: vulnTrend[idx]?.value ?? Math.max(0, r.value - 2),
-  }))
-
   return (
     <div className="space-y-admin-content">
       <div>
@@ -138,52 +128,7 @@ export function TeamProfile() {
             <h3 className="text-lg font-semibold">报告统计趋势</h3>
           </div>
 
-          <ChartContainer
-            config={{
-              submitted: { label: '提交的漏洞报告数', color: 'oklch(56% 0.19 230deg)' },
-              approved: { label: '审核通过的报告数', color: 'oklch(60.8% 0.172 155.46deg)' },
-            }}
-          >
-            <AreaChart data={performanceData}>
-              <defs>
-                <linearGradient id="fill-approved" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-approved)" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="var(--color-approved)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <XAxis
-                axisLine={false}
-                dataKey="date"
-                minTickGap={24}
-                tickLine={false}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-              />
-              <ChartTooltip
-                content={<ChartTooltipContent indicator="line" />}
-              />
-              <Area
-                dataKey="approved"
-                dot={false}
-                fill="url(#fill-approved)"
-                isAnimationActive={false}
-                stroke="var(--color-approved)"
-                strokeWidth={2}
-                type="monotone"
-              />
-              <Area
-                dataKey="submitted"
-                dot={false}
-                fill="transparent"
-                isAnimationActive={false}
-                stroke="var(--color-submitted)"
-                strokeWidth={2}
-                type="monotone"
-              />
-            </AreaChart>
-          </ChartContainer>
+          <EventTrendChart departmentId={teamId} />
         </div>
 
         <div className="space-y-6">

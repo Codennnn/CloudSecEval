@@ -1156,10 +1156,12 @@ export class BugReportsRepository {
   /**
    * 获取组织下每日报告统计
    * 统计该组织下所有部门成员每日提交的漏洞报告数以及审核通过的漏洞报告数
+   * 支持按部门筛选
    */
   async getDailyReportsStats(
     dto: GetDailyReportsStatsDto,
     orgId: string,
+    departmentId?: string,
   ) {
     // 设置默认时间范围：最近30天
     const endDate = dto.endDate ? new Date(dto.endDate) : new Date()
@@ -1175,8 +1177,12 @@ export class BugReportsRepository {
     const endOfPeriod = new Date(endDate)
     endOfPeriod.setHours(23, 59, 59, 999)
 
+    // 构建部门筛选条件
+    const departmentFilter = departmentId ? Prisma.sql`AND u."departmentId" = ${departmentId}::uuid` : Prisma.empty
+
     // 查询该组织下所有部门成员每日提交的漏洞报告统计
     // 通过JOIN users表确保只统计该组织成员提交的报告
+    // 支持按部门筛选
     const submittedStats = await this.prisma.$queryRaw<
       { date: string, count: number }[]
     >`
@@ -1186,6 +1192,7 @@ export class BugReportsRepository {
       FROM bug_reports br
       INNER JOIN users u ON br."userId" = u.id
       WHERE u."orgId" = ${orgId}::uuid
+        ${departmentFilter}
         AND br.status IN (
           ${BugReportStatus.PENDING}::"public"."bug_report_status",
           ${BugReportStatus.IN_REVIEW}::"public"."bug_report_status",
@@ -1202,6 +1209,7 @@ export class BugReportsRepository {
 
     // 查询该组织下成员提交的报告每日审核通过的统计
     // 只统计 action = 'APPROVE' 的审批记录
+    // 支持按部门筛选
     const reviewedStats = await this.prisma.$queryRaw<
       { date: string, count: number }[]
     >`
@@ -1212,6 +1220,7 @@ export class BugReportsRepository {
       INNER JOIN bug_reports br ON bal."bugReportId" = br.id
       INNER JOIN users u ON br."userId" = u.id
       WHERE u."orgId" = ${orgId}::uuid
+        ${departmentFilter}
         AND bal.action = 'APPROVE'
         AND bal."createdAt" >= ${startOfPeriod}
         AND bal."createdAt" <= ${endOfPeriod}

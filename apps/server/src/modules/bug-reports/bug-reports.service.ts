@@ -10,6 +10,7 @@ import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { HtmlSanitizerService } from '~/common/services/html-sanitizer.service'
 import { UploadsService } from '~/modules/uploads/uploads.service'
+import { PrismaService } from '~/prisma/prisma.service'
 
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsRepository } from './bug-reports.repository'
@@ -44,6 +45,7 @@ export class BugReportsService {
     private readonly bugReportsRepository: BugReportsRepository,
     private readonly uploadsService: UploadsService,
     private readonly htmlSanitizerService: HtmlSanitizerService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async create(dto: CreateBugReportDto, currentUser: CurrentUserDto) {
@@ -786,14 +788,41 @@ export class BugReportsService {
 
   /**
    * 获取组织下每日报告统计
+   * 支持按部门筛选
    */
   async getDailyReportsStats(
     dto: GetDailyReportsStatsDto,
     currentUser: CurrentUserDto,
   ): Promise<DailyReportsStatsDataDto> {
+    let targetDepartmentId: string | undefined
+
+    // 如果请求中指定了部门ID，验证部门是否属于当前组织
+    if (dto.departmentId) {
+      const department = await this.prisma.department.findFirst({
+        where: {
+          id: dto.departmentId,
+          orgId: currentUser.organization.id,
+        },
+      })
+
+      if (!department) {
+        throw BusinessException.badRequest(
+          BUSINESS_CODES.RESOURCE_NOT_FOUND,
+          '指定的部门不存在或不属于当前组织',
+        )
+      }
+
+      targetDepartmentId = dto.departmentId
+    }
+    else {
+      // 没有指定部门ID，查看全组织数据
+      targetDepartmentId = undefined
+    }
+
     const stats = await this.bugReportsRepository.getDailyReportsStats(
       dto,
       currentUser.organization.id,
+      targetDepartmentId,
     )
 
     return stats

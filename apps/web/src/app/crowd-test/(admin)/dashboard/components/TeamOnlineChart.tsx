@@ -25,7 +25,7 @@ export function TeamOnlineChart() {
             dataKey="value"
             endAngle={-270}
             innerRadius={48}
-            label={({ name, value, percent }) => `${name} ${String(value)} (${(percent * 100).toFixed(0)}%)`}
+            label={({ name }) => `${name}`}
             labelLine={false}
             outerRadius={78}
             paddingAngle={2}

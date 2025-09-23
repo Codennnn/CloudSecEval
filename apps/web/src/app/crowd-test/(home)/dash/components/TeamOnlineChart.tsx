@@ -3,8 +3,6 @@ import { Cell, Pie, PieChart } from 'recharts'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '~/components/ui/chart'
 import { useTeamOnlineStats } from '~/hooks/useTeamOnlineStats'
 
-import { teamConfig, TeamRole } from '~crowd-test/constants'
-
 export function TeamOnlineChart() {
   const legendSolidColors = ['#3b82f6', '#ef4444', '#22d3ee', '#a78bfa']
 
@@ -46,7 +44,7 @@ export function TeamOnlineChart() {
             dataKey="value"
             endAngle={-270}
             innerRadius={56}
-            label={({ name, value, percent }) => `${name} ${String(value)} (${(percent * 100).toFixed(0)}%)`}
+            label={({ name }) => `${name}`}
             labelLine={false}
             outerRadius={84}
             paddingAngle={2}
@@ -80,45 +78,6 @@ export function TeamOnlineChart() {
           </div>
           <div className="text-xs text-theme2/70">总在线人数</div>
         </div>
-      </div>
-
-      {/* 简洁图例 - 按红队蓝队分组 */}
-      <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
-        {(() => {
-          // 从已处理的数据中按队伍分组计算总在线人数
-          const redTeamOnline = teamOnlineData
-            .filter((item) => {
-              // 根据颜色判断队伍（红队使用红色系）
-              return item.fill === teamConfig[TeamRole.红].colorValue
-            })
-            .reduce((sum, item) => sum + item.value, 0)
-
-          const blueTeamOnline = teamOnlineData
-            .filter((item) => {
-              // 根据颜色判断队伍（蓝队使用蓝色系）
-              return item.fill === teamConfig[TeamRole.蓝].colorValue
-            })
-            .reduce((sum, item) => sum + item.value, 0)
-
-          const groupData = [
-            { name: '红队', value: redTeamOnline, color: teamConfig[TeamRole.红].colorValue },
-            { name: '蓝队', value: blueTeamOnline, color: teamConfig[TeamRole.蓝].colorValue },
-          ]
-
-          return groupData.map((item) => {
-            const percent = totalOnline ? Math.round((item.value / totalOnline) * 100) : 0
-
-            return (
-              <div key={item.name} className="flex items-center gap-2">
-                <svg className="shrink-0" height="10" viewBox="0 0 10 10" width="10">
-                  <circle cx="5" cy="5" fill={item.color} r="5" />
-                </svg>
-                <span className="truncate opacity-60">{item.name}</span>
-                <span className="ml-auto tabular-nums opacity-80">{item.value}人 ({percent}%)</span>
-              </div>
-            )
-          })
-        })()}
       </div>
     </div>
   )

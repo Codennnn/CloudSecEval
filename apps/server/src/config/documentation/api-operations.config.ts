@@ -1127,7 +1127,7 @@ export const BUG_REPORTS_API_CONFIG = {
 
   getDailyReportsStats: {
     summary: '获取每日报告统计',
-    description: '获取组织内每日提交和审核的漏洞报告统计数据，支持时间范围筛选，默认统计最近30天',
+    description: '获取组织内每日提交和审核的漏洞报告统计数据，支持时间范围和部门筛选。默认统计最近30天。如果指定了部门ID，则只返回该部门的数据；否则返回全组织的数据',
     successResponse: createSuccessResponse({
       description: '获取每日报告统计成功',
       type: DailyReportsStatsResponseDto,

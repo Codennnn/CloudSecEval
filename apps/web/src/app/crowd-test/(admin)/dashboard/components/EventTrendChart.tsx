@@ -31,14 +31,23 @@ function transformApiDataToChartData(
   }))
 }
 
-export function EventTrendChart() {
+interface EventTrendChartProps {
+  /** 部门ID，用于筛选特定部门的数据。如果不提供，则根据用户权限返回相应范围的数据 */
+  departmentId?: string
+  /** 统计天数，默认为14天 */
+  days?: number
+}
+
+export function EventTrendChart({ departmentId, days = 14 }: EventTrendChartProps) {
   const { data, isLoading } = useQuery(
     bugReportsControllerGetDailyReportsStatsOptions({
       query: {
-        // 14天前的日期
-        startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        // N天前的日期
+        startDate: new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         // 当前日期
         endDate: new Date().toISOString().split('T')[0],
+        // 部门ID（可选）
+        ...(departmentId && { departmentId }),
       },
     }),
   )
