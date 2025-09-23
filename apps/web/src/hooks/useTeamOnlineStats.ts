@@ -5,6 +5,12 @@ import { useLocalStorage } from './useLocalStorage'
 import type { DepartmentOnlineStatsDto } from '~api/types.gen'
 import { getTeamRole, isRedTeam, teamConfig } from '~crowd-test/constants'
 
+const MOCK_UPDATE_INTERVAL = 8 * 60 * 1000 // 8分钟更新一次
+const CROWD_TEST_UPDATE_INTERVAL = 30 * 1000 // 众测团队30秒更新一次
+const CROWD_TEST_MIN = 5 // 众测团队最小在线人数
+const CROWD_TEST_MAX = 15 // 众测团队最大在线人数
+const CROWD_TEST_TEAM_ID = '3' // 众测团队的ID
+
 const teamData: DepartmentOnlineStatsDto[] = [
   {
     department: {
@@ -20,11 +26,11 @@ const teamData: DepartmentOnlineStatsDto[] = [
       name: '广东网安科技攻击队 2',
       remark: '红队',
     },
-    online: 230,
+    online: 3,
   },
   {
     department: {
-      id: '3',
+      id: CROWD_TEST_TEAM_ID,
       name: '众测团队',
       remark: '红队',
     },
@@ -49,14 +55,6 @@ interface TeamOnlineData {
   fill: string
 }
 
-const MOCK_UPDATE_INTERVAL = 8 * 60 * 1000 // 8分钟更新一次
-const RED_TEAM_MIN = 10 // 红队最小在线人数
-const RED_TEAM_MAX = 20 // 红队最大在线人数
-const CROWD_TEST_UPDATE_INTERVAL = 30 * 1000 // 众测团队30秒更新一次
-const CROWD_TEST_MIN = 10 // 众测团队最小在线人数
-const CROWD_TEST_MAX = 20 // 众测团队最大在线人数
-const CROWD_TEST_TEAM_ID = '3' // 众测团队的ID
-
 /**
  * 生成众测团队动态在线人数
  */
@@ -65,30 +63,15 @@ function generateCrowdTestOnline(): number {
 }
 
 /**
- * 生成红队目标总人数和部门分配
+ * 生成模拟数据状态（现在主要用于时间戳管理）
  */
-function generateMockData(departments: DepartmentOnlineStatsDto[] = []): MockDataState {
-  // 生成红队目标总人数（10-20人）
-  const targetTotal = Math.floor(Math.random() * (RED_TEAM_MAX - RED_TEAM_MIN + 1)) + RED_TEAM_MIN
+function generateMockData(): MockDataState {
+  // 攻击队1和2固定为3人，众测团队动态变化
+  // 总人数 = 3 + 3 + 众测团队动态人数
+  const targetTotal = 0 // 不再需要预设总人数
 
-  // 获取所有红队部门
-  const redTeamDepartments = departments.filter((d) => isRedTeam(d.department.remark))
-
-  // 为每个红队部门分配人数
+  // 不再需要复杂的分配逻辑，因为都是固定值
   const departmentOffsets: Record<string, number> = {}
-
-  if (redTeamDepartments.length > 0) {
-    // 平均分配基础人数
-    const basePerDept = Math.floor(targetTotal / redTeamDepartments.length)
-    const remainder = targetTotal % redTeamDepartments.length
-
-    redTeamDepartments.forEach((d, index) => {
-      // 基础人数 + 余数分配（前面的部门多分配1人）
-      const allocatedCount = basePerDept + (index < remainder ? 1 : 0)
-      // 相对于原始数据的偏移量
-      departmentOffsets[d.department.id] = allocatedCount - d.online
-    })
-  }
 
   return {
     baseTimestamp: Date.now(),
@@ -120,6 +103,14 @@ function adjustDepartmentData(
       }
     }
 
+    // 广东网安科技攻击队 1 和 2 固定为 3 人
+    if (d.department.id === '1' || d.department.id === '2') {
+      return {
+        ...d,
+        online: 3,
+      }
+    }
+
     const offset = departmentOffsets[d.department.id] || 0
     const newOnline = Math.max(0, d.online + offset)
 
@@ -144,7 +135,7 @@ export function useTeamOnlineStats() {
       || shouldRefreshMock
 
     if (shouldUpdate) {
-      const newMockData = generateMockData(teamData)
+      const newMockData = generateMockData()
       setMockData(newMockData)
       setShouldRefreshMock(false)
     }

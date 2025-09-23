@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import { FieldTypeEnum } from '~/constants/form'
+import { cn } from '~/lib/utils'
 import { downloadBlob, sanitizeFileName } from '~/utils/file'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
@@ -164,10 +165,18 @@ export function BugListTable<Row extends BugReportSummaryDto>(
         enumOptions: Object.values(vulSeverityConfig),
         cell: ({ row }) => {
           const severity = row.original.severity
+          const severityConfig = getVulSeverity(severity)
 
           return (
-            <Badge variant="outline">
-              {getVulSeverity(severity).label}
+            <Badge
+              className={cn(
+                severityConfig.frontColor,
+                severityConfig.bgColor,
+                severityConfig.borderColor,
+              )}
+              variant="outline"
+            >
+              {severityConfig.label}
             </Badge>
           )
         },

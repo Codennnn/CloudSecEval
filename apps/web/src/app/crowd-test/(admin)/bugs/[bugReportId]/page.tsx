@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function BugReportPage() {
   return (
-    <div className="p-admin-content">
+    <div>
       <BugReportFormEdit roleView={BugReportRoleView.USER} />
     </div>
   )

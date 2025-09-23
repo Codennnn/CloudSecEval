@@ -14,28 +14,18 @@ import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Textarea } from '~/components/ui/textarea'
 import { adminPermission } from '~/constants/permission'
+import { cn } from '~/lib/utils'
 
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerProcessApprovalMutation } from '~api/@tanstack/react-query.gen'
 import type { ProcessApprovalDto } from '~api/types.gen'
-import { BugReportStatus } from '~crowd-test/constants'
+import { ApprovalAction, approvalActionConfig, BugReportStatus, getApprovalActionConfig } from '~crowd-test/constants'
 
 export interface BugReportApprovalProps {
   bugReportId: string
   currentStatus: BugReportStatus
   onApprovalComplete?: () => void
 }
-
-const APPROVAL_ACTIONS = [
-  { value: 'APPROVE', label: '审批通过', variant: 'default' as const },
-  { value: 'REJECT', label: '审批驳回', variant: 'destructive' as const },
-  {
-    value: 'REQUEST_INFO',
-    label: '要求补充信息',
-    variant: 'secondary' as const,
-  },
-  { value: 'FORWARD', label: '转发审批', variant: 'outline' as const },
-] as const
 
 export function BugReportApproval({
   bugReportId,
@@ -108,8 +98,6 @@ export function BugReportApproval({
     })
   }
 
-  const selectedActionConfig = APPROVAL_ACTIONS.find((action) => action.value === selectedAction)
-
   return (
     <PermissionGuard required={adminPermission.bug_reports.manage}>
       <Card>
@@ -131,12 +119,26 @@ export function BugReportApproval({
                     <SelectTrigger id="approval-action">
                       <SelectValue placeholder="选择审批动作" />
                     </SelectTrigger>
+
                     <SelectContent>
-                      {APPROVAL_ACTIONS.map((action) => (
-                        <SelectItem key={action.value} value={action.value}>
-                          {action.label}
-                        </SelectItem>
-                      ))}
+                      {Object.values(approvalActionConfig)
+                        .filter((action) => action.value !== ApprovalAction.FORWARD
+                          && action.value !== ApprovalAction.RESUBMIT)
+                        .map((action) => {
+                          const actionConfig = getApprovalActionConfig(action.value)
+
+                          return (
+                            <SelectItem
+                              key={action.value}
+                              className={
+                                cn(actionConfig.frontColor)
+                              }
+                              value={action.value}
+                            >
+                              {action.label}
+                            </SelectItem>
+                          )
+                        })}
                     </SelectContent>
                   </Select>
                 </div>
@@ -171,12 +173,11 @@ export function BugReportApproval({
                 <Button
                   className="w-full"
                   disabled={!selectedAction || !comment.trim() || processApprovalMutation.isPending}
-                  variant={selectedActionConfig?.variant ?? 'default'}
                   onClick={handleSubmit}
                 >
                   {processApprovalMutation.isPending
                     ? '处理中...'
-                    : selectedActionConfig?.label ?? '提交审批'}
+                    : '提交审批'}
                 </Button>
               </CardContent>
             )

@@ -197,6 +197,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
           }
         }}
       >
+        {/* MARK: 报告标题 */}
         <FormField
           control={form.control}
           name="title"
@@ -224,6 +225,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
           )}
         />
 
+        {/* MARK: 漏洞等级 */}
         <FormField
           control={form.control}
           name="severity"
@@ -232,7 +234,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
 
             return (
               <FormItem>
-                <FormLabel>严重等级</FormLabel>
+                <FormLabel>漏洞等级</FormLabel>
                 {!readonly && (
                   <FormDescription>
                     请选择与你的评估一致的严重程度，后续仍可在审核中调整
@@ -298,6 +300,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
           }}
         />
 
+        {/* MARK: 问题描述与复现步骤 */}
         <FormField
           control={form.control}
           name="description"
@@ -313,8 +316,10 @@ export function BugReportForm(props: BugReportFormCardProps) {
                 ? (
                     field.value
                       ? (
-                          <ProseContainer className="bg-secondary rounded-lg p-2">
-                            <SafeHtmlRenderer html={field.value} />
+                          <ProseContainer className="bg-secondary rounded-lg p-2 w-full max-h-[800px] overflow-auto border border-border">
+                            <SafeHtmlRenderer
+                              html={field.value}
+                            />
                           </ProseContainer>
                         )
                       : <EmptyContent />
@@ -333,7 +338,7 @@ export function BugReportForm(props: BugReportFormCardProps) {
           )}
         />
 
-        {/* MARK: 漏洞 URL 字段 */}
+        {/* MARK: 复现链接 */}
         <FormItem>
           <FormLabel>复现链接</FormLabel>
           {!readonly && (

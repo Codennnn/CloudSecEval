@@ -98,7 +98,7 @@ export function RichTextEditor(props: RichTextEditorProps) {
   }))
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn('w-full max-w-full overflow-auto', className)}>
       <CKRichEditor
         disabled={disabled}
         placeholder={placeholder}

@@ -272,8 +272,8 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
   const formBehavior = getFormBehavior()
 
   return (
-    <div className="flex gap-admin-content">
-      <div className="flex-1">
+    <div className="flex gap-admin-content w-full">
+      <div className="flex-1 min-w-0 overflow-auto p-admin-content pr-0">
         <BugReportForm
           initialValues={initialValues}
           isDraft={formBehavior.isDraft}
@@ -286,7 +286,7 @@ export function BugReportFormEdit(props: BugReportFormEditProps) {
         />
       </div>
 
-      <div className="flex flex-col gap-admin-content shrink-0 xl:w-[420px]">
+      <div className="flex flex-col gap-admin-content shrink-0 xl:w-[420px] p-admin-content pl-0">
         {/* 状态显示 */}
         {bugReportData && !isNew && isUser && (
           <div className="space-y-2">

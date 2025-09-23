@@ -39,7 +39,6 @@ import {
 import { cn } from '~/lib/utils'
 
 import 'ckeditor5/ckeditor5.css'
-import styles from './CKRichEditor.module.css'
 
 const editorConfig: EditorConfig = {
   licenseKey: 'GPL',
@@ -368,7 +367,7 @@ export function CKRichEditor(props: CKRichEditorProps) {
   }, [value, isControlled])
 
   return (
-    <div className={cn(styles.ckr, className)}>
+    <div className={cn(className)}>
       <CKEditor
         config={{
           ...editorConfig,

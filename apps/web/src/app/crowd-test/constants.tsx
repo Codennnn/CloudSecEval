@@ -70,6 +70,70 @@ const timelineEventTypeConfig = {
   },
 } satisfies EnumConfig<TimelineEventType, TimelineEventTypeConfig>
 
+export const enum ApprovalAction {
+  APPROVE = 'APPROVE',
+  REJECT = 'REJECT',
+  REQUEST_INFO = 'REQUEST_INFO',
+  FORWARD = 'FORWARD',
+  RESUBMIT = 'RESUBMIT',
+}
+
+interface ApprovalActionConfig extends BaseEnumConfig {
+  value: ApprovalAction
+  icon?: React.ReactNode
+  bgColor?: string
+  frontColor?: string
+}
+
+export const approvalActionConfig = {
+  [ApprovalAction.APPROVE]: {
+    value: ApprovalAction.APPROVE,
+    label: '审批通过',
+    icon: <CheckCircleIcon />,
+    bgColor: 'bg-green-500/10',
+    frontColor: 'text-green-600',
+  },
+  [ApprovalAction.REJECT]: {
+    value: ApprovalAction.REJECT,
+    label: '审批驳回',
+    icon: <XCircleIcon />,
+    bgColor: 'bg-red-500/10',
+    frontColor: 'text-red-600',
+  },
+  [ApprovalAction.REQUEST_INFO]: {
+    value: ApprovalAction.REQUEST_INFO,
+    label: '要求补充信息',
+    icon: <ClockIcon />,
+    bgColor: 'bg-amber-500/10',
+    frontColor: 'text-amber-500',
+  },
+  [ApprovalAction.FORWARD]: {
+    value: ApprovalAction.FORWARD,
+    label: '转发审批',
+    icon: <Share2Icon />,
+    bgColor: 'bg-purple-500/10',
+    frontColor: 'text-purple-500',
+  },
+  [ApprovalAction.RESUBMIT]: {
+    value: ApprovalAction.RESUBMIT,
+    label: '重新提交',
+    icon: <SendIcon />,
+    bgColor: 'bg-cyan-500/10',
+    frontColor: 'text-cyan-500',
+  },
+} satisfies EnumConfig<ApprovalAction, ApprovalActionConfig>
+
+export function getApprovalActionConfig(action?: string): ApprovalActionConfig {
+  if (action && action in approvalActionConfig) {
+    return approvalActionConfig[action as ApprovalAction]
+  }
+
+  return {
+    label: '未知',
+    value: action as ApprovalAction,
+  }
+}
+
 export function getTimelineEventType(eventType?: string): TimelineEventTypeConfig {
   if (eventType && eventType in timelineEventTypeConfig) {
     return timelineEventTypeConfig[eventType as TimelineEventType]
