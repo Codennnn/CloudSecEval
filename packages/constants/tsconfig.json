@@ -8,9 +8,7 @@
     "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
-    "outDir": "dist/esm",
-    "rootDir": "src",
-    "isolatedDeclarations": true
+    "outDir": "dist/esm"
   },
-  "include": ["src"]
+  "include": ["src", "tsup.config.ts"]
 }

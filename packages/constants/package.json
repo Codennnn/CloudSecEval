@@ -2,20 +2,22 @@
   "name": "@mono/constants",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "sideEffects": false,
   "exports": {
-    "./app": {
-      "types": "./dist/app.d.ts",
-      "import": "./dist/app.js",
-      "require": "./dist/app.cjs"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "rimraf dist && tsup",
     "lint": "pnpm lint:es && pnpm lint:ts",
     "lint:es": "eslint \"**/*.{ts,tsx,js,mjs,cjs}\"",
     "lint:ts": "tsc --noEmit --skipLibCheck",
