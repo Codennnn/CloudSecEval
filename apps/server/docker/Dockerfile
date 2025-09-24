@@ -13,6 +13,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # 复制后端应用的 package.json
 COPY apps/server/package.json ./apps/server/
+# 复制 packages/ 目录（workspace 依赖）
+COPY packages/ ./packages/
 
 # 安装所有依赖（含 dev，便于后续构建）
 RUN pnpm install --frozen-lockfile --registry=${NPM_REGISTRY}
@@ -42,6 +44,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # 复制后端应用的 package.json
 COPY apps/server/package.json ./apps/server/
+# 复制 packages/ 目录（workspace 依赖）
+COPY packages/ ./packages/
 
 # 复用 deps 阶段的依赖与 Prisma Client
 COPY --from=deps /app/node_modules ./node_modules
@@ -88,6 +92,8 @@ ENV NODE_ENV=production
 COPY --from=builder /app/package.json /app/pnpm-workspace.yaml ./
 # 复制后端应用的必要文件和生产依赖
 COPY --from=builder /app/apps/server/package.json ./apps/server/
+# 复制 packages/ 目录（workspace 依赖）
+COPY --from=builder /app/packages/ ./packages/
 # 复制根目录的 node_modules（pnpm 需要）
 COPY --from=builder /app/node_modules ./node_modules
 # 复制子目录的 node_modules
