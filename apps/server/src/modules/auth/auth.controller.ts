@@ -3,7 +3,9 @@ import { ConfigType } from '@nestjs/config'
 import { ApiTags } from '@nestjs/swagger'
 import type { Response as ExpressResponse } from 'express'
 
+import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { DisabledApi } from '~/common/decorators/disabled-api.decorator'
+import { BusinessException } from '~/common/exceptions/business.exception'
 import { resp } from '~/common/utils/response.util'
 import jwtConfig from '~/config/configurations/jwt.config'
 import { AUTH_API_CONFIG } from '~/config/documentation/api-operations.config'
@@ -81,7 +83,7 @@ export class AuthController {
       })
     }
 
-    throw new Error('登录失败')
+    throw BusinessException.unauthorized(BUSINESS_CODES.INVALID_CREDENTIALS, '登录失败')
   }
 
   @Public()

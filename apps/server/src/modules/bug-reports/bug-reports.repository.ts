@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
 
 import { BugReportStatus, BugSeverity, Prisma } from '#prisma/client'
+import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
+import { BusinessException } from '~/common/exceptions/business.exception'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
@@ -433,7 +435,7 @@ export class BugReportsRepository {
     })
 
     if (!bugReport) {
-      throw new Error('漏洞报告不存在')
+      throw BusinessException.notFound(BUSINESS_CODES.BUG_REPORT_NOT_FOUND)
     }
 
     // 2. 获取审批日志

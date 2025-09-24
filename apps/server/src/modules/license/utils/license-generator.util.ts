@@ -1,5 +1,8 @@
 import { randomBytes } from 'crypto'
 
+import { BUSINESS_CODES } from '~/common/constants/business-codes'
+import { BusinessException } from '~/common/exceptions/business.exception'
+
 /**
  * 创建自定义字母表的随机字符串生成器
  * @param alphabet 字符集
@@ -182,7 +185,7 @@ export async function generateUniqueLicenseCode(
     }
   }
 
-  throw new Error('无法生成唯一授权码，请稍后重试')
+  throw BusinessException.internalServerError(BUSINESS_CODES.INTERNAL_SERVER_ERROR, '无法生成唯一授权码，请稍后重试')
 }
 
 /**
@@ -246,7 +249,7 @@ export async function generateUniqueLicenseCodes(
     }
 
     if (attempts >= maxAttempts) {
-      throw new Error(`无法生成第 ${i + 1} 个唯一授权码，请稍后重试`)
+      throw BusinessException.internalServerError(BUSINESS_CODES.INTERNAL_SERVER_ERROR, `无法生成第 ${i + 1} 个唯一授权码，请稍后重试`)
     }
   }
 
