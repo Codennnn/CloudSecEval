@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import Script from 'next/script'
+import NextTopLoader from 'nextjs-toploader'
 
 import { GlobalAuthDialog } from '~/components/GlobalAuthDialog'
 import { StructuredData } from '~/components/StructuredData'
@@ -154,6 +155,13 @@ export default function RootLayout(props: React.PropsWithChildren) {
           mapleMono.variable,
         ])}
       >
+        <NextTopLoader
+          color="var(--primary)"
+          height={2}
+          shadow="0 0 10px var(--primary),0 0 5px var(--primary)"
+          showSpinner={false}
+        />
+
         <StructuredData
           description={SITE_CONFIG.description}
           title={SITE_CONFIG.title}

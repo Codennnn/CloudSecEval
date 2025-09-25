@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 
 import { getDocsUrl, getFullUrl, isExternalLink } from '~/utils/link'
 import { isClient } from '~/utils/platform'

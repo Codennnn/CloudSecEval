@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 
 import { tokenManager } from '~/lib/auth/token'
 import { isCookieEnabled } from '~/utils/platform'

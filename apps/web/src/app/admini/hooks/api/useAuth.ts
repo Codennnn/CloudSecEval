@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { consola } from 'consola'
 

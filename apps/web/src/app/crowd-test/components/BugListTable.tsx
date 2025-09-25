@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import { useMutation } from '@tanstack/react-query'
 import { EllipsisVerticalIcon, ExternalLinkIcon, PencilLineIcon } from 'lucide-react'
 import { toast } from 'sonner'

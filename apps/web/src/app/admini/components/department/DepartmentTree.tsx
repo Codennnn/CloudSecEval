@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import { useMutation } from '@tanstack/react-query'
 import { PlusIcon, UsersRoundIcon } from 'lucide-react'
 import { toast } from 'sonner'

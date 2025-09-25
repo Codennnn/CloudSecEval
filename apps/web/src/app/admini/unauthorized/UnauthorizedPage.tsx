@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'nextjs-toploader/app'
 import { AlertTriangle, ArrowLeft, LogIn } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
