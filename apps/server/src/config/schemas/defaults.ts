@@ -30,6 +30,9 @@ export const CONFIG_DEFAULTS = {
 
   // 时区配置
   TIMEZONE: 'Asia/Shanghai',
+
+  // 临时目录配置 (Docker环境推荐使用容器内的temp目录)
+  TEMP_DIR: process.env.NODE_ENV === 'production' ? '/app/apps/server/temp' : '/tmp/app-temp',
 } as const
 
 /**

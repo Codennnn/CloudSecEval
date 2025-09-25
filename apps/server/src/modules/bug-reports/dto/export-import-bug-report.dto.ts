@@ -96,13 +96,12 @@ export class ExportBugReportPackageDto {
 
   @ApiPropertyOptional({
     description: '压缩包文件名前缀（不包含扩展名）',
-    example: 'bug-report-2024',
   })
   @IsOptional()
   @IsString({ message: '文件名前缀必须是字符串' })
   @Length(1, 100, { message: '文件名前缀长度必须在1-100个字符之间' })
-  @Matches(/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/, {
-    message: '文件名前缀只能包含字母、数字、中文、下划线和连字符',
+  @Matches(/^[^<>:"/\\|?*]+$/, {
+    message: '文件名前缀不能包含以下字符: < > : " / \\ | ? *',
   })
   @Expose()
   readonly filenamePrefix?: string

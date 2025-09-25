@@ -71,7 +71,6 @@ export function BugListTable<Row extends BugReportSummaryDto>(
           includeWord: true,
           includeAttachments: true,
           includeHistory: true,
-          filenamePrefix: sanitizeFileName(item.title || `bug-report-${item.id}`),
         },
         throwOnError: true,
       })

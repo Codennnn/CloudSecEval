@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { execSync } from 'child_process'
 import { promises as fs } from 'fs'
 import { JSDOM } from 'jsdom'
@@ -37,7 +38,11 @@ interface ImageProcessingResult {
  */
 @Injectable()
 export class PandocWordExportService {
-  private readonly tempDir: string = '/tmp/bug-reports'
+  private readonly tempDir: string
+
+  constructor(private readonly configService: ConfigService) {
+    this.tempDir = join(this.configService.get<string>('app.tempDir') || '/tmp/app-temp', 'bug-reports')
+  }
 
   /**
    * 生成漏洞报告Word文档

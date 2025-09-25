@@ -29,4 +29,7 @@ export default registerAs('app', () => ({
 
   // 时区配置
   timezone: process.env.TIMEZONE ?? CONFIG_DEFAULTS.TIMEZONE,
+
+  // 临时目录配置
+  tempDir: process.env.TEMP_DIR ?? CONFIG_DEFAULTS.TEMP_DIR,
 }))

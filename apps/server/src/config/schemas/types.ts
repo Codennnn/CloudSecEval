@@ -24,6 +24,8 @@ export interface AppConfig {
     password: string
     name: string
   }
+  timezone: string
+  tempDir: string
 }
 
 export interface AllConfig {

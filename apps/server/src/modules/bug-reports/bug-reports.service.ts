@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import archiver from 'archiver'
 import { promises as fs } from 'fs'
 import { nanoid } from 'nanoid'
@@ -99,6 +100,7 @@ export class BugReportsService {
     private readonly htmlSanitizerService: HtmlSanitizerService,
     private readonly prisma: PrismaService,
     private readonly pandocWordExportService: PandocWordExportService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(dto: CreateBugReportDto, currentUser: CurrentUserDto) {
@@ -967,7 +969,8 @@ export class BugReportsService {
     }
 
     const taskId = nanoid()
-    const tempDir = join(process.cwd(), 'temp', 'package-export', taskId)
+    const baseTempDir = this.configService.get<string>('app.tempDir') || '/tmp/app-temp'
+    const tempDir = join(baseTempDir, 'package-export', taskId)
 
     try {
       // 创建临时目录
@@ -1072,7 +1075,7 @@ export class BugReportsService {
       })
 
       const filename = dto.filenamePrefix
-        ? `${dto.filenamePrefix}.zip`
+        ? `${this.generateSafeFileName(dto.filenamePrefix)}.zip`
         : this.generateExportFilename(fullReport.title, 'zip')
 
       return {

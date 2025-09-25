@@ -103,11 +103,11 @@ COPY --from=builder /app/apps/server/prisma.config.ts ./apps/server/
 COPY --from=builder /app/apps/server/src/prisma ./apps/server/src/prisma
 COPY --from=builder /app/apps/server/generated ./apps/server/generated
 
-# 创建并授权存储目录（确保后续使用 node 用户可写）
-RUN mkdir -p /app/apps/server/storage && chown -R node:node /app/apps/server/storage
+# 创建并授权存储目录和临时目录（确保后续使用 node 用户可写）
+RUN mkdir -p /app/apps/server/storage /app/apps/server/temp && chown -R node:node /app/apps/server/storage /app/apps/server/temp
 
 # 可选：声明挂载点，便于数据持久化
-VOLUME ["/app/apps/server/storage"]
+VOLUME ["/app/apps/server/storage", "/app/apps/server/temp"]
 
 # 使用非 root 用户提升安全性（node 镜像自带 node 用户）
 USER node

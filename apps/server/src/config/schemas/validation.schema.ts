@@ -27,6 +27,9 @@ export const validationSchema = z.object({
 
   // 时区配置（可选）
   TIMEZONE: z.string().default(CONFIG_DEFAULTS.TIMEZONE),
+
+  // 临时目录配置（可选）
+  TEMP_DIR: z.string().default(CONFIG_DEFAULTS.TEMP_DIR),
 })
 
 export type ValidationSchema = z.infer<typeof validationSchema>
