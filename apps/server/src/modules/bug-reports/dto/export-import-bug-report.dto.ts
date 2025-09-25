@@ -1,15 +1,34 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Expose, Type } from 'class-transformer'
-import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsArray, IsBoolean, IsEnum, IsOptional, IsString, Length, Matches, ValidateNested } from 'class-validator'
 
 import { BugReportStatus } from '#prisma/client'
 import { BooleanTransform } from '~/common/decorators/boolean-transform.decorator'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 
 /**
+ * 导出格式枚举
+ */
+export enum ExportFormat {
+  JSON = 'json',
+  WORD = 'word',
+  PACKAGE = 'package',
+}
+
+/**
  * 导出选项 DTO
  */
 export class ExportBugReportDto {
+  @ApiPropertyOptional({
+    description: '导出格式',
+    enum: ExportFormat,
+    default: ExportFormat.JSON,
+  })
+  @IsOptional()
+  @IsEnum(ExportFormat, { message: '导出格式必须是有效的枚举值' })
+  @Expose()
+  readonly format?: ExportFormat = ExportFormat.JSON
+
   @ApiPropertyOptional({
     description: '是否包含附件内容（base64编码）',
     default: false,
@@ -29,6 +48,64 @@ export class ExportBugReportDto {
   @BooleanTransform(true)
   @Expose()
   readonly includeHistory?: boolean = true
+}
+
+/**
+ * 压缩包导出选项 DTO
+ */
+export class ExportBugReportPackageDto {
+  @ApiPropertyOptional({
+    description: '是否包含JSON格式文件',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '包含JSON选项必须是布尔值' })
+  @BooleanTransform(true)
+  @Expose()
+  readonly includeJson?: boolean = true
+
+  @ApiPropertyOptional({
+    description: '是否包含Word格式文件',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '包含Word选项必须是布尔值' })
+  @BooleanTransform(true)
+  @Expose()
+  readonly includeWord?: boolean = true
+
+  @ApiPropertyOptional({
+    description: '是否包含原始附件文件',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '包含附件选项必须是布尔值' })
+  @BooleanTransform(true)
+  @Expose()
+  readonly includeAttachments?: boolean = true
+
+  @ApiPropertyOptional({
+    description: '是否包含审批历史',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '包含审批历史选项必须是布尔值' })
+  @BooleanTransform(true)
+  @Expose()
+  readonly includeHistory?: boolean = true
+
+  @ApiPropertyOptional({
+    description: '压缩包文件名前缀（不包含扩展名）',
+    example: 'bug-report-2024',
+  })
+  @IsOptional()
+  @IsString({ message: '文件名前缀必须是字符串' })
+  @Length(1, 100, { message: '文件名前缀长度必须在1-100个字符之间' })
+  @Matches(/^[a-zA-Z0-9\u4e00-\u9fa5_-]+$/, {
+    message: '文件名前缀只能包含字母、数字、中文、下划线和连字符',
+  })
+  @Expose()
+  readonly filenamePrefix?: string
 }
 
 /**
@@ -395,13 +472,13 @@ export class ExportedBugReportDataDto {
   @Expose()
   readonly report!: ExportReportDto
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '提交者信息',
     type: () => ExportUserDto,
   })
   @Type(() => ExportUserDto)
   @Expose()
-  readonly submitter!: ExportUserDto
+  readonly submitter?: ExportUserDto
 
   @ApiPropertyOptional({
     description: '审核人信息',
@@ -411,13 +488,13 @@ export class ExportedBugReportDataDto {
   @Expose()
   readonly reviewer?: ExportUserDto
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '组织信息',
     type: () => ExportOrganizationDto,
   })
   @Type(() => ExportOrganizationDto)
   @Expose()
-  readonly organization!: ExportOrganizationDto
+  readonly organization?: ExportOrganizationDto
 
   @ApiPropertyOptional({
     description: '附件列表',

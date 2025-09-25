@@ -27,18 +27,30 @@ export const BUG_REPORT_ATTACHMENTS = {
   MAX_SIZE: 50 * 1024 * 1024,
   /** 支持的文件类型 */
   ALLOWED_TYPES: [
+    // 图片格式
     'image/jpeg',
     'image/png',
     'image/gif',
     'image/webp',
+    'image/svg+xml', // SVG矢量图 - 架构图、流程图
+    // 文档格式
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    // 文本和代码格式
     'text/plain',
+    'text/html',
+    'text/css', // CSS样式文件
+    'application/javascript', // JavaScript代码
+    'application/json',
+    'application/xml', // XML配置和数据文件
+    'text/csv', // CSV数据文件
+    // 压缩格式
     'application/zip',
     'application/x-rar-compressed',
+    // 媒体格式
     'video/mp4',
     'audio/mpeg',
   ],

@@ -5,7 +5,7 @@ import type { Response } from 'express'
 
 import { DisabledApi } from '~/common/decorators/disabled-api.decorator'
 import { ExcelExportService, type ExportColumn } from '~/common/services/excel-export.service'
-import { resp, respWithPagination } from '~/common/utils/response.util'
+import { encodeRFC5987Filename, resp, respWithPagination } from '~/common/utils/response.util'
 import { USERS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
@@ -128,7 +128,7 @@ export class UsersController {
   ): Promise<void> {
     // 文件名（RFC5987 编码）
     const fileName = `users-${new Date().toISOString().slice(0, 10)}.xlsx`
-    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`)
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeRFC5987Filename(fileName)}`)
 
     // 列定义，可提取为常量或支持前端 columns 覆盖
     const columns: readonly ExportColumn[] = [

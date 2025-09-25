@@ -19,7 +19,7 @@ import { createReadStream } from 'fs'
 
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
-import { resp } from '~/common/utils/response.util'
+import { encodeRFC5987Filename, resp } from '~/common/utils/response.util'
 import { UPLOADS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
@@ -248,9 +248,7 @@ export class UploadsController {
       })
 
       // 设置响应头 - 确保文件名正确编码
-      const encodedFileName = encodeURIComponent(fileInfo.originalName)
-        .replace(/['()]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
-        .replace(/\*/g, '%2A')
+      const encodedFileName = encodeRFC5987Filename(fileInfo.originalName)
 
       res.set({
         'Content-Type': fileInfo.mimeType || 'application/octet-stream',

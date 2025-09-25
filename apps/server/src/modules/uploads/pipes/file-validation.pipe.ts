@@ -242,3 +242,9 @@ export const AvatarValidationPipe = new FileValidationPipe({
   allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
   maxFiles: 1,
 })
+
+export const JsonValidationPipe = new FileValidationPipe({
+  maxSize: 10 * 1024 * 1024, // 10MB
+  allowedTypes: ['application/json'],
+  maxFiles: 1,
+})

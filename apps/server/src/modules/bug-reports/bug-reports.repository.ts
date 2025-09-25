@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 
-import { BugReportStatus, BugSeverity, Prisma } from '#prisma/client'
+import { BugReport, BugReportStatus, BugSeverity, Prisma } from '#prisma/client'
 import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import { BusinessException } from '~/common/exceptions/business.exception'
@@ -113,6 +113,20 @@ export class BugReportsRepository {
     return this.prisma.bugReport.findUnique({
       where: { id },
       include: includeRelations ? this.getIncludeOptions() : undefined,
+    })
+  }
+
+  /**
+   * 根据ID查找漏洞报告（用于导出，包含组织信息）
+   */
+  async findByIdForExport(id: string): Promise<BugReport & {
+    user?: { id: string, name: string | null, email: string, avatarUrl: string | null } | null
+    reviewer?: { id: string, name: string | null, email: string, avatarUrl: string | null } | null
+    organization?: { id: string, name: string, code: string } | null
+  } | null> {
+    return this.prisma.bugReport.findUnique({
+      where: { id },
+      include: this.getIncludeOptions(true, true, true),
     })
   }
 

@@ -1,4 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import archiver from 'archiver'
+import { promises as fs } from 'fs'
+import { nanoid } from 'nanoid'
+import { basename, extname, join } from 'path'
 
 import { BugReport, BugReportStatus, BugSeverity, Prisma } from '#prisma/client'
 import {
@@ -23,6 +27,9 @@ import type { DepartmentReportsStatsDataDto, GetDepartmentReportsStatsDto } from
 import type { SaveDraftDto, SubmitDraftDto } from './dto/draft-bug-report.dto'
 import {
   ExportBugReportDto,
+  ExportBugReportPackageDto,
+  type ExportedBugReportDataDto,
+  ExportFormat,
   ImportBugReportDto,
 } from './dto/export-import-bug-report.dto'
 import type { FindBugReportsDto } from './dto/find-bug-reports.dto'
@@ -33,6 +40,51 @@ import type {
   UpdateBugReportDto,
   UpdateBugReportStatusDto,
 } from './dto/update-bug-report.dto'
+import { PandocWordExportService } from './services/pandoc-word-export.service'
+
+/**
+ * 漏洞报告关联数据类型
+ */
+interface FullReportWithRelations {
+  id: string
+  title: string
+  severity: VulnerabilitySeverity
+  attackMethod?: string | null
+  description?: string | null
+  discoveredUrls?: string[]
+  status: BugReportStatus
+  createdAt: Date
+  updatedAt: Date
+  reviewNote?: string | null
+  reviewedAt?: Date | null
+  attachments?: unknown[]
+  user?: {
+    id: string
+    name: string | null
+    email: string
+    avatarUrl: string | null
+  }
+  reviewer?: {
+    id: string
+    name: string | null
+    email: string
+    avatarUrl: string | null
+  }
+  organization?: {
+    id: string
+    name: string
+    code: string
+  }
+}
+
+/**
+ * 导出结果类型
+ */
+interface ExportResult {
+  buffer: Buffer
+  filename: string
+  contentType: string
+}
 
 /**
  * 漏洞报告业务逻辑层
@@ -46,6 +98,7 @@ export class BugReportsService {
     private readonly uploadsService: UploadsService,
     private readonly htmlSanitizerService: HtmlSanitizerService,
     private readonly prisma: PrismaService,
+    private readonly pandocWordExportService: PandocWordExportService,
   ) {}
 
   async create(dto: CreateBugReportDto, currentUser: CurrentUserDto) {
@@ -848,7 +901,7 @@ export class BugReportsService {
   }
 
   /**
-   * 导出单个漏洞报告为 JSON
+   * 导出单个漏洞报告（支持JSON和Word格式）
    */
   async exportBugReport(id: string, dto: ExportBugReportDto, currentUser: CurrentUserDto) {
     const bugReport = await this.findBugReportOrThrow(id)
@@ -858,23 +911,215 @@ export class BugReportsService {
       throw new BadRequestException('只能导出本组织的漏洞报告')
     }
 
-    // 获取完整数据
-    const fullReport = await this.bugReportsRepository.findById(id, true)
+    // 获取完整数据（包含组织信息）
+    const fullReport = await this.bugReportsRepository
+      .findByIdForExport(id) as FullReportWithRelations | null
 
     if (!fullReport) {
       throw BusinessException.notFound(BUSINESS_CODES.BUG_REPORT_NOT_FOUND)
     }
 
     // 类型断言为包含关联数据的类型
-    type FullReportWithRelations = typeof fullReport & {
-      user?: { id: string, name: string | null, email: string, avatarUrl: string | null }
-      reviewer?: { id: string, name: string | null, email: string, avatarUrl: string | null }
-      organization?: { id: string, name: string, code: string }
-    }
-
-    const reportWithRelations = fullReport as FullReportWithRelations
+    const reportWithRelations = fullReport
 
     // 构建导出数据
+    const exportData = this.buildExportData(
+      reportWithRelations,
+      reportWithRelations,
+      dto,
+      currentUser,
+    )
+
+    // 根据格式选择导出方式
+    switch (dto.format) {
+      case ExportFormat.WORD:
+        return await this.exportAsWord(exportData)
+
+      case ExportFormat.JSON:
+        return await this.exportAsJson(exportData, fullReport.id)
+
+      default:
+        return await this.exportAsJson(exportData, fullReport.id)
+    }
+  }
+
+  /**
+   * 导出压缩包（包含JSON、Word和附件原文件）
+   */
+  async exportBugReportPackage(
+    id: string,
+    dto: ExportBugReportPackageDto,
+    currentUser: CurrentUserDto,
+  ) {
+    const bugReport = await this.findBugReportOrThrow(id)
+
+    // 权限检查
+    if (bugReport.orgId !== currentUser.organization.id) {
+      throw new BadRequestException('只能导出本组织的漏洞报告')
+    }
+
+    // 获取完整数据
+    const fullReport = await this.bugReportsRepository
+      .findByIdForExport(id) as FullReportWithRelations | null
+
+    if (!fullReport) {
+      throw BusinessException.notFound(BUSINESS_CODES.BUG_REPORT_NOT_FOUND)
+    }
+
+    const taskId = nanoid()
+    const tempDir = join(process.cwd(), 'temp', 'package-export', taskId)
+
+    try {
+      // 创建临时目录
+      await fs.mkdir(tempDir, { recursive: true })
+
+      // 构建导出数据（用于JSON和Word）
+      const exportData = this.buildExportData(
+        fullReport,
+        fullReport,
+        { includeHistory: dto.includeHistory } as ExportBugReportDto,
+        currentUser,
+      )
+
+      const files: { filePath: string, archivePath: string }[] = []
+
+      // 1. 生成JSON文件
+      if (dto.includeJson) {
+        const jsonResult = await this.exportAsJson(exportData, fullReport.id)
+        const jsonPath = join(tempDir, this.generateExportFilename(fullReport.title, 'json'))
+        await fs.writeFile(jsonPath, jsonResult.buffer)
+        files.push({ filePath: jsonPath, archivePath: this.generateExportFilename(fullReport.title, 'json') })
+      }
+
+      // 2. 生成Word文件
+      if (dto.includeWord) {
+        const wordResult = await this.exportAsWord(exportData)
+        const wordPath = join(tempDir, this.generateExportFilename(fullReport.title, 'docx'))
+        await fs.writeFile(wordPath, wordResult.buffer)
+        files.push({ filePath: wordPath, archivePath: this.generateExportFilename(fullReport.title, 'docx') })
+      }
+
+      // 3. 处理附件文件
+      if (dto.includeAttachments && fullReport.attachments) {
+        const attachments = Array.isArray(fullReport.attachments)
+          ? fullReport.attachments
+          : []
+
+        if (attachments.length > 0) {
+          const attachmentFolder = '相关附件'
+          // 创建附件目录
+          const attachmentsDir = join(tempDir, attachmentFolder)
+          await fs.mkdir(attachmentsDir, { recursive: true })
+
+          for (const attachment of attachments) {
+            const attachmentData = attachment as { id: string, originalName?: string }
+
+            try {
+              // 获取文件信息
+              const fileInfo = await this.uploadsService.getStoredFile(attachmentData.id)
+
+              if (fileInfo?.localPath) {
+                // 检查文件是否存在
+                try {
+                  await fs.access(fileInfo.localPath)
+
+                  // 生成安全的文件名
+                  const safeFileName = this.generateSafeFileName(
+                    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                    attachmentData.originalName
+                      ? attachmentData.originalName
+                      : fileInfo.originalName
+                        ? fileInfo.originalName
+                        : `attachment_${attachmentData.id}`,
+                  )
+                  const attachmentPath = join(attachmentsDir, safeFileName)
+
+                  // 复制文件
+                  await fs.copyFile(fileInfo.localPath, attachmentPath)
+                  files.push({ filePath: attachmentPath, archivePath: `${attachmentFolder}/${safeFileName}` })
+                }
+                catch {
+                  // 文件不存在，跳过
+                  console.warn(`附件文件不存在: ${fileInfo.localPath}`)
+                }
+              }
+            }
+            catch (error) {
+              // 获取文件信息失败，跳过该附件
+              console.warn(`获取附件信息失败: ${attachmentData.id}`, error)
+            }
+          }
+        }
+      }
+
+      // 4. 创建压缩包
+      const archive = archiver('zip', { zlib: { level: 9 } })
+      const zipBuffer = await new Promise<Buffer>((resolve, reject) => {
+        const chunks: Buffer[] = []
+
+        archive.on('data', (chunk: Buffer) => chunks.push(chunk))
+        archive.on('end', () => {
+          resolve(Buffer.concat(chunks))
+        })
+        archive.on('error', reject)
+
+        // 添加文件到压缩包
+        for (const file of files) {
+          archive.file(file.filePath, { name: file.archivePath })
+        }
+
+        void archive.finalize()
+      })
+
+      const filename = dto.filenamePrefix
+        ? `${dto.filenamePrefix}.zip`
+        : this.generateExportFilename(fullReport.title, 'zip')
+
+      return {
+        buffer: zipBuffer,
+        filename,
+        contentType: 'application/zip',
+      }
+    }
+    finally {
+      // 清理临时文件
+      try {
+        await fs.rm(tempDir, { recursive: true, force: true })
+      }
+      catch (error) {
+        console.warn('清理临时文件失败:', error)
+      }
+    }
+  }
+
+  /**
+   * 生成安全的文件名
+   */
+  private generateSafeFileName(originalName: string): string {
+    // 移除路径分隔符和特殊字符
+    let safeName = originalName.replace(/[/\\:*?"<>|]/g, '_')
+
+    // 限制文件名长度
+    const ext = extname(safeName)
+    const nameWithoutExt = basename(safeName, ext)
+
+    if (nameWithoutExt.length > 100) {
+      safeName = nameWithoutExt.substring(0, 100) + ext
+    }
+
+    return safeName
+  }
+
+  /**
+   * 构建导出数据
+   */
+  private buildExportData(
+    fullReport: FullReportWithRelations,
+    reportWithRelations: FullReportWithRelations,
+    dto: ExportBugReportDto,
+    currentUser: CurrentUserDto,
+  ): Record<string, unknown> {
+    // 构建基础导出数据
     const exportData = {
       exportMeta: {
         version: '1.0.0',
@@ -924,8 +1169,12 @@ export class BugReportsService {
         : undefined,
     }
 
-    // 处理附件
-    if (fullReport.attachments && Array.isArray(fullReport.attachments)) {
+    // 处理附件（仅在JSON格式时包含）
+    if (
+      dto.format === ExportFormat.JSON
+      && fullReport.attachments
+      && Array.isArray(fullReport.attachments)
+    ) {
       interface AttachmentData {
         id: string
         originalName: string
@@ -951,10 +1200,48 @@ export class BugReportsService {
       Object.assign(exportData, { attachments: processedAttachments })
     }
 
-    // 处理审批历史
-    if (dto.includeHistory) {
+    // 处理审批历史（仅在JSON格式且启用时包含）
+    if (dto.format === ExportFormat.JSON && dto.includeHistory) {
+      // 注意：这里需要异步处理，但为了保持方法签名简单，我们在调用方处理
+      // 这个逻辑会在 exportAsJson 方法中处理
+    }
+
+    return exportData
+  }
+
+  /**
+   * 导出为Word格式
+   */
+  private async exportAsWord(
+    exportData: Record<string, unknown>,
+  ): Promise<ExportResult> {
+    const buffer = await this.pandocWordExportService.generateBugReportDocument(
+      exportData as unknown as ExportedBugReportDataDto,
+    )
+
+    // 获取报告标题用于生成文件名
+    const typedExportData = exportData as { report?: { title?: string } }
+    const reportTitle = typedExportData.report?.title ?? '未知报告'
+    const filename = this.generateExportFilename(reportTitle, 'docx')
+
+    return {
+      buffer,
+      filename,
+      contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    }
+  }
+
+  /**
+   * 导出为JSON格式
+   */
+  private async exportAsJson(
+    exportData: Record<string, unknown>,
+    reportId: string,
+  ): Promise<ExportResult> {
+    // 处理审批历史（如果需要的话）
+    if (!exportData.approvalHistory && exportData.includeHistory !== false) {
       try {
-        const history = await this.getExtendedApprovalHistory(id)
+        const history = await this.getExtendedApprovalHistory(reportId)
         const processedHistory = history.map((item) => ({
           id: item.id,
           eventType: item.eventType,
@@ -967,7 +1254,9 @@ export class BugReportsService {
             avatarUrl: item.user.avatarUrl,
           },
           description: item.description,
-          comment: item.approvalInfo?.comment ?? item.submitInfo?.changedFields?.join(', ') ?? undefined,
+          comment: item.approvalInfo?.comment
+            ?? item.submitInfo?.changedFields?.join(', ')
+            ?? undefined,
           changedFields: item.submitInfo?.changedFields,
         }))
         Object.assign(exportData, { approvalHistory: processedHistory })
@@ -977,9 +1266,12 @@ export class BugReportsService {
       }
     }
 
-    // 生成 JSON 文件
     const jsonContent = JSON.stringify(exportData, null, 2)
-    const filename = `bug-report-${fullReport.id}-${Date.now()}.json`
+
+    // 获取报告标题用于生成文件名
+    const typedExportData = exportData as { report?: { title?: string } }
+    const reportTitle = typedExportData.report?.title ?? '未知报告'
+    const filename = this.generateExportFilename(reportTitle, 'json')
 
     return {
       buffer: Buffer.from(jsonContent, 'utf8'),
@@ -1078,5 +1370,46 @@ export class BugReportsService {
     })
 
     return newReport
+  }
+
+  /**
+   * 生成导出文件名
+   * 格式：漏洞报告 - {漏洞标题} - {导出时间}
+   */
+  private generateExportFilename(title: string, extension: string): string {
+    // 清理标题中的非法字符
+    const cleanTitle = title
+      .replace(/[<>:"/\\|?*]/g, '') // 移除文件名中的非法字符
+      .replace(/\s+/g, ' ') // 将多个空格替换为单个空格
+      .trim()
+      .substring(0, 50) // 限制标题长度以避免文件名过长
+
+    // 生成时间戳 (YYYY-MM-DD HH-mm-ss 格式)
+    const now = new Date()
+    const timestamp = now.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).replace(/[/\s:]/g, (match) => {
+      if (match === '/') {
+        return '-'
+      }
+
+      if (match === ' ') {
+        return ' '
+      }
+
+      if (match === ':') {
+        return '-'
+      }
+
+      return match
+    })
+
+    return `漏洞报告 - ${cleanTitle} - ${timestamp}.${extension}`
   }
 }

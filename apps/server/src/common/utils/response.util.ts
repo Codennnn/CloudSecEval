@@ -97,3 +97,14 @@ export function mapHttpStatusToBusinessCode(httpStatus: HttpStatus): BusinessCod
       return BUSINESS_CODES.INTERNAL_SERVER_ERROR
   }
 }
+
+/**
+ * 编码文件名以符合 RFC5987 标准，支持中文等 Unicode 字符
+ * @param filename 原始文件名
+ * @returns 编码后的文件名，可用于 Content-Disposition 头
+ */
+export function encodeRFC5987Filename(filename: string): string {
+  return encodeURIComponent(filename)
+    .replace(/['()]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
+    .replace(/\*/g, '%2A')
+}

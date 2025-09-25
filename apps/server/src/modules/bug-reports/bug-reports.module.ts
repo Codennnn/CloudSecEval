@@ -8,6 +8,7 @@ import { PrismaModule } from '~/prisma/prisma.module'
 import { BugReportsController } from './bug-reports.controller'
 import { BugReportsRepository } from './bug-reports.repository'
 import { BugReportsService } from './bug-reports.service'
+import { PandocWordExportService } from './services/pandoc-word-export.service'
 
 /**
  * 漏洞报告模块
@@ -27,7 +28,11 @@ import { BugReportsService } from './bug-reports.service'
     PermissionsModule,
   ],
   controllers: [BugReportsController],
-  providers: [BugReportsService, BugReportsRepository],
+  providers: [
+    BugReportsService,
+    BugReportsRepository,
+    PandocWordExportService,
+  ],
   exports: [BugReportsService, BugReportsRepository],
 })
 export class BugReportsModule {}

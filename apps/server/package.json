@@ -81,8 +81,8 @@
     ]
   },
   "dependencies": {
-    "@mono/constants": "workspace:*",
     "@date-fns/tz": "^1.4.1",
+    "@mono/constants": "workspace:*",
     "@nestjs/common": "^11.1.6",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.6",
@@ -93,6 +93,7 @@
     "@nestjs/serve-static": "^5.0.3",
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.15.0",
+    "archiver": "^7.0.1",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -130,6 +131,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.2",
+    "@types/archiver": "^6.0.3",
     "chalk": "^5.6.2",
     "commander": "^14.0.0",
     "dotenv": "^17.2.2",

@@ -1185,6 +1185,24 @@ export const BUG_REPORTS_API_CONFIG = {
     requireAdmin: false,
   },
 
+  exportPackage: {
+    summary: '导出漏洞报告压缩包',
+    description: '导出包含JSON格式报告、Word文档和原始附件的压缩包',
+    successResponse: {
+      description: '导出成功，返回ZIP压缩包',
+      content: {
+        'application/zip': {
+          schema: {
+            type: 'string',
+            format: 'binary',
+          },
+          example: '二进制ZIP文件内容',
+        },
+      },
+    },
+    requireAdmin: false,
+  },
+
   import: {
     summary: '导入漏洞报告',
     description: '从JSON文件导入漏洞报告，支持重新创建报告和附件',

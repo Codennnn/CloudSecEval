@@ -28,7 +28,7 @@ import { downloadBlob, sanitizeFileName } from '~/utils/file'
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
 import { bugReportsControllerDeleteMutation, bugReportsControllerFindManyOptions, bugReportsControllerFindManyQueryKey, bugReportsControllerFindMyReportsOptions, bugReportsControllerFindMyReportsQueryKey } from '~api/@tanstack/react-query.gen'
-import { bugReportsControllerExportBugReport } from '~api/sdk.gen'
+import { bugReportsControllerExportBugReportPackage } from '~api/sdk.gen'
 import { type BugReportSummaryDto } from '~api/types.gen'
 import { BugReportRoleView, getReportStatus, getVulSeverity, NEW_BUG_ID, reportStatusConfig, vulSeverityConfig } from '~crowd-test/constants'
 
@@ -64,12 +64,16 @@ export function BugListTable<Row extends BugReportSummaryDto>(
 
   const exportBugMutation = useMutation({
     mutationFn: async (item: Row) => {
-      const response = await bugReportsControllerExportBugReport({
+      const response = await bugReportsControllerExportBugReportPackage({
         path: { id: item.id },
         query: {
+          includeJson: true,
+          includeWord: true,
+          includeAttachments: true,
           includeHistory: true,
-          includeAttachmentContent: false,
+          filenamePrefix: sanitizeFileName(item.title || `bug-report-${item.id}`),
         },
+        throwOnError: true,
       })
 
       return { response, item }
@@ -77,13 +81,16 @@ export function BugListTable<Row extends BugReportSummaryDto>(
     onSuccess: ({ response, item }) => {
       const filename = sanitizeFileName(item.title || `bug-report-${item.id}`)
 
-      downloadBlob(response.data, `${filename}-${Date.now()}.json`, {
-        type: 'application/json',
-        stringify: true,
-        formatting: 2,
-      })
+      if (response.data instanceof Blob) {
+        downloadBlob(response.data, `${filename}-${Date.now()}.zip`, {
+          type: 'application/zip',
+        })
 
-      toast.success('漏洞报告导出成功')
+        toast.success('漏洞报告压缩包导出成功')
+      }
+      else {
+        toast.error('导出文件格式错误')
+      }
     },
     onError: () => {
       toast.error('导出失败，请稍后重试')
@@ -264,10 +271,11 @@ export function BugListTable<Row extends BugReportSummaryDto>(
                   )}
 
                   <DropdownMenuItem
+                    className="whitespace-nowrap"
                     disabled={exportBugMutation.isPending}
                     onClick={() => { handleExportClick(item) }}
                   >
-                    导出报告
+                    导出压缩包
                   </DropdownMenuItem>
 
                   {(isUser || isAdmin) && (

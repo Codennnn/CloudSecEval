@@ -17,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 
-import { resp, respWithPagination } from '~/common/utils/response.util'
+import { encodeRFC5987Filename, resp, respWithPagination } from '~/common/utils/response.util'
 import { BUG_REPORTS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
@@ -48,6 +48,7 @@ import {
 } from './dto/draft-bug-report.dto'
 import {
   ExportBugReportDto,
+  ExportBugReportPackageDto,
   ImportBugReportDto,
 } from './dto/export-import-bug-report.dto'
 import {
@@ -368,10 +369,40 @@ export class BugReportsController {
       currentUser,
     )
 
+    // 正确编码中文文件名（RFC5987）
+    const encodedFileName = encodeRFC5987Filename(exportResult.filename)
+
     response.setHeader('Content-Type', exportResult.contentType)
     response.setHeader(
       'Content-Disposition',
-      `attachment; filename="${exportResult.filename}"`,
+      `attachment; filename*=UTF-8''${encodedFileName}`,
+    )
+
+    return response.send(exportResult.buffer)
+  }
+
+  @Get(':id/export-package')
+  @ApiDocs(BUG_REPORTS_API_CONFIG.exportPackage)
+  @RequirePermissions(PERMISSIONS.bug_reports.read)
+  async exportBugReportPackage(
+    @Param('id') id: string,
+    @Query() exportPackageDto: ExportBugReportPackageDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+    @Res() response: Response,
+  ) {
+    const exportResult = await this.bugReportsService.exportBugReportPackage(
+      id,
+      exportPackageDto,
+      currentUser,
+    )
+
+    // 正确编码中文文件名（RFC5987）
+    const encodedFileName = encodeRFC5987Filename(exportResult.filename)
+
+    response.setHeader('Content-Type', exportResult.contentType)
+    response.setHeader(
+      'Content-Disposition',
+      `attachment; filename*=UTF-8''${encodedFileName}`,
     )
 
     return response.send(exportResult.buffer)
