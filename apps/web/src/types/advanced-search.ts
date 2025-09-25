@@ -6,6 +6,7 @@
  */
 
 import type { FieldTypeEnum, SearchOperatorEnum } from '~/constants/form'
+import type { BaseEnumConfig } from '~/types/common'
 
 import type { LogicalOperator, SortOrder } from '~api/types.gen'
 
@@ -134,9 +135,9 @@ export interface SearchConfig {
 /**
  * 操作符配置
  */
-export interface OperatorConfig {
+export interface OperatorConfig extends BaseEnumConfig {
   /** 操作符值 */
-  value: SearchOperator
+  value: SearchOperatorEnum
   /** 操作符显示标签 */
   label: string
   /** 操作符描述 */

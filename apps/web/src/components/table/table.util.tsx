@@ -33,9 +33,8 @@ export function generateSearchFields<TData>(columns: TableColumnDef<TData>[]): S
         key,
         label: header,
         type: fieldType,
-        // 传递枚举选项
-        options: column.enumOptions,
         visible,
+        options: column.enumOptions,
         sortable: column.enableSorting,
         enableHiding: column.enableHiding,
       }
@@ -80,10 +79,4 @@ export function createDateColumn<TData>(
       return '-'
     },
   }
-}
-
-export type EnumColumnOptions<TData> = TableColumnDef<TData> & {
-  enumOptions: { value: string, label: string }[]
-  getLabelFn?: (value: string) => string
-  className?: string
 }

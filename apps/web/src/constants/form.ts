@@ -1,7 +1,4 @@
-/**
- * 高级搜索表单常量定义
- * 提供高级搜索功能所需的字段类型、操作符配置和分组定义
- */
+import type { BaseEnumConfig, EnumConfig } from '~/types/common'
 
 import type { OperatorConfig, SearchOperator } from '../types/advanced-search'
 
@@ -24,6 +21,21 @@ export const enum FieldTypeEnum {
   BOOLEAN = 'boolean',
   /** 枚举类型 - 支持包含性和基础操作符 */
   ENUM = 'enum',
+}
+
+/**
+ * 操作符分组枚举
+ * 定义操作符的逻辑分组类型，用于在UI中进行分类展示
+ */
+export const enum OperatorGroupEnum {
+  /** 相等性操作符分组 - 用于精确匹配 */
+  EQUALITY = 'equality',
+  /** 包含性操作符分组 - 用于部分匹配和集合操作 */
+  INCLUSION = 'inclusion',
+  /** 比较操作符分组 - 用于数值和日期比较 */
+  COMPARISON = 'comparison',
+  /** 空值检查操作符分组 - 用于验证字段是否有值 */
+  NULLABILITY = 'nullability',
 }
 
 /**
@@ -138,7 +150,7 @@ const TYPE_COMBINATIONS = {
  * 搜索操作符配置映射表
  * 定义每个操作符的详细配置信息，包括标签、描述、支持的字段类型等
  */
-export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
+export const operatorConfig = {
   // ========================================
   // 相等性操作符配置
   // ========================================
@@ -266,31 +278,35 @@ export const OPERATOR_CONFIGS: Record<SearchOperator, OperatorConfig> = {
     requiresValue: false,
     supportedTypes: TYPE_COMBINATIONS.ALL_BASIC,
   },
-}
+} satisfies EnumConfig<SearchOperator, OperatorConfig>
 
 // ============================================================================
 // MARK: 操作符分组配置
 // ============================================================================
 
+interface OperatorGroupConfig extends BaseEnumConfig {
+  value: OperatorGroupEnum
+  description?: string
+  /** 该分组包含的操作符列表 */
+  operators: SearchOperatorEnum[]
+}
+
 /**
  * 操作符分组定义
  * 将操作符按功能进行逻辑分组，便于在UI中展示和管理
  */
-export const OPERATOR_GROUPS: Record<'equality' | 'inclusion' | 'comparison' | 'nullability', {
-  /** 分组显示标签 */
-  label: string
-  /** 该分组包含的操作符列表 */
-  operators: SearchOperator[]
-}> = {
-  /** 相等性操作符分组 - 用于精确匹配 */
-  equality: {
+export const operatorGroupConfig = {
+  [OperatorGroupEnum.EQUALITY]: {
+    value: OperatorGroupEnum.EQUALITY,
     label: '相等性',
+    description: '用于精确匹配',
     operators: [SearchOperatorEnum.EQ, SearchOperatorEnum.NEQ],
   },
 
-  /** 包含性操作符分组 - 用于部分匹配和集合操作 */
-  inclusion: {
+  [OperatorGroupEnum.INCLUSION]: {
+    value: OperatorGroupEnum.INCLUSION,
     label: '包含性',
+    description: '用于部分匹配和集合操作',
     operators: [
       SearchOperatorEnum.IN,
       SearchOperatorEnum.NOT_IN,
@@ -300,9 +316,10 @@ export const OPERATOR_GROUPS: Record<'equality' | 'inclusion' | 'comparison' | '
     ],
   },
 
-  /** 比较操作符分组 - 用于数值和日期比较 */
-  comparison: {
+  [OperatorGroupEnum.COMPARISON]: {
+    value: OperatorGroupEnum.COMPARISON,
     label: '比较',
+    description: '用于数值和日期比较',
     operators: [
       SearchOperatorEnum.GT,
       SearchOperatorEnum.GTE,
@@ -312,9 +329,10 @@ export const OPERATOR_GROUPS: Record<'equality' | 'inclusion' | 'comparison' | '
     ],
   },
 
-  /** 空值检查操作符分组 - 用于验证字段是否有值 */
-  nullability: {
+  [OperatorGroupEnum.NULLABILITY]: {
+    value: OperatorGroupEnum.NULLABILITY,
     label: '空值检查',
+    description: '用于验证字段是否有值',
     operators: [SearchOperatorEnum.IS_NULL, SearchOperatorEnum.IS_NOT_NULL],
   },
-}
+} satisfies EnumConfig<OperatorGroupEnum, OperatorGroupConfig>

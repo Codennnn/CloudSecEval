@@ -928,7 +928,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                 getAllOptions().length
               } 个选项。${placeholder}`}
               className={cn(
-                'flex p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-transparent hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:pointer-events-auto',
+                'flex p-1 rounded-md border min-h-9 h-auto items-center justify-between bg-transparent hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:pointer-events-auto',
                 autoSize ? 'w-auto' : 'w-full',
                 responsiveSettings.compactMode && 'min-h-8 text-sm',
                 screenSize === 'mobile' && 'min-h-12 text-base',
@@ -981,7 +981,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                               <Badge
                                 key={value}
                                 className={cn(
-                                  '!m-0',
+                                  '!m-0 rounded-sm',
                                   multiSelectVariants({ variant }),
                                   customStyle?.gradient
                                   && 'text-white border-transparent',
@@ -1054,7 +1054,7 @@ export const MultiSelect = forwardRef<MultiSelectRef, MultiSelectProps>(
                         {selectedValues.length > responsiveSettings.maxCount && (
                           <Badge
                             className={cn(
-                              '!m-0 bg-transparent text-foreground border-foreground/1',
+                              '!m-0 bg-transparent text-foreground border-foreground/1 rounded-sm',
                               multiSelectVariants({ variant }),
                               responsiveSettings.compactMode
                               && 'text-xs px-1.5 py-0.5',

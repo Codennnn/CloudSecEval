@@ -19,9 +19,9 @@ export interface RichTextEditorProps {
   /** 编辑器的值 */
   value?: string
   /** 值变化时的回调函数 */
-  onChange?: (value: string) => void
+  onChange?: (value: RichTextEditorProps['value']) => void
   /** 初始值（仅在非受控模式下使用） */
-  defaultValue?: string
+  defaultValue?: RichTextEditorProps['value']
   /** 是否禁用编辑器 */
   disabled?: boolean
   /** 占位符文本 */

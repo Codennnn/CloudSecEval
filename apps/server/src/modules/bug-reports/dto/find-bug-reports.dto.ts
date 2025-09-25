@@ -79,6 +79,15 @@ export class BugReportSearchFields {
   @ValidateNested()
   @Type(() => AdvancedDateSearchOperators)
   reviewedAt?: AdvancedDateSearchOperators | Date
+
+  @ApiPropertyOptional({
+    description: '提交用户搜索条件（根据用户邮箱或名称查询）',
+    type: AdvancedStringSearchOperators,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AdvancedStringSearchOperators)
+  user?: AdvancedStringSearchOperators | string
 }
 
 /**
@@ -90,19 +99,19 @@ export class FindBugReportsDto extends IntersectionType(
   BaseSearchDto,
   BugReportSearchFields,
 ) {
-  @ApiPropertyOptional({ description: '是否包含关联的用户信息', example: true })
+  @ApiPropertyOptional({ description: '是否包含关联的用户信息' })
   @IsOptional()
   @IsBoolean({ message: '包含用户信息必须是布尔值' })
   @BooleanTransform()
   includeUser?: boolean
 
-  @ApiPropertyOptional({ description: '是否包含关联的审核人信息', example: true })
+  @ApiPropertyOptional({ description: '是否包含关联的审核人信息' })
   @IsOptional()
   @IsBoolean({ message: '包含审核人信息必须是布尔值' })
   @BooleanTransform()
   includeReviewer?: boolean
 
-  @ApiPropertyOptional({ description: '是否包含关联的组织信息', example: false })
+  @ApiPropertyOptional({ description: '是否包含关联的组织信息' })
   @IsOptional()
   @IsBoolean({ message: '包含组织信息必须是布尔值' })
   @BooleanTransform()

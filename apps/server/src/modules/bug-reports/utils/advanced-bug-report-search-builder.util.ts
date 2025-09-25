@@ -1,6 +1,8 @@
 import type { Prisma } from '#prisma/client'
 import { EntitySearchBuilder } from '~/common/search/builders/entity-search-builder'
-import { type BaseFieldSearchConfig } from '~/common/search/meta/field-metadata'
+import type { SearchOperators } from '~/common/search/interfaces/search.interface'
+import { type BaseFieldSearchConfig, isOperatorValue, isSimpleValue } from '~/common/search/meta/field-metadata'
+import { toPrismaCondition } from '~/common/search/operators/search-operators.util'
 
 import type { FindBugReportsDto } from '../dto/find-bug-reports.dto'
 
@@ -16,6 +18,7 @@ interface BugReportSearchFields {
   createdAt: Date
   updatedAt: Date
   reviewedAt: Date
+  user: string
 }
 
 /**
@@ -73,6 +76,12 @@ const BUG_REPORT_FIELD_CONFIG = {
     sortable: true,
     searchable: true,
   },
+  user: {
+    type: 'string',
+    global: false,
+    sortable: false,
+    searchable: true,
+  },
 } as const satisfies Record<keyof BugReportSearchFields, BaseFieldSearchConfig>
 
 /**
@@ -104,10 +113,59 @@ export class AdvancedBugReportSearchBuilder extends EntitySearchBuilder<
 
   /**
    * 构建自定义筛选条件
-   * 目前无需额外的自定义筛选逻辑
+   * 处理用户字段的搜索逻辑，支持根据用户邮箱或名称查询
    */
   protected buildCustomFilters(): void {
-    // 所有搜索字段都通过通用搜索框架处理
+    this.buildUserSearchFilter()
+  }
+
+  /**
+   * 构建用户搜索筛选条件
+   * 支持根据用户邮箱或名称进行搜索
+   */
+  private buildUserSearchFilter(): void {
+    const userValue = this.searchDto.user
+
+    if (!userValue) {
+      return
+    }
+
+    // 处理简单字符串值
+    if (isSimpleValue(userValue)) {
+      this.conditions.user = {
+        OR: [
+          {
+            email: {
+              contains: userValue as string,
+              mode: 'insensitive',
+            },
+          },
+          {
+            name: {
+              contains: userValue as string,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      }
+
+      return
+    }
+
+    // 处理高级搜索操作符
+    if (isOperatorValue(userValue)) {
+      const prismaCondition = toPrismaCondition(userValue as SearchOperators<string>)
+
+      if (prismaCondition !== null) {
+        // 对于操作符，我们需要将条件应用到邮箱和名称字段上
+        this.conditions.user = {
+          OR: [
+            { email: prismaCondition },
+            { name: prismaCondition },
+          ],
+        }
+      }
+    }
   }
 
   /**

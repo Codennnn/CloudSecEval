@@ -76,8 +76,28 @@ export function IsEnumOrOperators(
 
 /**
  * 转换器：处理枚举或操作符对象
- * 不进行任何转换，保持原始值
+ * 只对操作符对象内的 in 和 notIn 进行数组转换，保持简单枚举值不变
  */
 export function EnumOrOperatorsTransform() {
-  return Transform(({ value }: { value: unknown }) => value)
+  return Transform(({ value }: { value: unknown }) => {
+    // 如果不是对象，直接返回（可能是简单的枚举值、数组或其他类型）
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      return value
+    }
+
+    const operatorObj = value as Record<string, unknown>
+    const result = { ...operatorObj }
+
+    // 确保 in 和 notIn 操作符的值始终为数组
+    // 当 Express 解析单个值为字符串时，转换为数组
+    if ('in' in result && result.in !== undefined && !Array.isArray(result.in)) {
+      result.in = [result.in]
+    }
+
+    if ('notIn' in result && result.notIn !== undefined && !Array.isArray(result.notIn)) {
+      result.notIn = [result.notIn]
+    }
+
+    return result
+  })
 }

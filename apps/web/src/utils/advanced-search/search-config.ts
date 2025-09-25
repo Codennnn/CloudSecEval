@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 
-import { type FieldTypeEnum, OPERATOR_CONFIGS, SearchOperatorEnum } from '~/constants/form'
+import { type FieldTypeEnum, operatorConfig, operatorGroupConfig, type OperatorGroupEnum, SearchOperatorEnum } from '~/constants/form'
 import type {
   FilterCondition,
   OperatorConfig,
@@ -18,7 +18,7 @@ import { LogicalOperator, SortOrder } from '~api/types.gen'
  * 根据字段类型获取支持的操作符
  */
 export function getOperatorsByFieldType(fieldType: FieldTypeEnum): OperatorConfig[] {
-  return Object.values(OPERATOR_CONFIGS).filter((config) =>
+  return Object.values(operatorConfig).filter((config) =>
     config.supportedTypes.includes(fieldType),
   )
 }
@@ -42,14 +42,38 @@ export function getDefaultOperatorByFieldType(fieldType: FieldTypeEnum): SearchO
 /**
  * 获取操作符配置
  */
-export function getOperatorConfig(operator: SearchOperator): OperatorConfig | undefined {
-  return OPERATOR_CONFIGS[operator]
+export function getOperatorConfig(operator?: string): OperatorConfig | null {
+  if (typeof operator === 'string' && operator in operatorConfig) {
+    return operatorConfig[operator as SearchOperatorEnum]
+  }
+
+  return null
 }
 
 /**
- * 生成唯一的条件ID
+ * 获取操作符所属的分组
  */
-export function generateConditionId(): string {
+export function getOperatorGroup(operator: SearchOperator): OperatorGroupEnum | null {
+  for (const [groupKey, groupConfig] of Object.entries(operatorGroupConfig)) {
+    if ((groupConfig.operators as SearchOperator[]).includes(operator)) {
+      return groupKey as OperatorGroupEnum
+    }
+  }
+
+  return null
+}
+
+/**
+ * 判断两个操作符是否属于同一分组
+ */
+export function isSameOperatorGroup(operator1: SearchOperator, operator2: SearchOperator): boolean {
+  const group1 = getOperatorGroup(operator1)
+  const group2 = getOperatorGroup(operator2)
+
+  return group1 !== null && group2 !== null && group1 === group2
+}
+
+function generateConditionId(): string {
   return `condition_${nanoid(4)}`
 }
 
@@ -270,7 +294,7 @@ export function queryParamsToSearchConfig(params: QueryParams): Partial<SearchCo
 
       const operatorKey = operator as SearchOperator
 
-      if (operatorKey in OPERATOR_CONFIGS) {
+      if (operatorKey in operatorConfig) {
         conditions.push(createSearchCondition(field, operatorKey, value))
       }
     }

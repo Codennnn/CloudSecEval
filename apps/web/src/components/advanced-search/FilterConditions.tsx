@@ -26,6 +26,7 @@ import type {
   SearchOperator,
   SearchValidationError,
 } from '~/types/advanced-search'
+import { isSameOperatorGroup } from '~/utils/advanced-search/search-config'
 
 import { SearchConditionOperatorSelect } from './SearchConditionOperatorSelect'
 import { ValueInput } from './ValueInput'
@@ -74,9 +75,6 @@ function SearchConditionRow(props: SearchConditionProps) {
     return fields.find((field) => field.key === condition.field)
   }, [fields, condition.field])
 
-  /**
-   * 处理字段变更
-   */
   const handleFieldChange = useEvent((fieldKey: string) => {
     const field = fields.find((f) => f.key === fieldKey)
 
@@ -90,26 +88,21 @@ function SearchConditionRow(props: SearchConditionProps) {
     }
   })
 
-  /**
-   * 处理操作符变更
-   */
   const handleOperatorChange = useEvent((operator: SearchOperator) => {
+    // 判断新操作符与当前操作符是否属于同一分组
+    const shouldResetValue = !isSameOperatorGroup(condition.operator, operator)
+
     onUpdate?.(condition.id, {
       operator,
-      value: undefined, // 重置值
+      // 只有在切换到不同分组时才重置值
+      value: shouldResetValue ? undefined : condition.value,
     })
   })
 
-  /**
-   * 处理值变更
-   */
   const handleValueChange = useEvent((value: unknown) => {
     onUpdate?.(condition.id, { value: value as FilterCondition['value'] })
   })
 
-  /**
-   * 处理逻辑运算符变更
-   */
   const handleLogicalOperatorChange = useEvent((logicalOperator: LogicalOperator) => {
     onUpdate?.(condition.id, { logicalOperator })
   })
@@ -157,36 +150,36 @@ function SearchConditionRow(props: SearchConditionProps) {
    * 渲染操作符选择器
    */
   const renderOperatorSelect = () => {
-    if (!currentField) {
-      return null
+    if (currentField) {
+      return (
+        <SearchConditionOperatorSelect
+          fieldType={currentField.type}
+          value={condition.operator}
+          onChange={handleOperatorChange}
+        />
+      )
     }
 
-    return (
-      <SearchConditionOperatorSelect
-        fieldType={currentField.type}
-        value={condition.operator}
-        onChange={handleOperatorChange}
-      />
-    )
+    return null
   }
 
   /**
    * 渲染值输入器
    */
   const renderValueInput = () => {
-    if (!currentField) {
-      return null
+    if (currentField) {
+      return (
+        <ValueInput
+          error={error?.message}
+          field={currentField}
+          operator={condition.operator}
+          value={condition.value}
+          onChange={handleValueChange}
+        />
+      )
     }
 
-    return (
-      <ValueInput
-        error={error?.message}
-        field={currentField}
-        operator={condition.operator}
-        value={condition.value}
-        onChange={handleValueChange}
-      />
-    )
+    return null
   }
 
   /**
@@ -225,17 +218,17 @@ function SearchConditionRow(props: SearchConditionProps) {
           </div>
         )}
 
-        {/* 字段选择 */}
+        {/* MARK: 字段选择 */}
         <div>
           {renderFieldSelect()}
         </div>
 
-        {/* 操作符选择 */}
+        {/* MARK: 操作符选择 */}
         <div>
           {renderOperatorSelect()}
         </div>
 
-        {/* 值输入 */}
+        {/* MARK: 值输入 */}
         <div>
           {renderValueInput()}
         </div>

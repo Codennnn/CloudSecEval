@@ -6,8 +6,8 @@ import { ScaleIcon } from 'lucide-react'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Separator } from '~/components/ui/separator'
-import { type FieldTypeEnum, OPERATOR_GROUPS } from '~/constants/form'
-import type { SearchOperator } from '~/types/advanced-search'
+import { type FieldTypeEnum, operatorGroupConfig } from '~/constants/form'
+import type { OperatorConfig, SearchOperator } from '~/types/advanced-search'
 import { getOperatorConfig, getOperatorsByFieldType } from '~/utils/advanced-search/search-config'
 
 type OnChange = (operator: SearchOperator) => void
@@ -53,11 +53,11 @@ export function SearchConditionOperatorSelect(props: SearchConditionOperatorSele
    * 按分组组织操作符
    */
   const groupedOperators = useMemo(() => {
-    const groups: { label: string, operators: typeof supportedOperators }[] = []
+    const groups: { label: string, operators: OperatorConfig[] }[] = []
 
-    Object.entries(OPERATOR_GROUPS).forEach(([, groupConfig]) => {
+    Object.values(operatorGroupConfig).forEach((groupConfig) => {
       const groupOperators = supportedOperators.filter((operator) =>
-        groupConfig.operators.includes(operator.value),
+        (groupConfig.operators as SearchOperator[]).includes(operator.value as SearchOperator),
       )
 
       if (groupOperators.length > 0) {

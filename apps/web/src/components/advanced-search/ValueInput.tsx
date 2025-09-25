@@ -10,13 +10,13 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { format } from 'date-fns'
-import { Calendar, CalendarClock, Plus, X } from 'lucide-react'
+import { Calendar, CalendarClock } from 'lucide-react'
 
-import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Calendar as CalendarComponent } from '~/components/ui/calendar'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
+import { MultiSelect, type MultiSelectOption } from '~/components/ui/multi-select'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Switch } from '~/components/ui/switch'
@@ -48,51 +48,64 @@ interface ValueInputProps {
 }
 
 /**
- * 标签输入组件（用于数组值输入）
+ * 自由输入多选组件（用于数组值输入）
+ * 基于 MultiSelect 组件，支持用户自由输入新值
+ * 当字段类型为枚举时，仅支持选择预定义选项
  */
-interface TagInputProps {
-  value: string[]
-  onChange: (value: string[]) => void
+interface FreeInputMultiSelectProps {
+  value?: string[]
+  onChange?: (value: FreeInputMultiSelectProps['value']) => void
   placeholder?: string
   disabled?: boolean
-  fieldType?: FieldTypeEnum
+  field: SearchField
 }
 
-function TagInput({ value = [], onChange, placeholder, disabled, fieldType }: TagInputProps) {
-  const [inputValue, setInputValue] = useState('')
+function FreeInputMultiSelect({
+  value = [],
+  onChange,
+  placeholder,
+  disabled,
+  field,
+}: FreeInputMultiSelectProps) {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  // 检查是否为枚举类型
+  const isEnumField = field.type === FieldTypeEnum.ENUM
 
   /**
-   * 添加标签
+   * 获取可用选项
+   * 枚举类型：使用预定义选项并支持搜索过滤
+   * 其他类型：支持自由输入
    */
-  const addTag = useCallback((tag: string) => {
-    const trimmedTag = tag.trim()
+  const availableOptions = useMemo((): MultiSelectOption[] => {
+    if (isEnumField && field.options) {
+      // 枚举类型：使用预定义的选项，支持搜索过滤
+      let enumOptions = field.options.map((option) => ({
+        label: option.label,
+        value: option.value,
+      }))
 
-    if (trimmedTag && !value.includes(trimmedTag)) {
-      onChange([...value, trimmedTag])
+      // 如果有搜索词，过滤枚举选项
+      if (searchTerm.trim()) {
+        const searchText = searchTerm.toLowerCase()
+        enumOptions = enumOptions.filter((option) =>
+          option.label.toLowerCase().includes(searchText)
+          || option.value.toLowerCase().includes(searchText),
+        )
+      }
+
+      return enumOptions
     }
 
-    setInputValue('')
-  }, [value, onChange])
+    // 非枚举类型：支持自由输入
+    const searchTermValue = searchTerm.trim() ? [searchTerm.trim()] : []
+    const uniqueValues = Array.from(new Set([...value, ...searchTermValue]))
 
-  /**
-   * 删除标签
-   */
-  const removeTag = useCallback((index: number) => {
-    onChange(value.filter((_, i) => i !== index))
-  }, [value, onChange])
-
-  /**
-   * 处理键盘事件
-   */
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault()
-      addTag(inputValue)
-    }
-    else if (e.key === 'Backspace' && !inputValue && value.length > 0) {
-      removeTag(value.length - 1)
-    }
-  }, [inputValue, addTag, value.length, removeTag])
+    return uniqueValues.map((val) => ({
+      label: val,
+      value: val,
+    }))
+  }, [isEnumField, field.options, value, searchTerm])
 
   /**
    * 验证输入值
@@ -102,57 +115,81 @@ function TagInput({ value = [], onChange, placeholder, disabled, fieldType }: Ta
       return false
     }
 
-    if (fieldType === FieldTypeEnum.NUMBER) {
+    // 枚举类型：检查是否在预定义选项中
+    if (isEnumField && field.options) {
+      return field.options.some((option) => option.value === input.trim())
+    }
+
+    // 数字类型：验证数字格式
+    if (field.type === FieldTypeEnum.NUMBER) {
       return !isNaN(Number(input))
     }
 
     return true
-  }, [fieldType])
+  }, [isEnumField, field.options, field.type])
+
+  /**
+   * 处理搜索输入
+   * 枚举类型：仅用于过滤现有选项
+   * 其他类型：允许用户输入新值并自动添加到选项中
+   */
+  const handleSearch = useCallback((term: string) => {
+    setSearchTerm(term)
+  }, [])
+
+  /**
+   * 处理值变更
+   */
+  const handleValueChange = useCallback((newValues: string[]) => {
+    // 过滤掉空值和无效值
+    const validValues = newValues.filter((val) => {
+      const trimmedVal = val.trim()
+
+      return trimmedVal && validateInput(trimmedVal)
+    })
+
+    onChange?.(validValues)
+  }, [onChange, validateInput])
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-1 min-h-[2.5rem] p-2 border rounded-md bg-background">
-        {value.map((tag, index) => (
-          <Badge key={index} className="flex items-center gap-1" variant="secondary">
-            {tag}
-            {!disabled && (
-              <button
-                className="ml-1 h-3 w-3 rounded-full hover:bg-destructive hover:text-destructive-foreground"
-                type="button"
-                onClick={() => { removeTag(index) }}
-              >
-                <X className="h-2 w-2" />
-              </button>
-            )}
-          </Badge>
-        ))}
-        {!disabled && (
-          <Input
-            className="flex-1 min-w-[120px] border-0 shadow-none focus-visible:ring-0"
-            placeholder={value.length === 0 ? placeholder : '添加更多...'}
-            style={{ minHeight: '1.5rem' }}
-            value={inputValue}
-            onBlur={() => { addTag(inputValue) }}
-            onChange={(e) => { setInputValue(e.target.value) }}
-            onKeyDown={handleKeyDown}
-          />
-        )}
-      </div>
-      {!disabled && (
-        <div className="flex gap-2">
-          <Button
-            disabled={!validateInput(inputValue)}
-            size="sm"
-            type="button"
-            variant="outline"
-            onClick={() => { addTag(inputValue) }}
-          >
-            <Plus className="h-3 w-3 mr-1" />
-            添加
-          </Button>
-        </div>
-      )}
-    </div>
+    <MultiSelect
+      deduplicateOptions
+      hideSelectAll
+      searchable // 枚举类型支持搜索过滤，非枚举类型支持搜索添加
+      defaultValue={value}
+      disabled={disabled}
+      emptyIndicator={
+        isEnumField
+          ? (
+              <div className="px-3 py-2 text-sm text-muted-foreground">
+                {searchTerm.trim() ? '未找到匹配的枚举选项' : '无可用的枚举选项'}
+              </div>
+            )
+          : searchTerm.trim() && validateInput(searchTerm)
+            ? (
+                <div className="px-3 py-2 text-sm text-muted-foreground">
+                  按 Enter 添加 "{searchTerm.trim()}"
+                </div>
+              )
+            : (
+                <div className="px-3 py-2 text-sm text-muted-foreground">
+                  {searchTerm.trim()
+                    ? '输入无效'
+                    : '开始输入以添加新值'}
+                </div>
+              )
+      }
+      minSearchChars={isEnumField ? 0 : 1}
+      options={availableOptions}
+      placeholder={
+        placeholder
+        ?? (isEnumField ? '选择枚举值' : '输入值，支持搜索和添加新值')
+      }
+      resetOnDefaultValueChange={false}
+      searchDebounceMs={200}
+      onSearch={handleSearch}
+      onValueChange={handleValueChange}
+    />
   )
 }
 
@@ -194,7 +231,7 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
                   disabled={disabled}
                   variant="outline"
                 >
-                  <CalendarClock className="mr-2 h-4 w-4" />
+                  <CalendarClock className="mr-2 size-4" />
                   {startValue ? format(new Date(startValue), 'yyyy-MM-dd') : '选择日期'}
                 </Button>
               </PopoverTrigger>
@@ -295,16 +332,18 @@ function safeStringify(val: unknown): string {
   return ''
 }
 
-export function ValueInput({
-  field,
-  operator,
-  value,
-  onChange,
-  disabled = false,
-  placeholder,
-  className,
-  error,
-}: ValueInputProps) {
+export function ValueInput(props: ValueInputProps) {
+  const {
+    field,
+    operator,
+    value,
+    onChange,
+    disabled = false,
+    placeholder,
+    className,
+    error,
+  } = props
+
   const operatorConfig = useMemo(() => getOperatorConfig(operator), [operator])
 
   /**
@@ -323,10 +362,10 @@ export function ValueInput({
     // 数组值输入
     if (operatorConfig.requiresArray) {
       return (
-        <TagInput
+        <FreeInputMultiSelect
           disabled={disabled}
-          fieldType={field.type}
-          placeholder={placeholder ?? '输入值，按 Enter 或逗号分隔'}
+          field={field}
+          placeholder={placeholder}
           value={Array.isArray(value) ? value : []}
           onChange={onChange}
         />
@@ -371,9 +410,10 @@ export function ValueInput({
             value={safeStringify(value)}
             onValueChange={onChange}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={placeholder ?? '请选择'} />
             </SelectTrigger>
+
             <SelectContent>
               {field.options?.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
