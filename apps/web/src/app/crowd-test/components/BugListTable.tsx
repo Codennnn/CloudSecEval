@@ -86,7 +86,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
           type: 'application/zip',
         })
 
-        toast.success('漏洞报告压缩包导出成功')
+        toast.success('漏洞报告导出成功')
       }
       else {
         toast.error('导出文件格式错误')
@@ -275,7 +275,7 @@ export function BugListTable<Row extends BugReportSummaryDto>(
                     disabled={exportBugMutation.isPending}
                     onClick={() => { handleExportClick(item) }}
                   >
-                    导出压缩包
+                    导出报告
                   </DropdownMenuItem>
 
                   {(isUser || isAdmin) && (
