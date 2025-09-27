@@ -41,7 +41,7 @@ export class PandocWordExportService {
   private readonly tempDir: string
 
   constructor(private readonly configService: ConfigService) {
-    this.tempDir = join(this.configService.get<string>('app.tempDir') || '/tmp/app-temp', 'bug-reports')
+    this.tempDir = join(this.configService.get<string>('app.tempDir') ?? '/tmp/app-temp', 'bug-reports')
   }
 
   /**

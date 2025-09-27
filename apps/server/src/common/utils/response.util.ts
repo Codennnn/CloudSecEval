@@ -1,7 +1,7 @@
+import { BUSINESS_CODES, type BusinessCode, getBusinessCodeMessage } from '@mono/constants'
 import { HttpStatus } from '@nestjs/common'
 import { type ClassConstructor, plainToInstance } from 'class-transformer'
 
-import { BUSINESS_CODES, type BusinessCode, getBusinessCodeMessage } from '~/common/constants/business-codes'
 import type { PaginationMetaDto } from '~/common/dto/pagination-meta.dto'
 import type { StandardListResponseDto, StandardResponseDto } from '~/common/dto/standard-response.dto'
 

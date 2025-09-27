@@ -1,9 +1,9 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { Injectable, Logger } from '@nestjs/common'
 import { plainToInstance } from 'class-transformer'
 import { omit } from 'radash'
 
 import type { License, Prisma } from '#prisma/client'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { RiskLevel } from '~/common/enums/severity.enum'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { SortOrder } from '~/common/search/interfaces/search.interface'

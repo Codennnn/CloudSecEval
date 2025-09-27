@@ -1,9 +1,9 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Patch, Post, Request, Response, UseGuards } from '@nestjs/common'
 import { ConfigType } from '@nestjs/config'
 import { ApiTags } from '@nestjs/swagger'
 import type { Response as ExpressResponse } from 'express'
 
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { DisabledApi } from '~/common/decorators/disabled-api.decorator'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { resp } from '~/common/utils/response.util'

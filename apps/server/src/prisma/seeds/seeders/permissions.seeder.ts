@@ -1,4 +1,4 @@
-import { SYSTEM_PERMISSIONS } from '~/common/constants/permissions'
+import { PERMISSIONS, SYSTEM_PERMISSIONS } from '@mono/constants'
 
 import { BaseSeeder } from '../core/base-seeder'
 import type { SeederOptions, SeederResult } from '../core/types'
@@ -136,7 +136,11 @@ export class PermissionsSeeder extends BaseSeeder {
       }
 
       // 检查关键权限是否存在
-      const criticalPermissions = [SYSTEM_PERMISSIONS.SUPER_ADMIN, 'users:read', 'roles:read']
+      const criticalPermissions = [
+        SYSTEM_PERMISSIONS.SUPER_ADMIN,
+        PERMISSIONS.users.read,
+        PERMISSIONS.roles.read,
+      ]
 
       for (const permissionSlug of criticalPermissions) {
         const permission = await this.prisma.permission.findUnique({

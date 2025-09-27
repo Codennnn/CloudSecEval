@@ -1,6 +1,7 @@
 'use client'
 
-import { PermissionMode } from '~/constants/permission'
+import { PermissionMode } from '@mono/constants'
+
 import { useHasPermissions } from '~/lib/permissions/hooks'
 import { type PermissionFlag } from '~/lib/permissions/matcher'
 
@@ -18,7 +19,7 @@ export function PermissionGuard(props: React.PropsWithChildren<PermissionGuardPr
 
   const fallbackNode = props.fallback ?? null
 
-  const mode = props.mode ?? PermissionMode.Any
+  const mode = props.mode ?? PermissionMode.ANY
   const granted = useHasPermissions(required, mode)
 
   if (granted) {

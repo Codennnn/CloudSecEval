@@ -1,3 +1,4 @@
+import { PERMISSIONS } from '@mono/constants'
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
@@ -5,7 +6,7 @@ import { resp, respWithPagination } from '~/common/utils/response.util'
 import { ORGANIZATIONS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
-import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
+import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { UserListApiResponseDto, UserListItemDto } from '~/modules/users/dto/user-response.dto'
 
 import { CreateOrganizationDto } from './dto/create-organization.dto'

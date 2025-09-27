@@ -1,6 +1,5 @@
+import { type BusinessCode, getBusinessCodeMessage } from '@mono/constants'
 import { HttpException, HttpStatus } from '@nestjs/common'
-
-import { type BusinessCode, getBusinessCodeMessage } from '../constants/business-codes'
 
 /**
  * 业务异常类

@@ -1,4 +1,4 @@
-import { SYSTEM_PERMISSIONS } from '~/common/constants/permissions'
+import { SYSTEM_PERMISSIONS } from '@mono/constants'
 
 /**
  * 系统角色种子数据

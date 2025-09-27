@@ -1,10 +1,9 @@
+import { PERMISSIONS } from '@mono/constants'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import type { User } from '~/lib/api/types'
 import type { PermissionFlag } from '~/lib/permissions/matcher'
-
-import { adminPermission } from '../../../constants/permission'
 
 // 缓存默认权限数组，避免每次创建新对象
 const DEFAULT_PERMISSIONS: PermissionFlag[] = []
@@ -67,7 +66,7 @@ export function useUser() {
 export function useIsClient() {
   const user = useUser()
 
-  return user?.permissions?.includes(adminPermission.bug_reports.client_manage)
+  return user?.permissions?.includes(PERMISSIONS.bug_reports.client_manage)
 }
 
 /**

@@ -1,4 +1,5 @@
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
+import { BUSINESS_CODES } from '@mono/constants'
+
 import { StandardResponseDto } from '~/common/dto/standard-response.dto'
 import { ChangePasswordApiResponseDto, DeleteUserApiResponseDto, LoginApiResponseDto, LogoutApiResponseDto, PasswordResetRequestApiResponseDto, PasswordResetSuccessApiResponseDto, RefreshTokenApiResponseDto, RegisterApiResponseDto, TokenVerifyApiResponseDto } from '~/modules/auth/dto/auth-response.dto'
 import { ApprovalStatusStatsResponseDto } from '~/modules/bug-reports/dto/approval-status-stats.dto'

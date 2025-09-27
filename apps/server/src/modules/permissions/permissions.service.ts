@@ -1,10 +1,9 @@
+import { BUSINESS_CODES, PermissionFlag, PermissionMode } from '@mono/constants'
 import { Injectable, NotFoundException } from '@nestjs/common'
 
 import { Organization, User } from '#prisma/client'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 
-import { PermissionFlag, PermissionMode, RoleMode } from './decorators/require-permissions.decorator'
 import { FindPermissionsDto } from './dto/find-permissions.dto'
 import { BasePermissionDto, CreatePermissionDto, PermissionGroupDto } from './dto/permission.dto'
 import { PermissionsRepository } from './permissions.repository'
@@ -161,26 +160,6 @@ export class PermissionsService {
     return {
       ...result,
       userPermissions: userPermissionArray,
-    }
-  }
-
-  /**
-   * 检查用户是否具有指定角色
-   */
-  async checkUserRoles(
-    userId: User['id'],
-    orgId: Organization['id'],
-    requiredRoles: string[],
-    mode: RoleMode = RoleMode.ANY,
-  ): Promise<boolean> {
-    const userPermissions = await this.getUserEffectivePermissions(userId, orgId)
-    const userRoles = userPermissions.roles.map((role) => role.slug)
-
-    if (mode === RoleMode.ANY) {
-      return requiredRoles.some((role) => userRoles.includes(role))
-    }
-    else {
-      return requiredRoles.every((role) => userRoles.includes(role))
     }
   }
 }

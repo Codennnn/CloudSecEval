@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": " pnpm api:setup && next dev -p 8080",
-    "build": "pnpm api:setup && next build",
+    "predev": "pnpm api:setup",
+    "dev": "next dev -p 8080",
+    "prebuild": "pnpm api:setup",
+    "build": "next build",
     "clean": "pnpm api:clean && rimraf node_modules .next",
     "start": "next start -p 8080",
     "deps": "pnpm up --interactive --latest",

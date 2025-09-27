@@ -1,10 +1,10 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { Injectable } from '@nestjs/common'
 import bcrypt from 'bcrypt'
 import { promises as fs } from 'fs'
 import { join } from 'path'
 
 import type { Prisma } from '#prisma/client'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { generateAvatarUrl } from '~/common/utils/gravatar.util'
 import { PermissionsService } from '~/modules/permissions/permissions.service'

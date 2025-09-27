@@ -1,6 +1,6 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { Injectable, PipeTransform } from '@nestjs/common'
 
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import {
   getAllowedExtensions,
   getAllowedMimeTypes,

@@ -1,11 +1,10 @@
+import { AUTH_STRATEGIES, BUSINESS_CODES } from '@mono/constants'
 import { Inject, Injectable } from '@nestjs/common'
 import { ConfigType } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import type { Request } from 'express'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
-import { AUTH_STRATEGIES } from '~/common/constants/auth-strategies'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import jwtConfig from '~/config/configurations/jwt.config'
 import { UsersService } from '~/modules/users/users.service'

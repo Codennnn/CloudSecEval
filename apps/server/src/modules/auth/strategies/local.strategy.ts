@@ -1,8 +1,8 @@
+import { AUTH_STRATEGIES } from '@mono/constants'
 import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-local'
 
-import { AUTH_STRATEGIES } from '~/common/constants/auth-strategies'
 import { CreateUserDto } from '~/modules/users/dto/create-user.dto'
 
 import { AuthService } from '../auth.service'

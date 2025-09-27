@@ -1,6 +1,6 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { randomBytes } from 'crypto'
 
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 
 /**

@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react'
 
-import { PermissionMode } from '~/constants/permission'
+import { PermissionMode } from '@mono/constants'
+
 import { matchPermission, type PermissionFlag } from '~/lib/permissions/matcher'
 
 import { useUserPermissions } from '~admin/stores/useUserStore'
@@ -12,12 +13,12 @@ import { useUserPermissions } from '~admin/stores/useUserStore'
  */
 export function useHasPermissions(
   required: PermissionFlag | PermissionFlag[],
-  mode: PermissionMode = PermissionMode.Any,
+  mode: PermissionMode = PermissionMode.ANY,
 ): boolean {
   const perms = useUserPermissions()
 
   const has = useMemo(() => {
-    const matcherMode = mode === PermissionMode.Any ? PermissionMode.Any : PermissionMode.All
+    const matcherMode = mode === PermissionMode.ANY ? PermissionMode.ANY : PermissionMode.ALL
 
     return matchPermission(perms, required, matcherMode)
   }, [perms, required, mode])

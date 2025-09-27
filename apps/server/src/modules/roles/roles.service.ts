@@ -1,7 +1,7 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 
 import { Organization } from '#prisma/client'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { PermissionsRepository } from '~/modules/permissions/permissions.repository'
 import { PrismaService } from '~/prisma/prisma.service'

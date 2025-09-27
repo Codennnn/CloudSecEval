@@ -1,6 +1,7 @@
+import { BUSINESS_CODES } from '@mono/constants'
+
 import type { Prisma } from '#prisma/client'
 
-import { BUSINESS_CODES } from '../constants/business-codes'
 import { BusinessException } from '../exceptions/business.exception'
 
 /**

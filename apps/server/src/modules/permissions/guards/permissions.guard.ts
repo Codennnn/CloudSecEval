@@ -1,27 +1,22 @@
+import { BUSINESS_CODES, PermissionFlag, PermissionMode, SYSTEM_PERMISSIONS } from '@mono/constants'
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
-import { SYSTEM_PERMISSIONS } from '~/common/constants/permissions'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { isPublicRoute } from '~/common/utils/guard.util'
 import { ExpressRequest } from '~/types/common'
 
 import {
   PermissionMetadata,
-  PermissionMode,
   PERMISSIONS_KEY,
-  RoleMetadata,
-  RoleMode,
-  ROLES_KEY,
 } from '../decorators/require-permissions.decorator'
 import { PermissionsService } from '../permissions.service'
 
 /**
  * 权限守卫
  *
- * 基于角色和权限的访问控制守卫
- * 配合 @RequirePermissions 和 @RequireRoles 装饰器使用
+ * 基于权限的访问控制守卫
+ * 配合 @RequirePermissions 装饰器使用
  */
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -47,34 +42,25 @@ export class PermissionsGuard implements CanActivate {
 
     const handler = context.getHandler()
 
-    // 获取权限与角色要求（可能为 undefined）
+    // 获取权限要求（可能为 undefined）
     const permissionMetadata = this.reflector.get<PermissionMetadata | undefined>(
       PERMISSIONS_KEY,
-      handler,
-    )
-
-    const roleMetadata = this.reflector.get<RoleMetadata | undefined>(
-      ROLES_KEY,
       handler,
     )
 
     const { id: userId, organization } = user
 
     try {
-      // 若两个维度均允许超级管理员，则进行一次全局超级管理员权限快速放行
-      const allowSuperAdminForPermissions = permissionMetadata
+      // 检查是否有全局超级管理员权限快速放行
+      const allowSuperAdmin = permissionMetadata
         ? permissionMetadata.options.allowSuperAdmin
         : true
-      const allowSuperAdminForRoles = roleMetadata
-        ? roleMetadata.options.allowSuperAdmin
-        : true
-      const allowSuperAdminGlobally = allowSuperAdminForPermissions && allowSuperAdminForRoles
 
-      if (allowSuperAdminGlobally) {
+      if (allowSuperAdmin) {
         const superAdminResult = await this.permissionsService.checkUserPermission(
           userId,
           organization.id,
-          SYSTEM_PERMISSIONS.SUPER_ADMIN,
+          SYSTEM_PERMISSIONS.SUPER_ADMIN as PermissionFlag,
         )
 
         if (superAdminResult.hasPermission) {
@@ -94,22 +80,6 @@ export class PermissionsGuard implements CanActivate {
           throw BusinessException.forbidden(
             BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
             '权限不足',
-          )
-        }
-      }
-
-      // 检查角色要求（若声明了角色要求）
-      if (roleMetadata) {
-        const hasRole = await this.checkRoles(
-          userId,
-          organization.id,
-          roleMetadata,
-        )
-
-        if (!hasRole) {
-          throw BusinessException.forbidden(
-            BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
-            '角色权限不足',
           )
         }
       }
@@ -146,7 +116,7 @@ export class PermissionsGuard implements CanActivate {
       const superAdminResult = await this.permissionsService.checkUserPermission(
         userId,
         orgId,
-        SYSTEM_PERMISSIONS.SUPER_ADMIN,
+        SYSTEM_PERMISSIONS.SUPER_ADMIN as PermissionFlag,
       )
 
       if (superAdminResult.hasPermission) {
@@ -163,37 +133,5 @@ export class PermissionsGuard implements CanActivate {
     )
 
     return result.hasPermission
-  }
-
-  /**
-   * 检查角色要求
-   */
-  private async checkRoles(
-    userId: string,
-    orgId: string,
-    metadata: RoleMetadata,
-  ): Promise<boolean> {
-    const { roles, options } = metadata
-    const { mode = RoleMode.ANY, allowSuperAdmin = true } = options
-
-    // 检查是否有超级管理员权限（如果允许）
-    if (allowSuperAdmin) {
-      const superAdminResult = await this.permissionsService.checkUserPermission(
-        userId,
-        orgId,
-        SYSTEM_PERMISSIONS.SUPER_ADMIN,
-      )
-
-      if (superAdminResult.hasPermission) {
-        return true
-      }
-    }
-
-    return this.permissionsService.checkUserRoles(
-      userId,
-      orgId,
-      roles,
-      mode,
-    )
   }
 }

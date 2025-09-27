@@ -1,7 +1,7 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { Injectable } from '@nestjs/common'
 
 import type { Organization, Prisma } from '#prisma/client'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'

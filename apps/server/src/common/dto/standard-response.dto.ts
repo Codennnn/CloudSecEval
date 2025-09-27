@@ -1,7 +1,6 @@
+import { BUSINESS_CODES, getBusinessCodeMessage } from '@mono/constants'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsOptional } from 'class-validator'
-
-import { BUSINESS_CODES, getBusinessCodeMessage } from '~/common/constants/business-codes'
 
 import { PaginationMetaDto } from './pagination-meta.dto'
 

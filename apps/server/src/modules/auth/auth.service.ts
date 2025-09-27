@@ -1,9 +1,9 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import bcrypt from 'bcrypt'
 import { plainToInstance } from 'class-transformer'
 
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { CreateUserDto } from '~/modules/users/dto/create-user.dto'
 import { UsersService } from '~/modules/users/users.service'

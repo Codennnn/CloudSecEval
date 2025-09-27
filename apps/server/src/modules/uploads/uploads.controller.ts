@@ -1,3 +1,4 @@
+import { BUSINESS_CODES, PERMISSIONS } from '@mono/constants'
 import {
   Body,
   Controller,
@@ -17,12 +18,11 @@ import { ApiTags } from '@nestjs/swagger'
 import type { Response } from 'express'
 import { createReadStream } from 'fs'
 
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { encodeRFC5987Filename, resp } from '~/common/utils/response.util'
 import { UPLOADS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
-import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
+import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 
 import {

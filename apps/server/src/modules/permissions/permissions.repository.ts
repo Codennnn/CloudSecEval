@@ -1,7 +1,7 @@
+import { Resource, SYSTEM_PERMISSIONS } from '@mono/constants'
 import { Injectable } from '@nestjs/common'
 
 import { type Permission, Prisma } from '#prisma/client'
-import { SYSTEM_PERMISSIONS } from '~/common/constants/permissions'
 import { getPaginationParams } from '~/common/utils/pagination.util'
 import { PrismaService } from '~/prisma/prisma.service'
 
@@ -240,7 +240,7 @@ export class PermissionsRepository {
     }
 
     // 通配符匹配
-    const [resource] = requiredPermission.split(':')
+    const [resource] = requiredPermission.split(':') as [Resource]
     const wildcardPermission = `${resource}:*`
 
     if (userPermissions.includes(wildcardPermission)) {

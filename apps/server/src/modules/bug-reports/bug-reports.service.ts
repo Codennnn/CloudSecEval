@@ -1,3 +1,4 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import archiver from 'archiver'
@@ -10,7 +11,6 @@ import {
   BUG_REPORT_ATTACHMENTS,
   BUG_REPORT_STATUS_TRANSITIONS,
 } from '~/common/constants/bug-reports'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { VulnerabilitySeverity } from '~/common/enums/severity.enum'
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { HtmlSanitizerService } from '~/common/services/html-sanitizer.service'
@@ -969,7 +969,7 @@ export class BugReportsService {
     }
 
     const taskId = nanoid()
-    const baseTempDir = this.configService.get<string>('app.tempDir') || '/tmp/app-temp'
+    const baseTempDir = this.configService.get<string>('app.tempDir') ?? '/tmp/app-temp'
     const tempDir = join(baseTempDir, 'package-export', taskId)
 
     try {

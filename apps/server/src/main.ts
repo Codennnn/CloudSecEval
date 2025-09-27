@@ -1,3 +1,4 @@
+import { BUSINESS_CODES } from '@mono/constants'
 import { BadRequestException, type LogLevel, ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import type { NestExpressApplication } from '@nestjs/platform-express'
@@ -6,7 +7,6 @@ import cookieParser from 'cookie-parser'
 import { json, urlencoded } from 'express'
 
 import { AppModule } from '~/app.module'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { AllExceptionsFilter } from '~/common/filters/all-exceptions.filter'
 import { HttpExceptionFilter } from '~/common/filters/http-exception.filter'
 import { TransformInterceptor } from '~/common/interceptors/transform.interceptor'

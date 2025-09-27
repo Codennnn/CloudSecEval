@@ -1,7 +1,6 @@
+import { getBusinessCodeMessage } from '@mono/constants'
 import { applyDecorators } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, type ApiResponseOptions } from '@nestjs/swagger'
-
-import { getBusinessCodeMessage } from '~/common/constants/business-codes'
 
 import type { ApiDocsDecoratorOptions, ApiOperationConfig } from '../types/api-docs.types'
 

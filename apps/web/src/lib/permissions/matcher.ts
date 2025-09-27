@@ -1,68 +1,37 @@
-import { PermissionMode } from '~/constants/permission'
+import { PermissionMode } from '@mono/constants'
 
-/**
- * 权限字符串类型（resource:action）
- * 例如："users:read"、"users:*"、"licenses:create"。
- */
 export type PermissionFlag = string
 
 /**
- * 内部工具：将权限标识拆分为资源与动作
- * @param flag 权限标识，例如 "users:read"
- * @returns 形如 { resource, action }
- */
-function splitFlag(flag: string): { resource: string, action: string } {
-  const idx = flag.indexOf(':')
-  let resource = ''
-  let action = ''
-
-  if (idx !== -1) {
-    resource = flag.slice(0, idx)
-    action = flag.slice(idx + 1)
-  }
-  else {
-    resource = flag
-    action = ''
-  }
-
-  return { resource, action }
-}
-
-/**
- * 单个权限匹配函数：支持 "resource:action" 与 "resource:*" 通配符
- * @param userPerms 用户拥有的权限列表
- * @param required  需要校验的权限标识
+ * 匹配单个权限
+ * @param userPerms 用户权限列表
+ * @param required 需要的权限
  * @returns 是否匹配
  */
 function matchSinglePermission(userPerms: PermissionFlag[], required: PermissionFlag): boolean {
-  const req = splitFlag(required)
-  let matched = false
-
-  for (const p of userPerms) {
-    const cur = splitFlag(p)
-    const sameResource = cur.resource === req.resource
-    const actionOk = cur.action === req.action || cur.action === '*'
-
-    if (sameResource && actionOk) {
-      matched = true
-      break
-    }
+  // 直接匹配
+  if (userPerms.includes(required)) {
+    return true
   }
 
-  return matched
+  // 通配符匹配
+  const [resource] = required.split(':')
+  const wildcardPerm = `${resource}:*`
+
+  return userPerms.includes(wildcardPerm)
 }
 
 /**
- * 权限匹配函数：支持单个权限或多个权限的 any/all 模式校验
- * @param userPerms 用户拥有的权限列表
- * @param required  需要校验的权限标识（单个或数组）
- * @param mode      校验模式：'any' 表示满足任一权限即可，'all' 表示必须满足所有权限
+ * 检查用户是否具有指定权限
+ * @param userPerms 用户权限列表
+ * @param required 需要的权限（单个或数组）
+ * @param mode 权限检查模式
  * @returns 是否匹配
  */
 export function matchPermission(
   userPerms: PermissionFlag[],
   required: PermissionFlag | PermissionFlag[],
-  mode: PermissionMode = PermissionMode.Any,
+  mode: PermissionMode = PermissionMode.ANY,
 ): boolean {
   // 超级管理员权限
   if (userPerms.includes('admin:*')) {
@@ -80,14 +49,40 @@ export function matchPermission(
   }
 
   // 根据模式进行权限校验
-  if (mode === PermissionMode.Any) {
-    return required.some((r) => matchSinglePermission(userPerms, r))
-  }
+  switch (mode) {
+    case PermissionMode.ANY:
+      return required.some((r) => matchSinglePermission(userPerms, r))
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (mode === PermissionMode.All) {
-    return required.every((r) => matchSinglePermission(userPerms, r))
-  }
+    case PermissionMode.ALL:
+      return required.every((r) => matchSinglePermission(userPerms, r))
 
-  return false
+    default:
+      return false
+  }
+}
+
+/**
+ * 检查用户是否具有任意一个权限
+ * @param userPerms 用户权限列表
+ * @param required 需要的权限数组
+ * @returns 是否匹配
+ */
+export function matchAnyPermission(
+  userPerms: PermissionFlag[],
+  required: PermissionFlag[],
+): boolean {
+  return matchPermission(userPerms, required, PermissionMode.ANY)
+}
+
+/**
+ * 检查用户是否具有所有权限
+ * @param userPerms 用户权限列表
+ * @param required 需要的权限数组
+ * @returns 是否匹配
+ */
+export function matchAllPermissions(
+  userPerms: PermissionFlag[],
+  required: PermissionFlag[],
+): boolean {
+  return matchPermission(userPerms, required, PermissionMode.ALL)
 }

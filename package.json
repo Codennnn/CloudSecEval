@@ -24,6 +24,7 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "clean": "pnpm --parallel --filter @mono/web --filter @mono/api clean && rimraf node_modules"
+    "clean": "pnpm --parallel --filter @mono/web --filter @mono/api clean && rimraf node_modules",
+    "postclean": "echo '✅ 项目清理完成'"
   }
 }

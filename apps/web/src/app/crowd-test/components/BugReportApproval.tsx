@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import { useRouter } from 'nextjs-toploader/app'
+import { PERMISSIONS } from '@mono/constants'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -13,7 +14,6 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Textarea } from '~/components/ui/textarea'
-import { adminPermission } from '~/constants/permission'
 import { cn } from '~/lib/utils'
 
 import { AdminRoutes, getRoutePath } from '~admin/lib/admin-nav'
@@ -99,7 +99,7 @@ export function BugReportApproval({
   }
 
   return (
-    <PermissionGuard required={adminPermission.bug_reports.manage}>
+    <PermissionGuard required={PERMISSIONS.bug_reports.manage}>
       <Card>
         <CardHeader>
           <CardTitle>审批操作</CardTitle>

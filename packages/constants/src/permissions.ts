@@ -1,7 +1,51 @@
-type Resource = 'organizations' | 'departments' | 'roles' | 'users' | 'licenses' | 'permissions' | 'statistics' | 'bug_reports' | 'uploads'
-type AdminPermission = Record<Resource, Record<string, `${Resource}:${string}`>>
+/**
+ * 权限系统常量
+ *
+ * 统一管理前后端权限相关的常量定义，确保权限系统的一致性
+ */
 
-export const adminPermission = {
+/**
+ * 规范化的权限标识符类型 `${resource}:${action}`，支持通配符 `${resource}:*`
+ */
+export type PermissionFlag = `${Resource}:${string}`
+
+/**
+ * 系统权限常量
+ */
+export const SYSTEM_PERMISSIONS: Record<string, PermissionFlag> = {
+  /** 超级管理员权限，拥有所有权限 */
+  SUPER_ADMIN: 'admin:*',
+}
+
+/**
+ * 权限校验模式枚举
+ */
+export enum PermissionMode {
+  /** 满足任意一个权限条件即可通过校验 */
+  ANY = 'any',
+  /** 必须满足所有权限条件才能通过校验 */
+  ALL = 'all',
+}
+
+/**
+ * 资源类型定义
+ */
+export type Resource
+  = 'organizations'
+    | 'departments'
+    | 'roles'
+    | 'users'
+    | 'licenses'
+    | 'permissions'
+    | 'statistics'
+    | 'bug_reports'
+    | 'uploads'
+
+/**
+ * 管理员权限配置
+ * 定义各个资源的具体权限操作
+ */
+export const PERMISSIONS: Record<Resource, Record<string, PermissionFlag>> = {
   users: {
     create: 'users:create',
     read: 'users:read',
@@ -59,12 +103,4 @@ export const adminPermission = {
     read: 'uploads:read',
     delete: 'uploads:delete',
   },
-} satisfies AdminPermission
-
-/** 权限校验模式 */
-export const enum PermissionMode {
-  /** 满足任意一个权限条件即可通过校验 */
-  Any = 'any',
-  /** 必须满足所有权限条件才能通过校验 */
-  All = 'all',
 }

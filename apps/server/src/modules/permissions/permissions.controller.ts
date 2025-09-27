@@ -1,3 +1,4 @@
+import { PERMISSIONS } from '@mono/constants'
 import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
@@ -6,7 +7,7 @@ import { resp, respWithPagination } from '~/common/utils/response.util'
 import { PERMISSIONS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 
-import { PERMISSIONS, RequirePermissions } from './decorators/require-permissions.decorator'
+import { RequirePermissions } from './decorators/require-permissions.decorator'
 import { FindPermissionsDto } from './dto/find-permissions.dto'
 import { CreatePermissionDto } from './dto/permission.dto'
 import { PermissionListApiResponseDto } from './dto/permission-response.dto'

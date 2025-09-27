@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'nextjs-toploader/app'
+import { PermissionMode } from '@mono/constants'
 
-import { PermissionMode } from '~/constants/permission'
 import { useHasPermissions } from '~/lib/permissions/hooks'
 import { isCrowdTest } from '~/utils/platform'
 
@@ -30,7 +30,7 @@ export function PagePermissionGuard({ children }: React.PropsWithChildren) {
 
   const hasPermission = useHasPermissions(
     requiredPermissions ?? [],
-    PermissionMode.Any,
+    PermissionMode.ANY,
   )
 
   useEffect(() => {

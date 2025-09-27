@@ -1,9 +1,9 @@
 'use client'
 
+import { PermissionMode } from '@mono/constants'
 import type { VariantProps } from 'class-variance-authority'
 
 import { Button, type buttonVariants } from '~/components/ui/button'
-import { PermissionMode } from '~/constants/permission'
 import { useHasPermissions } from '~/lib/permissions/hooks'
 import { type PermissionFlag } from '~/lib/permissions/matcher'
 
@@ -22,7 +22,7 @@ type PermitButtonProps
 export function PermitButton(props: PermitButtonProps) {
   const {
     required,
-    mode = PermissionMode.Any,
+    mode = PermissionMode.ANY,
     hideIfDenied = false,
     children,
     disabled,

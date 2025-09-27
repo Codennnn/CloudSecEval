@@ -1,6 +1,5 @@
+import type { BusinessCode } from '@mono/constants'
 import { type ApiBodyOptions, type ApiOperationOptions, type ApiResponseOptions, type ApiResponseSchemaHost } from '@nestjs/swagger'
-
-import type { BusinessCode } from '~/common/constants/business-codes'
 
 /**
  * 基础类型定义

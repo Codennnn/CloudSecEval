@@ -1,3 +1,4 @@
+import { PERMISSIONS } from '@mono/constants'
 import {
   BadRequestException,
   Body,
@@ -22,7 +23,7 @@ import { BUG_REPORTS_API_CONFIG } from '~/config/documentation/api-operations.co
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
 import { JwtAuthGuard } from '~/modules/auth/guards/jwt-auth.guard'
-import { PERMISSIONS, RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
+import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
 import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 
 import { CurrentUserDto } from '../users/dto/base-user.dto'

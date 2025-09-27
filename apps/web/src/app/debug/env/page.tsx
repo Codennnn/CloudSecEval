@@ -17,10 +17,6 @@ const publicEnvKeys: { key: string, value: string | undefined }[] = [
     value: process.env.NEXT_PUBLIC_ORAMA_ENDPOINT,
   },
   {
-    key: 'NEXT_PUBLIC_ENABLE_PAID_CONTENT_MODE',
-    value: process.env.NEXT_PUBLIC_ENABLE_PAID_CONTENT_MODE,
-  },
-  {
     key: 'NEXT_PUBLIC_API_BASE',
     value: process.env.NEXT_PUBLIC_API_BASE,
   },

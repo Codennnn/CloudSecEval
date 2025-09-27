@@ -1,10 +1,9 @@
+import { AUTH_STRATEGIES, BUSINESS_CODES } from '@mono/constants'
 import { Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import type { IVerifyOptions } from 'passport-local'
 
 import { User } from '#prisma/client'
-import { AUTH_STRATEGIES } from '~/common/constants/auth-strategies'
-import { BUSINESS_CODES } from '~/common/constants/business-codes'
 import { BusinessException } from '~/common/exceptions/business.exception'
 
 import { AuthError } from '../types/auth.type'

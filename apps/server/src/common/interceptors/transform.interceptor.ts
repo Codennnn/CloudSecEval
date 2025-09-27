@@ -1,8 +1,8 @@
+import { BUSINESS_CODES, getBusinessCodeMessage } from '@mono/constants'
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor, StreamableFile } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
-import { BUSINESS_CODES, getBusinessCodeMessage } from '../constants/business-codes'
 import { StandardListResponseDto, StandardResponseDto } from '../dto/standard-response.dto'
 
 @Injectable()
