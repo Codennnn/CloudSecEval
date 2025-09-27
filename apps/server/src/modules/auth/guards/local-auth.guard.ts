@@ -69,7 +69,7 @@ export class LocalAuthGuard extends AuthGuard(AUTH_STRATEGIES.LOCAL) {
       }
 
       // 其他验证失败情况
-      throw BusinessException.unauthorized(
+      throw new BusinessException(
         BUSINESS_CODES.INVALID_CREDENTIALS,
         '邮箱或密码错误',
       )

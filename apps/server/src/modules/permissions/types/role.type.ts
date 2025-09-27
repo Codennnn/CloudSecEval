@@ -4,7 +4,7 @@
 export interface UserEffectivePermissions {
   userId: string
   orgId: string
-  permissions: Set<string>
+  permissions: string[]
   roles: {
     id: string
     name: string

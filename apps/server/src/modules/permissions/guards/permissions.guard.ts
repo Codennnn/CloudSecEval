@@ -42,7 +42,7 @@ export class PermissionsGuard implements CanActivate {
 
     const handler = context.getHandler()
 
-    // 获取权限要求（可能为 undefined）
+    // 根据 permission key 获取权限
     const permissionMetadata = this.reflector.get<PermissionMetadata | undefined>(
       PERMISSIONS_KEY,
       handler,
@@ -51,32 +51,39 @@ export class PermissionsGuard implements CanActivate {
     const { id: userId, organization } = user
 
     try {
-      // 检查是否有全局超级管理员权限快速放行
-      const allowSuperAdmin = permissionMetadata
-        ? permissionMetadata.options.allowSuperAdmin
-        : true
+      if (permissionMetadata) {
+        const { permissions, options } = permissionMetadata
+        const { mode = PermissionMode.ANY, allowSuperAdmin = true } = options
 
-      if (allowSuperAdmin) {
+        const { hasPermission } = await this.permissionsService.checkUserPermissions(
+          userId,
+          organization.id,
+          [
+            ...permissions,
+            // 如果允许超级管理员，则添加超级管理员权限
+            ...allowSuperAdmin
+              ? [SYSTEM_PERMISSIONS.SUPER_ADMIN as PermissionFlag]
+              : [],
+          ],
+          mode,
+        )
+
+        if (!hasPermission) {
+          throw BusinessException.forbidden(
+            BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
+            '权限不足',
+          )
+        }
+      }
+      else {
+        // 如果没有权限元数据，默认检查超级管理员权限
         const superAdminResult = await this.permissionsService.checkUserPermission(
           userId,
           organization.id,
           SYSTEM_PERMISSIONS.SUPER_ADMIN as PermissionFlag,
         )
 
-        if (superAdminResult.hasPermission) {
-          return true
-        }
-      }
-
-      // 检查权限要求（若声明了权限要求）
-      if (permissionMetadata) {
-        const hasPermission = await this.checkPermissions(
-          userId,
-          organization.id,
-          permissionMetadata,
-        )
-
-        if (!hasPermission) {
+        if (!superAdminResult.hasPermission) {
           throw BusinessException.forbidden(
             BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
             '权限不足',
@@ -98,40 +105,5 @@ export class PermissionsGuard implements CanActivate {
         '权限验证失败',
       )
     }
-  }
-
-  /**
-   * 检查权限要求
-   */
-  private async checkPermissions(
-    userId: string,
-    orgId: string,
-    metadata: PermissionMetadata,
-  ): Promise<boolean> {
-    const { permissions, options } = metadata
-    const { mode = PermissionMode.ANY, allowSuperAdmin = true } = options
-
-    // 检查是否有超级管理员权限（如果允许）
-    if (allowSuperAdmin) {
-      const superAdminResult = await this.permissionsService.checkUserPermission(
-        userId,
-        orgId,
-        SYSTEM_PERMISSIONS.SUPER_ADMIN as PermissionFlag,
-      )
-
-      if (superAdminResult.hasPermission) {
-        return true
-      }
-    }
-
-    // 检查具体权限
-    const result = await this.permissionsService.checkUserPermissions(
-      userId,
-      orgId,
-      permissions,
-      mode,
-    )
-
-    return result.hasPermission
   }
 }

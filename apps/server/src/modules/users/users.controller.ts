@@ -1,5 +1,5 @@
 import { PERMISSIONS } from '@mono/constants'
-import { Body, Controller, Delete, Get, Header, Param, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Header, Param, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import type { Response } from 'express'
@@ -11,7 +11,6 @@ import { USERS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
 import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
-import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 import { AvatarValidationPipe } from '~/modules/uploads/pipes/file-validation.pipe'
 
 import { CreateUserDto } from './dto/create-user.dto'
@@ -22,7 +21,6 @@ import { UsersService } from './users.service'
 
 @ApiTags('用户管理')
 @Controller('users')
-@UseGuards(PermissionsGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,

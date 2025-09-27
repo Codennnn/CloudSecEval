@@ -13,7 +13,6 @@ type PermitButtonProps
     & {
       /** 所需的权限（单个权限或权限数组） */
       required: PermissionFlag | PermissionFlag[]
-      /** 权限校验模式：'any' 表示满足任一权限即可，'all' 表示必须满足所有权限 */
       mode?: PermissionMode
       /** 没有权限时是否隐藏按钮 */
       hideIfDenied?: boolean

@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
@@ -18,7 +17,6 @@ import { ROLES_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
 import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
-import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 import { SafeUserDto } from '~/modules/users/dto/base-user.dto'
 
 import { CreateRoleDto } from './dto/create-role.dto'
@@ -28,7 +26,6 @@ import { RolesService } from './roles.service'
 
 @ApiTags('角色管理')
 @Controller('roles')
-@UseGuards(PermissionsGuard)
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

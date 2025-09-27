@@ -12,7 +12,7 @@ export type PermissionFlag = `${Resource}:${string}`
 /**
  * 系统权限常量
  */
-export const SYSTEM_PERMISSIONS: Record<string, PermissionFlag> = {
+export const SYSTEM_PERMISSIONS: Record<string, string> = {
   /** 超级管理员权限，拥有所有权限 */
   SUPER_ADMIN: 'admin:*',
 }

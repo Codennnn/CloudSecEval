@@ -27,7 +27,7 @@ export class AuthService {
     const user = await this.usersService.findByEmailWithPassword(email)
 
     if (!user) {
-      throw BusinessException.unauthorized(
+      throw new BusinessException(
         BUSINESS_CODES.INVALID_CREDENTIALS,
         '用户不存在',
       )
@@ -44,7 +44,7 @@ export class AuthService {
     const isPasswordValid = await this.verifyPassword(password, user.passwordHash)
 
     if (!isPasswordValid) {
-      throw BusinessException.unauthorized(
+      throw new BusinessException(
         BUSINESS_CODES.INVALID_CREDENTIALS,
         '邮箱或密码错误',
       )

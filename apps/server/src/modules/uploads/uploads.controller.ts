@@ -10,7 +10,6 @@ import {
   StreamableFile,
   UploadedFile,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
@@ -23,7 +22,6 @@ import { encodeRFC5987Filename, resp } from '~/common/utils/response.util'
 import { UPLOADS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
-import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 
 import {
   BatchFileDeleteApiResponseDto,
@@ -40,7 +38,6 @@ import { UploadsService } from './uploads.service'
 
 @ApiTags('文件上传')
 @Controller('uploads')
-@UseGuards(PermissionsGuard)
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 

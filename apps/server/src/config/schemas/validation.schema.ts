@@ -15,14 +15,14 @@ export const validationSchema = z.object({
   DATABASE_URL: z.string().min(1, '数据库连接字符串不能为空'),
 
   // JWT 配置
-  JWT_SECRET: z.string().min(1, 'JWT密钥不能为空'),
+  JWT_SECRET: z.string().min(1, 'JWT 密钥不能为空'),
   JWT_EXPIRES_IN: z.string().default(CONFIG_DEFAULTS.JWT_EXPIRES_IN),
   JWT_REFRESH_SECRET: z.string().optional(),
   JWT_REFRESH_EXPIRES_IN: z.string().default(CONFIG_DEFAULTS.JWT_REFRESH_EXPIRES_IN),
 
   // 管理员配置
   ADMIN_EMAIL: z.email('管理员邮箱格式不正确').default(CONFIG_DEFAULTS.ADMIN_EMAIL),
-  ADMIN_PASSWORD: z.string().min(6, '管理员密码至少需要6个字符').default(CONFIG_DEFAULTS.ADMIN_PASSWORD),
+  ADMIN_PASSWORD: z.string().min(6, '管理员密码至少需要 6 个字符').default(CONFIG_DEFAULTS.ADMIN_PASSWORD),
   ADMIN_NAME: z.string().default(CONFIG_DEFAULTS.ADMIN_NAME),
 
   // 时区配置（可选）

@@ -1,5 +1,5 @@
 import { PERMISSIONS } from '@mono/constants'
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
 import { UuidDto } from '~/common/dto/common.dto'
@@ -11,12 +11,10 @@ import { RequirePermissions } from './decorators/require-permissions.decorator'
 import { FindPermissionsDto } from './dto/find-permissions.dto'
 import { CreatePermissionDto } from './dto/permission.dto'
 import { PermissionListApiResponseDto } from './dto/permission-response.dto'
-import { PermissionsGuard } from './guards/permissions.guard'
 import { PermissionsService } from './permissions.service'
 
 @ApiTags('权限管理')
 @Controller('permissions')
-@UseGuards(PermissionsGuard)
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 

@@ -9,7 +9,7 @@ import { matchPermission, type PermissionFlag } from '~/lib/permissions/matcher'
 import { useUserPermissions } from '~admin/stores/useUserStore'
 
 /**
- * Hook：通用权限校验（支持单个权限或多个权限的 any/all 模式）
+ * Hook：通用权限校验（支持单个权限或多个权限的 PermissionMode.ANY/PermissionMode.ALL 模式）
  */
 export function useHasPermissions(
   required: PermissionFlag | PermissionFlag[],

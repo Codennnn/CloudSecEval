@@ -1,4 +1,4 @@
-import { Resource, SYSTEM_PERMISSIONS } from '@mono/constants'
+import { PermissionMode, Resource, SYSTEM_PERMISSIONS } from '@mono/constants'
 import { Injectable } from '@nestjs/common'
 
 import { type Permission, Prisma } from '#prisma/client'
@@ -261,7 +261,7 @@ export class PermissionsRepository {
   checkMultiplePermissions(
     userPermissions: string[],
     requiredPermissions: string[],
-    mode: 'any' | 'all' = 'any',
+    mode: PermissionMode = PermissionMode.ANY,
   ): { hasPermission: boolean, matchedPermissions: string[] } {
     const matchedPermissions: string[] = []
 
@@ -271,7 +271,7 @@ export class PermissionsRepository {
       }
     }
 
-    const hasPermission = mode === 'any'
+    const hasPermission = mode === PermissionMode.ANY
       ? matchedPermissions.length > 0
       : matchedPermissions.length === requiredPermissions.length
 

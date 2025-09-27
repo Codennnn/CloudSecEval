@@ -83,7 +83,10 @@ export class AuthController {
       })
     }
 
-    throw BusinessException.unauthorized(BUSINESS_CODES.INVALID_CREDENTIALS, '登录失败')
+    throw new BusinessException(
+      BUSINESS_CODES.INVALID_CREDENTIALS,
+      '登录失败',
+    )
   }
 
   @Public()

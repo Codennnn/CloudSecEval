@@ -102,16 +102,17 @@ export class PermissionsService {
    * 获取用户有效权限
    */
   async getUserEffectivePermissions(
-    userId: string,
-    orgId: string,
+    userId: User['id'],
+    orgId: Organization['id'],
   ): Promise<UserEffectivePermissions> {
-    const result = await this.permissionsRepository.getUserEffectivePermissions(userId, orgId)
+    const { permissions, roles }
+      = await this.permissionsRepository.getUserEffectivePermissions(userId, orgId)
 
     return {
       userId,
       orgId,
-      permissions: new Set(result.permissions),
-      roles: result.roles,
+      permissions,
+      roles,
     }
   }
 
@@ -121,21 +122,19 @@ export class PermissionsService {
   async checkUserPermission(
     userId: User['id'],
     orgId: Organization['id'],
-    /** 需要检查的权限标识符 */
     requiredPermission: PermissionFlag,
   ): Promise<PermissionCheckResult> {
     const userPermissions = await this.getUserEffectivePermissions(userId, orgId)
-    const userPermissionArray = Array.from(userPermissions.permissions)
 
     const hasPermission = this.permissionsRepository.checkPermissionMatch(
-      userPermissionArray,
+      userPermissions.permissions,
       requiredPermission,
     )
 
     return {
       hasPermission,
       matchedPermissions: hasPermission ? [requiredPermission] : [],
-      userPermissions: userPermissionArray,
+      userPermissions: userPermissions.permissions,
     }
   }
 
@@ -149,17 +148,16 @@ export class PermissionsService {
     mode: PermissionMode = PermissionMode.ANY,
   ): Promise<PermissionCheckResult> {
     const userPermissions = await this.getUserEffectivePermissions(userId, orgId)
-    const userPermissionArray = Array.from(userPermissions.permissions)
 
     const result = this.permissionsRepository.checkMultiplePermissions(
-      userPermissionArray,
+      userPermissions.permissions,
       requiredPermissions,
       mode,
     )
 
     return {
       ...result,
-      userPermissions: userPermissionArray,
+      userPermissions: userPermissions.permissions,
     }
   }
 }

@@ -11,7 +11,6 @@ import {
   Query,
   Res,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
@@ -22,9 +21,7 @@ import { encodeRFC5987Filename, resp, respWithPagination } from '~/common/utils/
 import { BUG_REPORTS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
-import { JwtAuthGuard } from '~/modules/auth/guards/jwt-auth.guard'
 import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
-import { PermissionsGuard } from '~/modules/permissions/guards/permissions.guard'
 
 import { CurrentUserDto } from '../users/dto/base-user.dto'
 import { BugReportsService } from './bug-reports.service'
@@ -63,7 +60,6 @@ import {
 } from './dto/update-bug-report.dto'
 
 @ApiTags('漏洞报告管理')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('bug-reports')
 export class BugReportsController {
   constructor(private readonly bugReportsService: BugReportsService) {}
