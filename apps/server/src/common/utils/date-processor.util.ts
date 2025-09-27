@@ -1,6 +1,8 @@
 import { TZDate } from '@date-fns/tz'
-import { BadRequestException } from '@nestjs/common'
+import { BUSINESS_CODES } from '@mono/constants'
 import { addDays, format, startOfDay, subDays } from 'date-fns'
+
+import { BusinessException } from '~/common/exceptions/business.exception'
 
 const DEFAULT_TIMEZONE = process.env.TIMEZONE ?? 'Asia/Shanghai'
 
@@ -41,7 +43,7 @@ export type DataAggregator<T> = (item: T) => number
  *
  * @param config 日期范围配置
  * @returns 规范化后的开始和结束日期
- * @throws BadRequestException 当日期范围无效时抛出异常
+ * @throws BusinessException 当日期范围无效时抛出异常
  */
 export function normalizeDateRange(config: DateRangeConfig): {
   startDate: Date
@@ -75,7 +77,10 @@ export function normalizeDateRange(config: DateRangeConfig): {
 
   // 日期有效性校验：确保 endDate 不早于 startDate
   if (finalStartDate && finalEndDate && finalEndDate < finalStartDate) {
-    throw new BadRequestException('结束日期不能早于开始日期')
+    throw BusinessException.badRequest(
+      BUSINESS_CODES.INVALID_PARAMETER,
+      '结束日期不能早于开始日期',
+    )
   }
 
   return {
@@ -91,7 +96,7 @@ export function normalizeDateRange(config: DateRangeConfig): {
  * @param startDate 开始日期
  * @param endDate 结束日期
  * @param maxRangeDays 最大日期范围天数，默认为 365 天
- * @throws BadRequestException 当日期无效或范围超出限制时抛出异常
+ * @throws BusinessException 当日期无效或范围超出限制时抛出异常
  */
 export function validateDateRange(
   startDate: Date,
@@ -100,16 +105,25 @@ export function validateDateRange(
 ): void {
   // 检查日期是否为有效的 Date 对象
   if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
-    throw new BadRequestException('开始日期格式无效')
+    throw BusinessException.badRequest(
+      BUSINESS_CODES.INVALID_PARAMETER,
+      '开始日期格式无效',
+    )
   }
 
   if (!(endDate instanceof Date) || isNaN(endDate.getTime())) {
-    throw new BadRequestException('结束日期格式无效')
+    throw BusinessException.badRequest(
+      BUSINESS_CODES.INVALID_PARAMETER,
+      '结束日期格式无效',
+    )
   }
 
   // 检查日期逻辑顺序
   if (endDate < startDate) {
-    throw new BadRequestException('结束日期不能早于开始日期')
+    throw BusinessException.badRequest(
+      BUSINESS_CODES.INVALID_PARAMETER,
+      '结束日期不能早于开始日期',
+    )
   }
 
   // 检查日期范围是否超出限制
@@ -118,7 +132,8 @@ export function validateDateRange(
   )
 
   if (daysDiff > maxRangeDays) {
-    throw new BadRequestException(
+    throw BusinessException.badRequest(
+      BUSINESS_CODES.INVALID_PARAMETER,
       `日期范围不能超过 ${maxRangeDays} 天，当前范围为 ${daysDiff} 天`,
     )
   }

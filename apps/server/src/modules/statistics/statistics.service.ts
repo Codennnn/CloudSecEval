@@ -377,7 +377,7 @@ export class StatisticsService {
    * @param endDate 结束日期（可选，用于填充完整时间序列）
    * @param timezone 目标时区，默认从配置中读取
    * @returns 时间序列数据点数组
-   * @throws BadRequestException 当 endDate 早于 startDate 时抛出异常
+   * @throws BusinessException 当 endDate 早于 startDate 时抛出异常
    */
   private processDateGroupedData(
     data: { createdAt: Date, _count: { id: number } }[],

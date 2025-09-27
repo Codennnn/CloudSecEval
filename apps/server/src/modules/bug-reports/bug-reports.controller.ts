@@ -1,6 +1,5 @@
-import { PERMISSIONS } from '@mono/constants'
+import { BUSINESS_CODES, PERMISSIONS } from '@mono/constants'
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -17,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 
+import { BusinessException } from '~/common/exceptions/business.exception'
 import { encodeRFC5987Filename, resp, respWithPagination } from '~/common/utils/response.util'
 import { BUG_REPORTS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
@@ -415,7 +415,10 @@ export class BugReportsController {
     @CurrentUser() currentUser: CurrentUserDto,
   ) {
     if (!file) {
-      throw new BadRequestException('请选择要导入的JSON文件')
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.MISSING_PARAMETER,
+        '请选择要导入的JSON文件'
+      )
     }
 
     const importedReport = await this.bugReportsService.importBugReport(

@@ -1,5 +1,6 @@
-import { BadRequestException } from '@nestjs/common'
 import { addDays, subDays } from 'date-fns'
+
+import { BusinessException } from '~/common/exceptions/business.exception'
 
 import {
   formatDateInTimezone,
@@ -57,7 +58,7 @@ describe('DateProcessorUtil', () => {
 
       expect(() => {
         normalizeDateRange({ startDate, endDate })
-      }).toThrow(BadRequestException)
+      }).toThrow(BusinessException)
     })
 
     it('应该使用自定义时区', () => {
@@ -83,7 +84,7 @@ describe('DateProcessorUtil', () => {
 
       expect(() => {
         validateDateRange(startDate, endDate)
-      }).toThrow(BadRequestException)
+      }).toThrow(BusinessException)
     })
 
     it('应该在结束日期无效时抛出异常', () => {
@@ -92,7 +93,7 @@ describe('DateProcessorUtil', () => {
 
       expect(() => {
         validateDateRange(startDate, endDate)
-      }).toThrow(BadRequestException)
+      }).toThrow(BusinessException)
     })
 
     it('应该在结束日期早于开始日期时抛出异常', () => {
@@ -101,7 +102,7 @@ describe('DateProcessorUtil', () => {
 
       expect(() => {
         validateDateRange(startDate, endDate)
-      }).toThrow(BadRequestException)
+      }).toThrow(BusinessException)
     })
 
     it('应该在日期范围超出限制时抛出异常', () => {
@@ -110,7 +111,7 @@ describe('DateProcessorUtil', () => {
 
       expect(() => {
         validateDateRange(startDate, endDate, 100)
-      }).toThrow(BadRequestException)
+      }).toThrow(BusinessException)
     })
   })
 

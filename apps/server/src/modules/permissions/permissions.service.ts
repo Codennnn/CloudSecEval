@@ -1,5 +1,5 @@
 import { BUSINESS_CODES, PermissionFlag, PermissionMode } from '@mono/constants'
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 
 import { Organization, User } from '#prisma/client'
 import { BusinessException } from '~/common/exceptions/business.exception'
@@ -9,11 +9,6 @@ import { BasePermissionDto, CreatePermissionDto, PermissionGroupDto } from './dt
 import { PermissionsRepository } from './permissions.repository'
 import { PermissionCheckResult, UserEffectivePermissions } from './types/role.type'
 
-/**
- * 权限业务逻辑层
- *
- * 处理权限相关的业务逻辑和权限检查
- */
 @Injectable()
 export class PermissionsService {
   constructor(
@@ -29,7 +24,7 @@ export class PermissionsService {
     if (exists) {
       throw BusinessException.badRequest(
         BUSINESS_CODES.DUPLICATE_RESOURCE,
-        `权限 "${slug}" 已存在`,
+        `权限「${slug}」已存在`,
       )
     }
 
@@ -47,7 +42,10 @@ export class PermissionsService {
     const permission = await this.permissionsRepository.findById(id)
 
     if (!permission) {
-      throw new NotFoundException(`权限 ID ${id} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `权限 ID ${id} 不存在`,
+      )
     }
 
     return permission
@@ -85,7 +83,10 @@ export class PermissionsService {
     const permission = await this.permissionsRepository.findById(id)
 
     if (!permission) {
-      throw new NotFoundException(`权限 ID ${id} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `权限 ID ${id} 不存在`,
+      )
     }
 
     if (permission.system) {

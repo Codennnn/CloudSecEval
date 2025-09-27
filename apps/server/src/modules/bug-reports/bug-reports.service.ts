@@ -1,5 +1,5 @@
 import { BUSINESS_CODES } from '@mono/constants'
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import archiver from 'archiver'
 import { promises as fs } from 'fs'
@@ -274,7 +274,10 @@ export class BugReportsService {
     const bugReport = await this.findBugReportOrThrow(id)
 
     if (bugReport.status !== BugReportStatus.REJECTED) {
-      throw new BadRequestException('只能重新提交被驳回的报告')
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_STATUS_TRANSITION,
+        '只能重新提交被驳回的报告',
+      )
     }
 
     // 检测变更字段
@@ -413,11 +416,17 @@ export class BugReportsService {
 
     // 验证权限和状态
     if (bugReport.status !== BugReportStatus.DRAFT) {
-      throw new BadRequestException('只能更新草稿状态的报告')
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_STATUS_TRANSITION,
+        '只能更新草稿状态的报告',
+      )
     }
 
     if (bugReport.userId !== currentUser.id) {
-      throw new BadRequestException('只能更新自己的草稿')
+      throw BusinessException.forbidden(
+        BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
+        '只能更新自己的草稿',
+      )
     }
 
     // 处理附件更新
@@ -462,11 +471,17 @@ export class BugReportsService {
 
     // 验证权限和状态
     if (bugReport.status !== BugReportStatus.DRAFT) {
-      throw new BadRequestException('只能提交草稿状态的报告')
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_STATUS_TRANSITION,
+        '只能提交草稿状态的报告',
+      )
     }
 
     if (bugReport.userId !== currentUser.id) {
-      throw new BadRequestException('只能提交自己的草稿')
+      throw BusinessException.forbidden(
+        BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
+        '只能提交自己的草稿',
+      )
     }
 
     // 处理附件
@@ -523,7 +538,8 @@ export class BugReportsService {
    */
   private async processAttachments(attachmentIds: string[]) {
     if (attachmentIds.length > BUG_REPORT_ATTACHMENTS.MAX_COUNT) {
-      throw new BadRequestException(
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_PARAMETER,
         `附件数量不能超过 ${BUG_REPORT_ATTACHMENTS.MAX_COUNT} 个`,
       )
     }
@@ -542,11 +558,15 @@ export class BugReportsService {
         !BUG_REPORT_ATTACHMENTS.ALLOWED_TYPES
           .includes(storedFile.mimeType as (typeof BUG_REPORT_ATTACHMENTS.ALLOWED_TYPES)[number])
       ) {
-        throw new BadRequestException(`不支持的文件类型: ${storedFile.mimeType}`)
+        throw BusinessException.badRequest(
+          BUSINESS_CODES.FILE_TYPE_NOT_ALLOWED,
+          `不支持的文件类型: ${storedFile.mimeType}`,
+        )
       }
 
       if (storedFile.size > BUG_REPORT_ATTACHMENTS.MAX_SIZE) {
-        throw new BadRequestException(
+        throw BusinessException.badRequest(
+          BUSINESS_CODES.FILE_SIZE_EXCEEDED,
           `文件大小不能超过 ${BUG_REPORT_ATTACHMENTS.MAX_SIZE / 1024 / 1024}MB`,
         )
       }
@@ -626,7 +646,10 @@ export class BugReportsService {
         break
 
       default:
-        throw new BadRequestException('不支持的审批动作')
+        throw BusinessException.badRequest(
+          BUSINESS_CODES.INVALID_PARAMETER,
+          '不支持的审批动作',
+        )
     }
 
     // 只有操作成功后才记录审批日志
@@ -686,7 +709,10 @@ export class BugReportsService {
       }, currentUser)
     }
     else {
-      throw new BadRequestException(`当前状态 ${bugReport.status} 不支持审批通过操作`)
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_STATUS_TRANSITION,
+        `当前状态 ${bugReport.status} 不支持审批通过操作`,
+      )
     }
   }
 
@@ -735,7 +761,10 @@ export class BugReportsService {
     currentUser: CurrentUserDto,
   ) {
     if (!dto.targetUserId) {
-      throw new BadRequestException('转发操作需要指定目标用户')
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_PARAMETER,
+        '转发操作需要指定目标用户',
+      )
     }
 
     // 先更新审批意见
@@ -764,17 +793,26 @@ export class BugReportsService {
     const validStatuses: BugReportStatus[] = [BugReportStatus.PENDING, BugReportStatus.IN_REVIEW]
 
     if (!validStatuses.includes(bugReport.status)) {
-      throw new BadRequestException(`当前状态 ${bugReport.status} 不允许审批操作`)
+      throw BusinessException.badRequest(
+        BUSINESS_CODES.INVALID_PARAMETER,
+        `当前状态 ${bugReport.status} 不允许审批操作`,
+      )
     }
 
     // 检查组织权限
     if (bugReport.orgId !== currentUser.organization.id) {
-      throw new BadRequestException('只能审批本组织的漏洞报告')
+      throw BusinessException.forbidden(
+        BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
+        '只能审批本组织的漏洞报告',
+      )
     }
 
     // 检查是否是自己提交的报告（不能自审）
     if (bugReport.userId === currentUser.id) {
-      throw new BadRequestException('不能审批自己提交的漏洞报告')
+      throw BusinessException.forbidden(
+        BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
+        '不能审批自己提交的漏洞报告',
+      )
     }
 
     // 转发操作需要额外验证目标用户
@@ -910,7 +948,7 @@ export class BugReportsService {
 
     // 权限检查
     if (bugReport.orgId !== currentUser.organization.id) {
-      throw new BadRequestException('只能导出本组织的漏洞报告')
+      throw BusinessException.forbidden(BUSINESS_CODES.INSUFFICIENT_PERMISSIONS, '只能导出本组织的漏洞报告')
     }
 
     // 获取完整数据（包含组织信息）
@@ -957,7 +995,7 @@ export class BugReportsService {
 
     // 权限检查
     if (bugReport.orgId !== currentUser.organization.id) {
-      throw new BadRequestException('只能导出本组织的漏洞报告')
+      throw BusinessException.forbidden(BUSINESS_CODES.INSUFFICIENT_PERMISSIONS, '只能导出本组织的漏洞报告')
     }
 
     // 获取完整数据
@@ -1319,21 +1357,21 @@ export class BugReportsService {
       importData = JSON.parse(jsonContent) as ImportDataType
     }
     catch {
-      throw new BadRequestException('无效的JSON文件格式')
+      throw BusinessException.badRequest(BUSINESS_CODES.INVALID_PARAMETER, '无效的JSON文件格式')
     }
 
     // 数据验证
     if (!importData.exportMeta || !importData.report) {
-      throw new BadRequestException('无效的导出文件格式')
+      throw BusinessException.badRequest(BUSINESS_CODES.INVALID_PARAMETER, '无效的导出文件格式')
     }
 
     if (!importData.report.title || !importData.report.severity) {
-      throw new BadRequestException('缺少必要的报告信息')
+      throw BusinessException.badRequest(BUSINESS_CODES.MISSING_PARAMETER, '缺少必要的报告信息')
     }
 
     // 验证严重性等级
     if (!this.isValidBugSeverity(importData.report.severity)) {
-      throw new BadRequestException(`无效的严重性等级: ${importData.report.severity}`)
+      throw BusinessException.badRequest(BUSINESS_CODES.INVALID_PARAMETER, `无效的严重性等级: ${importData.report.severity}`)
     }
 
     // 对富文本内容进行消毒处理

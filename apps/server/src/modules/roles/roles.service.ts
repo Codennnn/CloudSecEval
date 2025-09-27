@@ -1,5 +1,5 @@
 import { BUSINESS_CODES } from '@mono/constants'
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 
 import { Organization } from '#prisma/client'
 import { BusinessException } from '~/common/exceptions/business.exception'
@@ -66,7 +66,10 @@ export class RolesService {
     const role = await this.rolesRepository.findById(id, orgId)
 
     if (!role) {
-      throw new NotFoundException(`角色 ID ${id} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `角色 ID ${id} 不存在`,
+      )
     }
 
     return role
@@ -77,12 +80,18 @@ export class RolesService {
     const existingRole = await this.rolesRepository.findById(id, orgId)
 
     if (!existingRole) {
-      throw new NotFoundException(`角色 ID ${id} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `角色 ID ${id} 不存在`,
+      )
     }
 
     // 检查是否尝试修改系统角色
     if (existingRole.system) {
-      throw new ForbiddenException('不能修改系统内置角色')
+      throw BusinessException.forbidden(
+        BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
+        '不能修改系统内置角色',
+      )
     }
 
     // 如果更新了slug，检查是否冲突
@@ -124,11 +133,17 @@ export class RolesService {
     const role = await this.rolesRepository.findById(id, orgId)
 
     if (!role) {
-      throw new NotFoundException(`角色 ID ${id} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `角色 ID ${id} 不存在`,
+      )
     }
 
     if (role.system) {
-      throw new ForbiddenException('不能删除系统内置角色')
+      throw BusinessException.forbidden(
+        BUSINESS_CODES.INSUFFICIENT_PERMISSIONS,
+        '不能删除系统内置角色',
+      )
     }
 
     // TODO: 检查是否有用户正在使用该角色，如果有则提示或转移
@@ -146,7 +161,10 @@ export class RolesService {
     const role = await this.rolesRepository.findById(id, orgId)
 
     if (!role) {
-      throw new NotFoundException(`角色 ID ${id} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `角色 ID ${id} 不存在`,
+      )
     }
 
     return this.rolesRepository.getRolePermissions(id)
@@ -159,7 +177,10 @@ export class RolesService {
     const role = await this.rolesRepository.findById(roleId, orgId)
 
     if (!role) {
-      throw new NotFoundException(`角色 ID ${roleId} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `角色 ID ${roleId} 不存在`,
+      )
     }
 
     return this.rolesRepository.getRoleMembers(roleId, orgId, query)
@@ -173,7 +194,10 @@ export class RolesService {
     const sourceRole = await this.rolesRepository.findById(id, orgId)
 
     if (!sourceRole) {
-      throw new NotFoundException(`源角色 ID ${id} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `源角色 ID ${id} 不存在`,
+      )
     }
 
     // 获取源角色的权限
@@ -206,7 +230,10 @@ export class RolesService {
     const role = await this.rolesRepository.findById(roleId, orgId)
 
     if (!role) {
-      throw new NotFoundException(`角色 ID ${roleId} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `角色 ID ${roleId} 不存在`,
+      )
     }
 
     if (!role.isActive) {
@@ -280,7 +307,10 @@ export class RolesService {
     const role = await this.rolesRepository.findById(roleId, orgId)
 
     if (!role) {
-      throw new NotFoundException(`角色 ID ${roleId} 不存在`)
+      throw BusinessException.notFound(
+        BUSINESS_CODES.RESOURCE_NOT_FOUND,
+        `角色 ID ${roleId} 不存在`,
+      )
     }
 
     if (!Array.isArray(userIds) || userIds.length === 0) {
