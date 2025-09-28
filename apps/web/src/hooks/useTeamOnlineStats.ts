@@ -18,7 +18,7 @@ const teamData: DepartmentOnlineStatsDto[] = [
       name: '广东网安科技攻击队 1',
       remark: '红队',
     },
-    online: 3,
+    online: 0,
   },
   {
     department: {
@@ -26,7 +26,7 @@ const teamData: DepartmentOnlineStatsDto[] = [
       name: '广东网安科技攻击队 2',
       remark: '红队',
     },
-    online: 3,
+    online: 0,
   },
   {
     department: {
@@ -34,7 +34,7 @@ const teamData: DepartmentOnlineStatsDto[] = [
       name: '众测团队',
       remark: '红队',
     },
-    online: 8,
+    online: 0,
   },
 ]
 
@@ -214,9 +214,7 @@ export function useTeamOnlineStats() {
       }
 
   // 生成团队在线数据（用于饼图）
-  const teamOnlineData: TeamOnlineData[] = adjustedData.data.departments
-    .filter((d) => d.online > 0
-      && isRedTeam(d.department.remark))
+  const teamOnlineData: TeamOnlineData[] = teamData
     .map((d) => {
       const role = getTeamRole(d.department.remark)
 
@@ -228,9 +226,7 @@ export function useTeamOnlineStats() {
     })
 
   // 计算所有红队部门的总在线人数（包括在线人数为0的部门）
-  const totalOnline = adjustedData.data.departments
-    .filter((d) => isRedTeam(d.department.remark))
-    .reduce((sum, d) => sum + d.online, 0)
+  const totalOnline = 0
 
   return {
     data: adjustedData,

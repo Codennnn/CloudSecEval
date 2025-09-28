@@ -417,7 +417,7 @@ export class BugReportsController {
     if (!file) {
       throw BusinessException.badRequest(
         BUSINESS_CODES.MISSING_PARAMETER,
-        '请选择要导入的JSON文件'
+        '请选择要导入的JSON文件',
       )
     }
 

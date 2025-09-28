@@ -198,7 +198,9 @@ interface RangeInputProps {
   placeholder?: [string, string]
 }
 
-function RangeInput({ value, onChange, fieldType, disabled, placeholder }: RangeInputProps) {
+function RangeInput(props: RangeInputProps) {
+  const { value, onChange, fieldType, disabled, placeholder } = props
+
   const [startValue, endValue] = value ?? []
 
   const handleStartChange = useEvent((newValue: string | number | undefined) => {
