@@ -19,6 +19,9 @@ COPY packages/ ./packages/
 # 安装所有依赖（含 dev，便于后续构建）
 RUN pnpm install --frozen-lockfile --registry=${NPM_REGISTRY}
 
+# 构建 workspace 包
+RUN cd packages/constants && pnpm run build
+
 # 复制 Prisma 配置与 schema 并生成客户端（生产环境使用 --no-engine）
 COPY apps/server/prisma.config.ts ./apps/server/
 COPY apps/server/src/prisma ./apps/server/src/prisma
@@ -49,6 +52,8 @@ COPY packages/ ./packages/
 
 # 复用 deps 阶段的依赖与 Prisma Client
 COPY --from=deps /app/node_modules ./node_modules
+# 复用构建好的 workspace 包
+COPY --from=deps /app/packages/constants/dist ./packages/constants/dist
 COPY --from=deps /app/apps/server/prisma.config.ts ./apps/server/
 COPY --from=deps /app/apps/server/src/prisma ./apps/server/src/prisma
 COPY --from=deps /app/apps/server/generated ./apps/server/generated
@@ -102,6 +107,8 @@ COPY --from=builder /app/apps/server/dist ./apps/server/dist
 COPY --from=builder /app/apps/server/prisma.config.ts ./apps/server/
 COPY --from=builder /app/apps/server/src/prisma ./apps/server/src/prisma
 COPY --from=builder /app/apps/server/generated ./apps/server/generated
+# 复制构建好的 workspace 包
+COPY --from=builder /app/packages/constants/dist ./packages/constants/dist
 
 # 创建并授权存储目录和临时目录（确保后续使用 node 用户可写）
 RUN mkdir -p /app/apps/server/storage /app/apps/server/temp && chown -R node:node /app/apps/server/storage /app/apps/server/temp

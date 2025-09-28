@@ -36,6 +36,9 @@ COPY --from=deps /app/packages/constants/node_modules ./packages/constants/node_
 COPY apps/web ./apps/web
 COPY packages/constants ./packages/constants
 
+# 构建 workspace 包
+RUN cd packages/constants && pnpm run build
+
 # 设置工作目录到 web 应用
 WORKDIR /app/apps/web
 
