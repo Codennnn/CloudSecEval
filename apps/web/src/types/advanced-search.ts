@@ -76,7 +76,7 @@ export interface SearchField {
   label: string
   /** 字段数据类型 */
   type: FieldTypeEnum
-  /** 枚举选项（仅当 type 为 'enum' 时需要） */
+  /** 枚举选项 */
   options?: { value: string, label: string }[]
   /** 字段描述 */
   description?: string

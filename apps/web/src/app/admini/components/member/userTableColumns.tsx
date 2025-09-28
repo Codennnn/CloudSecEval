@@ -48,6 +48,11 @@ export function createUserColumns(
     {
       accessorKey: 'isActive',
       header: '状态',
+      type: FieldTypeEnum.BOOLEAN,
+      enumOptions: [
+        { value: true, label: '已启用' },
+        { value: false, label: '已禁用' },
+      ],
       cell: ({ row }) => (
         <Badge variant={row.original.isActive ? 'secondary' : 'default'}>
           {row.original.isActive ? '已启用' : '已禁用'}

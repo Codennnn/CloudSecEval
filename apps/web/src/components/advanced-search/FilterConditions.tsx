@@ -219,22 +219,22 @@ function SearchConditionRow(props: SearchConditionProps) {
         )}
 
         {/* MARK: 字段选择 */}
-        <div>
+        <div className="flex items-center">
           {renderFieldSelect()}
         </div>
 
         {/* MARK: 操作符选择 */}
-        <div>
+        <div className="flex items-center">
           {renderOperatorSelect()}
         </div>
 
         {/* MARK: 值输入 */}
-        <div>
+        <div className="flex items-center">
           {renderValueInput()}
         </div>
 
         {/* 操作按钮 */}
-        <div className="pt-0.5">
+        <div className="flex items-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

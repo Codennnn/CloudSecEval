@@ -76,6 +76,11 @@ export function TableToolbar(props: TableToolbarProps) {
     onColumnVisibilityChange,
   } = props
 
+  const handleConfigChange = useEvent((newConfig: SearchConfig) => {
+    const params = generateQueryParams(newConfig)
+    onQueryParamsChange?.(params)
+  })
+
   const {
     config,
     setConfig,
@@ -90,12 +95,12 @@ export function TableToolbar(props: TableToolbarProps) {
     removeSortCondition,
     duplicateSortCondition,
     clearSortConditions,
+    triggerSearch,
   } = useSearchBuilder({
     initialConfig,
-    onChange: (newConfig) => {
-      const params = generateQueryParams(newConfig)
-      onQueryParamsChange?.(params)
-    },
+    enableDebounce: true,
+    debounceMs: 600,
+    onChange: handleConfigChange,
   })
 
   // 列可见性管理
@@ -131,6 +136,17 @@ export function TableToolbar(props: TableToolbarProps) {
       addSortCondition(fieldKey, SortOrder.ASC)
     },
   )
+
+  // 清除操作立即触发搜索，不等待防抖
+  const handleClearConditions = useEvent(() => {
+    clearConditions()
+    triggerSearch()
+  })
+
+  const handleClearSortConditions = useEvent(() => {
+    clearSortConditions()
+    triggerSearch()
+  })
 
   const hasFilterConditions = config.filterConditions.length > 0
   const hasSortConditions = config.sortConditions.length > 0
@@ -220,9 +236,7 @@ export function TableToolbar(props: TableToolbarProps) {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
-                            clearConditions()
-                          }}
+                          onClick={handleClearConditions}
                         >
                           <TrashIcon />
                         </Button>
@@ -317,9 +331,7 @@ export function TableToolbar(props: TableToolbarProps) {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
-                            clearSortConditions()
-                          }}
+                          onClick={handleClearSortConditions}
                         >
                           <TrashIcon />
                         </Button>

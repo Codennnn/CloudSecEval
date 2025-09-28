@@ -34,7 +34,10 @@ export function generateSearchFields<TData>(columns: TableColumnDef<TData>[]): S
         label: header,
         type: fieldType,
         visible,
-        options: column.enumOptions,
+        options: column.enumOptions?.map((option) => ({
+          label: option.label,
+          value: String(option.value),
+        })),
         sortable: column.enableSorting,
         enableHiding: column.enableHiding,
       }

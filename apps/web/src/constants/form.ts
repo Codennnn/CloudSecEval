@@ -25,7 +25,7 @@ export const enum FieldTypeEnum {
 
 /**
  * 操作符分组枚举
- * 定义操作符的逻辑分组类型，用于在UI中进行分类展示
+ * 定义操作符的逻辑分组类型，用于在 UI 中进行分类展示
  */
 export const enum OperatorGroupEnum {
   /** 相等性操作符分组 - 用于精确匹配 */

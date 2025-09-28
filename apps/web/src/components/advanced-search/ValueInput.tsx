@@ -1,13 +1,7 @@
-/**
- * 动态值输入组件
- *
- * 根据字段类型和操作符自动选择合适的输入组件
- * 支持文本、数值、日期、布尔值、枚举、数组、范围等多种输入类型
- */
-
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
+import { useEvent } from 'react-use-event-hook'
 
 import { format } from 'date-fns'
 import { Calendar, CalendarClock } from 'lucide-react'
@@ -34,9 +28,9 @@ interface ValueInputProps {
   /** 操作符 */
   operator: SearchOperator
   /** 当前值 */
-  value: unknown
+  value?: unknown
   /** 值变更回调 */
-  onChange: (value: unknown) => void
+  onChange?: (value: unknown) => void
   /** 是否禁用 */
   disabled?: boolean
   /** 占位符 */
@@ -197,23 +191,23 @@ function FreeInputMultiSelect({
  * 范围输入组件（用于 between 操作符）
  */
 interface RangeInputProps {
-  value: [string | number | undefined, string | number | undefined]
-  onChange: (value: [string | number | undefined, string | number | undefined]) => void
+  value?: [string | number | undefined, string | number | undefined]
+  onChange?: (value: RangeInputProps['value']) => void
   fieldType: FieldTypeEnum
   disabled?: boolean
   placeholder?: [string, string]
 }
 
 function RangeInput({ value, onChange, fieldType, disabled, placeholder }: RangeInputProps) {
-  const [startValue, endValue] = value
+  const [startValue, endValue] = value ?? []
 
-  const handleStartChange = useCallback((newValue: string | number | undefined) => {
-    onChange([newValue, endValue])
-  }, [onChange, endValue])
+  const handleStartChange = useEvent((newValue: string | number | undefined) => {
+    onChange?.([newValue, endValue])
+  })
 
-  const handleEndChange = useCallback((newValue: string | number | undefined) => {
-    onChange([startValue, newValue])
-  }, [onChange, startValue])
+  const handleEndChange = useEvent((newValue: string | number | undefined) => {
+    onChange?.([startValue, newValue])
+  })
 
   if (fieldType === FieldTypeEnum.DATE) {
     return (
@@ -311,9 +305,6 @@ function RangeInput({ value, onChange, fieldType, disabled, placeholder }: Range
 }
 
 /**
- * 值输入组件主体
- */
-/**
  * 安全地将值转换为字符串
  */
 function safeStringify(val: unknown): string {
@@ -332,6 +323,12 @@ function safeStringify(val: unknown): string {
   return ''
 }
 
+/**
+ * 动态值输入组件
+ *
+ * 根据字段类型和操作符自动选择合适的输入组件
+ * 支持文本、数值、日期、布尔值、枚举、数组、范围等多种输入类型
+ */
 export function ValueInput(props: ValueInputProps) {
   const {
     field,
@@ -389,7 +386,29 @@ export function ValueInput(props: ValueInputProps) {
 
     // 根据字段类型渲染输入组件
     switch (field.type) {
-      case FieldTypeEnum.BOOLEAN:
+      case FieldTypeEnum.BOOLEAN: {
+        if (field.options) {
+          return (
+            <Select
+              disabled={disabled}
+              value={value as string | undefined}
+              onValueChange={onChange}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={placeholder ?? '请选择'} />
+              </SelectTrigger>
+
+              <SelectContent>
+                {field.options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )
+        }
+
         return (
           <div className="flex items-center space-x-2">
             <Switch
@@ -402,6 +421,7 @@ export function ValueInput(props: ValueInputProps) {
             </Label>
           </div>
         )
+      }
 
       case FieldTypeEnum.ENUM:
         return (
@@ -451,7 +471,7 @@ export function ValueInput(props: ValueInputProps) {
                     : undefined
                 }
                 onSelect={(date) => {
-                  onChange(date?.toISOString().split('T')[0])
+                  onChange?.(date?.toISOString().split('T')[0])
                 }}
               />
             </PopoverContent>
@@ -466,7 +486,7 @@ export function ValueInput(props: ValueInputProps) {
             type="number"
             value={safeStringify(value)}
             onChange={(e) => {
-              onChange(e.target.value ? Number(e.target.value) : undefined)
+              onChange?.(e.target.value ? Number(e.target.value) : undefined)
             }}
           />
         )
@@ -478,7 +498,7 @@ export function ValueInput(props: ValueInputProps) {
             placeholder={placeholder ?? '输入文本'}
             type="text"
             value={safeStringify(value)}
-            onChange={(e) => { onChange(e.target.value) }}
+            onChange={(e) => { onChange?.(e.target.value) }}
           />
         )
     }

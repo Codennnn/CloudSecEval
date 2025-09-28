@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
+import { useDebounce } from '~/hooks/useDebounce'
 import type {
   FilterCondition,
   QueryParams,
@@ -32,6 +33,10 @@ interface UseSearchBuilderOptions {
   onChange?: (config: SearchConfig) => void
   /** 自动验证 */
   autoValidate?: boolean
+  /** 防抖延迟时间（毫秒） */
+  debounceMs?: number
+  /** 是否启用搜索防抖 */
+  enableDebounce?: boolean
 }
 
 /**
@@ -87,6 +92,10 @@ interface UseSearchBuilderReturn {
   isValid: boolean
   /** 验证错误 */
   errors: SearchValidationError[]
+  /** 手动触发搜索（跳过防抖） */
+  triggerSearch: () => void
+  /** 立即执行等待中的防抖函数 */
+  flushSearch: () => void
 
 }
 
@@ -108,6 +117,8 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     initialConfig,
     autoValidate = true,
     onChange,
+    debounceMs = 600,
+    enableDebounce = false,
   } = options
 
   // 初始化配置
@@ -118,9 +129,23 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
   // 验证错误状态
   const [errors, setErrors] = useState<SearchValidationError[]>([])
 
-  // 使用 ref 保持最新的 onChange 回调引用
-  const onChangeRef = useRef(onChange)
-  onChangeRef.current = onChange
+  // 使用防抖hook，内部自动处理配置稳定化
+  const {
+    debouncedCallback: debouncedOnChange,
+    cancel: cancelSearch,
+    flush: flushSearch,
+  } = useDebounce<[SearchConfig]>(
+    (nextConfig) => {
+      onChange?.(nextConfig)
+    },
+    {
+      delay: debounceMs,
+      enabled: enableDebounce && !!onChange,
+      leading: false,
+      trailing: true,
+      maxWait: debounceMs * 3, // 最长等待时间，避免长时间不触发
+    },
+  )
 
   // 追踪是否为初始渲染，避免初始时触发 onChange
   const [isInitialized, setIsInitialized] = useState(false)
@@ -137,15 +162,20 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     },
   )
 
-  // 监听配置变化，延迟触发回调以避免渲染期间状态更新
+  // 监听配置变化，根据防抖设置决定是否延迟触发回调
   useEffect(() => {
     if (isInitialized) {
-      onChangeRef.current?.(config)
+      if (enableDebounce && onChange) {
+        debouncedOnChange(config)
+      }
+      else {
+        onChange?.(config)
+      }
     }
     else {
       setIsInitialized(true)
     }
-  }, [config, isInitialized])
+  }, [config, isInitialized, enableDebounce, onChange, debouncedOnChange])
 
   /**
    * 添加搜索条件
@@ -482,5 +512,15 @@ export function useSearchBuilder(options: UseSearchBuilderOptions = {}): UseSear
     isValid,
     errors,
 
+    // 手动触发搜索（跳过防抖）
+    triggerSearch: useEvent(() => {
+      cancelSearch()
+      onChange?.(config)
+    }),
+
+    // 立即执行等待中的防抖函数
+    flushSearch: useEvent(() => {
+      flushSearch()
+    }),
   }
 }
