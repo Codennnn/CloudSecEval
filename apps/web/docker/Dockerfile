@@ -18,6 +18,7 @@ COPY package.json ./
 # 复制所有必要的 package.json 文件
 COPY apps/web/package.json ./apps/web/
 COPY packages/constants/package.json ./packages/constants/
+COPY packages/utils/package.json ./packages/utils/
 
 # 安装依赖阶段
 FROM base AS deps
@@ -31,13 +32,16 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=deps /app/packages/constants/node_modules ./packages/constants/node_modules
+COPY --from=deps /app/packages/utils/node_modules ./packages/utils/node_modules
 
 # 复制源代码
 COPY apps/web ./apps/web
 COPY packages/constants ./packages/constants
+COPY packages/utils ./packages/utils
 
 # 构建 workspace 包
 RUN cd packages/constants && pnpm run build
+RUN cd packages/utils && pnpm run build
 
 # 设置工作目录到 web 应用
 WORKDIR /app/apps/web

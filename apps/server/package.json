@@ -83,6 +83,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@mono/constants": "workspace:*",
+    "@mono/utils": "workspace:*",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.1.6",
     "@nestjs/config": "^4.0.2",

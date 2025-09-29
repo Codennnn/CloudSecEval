@@ -1,3 +1,4 @@
+import { formatFileSize } from '@mono/utils'
 import { ArchiveIcon, CodeIcon, DatabaseIcon, DownloadIcon, FileIcon, FileSpreadsheetIcon, FileTextIcon, ImageIcon, MusicIcon, PresentationIcon, VideoIcon, XIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -87,19 +88,6 @@ function getFileIcon(filename: string) {
   }
 
   return FileIcon
-}
-
-// 格式化文件大小
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) {
-    return '0 B'
-  }
-
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
 }
 
 async function downloadFileFromAPI(fileId: string, fileName: string): Promise<void> {
@@ -209,7 +197,7 @@ export function UploadedFileList(props: UploadedFileListProps) {
                     </div>
 
                     <p className="text-xs text-muted-foreground">
-                      {formatFileSize(file.size)}
+                      {formatFileSize(file.size, { format: 'short' })}
                     </p>
                   </div>
                 </div>
