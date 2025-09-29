@@ -177,7 +177,7 @@ class FilesUploadDto {
 
 ## 进阶：构建通用的 `ApiResponse`
 
-我们可以通过提供[原始定义](/openapi/types-and-parameters#raw-definitions)的方式，为 Swagger UI 定义通用（或称"泛型"）的 Schema。假设有如下一个 DTO：
+我们可以通过提供[原始定义](/openapi/types-and-parameters#原始定义)的方式，为 Swagger UI 定义通用（或称"泛型"）的 Schema。假设有如下一个 DTO：
 
 ```ts
 export class PaginatedDto<TData> {
@@ -235,7 +235,7 @@ async findAll(): Promise<PaginatedDto<CatDto>> {}
 - `getSchemaPath()` 函数会根据指定的模型类，返回其在 OpenAPI 规范文件中的 Schema 路径。
 - `allOf` 是 OpenAPI 规范 v3 (OAS 3) 中的一个概念，用于组合和继承 Schema，能够处理多种复杂的场景。
 
-最后，由于没有控制器直接引用 `PaginatedDto`，`SwaggerModule` 无法自动为它生成对应的模型定义。因此，我们需要使用 `@ApiExtraModels()` 装饰器将其显式地声明为[额外模型](/openapi/types-and-parameters#extra-models)。例如，在控制器层级添加该装饰器：
+最后，由于没有控制器直接引用 `PaginatedDto`，`SwaggerModule` 无法自动为它生成对应的模型定义。因此，我们需要使用 `@ApiExtraModels()` 装饰器将其显式地声明为[额外模型](/openapi/types-and-parameters#额外模型)。例如，在控制器层级添加该装饰器：
 
 ```ts
 @Controller('cats')

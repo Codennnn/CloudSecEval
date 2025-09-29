@@ -629,7 +629,7 @@ export class JwtAuthGuard extends AuthGuard(['strategy_jwt_1', 'strategy_jwt_2',
 
 ## 全局启用认证
 
-如果你希望大部分路由默认都受到保护，可以将认证守卫注册为[全局守卫](/guards#binding-guards)，这样就无需在每个控制器上都使用 `@UseGuards()` 装饰器，只需为需要公开访问的路由单独标记即可。
+如果你希望大部分路由默认都受到保护，可以将认证守卫注册为[全局守卫](/guards#守卫的绑定方式)，这样就无需在每个控制器上都使用 `@UseGuards()` 装饰器，只需为需要公开访问的路由单独标记即可。
 
 首先，在任意模块中，通过以下方式将 `JwtAuthGuard` 注册为全局守卫：
 
@@ -665,7 +665,7 @@ findAll() {
 }
 ```
 
-最后，需要让 `JwtAuthGuard` 在检测到 `isPublic` 元数据时直接放行。为此，可以使用 `Reflector` 辅助类（详细说明见[此处](/guards#putting-it-all-together)）。
+最后，需要让 `JwtAuthGuard` 在检测到 `isPublic` 元数据时直接放行。为此，可以使用 `Reflector` 辅助类（详细说明见[此处](/guards#角色守卫完整示例)）。
 
 ```ts
 @Injectable()
@@ -709,7 +709,7 @@ constructor(private moduleRef: ModuleRef) {
 
 请确保如上所示，将 `passReqToCallback` 配置属性设置为 `true`。
 
-接着，我们会使用请求实例来获取当前请求的上下文标识符（context ID），而不是生成新的标识符（更多关于请求上下文的内容，请参阅[此节](/fundamentals/module-ref#getting-current-sub-tree)）。
+接着，我们会使用请求实例来获取当前请求的上下文标识符（context ID），而不是生成新的标识符（更多关于请求上下文的内容，请参阅[此节](/fundamentals/module-ref#获取当前请求的上下文)）。
 
 现在，在 `LocalStrategy` 类的 `validate()` 方法中，使用 `ContextIdFactory.getByRequest()` 方法，根据请求对象创建上下文 ID，然后将其传递给 `moduleRef.resolve()` 方法：
 

@@ -34,7 +34,7 @@ export class CatsService implements OnModuleInit {
 
 <CalloutInfo type="warning">
   `get()`
-  方法**无法解析作用域提供者**（如瞬态或请求作用域的依赖）。如果需要访问这类提供者，请参考下文的[解析作用域提供者](#resolving-scoped-providers)部分。关于依赖作用域的完整说明，请参阅[依赖注入作用域](/fundamentals/injection-scopes)。
+  方法**无法解析作用域提供者**（如瞬态或请求作用域的依赖）。如果需要访问这类提供者，请参考下文的[解析作用域提供者](#动态解析作用域提供者)部分。关于依赖作用域的完整说明，请参阅[依赖注入作用域](/fundamentals/injection-scopes)。
 </CalloutInfo>
 
 在某些情况下，你可能希望从**全局上下文**中解析一个定义在其他模块的提供者。此时，可以通过传入 `{ strict: false }` 选项关闭严格模式，从而允许跨模块检索：

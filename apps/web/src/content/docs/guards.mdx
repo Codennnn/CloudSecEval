@@ -236,7 +236,7 @@ async create(@Body() createCatDto: CreateCatDto) {
 
 ### 其他方式
 
-除了自定义装饰器外，你也可以使用更底层的 `@SetMetadata()` 装饰器手动附加元数据，具体用法可参考[反射与元数据](/fundamentals/execution-context#low-level-approach)。
+除了自定义装饰器外，你也可以使用更底层的 `@SetMetadata()` 装饰器手动附加元数据，具体用法可参考[反射与元数据](/fundamentals/execution-context#底层实现方式low-level-approach)。
 
 ## 角色守卫完整示例
 
@@ -278,7 +278,7 @@ export class RolesGuard implements CanActivate {
   的请求处理流程，实现访问权限控制。
 </CalloutInfo>
 
-如果你希望进一步了解如何在上下文感知的场景中使用 `Reflector`，建议阅读执行上下文章节中的[反射与元数据](/fundamentals/execution-context#reflection-and-metadata)部分。
+如果你希望进一步了解如何在上下文感知的场景中使用 `Reflector`，建议阅读执行上下文章节中的[反射与元数据](/fundamentals/execution-context#反射与元数据)部分。
 
 当用户权限不足时，Nest 会自动返回以下响应：
 

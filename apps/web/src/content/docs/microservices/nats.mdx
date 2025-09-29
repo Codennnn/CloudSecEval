@@ -32,11 +32,11 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(
 
 `options` 对象是针对所选传输层特定的配置。NATS 传输层支持[此处](https://github.com/nats-io/node-nats#connection-options)描述的属性，以及下列额外属性：
 
-| 选项               | 说明                                                                                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `queue`            | 服务器应订阅的队列（如设置为 `undefined` 则忽略此配置）。关于 NATS 队列组（queue groups），可阅读[下文](/microservices/nats#queue-groups)。 |
-| `gracefulShutdown` | 是否启用优雅关闭（graceful shutdown）。启用后，服务器会在关闭连接前先取消所有频道的订阅。默认值为 `false`。                                 |
-| `gracePeriod`      | 在取消所有频道订阅后，服务器等待的时间（毫秒）。默认值为 `10000` 毫秒。                                                                     |
+| 选项               | 说明                                                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `queue`            | 服务器应订阅的队列（如设置为 `undefined` 则忽略此配置）。关于 NATS 队列组（queue groups），可阅读[下文](/microservices/nats#队列组)。 |
+| `gracefulShutdown` | 是否启用优雅关闭（graceful shutdown）。启用后，服务器会在关闭连接前先取消所有频道的订阅。默认值为 `false`。                           |
+| `gracePeriod`      | 在取消所有频道订阅后，服务器等待的时间（毫秒）。默认值为 `10000` 毫秒。                                                               |
 
 ## 客户端
 
@@ -65,11 +65,11 @@ const app = await NestFactory.createMicroservice<MicroserviceOptions>(
 
 ## 请求-响应
 
-对于**请求-响应（request-response）**消息风格（[详细说明](/microservices/basics#请求-响应)），NATS 传输器（NATS transporter）并未使用 NATS 内置的[请求-回复（Request-Reply）](https://docs.nats.io/nats-concepts/reqreply) 机制。相反，「请求」会通过 `publish()` 方法在指定主题（subject）上发布，并带有唯一的回复主题名称，响应方会监听该主题并将响应发送到该回复主题。无论请求方和响应方位于何处，回复主题都会动态地指向请求方。
+对于**请求-响应**（request-response）消息风格（[详细说明](/microservices/basics#请求-响应)），NATS 传输器（NATS transporter）并未使用 NATS 内置的[请求-回复（Request-Reply）](https://docs.nats.io/nats-concepts/reqreply) 机制。相反，「请求」会通过 `publish()` 方法在指定主题（subject）上发布，并带有唯一的回复主题名称，响应方会监听该主题并将响应发送到该回复主题。无论请求方和响应方位于何处，回复主题都会动态地指向请求方。
 
 ## 事件驱动
 
-对于**事件驱动（event-based）**消息风格（[详细说明](/microservices/basics#event-based)），NATS 传输器会使用 NATS 内置的[发布-订阅（Publish-Subscribe）](https://docs.nats.io/nats-concepts/pubsub)机制。发布者会在某个主题上发送消息，任何正在监听该主题的活跃订阅者都会收到该消息。订阅者还可以注册通配符主题（wildcard subjects），其工作方式类似于正则表达式。这种一对多的模式有时也被称为「扇出（fan-out）」。
+对于**事件驱动**（event-based）消息风格（[详细说明](/microservices/basics#基于事件)），NATS 传输器会使用 NATS 内置的[发布-订阅（Publish-Subscribe）](https://docs.nats.io/nats-concepts/pubsub)机制。发布者会在某个主题上发送消息，任何正在监听该主题的活跃订阅者都会收到该消息。订阅者还可以注册通配符主题（wildcard subjects），其工作方式类似于正则表达式。这种一对多的模式有时也被称为「扇出（fan-out）」。
 
 ## 队列组
 

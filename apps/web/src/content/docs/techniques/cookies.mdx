@@ -121,7 +121,7 @@ findAll(@Res({ passthrough: true }) response: FastifyReply) {
 <CalloutInfo type="warning">
   如果希望框架继续接管响应处理流程，必须将 `@Res()` 装饰器的 `passthrough`
   选项设为
-  `true`，如上述示例所示。更多说明请参考[控制器章节](/controllers#library-specific-approach)。
+  `true`，如上述示例所示。更多说明请参考[控制器章节](/controllers#使用底层框架的响应对象)。
 </CalloutInfo>
 
 ## 创建通用的自定义装饰器（跨平台适用）

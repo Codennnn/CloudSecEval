@@ -4,9 +4,9 @@ import playgroundImage from '/public/assets/playground.png'
 
 [GraphQL](https://graphql.org/) 是一种功能强大的 API 查询语言，同时也是一个用于根据现有数据满足这些查询的运行时。它以优雅的方式解决了 REST 接口（RESTful API）中常见的诸多问题。作为补充，建议阅读这篇 [GraphQL 与 REST 的对比](https://www.apollographql.com/blog/graphql-vs-rest)，以便更好地理解二者的区别。将 GraphQL 与 [TypeScript](https://www.typescriptlang.org/) 结合使用，可以让你的 GraphQL 查询具备端到端的类型安全。
 
-本章假设你已经具备 GraphQL 的基础知识，重点介绍如何使用内置的 `@nestjs/graphql` 模块。在 Nest 中，`GraphQLModule` 可以配置为使用 [Apollo](https://www.apollographql.com/) 服务器（通过 `@nestjs/apollo` 驱动）或 [Mercurius](https://github.com/mercurius-js/mercurius)（通过 `@nestjs/mercurius` 驱动）。我们为这些成熟的 GraphQL 方案提供了官方集成，帮助你更简单地在 Nest 中使用 GraphQL（更多集成方案请参见[这里](/graphql/quick-start#third-party-integrations)）。
+本章假设你已经具备 GraphQL 的基础知识，重点介绍如何使用内置的 `@nestjs/graphql` 模块。在 Nest 中，`GraphQLModule` 可以配置为使用 [Apollo](https://www.apollographql.com/) 服务器（通过 `@nestjs/apollo` 驱动）或 [Mercurius](https://github.com/mercurius-js/mercurius)（通过 `@nestjs/mercurius` 驱动）。我们为这些成熟的 GraphQL 方案提供了官方集成，帮助你更简单地在 Nest 中使用 GraphQL（更多集成方案请参见[这里](/graphql/quick-start#第三方集成)）。
 
-你也可以自行构建专用的驱动（详细内容请参见[此处](/graphql/other-features#creating-a-custom-driver)）。
+你也可以自行构建专用的驱动（详细内容请参见[此处](/graphql/other-features#创建自定义驱动)）。
 
 ## 安装
 
@@ -43,7 +43,7 @@ Nest 提供了两种构建 GraphQL 应用的方式，分别是**代码优先（c
 
 <CalloutInfo>
   在接下来的章节中，我们将集成 `@nestjs/apollo` 包。如果你希望使用 `mercurius`
-  包，请前往[本节](/graphql/quick-start#mercurius-integration)查看相关内容。
+  包，请前往[本节](/graphql/quick-start#mercurius-集成)查看相关内容。
 </CalloutInfo>
 
 安装好相关包后，我们可以导入 `GraphQLModule`，并通过其静态方法 `forRoot()` 进行配置。
@@ -309,7 +309,7 @@ const { schema } = app.get(GraphQLSchemaHost)
 }),
 ```
 
-与其他工厂提供者类似，我们的工厂函数也可以是[异步的](/fundamentals/custom-providers#factory-providers-usefactory)，并且可以通过 `inject` 注入依赖。
+与其他工厂提供者类似，我们的工厂函数也可以是[异步的](/fundamentals/custom-providers#工厂提供者usefactory)，并且可以通过 `inject` 注入依赖。
 
 ```ts
 GraphQLModule.forRootAsync<ApolloDriverConfig>({

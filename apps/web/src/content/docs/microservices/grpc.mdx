@@ -16,7 +16,7 @@ npm install @grpc/grpc-js @grpc/proto-loader
 
 ## 概述
 
-与其他 Nest 微服务传输层实现类似，你可以通过传递给 `createMicroservice()` 方法的选项对象中的 `transport` 属性来选择 gRPC 传输机制。下面的示例将演示如何搭建一个 hero 服务。`options` 属性用于提供该服务的元数据，其各项属性将在[下文](#options)详细说明。
+与其他 Nest 微服务传输层实现类似，你可以通过传递给 `createMicroservice()` 方法的选项对象中的 `transport` 属性来选择 gRPC 传输机制。下面的示例将演示如何搭建一个 hero 服务。`options` 属性用于提供该服务的元数据，其各项属性将在[下文](#选项)详细说明。
 
 ```ts filename='main.ts'
 import { NestFactory } from '@nestjs/core'
@@ -89,7 +89,7 @@ message Hero {
 
 <CalloutInfo>
   之前微服务章节介绍的 `@MessagePattern()`
-  装饰器（[详细说明](/microservices/basics#request-response)）在基于 gRPC
+  装饰器（[详细说明](/microservices/basics#请求-响应)）在基于 gRPC
   的微服务中不再使用。对于 gRPC 微服务，`@GrpcMethod()` 装饰器起到了同样的作用。
 </CalloutInfo>
 
@@ -162,7 +162,7 @@ export class HeroesService {
 
 Nest 应用可以作为 gRPC 客户端，消费在 `.proto` 文件中定义的服务。你可以通过 `ClientGrpc` 对象访问远程服务。获取 `ClientGrpc` 对象有多种方式。
 
-推荐的方式是导入 `ClientsModule`。使用 `register()` 方法，将在 `.proto` 文件中定义的一组服务绑定到一个注入令牌（injection token），并进行相关配置。`name` 属性即为注入令牌。对于 gRPC 服务，需设置 `transport: Transport.GRPC`。`options` 属性是一个对象，其属性与[上文](#options)描述一致。
+推荐的方式是导入 `ClientsModule`。使用 `register()` 方法，将在 `.proto` 文件中定义的一组服务绑定到一个注入令牌（injection token），并进行相关配置。`name` 属性即为注入令牌。对于 gRPC 服务，需设置 `transport: Transport.GRPC`。`options` 属性是一个对象，其属性与[上文](#选项)描述一致。
 
 ```ts
 imports: [
@@ -526,11 +526,11 @@ export class HeroesService {
 }
 ```
 
-同样地，要在使用 `@GrpcStreamMethod()` 装饰器的处理器（详见[主题策略](#subject-strategy)）中读取元数据，也可以通过第二个参数（metadata），其类型为 `Metadata`（从 `grpc` 包导入）。
+同样地，要在使用 `@GrpcStreamMethod()` 装饰器的处理器（详见[ Subject 策略](#subject-策略)）中读取元数据，也可以通过第二个参数（metadata），其类型为 `Metadata`（从 `grpc` 包导入）。
 
 如果需要从处理器中返回元数据，可以使用 `ServerDuplexStream#sendMetadata()` 方法（处理器的第三个参数）。
 
-如果需要在[调用流处理器](#call-stream-handler)（即使用 `@GrpcStreamCall()` 装饰器的处理器）中读取元数据，可以监听 `requestStream` 对象上的 `metadata` 事件，示例如下：
+如果需要在[调用流处理器](#调用流处理器call-stream-handler)（即使用 `@GrpcStreamCall()` 装饰器的处理器）中读取元数据，可以监听 `requestStream` 对象上的 `metadata` 事件，示例如下：
 
 ```ts
 requestStream.on('metadata', (metadata: Metadata) => {

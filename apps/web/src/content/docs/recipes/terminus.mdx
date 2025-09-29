@@ -78,7 +78,7 @@ nest g controller health
 ```
 
 <CalloutInfo title="重要提示">
-  建议启用[应用关闭钩子](/fundamentals/lifecycle-events#application-shutdown)，这样
+  建议启用[应用关闭钩子](/fundamentals/lifecycle-events#启用关闭钩子)，这样
   Terminus 可以在应用关闭时优雅地处理正在进行的健康检查。
 </CalloutInfo>
 
@@ -356,7 +356,7 @@ export class HealthController {
 
 ### RSS 内存检查
 
-除了堆内存，还可以检查 RSS（常驻集大小）——进程实际占用的物理内存：
+除了堆内存，还可以检查 RSS（常驻集大小）—— 进程实际占用的物理内存：
 
 <CalloutInfo>
   **RSS（Resident Set Size）**
@@ -484,7 +484,7 @@ export class HealthController {
 
 <CalloutInfo>
   更多关于 NestJS
-  自定义日志记录器的信息，请参考[日志文档](/techniques/logger#injecting-a-custom-logger)。
+  自定义日志记录器的信息，请参考[日志文档](/techniques/logger#注入自定义日志记录器)。
 </CalloutInfo>
 
 ```ts filename='terminus-logger.service.ts'

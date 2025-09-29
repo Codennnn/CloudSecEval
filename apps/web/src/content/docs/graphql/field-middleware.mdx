@@ -58,7 +58,7 @@ export class Recipe {
 <CalloutInfo>
   <div>
     如果你想了解如何结合[扩展（extensions）](/graphql/extensions)
-    功能实现字段级权限系统，请参考本[章节](/graphql/extensions#using-custom-metadata)。
+    功能实现字段级权限系统，请参考本[章节](/graphql/extensions#使用自定义元数据)。
   </div>
 </CalloutInfo>
 
@@ -86,7 +86,7 @@ title() {
 ```
 
 <CalloutInfo type="warning">
-  如果在字段解析器级别启用了增强器（enhancer）（[详细说明](/graphql/other-features#execute-enhancers-at-the-field-resolver-level)），字段中间件会在任何绑定到该方法的拦截器、守卫等之前执行（但会在为查询或变更处理器注册的根级增强器之后执行）。
+  如果在字段解析器级别启用了增强器（enhancer）（[详细说明](/graphql/other-features#在字段解析器级别执行增强器)），字段中间件会在任何绑定到该方法的拦截器、守卫等之前执行（但会在为查询或变更处理器注册的根级增强器之后执行）。
 </CalloutInfo>
 
 ## 全局字段中间件
