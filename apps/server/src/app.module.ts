@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { BugReportsModule } from './modules/bug-reports/bug-reports.module'
 import { DepartmentsModule } from './modules/departments/departments.module'
+import { HealthModule } from './modules/health/health.module'
 import { LicenseModule } from './modules/license/license.module'
 import { OrganizationsModule } from './modules/organizations/organizations.module'
 import { PermissionsGuard } from './modules/permissions/guards/permissions.guard'
@@ -31,6 +32,7 @@ import { PrismaModule } from './prisma/prisma.module'
     ConfigModule,
     PrismaModule,
     CommonModule,
+    HealthModule,
     OrganizationsModule,
     DepartmentsModule,
     UsersModule,

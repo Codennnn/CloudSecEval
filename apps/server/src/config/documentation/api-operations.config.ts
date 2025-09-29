@@ -8,6 +8,8 @@ import { DailyReportsStatsResponseDto } from '~/modules/bug-reports/dto/daily-re
 import { DepartmentReportsStatsResponseDto } from '~/modules/bug-reports/dto/department-reports-stats.dto'
 import { TimelineEventResponseDto } from '~/modules/bug-reports/dto/timeline.dto'
 import { DepartmentApiResponseDto, DepartmentListApiResponseDto, DepartmentMembersApiResponseDto, DepartmentOnlineStatsApiResponseDto, DepartmentTreeApiResponseDto } from '~/modules/departments/dto/department-response.dto'
+import { DetailedHealthCheckResponseDto } from '~/modules/health/dto/detailed-health-status.dto'
+import { HealthCheckResponseDto } from '~/modules/health/dto/health-status.dto'
 import { AdminCheckLicenseApiResponseDto, CheckLicenseApiResponseDto, CreateLicenseApiResponseDto, DeleteLicenseApiResponseDto, LicenseDetailApiResponseDto, LicenseListApiResponseDto, LogAccessApiResponseDto, SendRemindersResponseDataDto, ToggleLockResponseDataDto, UpdateLicenseApiResponseDto } from '~/modules/license/dto/license-response.dto'
 import { OrganizationApiResponseDto, OrganizationListApiResponseDto } from '~/modules/organizations/dto/organization-response.dto'
 import { PermissionApiResponseDto, PermissionListApiResponseDto } from '~/modules/permissions/dto/permission-response.dto'
@@ -1252,4 +1254,91 @@ export const BUG_REPORTS_API_CONFIG = {
     requireAdmin: false,
   },
 
+} satisfies Record<string, ApiOperationConfig>
+
+// ================================
+// MARK: 健康检查API配置
+// ================================
+
+export const HEALTH_API_CONFIG = {
+  checkHealth: {
+    summary: '基础健康检查',
+    description: '快速检查应用整体健康状态，包括数据库、内存和磁盘使用情况',
+    successResponse: createSuccessResponse({
+      description: '健康检查成功',
+      type: HealthCheckResponseDto,
+    }),
+    errorResponses: [
+      {
+        status: 503,
+        description: '服务不可用 - 一个或多个健康检查项失败',
+        type: HealthCheckResponseDto,
+      },
+    ],
+    requireAuth: false,
+  },
+
+  checkReadiness: {
+    summary: '就绪检查',
+    description: '检查应用是否准备好处理请求，用于负载均衡器的流量分发决策',
+    successResponse: createSuccessResponse({
+      description: '应用就绪，可以接收流量',
+      type: HealthCheckResponseDto,
+    }),
+    errorResponses: [
+      {
+        status: 503,
+        description: '应用未就绪，不应接收流量',
+        type: HealthCheckResponseDto,
+      },
+    ],
+    requireAuth: false,
+  },
+
+  checkLiveness: {
+    summary: '存活检查',
+    description: '检查应用进程是否正常运行，用于容器编排器的重启决策',
+    successResponse: createSuccessResponse({
+      description: '应用进程正常运行',
+      type: HealthCheckResponseDto,
+    }),
+    errorResponses: [
+      {
+        status: 503,
+        description: '应用进程异常，可能需要重启',
+        type: HealthCheckResponseDto,
+      },
+    ],
+    requireAuth: false,
+  },
+
+  getDetailedHealth: {
+    summary: '详细健康报告',
+    description: '获取详细的系统健康状态，包含性能指标和详细的组件信息',
+    successResponse: createSuccessResponse({
+      description: '详细健康检查报告',
+      type: DetailedHealthCheckResponseDto,
+    }),
+    requireAuth: false,
+  },
+
+  checkDatabase: {
+    summary: '数据库专项检查',
+    description: '专门检查数据库连接状态、性能指标和连接池情况',
+    successResponse: createSuccessResponse({
+      description: '数据库检查结果',
+      type: HealthCheckResponseDto,
+    }),
+    requireAuth: false,
+  },
+
+  checkResources: {
+    summary: '系统资源检查',
+    description: '检查内存和磁盘使用情况，用于资源监控和容量规划',
+    successResponse: createSuccessResponse({
+      description: '系统资源检查结果',
+      type: HealthCheckResponseDto,
+    }),
+    requireAuth: false,
+  },
 } satisfies Record<string, ApiOperationConfig>
