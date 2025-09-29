@@ -111,6 +111,18 @@ export default function Page() {
               </div>
             </div>
           </div>
+
+          <div className="border rounded-lg p-4 space-y-3">
+            <h3 className="font-semibold">文件上传功能测试</h3>
+            <p className="text-sm text-muted-foreground">
+              测试 FileUploader 组件和批量上传功能，包括拖拽上传、进度追踪、错误处理等
+            </p>
+            <Link href="/test/file-upload">
+              <Button className="w-full" variant="outline">
+                查看测试
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </main>

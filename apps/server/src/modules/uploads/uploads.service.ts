@@ -2,14 +2,17 @@ import { Injectable } from '@nestjs/common'
 import { consola } from 'consola'
 import { createHash } from 'crypto'
 import { promises as fs } from 'fs'
+import { nanoid } from 'nanoid'
 import { basename, join } from 'path'
 
-import { type FileObject, Prisma } from '#prisma/client'
+import { type FileObject, FileStatus, FileVisibility } from '#prisma/client'
 import { PrismaService } from '~/prisma/prisma.service'
 
 interface StoredFileInfo {
   /** 文件唯一标识 */
   id: string
+  /** 上传会话标识 */
+  uploadSessionId?: string
   /** 原始文件名 */
   originalName: string
   /** 存储的文件名（哈希值） */
@@ -48,6 +51,22 @@ interface FileStorageOptions {
   buffer: Buffer
 }
 
+interface FileMetadata {
+  /** 上传会话标识 */
+  uploadSessionId?: string
+  /** 其他元数据 */
+  [key: string]: unknown
+}
+
+interface FileUploadOptions {
+  /** 是否允许重复上传相同文件 */
+  allowDuplicate?: boolean
+  /** 上传会话标识 */
+  uploadSessionId?: string
+  /** 额外的元数据 */
+  metadata?: FileMetadata
+}
+
 @Injectable()
 export class UploadsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -55,39 +74,50 @@ export class UploadsService {
   /**
    * 处理上传的文件，直接存储到本地文件系统
    */
-  async handleUploadedFile(file: Express.Multer.File): Promise<StoredFileInfo> {
+  async handleUploadedFile(
+    file: Express.Multer.File,
+    options?: FileUploadOptions,
+  ): Promise<StoredFileInfo> {
     const hash = this.generateFileHash(file.buffer)
     const category = this.getFileCategory(file.mimetype)
     const extension = this.getFileExtension(file.originalname)
 
-    // 幂等检查：存在相同 sha256+size 且已就绪的文件则直接返回
-    try {
-      const existed: FileObject | null = await this.prisma.fileObject.findFirst({
-        where: { sha256: hash, size: file.size, status: { not: 'DELETED' } },
-      })
+    // 生成唯一的上传会话标识
+    const uploadSessionId = options?.uploadSessionId ?? this.generateUploadSessionId()
 
-      if (existed && existed.status !== 'DELETED') {
-        const info: StoredFileInfo = {
-          id: existed.id,
-          originalName: existed.originalName ?? file.originalname,
-          fileName: basename(existed.storageKey),
-          mimeType: existed.mimeType,
-          size: existed.size,
-          hash,
-          localPath: existed.storageKey,
-          publicUrl: existed.url ?? '',
-          storedAt: existed.createdAt,
-        }
+    // 检查是否已存在相同的文件
+    const existingFile = await this.prisma.fileObject.findFirst({
+      where: {
+        sha256: hash,
+        size: file.size,
+        status: { not: 'DELETED' },
+      },
+    })
 
-        return info
+    if (existingFile) {
+      const metadata = existingFile.metadata as FileMetadata | null
+
+      // 如果不允许重复上传，抛出错误
+      if (!options?.allowDuplicate) {
+        consola.warn('尝试上传重复文件:', { hash, size: file.size, originalName: file.originalname })
+        throw new Error('文件已存在，不允许重复上传')
+      }
+
+      // 如果允许重复上传，直接返回已存在的文件信息
+      return {
+        id: existingFile.id,
+        uploadSessionId: metadata?.uploadSessionId,
+        originalName: existingFile.originalName ?? file.originalname,
+        fileName: basename(existingFile.storageKey),
+        mimeType: existingFile.mimeType,
+        size: existingFile.size,
+        hash,
+        localPath: existingFile.storageKey,
+        publicUrl: existingFile.url ?? '',
+        storedAt: existingFile.createdAt,
       }
     }
-    catch (e) {
-      // 查询异常不应阻断上传流程，但记录日志
-      consola.warn('幂等检查失败，将继续写入：', e)
-    }
 
-    // 创建 UPLOADING 记录并写入文件后置 READY
     const uploading: FileObject = await this.prisma.fileObject.create({
       data: {
         provider: 'local',
@@ -99,8 +129,12 @@ export class UploadsService {
         originalName: file.originalname,
         sha256: hash,
         md5: null,
-        status: 'UPLOADING',
-        visibility: 'PRIVATE',
+        status: FileStatus.UPLOADING,
+        visibility: FileVisibility.PRIVATE,
+        metadata: {
+          uploadSessionId,
+          ...options?.metadata ?? {},
+        },
       },
     })
 
@@ -117,13 +151,14 @@ export class UploadsService {
         data: {
           storageKey: storageResult.localPath,
           url: storageResult.publicUrl,
-          status: 'READY',
+          status: FileStatus.READY,
           checksumAt: new Date(),
         },
       })
 
       const fileInfo: StoredFileInfo = {
         id: updated.id,
+        uploadSessionId,
         originalName: updated.originalName ?? file.originalname,
         fileName: storageResult.fileName,
         mimeType: updated.mimeType,
@@ -137,35 +172,11 @@ export class UploadsService {
       return fileInfo
     }
     catch (error: unknown) {
-      // 处理唯一键并发写入：返回已存在记录
-      // P2002: Unique constraint failed on the constraint
-      // 其他错误：标记失败并抛出
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        const existed: FileObject | null = await this.prisma.fileObject.findFirst({
-          where: { sha256: hash, size: file.size, status: { not: 'DELETED' } },
-        })
-
-        if (existed) {
-          const info: StoredFileInfo = {
-            id: existed.id,
-            originalName: existed.originalName ?? file.originalname,
-            fileName: basename(existed.storageKey),
-            mimeType: existed.mimeType,
-            size: existed.size,
-            hash,
-            localPath: existed.storageKey,
-            publicUrl: existed.url ?? '',
-            storedAt: existed.createdAt,
-          }
-
-          return info
-        }
-      }
-
+      // 标记失败并抛出
       try {
         await this.prisma.fileObject.update({
           where: { id: uploading.id },
-          data: { status: 'FAILED' },
+          data: { status: FileStatus.FAILED },
         })
       }
       catch {
@@ -180,11 +191,14 @@ export class UploadsService {
   /**
    * 处理多文件上传
    */
-  async handleUploadedFiles(files: Express.Multer.File[]): Promise<StoredFileInfo[]> {
+  async handleUploadedFiles(
+    files: Express.Multer.File[],
+    options?: FileUploadOptions,
+  ): Promise<StoredFileInfo[]> {
     const results = []
 
     for (const file of files) {
-      const storedFileInfo = await this.handleUploadedFile(file)
+      const storedFileInfo = await this.handleUploadedFile(file, options)
       results.push(storedFileInfo)
     }
 
@@ -270,8 +284,10 @@ export class UploadsService {
       return undefined
     }
 
+    const metadata = record.metadata as FileMetadata | null
     const info: StoredFileInfo = {
       id: record.id,
+      uploadSessionId: metadata?.uploadSessionId,
       originalName: record.originalName ?? '',
       fileName: basename(record.storageKey),
       mimeType: record.mimeType,
@@ -309,8 +325,10 @@ export class UploadsService {
 
     for (const r of records) {
       if (r.status !== 'DELETED') {
+        const metadata = r.metadata as FileMetadata | null
         list.push({
           id: r.id,
+          uploadSessionId: metadata?.uploadSessionId,
           originalName: r.originalName ?? '',
           fileName: basename(r.storageKey),
           mimeType: r.mimeType,
@@ -348,7 +366,7 @@ export class UploadsService {
     try {
       await this.prisma.fileObject.update({
         where: { id },
-        data: { status: 'DELETED', deletedAt: new Date() },
+        data: { status: FileStatus.DELETED, deletedAt: new Date() },
       })
 
       return true
@@ -409,5 +427,12 @@ export class UploadsService {
    */
   generateFileHash(buffer: Buffer): string {
     return createHash('sha256').update(buffer).digest('hex')
+  }
+
+  /**
+   * 生成上传会话标识
+   */
+  private generateUploadSessionId(): string {
+    return `upload_${nanoid(12)}`
   }
 }

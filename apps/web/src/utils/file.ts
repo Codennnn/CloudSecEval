@@ -122,3 +122,21 @@ export function sanitizeFileName(filename: string, maxLength = 50): string {
     .replace(/\s+/g, '-') // 替换空格为连字符
     .substring(0, maxLength) // 限制长度
 }
+
+/**
+ * 格式化文件大小
+ *
+ * @param bytes - 文件大小（字节）
+ * @returns 格式化后的文件大小字符串
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) {
+    return '0 B'
+  }
+
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
+}

@@ -54,14 +54,39 @@ export class UploadsController {
     )
   }
 
+  /**
+   * 解析布尔值，处理字符串形式的布尔值
+   */
+  private parseBooleanValue(value: boolean | string | undefined, defaultValue: boolean): boolean {
+    if (value === undefined) {
+      return defaultValue
+    }
+
+    if (typeof value === 'boolean') {
+      return value
+    }
+
+    if (typeof value === 'string') {
+      return value.toLowerCase() === 'true'
+    }
+
+    return defaultValue
+  }
+
   @Post('single')
   @UseInterceptors(FileInterceptor('file'))
   @RequirePermissions(PERMISSIONS.uploads.create)
   @ApiDocs(UPLOADS_API_CONFIG.uploadSingleFile)
   async uploadSingleFile(
     @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
+    @Body('allowDuplicate') allowDuplicate?: boolean | string,
   ): Promise<FileUploadApiResponseDto> {
-    const storedFileInfo = await this.uploadsService.handleUploadedFile(file)
+    // 处理字符串形式的布尔值
+    const allowDuplicateValue = this.parseBooleanValue(allowDuplicate, true)
+
+    const storedFileInfo = await this.uploadsService.handleUploadedFile(file, {
+      allowDuplicate: allowDuplicateValue,
+    })
 
     return resp({
       msg: '文件上传成功',
@@ -76,14 +101,23 @@ export class UploadsController {
     })
   }
 
+  /**
+   * 多文件上传
+   */
   @Post('multiple')
   @UseInterceptors(FilesInterceptor('files', 10))
   @RequirePermissions(PERMISSIONS.uploads.create)
   @ApiDocs(UPLOADS_API_CONFIG.uploadMultipleFiles)
   async uploadMultipleFiles(
     @UploadedFiles(MultipleFilesValidationPipe) files: Express.Multer.File[],
+    @Body('allowDuplicate') allowDuplicate?: boolean | string,
   ): Promise<MultipleFileUploadApiResponseDto> {
-    const storedFileInfos = await this.uploadsService.handleUploadedFiles(files)
+    // 处理字符串形式的布尔值
+    const allowDuplicateValue = this.parseBooleanValue(allowDuplicate, true)
+
+    const storedFileInfos = await this.uploadsService.handleUploadedFiles(files, {
+      allowDuplicate: allowDuplicateValue,
+    })
 
     return resp({
       msg: '文件上传成功',
@@ -107,7 +141,7 @@ export class UploadsController {
   @ApiDocs(UPLOADS_API_CONFIG.uploadCustomFile)
   async uploadCustomFile(
     @UploadedFile() file: Express.Multer.File,
-    @Body() options: FileValidationOptions,
+    @Body() options: FileValidationOptions & { allowDuplicate?: boolean },
   ): Promise<FileUploadApiResponseDto> {
     // 使用自定义验证选项
     const validationPipe = new FileValidationPipe(options)
@@ -122,7 +156,9 @@ export class UploadsController {
     }
 
     const storedFileInfo = await this.uploadsService
-      .handleUploadedFile(validatedFile)
+      .handleUploadedFile(validatedFile, {
+        allowDuplicate: options.allowDuplicate ?? true,
+      })
 
     return resp({
       msg: '文件上传成功',
