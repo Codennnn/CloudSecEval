@@ -6,7 +6,8 @@
     "node": ">=22"
   },
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "dependencies": {
     "consola": "^3.4.2",
@@ -18,13 +19,32 @@
     "@types/node": "^22.15.3",
     "prefer-code-style": "^3.9.2",
     "rimraf": "^6.0.1",
-    "stylelint-config-standard": "^38.0.0",
     "stylelint-config-clean-order": "^7.0.0",
+    "stylelint-config-standard": "^38.0.0",
     "stylelint-config-tailwindcss": "^1.0.0",
+    "turbo": "^2.5.8",
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "clean": "pnpm --parallel --filter @mono/web --filter @mono/api clean && rimraf node_modules",
-    "postclean": "echo '✅ 项目清理完成'"
+    "build": "turbo build",
+    "build:packages": "turbo build --filter='./packages/*'",
+    "build:apps": "turbo build --filter='./apps/*'",
+    "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=@mono/web",
+    "dev:server": "turbo dev --filter=@mono/api",
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "lint:fix": "turbo format",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "clean": "turbo clean && rimraf node_modules",
+    "clean:cache": "turbo clean && rm -rf .turbo",
+    "postclean": "echo '✅ 项目清理完成'",
+    "deps": "turbo deps",
+    "deps:update": "pnpm up --interactive --latest -r",
+    "format": "turbo format",
+    "type-check": "turbo lint:ts",
+    "graph": "turbo build --dry-run --graph",
+    "summary": "turbo build --dry-run --summarize"
   }
 }

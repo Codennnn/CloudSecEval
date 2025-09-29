@@ -1,0 +1,52 @@
+{
+  "folders": [
+    {
+      "name": "🏠 Root",
+      "path": ".",
+    },
+    {
+      "name": "🌐 Web App",
+      "path": "./apps/web",
+    },
+    {
+      "name": "🚀 API Server",
+      "path": "./apps/server",
+    },
+    {
+      "name": "📦 Constants",
+      "path": "./packages/constants",
+    },
+    {
+      "name": "🛠️ Utils",
+      "path": "./packages/utils",
+    },
+  ],
+  "settings": {
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit",
+    },
+    "eslint.workingDirectories": [
+      "apps/web",
+      "apps/server",
+      "packages/constants",
+      "packages/utils",
+    ],
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.next": true,
+      "**/.turbo": true,
+      "**/coverage": true,
+    },
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/.next/**": true,
+      "**/.turbo/**": true,
+    },
+  },
+}

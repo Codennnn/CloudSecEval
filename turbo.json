@@ -1,0 +1,102 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "lint:es": {
+      "outputs": []
+    },
+    "lint:ts": {
+      "outputs": []
+    },
+    "lint:css": {
+      "outputs": []
+    },
+    "format": {
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "deps": {
+      "cache": false
+    },
+    "prisma:generate": {
+      "outputs": [
+        "node_modules/.prisma/**",
+        "generated/**"
+      ]
+    },
+    "prisma:format": {
+      "outputs": []
+    },
+    "prisma:push": {
+      "cache": false
+    },
+    "prisma:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "api:generate": {
+      "outputs": ["src/lib/api/generated/**"]
+    },
+    "api:clean": {
+      "cache": false
+    },
+    "db:dev:up": {
+      "cache": false
+    },
+    "db:dev:down": {
+      "cache": false
+    },
+    "docker:start": {
+      "cache": false
+    },
+    "docker:stop": {
+      "cache": false
+    }
+  },
+  "globalDependencies": [
+    "package.json",
+    "pnpm-workspace.yaml",
+    "turbo.json",
+    "tsconfig.json",
+    ".env*",
+    "**/.env*"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "CI"
+  ]
+}
