@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,11 +24,7 @@ import {
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { useLicenseVerification } from '~/hooks/useLicenseVerification'
-import {
-  useAuthDialogConfig,
-  useAuthDialogOpen,
-  useCloseAuthDialog,
-} from '~/stores/useAuthDialogStore'
+import { useAuthDialogStore } from '~/stores/useAuthDialogStore'
 import { useLicenseStore } from '~/stores/useLicenseStore'
 
 const authFormSchema = z.object({
@@ -43,13 +38,11 @@ type AuthFormValues = z.infer<typeof authFormSchema>
 
 /**
  * 全局授权对话框组件
- * 使用 Zustand store 管理状态，可以从任何地方触发显示
+ * 使用 store 管理状态，可以从任何地方触发显示
  */
 export function GlobalAuthDialog() {
   const { setLicenseInfo } = useLicenseStore()
-  const isOpen = useAuthDialogOpen()
-  const config = useAuthDialogConfig()
-  const closeAuthDialog = useCloseAuthDialog()
+  const { isOpen, config, closeAuthDialog } = useAuthDialogStore()
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authFormSchema),
@@ -59,49 +52,34 @@ export function GlobalAuthDialog() {
     },
   })
 
-  // 授权验证状态
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [shouldVerify, setShouldVerify] = useState(false)
-  const [verificationData, setVerificationData] = useState<{
-    email: string
-    code: string
-  } | null>(null)
-
-  const verificationResult = useLicenseVerification({
-    credentials: verificationData,
-    enabled: shouldVerify,
-  })
+  const verificationResult = useLicenseVerification()
 
   const {
-    hasAccess,
     isLoading: isVerifying,
-    isError,
-    error,
-    data: authData,
+    verify,
   } = verificationResult
 
-  // 处理验证结果
-  useEffect(() => {
-    if (shouldVerify && authData) {
-      if (hasAccess) {
-        // 保存授权信息到 store
-        if (verificationData) {
-          setLicenseInfo({
-            email: verificationData.email,
-            code: verificationData.code,
-          })
-        }
+  /**
+   * 处理表单提交
+   */
+  const handleSubmit = async (values: AuthFormValues) => {
+    try {
+      const credentials = {
+        email: values.email.trim(),
+        code: values.code.trim(),
+      }
 
-        // 重置表单
+      const result = await verify(credentials)
+
+      if (result.data.authorized) {
+        setLicenseInfo({
+          email: credentials.email,
+          code: credentials.code,
+        })
+
         form.reset()
-
-        // 关闭对话框
         closeAuthDialog()
-
-        // 调用成功回调
-        if (config.onSuccess) {
-          config.onSuccess()
-        }
+        config.onSuccess?.()
       }
       else {
         form.setError('code', {
@@ -109,51 +87,17 @@ export function GlobalAuthDialog() {
           message: '授权码无效或已过期',
         })
       }
-
-      // 重置状态
-      setShouldVerify(false)
-      setVerificationData(null)
-      setIsSubmitting(false)
     }
-  }, [
-    authData,
-    shouldVerify,
-    verificationData,
-    hasAccess,
-    form,
-    closeAuthDialog,
-    config,
-    setLicenseInfo,
-  ])
-
-  // 处理验证错误
-  useEffect(() => {
-    if (shouldVerify && isError) {
-      const errorMessage = error instanceof Error
-        ? error.message
+    catch (err) {
+      const errorMessage = err instanceof Error
+        ? err.message
         : '验证失败，请重试'
+
       form.setError('code', {
         type: 'manual',
         message: errorMessage,
       })
-
-      // 重置状态
-      setShouldVerify(false)
-      setVerificationData(null)
-      setIsSubmitting(false)
     }
-  }, [isError, error, shouldVerify, form])
-
-  /**
-   * 处理表单提交
-   */
-  const handleSubmit = (values: AuthFormValues) => {
-    setIsSubmitting(true)
-    setVerificationData({
-      email: values.email.trim(),
-      code: values.code.trim(),
-    })
-    setShouldVerify(true)
   }
 
   const handleOpenChange = (open: boolean) => {
@@ -170,6 +114,7 @@ export function GlobalAuthDialog() {
           <DialogTitle>
             {config.title ?? '输入授权信息'}
           </DialogTitle>
+
           <DialogDescription>
             {config.description ?? '请输入你的邮箱和授权码来解锁付费内容'}
           </DialogDescription>
@@ -177,7 +122,7 @@ export function GlobalAuthDialog() {
 
         <Form {...form}>
           <form
-            className="space-y-4"
+            className="flex flex-col gap-form-item"
             onSubmit={(ev) => {
               ev.preventDefault()
               void form.handleSubmit(handleSubmit)(ev)
@@ -192,7 +137,7 @@ export function GlobalAuthDialog() {
                   <FormControl>
                     <Input
                       autoComplete="email"
-                      disabled={isSubmitting || isVerifying}
+                      disabled={isVerifying}
                       placeholder="请输入您的邮箱地址"
                       type="email"
                       {...field}
@@ -211,7 +156,7 @@ export function GlobalAuthDialog() {
                   <FormLabel>授权码</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={isSubmitting || isVerifying}
+                      disabled={isVerifying}
                       placeholder="请输入您的授权码"
                       type="text"
                       {...field}
@@ -224,7 +169,7 @@ export function GlobalAuthDialog() {
 
             <DialogFooter>
               <Button
-                disabled={isSubmitting || isVerifying}
+                disabled={isVerifying}
                 type="button"
                 variant="outline"
                 onClick={() => {
@@ -233,8 +178,9 @@ export function GlobalAuthDialog() {
               >
                 取消
               </Button>
-              <Button disabled={isSubmitting || isVerifying} type="submit">
-                {isSubmitting || isVerifying ? '验证中...' : '确认授权'}
+
+              <Button disabled={isVerifying} type="submit">
+                {isVerifying ? '验证中...' : '确认授权'}
               </Button>
             </DialogFooter>
           </form>

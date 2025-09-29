@@ -21,22 +21,6 @@ interface UseKeyboardShortcutOptions {
  *
  * @param shortcuts 快捷键配置，可以是单个配置对象或配置数组
  * @param options 选项配置
- *
- * @example
- * ```tsx
- * // 单个快捷键
- * useKeyboardShortcut({
- *   key: 'k',
- *   onShortcut: () => openSearch()
- * })
- *
- * // 多个快捷键
- * useKeyboardShortcut([
- *   { key: 'k', onShortcut: () => openSearch() },
- *   { key: 'i', onShortcut: () => openAnswer() },
- *   { key: 'Enter', useModifier: false, onShortcut: () => submit() }
- * ])
- * ```
  */
 export function useKeyboardShortcut(
   shortcuts: ShortcutConfig | ShortcutConfig[],
@@ -52,24 +36,25 @@ export function useKeyboardShortcut(
     const shortcutArray = Array.isArray(shortcuts) ? shortcuts : [shortcuts]
 
     const handleKeyDown = (ev: KeyboardEvent) => {
-      const isModifierPressed = ev.metaKey || ev.ctrlKey
+      // 防护性检查：确保 ev.key 存在
+      if (ev.key) {
+        const isModifierPressed = ev.metaKey || ev.ctrlKey
 
-      for (const shortcut of shortcutArray) {
-        const { key, useModifier = true, onShortcut } = shortcut
+        for (const shortcut of shortcutArray) {
+          const { key, useModifier = true, onShortcut } = shortcut
 
-        if (!onShortcut) {
-          continue
-        }
+          if (onShortcut) {
+            const isTargetKey = ev.key.toLowerCase() === key.toLowerCase()
+            const shouldTrigger = useModifier
+              ? isModifierPressed && isTargetKey
+              : isTargetKey
 
-        const isTargetKey = ev.key.toLowerCase() === key.toLowerCase()
-        const shouldTrigger = useModifier
-          ? isModifierPressed && isTargetKey
-          : isTargetKey
-
-        if (shouldTrigger) {
-          ev.preventDefault()
-          onShortcut()
-          break // 只触发第一个匹配的快捷键
+            if (shouldTrigger) {
+              ev.preventDefault()
+              onShortcut()
+              break // 只触发第一个匹配的快捷键
+            }
+          }
         }
       }
     }

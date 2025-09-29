@@ -27,28 +27,6 @@ interface ShortcutKeyProps {
  * 1. 自动检测平台并显示正确的修饰键（Mac 显示 Cmd 图标，其他平台显示 Ctrl 文字）
  * 2. 自动监听键盘事件并触发回调
  * 3. 提供统一的快捷键显示样式
- *
- * @example
- * ```tsx
- * // 基本用法
- * <ShortcutKey
- *   mainKey="k"
- *   onShortcut={() => console.log('Ctrl+K pressed')}
- * />
- *
- * // 只显示不监听
- * <ShortcutKey
- *   mainKey="i"
- *   enableListener={false}
- * />
- *
- * // 不使用修饰键
- * <ShortcutKey
- *   mainKey="Enter"
- *   useModifier={false}
- *   onShortcut={() => console.log('Enter pressed')}
- * />
- * ```
  */
 export function ShortcutKey(props: ShortcutKeyProps) {
   const {

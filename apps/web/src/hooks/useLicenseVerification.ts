@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react'
+
 import { useMutation } from '@tanstack/react-query'
 
 import { licenseControllerCheckLicenseMutation } from '~api/@tanstack/react-query.gen'
 import type { CheckLicenseApiResponseDto } from '~api/types.gen'
 
-interface LicenseCredentials {
+export interface LicenseCredentials {
   email: string
   code: string
 }
@@ -30,43 +32,65 @@ interface LicenseVerificationResult {
   error: unknown
   /** 原始响应数据 */
   data: CheckLicenseApiResponseDto | undefined
-  /** 是否已启用验证 */
-  isEnabled: boolean
+  /** 验证函数 */
+  verify: (credentials: LicenseCredentials) => Promise<CheckLicenseApiResponseDto>
 }
 
 /**
  * 统一的授权验证 Hook
- * 封装了授权验证的通用逻辑，可在不同组件中复用
- *
- * @param options 验证选项
- * @returns 验证结果和状态
+ * 支持两种模式：
+ * 1. 手动模式：不传参数，返回 verify 函数
+ * 2. 自动模式：传入 credentials 和 enabled，自动执行验证
  */
-export function useLicenseVerification({
-  credentials,
-  enabled = true,
-}: UseLicenseVerificationOptions = {}): LicenseVerificationResult {
-  const shouldVerify = enabled && credentials !== null && credentials !== undefined
+export function useLicenseVerification(
+  options?: UseLicenseVerificationOptions,
+): LicenseVerificationResult {
+  const mutation = useMutation({
+    ...licenseControllerCheckLicenseMutation(),
+  })
 
   const {
     data,
-    status,
+    isPending,
     isError,
     error,
-  } = useMutation({
-    ...licenseControllerCheckLicenseMutation({
+    mutateAsync,
+  } = mutation
+
+  // 自动验证模式
+  const [autoVerificationTriggered, setAutoVerificationTriggered] = useState(false)
+
+  useEffect(() => {
+    if (options?.enabled && options.credentials && !autoVerificationTriggered) {
+      setAutoVerificationTriggered(true)
+
+      void mutateAsync({
+        body: {
+          email: options.credentials.email,
+          code: options.credentials.code,
+        },
+      })
+    }
+  }, [options?.enabled, options?.credentials, mutateAsync, autoVerificationTriggered])
+
+  /**
+   * 验证授权凭据
+   */
+  const verify = async (credentials: LicenseCredentials): Promise<CheckLicenseApiResponseDto> => {
+    return mutateAsync({
       body: {
-        email: credentials?.email ?? '',
-        code: credentials?.code ?? '',
+        email: credentials.email,
+        code: credentials.code,
       },
-    }),
-  })
+    })
+  }
 
   return {
     hasAccess: Boolean(data?.data.authorized),
-    isLoading: shouldVerify && status === 'pending',
+    isLoading: isPending,
     isError,
     error,
     data,
-    isEnabled: shouldVerify,
+    verify,
   }
 }

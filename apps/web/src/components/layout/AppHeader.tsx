@@ -3,12 +3,12 @@
 import { DocBreadcrumbs } from '~/components/doc/DocBreadcrumbs'
 import { SidebarToggleButton } from '~/components/layout/SidebarToggleButton'
 import { Button } from '~/components/ui/button'
-import { useOpenAuthDialog } from '~/stores/useAuthDialogStore'
+import { useAuthDialogStore } from '~/stores/useAuthDialogStore'
 import { useHasValidLicense } from '~/stores/useLicenseStore'
 
 export function AppHeader() {
   const hasValidLicense = useHasValidLicense()
-  const openAuthDialog = useOpenAuthDialog()
+  const { openAuthDialog } = useAuthDialogStore()
 
   /**
    * 处理授权按钮点击事件

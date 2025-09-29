@@ -46,37 +46,3 @@ export const useAuthDialogStore = create<AuthDialogState>()((set) => ({
     set((state) => ({ config: { ...state.config, ...config } }))
   },
 }))
-
-// ==================== 便捷的选择器 hooks ====================
-
-/**
- * 获取 AuthDialog 的打开状态
- * @returns 对话框是否打开的布尔值
- */
-export function useAuthDialogOpen() {
-  return useAuthDialogStore((state) => state.isOpen)
-}
-
-/**
- * 获取 AuthDialog 的配置
- * @returns 对话框配置对象
- */
-export function useAuthDialogConfig() {
-  return useAuthDialogStore((state) => state.config)
-}
-
-/**
- * 获取打开 AuthDialog 的函数
- * @returns 打开对话框的函数
- */
-export function useOpenAuthDialog() {
-  return useAuthDialogStore((state) => state.openAuthDialog)
-}
-
-/**
- * 获取关闭 AuthDialog 的函数
- * @returns 关闭对话框的函数
- */
-export function useCloseAuthDialog() {
-  return useAuthDialogStore((state) => state.closeAuthDialog)
-}

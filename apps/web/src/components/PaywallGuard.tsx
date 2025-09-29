@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { DocLoadingSkeleton } from '~/components/DocLoadingSkeleton'
 import { useLicenseVerification } from '~/hooks/useLicenseVerification'
-import { useOpenAuthDialog } from '~/stores/useAuthDialogStore'
+import { useAuthDialogStore } from '~/stores/useAuthDialogStore'
 import { useHasValidLicense, useLicenseInfo } from '~/stores/useLicenseStore'
 import { isPaidContent } from '~/utils/free-content-config'
 
@@ -55,7 +55,7 @@ function usePaywallAccess() {
 export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) {
   const { children, fallback, docPath } = props
 
-  const openAuthDialog = useOpenAuthDialog()
+  const { openAuthDialog } = useAuthDialogStore()
 
   const needsPayment = isPaidContent(docPath)
 
