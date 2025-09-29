@@ -17,7 +17,7 @@ import { ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 
 import { BusinessException } from '~/common/exceptions/business.exception'
-import { encodeRFC5987Filename, resp, respWithPagination } from '~/common/utils/response.util'
+import { createContentDisposition, resp, respWithPagination } from '~/common/utils/response.util'
 import { BUG_REPORTS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator'
@@ -366,13 +366,10 @@ export class BugReportsController {
       currentUser,
     )
 
-    // 正确编码中文文件名（RFC5987）
-    const encodedFileName = encodeRFC5987Filename(exportResult.filename)
-
     response.setHeader('Content-Type', exportResult.contentType)
     response.setHeader(
       'Content-Disposition',
-      `attachment; filename*=UTF-8''${encodedFileName}`,
+      createContentDisposition(exportResult.filename),
     )
 
     return response.send(exportResult.buffer)
@@ -393,13 +390,10 @@ export class BugReportsController {
       currentUser,
     )
 
-    // 正确编码中文文件名（RFC5987）
-    const encodedFileName = encodeRFC5987Filename(exportResult.filename)
-
     response.setHeader('Content-Type', exportResult.contentType)
     response.setHeader(
       'Content-Disposition',
-      `attachment; filename*=UTF-8''${encodedFileName}`,
+      createContentDisposition(exportResult.filename),
     )
 
     return response.send(exportResult.buffer)

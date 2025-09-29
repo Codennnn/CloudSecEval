@@ -1,6 +1,7 @@
 import { BUSINESS_CODES, type BusinessCode, getBusinessCodeMessage } from '@mono/constants'
 import { HttpStatus } from '@nestjs/common'
 import { type ClassConstructor, plainToInstance } from 'class-transformer'
+import contentDisposition from 'content-disposition'
 
 import type { PaginationMetaDto } from '~/common/dto/pagination-meta.dto'
 import type { StandardListResponseDto, StandardResponseDto } from '~/common/dto/standard-response.dto'
@@ -99,12 +100,23 @@ export function mapHttpStatusToBusinessCode(httpStatus: HttpStatus): BusinessCod
 }
 
 /**
- * 编码文件名以符合 RFC5987 标准，支持中文等 Unicode 字符
+ * 生成符合标准的 Content-Disposition 头值
+ * 使用 content-disposition 库确保完全符合 RFC 6266 和 RFC 5987 标准
+ *
  * @param filename 原始文件名
- * @returns 编码后的文件名，可用于 Content-Disposition 头
+ * @param options 其他处置选项
+ *
+ * @returns 完整的 Content-Disposition 头值
  */
-export function encodeRFC5987Filename(filename: string): string {
-  return encodeURIComponent(filename)
-    .replace(/['()]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
-    .replace(/\*/g, '%2A')
+export function createContentDisposition(
+  filename: string,
+  options?: contentDisposition.Options,
+): string {
+  return contentDisposition(
+    filename,
+    {
+      type: 'attachment',
+      ...options,
+    },
+  )
 }

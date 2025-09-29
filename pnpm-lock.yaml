@@ -184,6 +184,9 @@ importers:
       '@types/bcrypt':
         specifier: ^6.0.0
         version: 6.0.0
+      '@types/content-disposition':
+        specifier: ^0.5.9
+        version: 0.5.9
       '@types/cookie-parser':
         specifier: ^1.4.9
         version: 1.4.9(@types/express@5.0.3)
@@ -3100,6 +3103,9 @@ packages:
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
+
+  '@types/content-disposition@0.5.9':
+    resolution: {integrity: sha512-8uYXI3Gw35MhiVYhG3s295oihrxRyytcRHjSjqnqZVDDy/xcGBRny7+Xj1Wgfhv5QzRtN2hB2dVRBUX9XW3UcQ==}
 
   '@types/cookie-parser@1.4.9':
     resolution: {integrity: sha512-tGZiZ2Gtc4m3wIdLkZ8mkj1T6CEHb35+VApbL2T14Dew8HA7c+04dmKqsKRNC+8RJPm16JEK0tFSwdZqubfc4g==}
@@ -9322,12 +9328,16 @@ snapshots:
     dependencies:
       '@ckeditor/ckeditor5-utils': 46.1.1
       es-toolkit: 1.39.5
+    transitivePeerDependencies:
+      - supports-color
 
   '@ckeditor/ckeditor5-enter@46.1.1':
     dependencies:
       '@ckeditor/ckeditor5-core': 46.1.1
       '@ckeditor/ckeditor5-engine': 46.1.1
       '@ckeditor/ckeditor5-utils': 46.1.1
+    transitivePeerDependencies:
+      - supports-color
 
   '@ckeditor/ckeditor5-essentials@46.1.1':
     dependencies:
@@ -9646,8 +9656,6 @@ snapshots:
       '@ckeditor/ckeditor5-ui': 46.1.1
       '@ckeditor/ckeditor5-utils': 46.1.1
       ckeditor5: 46.1.1
-    transitivePeerDependencies:
-      - supports-color
 
   '@ckeditor/ckeditor5-special-characters@46.1.1':
     dependencies:
@@ -9719,6 +9727,8 @@ snapshots:
       '@ckeditor/ckeditor5-icons': 46.1.1
       '@ckeditor/ckeditor5-ui': 46.1.1
       '@ckeditor/ckeditor5-utils': 46.1.1
+    transitivePeerDependencies:
+      - supports-color
 
   '@ckeditor/ckeditor5-upload@46.1.1':
     dependencies:
@@ -11869,6 +11879,8 @@ snapshots:
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 22.18.1
+
+  '@types/content-disposition@0.5.9': {}
 
   '@types/cookie-parser@1.4.9(@types/express@5.0.3)':
     dependencies:

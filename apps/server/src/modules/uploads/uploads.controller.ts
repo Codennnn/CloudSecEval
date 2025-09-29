@@ -18,7 +18,7 @@ import type { Response } from 'express'
 import { createReadStream } from 'fs'
 
 import { BusinessException } from '~/common/exceptions/business.exception'
-import { encodeRFC5987Filename, resp } from '~/common/utils/response.util'
+import { createContentDisposition, resp } from '~/common/utils/response.util'
 import { UPLOADS_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
 import { RequirePermissions } from '~/modules/permissions/decorators/require-permissions.decorator'
@@ -280,12 +280,11 @@ export class UploadsController {
         }
       })
 
-      // 设置响应头 - 确保文件名正确编码
-      const encodedFileName = encodeRFC5987Filename(fileInfo.originalName)
+      const contentDisposition = createContentDisposition(fileInfo.originalName)
 
       res.set({
         'Content-Type': fileInfo.mimeType || 'application/octet-stream',
-        'Content-Disposition': `attachment; filename*=UTF-8''${encodedFileName}`,
+        'Content-Disposition': contentDisposition,
         'Content-Length': fileInfo.size.toString(),
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         Pragma: 'no-cache',
@@ -295,7 +294,7 @@ export class UploadsController {
       return new StreamableFile(fileStream, {
         type: fileInfo.mimeType || 'application/octet-stream',
         length: fileInfo.size,
-        disposition: `attachment; filename*=UTF-8''${encodedFileName}`,
+        disposition: contentDisposition,
       })
     }
     catch (error) {
