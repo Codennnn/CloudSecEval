@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 
 import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
+import { TableEmptyContent } from '~/components/table/TableEmptyContent'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -88,7 +89,7 @@ export function UsersTable() {
         cell: ({ row }) => (
           <div className="text-sm">
             {row.original.phone ?? (
-              <span className="text-muted-foreground">-</span>
+              <TableEmptyContent />
             )}
           </div>
         ),

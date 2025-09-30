@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
+import { TableEmptyContent } from '~/components/table/TableEmptyContent'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -100,14 +101,14 @@ export function PermissionsTable() {
         accessorKey: 'resource',
         header: '资源',
         cell: ({ row }) => (
-          <div className="text-sm">{row.original.resource}</div>
+          <div>{row.original.resource}</div>
         ),
       },
       {
         accessorKey: 'action',
         header: '操作',
         cell: ({ row }) => (
-          <div className="text-sm">{row.original.action}</div>
+          <div>{row.original.action}</div>
         ),
       },
       {
@@ -123,9 +124,9 @@ export function PermissionsTable() {
         accessorKey: 'description',
         header: '描述',
         cell: ({ row }) => (
-          <div className="text-sm">
-            {row.original.description ?? (
-              <span className="text-muted-foreground">-</span>
+          <div>
+            {row.original.description || (
+              <TableEmptyContent />
             )}
           </div>
         ),

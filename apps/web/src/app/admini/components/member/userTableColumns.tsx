@@ -4,6 +4,7 @@ import { formatDate } from '@mono/utils'
 
 import { MemberInfo } from '~/components/MemberInfo'
 import type { TableColumnDef } from '~/components/table/table.type'
+import { TableEmptyContent } from '~/components/table/TableEmptyContent'
 import { Badge } from '~/components/ui/badge'
 import { FieldTypeEnum } from '~/constants/form'
 
@@ -41,7 +42,7 @@ export function createUserColumns(
       cell: ({ row }) => (
         <div className="text-sm">
           {row.original.phone ?? (
-            <span className="text-muted-foreground">-</span>
+            <TableEmptyContent />
           )}
         </div>
       ),

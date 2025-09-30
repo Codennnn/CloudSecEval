@@ -16,6 +16,7 @@ import { CopyButton } from '~/components/CopyButton'
 import { ProTable, type QueryKeyFn, type QueryOptionsFn } from '~/components/table/ProTable'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { createDateColumn } from '~/components/table/table.util'
+import { TableEmptyContent } from '~/components/table/TableEmptyContent'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -183,7 +184,7 @@ export function LicensesTable() {
         cell: ({ row }) => (
           <div className="max-w-xs truncate">
             {row.original.remark ?? (
-              <span className="text-muted-foreground">-</span>
+              <TableEmptyContent />
             )}
           </div>
         ),
