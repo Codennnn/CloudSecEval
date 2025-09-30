@@ -4,15 +4,14 @@ import { CheckIcon, ShieldOffIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
-import { useLicenseInfo, useLicenseStore } from '~/stores/useLicenseStore'
+import { useLicenseStore } from '~/stores/useLicenseStore'
 
 /**
  * 授权信息弹出框组件
  * 显示当前用户的授权信息，并提供注销授权功能
  */
 export function LicenseInfoPopover() {
-  const { clearLicenseInfo } = useLicenseStore()
-  const licenseInfo = useLicenseInfo()
+  const { licenseInfo, clearLicenseInfo } = useLicenseStore()
 
   const handleClearLicense = () => {
     clearLicenseInfo()

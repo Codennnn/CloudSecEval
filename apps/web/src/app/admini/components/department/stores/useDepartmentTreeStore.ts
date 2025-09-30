@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
+import { STORAGE_KEY_GENERATORS } from '~/constants/storage'
 import type { OrganizationId } from '~/lib/api/types'
 
 import type { DepartmentTreeNode, DepartmentTreeStore, SelectMode } from '../types'
@@ -167,7 +168,7 @@ function createDepartmentTreeStore(orgId: OrganizationId) {
         },
       }),
       {
-        name: `department-tree-store-${orgId}`,
+        name: STORAGE_KEY_GENERATORS.departmentTree(orgId),
         enabled: process.env.NODE_ENV === 'development',
       },
     ),

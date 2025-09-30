@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { LOCAL_STORAGE_KEYS } from '~/constants/storage'
+
 /**
  * 用户授权信息接口
  */
@@ -27,7 +29,6 @@ interface LicenseState {
 
 /**
  * 用户授权信息状态管理 Store
- * 使用 Zustand + persist 中间件实现持久化存储
  * 支持页面刷新后状态恢复和跨标签页同步
  */
 export const useLicenseStore = create<LicenseState>()(
@@ -54,25 +55,21 @@ export const useLicenseStore = create<LicenseState>()(
       hasValidLicenseInfo: () => {
         const info = get().licenseInfo
 
-        return Boolean(info?.email) && Boolean(info?.code)
+        if (info) {
+          return Boolean(info.email) && Boolean(info.code)
+        }
+
+        return false
       },
     }),
     {
-      name: 'user-license-info', // localStorage 键名，保持与原来一致
+      name: LOCAL_STORAGE_KEYS.USER_LICENSE_INFO, // 使用常量替代硬编码字符串
       partialize: (state) => ({ licenseInfo: state.licenseInfo }), // 只持久化授权信息
     },
   ),
 )
 
 // ==================== 便捷的选择器 hooks ====================
-
-/**
- * 获取当前用户授权信息
- * @returns 当前授权信息对象或 null
- */
-export function useLicenseInfo() {
-  return useLicenseStore((state) => state.licenseInfo)
-}
 
 /**
  * 检查是否有有效的授权信息

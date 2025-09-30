@@ -3,10 +3,16 @@
  * 用于管理 localStorage 中的认证令牌
  */
 
-export const TOKEN_KEY = 'access_token'
-export const REFRESH_TOKEN_KEY = 'refresh_token'
-export const AUTH_STATUS_COOKIE = 'auth_status'
-export const AUTH_STATUS_LOGGED_IN = 'true'
+import {
+  AUTH_STATUS_VALUES,
+  COOKIE_KEYS,
+  LOCAL_STORAGE_KEYS } from '~/constants/storage'
+
+// 为了向后兼容，保留这些导出（但现在它们引用常量文件中的值）
+export const TOKEN_KEY = LOCAL_STORAGE_KEYS.ACCESS_TOKEN
+export const REFRESH_TOKEN_KEY = LOCAL_STORAGE_KEYS.REFRESH_TOKEN
+export const AUTH_STATUS_COOKIE = COOKIE_KEYS.AUTH_STATUS
+export const AUTH_STATUS_LOGGED_IN = AUTH_STATUS_VALUES.LOGGED_IN
 
 export const tokenManager = {
   /**
@@ -17,7 +23,7 @@ export const tokenManager = {
       return null
     }
 
-    return localStorage.getItem(TOKEN_KEY)
+    return localStorage.getItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN)
   },
 
   /**
@@ -28,7 +34,7 @@ export const tokenManager = {
       return
     }
 
-    localStorage.setItem(TOKEN_KEY, token)
+    localStorage.setItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN, token)
   },
 
   /**
@@ -39,7 +45,7 @@ export const tokenManager = {
       return null
     }
 
-    return localStorage.getItem(REFRESH_TOKEN_KEY)
+    return localStorage.getItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN)
   },
 
   /**
@@ -47,7 +53,7 @@ export const tokenManager = {
    */
   setRefreshToken(token: string): void {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(REFRESH_TOKEN_KEY, token)
+      localStorage.setItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN, token)
     }
   },
 
@@ -56,8 +62,8 @@ export const tokenManager = {
    */
   clearTokens(): void {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem(TOKEN_KEY)
-      localStorage.removeItem(REFRESH_TOKEN_KEY)
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN)
+      localStorage.removeItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN)
     }
   },
 

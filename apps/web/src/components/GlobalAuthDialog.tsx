@@ -46,22 +46,13 @@ export function GlobalAuthDialog() {
 
   const form = useForm<AuthFormValues>({
     resolver: zodResolver(authFormSchema),
-    defaultValues: {
-      email: '',
-      code: '',
-    },
   })
-
-  const verificationResult = useLicenseVerification()
 
   const {
     isLoading: isVerifying,
     verify,
-  } = verificationResult
+  } = useLicenseVerification()
 
-  /**
-   * 处理表单提交
-   */
   const handleSubmit = async (values: AuthFormValues) => {
     try {
       const credentials = {

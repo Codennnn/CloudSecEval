@@ -2,6 +2,7 @@ import { PERMISSIONS } from '@mono/constants'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { LOCAL_STORAGE_KEYS } from '~/constants/storage'
 import type { User } from '~/lib/api/types'
 import type { PermissionFlag } from '~/lib/permissions/matcher'
 
@@ -47,7 +48,7 @@ export const useUserStore = create<UserState>()(
       },
     }),
     {
-      name: 'user-storage', // localStorage 键名
+      name: LOCAL_STORAGE_KEYS.USER_STORAGE,
       partialize: (state) => ({ user: state.user }), // 只持久化 user 数据
     },
   ),

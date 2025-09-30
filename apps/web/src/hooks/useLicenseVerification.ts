@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react'
 
 import { useMutation } from '@tanstack/react-query'
 
-import { licenseControllerCheckLicenseMutation } from '~api/@tanstack/react-query.gen'
-import type { CheckLicenseApiResponseDto } from '~api/types.gen'
+import { useLicenseStore } from '../stores/useLicenseStore'
 
-export interface LicenseCredentials {
-  email: string
-  code: string
-}
+import { licenseControllerCheckLicenseMutation } from '~api/@tanstack/react-query.gen'
+import type { CheckLicenseApiResponseDto, CheckUserLicenseDto } from '~api/types.gen'
+
+type LicenseCredentials = CheckUserLicenseDto
 
 interface UseLicenseVerificationOptions {
   /** 授权凭据 */
@@ -45,8 +44,20 @@ interface LicenseVerificationResult {
 export function useLicenseVerification(
   options?: UseLicenseVerificationOptions,
 ): LicenseVerificationResult {
+  const { clearLicenseInfo } = useLicenseStore()
+
   const mutation = useMutation({
     ...licenseControllerCheckLicenseMutation(),
+
+    onSuccess: ({ data }) => {
+      if (!data.authorized) {
+        clearLicenseInfo()
+      }
+    },
+
+    onError: () => {
+      clearLicenseInfo()
+    },
   })
 
   const {

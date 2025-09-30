@@ -22,13 +22,6 @@
     },
   ],
   "settings": {
-    "typescript.preferences.includePackageJsonAutoImports": "on",
-    "typescript.suggest.autoImports": true,
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
-      "source.organizeImports": "explicit",
-    },
     "eslint.workingDirectories": [
       "apps/web",
       "apps/server",

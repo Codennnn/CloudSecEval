@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { DocLoadingSkeleton } from '~/components/DocLoadingSkeleton'
 import { useLicenseVerification } from '~/hooks/useLicenseVerification'
 import { useAuthDialogStore } from '~/stores/useAuthDialogStore'
-import { useHasValidLicense, useLicenseInfo } from '~/stores/useLicenseStore'
+import { useHasValidLicense, useLicenseStore } from '~/stores/useLicenseStore'
 import { isPaidContent } from '~/utils/free-content-config'
 
 interface PaywallGuardProps {
@@ -20,35 +20,6 @@ interface PaywallGuardProps {
 }
 
 /**
- * 使用授权信息校验用户访问权限的 Hook
- * @returns 权限校验结果和状态
- */
-function usePaywallAccess() {
-  const licenseInfo = useLicenseInfo()
-  const hasValidLicense = useHasValidLicense()
-
-  const {
-    hasAccess,
-    isLoading,
-    isError,
-    error,
-  } = useLicenseVerification({
-    credentials: licenseInfo,
-    enabled: hasValidLicense === true,
-    retry: false,
-    staleTime: 5 * 60 * 1000, // 5 分钟内不重新验证
-  })
-
-  return {
-    hasAccess,
-    isLoading,
-    isError,
-    error,
-    hasValidLicense,
-  }
-}
-
-/**
  * 付费墙守卫组件
  * 根据付费模式开关和用户权限校验来控制内容的显示
  */
@@ -59,7 +30,19 @@ export function PaywallGuard(props: React.PropsWithChildren<PaywallGuardProps>) 
 
   const needsPayment = isPaidContent(docPath)
 
-  const { hasAccess, isLoading, isError, hasValidLicense } = usePaywallAccess()
+  const { licenseInfo } = useLicenseStore()
+  const hasValidLicense = useHasValidLicense()
+
+  const {
+    hasAccess,
+    isLoading,
+    isError,
+  } = useLicenseVerification({
+    credentials: licenseInfo,
+    enabled: hasValidLicense === true,
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 分钟内不重新验证
+  })
 
   const handleAuthClick = (title?: string, description?: string) => {
     openAuthDialog({

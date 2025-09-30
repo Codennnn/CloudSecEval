@@ -1,5 +1,6 @@
 'use client'
 
+import { BUSINESS_CODES } from '@mono/constants'
 import { consola } from 'consola'
 import { toast } from 'sonner'
 
@@ -13,13 +14,12 @@ import { client } from '~api/client.gen'
 
 export class ApiError extends Error {
   constructor(
-    message: string,
+    message: ApiResponse['message'],
     public status: number,
-    public code?: string,
-    public data?: unknown,
+    public code?: ApiResponse['code'],
+    public data?: ApiResponse['data'],
   ) {
     super(message, { cause: data })
-
     this.name = 'ApiError'
   }
 }
@@ -47,7 +47,7 @@ function handleError(error: unknown, showError = true): void {
 
   // 处理认证相关错误，重定向到登录页面
   if (error instanceof ApiError) {
-    const unAuthorized = error.status === 401 || error.code === '20100'
+    const unAuthorized = error.status === 401 || error.code === BUSINESS_CODES.UNAUTHORIZED
 
     if (unAuthorized) {
       tokenManager.clearAllAuthData()
@@ -108,7 +108,7 @@ async function handleResponse(response: Response) {
         const errorMessage = result.message ?? '业务处理异常'
 
         handleError(
-          new ApiError(errorMessage, clonedResponse.status, result.code.toString(), result),
+          new ApiError(errorMessage, clonedResponse.status, result.code, result),
         )
       }
     }
