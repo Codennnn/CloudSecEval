@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
-import { format } from 'date-fns'
+import { DateFormat, formatDate } from '@mono/utils'
 import { Calendar, CalendarClock } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
@@ -216,7 +216,6 @@ function RangeInput(props: RangeInputProps) {
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <Label className="text-sm text-muted-foreground">开始日期</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -227,8 +226,12 @@ function RangeInput(props: RangeInputProps) {
                   disabled={disabled}
                   variant="outline"
                 >
-                  <CalendarClock className="mr-2 size-4" />
-                  {startValue ? format(new Date(startValue), 'yyyy-MM-dd') : '选择日期'}
+                  <CalendarClock />
+                  {
+                    startValue
+                      ? formatDate(startValue, DateFormat.YYYY_MM_DD)
+                      : '开始日期'
+                  }
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="start" className="w-auto p-0">
@@ -243,7 +246,6 @@ function RangeInput(props: RangeInputProps) {
             </Popover>
           </div>
           <div>
-            <Label className="text-sm text-muted-foreground">结束日期</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -254,8 +256,12 @@ function RangeInput(props: RangeInputProps) {
                   disabled={disabled}
                   variant="outline"
                 >
-                  <CalendarClock className="mr-2 h-4 w-4" />
-                  {endValue ? format(new Date(endValue), 'yyyy-MM-dd') : '选择日期'}
+                  <CalendarClock />
+                  {
+                    endValue
+                      ? formatDate(endValue, DateFormat.YYYY_MM_DD)
+                      : '结束日期'
+                  }
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="start" className="w-auto p-0">
@@ -458,10 +464,12 @@ export function ValueInput(props: ValueInputProps) {
                 disabled={disabled}
                 variant="outline"
               >
-                <Calendar className="mr-2" />
-                {value !== null && value !== undefined
-                  ? format(new Date(safeStringify(value)), 'yyyy-MM-dd')
-                  : (placeholder ?? '选择日期')}
+                <Calendar />
+                {
+                  value !== null && value !== undefined
+                    ? formatDate(safeStringify(value), DateFormat.YYYY_MM_DD)
+                    : (placeholder ?? '选择日期')
+                }
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto p-0">
@@ -507,7 +515,7 @@ export function ValueInput(props: ValueInputProps) {
   }, [field, operatorConfig, value, onChange, disabled, placeholder])
 
   return (
-    <div className={cn('space-y-1', className)}>
+    <div className={cn('space-y-1 w-full', className)}>
       {renderInput()}
       {error && (
         <div className="text-sm text-destructive">

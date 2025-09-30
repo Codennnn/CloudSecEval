@@ -1,7 +1,8 @@
+import { formatDate } from '@mono/utils'
+
 import { Badge } from '~/components/ui/badge'
 import { FormItem } from '~/components/ui/form'
 import { Label } from '~/components/ui/label'
-import { formatDate } from '~/utils/date'
 
 import type { RoleDetailResponseDto } from '~api/types.gen'
 

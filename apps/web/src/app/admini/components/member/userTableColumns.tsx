@@ -1,10 +1,11 @@
 'use client'
 
+import { formatDate } from '@mono/utils'
+
 import { MemberInfo } from '~/components/MemberInfo'
 import type { TableColumnDef } from '~/components/table/table.type'
 import { Badge } from '~/components/ui/badge'
 import { FieldTypeEnum } from '~/constants/form'
-import { formatDate } from '~/utils/date'
 
 import type { UserListItemDto } from '~api/types.gen'
 

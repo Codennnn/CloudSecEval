@@ -1,5 +1,6 @@
 'use client'
 
+import { formatDate } from '@mono/utils'
 import { useQuery } from '@tanstack/react-query'
 import { CalendarIcon, CreditCard, Mail, User } from 'lucide-react'
 
@@ -12,7 +13,6 @@ import {
   DrawerTitle,
 } from '~/components/ui/drawer'
 import { Skeleton } from '~/components/ui/skeleton'
-import { formatDate } from '~/utils/date'
 
 import { licenseControllerGetLicenseByIdOptions } from '~api/@tanstack/react-query.gen'
 

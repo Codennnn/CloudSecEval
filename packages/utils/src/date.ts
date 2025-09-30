@@ -11,7 +11,7 @@ import { differenceInDays, differenceInHours, differenceInMinutes, format } from
  * - mm: 分钟 (00-59)
  * - ss: 秒钟 (00-59)
  */
-export const enum DateFormat {
+export enum DateFormat {
   /** 年-月-日 (例：2024-03-21) */
   YYYY_MM_DD = 'yyyy-MM-dd',
   /** 年-月-日 时:分 (例：2024-03-21 15:30) */

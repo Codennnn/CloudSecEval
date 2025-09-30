@@ -32,17 +32,11 @@
     "dev": "turbo dev",
     "dev:web": "turbo dev --filter=@mono/web",
     "dev:server": "turbo dev --filter=@mono/api",
-    "start": "turbo start",
     "lint": "turbo lint",
-    "lint:fix": "turbo format",
     "test": "turbo test",
     "test:watch": "turbo test:watch",
     "clean": "turbo clean && rimraf node_modules .turbo",
     "postclean": "echo '✅ 项目清理完成'",
-    "deps": "turbo deps",
-    "deps:update": "pnpm up --interactive --latest -r",
-    "format": "turbo format",
-    "type-check": "turbo lint:ts",
     "graph": "turbo build --dry-run --graph",
     "summary": "turbo build --dry-run --summarize"
   }

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 
+import { formatDate } from '@mono/utils'
 import { type QueryKey, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   EllipsisVerticalIcon,
@@ -23,7 +24,6 @@ import {
 import { UserAvatar } from '~/components/UserAvatar'
 import { FieldTypeEnum } from '~/constants/form'
 import type { UserData } from '~/lib/api/types'
-import { formatDate } from '~/utils/date'
 
 import { DeleteConfirmDialog } from '~admin/components/DeleteConfirmDialog'
 import { usersControllerFindAllUsersOptions, usersControllerFindAllUsersQueryKey, usersControllerRemoveUserMutation } from '~api/@tanstack/react-query.gen'

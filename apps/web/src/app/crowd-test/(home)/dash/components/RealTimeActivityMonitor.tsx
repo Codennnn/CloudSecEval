@@ -1,10 +1,10 @@
 'use client'
 
+import { DateFormat, formatDate, formatRelativeTime } from '@mono/utils'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { bugReportsControllerGetTimelineInfiniteOptions } from '~/lib/api/generated/@tanstack/react-query.gen'
 import { cn } from '~/lib/utils'
-import { DateFormat, formatDate, formatRelativeTime } from '~/utils/date'
 
 import { BugReportStatus, getTimelineEventType, getVulSeverity } from '~crowd-test/constants'
 

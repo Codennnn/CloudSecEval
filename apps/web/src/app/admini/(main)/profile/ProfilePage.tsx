@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import { formatDate } from '@mono/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CalendarIcon, EditIcon, HouseIcon, MailIcon, UploadIcon } from 'lucide-react'
 import { toast } from 'sonner'
@@ -15,7 +16,6 @@ import { Separator } from '~/components/ui/separator'
 import { Textarea } from '~/components/ui/textarea'
 import { CardBox, CardBoxContent, CardBoxDescription, CardBoxHeader, CardBoxTitle } from '~/components/ui-common/CardBox'
 import { UserAvatar } from '~/components/UserAvatar'
-import { formatDate } from '~/utils/date'
 
 import { ChangePasswordForm } from './components/ChangePasswordForm'
 
