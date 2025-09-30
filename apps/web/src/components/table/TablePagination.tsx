@@ -71,7 +71,7 @@ export function TablePagination<TData>({
   }
 
   return (
-    <div className={cn('flex items-center', className)}>
+    <div className={cn('flex items-center flex-wrap', className)}>
       {/* 选中行数统计 */}
       {showSelection && (
         <div className="px-1 text-muted-foreground hidden text-sm lg:flex">
@@ -79,7 +79,7 @@ export function TablePagination<TData>({
         </div>
       )}
 
-      <div className="flex items-center gap-8 ml-auto lg:w-fit">
+      <div className="flex items-center flex-wrap gap-x-8 gap-y-1.5 ml-auto lg:w-fit">
         {/* 每页条数选择器 */}
         {showPageSizeSelector && (
           <div className="hidden items-center gap-2 lg:flex">
@@ -111,8 +111,9 @@ export function TablePagination<TData>({
         )}
 
         {/* 当前页码显示 */}
-        <div className="flex w-fit items-center justify-center text-sm font-medium">
-          第 {pageIndex + 1} 页，共 {pageCount} 页
+        <div className="flex w-fit items-center justify-center flex-wrap text-sm font-medium">
+          <span className="whitespace-nowrap">第 {pageIndex + 1} 页，</span>
+          <span className="whitespace-nowrap">共 {pageCount} 页</span>
         </div>
 
         {/* 分页按钮组 */}

@@ -63,7 +63,7 @@ function SortableItem(props: SortableItemProps) {
       aria-disabled={disabled}
       className={cn(
         'flex items-center gap-2 rounded-md py-1 px-0.5',
-        isDragging ? 'bg-muted relative z-10' : 'bg-background',
+        isDragging ? 'bg-muted relative z-10 shadow' : 'bg-background',
         disabled && 'opacity-50 pointer-events-none',
       )}
       style={style}
@@ -99,6 +99,7 @@ function SortableItem(props: SortableItemProps) {
 
 export function MemberSelectedList(props: MemberSelectedListProps) {
   const { selected, single = false, onClearAll, onRemove, onReorder } = props
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),

@@ -53,7 +53,7 @@ export function NavUser() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:shadow-xs hover:shadow-sm bg-background border border-border"
               size="lg"
             >
               <UserAvatar
