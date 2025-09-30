@@ -30,6 +30,12 @@ export const validationSchema = z.object({
 
   // 临时目录配置（可选）
   TEMP_DIR: z.string().default(CONFIG_DEFAULTS.TEMP_DIR),
+
+  // 频率限制配置（可选）
+  THROTTLE_ENABLED: z.string().optional(),
+  THROTTLE_TTL: z.coerce.number().optional(),
+  THROTTLE_LIMIT: z.coerce.number().optional(),
+  THROTTLE_SKIP_IF_BEHIND_PROXY: z.string().optional(),
 })
 
 export type ValidationSchema = z.infer<typeof validationSchema>

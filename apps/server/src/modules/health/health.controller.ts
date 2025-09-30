@@ -1,6 +1,7 @@
 import { Controller, Get, Logger, Query } from '@nestjs/common'
 import { ApiQuery, ApiTags } from '@nestjs/swagger'
 import { HealthCheck } from '@nestjs/terminus'
+import { SkipThrottle } from '@nestjs/throttler'
 
 import { HEALTH_API_CONFIG } from '~/config/documentation/api-operations.config'
 import { ApiDocs } from '~/config/documentation/decorators/api-docs.decorator'
@@ -17,6 +18,7 @@ import { HealthAggregatorService } from './services/health-aggregator.service'
  */
 @Controller('health')
 @ApiTags('健康检查')
+@SkipThrottle()
 export class HealthController {
   private readonly logger = new Logger(HealthController.name)
 

@@ -13,6 +13,7 @@ import { TransformInterceptor } from '~/common/interceptors/transform.intercepto
 import { createStartupTable } from '~/common/utils/startup-table.util'
 import { setupSwagger } from '~/config/documentation/swagger.config'
 import { AppConfigService } from '~/config/services/config.service'
+import { ThrottlerExceptionFilter } from '~/modules/throttler/filters/throttler-exception.filter'
 
 import { flattenValidationErrors } from './common/utils/exception.util'
 
@@ -81,9 +82,11 @@ void (async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor())
 
   // 全局应用异常过滤器
+  // 注意：过滤器的执行顺序是从后往前，后注册的先执行
   app.useGlobalFilters(
-    new AllExceptionsFilter(),
-    new HttpExceptionFilter(),
+    new HttpExceptionFilter(), // 最后执行：处理 HTTP 异常
+    new AllExceptionsFilter(), // 次之执行：处理所有其他异常
+    new ThrottlerExceptionFilter(), // 最先执行：优先处理限流异常
   )
 
   // 配置 Swagger 文档

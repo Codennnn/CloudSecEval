@@ -6,12 +6,14 @@ import appConfig from './configurations/app.config'
 import databaseConfig from './configurations/database.config'
 import jwtConfig from './configurations/jwt.config'
 import mailConfig from './configurations/mail.config'
+import throttlerConfig from './configurations/throttler.config'
 
 const configurationProviders = [
   appConfig,
   databaseConfig,
   jwtConfig,
   mailConfig,
+  throttlerConfig,
 ]
 
 import { validationSchema } from './schemas/validation.schema'

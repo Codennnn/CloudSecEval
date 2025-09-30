@@ -11,6 +11,13 @@ export interface JwtConfig {
   refreshExpiresIn: string
 }
 
+export interface ThrottlerConfig {
+  enabled: boolean
+  ttl: number
+  limit: number
+  skipIfBehindProxy: boolean
+}
+
 export interface AppConfig {
   port: number
   env: Environment
@@ -32,4 +39,5 @@ export interface AllConfig {
   app: AppConfig
   database: DatabaseConfig
   jwt: JwtConfig
+  throttler: ThrottlerConfig
 }

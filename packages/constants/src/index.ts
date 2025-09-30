@@ -14,3 +14,6 @@ export * from './permissions'
 
 // 认证授权相关常量
 export * from './auth'
+
+// 请求频率限制常量
+export * from './throttler'

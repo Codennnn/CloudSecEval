@@ -99,7 +99,7 @@ export class UploadsService {
 
       // 如果不允许重复上传，抛出错误
       if (!options?.allowDuplicate) {
-        consola.warn('尝试上传重复文件:', { hash, size: file.size, originalName: file.originalname })
+        consola.warn('尝试上传重复文件：', { hash, size: file.size, originalName: file.originalname })
         throw new Error('文件已存在，不允许重复上传')
       }
 

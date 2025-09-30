@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
-import { AllConfig, AppConfig, DatabaseConfig, JwtConfig } from '~/config/schemas/types'
+import { AllConfig, AppConfig, DatabaseConfig, JwtConfig, ThrottlerConfig } from '~/config/schemas/types'
 
 @Injectable()
 export class AppConfigService {
@@ -17,6 +17,10 @@ export class AppConfigService {
 
   get jwt(): JwtConfig {
     return this.configService.get('jwt', { infer: true })
+  }
+
+  get throttler(): ThrottlerConfig {
+    return this.configService.get('throttler', { infer: true })
   }
 
   get isDevelopment(): boolean {

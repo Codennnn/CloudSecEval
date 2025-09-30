@@ -1,4 +1,4 @@
-import { BUSINESS_CODES, PERMISSIONS } from '@mono/constants'
+import { BUSINESS_CODES, PERMISSIONS, THROTTLE_CONFIG } from '@mono/constants'
 import {
   Body,
   Controller,
@@ -14,8 +14,10 @@ import {
 } from '@nestjs/common'
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { ApiTags } from '@nestjs/swagger'
+import { Throttle } from '@nestjs/throttler'
 import type { Response } from 'express'
 import { createReadStream } from 'fs'
+import { pick } from 'radash'
 
 import { BusinessException } from '~/common/exceptions/business.exception'
 import { createContentDisposition, resp } from '~/common/utils/response.util'
@@ -30,7 +32,6 @@ import {
   MultipleFileUploadApiResponseDto,
 } from './dto/upload-response.dto'
 import {
-  FileValidationOptions,
   FileValidationPipe,
   MultipleFilesValidationPipe,
 } from './pipes/file-validation.pipe'
@@ -41,135 +42,58 @@ import { UploadsService } from './uploads.service'
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
-  /**
-   * 运行时类型守卫：判断对象是否为 Express.Multer.File
-   */
-  private isExpressFile(value: unknown): value is Express.Multer.File {
-    return Boolean(
-      value
-      && typeof value === 'object'
-      && 'fieldname' in value
-      && 'originalname' in value
-      && 'buffer' in value,
-    )
-  }
-
-  /**
-   * 解析布尔值，处理字符串形式的布尔值
-   */
-  private parseBooleanValue(value: boolean | string | undefined, defaultValue: boolean): boolean {
-    if (value === undefined) {
-      return defaultValue
-    }
-
-    if (typeof value === 'boolean') {
-      return value
-    }
-
-    if (typeof value === 'string') {
-      return value.toLowerCase() === 'true'
-    }
-
-    return defaultValue
-  }
-
   @Post('single')
   @UseInterceptors(FileInterceptor('file'))
   @RequirePermissions(PERMISSIONS.uploads.create)
+  @Throttle({ default: THROTTLE_CONFIG.UPLOAD.SINGLE })
   @ApiDocs(UPLOADS_API_CONFIG.uploadSingleFile)
   async uploadSingleFile(
     @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
-    @Body('allowDuplicate') allowDuplicate?: boolean | string,
   ): Promise<FileUploadApiResponseDto> {
-    // 处理字符串形式的布尔值
-    const allowDuplicateValue = this.parseBooleanValue(allowDuplicate, true)
-
     const storedFileInfo = await this.uploadsService.handleUploadedFile(file, {
-      allowDuplicate: allowDuplicateValue,
+      allowDuplicate: true,
     })
 
     return resp({
       msg: '文件上传成功',
       data: {
-        id: storedFileInfo.id,
-        originalName: storedFileInfo.originalName,
-        size: storedFileInfo.size,
-        mimeType: storedFileInfo.mimeType,
-        publicUrl: storedFileInfo.publicUrl,
+        ...pick(storedFileInfo, [
+          'id',
+          'originalName',
+          'size',
+          'mimeType',
+          'publicUrl',
+        ]),
         uploadedAt: storedFileInfo.storedAt,
       },
     })
   }
 
-  /**
-   * 多文件上传
-   */
   @Post('multiple')
   @UseInterceptors(FilesInterceptor('files', 10))
   @RequirePermissions(PERMISSIONS.uploads.create)
+  @Throttle({ default: THROTTLE_CONFIG.UPLOAD.MULTIPLE })
   @ApiDocs(UPLOADS_API_CONFIG.uploadMultipleFiles)
   async uploadMultipleFiles(
     @UploadedFiles(MultipleFilesValidationPipe) files: Express.Multer.File[],
-    @Body('allowDuplicate') allowDuplicate?: boolean | string,
+    @Body('allowDuplicate') allowDuplicate?: boolean,
   ): Promise<MultipleFileUploadApiResponseDto> {
-    // 处理字符串形式的布尔值
-    const allowDuplicateValue = this.parseBooleanValue(allowDuplicate, true)
-
     const storedFileInfos = await this.uploadsService.handleUploadedFiles(files, {
-      allowDuplicate: allowDuplicateValue,
+      allowDuplicate,
     })
 
     return resp({
       msg: '文件上传成功',
       data: storedFileInfos.map((storedFileInfo) => ({
-        id: storedFileInfo.id,
-        originalName: storedFileInfo.originalName,
-        size: storedFileInfo.size,
-        mimeType: storedFileInfo.mimeType,
-        publicUrl: storedFileInfo.publicUrl,
+        ...pick(storedFileInfo, [
+          'id',
+          'originalName',
+          'size',
+          'mimeType',
+          'publicUrl',
+        ]),
         uploadedAt: storedFileInfo.storedAt,
       })),
-    })
-  }
-
-  /**
-   * 自定义文件上传配置
-   */
-  @Post('custom')
-  @UseInterceptors(FileInterceptor('file'))
-  @RequirePermissions(PERMISSIONS.uploads.create)
-  @ApiDocs(UPLOADS_API_CONFIG.uploadCustomFile)
-  async uploadCustomFile(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() options: FileValidationOptions & { allowDuplicate?: boolean },
-  ): Promise<FileUploadApiResponseDto> {
-    // 使用自定义验证选项
-    const validationPipe = new FileValidationPipe(options)
-    const validatedFile = validationPipe.transform(file)
-
-    // 运行时类型守卫，避免不安全赋值
-    if (!this.isExpressFile(validatedFile)) {
-      throw BusinessException.badRequest(
-        BUSINESS_CODES.MISSING_PARAMETER,
-        '请选择要上传的文件',
-      )
-    }
-
-    const storedFileInfo = await this.uploadsService
-      .handleUploadedFile(validatedFile, {
-        allowDuplicate: options.allowDuplicate ?? true,
-      })
-
-    return resp({
-      msg: '文件上传成功',
-      data: {
-        id: storedFileInfo.id,
-        originalName: storedFileInfo.originalName,
-        size: storedFileInfo.size,
-        mimeType: storedFileInfo.mimeType,
-        publicUrl: storedFileInfo.publicUrl,
-        uploadedAt: storedFileInfo.storedAt,
-      },
     })
   }
 
@@ -222,6 +146,7 @@ export class UploadsController {
    */
   @Delete('stored')
   @RequirePermissions(PERMISSIONS.uploads.delete)
+  @Throttle({ default: THROTTLE_CONFIG.DATA.BATCH_DELETE })
   @ApiDocs(UPLOADS_API_CONFIG.deleteStoredFiles)
   async deleteStoredFiles(
     @Body() { ids }: { ids: string[] },
@@ -238,6 +163,7 @@ export class UploadsController {
    * 下载文件
    */
   @Get('download/:id')
+  @Throttle({ default: THROTTLE_CONFIG.UPLOAD.DOWNLOAD })
   @ApiDocs(UPLOADS_API_CONFIG.downloadFile)
   @RequirePermissions(PERMISSIONS.uploads.read)
   async downloadFile(

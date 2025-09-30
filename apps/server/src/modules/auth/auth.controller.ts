@@ -1,7 +1,8 @@
-import { BUSINESS_CODES } from '@mono/constants'
+import { BUSINESS_CODES, THROTTLE_CONFIG } from '@mono/constants'
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Patch, Post, Request, Response, UseGuards } from '@nestjs/common'
 import { ConfigType } from '@nestjs/config'
 import { ApiTags } from '@nestjs/swagger'
+import { Throttle } from '@nestjs/throttler'
 import type { Response as ExpressResponse } from 'express'
 
 import { DisabledApi } from '~/common/decorators/disabled-api.decorator'
@@ -49,6 +50,7 @@ export class AuthController {
   @DisabledApi('用户注册功能暂时禁用，系统维护中')
   @Public()
   @Post('register')
+  @Throttle({ default: THROTTLE_CONFIG.AUTH.REGISTER })
   @ApiDocs(AUTH_API_CONFIG.register)
   async register(@Body() createUserDto: CreateUserDto): Promise<RegisterApiResponseDto> {
     const user = await this.usersService.create(createUserDto)
@@ -63,6 +65,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @Throttle({ default: THROTTLE_CONFIG.AUTH.LOGIN })
   @ApiDocs(AUTH_API_CONFIG.login)
   async login(
     @Body() loginDto: LoginDto,
@@ -91,6 +94,7 @@ export class AuthController {
 
   @Public()
   @Post('refresh-token')
+  @Throttle({ default: THROTTLE_CONFIG.AUTH.REFRESH_TOKEN })
   @ApiDocs(AUTH_API_CONFIG.refreshToken)
   async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
@@ -111,6 +115,7 @@ export class AuthController {
 
   @Public()
   @Post('request-password-reset')
+  @Throttle({ default: THROTTLE_CONFIG.AUTH.PASSWORD_RESET_REQUEST })
   @ApiDocs(AUTH_API_CONFIG.requestPasswordReset)
   async requestPasswordReset(
     @Body() requestPasswordResetDto: RequestPasswordResetDto,
@@ -125,6 +130,7 @@ export class AuthController {
 
   @Public()
   @Post('reset-password')
+  @Throttle({ default: THROTTLE_CONFIG.AUTH.PASSWORD_RESET })
   @ApiDocs(AUTH_API_CONFIG.resetPassword)
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
@@ -162,6 +168,7 @@ export class AuthController {
   }
 
   @Patch('change-password')
+  @Throttle({ default: THROTTLE_CONFIG.AUTH.CHANGE_PASSWORD })
   @ApiDocs(AUTH_API_CONFIG.changePassword)
   async changePassword(
     @CurrentUser() user: SafeUserDto,

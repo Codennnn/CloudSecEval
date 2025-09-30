@@ -19,6 +19,8 @@ import { PermissionsGuard } from './modules/permissions/guards/permissions.guard
 import { PermissionsModule } from './modules/permissions/permissions.module'
 import { RolesModule } from './modules/roles/roles.module'
 import { StatisticsModule } from './modules/statistics/statistics.module'
+import { CustomThrottlerGuard } from './modules/throttler/guards/custom-throttler.guard'
+import { ThrottlerModule } from './modules/throttler/throttler.module'
 import { UploadsModule } from './modules/uploads/uploads.module'
 import { UsersModule } from './modules/users/users.module'
 import { PrismaModule } from './prisma/prisma.module'
@@ -32,6 +34,7 @@ import { PrismaModule } from './prisma/prisma.module'
     ConfigModule,
     PrismaModule,
     CommonModule,
+    ThrottlerModule,
     HealthModule,
     OrganizationsModule,
     DepartmentsModule,
@@ -52,7 +55,12 @@ import { PrismaModule } from './prisma/prisma.module'
       provide: APP_GUARD,
       useClass: DisabledApiGuard,
     },
-    // JWT认证守卫 - 在接口可用的前提下进行身份验证
+    // 频率限制守卫 - 在接口可用后立即检查频率限制
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard,
+    },
+    // JWT认证守卫 - 在频率限制通过后进行身份验证
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
