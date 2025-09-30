@@ -355,6 +355,7 @@ export function ProfilePage() {
                   <CardBoxTitle className="flex items-center gap-2">
                     修改密码
                   </CardBoxTitle>
+
                   <CardBoxDescription>
                     为了账户安全，请定期更换密码
                   </CardBoxDescription>
