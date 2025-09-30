@@ -1,6 +1,6 @@
+import { DateFormat, formatDate } from '@mono/utils'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { format } from 'date-fns'
 
 import { Prisma } from '#prisma/client'
 import { processTimeSeriesData } from '~/common/utils/date-processor.util'
@@ -544,8 +544,8 @@ export class StatisticsService {
       userTimeSeries,
       revenueTimeSeries,
       periodInfo: {
-        currentPeriod: `${format(currentPeriodStart, 'yyyy-MM-dd')} 至 ${format(currentPeriodEnd, 'yyyy-MM-dd')}`,
-        previousPeriod: `${format(previousPeriodStart, 'yyyy-MM-dd')} 至 ${format(previousPeriodEnd, 'yyyy-MM-dd')}`,
+        currentPeriod: `${formatDate(currentPeriodStart, DateFormat.YYYY_MM_DD)!} 至 ${formatDate(currentPeriodEnd, DateFormat.YYYY_MM_DD)!}`,
+        previousPeriod: `${formatDate(previousPeriodStart, DateFormat.YYYY_MM_DD)!} 至 ${formatDate(previousPeriodEnd, DateFormat.YYYY_MM_DD)!}`,
         lastUpdated: now.toISOString(),
       },
     }

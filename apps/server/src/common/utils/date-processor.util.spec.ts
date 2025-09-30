@@ -3,7 +3,6 @@ import { addDays, subDays } from 'date-fns'
 import { BusinessException } from '~/common/exceptions/business.exception'
 
 import {
-  formatDateInTimezone,
   getDateRange,
   getDaysDifference,
   normalizeDateRange,
@@ -195,28 +194,6 @@ describe('DateProcessorUtil', () => {
       const result = getDateRange(date, date, 'UTC')
 
       expect(result).toEqual(['2024-01-01'])
-    })
-  })
-
-  describe('formatDateInTimezone', () => {
-    it('应该格式化日期为指定时区', () => {
-      const date = new Date('2024-01-01T12:00:00Z')
-
-      const result = formatDateInTimezone(date, 'yyyy-MM-dd', 'UTC')
-
-      expect(result).toBe('2024-01-01')
-    })
-
-    it('应该使用自定义格式', () => {
-      const date = new Date('2024-01-01T12:00:00Z')
-
-      const result = formatDateInTimezone(
-        date,
-        'yyyy-MM-dd HH:mm:ss',
-        'UTC',
-      )
-
-      expect(result).toBe('2024-01-01 12:00:00')
     })
   })
 

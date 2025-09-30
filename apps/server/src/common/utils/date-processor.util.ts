@@ -1,6 +1,7 @@
 import { TZDate } from '@date-fns/tz'
 import { BUSINESS_CODES } from '@mono/constants'
-import { addDays, format, startOfDay, subDays } from 'date-fns'
+import { DateFormat, formatDate } from '@mono/utils'
+import { addDays, startOfDay, subDays } from 'date-fns'
 
 import { BusinessException } from '~/common/exceptions/business.exception'
 
@@ -163,7 +164,7 @@ function fillMissingDates(
   let currentDate = startDay
 
   while (currentDate <= endDay) {
-    const dateKey = format(currentDate, 'yyyy-MM-dd')
+    const dateKey = formatDate(currentDate, DateFormat.YYYY_MM_DD)!
 
     if (!dateMap.has(dateKey)) {
       dateMap.set(dateKey, 0)
@@ -225,7 +226,7 @@ export function processTimeSeriesData<T extends { createdAt: Date }>(
     // 获取该时区的日期开始时间
     const dayStart = startOfDay(zonedDate)
     // 格式化为 YYYY-MM-DD 格式作为分组键
-    const dateKey = format(dayStart, 'yyyy-MM-dd')
+    const dateKey = formatDate(dayStart, DateFormat.YYYY_MM_DD)!
 
     const currentValue = dateMap.get(dateKey) ?? 0
     const aggregatedValue = aggregator(item)
@@ -263,29 +264,11 @@ export function getDateRange(
   let currentDate = startDay
 
   while (currentDate <= endDay) {
-    dates.push(format(currentDate, 'yyyy-MM-dd'))
+    dates.push(formatDate(currentDate, DateFormat.YYYY_MM_DD)!)
     currentDate = addDays(currentDate, 1)
   }
 
   return dates
-}
-
-/**
- * 在指定时区格式化日期
- *
- * @param date 要格式化的日期
- * @param formatStr 格式字符串，默认为 'yyyy-MM-dd'
- * @param timezone 时区，默认为 'Asia/Shanghai'
- * @returns 格式化后的日期字符串
- */
-export function formatDateInTimezone(
-  date: Date,
-  formatStr = 'yyyy-MM-dd',
-  timezone = DEFAULT_TIMEZONE,
-): string {
-  const zonedDate = new TZDate(date, timezone)
-
-  return format(zonedDate, formatStr)
 }
 
 /**
