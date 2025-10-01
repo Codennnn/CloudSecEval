@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { APP_GUARD } from '@nestjs/core'
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 
@@ -7,6 +7,8 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { CommonModule } from './common/common.module'
 import { DisabledApiGuard } from './common/guards/disabled-api.guard'
+import { TenantContextInterceptor } from './common/tenant/interceptors/tenant-context.interceptor'
+import { TenantModule } from './common/tenant/tenant.module'
 import { ConfigModule } from './config/config.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
@@ -34,6 +36,7 @@ import { PrismaModule } from './prisma/prisma.module'
     ConfigModule,
     PrismaModule,
     CommonModule,
+    TenantModule,
     ThrottlerModule,
     HealthModule,
     OrganizationsModule,
@@ -65,7 +68,12 @@ import { PrismaModule } from './prisma/prisma.module'
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    // 权限守卫 - 在身份验证通过后进行权限检查
+    // 租户上下文拦截器 - 在JWT认证后提取并注入租户上下文
+    {
+      provide: APP_INTERCEPTOR,
+      useExisting: TenantContextInterceptor,
+    },
+    // 权限守卫 - 在身份验证和租户上下文设置后进行权限检查
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,
