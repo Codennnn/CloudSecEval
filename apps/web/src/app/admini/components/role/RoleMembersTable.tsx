@@ -149,15 +149,12 @@ export function RoleMembersTable(props: RoleMembersTableProps) {
 
       const userIds = userList.map((user) => user.id)
       const title = isMultiple ? '批量移除成员' : '移除成员'
-      const warningMessage = `移除后，${isMultiple ? '这些成员' : '该成员'}将不再继承该角色的权限，请确认是否继续？`
 
       showConfirmDialog({
         title,
         description,
         confirmButtonText: '确认移除',
         variant: 'destructive',
-        showWarning: true,
-        warningMessage,
         onConfirm: async () => {
           await handleRemoveMember(userIds)
           after?.()

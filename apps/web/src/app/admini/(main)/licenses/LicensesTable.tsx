@@ -26,6 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { emitter, EVENT_KEY } from '~/constants/common'
 import { FieldTypeEnum } from '~/constants/form'
 import type { LicenseData } from '~/lib/api/types'
@@ -227,16 +228,24 @@ export function LicensesTable() {
         header: '操作',
         cell: ({ row }) => (
           <div className="flex items-center gap-0.5">
-            <Button
-              className="text-muted-foreground"
-              size="iconNormal"
-              variant="ghost"
-              onClick={() => {
-                handleViewDetail(row.original.id)
-              }}
-            >
-              <MoveDiagonal />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="text-muted-foreground"
+                  size="iconNormal"
+                  variant="ghost"
+                  onClick={() => {
+                    handleViewDetail(row.original.id)
+                  }}
+                >
+                  <MoveDiagonal />
+                </Button>
+              </TooltipTrigger>
+
+              <TooltipContent>
+                查看详情
+              </TooltipContent>
+            </Tooltip>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
