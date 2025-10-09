@@ -6,9 +6,8 @@
   "license": "UNLICENSED",
   "author": "LeoKu",
   "scripts": {
-    "build": "nest build",
-    "build:prod": "pnpm prisma:generate:prod && nest build",
-    "clean": "rimraf dist generated node_modules src/metadata.ts",
+    "build": "pnpm prisma:generate:prod && nest build",
+    "clean": "rimraf dist generated node_modules",
     "deps": "pnpm up --interactive --latest",
     "lint": "pnpm lint:es && pnpm lint:ts",
     "lint:es": "eslint \"{src,apps,libs,test}/**/*.ts\" \"docker/**/*.mjs\" --fix",
