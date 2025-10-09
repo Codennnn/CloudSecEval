@@ -341,6 +341,7 @@ export class BugReportsService {
       changes.push('描述')
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     if (updated.severity && original.severity !== updated.severity) {
       changes.push('严重程度')
     }
@@ -1066,7 +1067,7 @@ export class BugReportsService {
 
                   // 生成安全的文件名
                   const safeFileName = this.generateSafeFileName(
-                    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
                     attachmentData.originalName
                       ? attachmentData.originalName
                       : fileInfo.originalName

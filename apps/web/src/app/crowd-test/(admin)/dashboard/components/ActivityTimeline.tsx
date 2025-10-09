@@ -70,6 +70,7 @@ export function ActivityTimeline(props: ActivityTimelineProps) {
   const events = typeof data === 'object' && 'pages' in data
     ? data.pages
         .flatMap((page) => page.data)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         .filter((event) => event.bugReport.status !== BugReportStatus.DRAFT)
     : []
 

@@ -47,6 +47,7 @@ export function RealTimeActivityMonitor() {
     ? data.pages
         .flatMap((page) => page.data)
         .slice(0, pageSize)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         .filter((event) => event.bugReport.status !== BugReportStatus.DRAFT)
     : []
 
