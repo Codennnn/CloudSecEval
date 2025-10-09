@@ -53,25 +53,14 @@ export function useChatSessions() {
       createdAt: now,
       updatedAt: now,
       archived: false,
-      pinned: false,
     }
 
     setSessions((prev) => {
       const updated = [newSession, ...(prev ?? [])]
 
-      // 保持最大会话数限制，删除最旧的未置顶会话
+      // 保持最大会话数限制，删除最旧的会话
       if (updated.length > MAX_SESSIONS) {
-        const sorted = updated.sort((a, b) => {
-          if (a.pinned && !b.pinned) {
-            return -1
-          }
-
-          if (!a.pinned && b.pinned) {
-            return 1
-          }
-
-          return b.updatedAt - a.updatedAt
-        })
+        const sorted = updated.sort((a, b) => b.updatedAt - a.updatedAt)
 
         return sorted.slice(0, MAX_SESSIONS)
       }
@@ -167,17 +156,6 @@ export function useChatSessions() {
     )
   })
 
-  // 置顶/取消置顶会话
-  const togglePinSession = useEvent((sessionId: string) => {
-    setSessions((prev) =>
-      (prev ?? []).map((session) =>
-        session.id === sessionId
-          ? { ...session, pinned: !session.pinned, updatedAt: Date.now() }
-          : session,
-      ),
-    )
-  })
-
   // 归档会话（软删除）
   const archiveSession = useEvent((sessionId: string) => {
     setSessions((prev) =>
@@ -215,18 +193,12 @@ export function useChatSessions() {
     return sessionsArray.find((session) => session.id === sessionId)
   })
 
-  // 过滤会话（纯函数，可以在渲染期间调用）
   const filterSessions = (filters: ChatSessionFilters = {}): ChatSession[] => {
     let filtered = sessionsArray
 
     // 过滤归档状态
     if (!filters.showArchived) {
       filtered = filtered.filter((session) => !session.archived)
-    }
-
-    // 过滤置顶状态
-    if (filters.showPinned) {
-      filtered = filtered.filter((session) => session.pinned)
     }
 
     // 搜索过滤
@@ -238,22 +210,12 @@ export function useChatSessions() {
       )
     }
 
-    // 排序：置顶的在前，然后按更新时间降序
-    return filtered.sort((a, b) => {
-      if (a.pinned && !b.pinned) {
-        return -1
-      }
-
-      if (!a.pinned && b.pinned) {
-        return 1
-      }
-
-      return b.updatedAt - a.updatedAt
-    })
+    // 排序：按更新时间降序
+    return filtered.sort((a, b) => b.updatedAt - a.updatedAt)
   }
 
-  // 获取统计信息（纯函数，可以在渲染期间调用）
-  const getStats = (): ChatSessionStats => {
+  // 获取统计信息（使用 useEvent 包装以保持稳定的函数引用）
+  const getStats = useEvent((): ChatSessionStats => {
     const totalSessions = sessionsArray.length
     const activeSessions = sessionsArray.filter((s) => !s.archived).length
     const archivedSessions = sessionsArray.filter((s) => s.archived).length
@@ -267,7 +229,7 @@ export function useChatSessions() {
       totalMessages,
       averageMessagesPerSession,
     }
-  }
+  })
 
   // 获取最近的会话
   const getRecentSessions = useEvent((limit?: number): ChatSession[] => {
@@ -282,7 +244,6 @@ export function useChatSessions() {
     appendMessage,
     appendMessages,
     renameSession,
-    togglePinSession,
     archiveSession,
     restoreSession,
     deleteSession,

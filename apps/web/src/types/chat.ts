@@ -12,7 +12,6 @@ export interface ChatSession {
   createdAt: number
   updatedAt: number
   archived?: boolean
-  pinned?: boolean
 }
 
 export interface ChatSessionStats {
@@ -25,6 +24,5 @@ export interface ChatSessionStats {
 
 export interface ChatSessionFilters {
   showArchived?: boolean
-  showPinned?: boolean
   searchTerm?: string
 }

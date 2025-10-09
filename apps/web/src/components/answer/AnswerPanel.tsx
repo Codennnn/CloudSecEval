@@ -134,19 +134,26 @@ export function AnswerPanel(props: AnswerPanelProps) {
     }
   })
 
-  // 初始化会话
-  useEffect(() => {
-    if (!currentSessionId) {
-      // 创建新的聊天会话
-      const newSession = createSession()
-
-      if (sessionId === undefined) {
-        setInternalSessionId(newSession.id)
-      }
-
-      onSessionChange?.(newSession.id)
+  /**
+   * 确保会话存在的辅助函数
+   * 只在需要时才创建会话（延迟创建）
+   */
+  const ensureSession = useEvent((): string => {
+    if (currentSessionId) {
+      return currentSessionId
     }
-  }, [currentSessionId, createSession, sessionId, onSessionChange])
+
+    // 创建新的聊天会话
+    const newSession = createSession()
+
+    if (sessionId === undefined) {
+      setInternalSessionId(newSession.id)
+    }
+
+    onSessionChange?.(newSession.id)
+
+    return newSession.id
+  })
 
   // 当会话切换时恢复对话历史
   useEffect(() => {
@@ -305,6 +312,9 @@ export function AnswerPanel(props: AnswerPanelProps) {
       return
     }
 
+    // 确保会话存在（延迟创建：只在用户真正发送消息时才创建会话）
+    ensureSession()
+
     const question = currentQuestion.trim()
     setCurrentQuestion('')
     setIsLoading(true)
@@ -405,7 +415,7 @@ export function AnswerPanel(props: AnswerPanelProps) {
           <div className="rounded-[12px] overflow-hidden bg-background">
             <Textarea
               ref={inputRef}
-              className="!text-[13px] p-2 resize-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent disabled:opacity-100 disabled:bg-muted"
+              className="!text-[13px] p-2 resize-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent disabled:opacity-80"
               disabled={isLoading}
               placeholder={
                 messages.length === 0

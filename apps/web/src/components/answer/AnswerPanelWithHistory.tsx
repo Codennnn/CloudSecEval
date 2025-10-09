@@ -57,6 +57,13 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
     setShowHistory(!showHistory)
   })
 
+  const handleSessionDelete = useEvent((sessionId: string) => {
+    // 如果删除的是当前选中的会话,清空当前会话
+    if (sessionId === currentSessionId) {
+      setCurrentSessionId(null)
+    }
+  })
+
   if (!isVisible) {
     return null
   }
@@ -70,6 +77,7 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
             currentSessionId={currentSessionId}
             isVisible={showHistory}
             onClose={() => { setShowHistory(false) }}
+            onSessionDelete={handleSessionDelete}
             onSessionSelect={handleSessionSelect}
           />
         </div>
@@ -79,17 +87,17 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
       <div className="size-full flex flex-col">
         {/* 增强的头部 */}
         <div className="flex items-center justify-between p-panel pr-panel-sm border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">AI 助手</span>
+          <div className="flex items-center gap-2 flex-1 overflow-hidden">
+            <span className="text-sm font-medium whitespace-nowrap">AI 助手</span>
 
             {sessionTitle && (
-              <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+              <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded truncate">
                 {sessionTitle}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-0.5 ml-auto">
+          <div className="flex items-center gap-0.5 ml-auto shrink-0">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -102,9 +110,11 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                {showHistory
-                  ? '隐藏历史'
-                  : '显示历史'}
+                {
+                  showHistory
+                    ? '隐藏历史'
+                    : '显示历史'
+                }
               </TooltipContent>
             </Tooltip>
 

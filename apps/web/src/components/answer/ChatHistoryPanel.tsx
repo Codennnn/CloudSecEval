@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import {
@@ -9,7 +9,6 @@ import {
   EditIcon,
   HistoryIcon,
   PanelLeftCloseIcon,
-  PinIcon,
   SearchIcon,
   Trash2Icon,
   XIcon,
@@ -17,6 +16,14 @@ import {
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Button } from '~/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '~/components/ui/dialog'
 import { Input } from '~/components/ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { useChatSessions } from '~/hooks/useChatSessions'
@@ -27,29 +34,31 @@ interface ChatHistoryPanelProps {
   onSessionSelect?: (session: ChatSession) => void
   currentSessionId?: string | null
   onClose?: () => void
+  /** 当会话被删除时的回调，用于通知父组件处理当前会话状态 */
+  onSessionDelete?: (sessionId: string) => void
 }
 
 export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
-  const { isVisible = true, onSessionSelect, currentSessionId, onClose } = props
+  const { isVisible = true, onSessionSelect, currentSessionId, onClose, onSessionDelete } = props
 
   const [searchTerm, setSearchTerm] = useState('')
   const [showArchived, setShowArchived] = useState(false)
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
+  const [sessionToDelete, setSessionToDelete] = useState<ChatSession | null>(null)
 
   const {
     filterSessions,
     renameSession,
-    togglePinSession,
     archiveSession,
     restoreSession,
     deleteSession,
   } = useChatSessions()
 
-  const filteredSessions = useMemo(() => filterSessions({
+  const filteredSessions = filterSessions({
     searchTerm,
     showArchived,
-  }), [filterSessions, searchTerm, showArchived])
+  })
 
   const handleEditStart = useEvent((session: ChatSession) => {
     setEditingSessionId(session.id)
@@ -68,6 +77,31 @@ export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
   const handleEditCancel = useEvent(() => {
     setEditingSessionId(null)
     setEditingTitle('')
+  })
+
+  const handleDeleteClick = useEvent((session: ChatSession) => {
+    setSessionToDelete(session)
+  })
+
+  const handleDeleteConfirm = useEvent(() => {
+    if (!sessionToDelete) {
+      return
+    }
+
+    // 删除会话
+    deleteSession(sessionToDelete.id)
+
+    // 如果删除的是当前选中的会话,通知父组件
+    if (sessionToDelete.id === currentSessionId) {
+      onSessionDelete?.(sessionToDelete.id)
+    }
+
+    // 关闭对话框
+    setSessionToDelete(null)
+  })
+
+  const handleDeleteCancel = useEvent(() => {
+    setSessionToDelete(null)
   })
 
   const formatDate = useEvent((timestamp: number) => {
@@ -169,9 +203,11 @@ export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
         {filteredSessions.length === 0
           ? (
               <div className="p-4 text-center text-muted-foreground text-sm">
-                {searchTerm
-                  ? '未找到匹配的对话'
-                  : '暂无对话历史'}
+                {
+                  searchTerm
+                    ? '未找到匹配的对话'
+                    : '暂无对话历史'
+                }
               </div>
             )
           : (
@@ -247,14 +283,9 @@ export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
                               </div>
                             )
                           : (
-                              <div className="flex items-center gap-1">
-                                {session.pinned && (
-                                  <PinIcon className="size-3 text-primary flex-shrink-0" />
-                                )}
-                                <h3 className="text-sm font-medium truncate">
-                                  {session.title}
-                                </h3>
-                              </div>
+                              <h3 className="text-sm font-medium truncate">
+                                {session.title}
+                              </h3>
                             )}
 
                         {/* 预览和时间 */}
@@ -292,31 +323,6 @@ export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
                                   variant="ghost"
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    togglePinSession(session.id)
-                                  }}
-                                >
-                                  <PinIcon
-                                    className={`size-3 ${session.pinned
-                                      ? 'text-primary'
-                                      : ''}`}
-                                  />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {session.pinned
-                                  ? '取消置顶'
-                                  : '置顶'}
-                              </TooltipContent>
-                            </Tooltip>
-
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  className="size-6"
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
                                     handleEditStart(session)
                                   }}
                                 >
@@ -344,6 +350,25 @@ export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
                               </TooltipTrigger>
                               <TooltipContent>
                                 归档
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  className="size-6"
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDeleteClick(session)
+                                  }}
+                                >
+                                  <Trash2Icon className="size-3" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                删除
                               </TooltipContent>
                             </Tooltip>
                           </>
@@ -397,6 +422,55 @@ export function ChatHistoryPanel(props: ChatHistoryPanelProps) {
               </div>
             )}
       </ScrollGradientContainer>
+
+      {/* 删除确认对话框 */}
+      <Dialog
+        open={!!sessionToDelete}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleDeleteCancel()
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>删除对话</DialogTitle>
+            <DialogDescription>
+              确定要删除这个对话吗?此操作无法撤销。
+            </DialogDescription>
+          </DialogHeader>
+
+          {sessionToDelete && (
+            <div className="py-4">
+              <div className="space-y-2 text-sm">
+                <div>
+                  <span className="text-muted-foreground">标题：</span>
+                  <span className="font-medium">{sessionToDelete.title}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">消息数量：</span>
+                  <span className="font-medium">{sessionToDelete.messages.length} 条</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={handleDeleteCancel}
+            >
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
