@@ -262,9 +262,9 @@ export class AudioConsumer extends WorkerHost {
 }
 ```
 
-当 worker 空闲且队列中有待处理的任务时，`process` 方法将被调用。该方法接收一个 `Job` 实例作为参数，返回值将存储在任务结果中，供后续监听任务完成事件时访问。
+当 worker 空闲且队列中有待处理的任务时，`updateProgress` 方法将被调用。该方法接收一个 `Job` 实例作为参数，返回值将存储在任务结果中，供后续监听任务完成事件时访问。
 
-`Job` 对象还提供了一系列方法用于与任务状态进行交互，例如上述代码中调用的 updateProgress() 用于更新任务进度。完整 API 可参考 `Job` 类[文档](https://api.docs.bullmq.io/classes/v4.Job.html)。
+`Job` 对象还提供了一系列方法用于与任务状态进行交互，例如上述代码中调用的 `updateProgress()` 用于更新任务进度。完整 API 可参考 `Job` 类[文档](https://api.docs.bullmq.io/classes/v4.Job.html)。
 
 ### 关于命名任务的处理方式
 

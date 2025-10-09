@@ -218,12 +218,18 @@ server: Server
 你也可以通过 `namespace` 属性获取对应的命名空间，示例如下：
 
 ```ts
-@WebSocketServer({ namespace: 'my-namespace' })
-namespace: Namespace
+@WebSocketGateway({ namespace: 'my-namespace' })
+export class EventsGateway {
+  @WebSocketServer()
+  namespace: Namespace
+}
 ```
 
+`@WebSocketServer()` 装饰器通过读取由 `@WebSocketGateway()` 装饰器保存的元数据，将对应的服务器实例注入到类中。
+如果在 `@WebSocketGateway()` 装饰器中指定了 `namespace` 选项，那么 `@WebSocketServer()` 注入的将不是 `Server` 实例，而是对应的 `Namespace` 实例。
+
 <CalloutInfo>
-  <div>`@WebSocketServer()` 装饰器需从 `@nestjs/websockets` 包中导入。</div>
+  `@WebSocketServer()` 装饰器需从 `@nestjs/websockets` 包中导入。
 </CalloutInfo>
 
 Nest 会在服务器实例准备就绪后，自动将其实例赋值到该属性。

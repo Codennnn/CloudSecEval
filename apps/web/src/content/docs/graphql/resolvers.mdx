@@ -645,12 +645,13 @@ export class AuthorsResolver {
 假设我们采用了 schema first 方式，并且已经启用了类型自动生成功能（如在[上一章](/graphql/quick-start)中通过 `outputAs: 'class'` 配置所示），当你运行应用程序时，系统会自动生成如下文件（文件位置由你在 `GraphQLModule.forRoot()` 方法中指定）。例如，生成在 `src/graphql.ts`：
 
 ```ts filename='graphql.ts'
-export (class Author {
+export class Author {
   id: number
   firstName?: string
   lastName?: string
   posts?: Post[]
-})
+}
+
 export class Post {
   id: number
   title: string
