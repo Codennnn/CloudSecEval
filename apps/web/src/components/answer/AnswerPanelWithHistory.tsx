@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
 import dynamic from 'next/dynamic'
@@ -30,8 +30,11 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
 
   const [showHistory, setShowHistory] = useState(false)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
 
   const { getSession } = useChatSessions()
+
+  const abortAnswerRef = useRef<(() => void) | null>(null)
 
   const sessionTitle = useMemo(() => {
     if (currentSessionId) {
@@ -62,6 +65,20 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
     if (sessionId === currentSessionId) {
       setCurrentSessionId(null)
     }
+  })
+
+  /**
+   * 处理关闭 AI 聊天界面
+   * 如果正在生成回答，先终止生成，然后关闭界面
+   */
+  const handleClose = useEvent(() => {
+    // 如果正在生成，先终止生成
+    if (isGenerating && abortAnswerRef.current) {
+      abortAnswerRef.current()
+    }
+
+    // 调用父组件的关闭回调
+    onClose?.()
   })
 
   if (!isVisible) {
@@ -140,7 +157,7 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
                   className="size-7"
                   size="icon"
                   variant="ghost"
-                  onClick={onClose}
+                  onClick={handleClose}
                 >
                   <XIcon className="size-[1em]" />
                 </Button>
@@ -156,6 +173,10 @@ export function AnswerPanelWithHistory(props: AnswerPanelWithHistoryProps) {
         <div className="flex-1 overflow-hidden">
           <AnswerPanel
             sessionId={currentSessionId}
+            onAbortRefReady={(abortFn) => {
+              abortAnswerRef.current = abortFn
+            }}
+            onLoadingChange={setIsGenerating}
             onSessionChange={handleSessionChange}
           />
         </div>
