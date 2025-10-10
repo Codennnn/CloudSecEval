@@ -9,7 +9,7 @@ export function LoadingMessage(props: LoadingMessageProps) {
 
   return (
     <div className="text-sm">
-      <TextShimmer>
+      <TextShimmer className="whitespace-nowrap text-muted-foreground text-sm font-medium">
         {isRegenerating ? '正在重新生成回答...' : '正在思考...'}
       </TextShimmer>
     </div>

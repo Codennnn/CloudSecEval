@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useEvent } from 'react-use-event-hook'
 
-import { type Interaction, OramaClient } from '@oramacloud/client'
-import { ArrowUpIcon } from 'lucide-react'
+import { type AnswerSession, type Interaction, OramaClient } from '@oramacloud/client'
+import { ArrowUpIcon, StopCircleIcon } from 'lucide-react'
 
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
 import { Button } from '~/components/ui/button'
@@ -18,12 +18,6 @@ import { LoadingMessage } from './LoadingMessage'
 import { UserMessage } from './UserMessage'
 
 const USER_CONTEXT = '用户正在浏览 NestJS 中文文档网站，希望获得关于 NestJS 框架的准确和详细的答案。请用中文回答问题，并保持对话的连续性和上下文理解。'
-
-interface AnswerSession {
-  ask: (params: Record<string, unknown>) => Promise<unknown>
-  clearSession: () => void
-  regenerateLast: (params?: Record<string, unknown>) => Promise<unknown>
-}
 
 interface AnswerPanelProps {
   sessionId?: string | null
@@ -40,7 +34,7 @@ export function AnswerPanel(props: AnswerPanelProps) {
 
   const [currentQuestion, setCurrentQuestion] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [answerSession, setAnswerSession] = useState<AnswerSession | null>(null)
+  const [answerSession, setAnswerSession] = useState<AnswerSession<boolean> | null>(null)
   const [interactions, setInteractions] = useState<Interaction[]>([])
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
@@ -359,6 +353,20 @@ export function AnswerPanel(props: AnswerPanelProps) {
     }, 100)
   })
 
+  const handleStopGeneration = useEvent(() => {
+    if (answerSession && isLoading) {
+      try {
+        // 调用 Orama 的 abortAnswer 方法终止回答生成
+        answerSession.abortAnswer()
+        setIsLoading(false)
+        setIsRegenerating(false)
+      }
+      catch (error) {
+        console.error('终止回答失败：', error)
+      }
+    }
+  })
+
   return (
     <div className="h-full flex flex-col">
       {/* 消息区域 */}
@@ -430,17 +438,31 @@ export function AnswerPanel(props: AnswerPanelProps) {
             />
 
             <div className="flex items-center justify-end p-1.5 pt-0">
-              <Button
-                className="!text-xs !py-1 !px-1.5 h-auto !gap-1"
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  void handleAskQuestion()
-                }}
-              >
-                <ArrowUpIcon className="size-3.5" />
-                发送
-              </Button>
+              {isLoading
+                ? (
+                    <Button
+                      className="!text-xs !py-1 !px-1.5 h-auto !gap-1"
+                      size="sm"
+                      variant="outline"
+                      onClick={handleStopGeneration}
+                    >
+                      <StopCircleIcon className="size-3.5" />
+                      停止
+                    </Button>
+                  )
+                : (
+                    <Button
+                      className="!text-xs !py-1 !px-1.5 h-auto !gap-1"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        void handleAskQuestion()
+                      }}
+                    >
+                      <ArrowUpIcon className="size-3.5" />
+                      发送
+                    </Button>
+                  )}
             </div>
           </div>
         </div>
