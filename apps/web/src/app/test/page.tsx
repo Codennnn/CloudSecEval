@@ -20,6 +20,11 @@ async function CodeBlock(props: Props) {
   return <div dangerouslySetInnerHTML={{ __html: out }} />
 }
 
+export const metadata = {
+  title: '测试页面 - NestJS 中文文档',
+  description: '各种组件和功能的测试用例集合',
+}
+
 export default function Page() {
   return (
     <main className="container mx-auto p-6 space-y-8">
@@ -123,13 +128,20 @@ export default function Page() {
               </Button>
             </Link>
           </div>
+
+          <div className="border rounded-lg p-4 space-y-3">
+            <h3 className="font-semibold">CodeTabs 多标签代码块测试</h3>
+            <p className="text-sm text-muted-foreground">
+              测试 CodeTabs 组件的多标签切换、语法高亮、文件名显示等功能
+            </p>
+            <Link href="/test/code-tabs">
+              <Button className="w-full" variant="outline">
+                查看测试
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </main>
   )
-}
-
-export const metadata = {
-  title: '测试页面 - NestJS 中文文档',
-  description: '各种组件和功能的测试用例集合',
 }

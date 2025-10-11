@@ -4,6 +4,7 @@ import type { MDXComponents } from 'mdx/types'
 import type { BundledLanguage } from 'shiki'
 
 import { CodeBlock } from '~/components/code/CodeBlock'
+import { CodeTab, CodeTabs } from '~/components/code/CodeTabs'
 import { CodeWrapper } from '~/components/code/CodeWrapper'
 import { CalloutInfo } from '~/components/doc/CalloutInfo'
 import { DocImage } from '~/components/doc/DocImage'
@@ -227,6 +228,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     FileTree,
     CalloutInfo,
     DocImage,
+    CodeTabs,
+    CodeTab,
 
     ...components,
   }
