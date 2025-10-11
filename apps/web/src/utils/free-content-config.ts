@@ -3,6 +3,8 @@
  * 定义哪些文档路径可以免费访问，其他所有路径都需要付费
  */
 
+import { isDevelopment } from './platform'
+
 /**
  * 免费访问的文档路径列表
  * 这些路径不需要付费即可访问
@@ -30,6 +32,10 @@ const FREE_CONTENT_PATHS = [
  * @returns true 表示免费内容，false 表示需要付费
  */
 export function isFreeContent(docPath: string): boolean {
+  if (isDevelopment()) {
+    return true
+  }
+
   return FREE_CONTENT_PATHS.some((freePath) => {
     // 精确匹配
     if (docPath === freePath) {

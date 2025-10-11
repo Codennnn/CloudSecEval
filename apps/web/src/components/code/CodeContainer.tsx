@@ -68,32 +68,34 @@ export function CodeContainer(props: CodeContainerProps) {
     <CodeWrapper className={cn(className, '@container/code-block')}>
       {/* 头部工具栏 */}
       {showHeader && (
-        <div className="flex items-center gap-2 text-sm px-4 py-code-block">
-          <div className="inline-flex items-center gap-2 flex-1">
-            {showLanguageIcon && (
-              <LanguageIcon
-                className="size-5"
-                filename={filename}
-                lang={lang}
-              />
-            )}
+        <div className="px-code-block">
+          <div className="flex items-center gap-2 text-sm p-code-block">
+            <div className="inline-flex items-center gap-2 flex-1">
+              {showLanguageIcon && (
+                <LanguageIcon
+                  className="size-5"
+                  filename={filename}
+                  lang={lang}
+                />
+              )}
 
-            <div className="flex items-center gap-2 font-medium">
-              {title && <span className="opacity-70">{title}</span>}
-              {filename && <span className="font-mono">{filename}</span>}
+              <div className="flex items-center gap-2 font-medium">
+                {title && <span className="opacity-70">{title}</span>}
+                {filename && <span className="font-mono">{filename}</span>}
+              </div>
+
+              {/* 微妙的加载指示器 */}
+              {isLoading && (
+                <div className="size-2 bg-current/60 rounded-full animate-pulse" />
+              )}
+
+              {/* 自定义头部内容 */}
+              {headerContent}
             </div>
 
-            {/* 微妙的加载指示器 */}
-            {isLoading && (
-              <div className="size-2 bg-current/60 rounded-full animate-pulse" />
-            )}
-
-            {/* 自定义头部内容 */}
-            {headerContent}
-          </div>
-
-          <div className="ml-auto flex items-center gap-1">
-            {showCopyButton && <CodeCopyButton text={code} />}
+            <div className="ml-auto flex items-center gap-1">
+              {showCopyButton && <CodeCopyButton text={code} />}
+            </div>
           </div>
         </div>
       )}
