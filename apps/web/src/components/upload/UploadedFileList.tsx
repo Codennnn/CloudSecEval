@@ -1,3 +1,5 @@
+'use client'
+
 import { formatFileSize } from '@mono/utils'
 import { ArchiveIcon, CodeIcon, DatabaseIcon, DownloadIcon, FileIcon, FileSpreadsheetIcon, FileTextIcon, ImageIcon, MusicIcon, PresentationIcon, VideoIcon, XIcon } from 'lucide-react'
 import { toast } from 'sonner'
