@@ -100,6 +100,6 @@ export function isCookieEnabled(): boolean {
   return process.env.NEXT_PUBLIC_JWT_USE_COOKIE === 'true'
 }
 
-export function isPaidContentModeEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_ENABLE_PAID_CONTENT_MODE === 'true'
+export function isPaidModeEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_ENABLE_PAID_MODE === 'true'
 }

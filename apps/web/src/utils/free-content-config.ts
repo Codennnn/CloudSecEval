@@ -3,7 +3,7 @@
  * 定义哪些文档路径可以免费访问，其他所有路径都需要付费
  */
 
-import { isPaidContentModeEnabled } from './platform'
+import { isPaidModeEnabled } from './platform'
 
 /**
  * 免费访问的文档路径列表
@@ -32,7 +32,7 @@ const FREE_CONTENT_PATHS = [
  * @returns true 表示免费内容，false 表示需要付费
  */
 export function isFreeContent(docPath: string): boolean {
-  if (isPaidContentModeEnabled()) {
+  if (!isPaidModeEnabled()) {
     return true
   }
 
