@@ -1,8 +1,4 @@
-import Link from 'next/link'
-import { ChevronLeftIcon } from 'lucide-react'
-
 import { CodeTab, CodeTabs } from '~/components/code/CodeTabs'
-import { Button } from '~/components/ui/button'
 
 export const metadata = {
   title: 'CodeTabs 组件测试 - NestJS 中文文档',
@@ -11,16 +7,8 @@ export const metadata = {
 
 export default function CodeTabsTestPage() {
   return (
-    <main className="container mx-auto p-6 space-y-8 max-w-5xl">
-      {/* 页面头部 */}
+    <div className="space-y-8 px-test-page-x py-test-page-y">
       <div className="space-y-4">
-        <Link href="/test">
-          <Button className="gap-2" size="sm" variant="ghost">
-            <ChevronLeftIcon className="size-4" />
-            返回测试页面
-          </Button>
-        </Link>
-
         <div>
           <h1 className="text-3xl font-bold mb-2">CodeTabs 组件测试</h1>
           <p className="text-muted-foreground">
@@ -325,6 +313,6 @@ console.log(greeting);`}
           </div>
         </div>
       </section>
-    </main>
+    </div>
   )
 }

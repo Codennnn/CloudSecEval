@@ -45,7 +45,7 @@ const testContent = `# Inline Code 高亮测试
 
 export default function TestInlineCodePage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="px-test-page-x py-test-page-y">
       <MDXRenderer content={testContent} />
     </div>
   )

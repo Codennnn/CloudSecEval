@@ -1,145 +1,126 @@
 import Link from 'next/link'
-import { transformerTwoslash } from '@shikijs/twoslash'
-import { type BundledLanguage, codeToHtml } from 'shiki'
 
-import { LanguageIcon } from '~/components/LanguageIcon'
+import { FileIconItem } from '~/components/FileIconItem'
 import { Button } from '~/components/ui/button'
-
-interface Props {
-  children: string
-  lang: BundledLanguage
-}
-
-async function CodeBlock(props: Props) {
-  const out = await codeToHtml(props.children, {
-    lang: props.lang,
-    theme: 'github-dark',
-    transformers: [transformerTwoslash()],
-  })
-
-  return <div dangerouslySetInnerHTML={{ __html: out }} />
-}
+import { PUBLIC_ROUTES } from '~/constants/routes.client'
 
 export const metadata = {
   title: '测试页面 - NestJS 中文文档',
   description: '各种组件和功能的测试用例集合',
 }
 
+/**
+ * TestCard 组件的属性接口
+ */
+interface TestCardProps {
+  /** 卡片标题 */
+  title: string
+  /** 卡片描述文本 */
+  description: string
+  /** 链接地址 */
+  href: string
+  /** 是否有独立的测试页面 */
+  hasTestPage?: boolean
+  /** 按钮文本，默认为 "查看测试" */
+  buttonText?: string
+  /** 子元素，用于自定义卡片内容 */
+  children?: React.ReactNode
+}
+
+/**
+ * 测试卡片组件
+ * 用于在测试页面展示各种测试功能的入口卡片
+ *
+ * @param props - TestCard 组件的属性
+ * @returns 测试卡片组件
+ */
+export function TestCard(props: TestCardProps) {
+  const {
+    title,
+    description,
+    href,
+    buttonText = '查看测试',
+    hasTestPage = true,
+    children,
+  } = props
+
+  return (
+    <div className="border rounded-lg p-4 space-y-3">
+      <h3 className="font-semibold">{title}</h3>
+
+      <p className="text-sm text-muted-foreground">{description}</p>
+
+      {children}
+
+      {hasTestPage && (
+        <Link href={href}>
+          <Button className="w-full" variant="outline">
+            {buttonText}
+          </Button>
+        </Link>
+      )}
+    </div>
+  )
+}
+
 export default function Page() {
   return (
-    <main className="container mx-auto p-6 space-y-8">
+    <main className="space-y-test-page">
       <div>
-        <h1 className="text-3xl font-bold mb-4">测试页面</h1>
-        <p className="text-muted-foreground mb-6">
+        <h1 className="text-3xl font-bold mb-3">测试页面</h1>
+        <div className="text-muted-foreground">
           这里包含了各种组件和功能的测试用例
-        </p>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">可用测试</h2>
+      <div>
+        <h2 className="mb-3 text-2xl font-semibold">可用测试</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div className="border rounded-lg p-4 space-y-3">
-            <h3 className="font-semibold">DynamicMDXRenderer 测试</h3>
-            <p className="text-sm text-muted-foreground">
-              测试动态 MDX 渲染器的流式内容处理和各种 Markdown 语法元素渲染
-            </p>
-            <Link href="/test/mdx-renderer">
-              <Button className="w-full" variant="outline">
-                查看测试
-              </Button>
-            </Link>
-          </div>
+          <TestCard
+            description="测试动态 MDX 渲染器的流式内容处理和各种 Markdown 语法元素渲染"
+            href={`${PUBLIC_ROUTES.TEST}/mdx-renderer`}
+            title="DynamicMDXRenderer 测试"
+          />
 
-          <div className="border rounded-lg p-4 space-y-3">
-            <h3 className="font-semibold">CalloutInfo 组件测试</h3>
-            <p className="text-sm text-muted-foreground">
-              交互式测试 CalloutInfo 组件的各种样式变体和属性配置
-            </p>
-            <Link href="/test/callout-info">
-              <Button className="w-full" variant="outline">
-                查看测试
-              </Button>
-            </Link>
-          </div>
+          <TestCard
+            description="交互式测试 CalloutInfo 组件的各种样式变体和属性配置"
+            href={`${PUBLIC_ROUTES.TEST}/callout-info`}
+            title="CalloutInfo 组件测试"
+          />
 
-          <div className="border rounded-lg p-4 space-y-3">
-            <h3 className="font-semibold">Shiki 代码高亮测试</h3>
-            <p className="text-sm text-muted-foreground">
-              测试 Shiki 代码高亮和 Twoslash 类型提示功能
-            </p>
-            <div className="pt-2">
-              <CodeBlock lang="ts">
-                {[
-                  'console.log("Hello")',
-                  'console.log("World")',
-                ].join('\n')}
-              </CodeBlock>
-            </div>
-          </div>
+          <TestCard
+            description="测试 Shiki 代码高亮引擎的各种功能，包括多语言支持、Twoslash 类型提示、主题切换等"
+            href={`${PUBLIC_ROUTES.TEST}/shiki-highlight`}
+            title="Shiki 代码高亮测试"
+          />
 
-          <div className="border rounded-lg p-4 space-y-3">
-            <h3 className="font-semibold">文件图标测试</h3>
-            <p className="text-sm text-muted-foreground">
-              测试根据文件名和语言类型显示对应图标的功能
-            </p>
+          <TestCard
+            description="测试根据文件名和语言类型显示对应图标的功能"
+            hasTestPage={false}
+            href="#"
+            title="文件图标测试"
+          >
             <div className="grid grid-cols-2 gap-3 pt-2">
-              {/* 特定文件名图标 */}
-              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon className="size-5" filename="nest-cli.json" lang="json" />
-                <span className="text-sm font-mono">nest-cli.json</span>
-              </div>
-
-              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon className="size-5" filename="webpack.config.js" lang="js" />
-                <span className="text-sm font-mono">webpack.config.js</span>
-              </div>
-
-              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon className="size-5" filename="Dockerfile" lang="" />
-                <span className="text-sm font-mono">Dockerfile</span>
-              </div>
-
-              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon className="size-5" filename="docker-compose.yml" lang="yaml" />
-                <span className="text-sm font-mono">docker-compose.yml</span>
-              </div>
-
-              {/* 语言类型图标 */}
-              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon className="size-5" lang="typescript" />
-                <span className="text-sm font-mono">TypeScript</span>
-              </div>
-
-              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                <LanguageIcon className="size-5" lang="javascript" />
-                <span className="text-sm font-mono">JavaScript</span>
-              </div>
+              <FileIconItem filename="nest-cli.json" lang="json" />
+              <FileIconItem filename="webpack.config.js" lang="js" />
+              <FileIconItem filename="Dockerfile" lang="" />
+              <FileIconItem filename="docker-compose.yml" lang="yaml" />
+              <FileIconItem lang="typescript" />
+              <FileIconItem lang="javascript" />
             </div>
-          </div>
+          </TestCard>
 
-          <div className="border rounded-lg p-4 space-y-3">
-            <h3 className="font-semibold">文件上传功能测试</h3>
-            <p className="text-sm text-muted-foreground">
-              测试 FileUploader 组件和批量上传功能，包括拖拽上传、进度追踪、错误处理等
-            </p>
-            <Link href="/test/file-upload">
-              <Button className="w-full" variant="outline">
-                查看测试
-              </Button>
-            </Link>
-          </div>
+          <TestCard
+            description="测试 FileUploader 组件和批量上传功能，包括拖拽上传、进度追踪、错误处理等"
+            href={`${PUBLIC_ROUTES.TEST}/file-upload`}
+            title="文件上传功能测试"
+          />
 
-          <div className="border rounded-lg p-4 space-y-3">
-            <h3 className="font-semibold">CodeTabs 多标签代码块测试</h3>
-            <p className="text-sm text-muted-foreground">
-              测试 CodeTabs 组件的多标签切换、语法高亮、文件名显示等功能
-            </p>
-            <Link href="/test/code-tabs">
-              <Button className="w-full" variant="outline">
-                查看测试
-              </Button>
-            </Link>
-          </div>
+          <TestCard
+            description="测试 CodeTabs 组件的多标签切换、语法高亮、文件名显示等功能"
+            href={`${PUBLIC_ROUTES.TEST}/code-tabs`}
+            title="CodeTabs 多标签代码块测试"
+          />
         </div>
       </div>
     </main>

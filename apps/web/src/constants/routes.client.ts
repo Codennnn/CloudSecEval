@@ -23,6 +23,8 @@ export const PUBLIC_ROUTES = {
   SEARCH: '/search',
   /** 关于页面 */
   ABOUT: '/about',
+  /** 测试页面 */
+  TEST: '/test',
 } as const
 
 /**
