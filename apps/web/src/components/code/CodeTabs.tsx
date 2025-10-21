@@ -1,15 +1,13 @@
 import { Children, isValidElement } from 'react'
 
+import { consola } from 'consola'
 import type { BundledLanguage } from 'shiki'
 
 import type { CodeTabProps } from '~/components/code/CodeTab'
 import { CodeTabsClient } from '~/components/code/CodeTabsClient'
 import { highlightCode } from '~/components/code/transformers'
 
-/**
- * 单个 tab 的数据结构
- */
-export interface TabData {
+export interface CodeTabData {
   /** tab 标签文本 */
   label: string
   /** 编程语言类型 */
@@ -41,7 +39,7 @@ export async function CodeTabs(props: CodeTabsProps) {
   const { children } = props
 
   // 提取所有 CodeTab 子组件的 props
-  const tabs: TabData[] = []
+  const tabs: CodeTabData[] = []
   const childrenArray = Children.toArray(children)
 
   for (const child of childrenArray) {
@@ -51,7 +49,7 @@ export async function CodeTabs(props: CodeTabsProps) {
 
       // 确保 code 是字符串
       if (typeof code !== 'string') {
-        console.warn('CodeTab children must be a string')
+        consola.warn('CodeTab children must be a string')
         continue
       }
 
@@ -76,7 +74,7 @@ export async function CodeTabs(props: CodeTabsProps) {
 
   // 如果没有有效的 tabs，返回 null
   if (tabs.length === 0) {
-    console.warn('CodeTabs: No valid CodeTab children found')
+    consola.warn('CodeTabs: No valid CodeTab children found')
 
     return null
   }

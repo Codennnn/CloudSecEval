@@ -21,8 +21,6 @@ interface CodeContainerProps {
   filename?: string
   /** 标题，可选 */
   title?: string
-  /** 是否显示加载状态 */
-  isLoading?: boolean
   /** 容器内容 */
   children: React.ReactNode
   /** 额外的 CSS 类名 */
@@ -47,7 +45,6 @@ export function CodeContainer(props: CodeContainerProps) {
     lang,
     filename,
     title,
-    isLoading = false,
     children,
     className,
     showHeader = true,
@@ -68,33 +65,33 @@ export function CodeContainer(props: CodeContainerProps) {
     <CodeWrapper className={cn(className, '@container/code-block')}>
       {/* 头部工具栏 */}
       {showHeader && (
-        <div className="px-code-block">
-          <div className="flex items-center gap-2 text-sm p-code-block">
-            <div className="inline-flex items-center gap-2 flex-1">
-              {showLanguageIcon && (
-                <LanguageIcon
-                  className="size-5"
-                  filename={filename}
-                  lang={lang}
-                />
-              )}
-
-              <div className="flex items-center gap-2 font-medium">
-                {title && <span className="opacity-70">{title}</span>}
-                {filename && <span className="font-mono">{filename}</span>}
-              </div>
-
-              {/* 微妙的加载指示器 */}
-              {isLoading && (
-                <div className="size-2 bg-current/60 rounded-full animate-pulse" />
-              )}
-
-              {/* 自定义头部内容 */}
+        <div>
+          {!!headerContent && (
+            <div className="p-code-block border-b border-border">
               {headerContent}
             </div>
+          )}
 
-            <div className="ml-auto flex items-center gap-1">
-              {showCopyButton && <CodeCopyButton text={code} />}
+          <div className="px-code-block">
+            <div className="flex items-center gap-2 text-sm p-code-block">
+              <div className="inline-flex items-center gap-2 flex-1">
+                {showLanguageIcon && (
+                  <LanguageIcon
+                    className="size-5"
+                    filename={filename}
+                    lang={lang}
+                  />
+                )}
+
+                <div className="flex items-center gap-2 font-medium">
+                  {title && <span className="opacity-70">{title}</span>}
+                  {filename && <span>{filename}</span>}
+                </div>
+              </div>
+
+              <div className="ml-auto flex items-center gap-1">
+                {showCopyButton && <CodeCopyButton text={code} />}
+              </div>
             </div>
           </div>
         </div>

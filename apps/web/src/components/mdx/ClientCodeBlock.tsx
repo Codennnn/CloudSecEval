@@ -190,7 +190,6 @@ export function ClientCodeBlock(props: ClientCodeBlockProps) {
     <CodeContainer
       code={code}
       filename={filename}
-      isLoading={isLoading && htmlOutput !== ''}
       lang={lang}
     >
       {renderContent()}

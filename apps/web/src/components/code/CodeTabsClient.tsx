@@ -3,12 +3,13 @@
 import { useState } from 'react'
 
 import { CodeContainer } from '~/components/code/CodeContainer'
-import type { TabData } from '~/components/code/CodeTabs'
+import type { CodeTabData } from '~/components/code/CodeTabs'
+import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 
 interface CodeTabsClientProps {
   /** 所有 tab 的数据 */
-  tabs: TabData[]
+  tabs: CodeTabData[]
 }
 
 /**
@@ -28,28 +29,27 @@ export function CodeTabsClient(props: CodeTabsClientProps) {
   // 获取当前激活的 tab 数据
   const currentTab = tabs[activeTabIndex]
 
-  // 渲染 tab 按钮列表
   const tabButtons = (
-    <div className="flex items-center gap-1 ml-auto">
+    <div className="flex items-center gap-code-block">
       {tabs.map((tab, index) => (
-        <button
+        <Button
           key={index}
-          aria-selected={index === activeTabIndex}
           className={cn(
-            'px-3 py-1 text-xs font-medium rounded transition-all duration-200',
-            'hover:bg-secondary/80',
+            'h-6 !px-2 text-xs font-medium rounded',
+            'hover:bg-secondary',
             index === activeTabIndex
-              ? 'bg-secondary text-secondary-foreground shadow-sm'
+              ? 'bg-secondary text-primary'
               : 'text-muted-foreground hover:text-foreground',
           )}
-          role="tab"
+          size="sm"
           type="button"
+          variant="ghost"
           onClick={() => {
             setActiveTabIndex(index)
           }}
         >
           {tab.label}
-        </button>
+        </Button>
       ))}
     </div>
   )
