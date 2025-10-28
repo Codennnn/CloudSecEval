@@ -74,15 +74,6 @@ export function EmptyState(props: EmptyStateProps) {
           })}
         </div>
       </div>
-
-      {/* 使用提示 */}
-      <div className="mt-8 text-xs text-muted-foreground text-center max-w-md">
-        <p>
-          💡 提示：这是一个演示原型，使用预设数据模拟 AI 回复。
-          实际系统将接入真实的 AI 模型和法规知识库。
-        </p>
-      </div>
     </div>
   )
 }
-
