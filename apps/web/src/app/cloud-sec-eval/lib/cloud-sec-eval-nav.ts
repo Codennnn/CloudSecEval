@@ -1,4 +1,4 @@
-import { AlertTriangleIcon, BookOpenIcon, CheckCircleIcon, FileTextIcon, LibraryIcon, type LucideIcon, MessageSquareIcon } from 'lucide-react'
+import { ActivityIcon, BookOpenIcon, CheckCircleIcon, FileTextIcon, LibraryIcon, type LucideIcon, MessageSquareIcon } from 'lucide-react'
 
 import { SITE_CONFIG } from '~/constants/common'
 
@@ -42,8 +42,13 @@ type CloudSecEvalNavConfig = Record<CloudSecEvalRoutes, CloudSecEvalNavItem>
  */
 export const cloudSecEvalNavConfig: CloudSecEvalNavConfig = {
   [CloudSecEvalRoutes.Root]: {
-    title: '云智评',
+    title: '云安全支撑与管理系统',
     url: CloudSecEvalRoutes.Root,
+  },
+  [CloudSecEvalRoutes.RiskIdentification]: {
+    title: '统计概览',
+    url: CloudSecEvalRoutes.RiskIdentification,
+    icon: ActivityIcon,
   },
   [CloudSecEvalRoutes.RegulationAnalysis]: {
     title: '法规解析',
@@ -54,11 +59,6 @@ export const cloudSecEvalNavConfig: CloudSecEvalNavConfig = {
     title: '合规评估',
     url: CloudSecEvalRoutes.ComplianceAssessment,
     icon: CheckCircleIcon,
-  },
-  [CloudSecEvalRoutes.RiskIdentification]: {
-    title: '风险识别',
-    url: CloudSecEvalRoutes.RiskIdentification,
-    icon: AlertTriangleIcon,
   },
   [CloudSecEvalRoutes.ReportGeneration]: {
     title: '报告生成',
@@ -88,10 +88,10 @@ function createCloudSecEvalNavItem(route: CloudSecEvalRoutes): CloudSecEvalNavIt
  * 主导航栏配置
  */
 const cloudSecEvalNavMain: CloudSecEvalNavItem[] = [
+  createCloudSecEvalNavItem(CloudSecEvalRoutes.RiskIdentification),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.KnowledgeBase),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.RegulationAnalysis),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.ComplianceAssessment),
-  createCloudSecEvalNavItem(CloudSecEvalRoutes.RiskIdentification),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.ReportGeneration),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.IntelligentQA),
 ]
@@ -108,7 +108,7 @@ export function getPageNameByRoute(pathname: string): string {
     return cloudSecEvalNavConfig[route].title
   }
 
-  return '云智评'
+  return '云安全支撑与管理系统'
 }
 
 /**

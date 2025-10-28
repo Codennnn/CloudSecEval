@@ -39,7 +39,7 @@ export function CloudSecEvalSidebar(props: React.ComponentProps<typeof Sidebar>)
                   src={SITE_CONFIG.logoPath}
                   width={24}
                 />
-                <span className="text-base font-semibold">云智评</span>
+                <span className="text-base font-semibold">云安全支撑与管理系统</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
