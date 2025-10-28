@@ -9,4 +9,3 @@ import { cloudSecEvalHomeRoute } from '~cloud-sec-eval/lib/cloud-sec-eval-nav'
 export default function CloudSecEvalRootPage() {
   redirect(cloudSecEvalHomeRoute)
 }
-

@@ -52,4 +52,3 @@ export function CloudSecEvalSidebar(props: React.ComponentProps<typeof Sidebar>)
     </Sidebar>
   )
 }
-

@@ -23,7 +23,7 @@ export const SITE_CONFIG = {
 
   // 相关链接
   englishDocsUrl: 'https://docs.nestjs.com',
-  logoPath: isCrowdTest() ? '/logos/crowd-test/logo.svg' : '/logos/logo-128.png',
+  logoPath: isCrowdTest() ? '/logos/crowd-test/logo.svg' : '/logos/logo.webp',
   appTouchIconPath: isCrowdTest() ? '/logos/crowd-test/logo.svg' : '/logos/apple-touch-icon.png',
   manifestPath: '/manifest.json',
 

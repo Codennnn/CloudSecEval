@@ -1,4 +1,4 @@
-import { AlertTriangleIcon, BookOpenIcon, CheckCircleIcon, FileTextIcon, type LucideIcon, MessageSquareIcon } from 'lucide-react'
+import { AlertTriangleIcon, BookOpenIcon, CheckCircleIcon, FileTextIcon, LibraryIcon, type LucideIcon, MessageSquareIcon } from 'lucide-react'
 
 import { SITE_CONFIG } from '~/constants/common'
 
@@ -12,6 +12,7 @@ export enum CloudSecEvalRoutes {
   RiskIdentification = '/cloud-sec-eval/risk-identification',
   ReportGeneration = '/cloud-sec-eval/report-generation',
   IntelligentQA = '/cloud-sec-eval/intelligent-qa',
+  KnowledgeBase = '/cloud-sec-eval/knowledge-base',
 }
 
 /**
@@ -69,6 +70,11 @@ export const cloudSecEvalNavConfig: CloudSecEvalNavConfig = {
     url: CloudSecEvalRoutes.IntelligentQA,
     icon: MessageSquareIcon,
   },
+  [CloudSecEvalRoutes.KnowledgeBase]: {
+    title: '知识库',
+    url: CloudSecEvalRoutes.KnowledgeBase,
+    icon: LibraryIcon,
+  },
 }
 
 /**
@@ -82,6 +88,7 @@ function createCloudSecEvalNavItem(route: CloudSecEvalRoutes): CloudSecEvalNavIt
  * 主导航栏配置
  */
 const cloudSecEvalNavMain: CloudSecEvalNavItem[] = [
+  createCloudSecEvalNavItem(CloudSecEvalRoutes.KnowledgeBase),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.RegulationAnalysis),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.ComplianceAssessment),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.RiskIdentification),
