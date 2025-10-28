@@ -23,6 +23,7 @@
       "~/*": ["./src/*"],
       "~admin/*": ["./src/app/admini/*"],
       "~crowd-test/*": ["./src/app/crowd-test/*"],
+      "~cloud-sec-eval/*": ["./src/app/cloud-sec-eval/*"],
       "~api/*": ["./src/lib/api/generated/*"]
     }
   },
