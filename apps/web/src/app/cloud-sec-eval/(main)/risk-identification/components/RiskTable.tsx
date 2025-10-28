@@ -2,16 +2,14 @@ import { useMemo } from 'react'
 
 import { EyeIcon } from 'lucide-react'
 
+import { ProTable } from '~/components/table/ProTable'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
 import type { TableColumnDef } from '~/types/advanced-search'
 
-import { ProTable } from '~/components/table/ProTable'
-
-import type { RiskItem } from '../lib/types'
-import { RISK_LEVEL_CONFIG, RISK_STATUS_CONFIG, RISK_TYPE_CONFIG } from '../lib/types'
+import { RISK_LEVEL_CONFIG, RISK_STATUS_CONFIG, RISK_TYPE_CONFIG, type RiskItem } from '../lib/types'
 import { formatDateTime } from '../lib/utils'
 
 interface RiskTableProps {
@@ -61,6 +59,7 @@ export function RiskTable(props: RiskTableProps) {
         header: '风险等级',
         cell: ({ row }) => {
           const config = RISK_LEVEL_CONFIG[row.original.level]
+
           return (
             <Badge
               className={cn(
@@ -92,6 +91,7 @@ export function RiskTable(props: RiskTableProps) {
         header: '影响资产',
         cell: ({ row }) => {
           const assets = row.original.affectedAssets
+
           if (assets.length === 0) {
             return <span className="text-muted-foreground">-</span>
           }
@@ -133,6 +133,7 @@ export function RiskTable(props: RiskTableProps) {
         header: '状态',
         cell: ({ row }) => {
           const config = RISK_STATUS_CONFIG[row.original.status]
+
           return (
             <Badge variant={config.variant}>
               {config.label}
@@ -200,4 +201,3 @@ export function RiskTable(props: RiskTableProps) {
     </div>
   )
 }
-

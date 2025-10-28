@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 
-import { mockProjects, reportTypeConfig, type ReportType } from '../lib/mock-reports'
+import { mockProjects, type ReportType, reportTypeConfig } from '../lib/mock-reports'
 
 interface CreateReportDialogProps {
   /** 对话框是否打开 */
@@ -71,6 +71,7 @@ export function CreateReportDialog(props: CreateReportDialogProps) {
 
     // 根据类型自动填充标题建议
     const config = reportTypeConfig[newType as ReportType]
+
     if (!title) {
       setTitle(`${config.label} - ${new Date().toLocaleDateString('zh-CN')}`)
     }
@@ -181,4 +182,3 @@ export function CreateReportDialog(props: CreateReportDialogProps) {
     </Dialog>
   )
 }
-

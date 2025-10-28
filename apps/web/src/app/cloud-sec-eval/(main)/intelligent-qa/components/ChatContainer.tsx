@@ -80,8 +80,8 @@ export function ChatContainer(props: ChatContainerProps) {
         {/* 显示正在输入的消息（打字机效果） */}
         {typingMessage && (
           <AssistantMessage
-            content={typingMessage}
             isTyping
+            content={typingMessage}
           />
         )}
 
@@ -96,4 +96,3 @@ export function ChatContainer(props: ChatContainerProps) {
     </ScrollArea>
   )
 }
-

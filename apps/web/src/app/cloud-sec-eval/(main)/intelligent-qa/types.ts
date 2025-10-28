@@ -40,4 +40,3 @@ export interface QAPair {
   /** 关键词（用于匹配） */
   keywords?: string[]
 }
-

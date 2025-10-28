@@ -7,4 +7,3 @@ export { ChatInput } from './ChatInput'
 export { EmptyState } from './EmptyState'
 export { LoadingIndicator } from './LoadingIndicator'
 export { UserMessage } from './UserMessage'
-

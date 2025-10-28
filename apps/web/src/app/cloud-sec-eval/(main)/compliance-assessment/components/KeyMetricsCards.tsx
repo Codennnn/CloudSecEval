@@ -25,30 +25,30 @@ export function KeyMetricsCards(props: KeyMetricsCardsProps) {
     <div className="grid gap-4 md:grid-cols-3">
       {/* 自动化率卡片 */}
       <MetricCard
+        color="blue"
         icon={<BotIcon className="size-5" />}
+        subtitle={`${metrics.autoProcessedCount}/${metrics.totalCount} 项自动处理`}
         title="测评流程自动化率"
         value={metrics.automationRate}
-        subtitle={`${metrics.autoProcessedCount}/${metrics.totalCount} 项自动处理`}
-        color="blue"
       />
 
       {/* 时间缩短卡片 */}
       <MetricCard
+        color="green"
         icon={<ClockIcon className="size-5" />}
+        subtitle="2天 → 4小时"
         title="报告生成时间缩短"
         value={metrics.timeSavedPercentage}
-        subtitle="2天 → 4小时"
-        color="green"
       />
 
       {/* 人工干预卡片 */}
       <MetricCard
+        isInverse
+        color="orange"
         icon={<UserIcon className="size-5" />}
+        subtitle={`${metrics.manualReviewCount}/${metrics.totalCount} 项需人工复核`}
         title="人工干预比例"
         value={metrics.manualInterventionRate}
-        subtitle={`${metrics.manualReviewCount}/${metrics.totalCount} 项需人工复核`}
-        color="orange"
-        isInverse
       />
     </div>
   )
@@ -158,4 +158,3 @@ function MetricCard(props: MetricCardProps) {
     </Card>
   )
 }
-

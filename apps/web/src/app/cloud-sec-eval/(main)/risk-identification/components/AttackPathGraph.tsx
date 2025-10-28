@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
-
 import { MermaidWrapper } from '~/components/doc/MermaidWrapper'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 
 import type { RiskItem } from '../lib/types'
 import { generateAttackPathMermaid } from '../lib/utils'
@@ -24,7 +23,7 @@ export function AttackPathGraph(props: AttackPathGraphProps) {
   }, [risks])
 
   // 统计有攻击路径的风险数量
-  const risksWithPath = risks.filter(risk => risk.attackPath && risk.attackPath.length > 0)
+  const risksWithPath = risks.filter((risk) => risk.attackPath && risk.attackPath.length > 0)
 
   return (
     <Card className="flex flex-col">
@@ -58,4 +57,3 @@ export function AttackPathGraph(props: AttackPathGraphProps) {
     </Card>
   )
 }
-

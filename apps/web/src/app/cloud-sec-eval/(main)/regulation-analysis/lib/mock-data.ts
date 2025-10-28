@@ -303,9 +303,7 @@ export const mockRemediationMeasures: RemediationMeasure[] = [
       '对用户进行双因素认证使用培训',
     ],
     estimatedEffort: 5,
-    referenceLinks: [
-      'https://www.djbh.net/webdev/web/GBDetail.aspx?id=1',
-    ],
+    referenceLinks: ['https://www.djbh.net/webdev/web/GBDetail.aspx?id=1'],
   },
   {
     id: 'remediation-3',
@@ -319,9 +317,7 @@ export const mockRemediationMeasures: RemediationMeasure[] = [
       '定期审查权限分配情况',
     ],
     estimatedEffort: 3,
-    referenceLinks: [
-      'https://www.gb688.cn/bzgk/gb/newGbInfo?hcno=73EEFA8E',
-    ],
+    referenceLinks: ['https://www.gb688.cn/bzgk/gb/newGbInfo?hcno=73EEFA8E'],
   },
   {
     id: 'remediation-4',
@@ -335,9 +331,7 @@ export const mockRemediationMeasures: RemediationMeasure[] = [
       '建立日志定期分析机制',
     ],
     estimatedEffort: 4,
-    referenceLinks: [
-      'https://www.djbh.net/webdev/web/GBDetail.aspx?id=1',
-    ],
+    referenceLinks: ['https://www.djbh.net/webdev/web/GBDetail.aspx?id=1'],
   },
   {
     id: 'remediation-5',
@@ -350,9 +344,7 @@ export const mockRemediationMeasures: RemediationMeasure[] = [
       '定期检查证书有效期并及时续期',
     ],
     estimatedEffort: 3,
-    referenceLinks: [
-      'https://www.gb688.cn/bzgk/gb/newGbInfo?hcno=73EEFA8E',
-    ],
+    referenceLinks: ['https://www.gb688.cn/bzgk/gb/newGbInfo?hcno=73EEFA8E'],
   },
   {
     id: 'remediation-6',
@@ -383,9 +375,7 @@ export const mockRemediationMeasures: RemediationMeasure[] = [
       '制定补丁发布计划并执行',
     ],
     estimatedEffort: 4,
-    referenceLinks: [
-      'https://www.djbh.net/webdev/web/GBDetail.aspx?id=1',
-    ],
+    referenceLinks: ['https://www.djbh.net/webdev/web/GBDetail.aspx?id=1'],
   },
   {
     id: 'remediation-8',
@@ -398,9 +388,7 @@ export const mockRemediationMeasures: RemediationMeasure[] = [
       '定期检查更新状态',
     ],
     estimatedEffort: 1,
-    referenceLinks: [
-      'https://www.gb688.cn/bzgk/gb/newGbInfo?hcno=73EEFA8E',
-    ],
+    referenceLinks: ['https://www.gb688.cn/bzgk/gb/newGbInfo?hcno=73EEFA8E'],
   },
   {
     id: 'remediation-9',
@@ -413,9 +401,7 @@ export const mockRemediationMeasures: RemediationMeasure[] = [
       '优化备份策略',
     ],
     estimatedEffort: 2,
-    referenceLinks: [
-      'https://www.djbh.net/webdev/web/GBDetail.aspx?id=1',
-    ],
+    referenceLinks: ['https://www.djbh.net/webdev/web/GBDetail.aspx?id=1'],
   },
 ]
 
@@ -500,4 +486,3 @@ export function getAnalysisResultByText(_text: string): AnalysisResult {
   // 演示项目中，无论输入什么文本，都返回第一个模板的结果
   return getAnalysisResultByTemplate('template-1')
 }
-

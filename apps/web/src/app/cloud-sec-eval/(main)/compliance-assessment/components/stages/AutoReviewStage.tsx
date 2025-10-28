@@ -34,10 +34,10 @@ export function AutoReviewStage(props: AutoReviewStageProps) {
 
   // 统计数据
   const autoPassedCount = project.reviewItems.filter(
-    item => item.status === 'auto-passed',
+    (item) => item.status === 'auto-passed',
   ).length
   const manualReviewCount = project.reviewItems.filter(
-    item => item.status === 'manual-review' || item.requiresManualReview,
+    (item) => item.status === 'manual-review' || item.requiresManualReview,
   ).length
 
   /**
@@ -154,7 +154,7 @@ export function AutoReviewStage(props: AutoReviewStageProps) {
           <h4 className="font-semibold">审核结果详情（显示前20项）</h4>
           <ScrollArea className="h-[300px] rounded-lg border">
             <div className="space-y-2 p-4">
-              {project.reviewItems.slice(0, 20).map(item => (
+              {project.reviewItems.slice(0, 20).map((item) => (
                 <ReviewItemCard key={item.id} item={item} />
               ))}
             </div>
@@ -243,4 +243,3 @@ function ReviewItemCard(props: { item: ReviewItem }) {
     </div>
   )
 }
-

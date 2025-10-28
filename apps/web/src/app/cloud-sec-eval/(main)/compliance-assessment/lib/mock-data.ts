@@ -1,11 +1,13 @@
 import {
   type AssessmentProject,
   type AssessmentTemplate,
-  type AssessmentType,
+  AssessmentType,
   type KeyMetrics,
   type ProcessStage,
-  ReviewCategory, type ReviewItem,
-  type ReviewItemStatus } from '../types/assessment'
+  ReviewCategory,
+  type ReviewItem,
+  type ReviewItemStatus,
+} from '../types/assessment'
 
 /**
  * 关键指标数据（固定值，用于顶部卡片展示）
@@ -23,10 +25,10 @@ export const keyMetrics: KeyMetrics = {
  * 评估类型显示名称映射
  */
 export const assessmentTypeNames: Record<AssessmentType, string> = {
-  dengbao: '等保2.0',
-  'cybersecurity-law': '网络安全法',
-  'data-security-law': '数据安全法',
-  'personal-info-protection-law': '个人信息保护法',
+  [AssessmentType.DengBao]: '等保2.0',
+  [AssessmentType.CyberSecurityLaw]: '网络安全法',
+  [AssessmentType.DataSecurityLaw]: '数据安全法',
+  [AssessmentType.PersonalInfoProtectionLaw]: '个人信息保护法',
 }
 
 /**
@@ -137,7 +139,7 @@ export const assessmentTemplates: AssessmentTemplate[] = [
     id: 'template-1',
     name: '等保2.0三级评估',
     description: '适用于等保三级系统的合规评估，包含526项审核要求',
-    type: 'dengbao',
+    type: AssessmentType.DengBao,
     reviewItemCount: 526,
     isRecommended: true,
   },
@@ -145,7 +147,7 @@ export const assessmentTemplates: AssessmentTemplate[] = [
     id: 'template-2',
     name: '网络安全法合规评估',
     description: '基于《网络安全法》的合规性评估模板',
-    type: 'cybersecurity-law',
+    type: AssessmentType.CyberSecurityLaw,
     reviewItemCount: 328,
     isRecommended: true,
   },
@@ -153,7 +155,7 @@ export const assessmentTemplates: AssessmentTemplate[] = [
     id: 'template-3',
     name: '数据安全法合规评估',
     description: '基于《数据安全法》的数据安全合规评估',
-    type: 'data-security-law',
+    type: AssessmentType.DataSecurityLaw,
     reviewItemCount: 245,
     isRecommended: false,
   },
@@ -161,7 +163,7 @@ export const assessmentTemplates: AssessmentTemplate[] = [
     id: 'template-4',
     name: '个人信息保护法评估',
     description: '针对个人信息处理活动的合规性评估',
-    type: 'personal-info-protection-law',
+    type: AssessmentType.PersonalInfoProtectionLaw,
     reviewItemCount: 198,
     isRecommended: false,
   },
@@ -174,7 +176,7 @@ export const mockAssessmentProjects: AssessmentProject[] = [
   {
     id: 'project-1',
     name: '2024年度等保三级评估',
-    type: 'dengbao',
+    type: AssessmentType.DengBao,
     status: 'in-progress',
     currentStage: 'auto-review',
     automationRate: 0.9,
@@ -205,7 +207,7 @@ export const mockAssessmentProjects: AssessmentProject[] = [
   {
     id: 'project-2',
     name: '数据安全合规检查',
-    type: 'data-security-law',
+    type: AssessmentType.DataSecurityLaw,
     status: 'completed',
     currentStage: 'completed',
     automationRate: 0.88,
@@ -229,7 +231,7 @@ export const mockAssessmentProjects: AssessmentProject[] = [
   {
     id: 'project-3',
     name: '个人信息保护评估',
-    type: 'personal-info-protection-law',
+    type: AssessmentType.PersonalInfoProtectionLaw,
     status: 'pending-review',
     currentStage: 'manual-review',
     automationRate: 0.85,
@@ -260,7 +262,7 @@ export const mockAssessmentProjects: AssessmentProject[] = [
   {
     id: 'project-4',
     name: '网络安全法年度审查',
-    type: 'cybersecurity-law',
+    type: AssessmentType.CyberSecurityLaw,
     status: 'completed',
     currentStage: 'completed',
     automationRate: 0.92,

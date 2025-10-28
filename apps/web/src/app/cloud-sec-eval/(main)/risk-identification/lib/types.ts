@@ -80,13 +80,13 @@ export interface RiskStats {
   /** 按类型统计 */
   byType: Record<RiskType, number>
   /** 趋势数据（近7天） */
-  trend: Array<{
+  trend: {
     date: string
     count: number
     high: number
     medium: number
     low: number
-  }>
+  }[]
 }
 
 /**
@@ -179,4 +179,3 @@ export const RISK_TYPE_CONFIG = {
     icon: '⬆️',
   },
 } as const
-

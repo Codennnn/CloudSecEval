@@ -85,4 +85,3 @@ export function ComplianceChart() {
     </Card>
   )
 }
-

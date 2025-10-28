@@ -92,4 +92,3 @@ function renderMarkdown(md: string): string {
 
   return html
 }
-

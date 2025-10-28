@@ -1,8 +1,9 @@
 'use client'
 
 import { useMemo } from 'react'
-import { BarChart3Icon, EyeIcon, FileTextIcon, FolderIcon, StarIcon, TagIcon } from 'lucide-react'
 import { useEvent } from 'react-use-event-hook'
+
+import { BarChart3Icon, EyeIcon, FileTextIcon, FolderIcon, StarIcon, TagIcon } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
@@ -118,7 +119,7 @@ export function StatisticsPanel() {
                             'flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors',
                             'hover:bg-accent',
                           )}
-                          onClick={() => handleDocumentClick(doc.id)}
+                          onClick={() => { handleDocumentClick(doc.id) }}
                         >
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <span className="text-sm font-medium text-muted-foreground shrink-0">
@@ -165,7 +166,7 @@ export function StatisticsPanel() {
                             'flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors',
                             'hover:bg-accent',
                           )}
-                          onClick={() => handleDocumentClick(doc.id)}
+                          onClick={() => { handleDocumentClick(doc.id) }}
                         >
                           <div className="flex-1 min-w-0">
                             <div className="text-sm truncate">{doc.name}</div>
@@ -270,4 +271,3 @@ export function StatisticsPanel() {
     </div>
   )
 }
-

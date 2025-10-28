@@ -148,4 +148,3 @@ export function RegulationInput(props: RegulationInputProps) {
     </Card>
   )
 }
-

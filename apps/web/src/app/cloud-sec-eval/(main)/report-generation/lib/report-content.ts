@@ -771,4 +771,3 @@ const REMEDIATION_REPORT_TEMPLATE = `# 安全整改计划报告
 **报告生成方式**：AI 智能生成 + 人工复核  
 **项目经理**：赵六（高级项目经理）
 `
-

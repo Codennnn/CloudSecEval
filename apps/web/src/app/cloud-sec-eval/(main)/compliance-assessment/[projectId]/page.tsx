@@ -1,7 +1,6 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-
 import { ArrowLeftIcon } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
@@ -154,4 +153,3 @@ function StatusBadge(props: { status: typeof mockAssessmentProjects[0]['status']
     </Badge>
   )
 }
-

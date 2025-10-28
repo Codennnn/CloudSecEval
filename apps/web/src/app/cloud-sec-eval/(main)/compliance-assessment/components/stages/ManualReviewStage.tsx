@@ -31,7 +31,7 @@ export function ManualReviewStage(props: ManualReviewStageProps) {
 
   // 筛选需要人工复核的项目
   const pendingItems = project.reviewItems.filter(
-    item => item.status === 'manual-review' || item.requiresManualReview,
+    (item) => item.status === 'manual-review' || item.requiresManualReview,
   )
 
   /**
@@ -40,12 +40,14 @@ export function ManualReviewStage(props: ManualReviewStageProps) {
   const handleToggleItem = (itemId: string) => {
     setSelectedItems((prev) => {
       const next = new Set(prev)
+
       if (next.has(itemId)) {
         next.delete(itemId)
       }
       else {
         next.add(itemId)
       }
+
       return next
     })
   }
@@ -58,7 +60,7 @@ export function ManualReviewStage(props: ManualReviewStageProps) {
       setSelectedItems(new Set())
     }
     else {
-      setSelectedItems(new Set(pendingItems.map(item => item.id)))
+      setSelectedItems(new Set(pendingItems.map((item) => item.id)))
     }
   }
 
@@ -125,7 +127,7 @@ export function ManualReviewStage(props: ManualReviewStageProps) {
             <>
               <ScrollArea className="h-[400px] rounded-lg border">
                 <div className="space-y-2 p-4">
-                  {pendingItems.map(item => (
+                  {pendingItems.map((item) => (
                     <ReviewItemCard
                       key={item.id}
                       isSelected={selectedItems.has(item.id)}
@@ -251,4 +253,3 @@ function ReviewItemCard(props: {
     </div>
   )
 }
-

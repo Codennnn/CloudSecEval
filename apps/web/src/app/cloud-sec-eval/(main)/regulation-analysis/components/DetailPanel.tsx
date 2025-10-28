@@ -285,4 +285,3 @@ export function DetailPanel(props: DetailPanelProps) {
     </Card>
   )
 }
-

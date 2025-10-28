@@ -42,12 +42,12 @@ export function RiskDistributionChart() {
           <ChartContainer className="h-[300px]" config={chartConfig}>
             <PieChart>
               <Pie
+                labelLine
                 cx="50%"
                 cy="50%"
                 data={riskData}
                 dataKey="value"
                 label={(entry) => `${entry.name}: ${entry.value}`}
-                labelLine
                 nameKey="name"
                 outerRadius={100}
               >
@@ -96,4 +96,3 @@ export function RiskDistributionChart() {
     </Card>
   )
 }
-

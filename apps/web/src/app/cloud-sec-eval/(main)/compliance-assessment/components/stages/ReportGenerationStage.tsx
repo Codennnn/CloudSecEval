@@ -195,4 +195,3 @@ export function ReportGenerationStage(props: ReportGenerationStageProps) {
     </div>
   )
 }
-

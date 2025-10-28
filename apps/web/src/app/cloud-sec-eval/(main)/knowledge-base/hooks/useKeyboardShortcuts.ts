@@ -18,7 +18,7 @@ interface KeyboardShortcut {
  * @param shortcuts 快捷键配置数组
  * @param enabled 是否启用快捷键
  */
-export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[], enabled: boolean = true) {
+export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[], enabled = true) {
   useEffect(() => {
     if (!enabled) {
       return
@@ -91,4 +91,3 @@ export function getShortcutText(shortcut: KeyboardShortcut): string {
 
   return parts.join(' + ')
 }
-

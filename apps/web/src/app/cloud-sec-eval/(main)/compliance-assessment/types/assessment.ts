@@ -242,4 +242,3 @@ export interface AssessmentTemplate {
   /** 是否为推荐模板 */
   isRecommended: boolean
 }
-

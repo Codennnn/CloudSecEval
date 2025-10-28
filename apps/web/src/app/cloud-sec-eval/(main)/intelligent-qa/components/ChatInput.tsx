@@ -125,4 +125,3 @@ export function ChatInput(props: ChatInputProps) {
     </div>
   )
 }
-

@@ -33,6 +33,7 @@ export function generateKnowledgeGraph(result: AnalysisResult): string {
     if (text.length <= maxLength) {
       return text
     }
+
     return `${text.substring(0, maxLength)}...`
   }
 
@@ -116,4 +117,3 @@ export function generateSimplifiedKnowledgeGraph(result: AnalysisResult, maxNode
     remediationMeasures: limitedRemediationMeasures,
   })
 }
-

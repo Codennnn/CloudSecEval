@@ -361,4 +361,3 @@ export function findBestAnswer(question: string): string {
   // 返回默认回复
   return defaultAnswer
 }
-

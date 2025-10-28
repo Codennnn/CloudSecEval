@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import { MermaidWrapper } from '~/components/doc/MermaidWrapper'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 
 import { generateSimplifiedKnowledgeGraph } from '../lib/graph-generator'
 import type { AnalysisResult } from '../types/regulation'
@@ -126,4 +126,3 @@ export function KnowledgeGraph(props: KnowledgeGraphProps) {
     </Card>
   )
 }
-

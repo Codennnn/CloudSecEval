@@ -3,7 +3,6 @@
 import { useState } from 'react'
 
 import { useParams, useRouter } from 'next/navigation'
-
 import { ArrowLeftIcon, DownloadIcon, EditIcon, SaveIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -12,8 +11,8 @@ import { Button } from '~/components/ui/button'
 
 import { ReportPreview } from '../components/ReportPreview'
 import { ReportTOC } from '../components/ReportTOC'
-import { getReportContent, reportTOC } from '../lib/report-content'
 import { formatDateTime, mockReports } from '../lib/mock-reports'
+import { getReportContent, reportTOC } from '../lib/report-content'
 
 /**
  * 报告详情页
@@ -129,4 +128,3 @@ export default function ReportDetailPage() {
     </div>
   )
 }
-

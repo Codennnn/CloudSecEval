@@ -1,14 +1,12 @@
-import type {
-  Document,
-  DocumentCategory,
-  DocumentFilter,
-  DocumentStatistics,
-  DocumentTag,
-  DocumentTreeNode,
-  SortBy,
-  SortOrder,
-} from '../types'
-import { DocumentType } from '../types'
+import {
+  type Document,
+  type DocumentCategory,
+  type DocumentFilter,
+  type DocumentStatistics,
+  type DocumentTag,
+  type DocumentTreeNode,
+  DocumentType, type SortBy,
+  type SortOrder } from '../types'
 
 /**
  * 搜索文档
@@ -116,18 +114,23 @@ export function sortDocuments(
       case 'name':
         comparison = a.name.localeCompare(b.name, 'zh-CN')
         break
+
       case 'createdAt':
         comparison = a.createdAt - b.createdAt
         break
+
       case 'updatedAt':
         comparison = a.updatedAt - b.updatedAt
         break
+
       case 'viewCount':
         comparison = a.viewCount - b.viewCount
         break
+
       case 'lastViewedAt':
         comparison = (a.lastViewedAt ?? 0) - (b.lastViewedAt ?? 0)
         break
+
       default:
         comparison = 0
     }
@@ -290,7 +293,7 @@ export function highlightKeyword(text: string, keyword: string): string {
  * @param maxLength 最大长度
  * @returns 摘要文本
  */
-export function extractSummary(content: string, maxLength: number = 200): string {
+export function extractSummary(content: string, maxLength = 200): string {
   // 移除 Markdown 标记
   const plainText = content
     .replace(/^#+\s+/gm, '') // 移除标题标记
@@ -399,4 +402,3 @@ export function suggestTags(documentName: string, existingTags: DocumentTag[]): 
 
   return suggestions
 }
-

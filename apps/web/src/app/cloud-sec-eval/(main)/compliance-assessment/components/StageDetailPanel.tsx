@@ -2,11 +2,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 
+import type { AssessmentProject, ProcessStage } from '../types/assessment'
+
 import { AutoReviewStage } from './stages/AutoReviewStage'
 import { ManualReviewStage } from './stages/ManualReviewStage'
 import { MaterialUploadStage } from './stages/MaterialUploadStage'
 import { ReportGenerationStage } from './stages/ReportGenerationStage'
-import type { AssessmentProject, ProcessStage } from '../types/assessment'
 
 interface StageDetailPanelProps {
   /** 评估项目 */
@@ -100,9 +101,8 @@ function getStageDescription(stage: ProcessStage): string {
     'auto-review': 'AI智能审核评估项，自动识别合规性问题',
     'manual-review': '人工复核需要关注的项目，确保评估准确性',
     'report-generation': '自动生成评估报告，包含详细的合规性分析',
-    'completed': '评估流程已完成',
+    completed: '评估流程已完成',
   }
 
   return descriptions[stage] || ''
 }
-

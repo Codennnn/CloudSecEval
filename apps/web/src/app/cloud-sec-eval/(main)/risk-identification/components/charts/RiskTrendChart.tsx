@@ -21,6 +21,7 @@ export function RiskTrendChart(props: RiskTrendChartProps) {
   // 格式化日期显示
   const chartData = data.map((item) => {
     const date = new Date(item.date)
+
     return {
       ...item,
       dateLabel: `${date.getMonth() + 1}/${date.getDate()}`,
@@ -99,4 +100,3 @@ export function RiskTrendChart(props: RiskTrendChartProps) {
     </Card>
   )
 }
-

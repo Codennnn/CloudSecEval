@@ -1,7 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-
 import { EyeIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
@@ -96,7 +95,7 @@ export function ProjectTable(props: ProjectTableProps) {
                     </TableRow>
                   )
                 : (
-                    projects.map(project => (
+                    projects.map((project) => (
                       <TableRow
                         key={project.id}
                         className="cursor-pointer hover:bg-muted/50"
@@ -230,4 +229,3 @@ function StatusBadge(props: { status: AssessmentProject['status'] }) {
     </Badge>
   )
 }
-

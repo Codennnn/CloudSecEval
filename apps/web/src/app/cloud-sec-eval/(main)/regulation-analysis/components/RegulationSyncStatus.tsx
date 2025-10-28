@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 
 import { ClockIcon, DatabaseIcon, RefreshCwIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
-import { toast } from 'sonner'
 
 /**
  * 法规库状态组件
@@ -36,6 +36,7 @@ export function RegulationSyncStatus() {
   const formatCountdown = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
+
     return `${hours}小时${minutes}分钟`
   }
 
@@ -49,12 +50,16 @@ export function RegulationSyncStatus() {
 
     if (hours < 1) {
       const minutes = Math.floor(diff / (1000 * 60))
+
       return `${minutes}分钟前`
     }
+
     if (hours < 24) {
       return `${hours}小时前`
     }
+
     const days = Math.floor(hours / 24)
+
     return `${days}天前`
   }
 
@@ -148,4 +153,3 @@ export function RegulationSyncStatus() {
     </Card>
   )
 }
-

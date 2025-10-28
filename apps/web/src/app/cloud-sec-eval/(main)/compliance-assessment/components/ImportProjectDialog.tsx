@@ -3,7 +3,6 @@
 import { useState } from 'react'
 
 import { useRouter } from 'next/navigation'
-
 import { FileUpIcon, UploadIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
@@ -42,6 +41,7 @@ export function ImportProjectDialog(props: ImportProjectDialogProps) {
    */
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
+
     if (file) {
       setSelectedFile(file)
     }
@@ -58,7 +58,7 @@ export function ImportProjectDialog(props: ImportProjectDialogProps) {
     setIsImporting(true)
 
     // 模拟导入延迟
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1500))
 
     // 生成新项目ID
     const newProjectId = `project-${Date.now()}`
@@ -168,4 +168,3 @@ export function ImportProjectDialog(props: ImportProjectDialogProps) {
     </Dialog>
   )
 }
-

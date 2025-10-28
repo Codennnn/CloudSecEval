@@ -153,4 +153,3 @@ export function AutomationStatsPanel(props: AutomationStatsPanelProps) {
     </Card>
   )
 }
-

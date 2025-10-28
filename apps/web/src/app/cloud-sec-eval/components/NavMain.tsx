@@ -51,4 +51,3 @@ export function NavMain({ items }: NavMainProps) {
     </SidebarGroup>
   )
 }
-

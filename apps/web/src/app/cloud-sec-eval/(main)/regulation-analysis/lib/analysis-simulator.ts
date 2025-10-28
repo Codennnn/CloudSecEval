@@ -1,4 +1,5 @@
 import type { AnalysisResult, AnalysisStep, AnalysisStepConfig } from '../types/regulation'
+
 import { getAnalysisResultByTemplate, getAnalysisResultByText } from './mock-data'
 
 /**
@@ -94,4 +95,3 @@ export function getStepIndex(step: AnalysisStep): number {
     return s.step === step
   })
 }
-

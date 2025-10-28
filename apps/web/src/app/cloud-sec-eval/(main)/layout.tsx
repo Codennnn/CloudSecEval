@@ -1,5 +1,5 @@
-import { SidebarInset, SidebarProvider } from '~/components/ui/sidebar'
 import { ScrollGradientContainer } from '~/components/ScrollGradientContainer'
+import { SidebarInset, SidebarProvider } from '~/components/ui/sidebar'
 
 import { CloudSecEvalHeader } from '~cloud-sec-eval/components/CloudSecEvalHeader'
 import { CloudSecEvalSidebar } from '~cloud-sec-eval/components/CloudSecEvalSidebar'
@@ -34,4 +34,3 @@ export default function CloudSecEvalLayout(props: React.PropsWithChildren) {
     </SidebarProvider>
   )
 }
-

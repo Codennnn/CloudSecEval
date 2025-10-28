@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-
 import { FileTextIcon, MoreVerticalIcon } from 'lucide-react'
 
 import { Badge } from '~/components/ui/badge'
@@ -152,4 +151,3 @@ export function ReportList(props: ReportListProps) {
     </div>
   )
 }
-

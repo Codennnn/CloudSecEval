@@ -32,18 +32,19 @@ export function MaterialUploadStage(props: MaterialUploadStageProps) {
 
     for (const file of files) {
       const fileId = `${file.name}-${Date.now()}`
-      setUploadingFiles(prev => new Map(prev).set(fileId, 0))
+      setUploadingFiles((prev) => new Map(prev).set(fileId, 0))
 
       // 模拟上传进度
       for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-        setUploadingFiles(prev => new Map(prev).set(fileId, progress))
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        setUploadingFiles((prev) => new Map(prev).set(fileId, progress))
       }
 
       // 上传完成，移除进度
       setUploadingFiles((prev) => {
         const next = new Map(prev)
         next.delete(fileId)
+
         return next
       })
     }
@@ -61,7 +62,7 @@ export function MaterialUploadStage(props: MaterialUploadStageProps) {
   }
 
   const hasFiles = project.uploadedFiles.length > 0
-  const allFilesValid = project.uploadedFiles.every(f => f.validationStatus === 'passed')
+  const allFilesValid = project.uploadedFiles.every((f) => f.validationStatus === 'passed')
 
   return (
     <div className="space-y-6">
@@ -77,9 +78,9 @@ export function MaterialUploadStage(props: MaterialUploadStageProps) {
         <Button asChild>
           <label className="cursor-pointer">
             <input
+              multiple
               accept=".pdf,.doc,.docx,.xls,.xlsx"
               className="hidden"
-              multiple
               type="file"
               onChange={handleFileSelect}
             />
@@ -111,7 +112,7 @@ export function MaterialUploadStage(props: MaterialUploadStageProps) {
         <div className="space-y-2">
           <h4 className="font-semibold">已上传文件</h4>
           <div className="space-y-2">
-            {project.uploadedFiles.map(file => (
+            {project.uploadedFiles.map((file) => (
               <FileItem key={file.id} file={file} />
             ))}
           </div>
@@ -175,4 +176,3 @@ function FileItem(props: { file: UploadedFile }) {
     </div>
   )
 }
-

@@ -120,4 +120,3 @@ export function AnalysisProgress(props: AnalysisProgressProps) {
     </Card>
   )
 }
-

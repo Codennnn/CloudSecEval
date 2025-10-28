@@ -1,9 +1,9 @@
 'use client'
 
+import { Loader2Icon, SparklesIcon } from 'lucide-react'
+
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Progress } from '~/components/ui/progress'
-
-import { Loader2Icon, SparklesIcon } from 'lucide-react'
 
 import type { Report } from '../lib/mock-reports'
 
@@ -102,4 +102,3 @@ export function GenerationProgress(props: GenerationProgressProps) {
     </Card>
   )
 }
-

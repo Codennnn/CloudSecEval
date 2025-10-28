@@ -109,4 +109,3 @@ export async function simulateAIResponseFast(question: string): Promise<string> 
 
   return findBestAnswer(question)
 }
-

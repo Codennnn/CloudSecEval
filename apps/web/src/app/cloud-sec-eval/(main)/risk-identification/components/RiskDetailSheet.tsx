@@ -10,8 +10,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { Textarea } from '~/components/ui/textarea'
 import { cn } from '~/lib/utils'
 
-import type { RiskItem } from '../lib/types'
-import { RISK_LEVEL_CONFIG, RISK_STATUS_CONFIG, RISK_TYPE_CONFIG } from '../lib/types'
+import { RISK_LEVEL_CONFIG, RISK_STATUS_CONFIG, RISK_TYPE_CONFIG, type RiskItem } from '../lib/types'
 import { formatDateTime } from '../lib/utils'
 
 interface RiskDetailSheetProps {
@@ -229,7 +228,7 @@ export function RiskDetailSheet(props: RiskDetailSheetProps) {
               className="min-h-[100px]"
               placeholder="输入备注信息..."
               value={notes}
-              onChange={e => setNotes(e.target.value)}
+              onChange={(e) => { setNotes(e.target.value) }}
             />
             <Button
               className="w-full"
@@ -252,4 +251,3 @@ export function RiskDetailSheet(props: RiskDetailSheetProps) {
     </Sheet>
   )
 }
-

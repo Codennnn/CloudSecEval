@@ -59,7 +59,7 @@ export function CreateProjectDialog(props: CreateProjectDialogProps) {
     setIsCreating(true)
 
     // 模拟创建延迟
-    await new Promise(resolve => setTimeout(resolve, 800))
+    await new Promise((resolve) => setTimeout(resolve, 800))
 
     // 生成新项目ID
     const newProjectId = `project-${Date.now()}`
@@ -108,7 +108,7 @@ export function CreateProjectDialog(props: CreateProjectDialogProps) {
               id="project-name"
               placeholder="例如：2024年度等保三级评估"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value) }}
             />
           </div>
 
@@ -117,7 +117,7 @@ export function CreateProjectDialog(props: CreateProjectDialogProps) {
             <Label htmlFor="assessment-type">评估类型 *</Label>
             <Select
               value={type}
-              onValueChange={value => setType(value as AssessmentType)}
+              onValueChange={(value) => { setType(value as AssessmentType) }}
             >
               <SelectTrigger id="assessment-type">
                 <SelectValue />
@@ -140,7 +140,7 @@ export function CreateProjectDialog(props: CreateProjectDialogProps) {
               placeholder="简要描述评估项目的目的和范围..."
               rows={3}
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => { setDescription(e.target.value) }}
             />
           </div>
         </div>
@@ -164,4 +164,3 @@ export function CreateProjectDialog(props: CreateProjectDialogProps) {
     </Dialog>
   )
 }
-

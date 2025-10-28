@@ -3,7 +3,6 @@
 import { useState } from 'react'
 
 import { useRouter } from 'next/navigation'
-
 import { CheckIcon, StarIcon } from 'lucide-react'
 
 import { Button } from '~/components/ui/button'
@@ -55,7 +54,7 @@ export function SelectTemplateDialog(props: SelectTemplateDialogProps) {
     setIsCreating(true)
 
     // 模拟创建延迟
-    await new Promise(resolve => setTimeout(resolve, 800))
+    await new Promise((resolve) => setTimeout(resolve, 800))
 
     // 生成新项目ID
     const newProjectId = `project-${Date.now()}`
@@ -102,7 +101,7 @@ export function SelectTemplateDialog(props: SelectTemplateDialogProps) {
               id="template-project-name"
               placeholder="例如：2024年度等保三级评估"
               value={projectName}
-              onChange={e => setProjectName(e.target.value)}
+              onChange={(e) => { setProjectName(e.target.value) }}
             />
           </div>
 
@@ -114,7 +113,7 @@ export function SelectTemplateDialog(props: SelectTemplateDialogProps) {
               value={selectedTemplateId}
               onValueChange={setSelectedTemplateId}
             >
-              {assessmentTemplates.map(template => (
+              {assessmentTemplates.map((template) => (
                 <TemplateOption
                   key={template.id}
                   template={template}
@@ -180,7 +179,9 @@ function TemplateOption(props: TemplateOptionProps) {
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <CheckIcon className="size-3" />
-            {template.reviewItemCount} 项审核要求
+            {template.reviewItemCount}
+            {' '}
+            项审核要求
           </span>
           <span>
             类型：{assessmentTypeNames[template.type]}
@@ -190,4 +191,3 @@ function TemplateOption(props: TemplateOptionProps) {
     </div>
   )
 }
-

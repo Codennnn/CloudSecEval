@@ -1,5 +1,4 @@
-import type { RiskItem } from './types'
-import { RiskLevel, RiskType } from './types'
+import { type RiskItem, RiskLevel, RiskType } from './types'
 
 /**
  * 格式化日期时间
@@ -12,10 +11,13 @@ export function formatDateTime(dateStr: string): string {
 
   if (days === 0) {
     const hours = Math.floor(diff / (1000 * 60 * 60))
+
     if (hours === 0) {
       const minutes = Math.floor(diff / (1000 * 60))
+
       return `${minutes}分钟前`
     }
+
     return `${hours}小时前`
   }
   else if (days === 1) {
@@ -40,7 +42,7 @@ export function formatDateTime(dateStr: string): string {
 export function generateAttackPathMermaid(risks: RiskItem[]): string {
   // 筛选有攻击路径的高风险项
   const risksWithPath = risks
-    .filter(risk => risk.attackPath && risk.attackPath.length > 0)
+    .filter((risk) => risk.attackPath && risk.attackPath.length > 0)
     .slice(0, 5) // 只取前5个，避免图谱过于复杂
 
   if (risksWithPath.length === 0) {
@@ -66,6 +68,7 @@ export function generateAttackPathMermaid(risks: RiskItem[]): string {
         const nodeId = `N${nodeIndex++}`
         nodeMap.set(step, nodeId)
       }
+
       pathNodes.push(nodeMap.get(step)!)
     })
 
@@ -92,6 +95,7 @@ export function generateAttackPathMermaid(risks: RiskItem[]): string {
 
     if (risk.attackPath && risk.attackPath.length > 0) {
       const lastNode = nodeMap.get(risk.attackPath[risk.attackPath.length - 1])
+
       if (lastNode) {
         mermaidCode += `    style ${lastNode} fill:${color},stroke:${color},stroke-width:3px,color:#fff\n`
       }
@@ -115,6 +119,7 @@ export function getRiskTypeIcon(type: RiskType): string {
     [RiskType.DATA_LEAK]: '💧',
     [RiskType.PRIVILEGE_ESCALATION]: '⬆️',
   }
+
   return icons[type] || '⚠️'
 }
 
@@ -127,6 +132,7 @@ export function getRiskLevelColor(level: RiskLevel): string {
     [RiskLevel.MEDIUM]: '#f59e0b',
     [RiskLevel.LOW]: '#10b981',
   }
+
   return colors[level]
 }
 
@@ -161,14 +167,14 @@ export function filterRisks(
     // 搜索筛选
     if (filters.search) {
       const searchLower = filters.search.toLowerCase()
+
       return (
         risk.name.toLowerCase().includes(searchLower)
         || risk.description.toLowerCase().includes(searchLower)
-        || risk.affectedAssets.some(asset => asset.toLowerCase().includes(searchLower))
+        || risk.affectedAssets.some((asset) => asset.toLowerCase().includes(searchLower))
       )
     }
 
     return true
   })
 }
-

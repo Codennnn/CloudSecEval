@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckIcon, ClockIcon, FileUpIcon, FileTextIcon, SearchIcon, UserCheckIcon } from 'lucide-react'
+import { CheckIcon, ClockIcon, FileTextIcon, FileUpIcon, SearchIcon, UserCheckIcon } from 'lucide-react'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import { cn } from '~/lib/utils'
@@ -20,14 +20,14 @@ interface ProcessFlowProps {
 export function ProcessFlow(props: ProcessFlowProps) {
   const { currentStage } = props
 
-  const stages = processStageConfigs.filter(config => config.stage !== 'completed')
+  const stages = processStageConfigs.filter((config) => config.stage !== 'completed')
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>评估流程</CardTitle>
         <CardDescription>
-          当前进度：{processStageConfigs.find(c => c.stage === currentStage)?.title}
+          当前进度：{processStageConfigs.find((c) => c.stage === currentStage)?.title}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -124,7 +124,7 @@ function StageIcon(props: { stage: ProcessStage }) {
     'auto-review': <SearchIcon className="size-5" />,
     'manual-review': <UserCheckIcon className="size-5" />,
     'report-generation': <FileTextIcon className="size-5" />,
-    'completed': <CheckIcon className="size-5" />,
+    completed: <CheckIcon className="size-5" />,
   }
 
   return icons[stage] || null
@@ -144,4 +144,3 @@ function getStageIndex(stage: ProcessStage): number {
 
   return stages.indexOf(stage)
 }
-

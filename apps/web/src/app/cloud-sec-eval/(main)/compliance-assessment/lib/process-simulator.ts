@@ -63,8 +63,10 @@ export async function simulateFileUpload(
 ): Promise<UploadedFile> {
   // 模拟上传进度
   const steps = 10
+
   for (let i = 0; i <= steps; i++) {
     await delay(100)
+
     if (onProgress) {
       onProgress((i / steps) * 100)
     }
@@ -189,7 +191,7 @@ export async function simulateBatchApproval(
  * 获取流程阶段配置
  */
 export function getStageConfig(stage: ProcessStage): ProcessStageConfig | undefined {
-  return processStageConfigs.find(config => config.stage === stage)
+  return processStageConfigs.find((config) => config.stage === stage)
 }
 
 /**
@@ -205,6 +207,7 @@ export function getNextStage(currentStage: ProcessStage): ProcessStage | null {
   ]
 
   const currentIndex = stages.indexOf(currentStage)
+
   if (currentIndex === -1 || currentIndex === stages.length - 1) {
     return null
   }
@@ -233,10 +236,10 @@ export function getStageIndex(stage: ProcessStage): number {
 export function calculateAutomationStats(reviewItems: ReviewItem[]) {
   const totalItems = reviewItems.length
   const autoProcessedCount = reviewItems.filter(
-    item => item.status === 'auto-passed' || item.status === 'auto-failed',
+    (item) => item.status === 'auto-passed' || item.status === 'auto-failed',
   ).length
   const manualReviewCount = reviewItems.filter(
-    item => item.requiresManualReview || item.status === 'manual-review',
+    (item) => item.requiresManualReview || item.status === 'manual-review',
   ).length
 
   const automationRate = totalItems > 0 ? autoProcessedCount / totalItems : 0
@@ -286,12 +289,15 @@ export function formatRelativeTime(timestamp: number): string {
   if (days > 0) {
     return `${days}天前`
   }
+
   if (hours > 0) {
     return `${hours}小时前`
   }
+
   if (minutes > 0) {
     return `${minutes}分钟前`
   }
+
   return '刚刚'
 }
 
@@ -308,4 +314,3 @@ export function formatDateTime(timestamp: number): string {
 
   return `${year}-${month}-${day} ${hours}:${minutes}`
 }
-
