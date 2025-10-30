@@ -1,4 +1,4 @@
-import { ActivityIcon, BookOpenIcon, CheckCircleIcon, FileTextIcon, LibraryIcon, type LucideIcon, MessageSquareIcon } from 'lucide-react'
+import { ActivityIcon, BookOpenIcon, Building2Icon, CheckCheckIcon, CheckCircleIcon, ClipboardListIcon, Clock3Icon, FileTextIcon, LibraryIcon, type LucideIcon, MapPinIcon, MessageSquareIcon, PencilIcon } from 'lucide-react'
 
 import { SITE_CONFIG } from '~/constants/common'
 
@@ -13,6 +13,12 @@ export enum CloudSecEvalRoutes {
   ReportGeneration = '/cloud-sec-eval/report-generation',
   IntelligentQA = '/cloud-sec-eval/intelligent-qa',
   KnowledgeBase = '/cloud-sec-eval/knowledge-base',
+  ITTemplate = '/cloud-sec-eval/it-template',
+  TaskCreation = '/cloud-sec-eval/it-template/task-creation',
+  TaskScheduling = '/cloud-sec-eval/it-template/task-scheduling',
+  TaskFilling = '/cloud-sec-eval/it-template/task-filling',
+  TaskReview = '/cloud-sec-eval/it-template/task-review',
+  TaskTracking = '/cloud-sec-eval/it-template/task-tracking',
 }
 
 /**
@@ -33,6 +39,7 @@ export interface CloudSecEvalNavItem {
   url?: string
   icon?: LucideIcon
   type?: 'label' | 'menu-item'
+  items?: CloudSecEvalNavItem[]
 }
 
 type CloudSecEvalNavConfig = Record<CloudSecEvalRoutes, CloudSecEvalNavItem>
@@ -75,6 +82,63 @@ export const cloudSecEvalNavConfig: CloudSecEvalNavConfig = {
     url: CloudSecEvalRoutes.KnowledgeBase,
     icon: LibraryIcon,
   },
+  [CloudSecEvalRoutes.ITTemplate]: {
+    title: '云评 IT 化管理',
+    url: CloudSecEvalRoutes.ITTemplate,
+    icon: Building2Icon,
+    items: [
+      {
+        title: '任务创建台',
+        url: CloudSecEvalRoutes.TaskCreation,
+        icon: ClipboardListIcon,
+      },
+      {
+        title: '任务调度台',
+        url: CloudSecEvalRoutes.TaskScheduling,
+        icon: Clock3Icon,
+      },
+      {
+        title: '任务填报台',
+        url: CloudSecEvalRoutes.TaskFilling,
+        icon: PencilIcon,
+      },
+      {
+        title: '任务审核台',
+        url: CloudSecEvalRoutes.TaskReview,
+        icon: CheckCheckIcon,
+      },
+      {
+        title: '任务跟踪台',
+        url: CloudSecEvalRoutes.TaskTracking,
+        icon: MapPinIcon,
+      },
+    ],
+  },
+  [CloudSecEvalRoutes.TaskCreation]: {
+    title: '任务创建台',
+    url: CloudSecEvalRoutes.TaskCreation,
+    icon: ClipboardListIcon,
+  },
+  [CloudSecEvalRoutes.TaskScheduling]: {
+    title: '任务调度台',
+    url: CloudSecEvalRoutes.TaskScheduling,
+    icon: Clock3Icon,
+  },
+  [CloudSecEvalRoutes.TaskFilling]: {
+    title: '任务填报台',
+    url: CloudSecEvalRoutes.TaskFilling,
+    icon: PencilIcon,
+  },
+  [CloudSecEvalRoutes.TaskReview]: {
+    title: '任务审核台',
+    url: CloudSecEvalRoutes.TaskReview,
+    icon: CheckCheckIcon,
+  },
+  [CloudSecEvalRoutes.TaskTracking]: {
+    title: '任务跟踪台',
+    url: CloudSecEvalRoutes.TaskTracking,
+    icon: MapPinIcon,
+  },
 }
 
 /**
@@ -93,6 +157,7 @@ const cloudSecEvalNavMain: CloudSecEvalNavItem[] = [
   createCloudSecEvalNavItem(CloudSecEvalRoutes.RegulationAnalysis),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.ComplianceAssessment),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.ReportGeneration),
+  createCloudSecEvalNavItem(CloudSecEvalRoutes.ITTemplate),
   createCloudSecEvalNavItem(CloudSecEvalRoutes.IntelligentQA),
 ]
 

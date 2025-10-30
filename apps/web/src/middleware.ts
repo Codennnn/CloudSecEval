@@ -141,17 +141,17 @@ export function middleware(request: NextRequest) {
           host.includes(domain) || domain.includes(host),
         )
 
-        if (!isAllowedReferer && !isAllowedHost) {
-          consola.warn('🚫 已拦截盗链访问：', {
-            path: request.nextUrl.pathname,
-            referer,
-            userAgent: userAgent.substring(0, 100),
-            timestamp: new Date().toISOString(),
-          })
+        // if (!isAllowedReferer && !isAllowedHost) {
+        //   consola.warn('🚫 已拦截盗链访问：', {
+        //     path: request.nextUrl.pathname,
+        //     referer,
+        //     userAgent: userAgent.substring(0, 100),
+        //     timestamp: new Date().toISOString(),
+        //   })
 
-          // 返回防盗链警告图片
-          return NextResponse.redirect(new URL(ASSET_ROUTES.HOTLINK_WARNING, request.url))
-        }
+        //   // 返回防盗链警告图片
+        //   return NextResponse.redirect(new URL(ASSET_ROUTES.HOTLINK_WARNING, request.url))
+        // }
       }
     }
   }
